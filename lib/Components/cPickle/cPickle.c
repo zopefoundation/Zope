@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.50 1998/03/25 12:39:28 jim Exp $
+     $Id: cPickle.c,v 1.51 1998/05/05 14:56:54 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.50 1998/03/25 12:39:28 jim Exp $\n"
+"$Id: cPickle.c,v 1.51 1998/05/05 14:56:54 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -195,15 +195,14 @@ cPickle_PyMapping_HasKey(PyObject *o, PyObject *key) {
     return 0;
 }
 
-#define PyErr_Format PyErr_JFFormat
 static
 PyObject *
 #ifdef HAVE_STDARG_PROTOTYPES
 /* VARARGS 2 */
-PyErr_Format(PyObject *ErrType, char *stringformat, char *format, ...) {
+cPickle_ErrFormat(PyObject *ErrType, char *stringformat, char *format, ...) {
 #else
 /* VARARGS */
-PyErr_Format(va_alist) va_dcl {
+cPickle_ErrFormat(va_alist) va_dcl {
 #endif
   va_list va;
   PyObject *args=0, *retval=0;
@@ -721,7 +720,7 @@ whichmodule(PyObject *class_map, PyObject *global, PyObject *global_name) {
     
     /*
     if (!j) {
-        PyErr_Format(PicklingError, "Could not find module for %s.", 
+        cPickle_ErrFormat(PicklingError, "Could not find module for %s.", 
             "O", global_name);
         return NULL;
     }
@@ -923,7 +922,7 @@ save_float(Picklerobject *self, PyObject *args) {
     {
         char c_str[250];
         c_str[0] = FLOAT;
-        sprintf(c_str + 1, "%.12g\n", x);
+        sprintf(c_str + 1, "%.17g\n", x);
 
         if ((*self->write_func)(self, c_str, strlen(c_str)) < 0)
             return -1;
@@ -1638,7 +1637,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
         }
  
         if (!PyTuple_Check(t)) {
-            PyErr_Format(PicklingError, "Value returned by %s must "
+            cPickle_ErrFormat(PicklingError, "Value returned by %s must "
                 "be a tuple", "O", __reduce__);
             goto finally;
         }
@@ -1646,7 +1645,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
         size = PyTuple_Size(t);
         
         if ((size != 3) && (size != 2)) {
-            PyErr_Format(PicklingError, "tuple returned by %s must "     
+            cPickle_ErrFormat(PicklingError, "tuple returned by %s must "     
                 "contain only two or three elements", "O", __reduce__);
                 goto finally;
         }
@@ -1660,7 +1659,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
         }
 
         UNLESS(PyTuple_Check(arg_tup) || arg_tup==Py_None) {
-            PyErr_Format(PicklingError, "Second element of tuple "
+            cPickle_ErrFormat(PicklingError, "Second element of tuple "
                 "returned by %s must be a tuple", "O", __reduce__);
             goto finally;
         }
@@ -1676,7 +1675,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
     }
     */
 
-    PyErr_Format(PicklingError, "Cannot pickle %s objects.", 
+    cPickle_ErrFormat(PicklingError, "Cannot pickle %s objects.", 
         "O", (PyObject *)type);
 
 finally:
@@ -2568,7 +2567,8 @@ Instance_New(PyObject *cls, PyObject *args) {
   if (!has_key)
     if(!(safe = PyObject_GetAttr(cls, __safe_for_unpickling___str)) ||
        !PyObject_IsTrue(safe)) {
-      PyErr_Format(UnpicklingError, "%s is not safe for unpickling", "O", cls);
+      cPickle_ErrFormat(UnpicklingError,
+			"%s is not safe for unpickling", "O", cls);
       Py_XDECREF(safe);
       return NULL;
   }
@@ -3527,7 +3527,7 @@ load(Unpicklerobject *self) {
                 continue;
 
             default: 
-                PyErr_Format(UnpicklingError, "invalid load key, '%s'.", 
+                cPickle_ErrFormat(UnpicklingError, "invalid load key, '%s'.", 
                     "c", s[0]);
                 goto err;
         }
@@ -3824,7 +3824,7 @@ noload(Unpicklerobject *self) {
                 continue;
 
             default: 
-                PyErr_Format(UnpicklingError, "invalid load key, '%s'.", 
+                cPickle_ErrFormat(UnpicklingError, "invalid load key, '%s'.", 
                     "c", s[0]);
                 goto err;
         }
@@ -3907,8 +3907,8 @@ newUnpicklerobject(PyObject *f) {
     self->marks_size = 0;
     self->buf_size = 0;
     self->read = NULL;
-    self->readline = NULL;    
-    self->class_map = NULL;    
+    self->readline = NULL;
+    self->class_map = NULL;
 
     UNLESS(self->memo = PyDict_New()) {
        Py_XDECREF((PyObject *)self);
@@ -4308,7 +4308,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.50 $";
+    char *rev="$Revision: 1.51 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
