@@ -262,7 +262,7 @@ Zope Changes
 
 	    <dtml-var foo>
 
-	  and is especially handy in attributes:
+	  and is especially handy in attributes::
 
 	    <a href="&dtml-foo;">
 
@@ -635,7 +635,7 @@ Zope Changes
         - Construction, upload, and edit methods did not consistently
           support either string or file data.  This caused really weird
           behavior when file upload was used with out includeing the 
-          ":string" suffix in the argument name when doing a file upload.
+          ':string' suffix in the argument name when doing a file upload.
 
           This bug was previously (and incorrectly) reported as a 
           ZPublisher.Client problem.
