@@ -31,10 +31,19 @@ Principia Changes
 
       - Added "Find" tab to Folders
 
+      - Added Rename function
+
+      - Added support for multiple cut and paste
+
     Bugs Fixed
 
       - The folder objectItems method returned all items even when
         specific item types were given.
+
+      - Domain-based security failed to authenticate users if their
+        IP could not be translated to a hostname via dns.
+
+
 
   Principia 1.7.0
 
