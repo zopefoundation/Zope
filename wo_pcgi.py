@@ -17,13 +17,26 @@ import build_extensions
 
 print
 print '-'*78
-print 'making the var directory'
+
+
 os.chdir(home)
-os.mkdir('var')
+data_dir=os.path.join(home, 'var')
+sbin_dir=os.path.join(home, 'sbin')
+db_path=os.path.join(data_dir, 'Data.bbb')
+dd_path=os.path.join(sbin_dir, 'Data.bbb.in')
+if not os.path.exists(data_dir):
+    print 'creating data directory'
+    os.mkdir('var')
+    
+if not os.path.exists(db_path):
+    print 'creating default database'
+    os.system('cp %s %s' % (dd_path, db_path))
+    
+
 print
 print '-'*78
 print 'NOTE: change owndership or permissions on var so that it can be'
-print '      writen by the web server!'
+print '      written by the web server!'
 print
 print "NOTE: The default super user name and password are 'superuser'"
 print "      and '123'.  Create a file named 'access' in this directory"
