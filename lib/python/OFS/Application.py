@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.90 1999/03/11 18:56:20 brian Exp $'''
-__version__='$Revision: 1.90 $'[11:-2]
+$Id: Application.py,v 1.91 1999/03/22 17:30:08 jim Exp $'''
+__version__='$Revision: 1.91 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -142,6 +142,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     __defined_roles__=('Manager','Anonymous')
     web__form__method='GET'
     isTopLevelPrincipiaApplicationObject=1
+    _isBeingUsedAsAMethod_=0
 
     # Create the help system object
     HelpSys=HelpSys()
