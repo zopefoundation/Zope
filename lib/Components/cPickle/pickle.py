@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.3 1997/01/03 16:23:02 chris Exp $
+#     $Id: pickle.py,v 1.4 1997/01/03 21:21:10 chris Exp $
 #
 #     Copyright 
 #
@@ -759,13 +759,11 @@ def test():
     c = C()
     c.foo = 1
     c.bar = 2
-    c2 = C()
     x = [0, 1, 2, 3]
     y = ('abc', 'abc', c, c)
     x.append(y)
     x.append(y)
     x.append(5)
-    x.append(c2)
     f = open(fn, 'w')
     F = Pickler(f)
     F.dump(x)
