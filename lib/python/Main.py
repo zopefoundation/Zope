@@ -40,6 +40,12 @@ PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
 
+# hack Python __str__ method into the record class.
+# This needs to be done better in the future.
+import Record, string
+Record.Record.__str__=lambda r, j=string.join, m=map, s=str: j(m(s,r),', ')
+del Record
+del string
 
 SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
 
@@ -56,6 +62,9 @@ if os.environ.has_key('PRINCIPIA_REALM'):
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.20  1998/10/21 14:54:37  jim
+# Added __str__ method to Record.Record
+#
 # Revision 1.19  1998/10/21 14:52:34  jim
 # Added development mode flag.
 #
