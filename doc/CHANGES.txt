@@ -62,7 +62,7 @@ Zope Changes
 
   Releases
 
-    Zope 2.1
+    Zope 2.1.0
 
       Features Added
 
@@ -188,21 +188,41 @@ Zope Changes
         - A bug that caused installation of through-the-web product
           distributions to fail.
 
-      Security Issues Resolved
+        - A bug in the handling of long int properties was fixed.
 
-        - Fixed bug that allowed users with local roles gain priviledges on
-          acquired objects.  getRolesInContext did not used the correct 
-          context, as defined by the inner-most object wrapping.
+        - Some bugs in the generation and verification of CRYPT based 
+          passwords was fixed.
 
-        - The permissions for Find support methods were not being properly
-          initialized.
+        - A bug in the earliestTime method of DateTime objects was fixed.
 
-        - Viewing existing user no long displays current password,
-          only space for putting in the new password. This will be
-          more critical as we move toward fully encrypted passwords.
+        - A bug in determination of the ZServer version string was fixed.
 
-        - A bug that prevented setting permissions on External Methods
-          in ZClasses was fixed.
+        - Height and width detection for some PNG images did not work 
+          properly.
+
+        - A bug that caused proxy role machinery to ignore local roles
+          was fixed.
+
+        - Added a fix for PCGI to make sure binary IO is used on win32.
+
+        - A javascript fix for IE5 was made for the folder add list.
+
+        - A bug in sequence multiplication in DTML was fixed.
+
+        - SECURITY: Fixed bug that allowed users with local roles gain 
+          priviledges on acquired objects.  getRolesInContext did not 
+          used the correct context, as defined by the inner-most object 
+          wrapping.
+
+        - SECURITY: The permissions for Find support methods were not 
+          being properly initialized.
+
+        - SECURITY: Viewing existing user no long displays current password,
+          only space for putting in the new password. This will be more
+          critical as we move toward fully encrypted passwords.
+
+        - SECURITY: A bug that prevented setting permissions on External 
+          Methods in ZClasses was fixed.
 
 
     Zope 2.0.1
