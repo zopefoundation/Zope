@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -153,7 +153,7 @@ class PythonScript(Script, Historical, Cacheable):
 
     __ac_permissions__ = (
         ('View management screens',
-          ('ZPythonScriptHTML_editForm', 'ZPythonScript_changePrefs',
+          ('ZPythonScriptHTML_editForm', 'ZPythonScriptHTML_changePrefs',
            'manage_main', 'ZScriptHTML_tryForm', 'read')),
         ('Change Python Scripts',
           ('ZPythonScript_edit', 'PUT', 'manage_FTPput', 'write',
@@ -161,7 +161,7 @@ class PythonScript(Script, Historical, Cacheable):
            'ZPythonScriptHTML_uploadForm', 'manage_historyCopy',
            'manage_beforeHistoryCopy', 'manage_afterHistoryCopy')),
         ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
-        ('View', ('__call__','','ZPythonScriptHTML_tryAction')),
+        ('View', ('__call__','')),
         )
 
     def __init__(self, id):

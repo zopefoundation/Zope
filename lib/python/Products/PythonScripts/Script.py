@@ -88,7 +88,7 @@
 This provides generic script support
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import os
 from Globals import package_home, HTMLFile
@@ -121,7 +121,7 @@ class Script(SimpleItem, Bindings):
 
     __ac_permissions__ = (
         ('View management screens', ('ZScriptHTML_tryForm',)),
-        ('View', ('__call__','','ZPythonScriptHTML_tryAction')),
+        ('View', ('__call__','','ZScriptHTML_tryAction')),
         )
 
     ZScriptHTML_tryForm = HTMLFile('scriptTry', _www)
