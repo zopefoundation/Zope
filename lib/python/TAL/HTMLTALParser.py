@@ -251,6 +251,9 @@ class HTMLTALParser(SGMLParser):
     def handle_comment(self, data):
         self.gen.emitRawText("<!--%s-->" % data)
 
+    def handle_decl(self, data):
+        self.gen.emitRawText("<!%s>" % data)
+
     def handle_pi(self, data):
         self.gen.emitRawText("<?%s>" % data)
 
