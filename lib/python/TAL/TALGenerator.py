@@ -158,7 +158,7 @@ class TALGenerator:
                 output.append(self.optimizeArgsList(item))
             rawseen = cursor+1
             collect = []
-        return output
+        return self.optimizeCommonTriple(output)
 
     def optimizeArgsList(self, item):
         if len(item) == 2:
@@ -195,6 +195,29 @@ class TALGenerator:
             new.append(end)
             collect.extend(new)
         return opt
+
+    def optimizeCommonTriple(self, program):
+        if len(program) < 3:
+            return program
+        output = program[:2]
+        prev2, prev1 = output
+        for item in program[2:]:
+            if (  item[0] == "beginScope"
+                  and prev1[0] == "setPosition"
+                  and prev2[0] == "rawtextColumn"):
+                position = output.pop()[1]
+                text, column = output.pop()[1]
+                prev1 = None, None
+                closeprev = 0
+                if output and output[-1][0] == "endScope":
+                    closeprev = 1
+                    output.pop()
+                item = ("rawtextBeginScope",
+                        (text, column, position, closeprev, item[1]))
+            output.append(item)
+            prev2 = prev1
+            prev1 = item
+        return output
 
     def todoPush(self, todo):
         self.todoStack.append(todo)
