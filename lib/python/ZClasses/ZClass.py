@@ -129,17 +129,24 @@ def manage_addZClass(self, id, title='', baseclasses=[],
                      zope_object=0):
     """Add a Z Class
     """
+
+    if not meta_type: meta_type=id
+
+    r={}
+    for data in self.aq_acquire('_getProductRegistryData')('zclasses'):
+        r['%(product)s/%(id)s' % data]=data['meta_class']
+
     bases=[]
     for b in baseclasses:
         if Products.meta_classes.has_key(b):
             bases.append(Products.meta_classes[b])
+        elif r.has_key(b):
+            bases.append(r[b])
         else:
-            base=find_class(self, b)
-            bases.append(base)
-
+            raise 'Invalid class', b
 
     Z=ZClass(id, title, bases, zope_object=zope_object)
-    if meta_type: Z._zclass_.meta_type=meta_type
+    Z._zclass_.meta_type=meta_type
     self._setObject(id, Z)
 
     if CreateAFactory and meta_type:
@@ -175,22 +182,6 @@ def manage_addZClass(self, id, title='', baseclasses=[],
         ) 
     if REQUEST is not None:
         return self.manage_main(self,REQUEST, update_menu=1)
-
-def manage_subclassableClassNames(self):
-    r={}
-    r.update(Products.meta_class_info)
-
-    while 1:
-        if not hasattr(self, 'objectItems'): break
-        for k, v in self.objectItems():
-            if hasattr(v,'_zclass_') and not r.has_key(k):
-                r[k]=v.title_and_id()
-        if not hasattr(self, 'aq_parent'): break
-        self=self.aq_parent
-                
-    r=r.items()
-    r.sort()
-    return r
 
 class Template:
     _p_oid=_p_jar=__module__=None
@@ -381,10 +372,12 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
         globals[class_id]=z
 
+        product=self.aq_inner.aq_parent.zclass_product_name()
+
         # Register self as a ZClass:
         self.aq_acquire('_manage_add_product_data')(
             'zclasses',
-            product=self.aq_inner.aq_parent.id,
+            product=product,
             id=self.id,
             meta_type=z.meta_type or '',
             meta_class=self,
@@ -399,12 +392,18 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         if globals.has_key(class_id):
             del globals[class_id]
 
+        product=self.aq_inner.aq_parent.zclass_product_name()
+
         # Unregister self as a ZClass:
         self.aq_acquire('_manage_remove_product_data')(
             'zclasses',
-            product=self.aq_inner.aq_parent.id,
+            product=product,
             id=self.id,
             )
+
+    def zclass_product_name(self):
+        product=self.aq_inner.aq_parent.zclass_product_name()
+        return "%s/%s" % (product, self.id)
 
     def manage_afterClone(self, item):
         self.setClassAttr('__module__', None)
