@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.85 2000/03/14 17:15:36 brian Exp $"""
+$Id: ObjectManager.py,v 1.86 2000/04/04 22:12:17 amos Exp $"""
 
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -481,7 +481,13 @@ class ObjectManager(
         file=os.path.join(INSTANCE_HOME, 'import', file)
         if not os.path.exists(file):
             raise 'Bad Request', 'File does not exist: %s' % file
-        ob=self._p_jar.importFile(file)
+        # locate a valid connection
+        connection=self._p_jar
+        obj=self
+        while connection is None:
+            obj=obj.aq_parent
+            connection=obj._p_jar
+        ob=connection.importFile(file)
         if REQUEST: self._verifyObjectPaste(ob, REQUEST)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()
