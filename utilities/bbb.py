@@ -106,7 +106,6 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
     Read a file's index up to the given time.
     """
     first=1
-    file.flush()
     seek=file.seek
     read=file.read
     unpack=struct.unpack
