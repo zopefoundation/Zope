@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.5 1997/08/08 23:03:21 jim Exp $"""
+$Id: Folder.py,v 1.6 1997/08/18 15:14:53 brian Exp $"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -74,11 +74,11 @@ class Folder(ObjectManager,DocumentHandler,ImageHandler,FolderHandler):
     manage_options=(
     {'icon':icon, 'label':'Contents',
      'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/properties.jpg', 'label':'Properties',
+    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
     {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
-     'action':'AccessControlLists/manage_main',                    'target':'manage_main'},
-    {'icon':'App/help.jpg', 'label':'Help',
+     'action':'AccessControlLists/manage_main', 'target':'manage_main'},
+    {'icon':'OFS/Help_icon.gif', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
     )
 

@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.6 1997/08/13 19:09:05 jim Exp $"""
+$Id: ObjectManager.py,v 1.7 1997/08/18 15:14:54 brian Exp $"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -25,7 +25,7 @@ class ObjectManager(Acquirer,Management,Persistent):
     meta_types = dynamic_meta_types = ()
     id       ='default'
     title=''
-    icon       ='dir.jpg'
+    icon       ='OFS/Folder_icon.gif'
     _objects   =()
     _properties =({'id':'title', 'type': 'string'},)
 
@@ -33,11 +33,11 @@ class ObjectManager(Acquirer,Management,Persistent):
     manage_propertiesForm=HTMLFile('OFS/properties')
 
     manage_options=(
-    {'icon':'OFS/templates.jpg', 'label':'Objects',
+    {'icon':icon,              'label':'Objects',
      'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/properties.jpg', 'label':'Properties',
+    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'APP/help.jpg', 'label':'Help',
+    {'icon':'OFS/Help_icon.gif', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
     )
 
@@ -252,6 +252,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.7  1997/08/18 15:14:54  brian
+# Made changes to manage_options to support std icons
+#
 # Revision 1.6  1997/08/13 19:09:05  jim
 # Got rid of ManageHTMLFile
 #
