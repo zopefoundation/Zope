@@ -205,30 +205,29 @@ class PCGIChannel(asynchat.async_chat):
             method=self.env['REQUEST_METHOD']
         else:
             method="GET"
-		if self.addr:
-			self.server.logger.log (
-				self.addr[0],
-				'%d - - [%s] "%s %s" %d' % (
-					self.addr[1],
-					time.strftime (
-					'%d/%b/%Y:%H:%M:%S ',
-					time.gmtime(time.time())
-					) + tz_for_log,
-					method, path, bytes
-					)
-				)
-		else:
-			self.server.logger.log (
-				'127.0.0.1',
-				'- - [%s] "%s %s" %d' % (
-					time.strftime (
-					'%d/%b/%Y:%H:%M:%S ',
-					time.gmtime(time.time())
-					) + tz_for_log,
-					method, path, bytes
-					)
-				)		
-
+        if self.addr:
+            self.server.logger.log (
+                self.addr[0],
+                '%d - - [%s] "%s %s" %d' % (
+                    self.addr[1],
+                    time.strftime (
+                    '%d/%b/%Y:%H:%M:%S ',
+                    time.gmtime(time.time())
+                    ) + tz_for_log,
+                    method, path, bytes
+                    )
+                )
+        else:
+            self.server.logger.log (
+                '127.0.0.1',
+                '- - [%s] "%s %s" %d' % (
+                    time.strftime (
+                    '%d/%b/%Y:%H:%M:%S ',
+                    time.gmtime(time.time())
+                    ) + tz_for_log,
+                    method, path, bytes
+                    )
+                )       
 
     def push(self, producer, send=1):
         # this is thread-safe when send is false
@@ -237,9 +236,8 @@ class PCGIChannel(asynchat.async_chat):
         self.producer_fifo.push(producer)
         if send: self.initiate_send()
         
-
-	def __repr__(self):
-		return "<PCGIChannel at %x>" % id(self)
+    def __repr__(self):
+        return "<PCGIChannel at %x>" % id(self)
 
 class PCGIServer(asyncore.dispatcher):
     """Accepts PCGI requests and hands them off to the PCGIChannel for
@@ -277,12 +275,11 @@ class PCGIServer(asyncore.dispatcher):
             self.logger = logger.unresolving_logger (logger_object)
         
         # get configuration
-        if pcgi_file is None:
-            self.module=module    
-            self.port=port
-            self.pid_file=pid_file
-            self.socket_file=socket_file
-        else:
+        self.module=module    
+        self.port=port
+        self.pid_file=pid_file
+        self.socket_file=socket_file
+        if pcgi_file is not None:
             self.read_info(pcgi_file)
         
         # write pid file
@@ -317,16 +314,18 @@ class PCGIServer(asyncore.dispatcher):
         lines=open(info_file).readlines()
         directives={}
         for line in lines:
+            line=string.strip(line)
             if not len(line) or line[0]=='#':
                 continue
             k,v=string.split(line,'=',1)
             directives[string.strip(k)]=string.strip(v)
-        self.pid_file=directives['PCGI_PID_FILE']
+        self.pid_file=directives.get('PCGI_PID_FILE',None)
         self.socket_file=directives.get('PCGI_SOCKET_FILE',None)
-        self.port=directives.get('PCGI_PORT',None)
+        if directives.has_key('PCGI_PORT'):
+            self.port=string.atoi(directives['PCGI_PORT'])
         if directives.has_key('PCGI_MODULE'):
             self.module=directives['PCGI_MODULE']
-        else:
+        elif directives.has_key('PCGI_MODULE_PATH'):
             path=directives['PCGI_MODULE_PATH']
             path,module=os.path.split(path)
             module,ext=os.path.splitext(module)
