@@ -131,6 +131,9 @@ def main():
         htmlargs = glob.glob(prefix + "html")
         htmlargs.sort()
         args = xmlargs + htmlargs
+        if not args:
+             sys.stderr.write("No tests found -- please supply filenames\n")
+             sys.exit(1)
     errors = 0
     for arg in args:
         print arg,
