@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.34 1998/05/13 22:06:31 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.35 1998/05/13 22:15:27 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -262,6 +262,8 @@ Python expression support
   - The objects: 'None', 'abs', 'chr', 'divmod', 'float', 'hash',
        'hex', 'int', 'len', 'max', 'min', 'oct', 'ord', 'pow',
        'round', and 'str' from the standard Python builtin module.
+
+  - Special security-aware versions of 'getattr' and 'hasattr',
   
   - The Python 'string', 'math', and 'whrandom' modules, and
   
@@ -352,6 +354,9 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.35  1998/05/13 22:15:27  jim
+# Updated doc string.
+#
 # Revision 1.34  1998/05/13 22:06:31  jim
 # Updated doc string.
 #
