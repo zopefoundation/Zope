@@ -85,8 +85,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.3 1999/03/10 00:14:49 klm Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: PermissionRole.py,v 1.4 1999/03/22 16:50:46 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys
 
@@ -120,23 +120,47 @@ class PermissionRole(Base):
         else: r._d=self._d
         return r
 
+
+_what_not_even_god_should_do=[]
+
 class imPermissionRole(Base):
     """Implement permission-based roles
     """
     
-    def __of__(self, parent):
+    def __of__(self, parent, tt=type(()), st=type('')):
         obj=parent
         n=self._p
         r=None
         while 1:
             if hasattr(obj,n):
                 roles=getattr(obj, n)
+                
                 if roles is None: return 'Anonymous',
-                if type(roles) is type(()):
+                
+                t=type(roles)
+
+                if t is tt:
+                    # If we get a tuple, then we don't acquire
                     if r is None: return roles
                     return r+list(roles)
-                if r is None: r=list(roles)
-                else: r=r+list(roles)
+
+                if t is st:
+                    # We found roles set to a name.  Start over
+                    # with the new permission name.  If the permission
+                    # name is '', then treat as private!
+                    if roles:
+                        if roles != n:
+                            n=roles
+                        # If we find a name that is the same as the
+                        # current name, we just ignore it.
+                        roles=None
+                    else:
+                        return _what_not_even_god_should_do
+
+                elif roles:
+                    if r is None: r=list(roles)
+                    else: r=r+list(roles)
+                
             if hasattr(obj,'aq_parent'):
                 obj=obj.aq_parent
             else:
