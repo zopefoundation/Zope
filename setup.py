@@ -686,10 +686,12 @@ setup(
 
     packages=['ZConfig', 'ZConfig.tests'],
     data_files=[
-        ['../../doc/zconfig', ['ZConfig/doc/zconfig.pdf',
-                               'ZConfig/doc/schema.dtd']],
+        ['../../doc/zconfig',
+         ['ZConfig/doc/zconfig.pdf', 'ZConfig/doc/schema.dtd']],
         ['ZConfig/tests/input', ['ZConfig/tests/input/*']],
         ['ZConfig/tests/library/thing', ['ZConfig/tests/library/thing/*']],
+        ['ZConfig/tests/library/thing/extras',
+         ['ZConfig/tests/library/thing/extras/*']],
         ['ZConfig/tests/library/widget', ['ZConfig/tests/library/widget/*']],
         ['ZConfig/scripts', ['ZConfig/scripts/zconfig']],
         ],
