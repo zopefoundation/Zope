@@ -118,6 +118,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         if record.keys is None:
             return None
         query_str = ' '.join(record.keys)
+        if not query_str:
+            return None
         tree = QueryParser(self.lexicon).parseQuery(query_str)
         results = tree.executeQuery(self.index)
         return  results, (self._fieldname,)
