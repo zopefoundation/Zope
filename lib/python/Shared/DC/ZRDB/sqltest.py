@@ -55,7 +55,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.16 2002/01/31 14:28:08 chrism Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.17 2002/08/09 17:58:33 jshell Exp $'
 
 ############################################################################
 #     Copyright 
@@ -65,7 +65,7 @@ __rcs_id__='$Id: sqltest.py,v 1.16 2002/01/31 14:28:08 chrism Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -180,7 +180,13 @@ class SQLTest:
 
         if len(vs) > 1:
             vs=join(map(str,vs),', ')
-            return "%s in (%s)" % (self.column,vs)
+            if self.op == '<>':
+                ## Do the equivalent of 'not-equal' for a list,
+                ## "a not in (b,c)"
+                return "%s not in (%s)" % (self.column, vs)
+            else:
+                ## "a in (b,c)"
+                return "%s in (%s)" % (self.column, vs)
         return "%s %s %s" % (self.column, self.op, vs[0])
 
     __call__=render
