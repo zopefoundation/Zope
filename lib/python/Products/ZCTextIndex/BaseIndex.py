@@ -259,7 +259,7 @@ class BaseIndex(Persistent):
             if doc2score is None:
                 doc2score = {}
             elif (isinstance(doc2score, dicttype) and
-                 len(doc2score) == self.DICT_CUTOFF):
+                  len(doc2score) == self.DICT_CUTOFF):
                 doc2score = IIBTree(doc2score)
             doc2score[docid] = weight
             self._wordinfo[wid] = doc2score # not redundant:  Persistency!
