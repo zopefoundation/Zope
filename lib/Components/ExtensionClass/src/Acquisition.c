@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.20 1998/04/08 14:50:51 jim Exp $
+  $Id: Acquisition.c,v 1.21 1998/05/07 22:10:49 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -227,34 +227,52 @@ Wrapper_special(Wrapper *self, char *name, PyObject *oname)
 {
   PyObject *r=0;
 
-  if(strcmp(name,"base")==0)
+  switch(*name)
     {
-      if(self->obj)
+    case 'b':
+      if(strcmp(name,"base")==0)
 	{
-	  r=self->obj;
-	  while(isWrapper(r) && WRAPPER(r)->obj) r=WRAPPER(r)->obj;
+	  if(self->obj)
+	    {
+	      r=self->obj;
+	      while(isWrapper(r) && WRAPPER(r)->obj) r=WRAPPER(r)->obj;
+	    }
+	  else r=Py_None;
+	  Py_INCREF(r);
+	  return r;
 	}
-      else r=Py_None;
-      Py_INCREF(r);
-      return r;
-    }
-  if(strcmp(name,"parent")==0)
-    {
-      if(self->container) r=self->container;
-      else r=Py_None;
-      Py_INCREF(r);
-      return r;
-    }
-  if(strcmp(name,"self")==0)
-    {
-      if(self->obj) r=self->obj;
-      else r=Py_None;
-      Py_INCREF(r);
-      return r;
-    }
-  if(strcmp(name,"acquire")==0)
-    {
-      return Py_FindAttr(OBJECT(self),oname);
+      break;
+    case 'p':
+      if(strcmp(name,"parent")==0)
+	{
+	  if(self->container) r=self->container;
+	  else r=Py_None;
+	  Py_INCREF(r);
+	  return r;
+	}
+      break;
+    case 's':
+      if(strcmp(name,"self")==0)
+	{
+	  if(self->obj) r=self->obj;
+	  else r=Py_None;
+	  Py_INCREF(r);
+	  return r;
+	}
+      break;
+    case 'a':
+      if(strcmp(name,"acquire")==0)
+	{
+	  return Py_FindAttr(OBJECT(self),oname);
+	}
+      break;
+    case 'i':
+      if(strcmp(name,"inContextOf")==0)
+	{
+	  return Py_FindAttr(OBJECT(self),oname);
+	}
+      break;
+      
     }
 
   return NULL;
@@ -305,7 +323,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
     {
       if((r=PyObject_GetAttr(self->obj,oname)))
 	{
-	  if(r->ob_type==self->ob_type)
+	  if(isWrapper(r) && WRAPPER(r)->container==self->obj)
 	    {
 	      if(r->ob_refcnt==1)
 		{
@@ -314,7 +332,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 		}
 	      else
 		ASSIGN(r,newWrapper(((Wrapper*)r)->obj,
-				    OBJECT(self), self->ob_type));
+				    OBJECT(self), r->ob_type));
 	    }
 	  else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	    ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
@@ -329,7 +347,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 	}
       PyErr_Clear();
     }
-  
+
   if(sco && self->container) 
     {
       if(isWrapper(self->container))
@@ -350,6 +368,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 
 	  
 	  if(r) goto acquired;
+	  return NULL;
 	}
       else
 	{
@@ -404,7 +423,7 @@ Wrapper_getattro_(Wrapper *self, PyObject *oname, int sob, int sco)
   if(sob && self->obj && (r=PyObject_GetAttr(self->obj,oname)))
     {
       if(r == Acquired) return handle_Acquired(self, oname, r);
-      if(r->ob_type==self->ob_type)
+      if(isWrapper(r) && WRAPPER(r)->container==self->obj)
 	{
 	  if(r->ob_refcnt==1)
 	    {
@@ -412,8 +431,7 @@ Wrapper_getattro_(Wrapper *self, PyObject *oname, int sob, int sco)
 	      ASSIGN(((Wrapper*)r)->container,OBJECT(self));
 	    }
 	  else
-	    ASSIGN(r, newWrapper(((Wrapper*)r)->obj,
-				 OBJECT(self),self->ob_type));
+	    ASSIGN(r, newWrapper(((Wrapper*)r)->obj,OBJECT(self),r->ob_type));
 	}
       else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
@@ -487,7 +505,7 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
   if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
     {
       if(r==Acquired) return handle_Acquired(self,oname,r);
-      if(r->ob_type==self->ob_type)
+      if(isWrapper(r) && WRAPPER(r)->container==self->obj)
 	{
 	  if(r->ob_refcnt==1)
 	    {
@@ -496,7 +514,7 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
 	    }
 	  else
 	    ASSIGN(r, newWrapper(((Wrapper*)r)->obj,
-				 OBJECT(self), self->ob_type));
+				 OBJECT(self), r->ob_type));
 	}
       else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
@@ -729,6 +747,28 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args)
   return Wrapper_acquire(self,name,filter,extra,OBJECT(self),1,1);
 }
 
+static PyObject *
+Wrapper_inContextOf(Wrapper *self, PyObject *args)
+{
+  PyObject *o, *c;
+  int inner=0;
+
+  UNLESS(PyArg_ParseTuple(args,"O|i",&o,&inner)) return NULL;
+
+  if(inner)
+    while(self->obj && isWrapper(self->obj))
+      self=WRAPPER(self->obj);
+
+  if(OBJECT(self)==o) return PyInt_FromLong(1);
+  c=self->container;
+  while(1)
+    {
+      if(c==o) return PyInt_FromLong(1);
+      if(isWrapper(c)) c=WRAPPER(c)->container;
+      else return PyInt_FromLong(0);
+    }
+}
+
 static struct PyMethodDef Wrapper_methods[] = {
   {"__init__", (PyCFunction)Wrapper__init__, 0,
    "Initialize an Acquirer Wrapper"},
@@ -736,6 +776,8 @@ static struct PyMethodDef Wrapper_methods[] = {
    "Get an attribute, acquiring it if necessary"},
   {"aq_acquire", (PyCFunction)Wrapper_acquire_method, METH_VARARGS,
    "Get an attribute, acquiring it if necessary"},
+  {"aq_inContextOf", (PyCFunction)Wrapper_inContextOf, METH_VARARGS,
+   "Test whether the object is currently in the context of the argument"},
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -851,7 +893,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.20 $";
+  char *rev="$Revision: 1.21 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -870,7 +912,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.20 1998/04/08 14:50:51 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.21 1998/05/07 22:10:49 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -893,6 +935,15 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.21  1998/05/07 22:10:49  jim
+  Added aq_inContextOf method.
+
+  Changed the way wrapping is done when getting an explicitly-wrapped
+  object from an implicitly-wrapped object to avoid an extra level of
+  wrapping.
+
+  Fixed a bug that prevented propigation of some filtering errors.
+
   Revision 1.20  1998/04/08 14:50:51  jim
   No longer acquire __roles__ explicitly.
 
