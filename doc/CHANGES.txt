@@ -52,6 +52,8 @@ Zope Changes
         - Collector #2504: level parameter has not been passed to HTMLClass
           constructor
 
+        - default for 'orphan' attribute of <dtml-in> is now 0 instead 3.
+
 
     Zope 2.4 beta 2
 
