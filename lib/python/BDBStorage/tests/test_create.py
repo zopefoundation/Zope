@@ -1,71 +1,33 @@
 # Unit test for database creation
 
 import os
-import errno
 import unittest
+import BerkeleyTestBase    
 
 
 
-class BaseFramework(unittest.TestCase):
-    def setUp(self):
-        from ZODB import DB
-
-        self._dbhome = 'test-db'
-        os.mkdir(self._dbhome)
-
-        try:
-            self._storage = self.ConcreteStorage(self._dbhome)
-            self._db = DB(self._storage)
-            self._conn = self._db.open()
-            self._root = self._conn.root()
-        except:
-            self.tearDown()
-            raise
-
-    def _close(self):
-        self._db.close()
-
-    def tearDown(self):
-        # If the tests exited with any uncommitted objects, they'll blow up
-        # subsequent tests because the next transaction commit will try to
-        # commit those object.  But they're tied to closed databases, so
-        # that's broken.  Aborting the transaction now saves us the headache.
-        get_transaction().abort()
-        self._close()
-        for file in os.listdir(self._dbhome):
-            os.unlink(os.path.join(self._dbhome, file))
-        os.removedirs(self._dbhome)
-    
-
 class TestMixin:
     def checkDBHomeExists(self):
-        assert os.path.isdir(self._dbhome)
+        assert os.path.isdir(BerkeleyTestBase.DBHOME)
 
 
-
-class MinimalBaseFramework(BaseFramework):
-    import Minimal
-    ConcreteStorage = Minimal.Minimal
-
-
-class MinimalDBHomeTest(MinimalBaseFramework, TestMixin):
+class MinimalCreateTest(BerkeleyTestBase.BerkeleyTestBase,
+                        BerkeleyTestBase.MinimalTestBase,
+                        TestMixin):
     pass
 
 
-
-class FullBaseFramework(BaseFramework):
-    import Full
-    ConcreteStorage = Full.Full
-
-class FullDBHomeTest(FullBaseFramework, TestMixin):
+class FullCreateTest(BerkeleyTestBase.BerkeleyTestBase,
+                     BerkeleyTestBase.FullTestBase,
+                     TestMixin):
     pass
 
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(MinimalDBHomeTest('checkDBHomeExists'))
-    suite.addTest(FullDBHomeTest('checkDBHomeExists'))
+    suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
+    suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
     return suite
 
 
