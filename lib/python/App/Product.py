@@ -409,7 +409,6 @@ def initializeProduct(productp, name, home, app):
     try:
         if ihasattr(products,name):
             old=getattr(products, name)
-            if os.environ.get('ZEO_CLIENT',''): return old            
             if (ihasattr(old,'version') and old.version==fver and
                 hasattr(old, 'import_error_') and
                 old.import_error_==ie):
@@ -455,6 +454,8 @@ def initializeProduct(productp, name, home, app):
         product.manage_options=product.manage_options+(
             {'label':'README', 'action':'manage_readme'},
             )
+
+    if os.environ.get('ZEO_CLIENT',''): get_transaction().abort()
 
     return product
 
