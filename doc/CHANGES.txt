@@ -62,6 +62,20 @@ Zope Changes
 
   Releases
 
+    Zope 2.x
+
+      Bugs Fixed 
+
+        - Conflict errors (multiple threads trying to modify the same
+          object) were not handled correctly for requests with
+          bodies (e.g. POST requests).
+
+        - ZODB FileStorage index files could become out of date after
+          an undo. This could lead to strange results and apparent
+          database corruption if Zope was shut down ungracefully and
+          restarted.  Now index files are removed when undoing
+          records.
+
     Zope 2.1.0
     
       Features Changed
