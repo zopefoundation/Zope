@@ -1,7 +1,9 @@
 """Server Zope from a basic Python web server
 """
 
-import ZopeHTTPServer, os
+import ZopeHTTPServer, os, sys
 
-ZopeHTTPServer.main(os.path.join(os.getcwd(),'lib','python','Main.py'))
+args=sys.argv[1:]+[os.path.join(os.getcwd(),'lib','python','Main.py')]
+
+ZopeHTTPServer.main(args)
                     
