@@ -86,7 +86,7 @@ class TransientObjectContainer(Interface.Base):
 
     You will rarely have to script a transient object
     container. You'll almost always deal with a TransientObject
-    itself which you'll usaually get as 'REQUEST.SESSION'.
+    itself which you'll usually get as 'REQUEST.SESSION'.
     """
     
     def getId(self):
@@ -217,19 +217,33 @@ class TransientObject(Interface.Base):
     When using a transient object from Python-based Scripts or DTML
     you can use the 'get', 'set', and 'delete' methods instead.
 
-    It's important to reassign mutuable sub-items when you change
+    Methods of transient objects are not protected by security
+    assertions.
+
+    It's necessary to reassign mutuable sub-items when you change
     them. For example::
 
       l=SESSION['myList']
       l.append('spam')
       SESSION['myList']=l
 
-    This is necessary in order to save your changes.
+    This is necessary in order to save your changes.  Note that this caveat
+    is true even for mutable subitems which inherit from the
+    Persistence.Persistent class.
     """
 
     def getId(self):
         """
         Returns a meaningful unique id for the object.
+
+        Permission -- Always available
+        """
+
+    def getContainerKey(self):
+        """
+        Returns the key under which the object is "filed" in its container.
+        getContainerKey will often return a differnt value than the value
+        returned by getId.
 
         Permission -- Always available
         """
@@ -241,7 +255,7 @@ class TransientObject(Interface.Base):
         Causes the transient object container's "before destruct" method
         related to this object to be called as a side effect.
 
-        Permission -- XXX        
+        Permission -- Always available
         """
 
     def getLastAccessed(self):
@@ -249,14 +263,14 @@ class TransientObject(Interface.Base):
         Return the time the transient object was last accessed in
         integer seconds-since-the-epoch form.
 
-        Permission -- XXX        
+        Permission -- Always available
         """
 
     def setLastAccessed(self):
         """
         Cause the last accessed time to be set to now.
 
-        Permission -- XXX      
+        Permission -- Always available
         """
 
     def getCreated(self):
@@ -264,28 +278,28 @@ class TransientObject(Interface.Base):
         Return the time the transient object was created in integer
         seconds-since-the-epoch form.
 
-        Permission -- XXX        
+        Permission -- Always available
         """
 
     def keys(self):
         """
         Return sequence of key elements.
 
-        Permission -- XXX        
+        Permission -- Always available
         """
 
     def values(self):
         """
         Return sequence of value elements.
 
-        Permission -- XXX        
+        Permission -- Always available
         """
 
     def items(self):
         """
         Return sequence of (key, value) elements.
 
-        Permission -- XXX        
+        Permission -- Always available
         """
 
     def get(self, k, default='marker'):
@@ -293,42 +307,42 @@ class TransientObject(Interface.Base):
         Return value associated with key k.  If k does not exist and default
         is not marker, return default, else raise KeyError.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
     def has_key(self, k):
         """
         Return true if item referenced by key k exists.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
     def clear(self):
         """
         Remove all key/value pairs.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
     def update(self, d):
         """
         Merge dictionary d into ourselves.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
     def set(self, k, v):
         """
         Call __setitem__ with key k, value v.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
     def delete(self, k):
         """
         Call __delitem__ with key k.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
 

@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.19 2001/11/17 22:48:43 chrism Exp $
+$Id: Transience.py,v 1.20 2001/11/20 15:29:23 chrism Exp $
 """
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -618,8 +618,8 @@ class TransientObject(Persistent, Implicit):
     # Initializer
     #
 
-    def __init__(self, id):
-        self.token = id
+    def __init__(self, containerkey):
+        self.token = containerkey
         self.id = self._generateUniqueId()
         self._container = {}
         self._created = self._last_accessed = time()
@@ -733,9 +733,9 @@ class TransientObject(Persistent, Implicit):
         # other objects (eliminates read conflicts).
         return 1
 
-    getName = getId
+    getName = getId # this is for SQLSession compatibility
 
-    def getToken(self):
+    def getContainerKey(self):
         return self.token
     
     def _generateUniqueId(self):

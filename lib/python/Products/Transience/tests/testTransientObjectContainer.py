@@ -479,7 +479,10 @@ class TestTransientObjectContainer(TestCase):
     def test_getId(self):
         assert self.t.getId() == 'sdc'
 
-
+    def test_getContainerKey(self):
+        t = self.t.new('foobieblech')
+        assert t.getContainerKey() == 'foobieblech'
+        
 def lsubtract(l1, l2):
    l1=list(l1)
    l2=list(l2)

@@ -173,6 +173,12 @@ class Transient(Interface.Base):
         seconds-since-the-epoch form.
         """
 
+    def getContainerKey(self):
+        """
+        Return the key under which the object was placed in its
+        container.
+        """
+
 class DictionaryLike(Interface.Base):
     def keys(self):
         """
