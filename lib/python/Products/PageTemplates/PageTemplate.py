@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os, sys, traceback
 from TAL.TALParser import TALParser
@@ -164,7 +164,7 @@ class PageTemplate:
     def pt_diagnostic(self):
         return ('<html><body>\n'
                 '<h4>Page Template Diagnostics</h4>\n'
-                ' %s\n'
+                '<pre> %s\n</pre>'
                 '</body></html>\n') % join(self._v_errors, ' \n')
         
     def write(self, text):
