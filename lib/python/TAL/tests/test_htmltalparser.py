@@ -8,7 +8,7 @@ import utils
 import unittest
 
 from TAL import HTMLTALParser
-from TAL.TALDefs import TAL_VERSION
+from TAL.TALDefs import TAL_VERSION, TALError, METALError
 
 
 class TestCaseBase(unittest.TestCase):
@@ -39,6 +39,12 @@ class TestCaseBase(unittest.TestCase):
         got_program, got_macros = parser.getCode()
         pprint.pprint(got_program)
         pprint.pprint(got_macros)
+
+    def _should_error(self, source, exc=TALError):
+        def parse(self=self, source=source):
+            parser = HTMLTALParser.HTMLTALParser()
+            parser.parseString(self.prologue + source + self.epilogue)
+        self.assertRaises(exc, parse)
 
 
 class HTMLTALParserTestCases(TestCaseBase):
@@ -349,6 +355,32 @@ class TALGeneratorTestCases(TestCaseBase):
               ('rawtext', '</p>')]),
             ])
 
+    def check_dup_attr(self):
+        self._should_error("<img tal:condition='x' tal:condition='x'>")
+        self._should_error("<img metal:define-macro='x' "
+                           "metal:define-macro='x'>", METALError)
+
+    def check_tal_errors(self):
+        self._should_error("<p tal:define='x' />")
+        self._should_error("<p tal:repeat='x' />")
+        self._should_error("<p tal:foobar='x' />")
+        self._should_error("<p tal:repeat='x y' tal:content='x' />")
+        self._should_error("<p tal:repeat='x y' tal:replace='x' />")
+        self._should_error("<p tal:replace='x' tal:content='x' />")
+        self._should_error("<p tal:replace='x'>")
+
+    def check_metal_errors(self):
+        exc = METALError
+        self._should_error(2*"<p metal:define-macro='x'>xxx</p>", exc)
+##        self._should_error("<html metal:define-macro='x'>" +
+##                           2*"<p metal:define-slot='y' />" + "</html>")
+        self._should_error("<html metal:use-macro='x'>" +
+                           2*"<p metal:fill-slot='y' />" + "</html>", exc)
+        self._should_error("<p metal:foobar='x' />", exc)
+        self._should_error("<p metal:define-slot='x' metal:fill-slot='x' />",
+                           exc)
+        self._should_error("<p metal:define-macro='x'>", exc)
+        
 
 def test_suite():
     suite = unittest.TestSuite()
