@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.111 1998/12/04 20:15:32 jim Exp $"""
-__version__='$Revision: 1.111 $'[11:-2]
+$Id: Publish.py,v 1.112 1998/12/08 19:08:54 jim Exp $"""
+__version__='$Revision: 1.112 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -613,6 +613,8 @@ def get_module_info(module_name, modules={},
         # Let the app specify a realm
         if hasattr(module,'__bobo_realm__'):
             realm=module.__bobo_realm__
+        elif os.environ.has_key('Z_REALM'):
+            realm=os.environ['Z_REALM']
         elif os.environ.has_key('BOBO_REALM'):
             realm=os.environ['BOBO_REALM']
         else: realm=module_name
@@ -620,8 +622,12 @@ def get_module_info(module_name, modules={},
         # Check for debug mode
         if hasattr(module,'__bobo_debug_mode__'):
             debug_mode=not not module.__bobo_debug_mode__
-        elif os.environ.has_key('BOBO_DEBUG_MODE'):
-            debug_mode=lower(os.environ['BOBO_DEBUG_MODE'])
+        elif (os.environ.has_key('Z_DEBUG_MODE') or
+              os.environ.has_key('BOBO_DEBUG_MODE')):
+            if os.environ.has_key('Z_DEBUG_MODE'):
+                debug_mode=lower(os.environ['Z_DEBUG_MODE'])
+            else:
+                debug_mode=lower(os.environ['BOBO_DEBUG_MODE'])
             if debug_mode=='y' or debug_mode=='yes':
                 debug_mode=1
             else:
