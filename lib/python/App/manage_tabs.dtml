@@ -38,7 +38,7 @@
   <font size="-1">
   <img align="left"  hspace="0" src="<!--#var SCRIPT_NAME-->/p_/ltab">
   <img align="right" hspace="0" src="<!--#var SCRIPT_NAME-->/p_/rtab">
-  <a href="<!--#var SCRIPT_NAME-->/HelpSys/hs_index" target="_help_wnd_">
+  <a href="<!--#var SCRIPT_NAME-->/HelpSys/hs_index" target="z_help_wnd">
   Help</a>
   </font>
   </td>
