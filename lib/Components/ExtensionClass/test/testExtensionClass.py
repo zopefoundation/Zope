@@ -880,11 +880,11 @@ class MagicMethodTests(unittest.TestCase):
             pass
 
         object = PythonClass(1)
-        object = object + 1
+        object += 1
         assert object.value == 2
 
         object = self.fixup_inst(DerivedClass(1))
-        object = object + 1
+        object += 1
         assert object.value == 2
 
 
