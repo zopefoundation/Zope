@@ -907,15 +907,17 @@ class ZCatalog(Folder, Persistent, Implicit):
         if base is None:
             raise ValueError, "Index type %s does not support addIndex" % type
 
-        # This code is somewhat lame but every index type has its own
+        # This code is *really* lame but every index type has its own
         # function signature *sigh* and there is no common way to pass
         # additional parameters to the constructor. The suggested way
         # for new index types is to use an "extra" record.
 
         if 'extra' in base.__init__.func_code.co_varnames:
             index = base(name, extra=extra, caller=self)
+        elif 'caller' in base.__init__.func_code.co_varnames:
+            index = base(name, caller=self)
         else:
-            index = base(name, self)
+            index = base(name)
 
         self._catalog.addIndex(name,index)
 
