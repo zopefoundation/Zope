@@ -85,10 +85,10 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.15 1999/10/28 17:08:36 petrilli Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: DT_InSV.py,v 1.16 1999/11/02 16:51:32 brian Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
-from string import lower, rfind
+from string import lower, rfind, split, join
 from math import sqrt
 TupleType=type(())
 try:
@@ -162,6 +162,7 @@ class sequence_variables:
                 roman = '%sI' % roman
 
         # Replaces special cases in Roman Numerals
+        
         roman = sub('DCCCC', 'CM', roman)
         roman = sub('CCCC', 'CD', roman)
         roman = sub('LXXXX', 'XC', roman)
@@ -402,6 +403,9 @@ class sequence_variables:
             
         raise KeyError, key
 
+
+def sub(s1, s2, src):
+    return join(split(src, s1), s2)
 
 def opt(start,end,size,orphan,sequence):
     if size < 1:
