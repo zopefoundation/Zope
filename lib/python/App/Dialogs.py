@@ -19,7 +19,7 @@
 	                 target='_top')
     </PRE>"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
  
 from Globals import HTML
@@ -58,4 +58,4 @@ MessageDialog = HTML("""
 </TR>
 </TABLE>
 </FORM>
-</BODY></HTML>""", target='')
+</BODY></HTML>""", target='', action='manage_main', title='Changed')
