@@ -1,136 +1,123 @@
+
+*** These instructions pertain to the new-install-branch! ***
+
+
 Building and installing Zope from source
 ----------------------------------------
 
-  This document describes building and installing Zope on Unix.
-  We will provide Windows instructions in later releases. We
-  will also provide binary releases for some platforms.
+  This document describes building and installing Zope on UNIX and
+  Linux.
 
-Important notes
+System requirements when building from source
 
-   Starting with Zope 2.7, Zope *REQUIRES* Python 2.2.2 or later.
-   This is done to ease code sharing with Zope 3.
-
-   See CHANGES.txt for important notes on this version of Zope.
-
+   bash or another Bourne shell variant
+   Python 2.2.2 or later installed somewhere in the system PATH
+   GNU make
+   A C compiler (gcc recommended)
 
 Quick Start
 
+  It is best to install Zope as a non-root user.
+
   If you are impatient, the following commands should get you up and
-  running with Zope 2 using ZServer and ZODB 3 on Unix::
+  running on any UNIX that meet the system requirements::
 
-    python w_pcgi.py  # Note, this must be Python 2.2.2 or later
-    ./start
+    $ gunzip -c Zope-2.7.X-src.tar.gz | xar xvf
+    $ cd Zope-2.7.X
+    $ ./configure --prefix=/where/to/install/zope
+    $ make
+    $ make instance
 
-  The first command builds and adjusts Zope.  Take note of the user
-  name and password output at the end of this command.  You will need
-  these to manage Zope.
+  These commands locate an appropriate version of Python, build Zope,
+  and create a usable Zope "instance" in the directory in which the
+  software was un-tarred.  The last of these commands will prompt you
+  to provide a user name and password for an administrator's account.
+
+  You can now start Zope by running::
+
+    $ ./bin/runzope
 
   If you get errors indicating that addresses are in use, then you
-  will have to supply arguments to z2.py to change the ports used for
-  HTTP or FTP. The default HTTP and FTP ports used by ZServer are 8080
-  and 8021 respectively. (See the help for the z2.py script by running
-  z2.py with the -h option for more information on how to specify
-  different ports)
+  will have to supply arguments to runzope to change the ports used
+  for HTTP or FTP. The default HTTP and FTP ports used by Zope are
+  8080 and 8021 respectively. You can change the ports used by
+  specifying the "port-base" parameter to runzope.  For example, to
+  run Zope on ports 9080 and 9021:
 
-  You can then connect to Zope 2 by directing your browser to::
+    $ ./bin/runzope -X port-base=1000
+
+  You can then connect to Zope by directing your browser to::
 
      http://yourhost:8080/manage
 
-  where yourhost is the name or address of the machine running Zope 2.
-  If you changed the HTTP port with the -w option to z2.py, then use
-  it rather than 8080.
+  .. where 'yourhost' is the DNS name or IP address of the machine
+  running Zope.  If you changed the HTTP port as described, use a port
+  number of 8080 + the port-base value.
 
   You will be prompted for a user name and password. Use the user name
-  and password output above.
+  and password you provided in response to the prompts issued during
+  the "make instance" process.
 
-  Now you're off and running! You should be looking at the Zope management
-  screen which is divided into two frames. On the left you can navigate
-  between Zope object and on the right you can edit them by selecting
-  different management functions with the tabs at the top of the frame.
+  Now you're off and running! You should be looking at the Zope
+  management screen which is divided into two frames. On the left you
+  can navigate between Zope objects and on the right you can edit them
+  by selecting different management functions with the tabs at the top
+  of the frame.
 
-  If you haven't used Zope before, you should head to the Zope web site
-  and read some documentation. The Zope Manager's Guide is a good place
-  to start. You can access the Zope site at:
+  If you haven't used Zope before, you should head to the Zope web
+  site and read some documentation. The Zope Book is a good place to
+  start. You can access the Zope Book at:
 
-    'http://www.zope.org/'
+    http://www.zope.org/Documentation/Books/ZopeBook
 
   Have fun!
 
 Building Zope
 
-  There are some python scripts in the top-level directory that should
-  help you get started. You must run these scripts from the top-level
-  directory.
+  If you want to try out Zope in the simplest fashion, then run the
+  conventional UNIX build sequence::
 
-  If you want to try out Zope in the simplest fashion using ZServer,
-  then run the script wo_pcgi::
+    ./configure --prefix /where/to/install/zope
+    make
+    make install
 
-    python wo_pcgi.py
+  Next, you need to create an "instance home", which contains
+  configuration and data for a Zope server process:
 
-  If you want to use PCGI and an existing web server run w_pcgi::
+    /where/to/install/zope/bin/mkzopeinstance /location/of/zope/instance
 
-    python w_pcgi.py
+  The Zope server can now be started using this command:
+
+    /location/of/zope/instance/bin/runzope
 
   Notes
 
-    * You should be using Python 2.2.2 or later to run the build scripts.
+    * You need to be using Python 2.2.2 or later to run the build
+      scripts; the ./configure script will attempt to locate the best
+      available interpreter.  All future invocations of Zope will use
+      that Python interpreter.
 
-    * The python you run Zope with *must* have threads compiled in,
+    * The Python you run Zope with *must* have threads compiled in,
       which is the case for a vanilla build.  Warning: Zope will not
       run with a Python version that uses libpth.  You *must* use
       libpthread.
 
-    * To build python extensions you need to have Python configuration
+    * To build Python extensions you need to have Python configuration
       information available. If your Python comes from an RPM you may
-      need the python-devel package installed too. If you built Python
-      from source all the configuration information should already be
-      there.
+      need the python-devel (or python-dev) package installed too. If
+      you built Python from source all the configuration information
+      should already be available.
 
     * If you just want to use Zope components it's not necessary to
       build Zope but it's a good idea since it will compile Python C
       extensions for you.
 
-    * You can use PCGI and an existing web server if you use ZServer.
+    * See CHANGES.txt for important notes on this version of Zope.
 
-Starting Zope with an existing web server
+Integrating Zope with an existing webserver
 
-  See the WEBSERVERS.txt file for more information about configuring Zope
-  with an existing web server. See also the pcgi/README file for further
-  informations on the installation of PCGI.
+  Zope doesn't require any existing webserver to run, but you can
+  integrate it with other webservers as necessary.  See the
+  WEBSERVERS.txt file for more information about configuring Zope with
+  an existing web server.
 
-Running Zope
-
-  There are two ways to run Zope:
-
-  - You can use ZServer, the integration of Zope and Medusa.  You must
-    use ZServer if you want to use multiple concurrent threads.
-    ZServer is a server application that supports multiple protocols:
-
-      o HTTP -- ZServer is a Web server
-
-      o FTP -- ZServer is a file-transfer protocol server.  This
-        allows you to use FTP-enabled publishing systems with Zope.
-
-      o PCGI -- PCGI is a lightweight protocol for forwarding
-        requests from other web servers, like Apache or Netscape, to
-        Zope. This makes it possible to use web server features like
-        connection encryption or logging with Zope.
-
-      o monitor -- ZServer has the capability to allow you to access
-        the Python interpreter directly over a network channel.  If
-        you intend to use this, please read the 'DEBUGGING.txt'
-        document for more information.
-
-    With ZServer, you must start Zope manually using the z2.py script.
-    Typically, the command used to run the z2.py script will be put in
-    system startup scripts.
-
-    ZServer is the prefered way to run Zope.
-
-  - If you *only* want to use PCGI and you don't need multi-threaded
-    operation, you can have a special program, the pcgi_publisger,
-    start Zope for you.  See the WEBSERVER.txt file for details on
-    using Zope with an existing webserver.
-
-  If you wish to enable Zope logging you must specify options on the
-  command line.  See LOGGING.txt in the doc directory.

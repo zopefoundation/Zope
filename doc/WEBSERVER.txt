@@ -45,24 +45,23 @@ Using Zope in multi-threaded mode with ZServer
 
  PCGI
 
-  To install PCGI, please read the pcgi/README file.
+  To install PCGI, please get the PCGI support package from XXX, and
+  read the pcgi/README.txt file from that package.
 
-  To run ZServer with PCGI, you must specify the -p option to the
-  'z2.py' startup script.  From the top level Zope directory, you
-  can::
+  To run ZServer with PCGI, you must configure Zope with a PCGI
+  server.  You can do this by adding a section to the etc/zope.conf
+  file like this::
 
-    bash% python2.2 z2.py -p
+    <pcgi-server>
+      address /path/to/PCGI/resource/file
+    </pcgi-server>
 
   Note, you must have gone through the directions in 'INSTALL.txt' for
   this to work.
 
-  This command will start ZServer up with PCGI (by default, it will
-  also start up an HTTP and FTP server).  For PCGI to work, the
-  webserver and Zope must agree on a PCGI resource file.  If this file
-  is not named 'Zope.cgi' and is not in the same directory as 'z2.py',
-  then you can specify the file name after the '-p', like::
-
-    bash% python2.2 z2.py -p /path/to/PCGI/resource/file
+  This command will cause Zope to start with a PCGI server as well as
+  any other servers you specify in the zope.conf file.  For PCGI to
+  work, the webserver and Zope must agree on a PCGI resource file.
 
   Now the Zope long running process is started up, and the PCGI
   component is loaded and ready to receive CGI requests from your
@@ -113,13 +112,9 @@ Using Zope in multi-threaded mode with ZServer
   comes with straightforward instructions.  You will need to download
   the mod_fastcgi module from FastCGI.com:
 
-    http://www.fastcgi.com
+    http://www.fastcgi.com/
 
-  A version more recent than 2.2.2 is needed.  If 2.2.3 or greater is
-  not yet available, get one of the snapshots from October 6th or
-  later:
-
-    http://www.fastcgi.com/dist/
+  A version more recent than 2.2.2 is needed.
 
   Extract the archive and follow the directions in its 'INSTALL' file.
   Using the 'DSO' method is usually easiest.
@@ -144,35 +139,24 @@ Using Zope in multi-threaded mode with ZServer
   write to the socket.  For illustrative purposes, I will use
   '/tmp/zope.soc'.
 
-  The option to configure this is '-F (port #|socket filename)'.  Edit
-  your 'start' script.  It's found in the root of your Zope
-  installation, and it will look something like this::
+  This can be configured by adding a fcgi-server section in your
+  etc/zope.conf file.  The section should look like this for a TCP
+  port::
 
-#! /bin/sh
-reldir=`dirname $0`
-PYTHONHOME=`cd $reldir; pwd`
-export PYTHONHOME
-exec /usr/bin/python \
-     $PYTHONHOME/z2.py \
-     -D "$@"
+    <fcgi-server>
+      address localhost:8889
+    </fcgi-server>
 
-  Insert a line after '$PYTHONHOME/z2.py \'.  If you are using
-  a TCP port, it will look like this::
+  To use a Unix domain socket instead, specify the path of the socket
+  file instead of a [hostname:]port::
 
-     -F 8889 \
+    <fcgi-server>
+      address /tmp/zope.soc
+    </fcgi-server>
 
-  If you are using a socket, the line will look like this::
+  You can start Zope at this point by running the 'runzope' script::
 
-     -F /tmp/zope.soc \
-
-  The trailing backslash is significant!  You can start Zope at this
-  point by running the 'start' script::
-
-$ ./start
-
-  Note that by default the start script starts Zope in debug mode, and
-  so this command will not come back to a shell prompt until Zope
-  exits.
+$ ./bin/runzope
 
   Next, Apache must be set up to pass FastCGI requests to Zope.  This
   is done with a 'FastCgiExternalServer' directive in Apache's
@@ -431,33 +415,35 @@ Zope authentication with existing web servers
 
       * An ISAPI module to support PCGI is under development.
 
-      * IIS 4.0 throws away Zope's error messages by default. This 
-        behavior can create quite a few problems, including authentication 
-        problems.
+      * IIS 4.0 throws away Zope's error messages by default. This
+        behavior can create quite a few problems, including
+        authentication problems.
 
-      Microsoft prides itself on the clear error messages that IIS 4.0 
-      presents, when the user makes a mistake. These error messages are 
-      implemented in the form of Custom Error handlers, that return a file, 
-      or URL to a user when a certain error occurs.
+      Microsoft prides itself on the clear error messages that IIS 4.0
+      presents, when the user makes a mistake. These error messages
+      are implemented in the form of Custom Error handlers, that
+      return a file, or URL to a user when a certain error occurs.
 
-      This means, that when you forget to fill in an Id when you want to 
-      create, say, a new SQL Method, Zope's clear error message is replaced 
-      by IIS's totally irrelevant error message. Also, it completely breaks 
-      authentication when the user uses IE5.0 when trying to log into a secure 
-      area of the server. These Custom Error handlers are enabled by default.
+      This means, that when you forget to fill in an Id when you want
+      to create, say, a new SQL Method, Zope's clear error message is
+      replaced by IIS's totally irrelevant error message. Also, it
+      completely breaks authentication when the user uses IE5.0 when
+      trying to log into a secure area of the server. These Custom
+      Error handlers are enabled by default.
 
       Luckily, the handlers can quite easily be switched off:
 
-      Open the IIS website in the Management Console, and navigate to the 
-      folder you put the PCGI executable in. If you named your Zope installation 
-      'Zope', it will be called 'Zope.exe'. Double-click on that file. A property 
-      page will appear. Select the 'Custom Errors' tab. Now, select every HTTP 
-      Error code in the listbox that doesn't have type 'Default', and click on 
-      the 'Set to Default' button for each one. This will disable IIS overriding 
-      the error message returned by Zope.
+      Open the IIS website in the Management Console, and navigate to
+      the folder you put the PCGI executable in. If you named your
+      Zope installation 'Zope', it will be called
+      'Zope.exe'. Double-click on that file. A property page will
+      appear. Select the 'Custom Errors' tab. Now, select every HTTP
+      Error code in the listbox that doesn't have type 'Default', and
+      click on the 'Set to Default' button for each one. This will
+      disable IIS overriding the error message returned by Zope.
 
-      Click OK, and voila, Zope is allowed to tell the world what it thinks went
-      wrong.
+      Click OK, and voila, Zope is allowed to tell the world what it
+      thinks went wrong.
 
 
 
