@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.23 1997/03/22 13:32:23 jim Exp $'''
+$Id: InvertedIndex.py,v 1.24 1997/03/24 20:22:27 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.23 1997/03/22 13:32:23 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.24  1997/03/24 20:22:27  chris
+# *** empty log message ***
+#
 # Revision 1.23  1997/03/22 13:32:23  jim
 # Rearranged index method to update result lists in a separate
 # overridable method.  This is needed to implement a clear method
@@ -164,7 +167,7 @@ $Id: InvertedIndex.py,v 1.23 1997/03/22 13:32:23 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -384,7 +387,7 @@ _default_stop_words = [
     'can', 'cannot', 'did', 'do', 'doing', 'either', 'else', 'even', 'for',
     'from', 'get', 'got', 'had', 'has', 'have', 'he', 'her', 'hers', 'herself',
     'him', 'himself', 'his', 'if', 'in', 'it', 'its', 'me', 'my', 'myself',
-    'no', 'not', 'of', 'only', 'or', 'our', 'ourselves', 'she', 'so', 'some',
+    'no', 'not', 'of', 'on', 'only', 'onto', 'or', 'our', 'ourselves', 'she', 'so', 'some',
     'than', 'that', 'the', 'their', 'them', 'themselves', 'then', 'there',
     'these', 'they', 'this', 'those', 'to', 'too', 'unless', 'until', 'us',
     'very', 'was', 'we', 'were', 'what', 'when', 'where', 'which', 'while',
