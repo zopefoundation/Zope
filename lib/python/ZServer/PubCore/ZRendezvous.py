@@ -4,7 +4,7 @@ from ZServerPublisher import ZServerPublisher
 
 class ZRendevous:
 
-    def __init__(self, n=1, name='Main'):
+    def __init__(self, n=1):
         sync=thread.allocate_lock()
         self._a=sync.acquire
         self._r=sync.release
@@ -17,7 +17,7 @@ class ZRendevous:
                 l.acquire()
                 pool.append(l)
                 thread.start_new_thread(ZServerPublisher,
-                                        (name, self.accept,))
+                                        (self.accept,))
                 n=n-1
         finally: self._r()
 
@@ -34,17 +34,17 @@ class ZRendevous:
                 self._a()
                 pool.append(l)
 
-            r=self.requests[0]
-            del self.requets[0]
+            r=requests[0]
+            del requests[0]
             return r
         finally: self._r()
 
-    def handle(self, environ, input):
-        output=OutputPipe()
+    def handle(self, name, environ, input, callback):
+        output=OutputPipe(callback)
         self._a()
         try:
             pool, requests, ready = self._lists
-            requests.append((input, output, environ))
+            requests.append((name, input, output, environ))
             if ready:
                 l=ready[-1]
                 del ready[-1]
