@@ -252,3 +252,6 @@ Lots of discussion!
 
  - Make it possible to install Zope-related Python libraries to
    The site-packages of the Python used to invoke setup.py.
+
+ - Give 'mkzopeinstance', 'mkzeoinstance', and 'zconfig' Python scripts
+   in software home a .py extension.
