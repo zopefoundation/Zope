@@ -661,8 +661,8 @@ def main(module_filter, test_filter, libdir):
     if config_file:
         config_file = os.path.realpath(config_file)
         print "Parsing %s" % config_file
-        import Zope
-        Zope.configure(config_file)
+        import Zope2
+        Zope2.configure(config_file)
 
     if not keepStaleBytecode:
         from App.config import getConfiguration

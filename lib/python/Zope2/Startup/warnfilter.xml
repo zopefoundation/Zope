@@ -1,4 +1,4 @@
-<component prefix="Zope.Startup.warnfilter">
+<component prefix="Zope2.Startup.warnfilter">
   <sectiontype name="warnfilter" datatype=".warning_filter_handler">
       <key name="action" datatype=".warn_action" default="default"/>
       <key name="message" default=""/>

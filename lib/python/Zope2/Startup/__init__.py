@@ -252,8 +252,8 @@ class ZopeStarter:
 
     def startZope(self):
         # Import Zope
-        import Zope
-        Zope.startup()
+        import Zope2
+        Zope2.startup()
 
     def makeLockFile(self):
         if not self.cfg.zserver_read_only_mode:
@@ -268,7 +268,7 @@ class ZopeStarter:
             # if we can't lock it.
             # we need a separate lock file because on win32, locks are not
             # advisory, otherwise we would just use the pid file
-            from Zope.Startup.misc.lock_file import lock_file
+            from Zope2.Startup.misc.lock_file import lock_file
             lock_filename = self.cfg.lock_filename
             try:
                 if os.path.exists(lock_filename):

@@ -25,7 +25,7 @@ import ZConfig
 from ZConfig.components.logger.tests import test_logger
 from ZConfig.components.logger.loghandler import NullHandler
 
-import Zope.Startup
+import Zope2.Startup
 
 from App.config import getConfiguration, setConfiguration
 
@@ -33,7 +33,7 @@ TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
 def getSchema():
-    startup = os.path.dirname(Zope.Startup.__file__)
+    startup = os.path.dirname(Zope2.Startup.__file__)
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
 
@@ -70,7 +70,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             logger.__dict__.update(logger_states[name])
 
     def get_starter(self, conf):
-        starter = Zope.Startup.get_starter()
+        starter = Zope2.Startup.get_starter()
         starter.setConfiguration(conf)
         return starter
 
@@ -183,7 +183,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         starter = self.get_starter(conf)
         # do the job the 'handler' would have done (call prepare)
         for server in conf.servers:
-            server.prepare('', None, 'Zope', {}, None)
+            server.prepare('', None, 'Zope2', {}, None)
         try:
             starter.setupServers()
             import ZServer
@@ -213,7 +213,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         ## starter = self.get_starter(conf)
         ## # do the job the 'handler' would have done (call prepare)
         ## for server in conf.servers:
-        ##     server.prepare('', None, 'Zope', {}, None)
+        ##     server.prepare('', None, 'Zope2', {}, None)
         ## try:
         ##     self.assertRaises(ZConfig.ConfigurationError, starter.setupServers)
         ## finally:
@@ -385,7 +385,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         sys.argv = [sys.argv[0]]
         try:
             fname = os.path.join(TEMPNAME, 'zope.conf')
-            from Zope import configure
+            from Zope2 import configure
             f = open(fname, 'w')
             f.write('instancehome %s\nzserver-threads 100\n' % TEMPNAME)
             f.flush()

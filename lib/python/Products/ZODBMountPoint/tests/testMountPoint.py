@@ -38,7 +38,7 @@ class TestDBConfig:
     def getDB(self):
         from ZODB.config import DemoStorage
         from ZODB.Connection import Connection
-        from Zope.Startup.datatypes import ZopeDatabase
+        from Zope2.Startup.datatypes import ZopeDatabase
         self.name = self.fname
         self.base = None
         self.path = os.path.join(os.path.dirname(__file__),  self.fname)

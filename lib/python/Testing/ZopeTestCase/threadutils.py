@@ -18,7 +18,7 @@ def zserverRunner(host, port, log=None):
     if log is None: log = dummyLOG
     lg = logger.file_logger(log)
     hs = zhttp_server(ip=host, port=port, resolver=None, logger_object=lg)
-    zh = zhttp_handler(module='Zope', uri_base='')
+    zh = zhttp_handler(module='Zope2', uri_base='')
     hs.install_handler(zh)
     asyncore.loop()
 

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-import Zope
+import Zope2
 import unittest
 import sys
 

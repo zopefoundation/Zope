@@ -20,9 +20,9 @@ import tempfile
 import unittest
 
 import ZConfig
-import Zope.Startup
+import Zope2.Startup
 
-from Zope.Startup import datatypes
+from Zope2.Startup import datatypes
 
 from App.config import getConfiguration
 
@@ -31,7 +31,7 @@ TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
 def getSchema():
-    startup = os.path.dirname(os.path.realpath(Zope.Startup.__file__))
+    startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
 

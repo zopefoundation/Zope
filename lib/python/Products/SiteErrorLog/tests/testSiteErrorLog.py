@@ -7,8 +7,8 @@ $Id: testSiteErrorLog.py 27325 2004-08-29 09:59:28Z jens $
 
 from Testing.makerequest import makerequest
 
-import Zope
-Zope.startup()
+import Zope2
+Zope2.startup()
 
 import transaction
 
@@ -20,7 +20,7 @@ class SiteErrorLogTests(unittest.TestCase):
 
     def setUp(self):
         transaction.begin()
-        self.app = makerequest(Zope.app())
+        self.app = makerequest(Zope2.app())
         try:
             self.app.manage_addDTMLMethod('doc', '')
         except:

@@ -17,7 +17,7 @@ ZODB objects
 Usage:
 
     import makerequest
-    app = makerequest.makerequest(Zope.app())
+    app = makerequest.makerequest(Zope2.app())
 
 $Id$
 

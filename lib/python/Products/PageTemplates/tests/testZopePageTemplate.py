@@ -8,7 +8,7 @@ Note: Tests require Zope >= 2.7
 
 
 import unittest
-import Zope
+import Zope2
 import transaction
 
 from Testing.makerequest import makerequest
@@ -17,7 +17,7 @@ class ZPTRegressions(unittest.TestCase):
 
     def setUp(self):
         transaction.begin()
-        self.app = makerequest(Zope.app())
+        self.app = makerequest(Zope2.app())
         f = self.app.manage_addProduct['PageTemplates'].manage_addPageTemplate
         self._addPT = f
         self.title = 'title of page template'

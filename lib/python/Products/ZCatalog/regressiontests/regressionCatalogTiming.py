@@ -17,7 +17,7 @@ os.environ['STUPID_LOG_FILE']=os.path.join(os.environ['INSTANCE_HOME'],'var',
                                            'debug.log')
 here = os.getcwd()
 
-import Zope
+import Zope2
 import mailbox, time, httplib
 from string import strip, find, split, lower, atoi, join
 from urllib import quote
@@ -36,7 +36,7 @@ TextTestRunner = VerboseTextTestRunner
 
 class TestTimeIndex(TestCase):
     def setUp(self):
-        self.app = makerequest(Zope.app())
+        self.app = makerequest(Zope2.app())
         try: self.app._delObject('catalogtest')
         except AttributeError: pass
         self.app.manage_addFolder('catalogtest')

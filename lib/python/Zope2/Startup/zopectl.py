@@ -40,7 +40,7 @@ import sys
 import signal
 
 import zdaemon
-import Zope.Startup
+import Zope2.Startup
 
 from zdaemon.zdctl import ZDCmd
 from zdaemon.zdoptions import ZDOptions
@@ -60,7 +60,7 @@ class ZopeCtlOptions(ZDOptions):
 
     positional_args_allowed = 1
     program = "zopectl"
-    schemadir = os.path.dirname(Zope.Startup.__file__)
+    schemadir = os.path.dirname(Zope2.Startup.__file__)
     schemafile = "zopeschema.xml"
     uid = gid = None
 
@@ -166,7 +166,7 @@ class ZopeCmd(ZDCmd):
 
     def do_debug(self, arg):
         cmdline = self.get_startup_cmd(self.options.python + ' -i',
-                                       'import Zope; app=Zope.app()')
+                                       'import Zope2; app=Zope2.app()')
         print ('Starting debugger (the name "app" is bound to the top-level '
                'Zope object)')
         os.system(cmdline)
@@ -194,7 +194,7 @@ class ZopeCmd(ZDCmd):
         if len(tup) > 1:
             argv = tup[1:]
             cmd += '[sys.argv.append(x) for x in %s];' % argv
-        cmd += 'import Zope; app=Zope.app(); execfile(\'%s\')' % script
+        cmd += 'import Zope2; app=Zope2.app(); execfile(\'%s\')' % script
         cmdline = self.get_startup_cmd(self.options.python, cmd)
         os.system(cmdline)
 
@@ -212,7 +212,7 @@ class ZopeCmd(ZDCmd):
             return
         cmdline = self.get_startup_cmd(
             self.options.python ,
-            'import Zope; app=Zope.app();'
+            'import Zope2; app=Zope2.app();'
             'app.acl_users._doAddUser(\'%s\', \'%s\', [\'Manager\'], []);'
             'get_transaction().commit()'
             ) % (name, password)

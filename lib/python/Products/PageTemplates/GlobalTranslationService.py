@@ -29,7 +29,7 @@ class DummyTranslationService:
             return ustr(mapping[m.group(m.lastindex)])
         cre = re.compile(r'\$(?:(%s)|\{(%s)\})' % (NAME_RE, NAME_RE))
         return cre.sub(repl, default or msgid)
-    # XXX Not all of Zope.I18n.ITranslationService is implemented.
+    # XXX Not all of Zope2.I18n.ITranslationService is implemented.
 
 translationService = DummyTranslationService()
 

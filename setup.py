@@ -605,9 +605,9 @@ setup(
     name='Zope',
     author=AUTHOR,
 
-    packages=['Zope', 'Zope.App', 'Zope.Startup', 'Zope.Startup.misc',
-              'Zope.Startup.nt', 'Zope.Startup.tests'],
-    data_files=[ ['Zope/Startup', ['Zope/Startup/*.xml']] ],
+    packages=['Zope2', 'Zope2.App', 'Zope2.Startup', 'Zope2.Startup.misc',
+              'Zope2.Startup.nt', 'Zope2.Startup.tests'],
+    data_files=[ ['Zope2/Startup', ['Zope2/Startup/*.xml']] ],
     )
 
 # webdav

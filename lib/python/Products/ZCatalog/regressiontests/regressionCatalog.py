@@ -16,7 +16,7 @@ os.environ['STUPID_LOG_FILE']= "debug.log"
 
 here = os.getcwd()
 
-import Zope
+import Zope2
 import ZODB, ZODB.FileStorage
 from Products.ZCatalog import ZCatalog,Vocabulary
 from Products.ZCatalog.Catalog import CatalogError

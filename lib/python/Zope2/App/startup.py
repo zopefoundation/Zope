@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Initialize the Zope Package and provide a published module
+"""Initialize the Zope2 Package and provide a published module
 """
 
 from AccessControl.SecurityManagement import getSecurityManager
@@ -33,7 +33,7 @@ import os
 import sys
 import ZODB
 import ZODB.ZApplication
-import Zope
+import Zope2
 import ZPublisher
 
 
@@ -58,7 +58,7 @@ def startup():
         DB = configuration.dbtab.getDatabase('/', is_root=1)
         Globals.BobobaseName = DB.getName()
     else:
-        m=imp.load_module('Zope.custom_zodb', m[0], m[1], m[2])
+        m=imp.load_module('Zope2.custom_zodb', m[0], m[1], m[2])
         if hasattr(m,'DB'):
             DB=m.DB
         else:
@@ -66,14 +66,14 @@ def startup():
             DB = ZODB.DB(storage)
 
         Globals.BobobaseName = DB.getName()
-        sys.modules['Zope.custom_zodb']=m
+        sys.modules['Zope2.custom_zodb']=m
 
     if DB.getActivityMonitor() is None:
         from ZODB.ActivityMonitor import ActivityMonitor
         DB.setActivityMonitor(ActivityMonitor())
 
     Globals.DB = DB # Ick, this is temporary until we come up with some registry
-    Zope.DB = DB
+    Zope2.DB = DB
 
     # Hook for providing multiple transaction object manager undo support:
     Globals.UndoManager=DB
@@ -90,7 +90,7 @@ def startup():
     app = ZODB.ZApplication.ZApplicationWrapper(
         DB, 'Application', OFS.Application.Application, (),
         Globals.VersionNameName)
-    Zope.bobo_application = app
+    Zope2.bobo_application = app
 
     # Initialize the app object
     application = app()
@@ -104,17 +104,13 @@ def startup():
     # "Log off" as system user
     noSecurityManager()
 
-    # This is really ugly.  Please remember to remove Main.py before
-    # Zope 2.7 and fix whatever breaks, if anything.
-    sys.modules['Main'] = sys.modules['Zope']
-
     global startup_time
     startup_time = log_time()
 
-    Zope.zpublisher_transactions_manager = TransactionsManager()
-    Zope.zpublisher_exception_hook = zpublisher_exception_hook
-    Zope.zpublisher_validated_hook = validated_hook
-    Zope.__bobo_before__ = noSecurityManager
+    Zope2.zpublisher_transactions_manager = TransactionsManager()
+    Zope2.zpublisher_exception_hook = zpublisher_exception_hook
+    Zope2.zpublisher_validated_hook = validated_hook
+    Zope2.__bobo_before__ = noSecurityManager
 
 
 def validated_hook(request, user):
@@ -129,7 +125,7 @@ def validated_hook(request, user):
                 expires="Mon, 25-Jan-1999 23:59:59 GMT",
                 path=(request['BASEPATH1'] or '/'),
                 )
-            Zope.DB.removeVersionPool(version)
+            Zope2.DB.removeVersionPool(version)
             raise Unauthorized, "You don't have permission to enter versions."
     
 

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2003 Zope Corporation and Contributors.
+# Copyright (c) 2005 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,5 +11,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Legacy Zope "package" that redirects to the new Zope 2 package
 
-"""Tests of the Zope.Startup package."""
+$Id$
+"""
+
+import sys, Zope2
+sys.modules['Zope'] = Zope2
+
+import warnings
+warnings.warn("The Zope package has been renamed to Zope2.\n"
+              "Import of a package named 'Zope' is deprecated\n"
+              "and will be disabled starting in Zope 2.11.\n"
+              ,
+              DeprecationWarning, stacklevel=2)
