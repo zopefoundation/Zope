@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -215,7 +215,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return ZopePageTemplate.inheritedAttribute(
             'manage_historyCompare')(
             self, rev1, rev2, REQUEST,
-            historyComparisonResults=html_diff(rev1.read(), rev2.read()) )
+            historyComparisonResults=html_diff(rev1._text, rev2._text) )
 
     def pt_getContext(self):
         root = self.getPhysicalRoot()
