@@ -85,8 +85,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.11 1999/03/30 19:33:47 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: SQL.py,v 1.12 1999/11/03 14:43:20 brian Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import HTMLFile
@@ -152,7 +152,7 @@ class SQL(Shared.DC.ZRDB.DA.DA):
 
     SQL Database methods are used to access external SQL databases.
 
-    They support three important Principia abstractions:
+    They support three important abstractions:
 
       - Method
 
@@ -163,8 +163,8 @@ class SQL(Shared.DC.ZRDB.DA.DA):
 
       - Searchability
 
-        Database methods support the Principia Searchable Object
-        Interface.  Search interface wizards can be used to build user
+        Database methods support the Searchable Object Interface.
+        Search interface wizards can be used to build user
         interfaces to them.  They can be used in joins and
         unions. They provide meta-data about their input parameters
         and result data.
