@@ -84,8 +84,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.7 2001/01/17 15:18:44 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Traversable.py,v 1.8 2001/05/21 19:47:28 evan Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 import Acquisition
@@ -151,6 +151,11 @@ class Traversable:
         REQUEST={'TraversalRequestNameStack': path}
         path.reverse()
         pop=path.pop
+
+        if len(path) > 1 and not path[0]:
+            # Remove trailing slash
+            path.pop(0)
+
         if restricted: securityManager=getSecurityManager()
         else: securityManager=None
 
