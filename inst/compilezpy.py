@@ -90,7 +90,7 @@ class Shutup:
 
 print
 print '-'*78
-print 'Compiling py files'
+print 'Compiling python modules'
 stdout=sys.stdout
 try:
     sys.stdout=Shutup()
