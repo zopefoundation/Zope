@@ -1,0 +1,209 @@
+cPickle, A C Pickle Implementation
+
+  cPickle is a C implementation of the Python module, pickle.py, and is
+  fully compatible with pickle: all types picklable by pickle can be
+  pickled using cPickle [1], and pickles generated using pickle may be
+  unpickled using cPickle and vice versa.
+
+  The basic interface for cPickle is nearly the same as pickle's, the
+  only difference being that an optional value may be specified as the
+  final argument to Pickler(), dump, and dumps(), specifying that
+  binary mode should be used.  For instance, to pickle an object, ob,
+  to file, f, which has been opened for binary writing::
+
+    p = cPickle.Pickler(f, 1)
+    p.dump(ob)
+
+  alternately::
+
+    cPickle.dump(ob, f, 1)
+
+  Using binary format produces smaller pickles and increases the speed of
+  pickling and unpickling.  Note, however, old versions of pickle
+  cannot read binary pickles and files containing binary pickles
+  should be opened in binary mode.  
+
+  Customization  
+
+     For this release of cPickle, a small amount of customization is
+     possible for the Pickler and Unpickler.  Specifically, the
+     persistent_id attribute of the Pickler and the persistent_load
+     attribute of the Unpickler may be set to user-defined functions by
+     setting attributes.  For instance::
+
+         def peristent_id(object):
+	     ... return appropriate persistent id string ...
+  
+         p = cPickle.Pickler(f)
+         p.persistent_id = persistent_id
+  
+    
+         def persistent_load(pers_id):
+	     ... return appropriate object, given a persistent id ...
+  
+         u = cPickle.Unpickler(f)
+         u.persistent_load = persistent_load
+
+     Note that this mechanism works with the current pickle module too.
+
+     The cPickle module does not support customization through inheritance
+     as pickle.py does.
+
+  Pickling Extension Types
+
+     When the pickler encounters an object it doesn't know how to pickle,
+     it checks to see if the object has a __reduce__ method.  This should
+     return a tuple consisting of an callable object, a tuple of arguments, and
+     an optional object state value.  If a state value is supplied, it will be
+     passed to the newly created object's __setstate__ method.  If the object
+     has no __setstate__ method, it will be added to the object's __dict__
+     (note that the state value must be a dictionary in this case).
+     The contents of this tuple will be saved, and, on unpickling, the callable
+     object will be called with the arguments to create the instance.
+
+     The callable object must either be:
+
+        - a Class,
+
+        - registered in the set of safe constructors (see below),
+
+        - or have an attribute, __safe_for_unpickling__, with a true value.
+
+     Note that the __reduce__ method may also return a string value.  In this
+     case, the value of the global variable with the name given by the string
+     value is used.
+
+     The module copy_reg.py provides an interface for registering pickling 
+     functions::
+
+        def pickle(ob_type, pickle_function, constructor = None):
+           '''Register the function, 'pickle_function' to be called
+              to pickle objects of type 'ob_type'.
+
+     The pickle function must behave in the same manner as the __reduce__
+     method described above.  If the argument 'constructor' is specified,
+     then it will be registered as an object that is safe for unpickling
+     objects. 
+ 
+     copy_reg.py also provides an interface for updating a registry of safe
+     constructors to be used when unpickling::
+
+        def constructor(object):
+           'Register the object as safe for unpicking objects'
+
+     The following example shows how one might add support for pickling 
+     complex numbers::
+
+        import copy_reg
+
+        def pickle_complex(z):
+            return (complex, (z.real, z.imag))
+
+        copy_reg.pickle(type(complex(0,0)), pickle_complex, complex)
+
+  This release also includes the latest release of the cStringIO
+  module.  The cStringIO module is a C implementation of the Python
+  StringIO module; it is used internally by cPickle.  It may also
+  be used outside of cPickle as a much faster StringIO implementation.
+  
+  A new version of pickle.py is also provided.  This version adds support
+  for writing and reading binary pickles.
+  
+  Status
+  
+    The current release of cPickle is 0.2.1 [Down-load]. The
+    implementation is about three thousand lines in size, including
+    comments.  This release requires Python version 1.4.  
+
+    This version introduces a special binary mode format for floats.
+    Since this could not be implemented in the python version, it is
+    disabled by default in cPickle.  To enable the new float format,
+    see the instructions in the Makefile.
+
+  Installation
+  
+    Dynamic linking installation (Unix)
+
+    Simply run the included Makefile.  It is assumed that python
+    can be run using the command 'python1.4'.  If this is not the
+    case, edit the makefile so that it uses the appropriate command
+    or specify the command name on the command line as the value of
+    the PYTHON variable, i.e.::
+
+          make PYTHON=python
+      
+    Static linking installation
+     
+    To statically link the cPickle module into the Python
+    interpreter:
+      
+        1. copy the files: 'cPickle.c', 'cStringIO.c' and 'cStringIO.h' to
+           the 'Modules' directory in the Python source tree,
+      
+        2. add the following line to the 'Setup' file in the 'Modules'
+           directory::
+      
+              cStringIO cStringIO.c
+              cPickle cPickle.c
+      
+        3. rebuild python
+
+  Note that cPickle requires that both copy_reg and cStringIO be importable.
+
+  Files
+  
+     Makefile      -- The Makefile for building cPickle
+     
+     cPickle.stx   -- This file in structured text format
+     
+     cPickle.html  -- This file in structured HTML format
+     
+     cPickle.c     -- The cPickle source
+     
+     cStringIO.c   -- The cStringIO source
+     
+     cStringIO.h   -- The cStringIO C-API definition
+     
+     pickle.py     -- The Python implementation of pickle with cPickle
+                      Extensions
+     
+     copy_reg.py   -- An auxilary module used to keep Pickle registration
+                      information used by cPickle
+
+  Release Notes
+
+     0.1 -- Initial (Alpha) Release
+
+     0.2 -- Second release incorporating many fixes and improvements over
+            initial release.  This is the first Beta release.
+
+            0.2.1 -- Bug fix release and slight format enhancement
+
+               Bugs fixed:
+
+               - Objects placed in memo when pickling were not
+                 actually retained, causing weird behavior when
+                 additional objects were created with the same ids
+                 (i.e. addresses).
+
+               - Objects saved via the '__reduce__' mechanism were not
+                 placed in memo when pickling.
+
+               In addition, binary floating point format was added.
+	       This uses code from the new struct module.
+	       Unfortunately, this cannot be supported in the current
+	       Python version.  Support of this format is disabled by
+	       default. To enable this feature, edit the make file
+	       'CFLAGS' variable as described in the make file,
+	       'Makefile'. 
+		 
+
+       
+
+[1] An earlier version of the pickle module provided for saving extension type
+    instances that had __class__ attributes.  Using cPickle, extension types can only be
+    be pickled using the mechanism described in the section "Pickling Extension Types"
+    above.       
+
+.. [Down-load] http://www.digicool.com/ftp/pub/releases/cPickle-0.2.1.tar.gz
+
