@@ -11,13 +11,14 @@
 #
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.6 2003/12/31 21:18:03 poster Exp $'
+__version__ = '$Id: FilteredSet.py,v 1.7 2004/01/15 23:17:17 tseaver Exp $'
 
 from ZODB.POSException import ConflictError
 from BTrees.IIBTree import IITreeSet
 from Persistence import Persistent
 from Globals import DTMLFile
 from zLOG import WARNING,LOG
+from RestrictedPython.Eval import RestrictionCapableEval
 import sys
 
 
@@ -69,7 +70,7 @@ class PythonFilteredSet(FilteredSetBase):
 
     def index_object(self, documentId, o):
         try:
-            if eval(self.expr): # XXX trusted code!
+            if RestrictionCapableEval(self.expr).eval({'o': o}): 
                 self.ids.insert(documentId)
             else:
                 try:
