@@ -13,18 +13,19 @@
 ##############################################################################
 
 from Interface.Verify import verifyClass
+import Acquisition
 
 from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
 
-from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
+from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex, PLexicon
 from Products.ZCTextIndex.tests import \
      testIndex, testQueryEngine, testQueryParser
 from Products.ZCTextIndex.BaseIndex import \
      scaled_int, SCALE_FACTOR, inverse_doc_frequency
 from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
-from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
+from Products.ZCTextIndex.Lexicon import Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser
 from Products.ZCTextIndex.StopDict import get_stopdict
@@ -37,12 +38,17 @@ class Indexable:
     def __init__(self, text):
         self.text = text
 
-class LexiconHolder:
+class LexiconHolder(Acquisition.Implicit):
     def __init__(self, lexicon):
         self.lexicon = lexicon
-
-class Extra:
-    pass
+        
+    def getPhysicalPath(self):
+        return ('',) # Pretend to be the root
+    
+def dummyUnrestrictedTraverse(self, path):
+    if path == ('', 'lexicon',):
+        return self.lexicon
+    raise 'NotFound', path
 
 # The tests classes below create a ZCTextIndex().  Then they create
 # instance variables that point to the internal components used by
@@ -95,12 +101,17 @@ text = [
 class ZCIndexTestsBase:
 
     def setUp(self):
-        extra = Extra()
-        extra.doc_attr = 'text'
-        extra.lexicon_id = 'lexicon'
-        self.lexicon = Lexicon(Splitter(), CaseNormalizer(), StopWordRemover())
+        self.lexicon = PLexicon('lexicon', '',
+                                Splitter(), 
+                                CaseNormalizer(), 
+                                StopWordRemover())
         caller = LexiconHolder(self.lexicon)
-        self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
+        self.zc_index = ZCTextIndex('name', 
+                                    None, 
+                                    caller, 
+                                    self.IndexFactory,
+                                    'text',
+                                    'lexicon')
         self.index = self.zc_index.index
 
     def parserFailure(self, query):
@@ -454,13 +465,18 @@ class QueryTestsBase(testQueryEngine.TestQueryEngine,
     docs = ["foo bar ham", "bar ham", "foo ham", "ham"]
 
     def setUp(self):
-        extra = Extra()
-        extra.doc_attr = 'text'
-        extra.lexicon_id = 'lexicon'
-        self.lexicon = Lexicon(Splitter(), CaseNormalizer(),
-                               StopWordRemover())
+        self.lexicon = PLexicon('lexicon', '',
+                                Splitter(), 
+                                CaseNormalizer(), 
+                                StopWordRemover())
         caller = LexiconHolder(self.lexicon)
-        self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
+        
+        self.zc_index = ZCTextIndex('name', 
+                                    None, 
+                                    caller, 
+                                    self.IndexFactory,
+                                    'text',
+                                    'lexicon')
         self.parser = QueryParser(self.lexicon)
         self.index = self.zc_index.index
         self.add_docs()

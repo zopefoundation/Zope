@@ -15,6 +15,7 @@
 """Plug in text index for ZCatalog with relevance ranking."""
 
 from cgi import escape
+from types import TupleType
 
 import ZODB
 from Persistence import Persistent
@@ -69,18 +70,19 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         # via the silly "extra" record.
         self._fieldname = field_name or getattr(extra, 'doc_attr', '') or id
         
-        lexicon_id = lexicon_id or extra.lexicon_id
+        lexicon_id = lexicon_id or extra.lexicon_idp
         lexicon = getattr(caller, lexicon_id, None)
 
         if lexicon is None:
             raise LookupError, 'Lexicon "%s" not found' % escape(lexicon_id)
 
         if not ILexicon.isImplementedBy(lexicon):
-            raise ValueError, \
-                'Object "%s" does not implement ZCTextIndex Lexicon interface' \
-                % lexicon.getId()
+            raise ValueError('Object "%s" does not implement '
+                             'ZCTextIndex Lexicon interface'
+                             % lexicon.getId())
 
-        self.lexicon = lexicon
+        self.lexicon_path = lexicon.getPhysicalPath()
+        self._v_lexicon = lexicon
 
         if index_factory is None:
             if extra.index_type not in index_types.keys():
@@ -91,7 +93,31 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         else:
             self._index_factory = index_factory
 
-        self.clear()
+        self.index = self._index_factory(self.getLexicon())
+        
+    ## Private Methods ##
+            
+    security.declarePrivate('getLexicon')
+    
+    def getLexicon(self):
+        """Get the lexicon for this index
+        """
+        if hasattr(self, 'lexicon'):
+            # Fix up old ZCTextIndexes by removing direct lexicon ref
+            # and changing it to a path
+            lexicon = getattr(self.aq_parent, self.lexicon.getId())
+            self.lexicon_path = lexicon.getPhysicalPath()
+            del self.lexicon
+            
+        try:
+            return self._v_lexicon
+        except AttributeError:
+            lexicon = self.unrestrictedTraverse(self.lexicon_path)
+            if not ILexicon.isImplementedBy(lexicon):
+                raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
+                                % lexicon.getId())
+            self._v_lexicon = lexicon
+            return lexicon
 
     ## External methods not in the Pluggable Index API ##
 
@@ -103,7 +129,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         The num results is the total number of results before trimming
         to the nbest results.
         """
-        tree = QueryParser(self.lexicon).parseQuery(query)
+        tree = QueryParser(self.getLexicon()).parseQuery(query)
         results = tree.executeQuery(self.index)
         if results is None:
             return [], 0
@@ -144,7 +170,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         query_str = ' '.join(record.keys)
         if not query_str:
             return None
-        tree = QueryParser(self.lexicon).parseQuery(query_str)
+        tree = QueryParser(self.getLexicon()).parseQuery(query_str)
         results = tree.executeQuery(self.index)
         return  results, (self._fieldname,)
 
@@ -154,7 +180,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             word_ids = self.index.get_words(documentId)
         except KeyError:
             return default
-        get_word = self.lexicon.get_word
+        get_word = self.getLexicon().get_word
         return [get_word(wid) for wid in word_ids]
 
     def uniqueValues(self, name=None, withLengths=0):
@@ -168,7 +194,13 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     def clear(self):
         """reinitialize the index (but not the lexicon)"""
-        self.index = self._index_factory(self.lexicon)
+        try:
+            # Remove the cached reference to the lexicon
+            # So that it is refreshed 
+            del self._v_lexicon 
+        except (AttributeError, KeyError):
+            pass
+        self.index = self._index_factory(self.getLexicon())
 
     ## User Interface Methods ##
 
@@ -182,9 +214,13 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         """Return indexed attribute name"""
         return self._fieldname
         
-    def getLexiconId(self):
-        """Return the id of the lexicon used by the index"""
-        return self.lexicon.getId()
+    def getLexiconPath(self):
+        """Return the path of the lexicon used by the index"""
+        try:
+            self.getLexicon() # Make sure the path is set
+            return '/'.join(self.lexicon_path)
+        except KeyError:
+            return
 
 InitializeClass(ZCTextIndex)
 

@@ -11,11 +11,16 @@
 </p>
 <p class="form-help">
   ZCTextIndex Lexicon used: 
-  <em><dtml-var getLexiconId></em>
+  <dtml-if getLexiconPath>
+    <a href="<dtml-var getLexiconPath>/manage_main"
+    ><dtml-var getLexiconPath></a>
+  <dtml-else>
+    <em>(Lexicon Not Found)</em>
+  </dtml-if>
 </p>
 <p class="form-help">
-  <em>Note:</em> You cannot change the lexicon assigned to a ZCTextIndex.
-  To use another lexicon, delete this index and create a new one that
-  uses the desired lexicon.
+  <em>Note:</em> The lexicon assigned to the index cannot be changed. To replace
+  the existing lexicon, create a new lexicon in the same place and clear the
+  index. This will make the index use the replacement lexicon.
 </p>
 <dtml-var manage_page_footer>
