@@ -89,15 +89,25 @@ from string import split, join, replace, expandtabs, strip, find, rstrip
 StringType=type('')
 ListType=type([])
 
+def flatten(obj, append):
+   if obj.getNodeType()==STDOM.TEXT_NODE:
+      append(obj.getNodeValue())
+   else:
+      for child in obj.getChildNodes():
+         flatten(child, append)
+
+
 class StructuredTextExample(ST.StructuredTextParagraph):
     """Represents a section of document with literal text, as for examples"""
 
     def __init__(self, subs, **kw):
-       t=[]; a=t.append
-       for s in subs: a(s.getNodeValue())
-       apply(ST.StructuredTextParagraph.__init__,
-             (self, join(t,'\n\n'), ()),
-             kw)
+        t=[]
+        a=t.append
+        for s in subs:
+            flatten(s, a)
+        apply(ST.StructuredTextParagraph.__init__,
+              (self, join(t,'\n\n'), ()),
+              kw)
 
     def getColorizableTexts(self): return ()
     def setColorizableTexts(self, src): pass # never color examples
