@@ -85,7 +85,6 @@
 
 from Persistence import Persistent
 import Acquisition
-import ExtensionClass
 import BTree, OIBTree, IOBTree, IIBTree
 IIBucket=IIBTree.Bucket
 from intSet import intSet
@@ -127,7 +126,7 @@ def orify(seq,
     return apply(Query.Or,tuple(subqueries))
     
 
-class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
+class Catalog(Persistent, Acquisition.Implicit):
     """ An Object Catalog
 
     An Object Catalog maintains a table of object metadata, and a
@@ -142,7 +141,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     _v_brains = NoBrainer
     _v_result_class = NoBrainer
 
-    def __init__(self, vocabulary=None, brains=None):
+    def __init__(self, brains=None):
 
         self.schema = {}    # mapping from attribute name to column number
         self.names = ()     # sequence of column names
@@ -164,12 +163,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # indexes can share a lexicon or have a private copy.  Here,
         # we instantiate a lexicon to be shared by all text indexes.
         # This may change.
-
-        if type(vocabulary) is type(''):
-            self.lexicon = vocabulary
-        else:
-            #ack!
-            self.lexicon = Lexicon()
+        self.lexicon = Lexicon()
 
         if brains is not None:
             self._v_brains = brains
@@ -358,10 +352,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         total = 0
         for x in self.indexes.values():
-            ## tricky!  indexes need to acquire now, and because they
-            ## are in a standard dict __getattr__ isn't used, so
-            ## acquisition doesn't kick in, we must explicitly wrap!
-            x = x.__of__(self)
             if hasattr(x, 'index_object'):
                 blah = x.index_object(i, object, threshold)
                 total = total + blah
@@ -379,10 +369,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         catalogued, otherwise it will not get removed from the catalog
 
         """
+        if uid not in self.uids.keys():
+            raise ValueError, "Uncatalog of absent id %s" % `uid`
+        
         rid = self.uids[uid]
 
         for x in self.indexes.values():
-            x = x.__of__(self)
             if hasattr(x, 'unindex_object'):
                 try:
                     x.unindex_object(rid)
@@ -460,7 +452,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if used is None: used={}
         for i in self.indexes.keys():
             try:
-                index = self.indexes[i].__of__(self)
+                index = self.indexes[i]
                 if hasattr(index,'_apply_index'):
                     r=index._apply_index(args)
                     if r is not None:
