@@ -27,12 +27,15 @@ Example usage:
     i.index(doc, key)
 
     # perform a test search
-    print i['blah']
+    try:
+      print i['blah']
+    except KeyError:
+      print 'No such key, "blah"'
 
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.2 1996/11/18 18:50:16 chris Exp $'''
+$Id: InvertedIndex.py,v 1.3 1996/12/03 17:44:21 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +87,12 @@ $Id: InvertedIndex.py,v 1.2 1996/11/18 18:50:16 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.3  1996/12/03 17:44:21  chris
+# Added pack() methods to Persistent and Transactional.
+# Disabled autosave on Persistent.
+# Failed searches now raise a KeyError rather than returning an
+# empty ResultList.
+#
 # Revision 1.2  1996/11/18 18:50:16  chris
 # Added doc strings
 #
@@ -92,7 +101,7 @@ $Id: InvertedIndex.py,v 1.2 1996/11/18 18:50:16 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -185,7 +194,10 @@ class ResultList:
 
 
   def Not(self, index):
-    '''Perform a "not" operation on a ResultList object.
+    '''\
+       Not(index)
+ 
+       Perform a "not" operation on a ResultList object.
        Not() returns the union of all ResultLists in the index that do
        not contain a link to a document that is found in "self".
        This method should be passed the Index object that returned the 
@@ -220,8 +232,12 @@ class ResultList:
 
 
   def sort(self):
-    '''Sort the frequency/key pairs in the ResultList by highest to lowest
-       frequency'''
+    '''\
+    sort()
+
+    Sort the frequency/key pairs in the ResultList by highest to lowest
+    frequency'''
+
     self._list.sort()
     self._list.reverse()    
 
@@ -272,7 +288,10 @@ class Index:
     i.index(doc, key)
 
     # perform a test search
-    print i['blah']
+    try:
+      print i['blah']
+    except KeyError:
+      print 'No such key, "blah"'
   '''
 
   list_class = ResultList
@@ -298,6 +317,8 @@ class Index:
 
   def index(self, src, srckey):
     '''\
+    index(src, srckey)
+
     Update the index by indexing the words in src to the key, srckey
 
     The source object, src, will be converted to a string and the
@@ -389,25 +410,19 @@ class Index:
       Lists = dict.keys()
 
       if (not len(Lists)):
-        return List()
+        raise KeyError
 
       return reduce(lambda x, y: x | y, Lists)
 
     key = string.lower(key)
 
-    try:
-      key = index[key]
-    except:
-      return List()
+    key = index[key]
 
     while (type(key) == StringType):
-      try:
-        key = index[key]
-      except KeyError:
-        return List()
+      key = index[key]
 
     if (key is None):
-      return List()
+      raise KeyError
 
     return key
 
@@ -447,8 +462,10 @@ class PersistentResultList(ResultList, PickleDictionary.Persistent):
   def __getstate__(self):
       return marshal.dumps(self._list)
 
+
   def __setstate__(self, marshaled_state):
       self._list = marshal.loads(marshaled_state)
+
 
   def addentry(self, freq, key):
     '''Add a frequency/key pair to this object'''
@@ -462,8 +479,10 @@ class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
   def __getstate__(self):
       return marshal.dumps(self._list)
 
+
   def __setstate__(self, marshaled_state):
       self._list = marshal.loads(marshaled_state)
+
 
   def addentry(self, freq, key):
     '''Add a frequency/key pair to this object'''
@@ -530,7 +549,10 @@ class Persistent(Index):
       i.index(doc, key)
 
       # perform a test search
-      print i['blah']
+      try:
+        print i['blah']
+      except KeyError:
+        print 'No such key, "blah"'
 
     Using an existing index:
 
@@ -546,7 +568,10 @@ class Persistent(Index):
       i.index(doc, key)
 
       # perform a test search
-      print i['blah']
+      try:
+        print i['blah']
+      except KeyError:
+        print 'No such key, "blah"'
   '''
 
   list_class = PersistentResultList
@@ -558,15 +583,55 @@ class Persistent(Index):
     pickledict = PickleDictionary.PickleDictionary(
 	picklefile, create, cache_size = cache_size)
 
+    pickledict.autosave(0)
+
     if (index_dictionary is not None):
       for key in index_dictionary.keys():
         pickledict[key] = index_dictionary[key]
 
-      pickledict.__changed__(1)
+      self.save()
 
     Index.__init__(self, pickledict)
 
 
+  def index(self, src, srckey, dont_save = 0):
+    '''\
+    index(src, srckey, dont_save = 0)
+
+    Update the index by indexing the words in src to the key, srckey
+
+    The source object, src, will be converted to a string and the
+    words in the string will be used as indexes to retrieve the objects 
+    key, srckey.  For simple objects, the srckey may be the object itself,
+    or it may be a key into some other data structure, such as a table.
+
+    If the fourth, optional argument, dont_save, is true, the index
+    will not be saved immediately after indexing.
+    '''
+
+    Index.index(self, src, srckey)
+
+    if (dont_save):
+      return
+
+    self.save()
+
+
+  def save(self):
+    '''\
+    save()
+    Save changes to the index.'''
+
+    self._index_object.save()
+
+
+  def pack(self):
+    '''\
+    pack()
+    Recover wasted space in the index file.'''
+    self._index_object.pack()
+
+    
 class Transactional(Index):
   '''\
   An inverted index.
@@ -629,7 +694,10 @@ class Transactional(Index):
       get_transaction().commit()
 
       # perform a test search
-      print i['blah']
+      try:
+        print i['blah']
+      except KeyError:
+        print 'No such key, "blah"'
 
     Using an existing index:
 
@@ -645,7 +713,10 @@ class Transactional(Index):
       i.index(doc, key)
 
       # perform a test search
-      print i['blah']
+      try:
+        print i['blah']
+      except KeyError:
+        print 'No such key, "blah"'
   '''
 
   list_class = STPResultList
@@ -665,11 +736,22 @@ class Transactional(Index):
  
     Index.__init__(self, pickledict)
 
+
+  def pack(self):
+    '''\
+    pack()
+    Recover wasted space in the index file.'''
+
+    self._index_object.pack()
+
+
   def __getinitargs__(self):
      return (self.picklefile,)
 
+
   def __getstate__(self):
      pass
+
 
   def __setstate__(self,arg):
      pass
