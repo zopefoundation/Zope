@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -247,8 +247,8 @@ class ApplicationManager(Folder,CacheManager):
     
     def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
         # return class reference info
-	dict={}
-	for m in sys.modules.values():
+        dict={}
+        for m in sys.modules.values():
             for sym in dir(m):
                 ob=getattr(m, sym)
                 if type(ob) in t:
