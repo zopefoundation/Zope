@@ -44,7 +44,7 @@ def _verify(iface, candidate, tentative=0, vtype=None):
     if not tentative and not tester( candidate ):
         raise DoesNotImplement(iface)
 
-    for n, d in iface.namesAndDescriptions():
+    for n, d in iface.namesAndDescriptions(1):
         if not hasattr(candidate, n):
             raise BrokenImplementation(iface, n)
 

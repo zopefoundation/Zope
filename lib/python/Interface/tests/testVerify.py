@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: testVerify.py,v 1.3 2002/08/14 21:35:33 mj Exp $
+$Id: testVerify.py,v 1.4 2002/11/11 19:53:16 mj Exp $
 """
 from __future__ import nested_scopes
 
@@ -44,6 +44,25 @@ class Test(unittest.TestCase):
 
         class I(Interface):
             def f(): pass
+
+        class C:
+
+            __implements__=I
+
+        self.assertRaises(BrokenImplementation, verifyClass, I, C)
+
+        C.f=lambda self: None
+
+        verifyClass(I, C)
+
+    def testMissingAttr_with_Extended_Interface(self):
+       
+        class II(Interface):
+            def f():
+                pass
+
+        class I(II):
+            pass
 
         class C:
 
