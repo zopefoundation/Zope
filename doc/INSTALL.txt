@@ -19,16 +19,16 @@ Quick Start
     python w_pcgi.py  # Note, this must be Python 1.5.2
     ./start
 
-  The first command build and sets up Zope.  Take note of the user
+  The first command builds and adjusts Zope.  Take note of the user
   name and password output at the end of this command.  You will need
   these to manage Zope.
 
-  If you get errors indicating that addresses are in use,
-  then you will have to supply arguments to z2.py to change the ports
-  used for HTTP or FTP. The default HTTP and FTP ports used by ZServer
-  are 8080 and 8021 respectively. (See the help for the z2.py script by
-  running z2.py with the -h option for more information on how to 
-  specify different ports)
+  If you get errors indicating that addresses are in use, then you
+  will have to supply arguments to z2.py to change the ports used for
+  HTTP or FTP. The default HTTP and FTP ports used by ZServer are 8080
+  and 8021 respectively. (See the help for the z2.py script by running
+  z2.py with the -h option for more information on how to specify
+  different ports)
 
   You can then connect to Zope 2 by directing your browser to::
 
