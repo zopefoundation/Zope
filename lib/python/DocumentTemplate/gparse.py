@@ -13,7 +13,7 @@ def astl(s): return parser.ast2list(parser.expr(s))
 def pret(ast, level=0):
     if ISTERMINAL(ast[0]): print '  '*level, ast[1]
     else:
-	print '  '*level, sym_name[ast[0]]
+	print '  '*level, sym_name[ast[0]], '(%s)' % ast[0]
 	for a in ast[1:]:
 	    pret(a,level+1)
 
@@ -23,7 +23,18 @@ def munge(ast):
     if ISTERMINAL(ast[0]): return
     else:
 	if ast[0]==term and len(ast) > 2:
-	    ast[1:]=[multi_munge(ast[1:])]
+	    keep_going=1
+	    while keep_going:
+		keep_going=0
+		start=2
+		for i in range(start,len(ast)-1):
+		    if ast[i][0]==STAR:
+			ast[i-1:i+2]=[multi_munge(ast[i-1:i+2])]
+			keep_going=1
+			break
+			
+	    for a in ast[1:]: munge(a)
+
 	elif ast[0]==power:
 	    keep_going=1
 	    while keep_going:
@@ -172,7 +183,7 @@ def dot_munge(ast, i):
 	    ]
 
 def multi_munge(ast):
-    # Munge a multiplication into a function call: __very_safe_multiply__
+    # Munge a multiplication into a function call: __guarded_mul__
     args=[arglist]
 
     append=args.append
@@ -219,7 +230,9 @@ def spam():
     ok=1
     for expr1, expr2 in (
 	("a*b", 	"__guarded_mul__(_vars, a, b)"),
-	("a*b*c", 	"__guarded_mul__(_vars, a, b, c)"),
+	("a*b*c",
+	 "__guarded_mul__(_vars, __guarded_mul__(_vars, a, b), c)"
+	 ),
 	("a.b",		"__guarded_getattr__(_vars, a, 'b')"),
 	("a[b]", 	"__guarded_getitem__(_vars, a, b)"),
 	("a[b,c]", 	"__guarded_getitem__(_vars, a, b, c)"),
@@ -227,6 +240,9 @@ def spam():
 	("a[:c]",	"__guarded_getslice__(_vars, a, 0, c)"),
 	("a[b:]",	"__guarded_getslice__(_vars, a, b)"),
 	("a[:]",	"__guarded_getslice__(_vars, a)"),
+	("_vars['sequence-index'] % 2",
+	 "__guarded_getitem__(_vars, _vars, 'sequence-index') % 2"
+	 ),
 	):
         l1=munge(astl(expr1))
 	l2=astl(expr2)
