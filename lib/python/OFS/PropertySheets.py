@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -662,7 +662,8 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         
     def get(self, name, default=None):
         for propset in self.__propsets__():
-            if propset.getId()==name or propset.xml_namespace()==name:
+            if propset.id==name or (hasattr(propset, 'xml_namespace') and \
+                                    propset.xml_namespace()==name):
                 return propset.__of__(self)
         return default
 
