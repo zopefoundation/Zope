@@ -13,6 +13,12 @@ Zope Changes
 
    Bugs fixed
 
+     - The connection-class keyword to database sections
+       didn't work.
+
+     - ZConfig didn't report a line number and munged capitalization
+       of replacement keys when a replacement error was provided.
+
      - log-to-stderr on startup will now emit messages to the console at 
        the lowest logging level defined by any of the handlers in the 
        eventlog section.
