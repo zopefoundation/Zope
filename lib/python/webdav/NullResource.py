@@ -85,11 +85,12 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
 from common import absattr, aq_base, urlfix
+from AccessControl.Permission import Permission
 from Resource import Resource
 from Globals import Persistent
 
@@ -101,17 +102,25 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     __dav_null__=1
 
     __ac_permissions__=(
-        ('View',                        ('HEAD',)),
-        ('Access contents information', ('PROPFIND',)),
-        ('Add Folders',                 ('MKCOL',)),
-        ('Delete objects',              ('DELETE',)),
-        ('Manage properties',           ('PROPPATCH',)),
+        ('View',                             ('HEAD',)),
+        ('Access contents information',      ('PROPFIND',)),
+        ('Add Documents, Images, and Files', ('PUT',)),
+        ('Add Folders',                      ('MKCOL',)),
+        ('Delete objects',                   ('DELETE',)),
+        ('Manage properties',                ('PROPPATCH',)),
     )
 
-    def __init__(self, parent, id):
-        self.id=id
+    def __init__(self, parent, name, request=None):
+        self.__name__=name
         self.__parent__=parent
-#        self.__roles__=parent.__roles__
+
+#        if hasattr(parent, '__ac_permissions__'):
+#            for p in parent.__ac_permissions__:
+#                n, v=p[:2]
+#                if n=='Add Documents, Images, and Files':
+#                    roles=Permission(n, v, parent).getRoles()
+#                    break
+#            self.PUT__roles__=roles
 
     def __bobo_traverse__(self, REQUEST, name=None):
         # We must handle traversal so that we can recognize situations
@@ -137,8 +146,9 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         self.dav__init(REQUEST, RESPONSE)
         type=REQUEST.get_header('content-type', None)
         body=REQUEST.get('BODY', '')
+        name=self.__name__
         if type is None:
-            type, enc=mimetypes.guess_type(self.id)
+            type, enc=mimetypes.guess_type(name)
         if type is None:
             if OFS.content_types.find_binary(body) >= 0:
                 content_type='application/octet-stream'
@@ -146,13 +156,13 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         type=string.lower(type)
         from OFS.Image import Image, File
         if type in ('text/html', 'text/xml', 'text/plain'):
-            self.__parent__.manage_addDTMLDocument(self.id, '', body)
+            self.__parent__.manage_addDTMLDocument(name, '', body)
         elif type[:6]=='image/':
-            ob=Image(self.id, '', body, content_type=type)
-            self.__parent__._setObject(self.id, ob)
+            ob=Image(name, '', body, content_type=type)
+            self.__parent__._setObject(name, ob)
         else:
-            ob=File(self.id, '', body, content_type=type)
-            self.__parent__._setObject(self.id, ob)
+            ob=File(name, '', body, content_type=type)
+            self.__parent__._setObject(name, ob)
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
@@ -163,13 +173,12 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         if REQUEST.get('BODY', ''):
             raise 'Unsupported Media Type', 'Unknown request body.'
         parent=self.__parent__
-        if hasattr(aq_base(parent), self.id):
-            raise 'Method Not Allowed', 'The name %s is in use.' % self.id
+        name=self.__name__
+        if hasattr(aq_base(parent), name):
+            raise 'Method Not Allowed', 'The name %s is in use.' % name
         if not hasattr(parent, '__dav_collection__'):
             raise 'Forbidden', 'Unable to create collection resource.'
-        # This should probably do self.__class__(id, ...), except Folder
-        # doesn't currently have a constructor.
-        parent.manage_addFolder(self.id)
+        parent.manage_addFolder(name)
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE

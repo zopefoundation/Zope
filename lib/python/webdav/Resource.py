@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -163,6 +163,7 @@ class Resource:
             RESPONSE.setHeader('Content-Type', absattr(self.content_type))
         if hasattr(self, 'getSize'):
             RESPONSE.setHeader('Content-Length', absattr(self.getSize))
+        RESPONSE.setStatus(200)
         return RESPONSE
 
     def PUT(self, REQUEST, RESPONSE):

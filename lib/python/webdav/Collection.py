@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os, string
 from Resource import Resource
@@ -110,13 +110,6 @@ class Collection(Resource):
         response.setHeader('Date', rfc1123_date())
         response.setHeader('DAV', '1')
 
-
-    def HEAD(self, REQUEST, RESPONSE):
-        """Retrieve resource information without a response body."""
-        self.dav__init(REQUEST, RESPONSE)
-        RESPONSE.setStatus(200)
-        return RESPONSE
-
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
         resources, though collections are not specifically forbidden
@@ -129,7 +122,7 @@ class Collection(Resource):
         """Delete a collection resource. For collection resources, DELETE
         may return either 200 (OK) or 204 (No Content) to indicate total
         success, or may return 207 (Multistatus) to indicate partial
-        success. Note that in Zope a DELETE never returns 207."""
+        success. Note that in Zope a DELETE currently never returns 207."""
         self.dav__init(REQUEST, RESPONSE)
         url=urlfix(REQUEST['URL'], 'DELETE')
         name=filter(None, string.split(url, '/'))[-1]
