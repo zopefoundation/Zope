@@ -385,15 +385,15 @@ class TestTransientObjectContainer(TestBase):
             assert self.t[x] == x + 1
 
     def testLen(self):
+        # This test must not time out else it will fail.
+        self.t._setTimeout(self.timeout)  # make timeout extremely unlikely
         added = {}
         r = range(10, 1010)
         for x in r:
             k = random.choice(r)
             self.t[k] = x
             added[k] = x
-        addl = added.keys()
-        addl.sort()
-        assert len(self.t) == len(addl), len(self.t)
+        self.assertEqual(len(self.t), len(added))
 
     def testResetWorks(self):
         self.t[10] = 1
