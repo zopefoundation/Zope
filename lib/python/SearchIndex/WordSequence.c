@@ -92,7 +92,7 @@ WordSequence_length(WordSequence *self)
 
     if (res == NULL)
     {
-        return NULL;
+        return -1;
     }
 
     return self->index + 1;
@@ -538,7 +538,7 @@ static char WordSequence_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: WordSequence.c,v 1.6 1997/06/30 15:36:06 jim Exp $\n"
+"$Id: WordSequence.c,v 1.7 1997/06/30 19:41:40 jim Exp $\n"
 ;
 
 void
