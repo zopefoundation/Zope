@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -141,14 +141,11 @@ class SafeMapping(MultiMapping):
     '''
     __allow_access_to_unprotected_subobjects__ = 1
     push = pop = None
-    def _push(self, ob):
-        MultiMapping.push(self, ob)
-    def _pop(self, *args):
-        if args:
-            return apply(MultiMapping.pop, (self,) + args)
-        else:
-            return MultiMapping.pop(self)
-    def has_get(self, key):
+
+    _push = MultiMapping.push
+    _pop = MultiMapping.pop
+
+    def has_get(self, key, _marker=[]):
         v = self.get(key, _marker)
         if v is _marker:
             return 0, None
@@ -253,18 +250,19 @@ class Context:
         oldctxts = self._current_ctxts
         self._ctxts_pushed.append(oldctxts)
         self._current_ctxts = ctxts = {}
+        contexts = self.contexts
         for ctxname in oldctxts.keys():
             # Push fresh namespace on each local stack.
             ctxts[ctxname] = ctx = {}
-            self.contexts[ctxname]._push(ctx)
+            contexts[ctxname]._push(ctx)
 
     def endScope(self):
         self._current_ctxts = ctxts = self._ctxts_pushed.pop()
         # Pop the ones that were pushed at the beginning of the scope.
+        contexts = self.contexts
         for ctxname in ctxts.keys():
-            ctx = self.contexts[ctxname]._pop()
-            # Make sure there's no circular garbage
-            ctx.clear()
+            # Pop, then make sure there's no circular garbage
+            contexts[ctxname]._pop().clear()
 
     def setLocal(self, name, value):
         self._current_ctxts['local'][name] = value
@@ -301,9 +299,9 @@ class Context:
 
     def evaluateText(self, expr):
         text = self.evaluate(expr)
-        if text not in (None, Default):
-            text = str(text)
-        return text
+        if text is Default or text is None:
+            return text
+        return str(text)
 
     def evaluateStructure(self, expr):
         return self.evaluate(expr)
