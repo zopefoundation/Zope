@@ -361,6 +361,8 @@ class TALInterpreter:
                 if evalue is None:
                     ok = 0
                 value = evalue
+        else:
+            evalue = None
 
         if ok:
             if xlat:
@@ -369,7 +371,11 @@ class TALInterpreter:
                     value = translated
             if value is None:
                 value = name
-            value = '%s="%s"' % (name, attrEscape(value))
+            elif evalue is self.Default:
+                value = attrEscape(value)
+            else:
+                value = escape(value)
+            value = '%s="%s"' % (name, value)
         return ok, name, value
     bytecode_handlers["<attrAction>"] = attrAction
 
