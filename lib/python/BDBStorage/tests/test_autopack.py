@@ -12,8 +12,6 @@
 #
 ##############################################################################
 
-from __future__ import nested_scopes
-
 import os
 import time
 import unittest
@@ -55,9 +53,9 @@ class C(Persistent):
 class TestAutopackBase(BerkeleyTestBase):
     def _config(self):
         config = BerkeleyConfig()
-        # Autopack every 3 seconds, 6 seconds into the past, no classic packs
-        config.frequency = 3
-        config.packtime = 6
+        # Autopack every 1 second, 2 seconds into the past, no classic packs
+        config.frequency = 1
+        config.packtime = 2
         config.classicpack = 0
         return config
 
@@ -66,7 +64,7 @@ class TestAutopackBase(BerkeleyTestBase):
         # BAW: this uses a non-public interface
         packtime = storage._autopacker._nextcheck
         while packtime == storage._autopacker._nextcheck:
-            time.sleep(1)
+            time.sleep(0.1)
 
     def _mk_dbhome(self, dir):
         # Create the storage
@@ -100,8 +98,8 @@ class TestAutopack(TestAutopackBase):
         unless(storage.loadSerial(oid, revid1))
         unless(storage.loadSerial(oid, revid2))
         unless(storage.loadSerial(oid, revid3))
-        # Should be enough time for the revisions to get packed away
-        time.sleep(10)
+        # Two more autopacks ought to be enough to pack away old revisions
+        self._wait_for_next_autopack()
         self._wait_for_next_autopack()
         # The first two revisions should now be gone, but the third should
         # still exist because it's the current revision, and we haven't done a
@@ -117,9 +115,10 @@ class TestAutomaticClassicPack(TestAutopackBase):
 
     def _config(self):
         config = BerkeleyConfig()
-        # Autopack every 3 seconds, 6 seconds into the past, no classic packs
-        config.frequency = 3
-        config.packtime = 6
+        # Autopack every 1 second, 2 seconds into the past, classic packing
+        # every time.
+        config.frequency = 1
+        config.packtime = 2
         config.classicpack = 1
         return config
 
@@ -141,8 +140,8 @@ class TestAutomaticClassicPack(TestAutopackBase):
         unless(storage.loadSerial(oid, revid1))
         unless(storage.loadSerial(oid, revid2))
         unless(storage.loadSerial(oid, revid3))
-        # Should be enough time for the revisions to get packed away
-        time.sleep(10)
+        # Two more autopacks ought to be enough to pack away old revisions
+        self._wait_for_next_autopack()
         self._wait_for_next_autopack()
         # The first two revisions should now be gone, but the third should
         # still exist because it's the current revision, and we haven't done a
@@ -282,6 +281,113 @@ class RaceConditionBase(BerkeleyTestBase):
         # clean up any outstanding transactions
         get_transaction().abort()
 
+    def _getPackThread(self, storage):
+        raise NotImplemented
+
+    def testRaceCondition(self):
+        unless = self.failUnless
+        storage = self._storage
+        db = DB(storage)
+        conn = db.open()
+        root = conn.root()
+        # Start by storing a root reachable object.
+        obj1 = C()
+        obj1.value = 888
+        root.obj1 = obj1
+        txn = get_transaction()
+        txn.note('root -> obj1')
+        txn.commit()
+        # Now, start a transaction, store an object, but don't yet complete
+        # the transaction.  This will ensure that the second object has a tid
+        # < packtime, but it won't be root reachable yet.
+        obj2 = C()
+        t = Transaction()
+        storage.tpc_begin(t)
+        obj2sn = storage.store('\0'*7 + '\2', ZERO, zodb_pickle(obj2), '', t)
+        # Now, acquire the condvar lock and start a thread that will do a
+        # pack, up to the _sweep call.  Wait for the _mark() call to
+        # complete.
+        now = time.time()
+        while now == time.time():
+            time.sleep(0.1)
+        self._cv.acquire()
+        packthread = self._getPackThread(storage)
+        packthread.start()
+        self._cv.wait()
+        # Now that the _mark() has finished, complete the transaction, which
+        # links the object to root.
+        root.obj2 = obj2
+        rootsn = storage.getSerial(ZERO)
+        rootsn = storage.store(ZERO, rootsn, zodb_pickle(root), '', t)
+        storage.tpc_vote(t)
+        storage.tpc_finish(t)
+        # And notify the pack thread that it can do the sweep and collect
+        self._cv.notify()
+        self._cv.wait()
+        # We're done with the condvar and the thread
+        self._cv.release()
+        packthread.join()
+        # Now make sure that all the interesting objects are still available
+        rootsn = storage.getSerial(ZERO)
+        obj1sn = storage.getSerial('\0'*7 + '\1')
+        obj2sn = storage.getSerial('\0'*7 + '\2')
+        # obj1 revision was written before the second revision of the root
+        unless(obj1sn < rootsn)
+        unless(rootsn == obj2sn)
+        unless(obj1sn < obj2sn)
+
+    def testEarlierRaceCondition(self):
+        unless = self.failUnless
+        storage = self._storage
+        db = DB(storage)
+        conn = db.open()
+        root = conn.root()
+        # Start by storing a root reachable object.
+        obj1 = C()
+        obj1.value = 888
+        root.obj1 = obj1
+        txn = get_transaction()
+        txn.note('root -> obj1')
+        txn.commit()
+        # Now, start a transaction, store an object, but don't yet complete
+        # the transaction.  This will ensure that the second object has a tid
+        # < packtime, but it won't be root reachable yet.
+        obj2 = C()
+        t = Transaction()
+        storage.tpc_begin(t)
+        # Now, acquire the condvar lock and start a thread that will do a
+        # pack, up to the _sweep call.  Wait for the _mark() call to
+        # complete.
+        now = time.time()
+        while now == time.time():
+            time.sleep(0.1)
+        self._cv.acquire()
+        packthread = self._getPackThread(storage)
+        packthread.start()
+        self._cv.wait()
+        obj2sn = storage.store('\0'*7 + '\2', ZERO, zodb_pickle(obj2), '', t)
+        # Now that the _mark() has finished, complete the transaction, which
+        # links the object to root.
+        root.obj2 = obj2
+        rootsn = storage.getSerial(ZERO)
+        rootsn = storage.store(ZERO, rootsn, zodb_pickle(root), '', t)
+        storage.tpc_vote(t)
+        storage.tpc_finish(t)
+        # And notify the pack thread that it can do the sweep and collect
+        self._cv.notify()
+        self._cv.wait()
+        # We're done with the condvar and the thread
+        self._cv.release()
+        packthread.join()
+        # Now make sure that all the interesting objects are still available
+        rootsn = storage.getSerial(ZERO)
+        obj1sn = storage.getSerial('\0'*7 + '\1')
+        obj2sn = storage.getSerial('\0'*7 + '\2')
+        # obj1 revision was written before the second revision of the root
+        unless(obj1sn < rootsn)
+        unless(rootsn == obj2sn)
+        unless(obj1sn < obj2sn)
+
 
 
 # Subclass which does ugly things to _dopack so we can actually test the race
@@ -362,57 +468,8 @@ class FullPackThread(threading.Thread):
 class TestFullClassicPackRaceCondition(RaceConditionBase):
     ConcreteStorage = SynchronizedFullStorage
 
-    def testRaceCondition(self):
-        unless = self.failUnless
-        storage = self._storage
-        db = DB(storage)
-        conn = db.open()
-        root = conn.root()
-        # Start by storing a root reachable object.
-        obj1 = C()
-        obj1.value = 888
-        root.obj1 = obj1
-        txn = get_transaction()
-        txn.note('root -> obj1')
-        txn.commit()
-        # Now, start a transaction, store an object, but don't yet complete
-        # the transaction.  This will ensure that the second object has a tid
-        # < packtime, but it won't be root reachable yet.
-        obj2 = C()
-        t = Transaction()
-        storage.tpc_begin(t)
-        obj2sn = storage.store('\0'*7 + '\2', ZERO, zodb_pickle(obj2), '', t)
-        # Now, acquire the condvar lock and start a thread that will do a
-        # pack, up to the _sweep call.  Wait for the _mark() call to
-        # complete.
-        now = time.time()
-        while now == time.time():
-            time.sleep(0.5)
-        self._cv.acquire()
-        packthread = FullPackThread(storage)
-        packthread.start()
-        self._cv.wait()
-        # Now that the _mark() has finished, complete the transaction, which
-        # links the object to root.
-        root.obj2 = obj2
-        rootsn = storage.getSerial(ZERO)
-        rootsn = storage.store(ZERO, rootsn, zodb_pickle(root), '', t)
-        storage.tpc_vote(t)
-        storage.tpc_finish(t)
-        # And notify the pack thread that it can do the sweep and collect
-        self._cv.notify()
-        self._cv.wait()
-        # We're done with the condvar and the thread
-        self._cv.release()
-        packthread.join()
-        # Now make sure that all the interesting objects are still available
-        rootsn = storage.getSerial(ZERO)
-        obj1sn = storage.getSerial('\0'*7 + '\1')
-        obj2sn = storage.getSerial('\0'*7 + '\2')
-        # obj1 revision was written before the second revision of the root
-        unless(obj1sn < rootsn)
-        unless(rootsn == obj2sn)
-        unless(obj1sn < obj2sn)
+    def _getPackThread(self, storage):
+        return FullPackThread(storage)
 
 
 
@@ -469,57 +526,8 @@ class MinimalPackThread(threading.Thread):
 class TestMinimalClassicPackRaceCondition(RaceConditionBase):
     ConcreteStorage = SynchronizedMinimalStorage
 
-    def testRaceCondition(self):
-        unless = self.failUnless
-        storage = self._storage
-        db = DB(storage)
-        conn = db.open()
-        root = conn.root()
-        # Start by storing a root reachable object.
-        obj1 = C()
-        obj1.value = 888
-        root.obj1 = obj1
-        txn = get_transaction()
-        txn.note('root -> obj1')
-        txn.commit()
-        # Now, start a transaction, store an object, but don't yet complete
-        # the transaction.  This will ensure that the second object has a tid
-        # < packtime, but it won't be root reachable yet.
-        obj2 = C()
-        t = Transaction()
-        storage.tpc_begin(t)
-        obj2sn = storage.store('\0'*7 + '\2', ZERO, zodb_pickle(obj2), '', t)
-        # Now, acquire the condvar lock and start a thread that will do a
-        # pack, up to the _sweep call.  Wait for the _mark() call to
-        # complete.
-        now = time.time()
-        while now == time.time():
-            time.sleep(0.5)
-        self._cv.acquire()
-        packthread = MinimalPackThread(storage)
-        packthread.start()
-        self._cv.wait()
-        # Now that the _mark() has finished, complete the transaction, which
-        # links the object to root.
-        root.obj2 = obj2
-        rootsn = storage.getSerial(ZERO)
-        rootsn = storage.store(ZERO, rootsn, zodb_pickle(root), '', t)
-        storage.tpc_vote(t)
-        storage.tpc_finish(t)
-        # And notify the pack thread that it can do the sweep and collect
-        self._cv.notify()
-        self._cv.wait()
-        # We're done with the condvar and the thread
-        self._cv.release()
-        packthread.join()
-        # Now make sure that all the interesting objects are still available
-        rootsn = storage.getSerial(ZERO)
-        obj1sn = storage.getSerial('\0'*7 + '\1')
-        obj2sn = storage.getSerial('\0'*7 + '\2')
-        # obj1 revision was written before the second revision of the root
-        unless(obj1sn < rootsn)
-        unless(rootsn == obj2sn)
-        unless(obj1sn < obj2sn)
+    def _getPackThread(self, storage):
+        return MinimalPackThread(storage)
 
 
 
