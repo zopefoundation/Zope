@@ -84,10 +84,10 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 
-from Globals import HTMLFile, MessageDialog, Dictionary
+from Globals import HTMLFile, DTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
 from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
@@ -186,7 +186,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return result
 
-    manage_roleForm=HTMLFile('dtml/roleEdit', globals(),
+    manage_roleForm=DTMLFile('dtml/roleEdit', globals(),
                              management_view='Security',
                              help_topic='Security_Manage-Role.stx',
                              help_product='OFSP')
@@ -201,7 +201,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(self,REQUEST)
 
-    manage_acquiredForm=HTMLFile('dtml/acquiredEdit', globals(),
+    manage_acquiredForm=DTMLFile('dtml/acquiredEdit', globals(),
                                  management_view='Security',
                                  help_topic='Security_Manage-Acquisition.stx',
                                  help_product='OFSP')
@@ -219,7 +219,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(self,REQUEST)
         
-    manage_permissionForm=HTMLFile('dtml/permissionEdit', globals(),
+    manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
                                    management_view='Security',
                                    help_topic='Security_Manage-Permission.stx',
                                    help_product='OFSP')
@@ -333,12 +333,12 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     
     __ac_local_roles__=None
 
-    manage_listLocalRoles=HTMLFile('dtml/listLocalRoles', globals(),
+    manage_listLocalRoles=DTMLFile('dtml/listLocalRoles', globals(),
                                    management_view='Security',
                                    help_topic='Security_Local-Roles.stx',
                                    help_product='OFSP')
 
-    manage_editLocalRoles=HTMLFile('dtml/editLocalRoles', globals(),
+    manage_editLocalRoles=DTMLFile('dtml/editLocalRoles', globals(),
                                    management_view='Security',
                                    help_topic='Security_User-Local-Roles.stx',
                                    help_product='OFSP')
@@ -494,12 +494,12 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             return MessageDialog(
                    title  ='Incomplete',
                    message='You must specify a role name',
-                   action ='manage_changeAccess')
+                   action ='manage_access')
         if role in self.__ac_roles__:
             return MessageDialog(
                    title  ='Role Exists',
                    message='The given role is already defined',
-                   action ='manage_changeAccess')
+                   action ='manage_access')
         data=list(self.__ac_roles__)
         data.append(role)
         self.__ac_roles__=tuple(data)
@@ -512,7 +512,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             return MessageDialog(
                    title  ='Incomplete',
                    message='You must specify a role name',
-                   action ='manage_changeAccess')
+                   action ='manage_access')
         data=list(self.__ac_roles__)
         for role in roles:
             try:    data.remove(role)
