@@ -1,8 +1,5 @@
 from unittest import TestCase, TestSuite, makeSuite, main
 
-import Zope
-Zope.startup()
-
 from Acquisition import Implicit
 from ZPublisher.BaseRequest import BaseRequest
 from ZPublisher.HTTPResponse import HTTPResponse
