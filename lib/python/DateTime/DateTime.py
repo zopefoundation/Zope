@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -110,7 +110,7 @@ CENTURY=1900
 jd1901 =2415385L
 
 
-
+numericTimeZoneMatch=regex.compile('[+-][\0-\9][\0-\9][\0-\9][\0-\9]').match
 
 
 
@@ -259,7 +259,9 @@ class _cache:
     def __getitem__(self,k):
         try:   n=self._zmap[lower(k)]
         except KeyError:
-            raise 'DateTimeError','Unrecognized timezone: %s' % k
+            if numericTimeZoneMatch(k) <= 0:
+                raise 'DateTimeError','Unrecognized timezone: %s' % k
+            return k
         try: return self._d[n]
         except KeyError:
             z=self._d[n]=_timezone(self._db[n])
@@ -501,7 +503,11 @@ class DateTime:
             elif type(arg)==StringType:
                 # Date/time string
                 yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
-                tz=self._tzinfo._zmap[lower(tz)]
+                
+                try: tz=self._tzinfo._zmap[lower(tz)]
+                except KeyError:
+                    if numericTimeZoneMatch(tz) <= 0:
+                        raise self.DateTimeError, 'Invalid date: %s' % arg
                 if not self._validDate(yr,mo,dy):
                     raise self.DateTimeError, 'Invalid date: %s' % arg
                 if not self._validTime(hr,mn,int(sc)):
@@ -509,8 +515,14 @@ class DateTime:
                 s=(hr/24.0+mn/1440.0+sc/86400.0)
                 d=(self._julianday(yr,mo,dy)-jd1901)+s
                 t=(d*86400.0)-EPOCH+86400.0
-                a=self._tzinfo[tz].info(t)[0]
+                try:
+                    a=self._tzinfo[tz].info(t)[0]
+                except:
+                    if numericTimeZoneMatch(tz) > 0:
+                        a=atoi(tz[1:3])*3600+atoi(tz[3:5])*60
+                        
                 d,t=d-(a/86400.0),t-a
+                        
 
             else:
                 # Seconds from epoch, gmt
