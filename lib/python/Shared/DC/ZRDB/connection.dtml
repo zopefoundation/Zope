@@ -29,7 +29,7 @@ Database Connection Information</H2>
 <!--#if HTTP_REFERER-->
   <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
 <!--#else HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var PARENT_URL-->">
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var URL1-->">
 <!--#/if HTTP_REFERER-->
 </form>
 

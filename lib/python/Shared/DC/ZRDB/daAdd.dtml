@@ -6,7 +6,7 @@
 <H2>New Database Adapter</H2>
 <P>
 
-<form action="<!--#var PARENT_URL-->/manage_addDA" method="post">
+<form action="manage_addDA" method="post">
 
 <table>     
             

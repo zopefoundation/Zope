@@ -4,7 +4,7 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
 <H2>Change MailHost</H2>
-<FORM ACTION="<!--#var PARENT_URL-->/manage_makeChanges" METHOD="POST">
+<FORM ACTION="manage_makeChanges" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">
   <TD ALIGN="LEFT"><STRONG>Id</STRONG></TD>

@@ -5,7 +5,7 @@
 
 <BODY BGCOLOR="#FFFFFF">
 <H2>Add MailHost</H2>
-<FORM ACTION="<!--#var PARENT_URL-->/manage_addMailHost" METHOD="POST">
+<FORM ACTION="manage_addMailHost" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">
   <TD ALIGN="LEFT"><STRONG>Id</STRONG></TD>
