@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>Profiler Information</title>
+<style type="text/css">
+<!-- 
+.header {
+font-weight: bold;
+font-size: 10pt;
+}
+
+.cell {
+font-size: 10pt;
+}
+
+-->
+</style>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+<!--#var manage_tabs-->
+
+<h3>Profile Information</h3>
+<p>
+
+<!--#let sort="REQUEST.get('sort', 'time')"
+          limit="REQUEST.get('limit', 100)" 
+          stats="manage_profile_stats(sort, limit)"-->
+<!--#if stats-->
+<form action="<!--#var URL-->" method="POST">
+<table>
+<tr>
+<td><strong>Sort</strong>: 
+    <select name="sort">
+    <!--#in "('time', 'cumulative', 'calls', 'pcalls',
+              'name', 'file', 'module', 'line',
+              'nfl', 'stdname')"-->
+    <option value="<!--#var sequence-item-->"<!--#if 
+     "sort==_['sequence-item']"--> selected<!--#/if-->><!--#var 
+    sequence-item-->
+    <!--#/in-->
+    </select>
+</td>
+<td><strong>Limit</strong>: 
+    <select name="limit:int">
+    <!--#in "(100, 200, 300, 400, 500)"-->
+    <option value="<!--#var sequence-item-->"<!--#if 
+     "limit==_['sequence-item']"--> selected<!--#/if-->><!--#var 
+    sequence-item-->
+    <!--#/in-->
+    </select>
+</td>
+<td>
+<input type="submit" name="submit" value="Update">
+</td>
+</tr>
+</table>
+</form>
+<hr>
+<pre>
+<!--#var stats-->
+</pre>
+
+<!--#else-->
+  <em>
+  Profiling is not currently enabled or there is not yet any profiling 
+  data to report. To enable profiling, restart the Zope process with 
+  the environment variable PROFILE_PUBLISHER defined. The value of this 
+  variable should be the full system path to a file that will be used 
+  to dump a profile report when the process restarts or exits.
+  </em>
+<!--#/if-->
+<!--#/let-->
+
+</body>
+</html>

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.141 1999/09/01 14:51:33 jim Exp $"""
-__version__='$Revision: 1.141 $'[11:-2]
+$Id: Publish.py,v 1.142 1999/09/08 14:52:07 brian Exp $"""
+__version__='$Revision: 1.142 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -317,3 +317,65 @@ def get_module_info(module_name, modules={},
     finally:
         tb=None
         release()
+
+
+# ZPublisher profiler support
+# ---------------------------
+
+if os.environ.get('PROFILE_PUBLISHER', None):
+
+    import profile, pstats
+
+    _pfile=os.environ['PROFILE_PUBLISHER']
+    _plock=allocate_lock()
+    _pfunc=publish_module
+    _pstat=None
+
+    def pm(module_name, stdin, stdout, stderr, 
+           environ, debug, request, response):
+        try:
+            r=_pfunc(module_name, stdin=stdin, stdout=stdout, 
+                     stderr=stderr, environ=environ, debug=debug, 
+                     request=request, response=response)
+        except: r=None
+        sys._pr_=r
+
+    def publish_module(module_name, stdin=sys.stdin, stdout=sys.stdout, 
+                       stderr=sys.stderr, environ=os.environ, debug=0, 
+                       request=None, response=None):
+        _plock.acquire()
+        try:
+            if request is not None:
+                path_info=request.get('PATH_INFO')
+            else: path_info=environ.get('PATH_INFO')
+            if path_info[-14:]=='manage_profile':
+                return _pfunc(module_name, stdin=stdin, stdout=stdout, 
+                              stderr=stderr, environ=environ, debug=debug, 
+                              request=request, response=response)
+            pobj=profile.Profile()
+            pobj.runcall(pm, module_name, stdin, stdout, stderr, 
+                         environ, debug, request, response)
+            result=sys._pr_
+            pobj.create_stats()
+            if _pstat is None:
+                global _pstat
+                _pstat=sys._ps_=pstats.Stats(pobj)
+            else: _pstat.add(pobj)
+        finally:
+            _plock.release()
+
+        if result is None:
+            try:
+                error=sys.exc_info()
+                file=open(_pfile, 'w')
+                sys.stdout=file
+                _pstat.strip_dirs().sort_stats('cumulative').print_stats(250)
+                _pstat.strip_dirs().sort_stats('time').print_stats(250)
+                file.flush()
+                file.close()
+            except: pass
+            raise error[0], error[1], error[2]
+        return result
+
+
+

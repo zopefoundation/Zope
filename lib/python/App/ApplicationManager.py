@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -96,6 +96,7 @@ from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
+from cStringIO import StringIO
 
 try: import thread
 except: get_ident=lambda: 0
@@ -395,3 +396,19 @@ class ApplicationManager(Folder,CacheManager):
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
             
 
+    # Profiling support
+
+    manage_profile=HTMLFile('profile', globals())
+
+    def manage_profile_stats(self, sort='time', limit=200):
+        """Return profile data if available"""
+        stats=getattr(sys, '_ps_', None)
+        if stats is None:
+            return None
+        output=StringIO()
+        stdout=sys.stdout
+        sys.stdout=output
+        stats.strip_dirs().sort_stats(sort).print_stats(limit)
+        sys.stdout.flush()
+        sys.stdout=stdout
+        return output.getvalue()
