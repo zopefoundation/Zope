@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -103,6 +103,7 @@ def getEngine():
     if _engine is None:
         _engine = Engine()
         installHandlers(_engine)
+        _engine._nocatch = (TALESError, 'Redirect')
     return _engine
 
 def installHandlers(engine):

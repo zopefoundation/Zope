@@ -17,3 +17,7 @@ Page Template changes
         - Expressions with embedded newlines were broken
 
         - History comparison tried to expand macros
+
+        - Iterator exceptions weren't converted
+
+        - 'Unauthorized' exception couldn't be handled by on-error

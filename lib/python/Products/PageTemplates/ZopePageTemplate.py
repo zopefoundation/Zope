@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -103,6 +103,7 @@ from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
 from PageTemplate import PageTemplate
+from TALES import TALESError
 
 try:
     from webdav.Lockable import ResourceLockedError
@@ -262,7 +263,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # Execute the template in a new security context.
         security.addContext(self)
         try:
-            result = self.pt_render(extra_context=bound_names)
+            try:
+                result = self.pt_render(extra_context=bound_names)
+            except TALESError, err:
+                if err.type == 'Unauthorized':
+                    raise err.type, err.value
+                raise
             if keyset is not None:
                 # Store the result in the cache.
                 self.ZCacheable_set(result, keywords=keyset)

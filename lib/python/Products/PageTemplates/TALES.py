@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -158,9 +158,15 @@ class Iterator(ZTUtils.Iterator):
         self._context = context
 
     def next(self):
-        if ZTUtils.Iterator.next(self):
-            self._context.setLocal(self.name, self.seq[self.index])
-            return 1
+        try:
+            if ZTUtils.Iterator.next(self):
+                self._context.setLocal(self.name, self.seq[self.index])
+                return 1
+        except TALESError:
+            raise
+        except:
+            raise TALESError, ('repeat/%s' % self.name,
+                               sys.exc_info()), sys.exc_info()[2]
         return 0
 
 
@@ -224,9 +230,12 @@ class Context:
     '''
 
     _context_class = SafeMapping
+    _nocatch = TALESError
 
     def __init__(self, engine, contexts):
         self._engine = engine
+        if hasattr(engine, '_nocatch'):
+            self._nocatch = engine._nocatch
         self.contexts = contexts
         contexts['nothing'] = None
         contexts['default'] = Default
@@ -284,15 +293,13 @@ class Context:
             expression = self._engine.compile(expression)
         try:
             v = expression(self)
-        except TALESError:
-            raise
-        except:
-            if sys.exc_info()[0] in ('Redirect', 'Unauthorized'):
-                raise
-            raise TALESError, (`expression`, sys.exc_info()), sys.exc_info()[2]
-        else:
             if isinstance(v, Exception):
                 raise v
+        except self._nocatch:
+            raise
+        except:
+            raise TALESError, (`expression`, sys.exc_info()), sys.exc_info()[2]
+        else:
             return v
 
     evaluateValue = evaluate
