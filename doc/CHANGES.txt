@@ -34,6 +34,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Management interface of TopicIndexes has been completely broken
+
      - Collector #1129: Improper parsing of ISO8601 in DateTime.
 
      - Removed pervasive use of string exceptions (some may still be
