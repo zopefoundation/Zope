@@ -343,6 +343,7 @@ class String:
 		push(mapping)
 		if hasattr(mapping,'AUTHENTICATED_USER'):
 		    md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
+	    md.validate=self.validate
 	    pushed=0
 
 	level=md.level
