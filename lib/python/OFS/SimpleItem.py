@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.73 2000/05/31 15:58:11 shane Exp $'''
-__version__='$Revision: 1.73 $'[11:-2]
+$Id: SimpleItem.py,v 1.74 2000/05/31 18:46:38 shane Exp $'''
+__version__='$Revision: 1.74 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -358,7 +358,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         p = getattr(self,'aq_inner', None)
         if p is not None: 
             path = p.aq_parent.getPhysicalPath() + path
-        print path
+
         return path
 
     unrestrictedTraverse__roles__=()
