@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#   $Id: asyncore.py,v 1.12 2000/06/02 14:22:48 brian Exp $
+#   $Id: asyncore.py,v 1.13 2000/10/01 15:58:56 jim Exp $
 #   Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -39,8 +39,10 @@ if os.name == 'nt':
     ECONNRESET  = 10054
     ENOTCONN    = 10057
     ESHUTDOWN   = 10058
+    EINTR       = 0 # what should this be?
 else:
-    from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, ENOTCONN, ESHUTDOWN
+    from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET
+    from errno import ENOTCONN, ESHUTDOWN, EINTR
 
 try:
     socket_map
@@ -63,7 +65,13 @@ def poll (timeout=0.0, map=None):
                 r.append (fd)
             if obj.writable():
                 w.append (fd)
-        r,w,e = select.select (r,w,e, timeout)
+
+        while 1:
+            try: r,w,e = select.select (r,w,e, timeout)
+            except select.error, v:
+                if v[0] != EINTR: raise
+            else: break
+            
 
         if DEBUG:
             print r,w,e
