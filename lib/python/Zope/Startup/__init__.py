@@ -21,153 +21,254 @@ import re
 
 import ZConfig
 
+started = False
+
 def start_zope(cfg):
-    # set up our initial logging environment (log everything to stderr
-    # if we're not in debug mode).
-    import zLOG
-    import logging
+    """ The function called by run.py which starts a Zope appserver """
+    global started
+    if started:
+        # dont allow any code to call start_zope twice.
+        return
 
-    # don't initialize the event logger from the environment
-    zLOG._call_initialize = 0
-
-    from zLOG.LogHandlers import StartupHandler
-
+    check_python_version()
+    starter = ZopeStarter(cfg)
+    starter.setupLocale()
     # we log events to the root logger, which is backed by a
     # "StartupHandler" log handler.  The "StartupHandler" outputs to
     # stderr but also buffers log messages.  When the "real" loggers
     # are set up, we flush accumulated messages in StartupHandler's
     # buffers to the real logger.
-    startup_handler = StartupHandler(sys.stderr)
-    formatter = zLOG.EventLogger.formatters['file']
-    startup_handler.setFormatter(formatter)
-    if not cfg.debug_mode:
-        # prevent startup messages from going to stderr if we're not
-        # in debug mode
-        if os.path.exists('/dev/null'): # unix
-            devnull = '/dev/null'
-        else: # win32
-            devnull = 'nul:'
-        startup_handler = StartupHandler(open(devnull, 'w'))
-
-    # set up our event logger temporarily with a startup handler
-    event_logger = zLOG.EventLogger.EventLogger.logger
-    event_logger.addHandler(startup_handler)
-    # set the initial logging level to INFO (this will be changed by the
-    # zconfig settings later)
-    event_logger.level = logging.INFO
-
-    # set a locale if one has been specified in the config
-    if cfg.locale:
-        do_locale(cfg.locale)
-
-    # Increase the number of threads
-    import ZServer
-    ZServer.setNumberOfThreads(cfg.zserver_threads)
-
-    # Start ZServer servers before we setuid so we can bind to low ports:
-    socket_err = (
-        'There was a problem starting a server of type "%s". '
-        'This may mean that your user does not have permission to '
-        'bind to the port which the server is trying to use or the '
-        'port may already be in use by another application. '
-        '(%s)'
-        )
-    servers = []
-    for server in cfg.servers:
-        # create the server from the server factory
-        # set up in the config
-        try:
-            servers.append(server.create())
-        except socket.error,e:
-            raise ZConfig.ConfigurationError(socket_err
-                                             % (server.servertype(),e[1]))
-    cfg.servers = servers
-
-    # do stuff that only applies to posix platforms (setuid mainly)
-    if os.name == 'posix':
-        do_posix_stuff(cfg)
-
-    # Import Zope
-    import Zope
-    Zope.startup()
-
-    # this is a bit of a white lie, since we haven't actually successfully
-    # started yet, but we're pretty close and we want this output to
-    # go to the startup logger in order to prevent the kinds of email messages 
+    starter.setupStartupHandler()
+    # Start ZServer servers before we drop privileges so we can bind to
+    # "low" ports:
+    starter.setupZServerThreads()
+    starter.setupServers()
+    # drop privileges after setting up servers
+    starter.dropPrivileges()
+    starter.makeLockFile()
+    starter.makePidFile()
+    starter.startZope()
+    starter.registerSignals()
+    # emit a "ready" message in order to prevent the kinds of emails
     # to the Zope maillist in which people claim that Zope has "frozen"
-    # after it has emitted ZServer messages ;-)
-    zLOG.LOG('Zope', zLOG.INFO, 'Ready to handle requests')
+    # after it has emitted ZServer messages.
+    starter.info('Ready to handle requests')
+    starter.removeStartupHandler()
+    starter.setupConfiguredLoggers()
+    starter.flushStartupHandlerBuffer()
 
-    if not cfg.zserver_read_only_mode:
-        # lock_file is used for the benefit of zctl-like systems, so they
-        # can tell whether Zope is already running before attempting to fire
-        # it off again.
-        #
-        # We aren't concerned about locking the file to protect against
-        # other Zope instances running from our CLIENT_HOME, we just
-        # try to lock the file to signal that zctl should not try to
-        # start Zope if *it* can't lock the file; we don't panic
-        # if we can't lock it.
-        # we need a separate lock file because on win32, locks are not
-        # advisory, otherwise we would just use the pid file
-        from Zope.Startup.misc.lock_file import lock_file
-        lock_filename = cfg.lock_filename
-        try:
-            if os.path.exists(lock_filename):
-                os.unlink(lock_filename)
-            LOCK_FILE = open(lock_filename, 'w')
-            lock_file(LOCK_FILE)
-            LOCK_FILE.write(str(os.getpid()))
-            LOCK_FILE.flush()
-        except IOError:
-            pass
+    started = True
 
-        # write the pid into the pidfile if possible
-        pid_filename = cfg.pid_filename
-        try:
-            if os.path.exists(pid_filename):
-                os.unlink(pid_filename)
-            f = open(pid_filename, 'w')
-            f.write(str(os.getpid()))
-            f.close()
-        except IOError:
-            pass
-        
-        # Now that we've successfully setuid'd, we can log to
-        # somewhere other than stderr.  Activate the configured logs:
-        if cfg.access is not None:
-            cfg.access()
-        if cfg.trace is not None:
-            cfg.trace()
-
-        # flush buffered startup messages to event logger
-        event_logger.removeHandler(startup_handler)
-        if cfg.eventlog is not None:
-            logger = cfg.eventlog()
-            startup_handler.flushBufferTo(logger)
-
-    # Start Medusa, Ye Hass!
+    # the mainloop.
     try:
+        import ZServer
         import Lifetime
         Lifetime.loop()
         sys.exit(ZServer.exit_code)
     finally:
-        if not cfg.zserver_read_only_mode:
+        starter.unlinkLockFile()
+        starter.unlinkPidFile()
+        started = False
+
+class ZopeStarter:
+    """ This is a class which starts a Zope server.  Making it a class
+    makes it easier to unit test. """
+    def __init__(self, cfg):
+        self.cfg = cfg
+        import zLOG
+        # don't initialize the event logger from the environment
+        zLOG._call_initialize = 0
+        self.event_logger = zLOG.EventLogger.EventLogger.logger
+
+    def info(self, msg):
+        import zLOG
+        zLOG.LOG('Zope', zLOG.INFO, msg)
+
+    def panic(self, msg):
+        import zLOG
+        zLOG.LOG('Zope', zLOG.PANIC, msg)
+
+    def error(self, msg):
+        import zLOG
+        zLOG.LOG('Zope', zLOG.ERROR, msg)
+
+    def registerSignals(self):
+        if os.name == 'posix':
+            from Signals import Signals
+            Signals.registerZopeSignals()
+
+    def setupStartupHandler(self):
+        # set up our initial logging environment (log everything to stderr
+        # if we're not in debug mode).
+        import zLOG
+
+        from zLOG.LogHandlers import StartupHandler
+        import logging
+
+        if self.cfg.eventlog is not None:
+            # get the lowest handler level.  This is the effective level
+            # level at which which we will spew messages to the console
+            # during startup.
+            level = self.cfg.eventlog.getLowestHandlerLevel()
+        else:
+            level = logging.INFO
+
+        self.startup_handler = StartupHandler(sys.stderr)
+        self.startup_handler.setLevel(level)
+        formatter = zLOG.EventLogger.formatters['file']
+        self.startup_handler.setFormatter(formatter)
+        if not self.cfg.debug_mode:
+            # prevent startup messages from going to stderr if we're not
+            # in debug mode
+            if os.path.exists('/dev/null'): # unix
+                devnull = '/dev/null'
+            else: # win32
+                devnull = 'nul:'
+            self.startup_handler = StartupHandler(open(devnull, 'w'))
+
+        # set up our event logger temporarily with a startup handler only
+        self.event_logger.handlers = []
+        self.event_logger.addHandler(self.startup_handler)
+        # set the initial logging level (this will be changed by the
+        # zconfig settings later)
+        self.event_logger.level = level
+
+    def setupLocale(self):
+        # set a locale if one has been specified in the config
+        if not self.cfg.locale:
+            return
+
+        # workaround to allow unicode encoding conversions in DTML
+        import codecs
+        dummy = codecs.lookup('iso-8859-1')
+
+        locale_id = self.cfg.locale
+
+        if locale_id is not None:
             try:
-                os.unlink(pid_filename)
-            except OSError:
+                import locale
+            except:
+                raise ZConfig.ConfigurationError(
+                    'The locale module could not be imported.\n'
+                    'To use localization options, you must ensure\n'
+                    'that the locale module is compiled into your\n'
+                    'Python installation.'
+                    )
+            try:
+                locale.setlocale(locale.LC_ALL, locale_id)
+            except:
+                raise ZConfig.ConfigurationError(
+                    'The specified locale "%s" is not supported by your'
+                    'system.\nSee your operating system documentation for '
+                    'more\ninformation on locale support.' % locale_id
+                    )
+
+    def setupZServerThreads(self):
+        # Increase the number of threads
+        import ZServer
+        ZServer.setNumberOfThreads(self.cfg.zserver_threads)
+
+    def setupServers(self):
+        socket_err = (
+            'There was a problem starting a server of type "%s". '
+            'This may mean that your user does not have permission to '
+            'bind to the port which the server is trying to use or the '
+            'port may already be in use by another application. '
+            '(%s)'
+            )
+        servers = []
+        for server in self.cfg.servers:
+            # create the server from the server factory
+            # set up in the config
+            try:
+                servers.append(server.create())
+            except socket.error,e:
+                raise ZConfig.ConfigurationError(socket_err
+                                                 % (server.servertype(),e[1]))
+        self.cfg.servers = servers
+
+    def dropPrivileges(self):
+        return dropPrivileges(self.cfg)
+
+    def removeStartupHandler(self):
+        if self.startup_handler in self.event_logger.handlers:
+            self.event_logger.removeHandler(self.startup_handler)
+
+    def setupConfiguredLoggers(self):
+        if self.cfg.zserver_read_only_mode:
+            # no log files written in read only mode
+            return
+
+        # flush buffered startup messages to event logger
+        if self.cfg.eventlog is not None:
+            self.cfg.eventlog()
+        if self.cfg.access is not None:
+            self.cfg.access()
+        if self.cfg.trace is not None:
+            self.cfg.trace()
+
+    def flushStartupHandlerBuffer(self):
+        import logging
+        logger = logging.getLogger('event')
+        self.startup_handler.flushBufferTo(logger)
+
+    def startZope(self):
+        # Import Zope
+        import Zope
+        Zope.startup()
+
+    def makeLockFile(self):
+        if not self.cfg.zserver_read_only_mode:
+            # lock_file is used for the benefit of zctl-like systems, so they
+            # can tell whether Zope is already running before attempting to
+            # fire it off again.
+            #
+            # We aren't concerned about locking the file to protect against
+            # other Zope instances running from our CLIENT_HOME, we just
+            # try to lock the file to signal that zctl should not try to
+            # start Zope if *it* can't lock the file; we don't panic
+            # if we can't lock it.
+            # we need a separate lock file because on win32, locks are not
+            # advisory, otherwise we would just use the pid file
+            from Zope.Startup.misc.lock_file import lock_file
+            lock_filename = self.cfg.lock_filename
+            try:
+                if os.path.exists(lock_filename):
+                    os.unlink(lock_filename)
+                self.lockfile = open(lock_filename, 'w')
+                lock_file(self.lockfile)
+                self.lockfile.write(str(os.getpid()))
+                self.lockfile.flush()
+            except IOError:
                 pass
+
+    def makePidFile(self):
+        if not self.cfg.zserver_read_only_mode:
+            # write the pid into the pidfile if possible
             try:
-                LOCK_FILE.close()
-                os.unlink(lock_filename)
+                if os.path.exists(self.cfg.pid_filename):
+                    os.unlink(self.cfg.pid_filename)
+                f = open(self.cfg.pid_filename, 'w')
+                f.write(str(os.getpid()))
+                f.close()
+            except IOError:
+                pass
+
+    def unlinkPidFile(self):
+        if not self.cfg.zserver_read_only_mode:
+            try:
+                os.unlink(self.cfg.pid_filename)
             except OSError:
                 pass
 
-def _warn_nobody():
-    import zLOG
-    zLOG.LOG("Zope", zLOG.INFO, ("Running Zope as 'nobody' can compromise "
-                                 "your Zope files; consider using a "
-                                 "dedicated user account for Zope"))
+    def unlinkLockFile(self):
+        if not self.cfg.zserver_read_only_mode:
+            try:
+                self.lockfile.close()
+                os.unlink(self.cfg.lock_filename)
+            except OSError:
+                pass
+
 
 def check_python_version():
     # check for Python version
@@ -184,94 +285,61 @@ def check_python_version():
                    (python_version, optimum_version))
             sys.stderr.write(err)
 
-def do_posix_stuff(cfg):
+def dropPrivileges(cfg):
+    # Drop root privileges if we have them and we're on a posix platform.
+    # This needs to be a function so it may be used outside of Zope
+    # appserver startup (e.g. from zopectl debug)
+    if os.name != 'posix':
+        return
+
+    if os.getuid() != 0:
+        return
+
     import zLOG
-    import zdaemon
     import pwd
-    from Signals import Signals
-    Signals.registerZopeSignals()
 
-    # Warn if we were started as nobody.
-    if os.getuid():
-        if pwd.getpwuid(os.getuid())[0] == 'nobody':
-            _warn_nobody()
+    effective_user  = cfg.effective_user
+    if effective_user is None:
+        msg = ('A user was not specified to setuid to; fix this to '
+               'start as root (change the effective-user directive '
+               'in zope.conf)')
+        zLOG.LOG('Zope', zLOG.PANIC, msg)
+        raise ZConfig.ConfigurationError(msg)
 
-    # Drop root privileges if we have them, and do some sanity checking
-    # to make sure we're not starting with an obviously insecure setup.
-    if os.getuid() == 0:
-        UID  = cfg.effective_user
-        if UID == None:
-            msg = ('A user was not specified to setuid to; fix this to '
-                   'start as root (change the effective_user directive '
-                   'in zope.conf)')
-            zLOG.LOG('Zope', zLOG.PANIC, msg)
+    try:
+        uid = int(effective_user)
+    except ValueError:
+        try:
+            pwrec = pwd.getpwnam(effective_user)
+        except KeyError:
+            msg = "Can't find username %r" % effective_user
+            zLOG.LOG("Zope", zLOG.ERROR, msg)
             raise ZConfig.ConfigurationError(msg)
-        # stuff about client home faults removed (real effective user
-        # support now)
+        uid = pwrec[2]
+    else:
         try:
-            UID = int(UID)
-        except (TypeError, ValueError):
-            pass
-        gid = None
-        if isinstance(UID, str):
-            uid = pwd.getpwnam(UID)[2]
-            gid = pwd.getpwnam(UID)[3]
-        elif isinstance(UID, int):
-            uid = pwd.getpwuid(UID)[2]
-            gid = pwd.getpwuid(UID)[3]
-            UID = pwd.getpwuid(UID)[0]
-        else:
-            zLOG.LOG("Zope", zLOG.ERROR, ("Can't find UID %s" % UID))
-            raise ZConfig.ConfigurationError('Cant find UID %s' % UID)
-        if UID == 'nobody':
-            _warn_nobody()
-        if gid is not None:
-            try:
-                import initgroups
-                initgroups.initgroups(UID, gid)
-                os.setgid(gid)
-            except OSError:
-                zLOG.LOG("Zope", zLOG.INFO,
-                         'Could not set group id of effective user',
-                         error=sys.exc_info())
-        os.setuid(uid)
+            pwrec = pwd.getpwuid(uid)
+        except KeyError:
+            msg = "Can't find uid %r" % uid
+            zLOG.LOG("Zope", zLOG.ERROR, msg)
+            raise ZConfig.ConfigurationError(msg)
+    gid = pwrec[3]
+
+    if uid == 0:
+        msg = 'Cannot start Zope with the effective user as the root user'
+        zLOG.LOG('Zope', zLOG.INFO, msg)
+        raise ZConfig.ConfigurationError(msg)
+
+    try:
+        import initgroups
+        initgroups.initgroups(effective_user, gid)
+        os.setgid(gid)
+    except OSError:
         zLOG.LOG("Zope", zLOG.INFO,
-                 'Set effective user to "%s"' % UID)
+                 'Could not set group id of effective user',
+                 error=sys.exc_info())
 
-    if not cfg.debug_mode:
-        # umask is silly, blame POSIX.  We have to set it to get its value.
-        current_umask = os.umask(0)
-        os.umask(current_umask)
-        if current_umask != 077:
-            current_umask = '%03o' % current_umask
-            zLOG.LOG("Zope", zLOG.INFO, (
-                'Your umask of %s may be too permissive; for the security of '
-                'your Zope data, it is recommended you use 077' % current_umask
-                ))
-
-
-def do_locale(locale_id):
-    # workaround to allow unicode encoding conversions in DTML
-    import codecs
-    dummy = codecs.lookup('iso-8859-1')
-
-    if locale_id is not None:
-        try:
-            import locale
-        except:
-            raise ZConfig.ConfigurationError(
-                'The locale module could not be imported.\n'
-                'To use localization options, you must ensure\n'
-                'that the locale module is compiled into your\n'
-                'Python installation.'
-                )
-        try:
-            locale.setlocale(locale.LC_ALL, locale_id)
-        except:
-            raise ZConfig.ConfigurationError(
-                'The specified locale "%s" is not supported by your system.\n'
-                'See your operating system documentation for more\n'
-                'information on locale support.' % locale_id
-                )
-
-
+    os.setuid(uid)
+    zLOG.LOG("Zope", zLOG.INFO,
+             'Set effective user to "%s"' % effective_user)
+    return 1 # for unit testing purposes 

@@ -142,8 +142,8 @@ class ZopeCmd(ZDCmd):
                     'opts.realize(); '
                     'h.handleConfig(opts.configroot,opts.confighandlers);'
                     'config.setConfiguration(opts.configroot); '
-                    'from Zope.Startup import do_posix_stuff; '
-                    'do_posix_stuff(opts.configroot); '%
+                    'from Zope.Startup import dropPrivileges; '
+                    'dropPrivileges(opts.configroot); '%
                     (python, self.options.configfile)
                     )
         return cmdline + more + '\"'
