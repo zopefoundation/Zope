@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.11 1997/09/23 10:30:45 jim Exp $"""
+$Id: Folder.py,v 1.12 1997/09/24 20:32:45 jim Exp $"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -53,6 +53,12 @@ class FolderHandler:
 		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
+
+    test_url___allow_groups__=None
+    def test_url_(self):
+	'''Method for testing server connection information
+	when configuring aqueduct clients'''
+	return 'PING'
 
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
