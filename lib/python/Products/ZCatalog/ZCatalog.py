@@ -36,10 +36,10 @@ from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
 import urllib, time, sys
-import string, logging
+import string,logging
 from IZCatalog import IZCatalog
-from zLOG import LOG, INFO, BLATHER, ERROR
 
+LOG = logging.getLogger('Zope.ZCatalog')
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
@@ -461,17 +461,20 @@ class ZCatalog(Folder, Persistent, Implicit):
 
 
     def reindexIndex(self, name, REQUEST):
-        paths = self._catalog.uids.keys()
-
-        for p in paths:
+        if isinstance(name, str):
+            name = (name,)
+        for p in self._catalog.uids.keys():
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, REQUEST)
-            if obj is not None:
+            if obj is None:
+                LOG.error('reindexIndex could not resolve '
+                          'an object from the uid %r.' % (uid))
+            else:
                 # don't update metadata when only reindexing a single
                 # index via the UI
                 try:
-                    self.catalog_object(obj, p, idxs=[name],
+                    self.catalog_object(obj, p, idxs=name,
                                         update_metadata=0)
                 except TypeError:
                     # Fall back to Zope 2.6.2 interface. This is necessary for
@@ -495,8 +498,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if isinstance(ids, str):
             ids = (ids,)
 
-        for name in ids:
-            self.reindexIndex(name, REQUEST)
+        self.reindexIndex(name, REQUEST, ids)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
