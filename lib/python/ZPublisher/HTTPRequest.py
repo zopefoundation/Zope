@@ -83,9 +83,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
-import  re, sys, os, string, urllib, time, whrandom
+import re, sys, os, string, urllib, time, whrandom, cgi
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -94,6 +94,10 @@ from urllib import quote, unquote, splittype, splitport
 from Converters import get_converter
 from maybe_lock import allocate_lock
 xmlrpc=None # Placeholder for module that we'll import if we have to.
+
+#cgi hotfix:
+if not hasattr(cgi, 'valid_boundary'):
+    import cgi_hotfix
 
 isCGI_NAME = {
         'SERVER_SOFTWARE' : 1, 
