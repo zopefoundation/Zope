@@ -31,6 +31,7 @@ class StorageAPI(test_create.BaseFramework):
         self._transaction = Transaction()
 
     def _close(self):
+        self._transaction.abort()
         self._storage.close()
 
     def checkBasics(self):
@@ -381,12 +382,33 @@ class StorageAPI(test_create.BaseFramework):
         assert oids[0] == oid
         data, revid = self._storage.load(oid, '')
         assert pickle.loads(data) == 23
-        # Can't undo the first record
+        # Try to undo the first record
         self._storage.tpc_begin(self._transaction)
-        self.assertRaises(POSException.UndoError,
-                          self._storage.transactionalUndo,
-                          revid, self._transaction)
-        self._storage.tpc_abort(self._transaction)
+        oids = self._storage.transactionalUndo(revid, self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        assert len(oids) == 1
+        assert oids[0] == oid
+        # This should fail since we've undone the object's creation
+        self.assertRaises(KeyError,
+                          self._storage.load, oid, '')
+        # But it's really a more specific type of error
+        import Full
+        self.assertRaises(Full.ObjectDoesNotExist,
+                          self._storage.load, oid, '')
+        # And now let's try to redo the object's creation
+        try:
+            self._storage.load(oid, '')
+        except Full.ObjectDoesNotExist, e:
+            revid = e.revid
+        self._storage.tpc_begin(self._transaction)
+        oids = self._storage.transactionalUndo(revid, self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        assert len(oids) == 1
+        assert oids[0] == oid
+        data, revid = self._storage.load(oid, '')
+        assert pickle.loads(data) == 23
 
     def checkTwoObjectUndo(self):
         # Convenience
