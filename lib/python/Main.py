@@ -7,9 +7,9 @@
 #       rights reserved.
 #
 ############################################################################## 
-import sys, dbdb, ni
+import sys, dcdb, ni
 
-dbdb.debug() # Make it easy to set a breakpoint near here.
+dcdb.debug() # Make it easy to set a breakpoint near here.
 
 import SimpleDB, Sync, TJar, SingleThreadedTransaction, os
 
@@ -55,6 +55,9 @@ if os.environ.has_key('PRINCIPIA_REALM'):
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.18  1998/08/03 14:39:30  jim
+# *** empty log message ***
+#
 # Revision 1.17  1998/08/03 14:31:45  jim
 # *** empty log message ***
 #
