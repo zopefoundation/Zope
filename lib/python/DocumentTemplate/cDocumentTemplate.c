@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.9 1997/12/18 17:48:46 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.10 1998/03/26 21:55:40 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -115,7 +115,21 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
 	{
 	  UNLESS_ASSIGN(r,PyObject_CallFunction(
 		 r, "OOO", key, self->validate, self->namespace))
-	    goto KeyError;
+	    {
+	      PyObject *tb;
+
+	      PyErr_Fetch(&r, &v, &tb);
+	      if(r != PyExc_AttributeError || PyObject_Compare(v,key))
+		{
+		  PyErr_Restore(r,v,tb);
+		  return NULL;
+		}
+	      Py_XDECREF(r);
+	      Py_XDECREF(v);
+	      Py_XDECREF(tb);
+	      
+	      goto KeyError;
+	    }
 	}
       else
 	UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
@@ -529,7 +543,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  char *rev="$Revision: 1.10 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
@@ -562,6 +576,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.10  1998/03/26 21:55:40  jim
+  Fixed error propigation from aq_acquire in InstanceDict.
+
   Revision 1.9  1997/12/18 17:48:46  jim
   added dcprotect
 
