@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.50 1998/07/12 23:15:09 jim Exp $'''
-__version__='$Revision: 1.50 $'[11:-2]
+$Id: DA.py,v 1.51 1998/08/03 13:45:10 jim Exp $'''
+__version__='$Revision: 1.51 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -30,6 +30,7 @@ import ExtensionClass
 import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Aqueduct.Results import Results
+from App.Extensions import getBrain
 
 class SQL(DocumentTemplate.HTML):
     commands={}
@@ -191,8 +192,7 @@ class DA(
 	self.max_cache_, self.cache_time_ = max_cache, cache_time
 	self._v_cache={}, IOBTree.Bucket()
 	self.class_name_, self.class_file_ = class_name, class_file
-	if modules.has_key(class_file): del modules[class_file]
-	getBrain(self)
+	self._v_brain=getBrain(self.class_file_, self.class_name_, 1)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
     
     def manage_testForm(self, REQUEST):
@@ -310,7 +310,8 @@ class DA(
 	else: result=DB__.query(query, self.max_rows_)
 
 	if hasattr(self, '_v_brain'): brain=self._v_brain
-	else: brain=getBrain(self)
+	else:
+            brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
         if type(result) is type(''): 
             result=Aqueduct.RDB.File(StringIO(result),brain,self)
         else:
@@ -434,46 +435,12 @@ class Traverse(ExtensionClass.Base):
 	return getattr(self.__dict__['_da'], name)
 
 
-braindir=SOFTWARE_HOME+'/Extensions'    
-
-modules={}
-
-def getBrain(self,
-	     ):
-    'Check/load a class'
-    
-    module=self.class_file_
-    class_name=self.class_name_
-
-    if not module and not class_name:
-	c=Aqueduct.RDB.NoBrains
-	self._v_brain=c
-	return c
-	
-    if modules.has_key(module):
-	m=modules[module]
-    else:
-	d,n = os.path.split(module)
-	if d: raise ValueError, (
-	    'The file name, %s, should be a simple file name' % module)
-	m={}
-	exec open("%s/%s.py" % (braindir, module)) in m
-	modules[module]=m
-
-    if not m.has_key(class_name): raise ValueError, (
-	'The class, %s, is not defined in file, %s' % (class_name, module))
-
-    c=m[class_name]
-    if not hasattr(c,'__bases__'):raise ValueError, (
-	'%s, is not a class' % class_name)
-
-    self._v_brain=c
-    
-    return c
-
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.51  1998/08/03 13:45:10  jim
+# Extensions management aspecs of brains have been moved to App/Extensions.
+#
 # Revision 1.50  1998/07/12 23:15:09  jim
 # Changed editing screen:
 #   - size prefs now separate from Document prefs
