@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import shared_dt_globals,HTMLFile
@@ -30,6 +30,7 @@ class Document(HTML, AccessControl.ACL.RoleManager):
 	"""Edit method"""
 	self.title=title
 	self.parse_roles_string(roles)
+	REQUEST['CANCEL_ACTION']="%s/manage_main" % REQUEST['URL2']
 	return HTML.manage_edit(self,data,REQUEST)
 
 
