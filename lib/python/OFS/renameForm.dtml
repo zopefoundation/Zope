@@ -4,7 +4,7 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#if expr="_.hasattr(REQUEST, 'ids') and REQUEST['ids']"-->
-<!--#with expr="_.getattr(this(), REQUEST['ids'][0])"-->
+<!--#with expr="manage_CopyContainerFirstItem(REQUEST)"-->
 <!--#if cb_isMoveable-->
 <H2>Rename <!--#var meta_type--></H2>
 <P>

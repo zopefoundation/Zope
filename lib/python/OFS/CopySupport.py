@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -94,6 +94,7 @@ from App.Dialogs import MessageDialog
 
 CopyError='Copy Error'
 
+_marker=[]
 class CopyContainer(ExtensionClass.Base):
     """Interface for containerish objects which allow cut/copy/paste"""
 
@@ -102,7 +103,21 @@ class CopyContainer(ExtensionClass.Base):
          ('manage_cutObjects', 'manage_copyObjects', 'manage_pasteObjects',
           'manage_renameForm', 'manage_renameObject',)),
         )
-    
+
+
+    # The following three methods should be overridden to store sub-objects
+    # as non-attributes.
+    def _setOb(self, id, object): setattr(self, id, object)
+    def _delOb(self, id): delattr(self, id)
+    def _getOb(self, id, default=_marker):
+        if hasattr(self, 'aq_base'): self=self.aq_base
+        if default is _marker: return getattr(self, id)
+        try: return getattr(self, id)
+        except: return default
+
+
+    def manage_CopyContainerFirstItem(self, REQUEST):
+        return self._getOb(REQUEST['ids'][0])        
 
     def manage_cutObjects(self, ids, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
@@ -110,7 +125,7 @@ class CopyContainer(ExtensionClass.Base):
             ids=[ids]
         oblist=[]
         for id in ids:
-            ob=getattr(self, id)
+            ob=self._getOb(id)
             if not ob.cb_isMoveable():
                 raise CopyError, eNotSupported % id
             m=Moniker.Moniker(ob)
@@ -129,7 +144,7 @@ class CopyContainer(ExtensionClass.Base):
             ids=[ids]
         oblist=[]
         for id in ids:
-            ob=getattr(self, id)
+            ob=self._getOb(id)
             if not ob.cb_isCopyable():
                 raise CopyError, eNotSupported % id
             m=Moniker.Moniker(ob)
@@ -224,7 +239,7 @@ class CopyContainer(ExtensionClass.Base):
                       title='Invalid Id',
                       message=sys.exc_value,
                       action ='manage_main')
-        ob=getattr(self, id)
+        ob=self._getOb(id)
         if not ob.cb_isMoveable():
             raise CopyError, eNotSupported % id            
         self._verifyObjectPaste(ob, REQUEST)
@@ -317,7 +332,7 @@ class CopyContainer(ExtensionClass.Base):
 
             meth=None
             if hasattr(self, method_name):
-                meth=getattr(self, method_name)
+                meth=self._getOb(method_name)
             else:
                 # Handle strange names that come from the Product
                 # machinery ;(

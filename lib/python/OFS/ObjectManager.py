@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.63 1999/04/08 14:04:54 brian Exp $"""
+$Id: ObjectManager.py,v 1.64 1999/04/09 17:05:23 jim Exp $"""
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -351,10 +351,10 @@ class ObjectManager(
         r=[]
         if hasattr(self.aq_base,'tree_ids'):
             for id in self.aq_base.tree_ids:
-                if hasattr(self, id): r.append(getattr(self, id))
+                if hasattr(self, id): r.append(self._getOb(id))
         else:
             for id in self._objects:
-                o=getattr(self, id['id'])
+                o=self._getOb(id['id'])
                 try:
                     if o.isPrincipiaFolderish: r.append(o)
                 except: pass
@@ -366,7 +366,7 @@ class ObjectManager(
         """Exports a folder and its contents to /var/export.bbe
         This file can later be imported by using manage_importHack"""
         if id is None: o=self
-        else: o=getattr(self.o)
+        else: o=self._getOb(id)
         f=Globals.data_dir+'/export.bbe'
         o._p_jar.export_file(o,f)
         return f
@@ -388,7 +388,7 @@ class ObjectManager(
             id=self.id
             if callable(id): id=id()
             ob=self
-        else: ob=getattr(self,id)
+        else: ob=self._getOb(id)
         if download:
             f=StringIO()
             ob._p_jar.export_file(ob, f)
