@@ -57,8 +57,8 @@ Changes to Indexes:
   - the default operator might be overridden by specifying a new one
     as 'operator' (see below)
 
-  - removed direct dependancy from Splitter module. Splitter is now
-    aquired from used vocabulary
+  - removed direct dependency from Splitter module. Splitter is now
+    acquired from used vocabulary
     
   - usage of the 'textindex_operator' is deprecated
 
