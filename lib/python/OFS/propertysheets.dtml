@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>PropertySheets</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<P>
+
+<FORM ACTION="." METHOD="POST">
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
+
+<!--#in items sort-->
+<!--#with "_(REQUEST=REQUEST, item=_['sequence-item'].aq_base)" only-->
+<!--#with item-->
+<!--#if id-->
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var id-->">
+    <!--#var id--> (<!--#var xml_namespace-->)
+  </A>
+  <!--#if locked_in_session-->
+    <!--#if modified_in_session-->
+      <IMG SRC="<!--#var "REQUEST['SCRIPT_NAME']"-->/p_/locked"
+       ALT="This item has been modified in this session">
+    <!--#else-->
+      <IMG SRC="<!--#var "REQUEST['SCRIPT_NAME']"-->/p_/lockedo"
+       ALT="This item has been modified in another session">
+    <!--#/if-->
+  <!--#/if-->
+  </TD>
+</TR>
+
+<!--#/if-->
+<!--#/with-->
+<!--#/with-->
+<!--#/in-->
+
+</TABLE>
+
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="manage_addPropertySheetForm:method" 
+           VALUE="Add">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+
+</BODY>
+</HTML>
