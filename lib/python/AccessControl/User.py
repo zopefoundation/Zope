@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.154 $'[11:-2]
+__version__='$Revision: 1.155 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -97,7 +97,7 @@ from base64 import decodestring
 from App.ImageFile import ImageFile
 from Role import RoleManager
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
-from AuthEncoding import pw_validate
+import AuthEncoding
 from AccessControl import getSecurityManager, Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -192,7 +192,7 @@ class BasicUser(Implicit):
     
     def authenticate(self, password, request):
         passwrd=self._getPassword()
-        result = pw_validate(passwrd, password)
+        result = AuthEncoding.pw_validate(passwrd, password)
         domains=self.getDomains()
         if domains:
             return result and domainSpecMatch(domains, request)
@@ -480,10 +480,14 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     isPrincipiaFolderish=1
     isAUserFolder=1
 
+    encrypt_passwords = 0
+
     manage_options=(
         (
         {'label':'Contents', 'action':'manage_main',
          'help':('OFSP','User-Folder_Contents.stx')},
+        {'label':'Properties', 'action':'manage_userFolderProperties',
+         'help':('OFSP','User-Folder_Properties.stx')},
         )
         +RoleManager.manage_options
         +Item.manage_options
@@ -750,6 +754,51 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     manage=manage_main=_mainUser
     manage_main._setName('manage_main')
 
+    _userFolderProperties = DTMLFile('dtml/userFolderProps', globals())
+
+    def manage_userFolderProperties(self, REQUEST=None,
+                                    manage_tabs_message=None):
+        """
+        """
+        return self._userFolderProperties(
+            self, REQUEST, manage_tabs_message=manage_tabs_message,
+            management_view='Properties')
+
+    def manage_setUserFolderProperties(self, encrypt_passwords=0,
+                                       update_passwords=0, REQUEST=None):
+        """
+        Sets the properties of the user folder.
+        """
+        self.encrypt_passwords = not not encrypt_passwords
+        if encrypt_passwords and update_passwords:
+            changed = 0
+            for u in self.getUsers():
+                pw = u._getPassword()
+                if not self._isPasswordEncrypted(pw):
+                    pw = self._encryptPassword(pw)
+                    self._doChangeUser(u.getUserName(), pw, u.getRoles(),
+                                       u.getDomains())
+                    changed = changed + 1
+            if REQUEST is not None:
+                if not changed:
+                    msg = 'All passwords already encrypted.'
+                else:
+                    msg = 'Encrypted %d password(s).' % changed
+                return self.manage_userFolderProperties(
+                    REQUEST, manage_tabs_message=msg)
+            else:
+                return changed
+        else:
+            if REQUEST is not None:
+                return self.manage_userFolderProperties(
+                    REQUEST, manage_tabs_message='Saved changes.')
+
+    def _isPasswordEncrypted(self, pw):
+        return AuthEncoding.is_encrypted(pw)
+
+    def _encryptPassword(self, pw):
+        return AuthEncoding.pw_encrypt(pw, 'SHA')
+
     def domainSpecValidate(self, spec):
         for ob in spec:
             sz=len(ob)
@@ -796,7 +845,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    title  ='Illegal value', 
                    message='Illegal domain specification',
                    action ='manage_main')
-        self._doAddUser(name, password, roles, domains)        
+        if self.encrypt_passwords:
+            password = self._encryptPassword(password)
+        self._doAddUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
 
@@ -834,6 +885,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    title  ='Illegal value', 
                    message='Illegal domain specification',
                    action ='manage_main')
+        if password is not None and self.encrypt_passwords:
+            password = self._encryptPassword(password)
         self._doChangeUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sha, binascii
 from string import upper
@@ -113,8 +113,15 @@ def pw_validate(reference, attempt):
 
     return result
 
-def pw_encode(pw, encoding='SHA'):
-    """Encode the provided plain text password using the encoding if provided
-    and return it in an LDAP-style representation."""
+def is_encrypted(pw):
+    return pw[:5] == '{SHA}' or pw[:7] == '{CRYPT}'
 
-    pass
+def pw_encrypt(pw, encoding='SHA'):
+    """Encrypt the provided plain text password using the encoding if provided
+    and return it in an LDAP-style representation."""
+    if encoding == 'SHA':
+        return '{SHA}' + binascii.b2a_base64(sha.new(pw).digest())[:-1]
+    else:
+        raise ValueError, 'Not supported: %s' % encoding
+
+pw_encode = pw_encrypt  # backward compatibility
