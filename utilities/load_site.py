@@ -303,19 +303,23 @@ def parse_html(infile):
    parser.close()
    infile.close()
 
-   return string.strip(parser.title), string.strip(parser.head), \
-"""<!--#var standard_html_header-->
-
-""" + string.strip(parser.accumulator) + """
-
-<!--#var standard_html_footer-->"""
+   return (string.strip(parser.title), string.strip(parser.head),
+           string.strip(parser.accumulator))
 
 
 def upload_html(object, f):
     dir, name = os.path.split(f)
     f=open(f)
 
-    if doctor: title, head, body = parse_html(f)
+    if doctor:
+        title, head, body = parse_html(f)
+        if old:
+            body = ("<!--#var standard_html_header-->\n\n" +
+                    body + "\n\n<!--#var standard_html_footer-->")
+        else:
+            body = ("<dtml-var standard_html_header>\n\n" +
+                    body + "\n\n<dtml-var standard_html_footer>")
+
     else:
         if old: f=f.read()
         title, head, body = '', '', f
