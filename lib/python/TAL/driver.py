@@ -107,7 +107,7 @@ FILE = "test/input/test1.xml"
 def main():
     versionTest = 1
     macros = 0
-    html = None
+    mode = None
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hmnx")
     except getopt.error, msg:
@@ -120,13 +120,13 @@ def main():
         sys.exit(2)
     for o, a in opts:
         if o == '-h':
-            html = 1
+            mode = "html"
         if o == '-m':
             macros = 1
         if o == '-n':
             versionTest = 0
         if o == '-x':
-            html = 0
+            mode = "xml"
     if not versionTest:
         if sys.version[:5] != "1.5.2":
             sys.stderr.write(
@@ -136,7 +136,7 @@ def main():
         file = args[0]
     else:
         file = FILE
-    it = compilefile(file, html=html)
+    it = compilefile(file, mode)
     interpretit(it, tal=(not macros))
 
 def interpretit(it, engine=None, stream=None, tal=1):
@@ -146,11 +146,15 @@ def interpretit(it, engine=None, stream=None, tal=1):
         engine = DummyEngine(macros)
     TALInterpreter(program, macros, engine, stream, wrap=0, tal=tal)()
 
-def compilefile(file, html=None):
-    if html is None:
+def compilefile(file, mode=None):
+    assert mode in ("html", "xml", None)
+    if mode is None:
         ext = os.path.splitext(file)[1]
-        html = string.lower(ext) in (".html", ".htm")
-    if html:
+        if string.lower(ext) in (".html", ".htm"):
+            mode = "html"
+        else:
+            mode = "xml"
+    if mode == "html":
         from HTMLTALParser import HTMLTALParser
         p = HTMLTALParser()
     else:
