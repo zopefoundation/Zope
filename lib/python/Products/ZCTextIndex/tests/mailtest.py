@@ -42,8 +42,8 @@ index from the database:
 
 import ZODB
 import ZODB.FileStorage
-from Products.ZCTextIndex.Lexicon import Lexicon, \
-     CaseNormalizer, Splitter, StopWordRemover
+from Products.ZCTextIndex.Lexicon import \
+     Lexicon, CaseNormalizer, Splitter, StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from BTrees.IOBTree import IOBTree
 
