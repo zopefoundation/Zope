@@ -82,20 +82,42 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Package of template utility classes and functions.
+__doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: __init__.py,v 1.3 2001/07/11 19:02:22 evan Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Zope.py,v 1.1 2001/07/11 19:02:22 evan Exp $'''
+__version__='$Revision: 1.1 $'[11:-2]
 
-from Batch import Batch
-from Iterator import Iterator
-from Tree import TreeMaker, encodeExpansion, decodeExpansion, a2b, b2a
+from Tree import encodeExpansion, decodeExpansion
 from SimpleTree import SimpleTreeMaker
+from Batch import Batch
+from string import split, join
 
-import sys
-if sys.modules.has_key('Zope'):
-    del sys
-    __allow_access_to_unprotected_subobjects__ = 1
-    __roles__ = None
+class SimpleTreeMaker(SimpleTreeMaker):
+    def cookieTree(self, root_object):
+        '''Make a tree with state stored in a cookie.'''
+        tree_pre = self.tree_pre
+        state_name = '%s-state' % tree_pre
+        set_name = '%s-setstate' % tree_pre
 
-    from Zope import Batch, SimpleTreeMaker
+        req = root_object.REQUEST
+        state = req.get(state_name)
+        if state:
+            setst = req.form.get(set_name)
+            if setst:
+                st, pn, expid = split(setst, ',')
+                state, (m, obid) = decodeExpansion(state, int(pn))
+                if m is None:
+                    pass
+                elif st == 'e':
+                    if m[obid] is None:
+                        m[obid] = {expid: None}
+                    else:
+                        m[obid][expid] = None
+                elif st == 'c' and m is not state and obid==expid:
+                    del m[obid]
+            else:
+                state = decodeExpansion(state)
+        tree = self.tree(root_object, state)
+        rows = tree.flat()
+        req.RESPONSE.setCookie(state_name, encodeExpansion(rows))
+        return tree, rows
