@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 from WriteLockInterface import WriteLockInterface, LockItemInterface
 from EtagSupport import EtagSupport
@@ -37,8 +37,7 @@ class LockableItem(EtagSupport):
     security.declarePrivate('wl_lockmapping')
     security.declarePublic('wl_isLocked', 'wl_getLock', 'wl_isLockedByUser',
                            'wl_lockItems', 'wl_lockValues', 'wl_lockTokens',)
-    security.declareProtected('WebDAV Lock items',
-                              'wl_grantLockToUser', 'wl_setLock')
+    security.declareProtected('WebDAV Lock items', 'wl_setLock')
     security.declareProtected('WebDAV Unlock items', 'wl_delLock')
     security.declareProtected('Manage WebDAV Locks', 'wl_clearLocks')
 

@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.11 2003/11/18 13:17:02 tseaver Exp $"""
+$Id: Cache.py,v 1.12 2003/11/28 16:45:33 jim Exp $"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import time, sys
 import Globals
@@ -92,7 +92,6 @@ class Cacheable:
         (ViewManagementScreensPermission,
          ('ZCacheable_manage',
           'ZCacheable_invalidate',
-          'ZCacheable_isMethod',
           'ZCacheable_enabled',
           'ZCacheable_getManagerId',
           'ZCacheable_getManagerIds',

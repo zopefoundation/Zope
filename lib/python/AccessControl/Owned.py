@@ -13,8 +13,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.19 2002/10/01 14:09:46 gvanrossum Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Owned.py,v 1.20 2003/11/28 16:45:32 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
@@ -34,7 +34,7 @@ class Owned(ExtensionClass.Base):
 
     __ac_permissions__=(
         ('View management screens',
-         ('manage_owner', 'owner_info', 'userCanChangeOwnershipType')),
+         ('manage_owner', 'owner_info')),
         ('Take ownership',
          ('manage_takeOwnership','manage_changeOwnershipType'),
          ("Owner",)),

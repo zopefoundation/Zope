@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.112 $'[11:-2]
+__version__='$Revision: 1.113 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -94,7 +94,7 @@ class DA(
     __ac_permissions__=(
         ('View management screens',
          (
-        'manage_main', 'index_html',
+        'index_html',
         'manage_advancedForm', 'PrincipiaSearchSource', 'document_src'
         )),
         ('Change Database Methods',

@@ -65,7 +65,7 @@ class Vocabulary(Item, Persistent, Implicit,
     __ac_permissions__=(
 
         ('Manage Vocabulary',
-         ['manage_main', 'manage_vocab', 'manage_query'],
+         ['manage_main', 'manage_query'],
          ['Manager']),
 
         ('Query Vocabulary',
