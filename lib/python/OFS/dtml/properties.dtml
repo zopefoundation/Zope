@@ -253,13 +253,13 @@ property and click the &quot;Add&quot; button.
       <option>lines</option>
       <option>long</option>
       <option selected>string</option>
+      <option>text</option>
+      <option>tokens</option>
       <dtml-if "REQUEST['management_page_charset'] == 'UTF-8'">
+        <option>ulines</option>
         <option>ustring</option>
-        <option>text</option>
-        <option>tokens</option>
         <option>utext</option>
         <option>utokens</option>
-        <option>ulines</option>
       </dtml-if>
       <option>selection</option>
       <option>multiple selection</option>
