@@ -26,12 +26,14 @@
 <TR><TD COLSPAN=2><BR></TD></TR>
 
 <TR>
- <TD ALIGN=TOP COLSPAN=2><INPUT TYPE=CHECKBOX NAME="createPublic:int" VALUE="1">
+ <TD ALIGN=TOP COLSPAN=2>
+<INPUT TYPE="CHECKBOX" NAME="createPublic:int" VALUE="1" CHECKED>
   <STRONG>Create public interface</STRONG>
  </TD>
 </TR>
 <TR>
- <TD ALIGN=TOP COLSPAN=2><INPUT TYPE=CHECKBOX NAME="createUserF:int" VALUE="1">
+ <TD ALIGN=TOP COLSPAN=2>
+<INPUT TYPE="CHECKBOX" NAME="createUserF:int" VALUE="1" CHECKED>
   <STRONG>Create user folder</STRONG>
  </TD>
 </TR>
