@@ -4,14 +4,15 @@ from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from socket import *; from select import select
 from AccessControl.Role import RoleManager
 from operator import truth
-import Acquisition, sys, ts_regex, string, types
+import Acquisition, sys, ts_regex, string, types, rfc822
 import OFS.SimpleItem
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
+from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.29 1998/04/30 19:04:49 jeffrey Exp $ 
-__version__ = "$Revision: 1.29 $"[11:-2]
+#$Id: MailHost.py,v 1.30 1998/05/07 19:55:27 jeffrey Exp $ 
+__version__ = "$Revision: 1.30 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -77,12 +78,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             target ='manage_main')
     
     def sendTemplate(trueself, self, messageTemplate, 
-                     statusTemplate=None, mto=None, mfrom=None, REQUEST):
+		     statusTemplate=None, mto=None, mfrom=None, REQUEST):
         'render a mail template, then send it...'
 	mtemplate = getattr(self, messageTemplate)
 	messageText = mtemplate(self, trueself.REQUEST)
 
-	headers, message = newDecapitate(messageText)
+	headers, message = decapitate(messageText)
 	if mto: headers['to'] = mto
 	if mfrom: headers['from'] = mfrom
 	for requiredHeader in ('to', 'from'):
@@ -109,7 +110,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 	    return "SEND OK"
 
     def send(self, messageText, mto=None, mfrom=None, subject=None):
-        headers, message = newDecapitate(messageText)
+        headers, message = decapitate(messageText)
 	
 	if not headers['subject']:
 	    messageText="subject: %s\n%s" % (subject or '[No Subject]',
@@ -132,7 +133,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 		body=messageText)
 
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None):
-	headers, message = newDecapitate(messageText)
+	headers, message = decapitate(messageText)
 
 	if not headers['subject']:
 	    messageText="subject: %s\n%s" % (subject or '[No Subject]',
@@ -229,48 +230,23 @@ class SendMail:
         self.conn.send("quit\n")
         self.conn.close()
 
-def newDecapitate(message, req_headers=['to','from','subject']):
-    blank_re =ts_regex.compile('^[%s]+$' % string.whitespace)
-    header_re=ts_regex.symcomp(
-	'^\(<headerName>[^\0- <>:]+\):\(<headerText>.*\)$',
-	ts_regex.casefold)
-    space_re =ts_regex.compile('^[%s]+' % string.whitespace)
+def decapitate(message):
+    # split message into headers / body
+    mfile=StringIO(message)
+    mo=rfc822.Message(mfile)
+
+    hd={}
+    hd['to']=[]
+    for header in (mo.getaddrlist('to'),
+		   mo.getaddrlist('cc')):
+	if not header: continue
+	for name, addr in header:
+	    hd['to'].append(addr)
     
-    # initialize namespace, blank out required headers
-    linecount=0; hd={};curHeader={}
-    for rh in req_headers: hd[rh]=''
-    maxwell=map(string.rstrip, string.split(message,'\n'))
+    hd['from']=mo.getaddr('from')[1]
+    hd['subject']=mo.getheader('subject') or "No Subject"
 
-    for line in maxwell:
-        if not line:
-	    break
-        if blank_re.match(line) >= 0:
-	    break
-        if header_re.match(line) >= 0:
-            curHeader=string.lower(header_re.group('headerName'))
-            hd[curHeader] =\
-                        string.strip(header_re.group('headerText'))
-        elif space_re.match(line) >= 0:
-            hd[curHeader] = "%s %s" % (hd[curHeader], line)
-        linecount=linecount+1
-
-    hd['to']=map(string.strip, string.split(hd['to'], ','))
-    
-    if hd.has_key('cc'):
-	hd['cc']=map(string.strip,
-		     string.split(hd['cc'], ','))
-	hd['to']=hd['to'] + hd['cc']
-    
-    # clean out empty strings
-    hd['to']=filter(truth, hd['to'])
-
-    body=string.join(maxwell[linecount:],'\n')
-    return hd, body
-
-def decapitate(message, **kw):
-    #left behind for bw-compatibility
-    return newDecapitate(message)
-
+    return hd, mfile.read()
 
 import __init__
 __init__.need_license=1
@@ -279,6 +255,9 @@ __init__.need_license=1
 ####################################################################
 #
 #$Log: MailHost.py,v $
+#Revision 1.30  1998/05/07 19:55:27  jeffrey
+#started using rfc822 module to parse headers
+#
 #Revision 1.29  1998/04/30 19:04:49  jeffrey
 #first step in some new cleanups.
 #
