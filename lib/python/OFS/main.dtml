@@ -18,7 +18,9 @@
 <!--#in objectValues sort=title_and_id-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var id-->"> 
+  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var id-->">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var id-->/manage_main">
   <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->"
    ALT="Click to open this item" BORDER="0"></A>
@@ -35,7 +37,8 @@
 <!--#/in objectValues-->
 <TR>
 <TD></TD>
-<TD>
+
+<TD COLSPAN="2">
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Copy">
 <!--#if validClipData-->
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
