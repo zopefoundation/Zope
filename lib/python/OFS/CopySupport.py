@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -231,7 +231,6 @@ class CopyContainer(ExtensionClass.Base):
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
                 id=self._get_id(id)
-                __tracenack_info__=type(ob), ob.__class__
                 ob._setId(id)
                 self._setObject(id, ob)
                 #ob=ob.__of__(self)            
