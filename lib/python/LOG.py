@@ -113,6 +113,27 @@ The module defines several standard severities:
 
 Also, looging facilities will normally ignore negative severities.
 
+To plug in a log handler, simply replace the log_write function
+with a callable object that takes 5 arguments:
+
+
+      subsystem -- The subsystem generating the message (e.g. ZODB)
+
+      severity -- The "severity" of the event.  This may be an integer or
+                  a floating point number.  Logging back ends may
+                  consider the int() of this valua to be significant.
+                  For example, a backend may consider any severity
+                  whos integer value is WARNING to be a warning.
+
+      summary -- A short summary of the event
+
+      detail -- A detailed description
+
+      error -- A three-element tuple consisting of an error type, value, and
+               traceback.  If provided, then a summary of the error
+               is added to the detail.
+
+
 """
 import time
 
