@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -1517,18 +1517,14 @@ EMPTY=16
 CONVERTED=32
 
 
-# The ZOPE_TRUSTED_PROXIES environment variable contains a colon separated 
-# list of front-end proxies that are trusted to supply an accurate
+# The trusted_proxies configuration setting contains a sequence
+# of front-end proxies that are trusted to supply an accurate
 # X_FORWARDED_FOR header. If REMOTE_ADDR is one of the values in this list
 # and it has set an X_FORWARDED_FOR header, ZPublisher copies REMOTE_ADDR
 # into X_FORWARDED_BY, and the last element of the X_FORWARDED_FOR list
 # into REMOTE_ADDR. X_FORWARDED_FOR is left unchanged.
-# This function parses the environment variable into a module variable
-# 
-def trusted_proxies():
-    proxies = os.environ.get('ZOPE_TRUSTED_PROXIES','')
-    proxies = proxies.split(':')
-    proxies = [p.strip() for p in proxies]
-    return tuple(proxies)
-trusted_proxies = trusted_proxies()
+# The ZConfig machinery may sets this attribute on initialization
+# if any trusted-proxies are defined in the configuration file.
+
+trusted_proxies = []
     
