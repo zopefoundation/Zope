@@ -4,7 +4,8 @@
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 
-RCS_ID =  '$Id: resolver.py,v 1.2 1999/04/09 00:37:33 amos Exp $'
+RCS_ID =  '$Id: resolver.py,v 1.3 1999/05/26 02:08:30 amos Exp $'
+
 
 # Fast, low-overhead asynchronous name resolver.  uses 'pre-cooked'
 # DNS requests, unpacks only as much as it needs of the reply.
@@ -12,6 +13,11 @@ RCS_ID =  '$Id: resolver.py,v 1.2 1999/04/09 00:37:33 amos Exp $'
 # see rfc1035 for details
 
 import string
+import asyncore
+import socket
+import sys
+import time
+from counter import counter
 
 VERSION = string.split(RCS_ID)[2]
 
@@ -177,11 +183,6 @@ def unpack_ptr_reply (r):
 		return 0, None
 
 
-from counter import counter
-import asyncore
-import socket
-import sys
-
 # This is a UDP (datagram) resolver.
 
 #
@@ -202,6 +203,7 @@ class resolver (asyncore.dispatcher):
 		self.create_socket (socket.AF_INET, socket.SOCK_DGRAM)
 		self.server = server
 		self.request_map = {}
+		self.last_reap_time = int(time.time())      # reap every few minutes
 
 	def writable (self):
 		return 0
@@ -213,18 +215,38 @@ class resolver (asyncore.dispatcher):
 		print 'closing!'
 		self.close()
 
+	def handle_error (self):      # don't close the connection on error
+		(file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
+		print 'Problem with DNS lookup (%s:%s %s)' % (t, v, tbinfo)
+
 	def get_id (self):
 		return (self.id.as_long() % (1<<16))
 
+	def reap (self):          # find DNS requests that have timed out
+		now = int(time.time())
+		if now - self.last_reap_time > 180:        # reap every 3 minutes
+			self.last_reap_time = now              # update before we forget
+			for k,(host,unpack,callback,when) in self.request_map.items():
+				if now - when > 180:               # over 3 minutes old
+					del self.request_map[k]
+					try:                           # same code as in handle_read
+						callback (host, 0, None)   # timeout val is (0,None) 
+					except:
+						(file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
+						print t,v,tbinfo
+
 	def resolve (self, host, callback):
+		self.reap()                                # first, get rid of old guys
 		self.socket.sendto (
 			fast_address_request (host, self.get_id()),
 			(self.server, 53)
 			)
-		self.request_map [self.get_id()] = host, unpack_address_reply, callback
+		self.request_map [self.get_id()] = (
+			host, unpack_address_reply, callback, int(time.time()))
 		self.id.increment()
 
 	def resolve_ptr (self, host, callback):
+		self.reap()                                # first, get rid of old guys
 		ip = string.split (host, '.')
 		ip.reverse()
 		ip = string.join (ip, '.') + '.in-addr.arpa'
@@ -232,7 +254,8 @@ class resolver (asyncore.dispatcher):
 			fast_ptr_request (ip, self.get_id()),
 			(self.server, 53)
 			)
-		self.request_map [self.get_id()] = host, unpack_ptr_reply, callback
+		self.request_map [self.get_id()] = (
+			host, unpack_ptr_reply, callback, int(time.time()))
 		self.id.increment()
 
 	def handle_read (self):
@@ -241,7 +264,7 @@ class resolver (asyncore.dispatcher):
 		# that <whence> is the server we sent the request to.
 		id = (ord(reply[0])<<8) + ord(reply[1])
 		if self.request_map.has_key (id):
-			host, unpack, callback = self.request_map[id]
+			host, unpack, callback, when = self.request_map[id]
 			del self.request_map[id]
 			ttl, answer = unpack (reply)
 			try:
@@ -270,7 +293,6 @@ class rbl (resolver):
 		print repr(r)
 		return 0, rcode # (ttl, answer)
 
-import time
 
 class hooked_callback:
 	def __init__ (self, hook, callback):

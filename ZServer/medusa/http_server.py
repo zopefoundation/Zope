@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.6 1999/04/09 00:37:33 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.7 1999/05/26 02:08:30 amos Exp $'
 
 # python modules
 import os
@@ -215,6 +215,12 @@ class http_request:
 					wrap_in_chunking = 1
 				else:
 					close_it = 1
+		elif self.version is None:
+			# Although we don't *really* support http/0.9 (because we'd have to
+			# use \r\n as a terminator, and it would just yuck up a lot of stuff)
+			# it's very common for developers to not want to type a version number
+			# when using telnet to debug a server.
+			close_it = 1
 					
 		outgoing_header = producers.simple_producer (self.build_reply_header())
 
@@ -388,9 +394,25 @@ class http_channel (asynchat.async_chat):
 		return result
 
 	def recv (self, buffer_size):
-		result = asynchat.async_chat.recv (self, buffer_size)
-		self.server.bytes_in.increment (len(result))
-		return result
+		try:
+			result = asynchat.async_chat.recv (self, buffer_size)
+			self.server.bytes_in.increment (len(result))
+			return result
+		except MemoryError:
+			# --- Save a Trip to Your Service Provider ---
+			# It's possible for a process to eat up all the memory of
+			# the machine, and put it in an extremely wedged state,
+			# where medusa keeps running and can't be shut down.  This
+			# is where MemoryError tends to get thrown, though of
+			# course it could get thrown elsewhere.
+			sys.exit ("Out of Memory!")
+
+	def handle_error (self):
+		t, v = sys.exc_info()[:2]
+		if t is SystemExit:
+			raise t, v
+		else:
+			asynchat.async_chat.handle_error (self)
 
 	def log (self, *args):
 		pass

@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.2 1999/04/09 00:37:33 amos Exp $
+# 	$Id: asyncore.py,v 1.3 1999/05/26 02:08:30 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -37,17 +37,20 @@ if os.name == 'nt':
 	EALREADY	= 10037
 	ECONNRESET  = 10054
 	ENOTCONN	= 10057
+	ESHUTDOWN   = 10058
 else:
-	from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, ENOTCONN
+	from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, ENOTCONN, ESHUTDOWN
 
 socket_map = {}
 
 def poll (timeout=0.0):
 	if socket_map:
-		sockets = socket_map.keys()
-		r = filter (lambda x: x.readable(), sockets)
-		w = filter (lambda x: x.writable(), sockets)
-		e = []
+		r = []; w = []; e = []
+		for s in socket_map.keys():
+			if s.readable():
+				r.append (s)
+			if s.writable():
+				w.append (s)
 
 		(r,w,e) = select.select (r,w,e, timeout)
 
@@ -140,12 +143,14 @@ class dispatcher:
 			return '<__repr__ (self) failed for object at %x (addr=%s)>' % (id(self),ar)
 
 	def add_channel (self):
-		self.log ('adding channel %s' % self)
+		if __debug__:
+			self.log ('adding channel %s' % self)
 		socket_map [self] = 1
 
 	def del_channel (self):
 		if socket_map.has_key (self):
-			self.log ('closing channel %d:%s' % (self.fileno(), self))
+			if __debug__:
+				self.log ('closing channel %d:%s' % (self.fileno(), self))
 			del socket_map [self]
 
 	def create_socket (self, family, type):
@@ -155,7 +160,8 @@ class dispatcher:
 		self.add_channel()
 
 	def set_socket (self, socket):
-		self.socket = socket
+		# This is done so we can be called safely from __init__
+		self.__dict__['socket'] = socket
 		self.add_channel()
 
 	def set_reuse_addr (self):
@@ -245,7 +251,7 @@ class dispatcher:
 				return data
 		except socket.error, why:
 			# winsock sometimes throws ENOTCONN
-			if why[0] in [ECONNRESET, ENOTCONN]:
+			if why[0] in [ECONNRESET, ENOTCONN, ESHUTDOWN]:
 				self.handle_close()
 				return ''
 			else:
@@ -257,11 +263,9 @@ class dispatcher:
 
 	# cheap inheritance, used to pass all other attribute
 	# references to the underlying socket object.
+	# NOTE: this may be removed soon for performance reasons.
 	def __getattr__ (self, attr):
-		if attr != 'socket':
-			return getattr (self.socket, attr)
-		else:
-			raise AttributeError, attr
+		return getattr (self.socket, attr)
 
 	def log (self, message):
 		print 'log:', message
@@ -310,22 +314,28 @@ class dispatcher:
 		self.close()
 
 	def handle_expt (self):
-		self.log ('unhandled exception')
+		if __debug__:
+			self.log ('unhandled exception')
 
 	def handle_read (self):
-		self.log ('unhandled read event')
+		if __debug__:
+			self.log ('unhandled read event')
 
 	def handle_write (self):
-		self.log ('unhandled write event')
+		if __debug__:
+			self.log ('unhandled write event')
 
 	def handle_connect (self):
-		self.log ('unhandled connect event')
+		if __debug__:
+			self.log ('unhandled connect event')
 
 	def handle_accept (self):
-		self.log ('unhandled accept event')
+		if __debug__:
+			self.log ('unhandled accept event')
 
 	def handle_close (self):
-		self.log ('unhandled close event')
+		if __debug__:
+			self.log ('unhandled close event')
 		self.close()
 
 # ---------------------------------------------------------------------------

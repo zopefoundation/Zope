@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.7 1999/04/09 00:37:33 amos Exp $
+#	$Id: asynchat.py,v 1.8 1999/05/26 02:08:29 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -99,7 +99,6 @@ class async_chat (asyncore.dispatcher):
 			elif type(terminator) == type(0):
 				# numeric terminator
 				n = terminator
-				lb = lb
 				if lb < n:
 					self.collect_incoming_data (self.ac_in_buffer)
 					self.ac_in_buffer = ''
@@ -159,7 +158,13 @@ class async_chat (asyncore.dispatcher):
 
 	def writable (self):
 		"predicate for inclusion in the writable for select()"
-		return len(self.ac_out_buffer) or len(self.producer_fifo) or (not self.connected)
+		# return len(self.ac_out_buffer) or len(self.producer_fifo) or (not self.connected)
+		# this is about twice as fast, though not as clear.
+		return not (
+			(self.ac_out_buffer is '') and
+			self.producer_fifo.is_empty() and
+			self.connected
+			)
 
 	def close_when_done (self):
 		"automatically close this channel once the outgoing queue is empty"
@@ -241,6 +246,9 @@ class fifo:
 		
 	def __len__ (self):
 		return len(self.list)
+
+	def is_empty (self):
+		return self.list == []
 
 	def first (self):
 		return self.list[0]

@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.4 1999/04/29 23:36:09 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.5 1999/05/26 02:08:30 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -53,9 +53,6 @@ import time
 #    methods, using try/finally. [this seems to work]
 
 VERSION = string.split(RCS_ID)[2]
-
-IP_ADDRESS = socket.gethostbyname (socket.gethostname())
-HOSTNAME = socket.gethostbyaddr (IP_ADDRESS)[0]
 
 from counter import counter
 import producers
@@ -286,7 +283,7 @@ class ftp_channel (asynchat.async_chat):
 		if pa:
 			if pa.ready:
 				# a connection has already been made.
-				conn, addr = self.passive_acceptor.ready
+				conn, addr = pa.ready
 				cdc = recv_channel (self, addr, fd)
 				cdc.set_socket (conn)
 				cdc.connected = 1
@@ -698,14 +695,19 @@ class ftp_server (asyncore.dispatcher):
 	def __init__ (
 		self,
 		authorizer,
-		hostname	=HOSTNAME,
+		hostname	=None,
 		port		=21,
 		resolver	=None,
 		logger_object=logger.file_logger (sys.stdout)
 		):
 		self.port = port
 		self.authorizer = authorizer
-		self.hostname = hostname
+
+		if hostname is None:
+			self.hostname = socket.gethostname()
+		else:
+			self.hostname = hostname
+
 		# statistics
 		self.total_sessions = counter()
 		self.closed_sessions = counter()
@@ -1053,8 +1055,7 @@ if os.name == 'posix':
 		import sys
 		fs = ftp_server (
 			unix_authorizer(),
-			HOSTNAME,
-			string.atoi (port)
+			port=string.atoi (port)
 			)
 		try:
 			asyncore.loop()
