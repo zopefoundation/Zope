@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -256,6 +256,9 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         sys.stdout.flush()
         sys.stdout=stdout
         return output.getvalue()
+
+    def manage_getSysPath(self):
+        return list(sys.path)
 
 Globals.default__class_init__(DebugManager)
 
@@ -480,3 +483,11 @@ class ApplicationManager(Folder,CacheManager):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
             
+    def getSOFTWARE_HOME(self):
+        return SOFTWARE_HOME
+
+    def getINSTANCE_HOME(self):
+        return INSTANCE_HOME
+
+    def getCLIENT_HOME(self):
+        return CLIENT_HOME

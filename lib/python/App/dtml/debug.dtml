@@ -41,8 +41,14 @@ font-size: 10pt;
 <li>Zope version: <dtml-var version_txt>
 <li>Python version: <dtml-var sys_version>
 <li>System Platform: <dtml-var sys_platform>
+<li>SOFTWARE_HOME: <dtml-var getSOFTWARE_HOME>
+<li>INSTANCE_HOME: <dtml-var getINSTANCE_HOME>
+<li>CLIENT_HOME: <dtml-var getCLIENT_HOME>
 <li>Process ID: <dtml-var process_id> (<dtml-var thread_get_ident>)
 <li>Running for: <dtml-var process_time>
+<li>sys.path: <dtml-in manage_getSysPath><br />&nbsp;
+   &dtml-sequence-item;
+  </dtml-in>
 <li>Top Refcounts:<br><select name="foo" size="5"><dtml-in
     "refcount(100)"><option><dtml-var 
     sequence-item>: <dtml-var sequence-key></option></dtml-in

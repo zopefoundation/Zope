@@ -47,6 +47,42 @@ functions such as database and product management.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
+  SOFTWARE_HOME
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-var getSOFTWARE_HOME>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  INSTANCE_HOME
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-var getINSTANCE_HOME>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  CLIENT_HOME
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-var getCLIENT_HOME>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
   Process Id
   </div>
   </td>
