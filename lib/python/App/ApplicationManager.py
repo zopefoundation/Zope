@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -114,7 +114,7 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         )
     
 
-def version_txt(self):
+def version_txt():
     try: return open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
     except: return '(unreleased version)'
         
