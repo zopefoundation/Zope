@@ -139,7 +139,7 @@ def initialize(context):
                 topic_id = 'topic_%02d' % id
                 text=string.join(lines[1:], '')
                 text=term_pat.sub(glossaryTerm, text)
-                topic=TutorialTopic.TutorialTopic(topic_id, string.strip(lines[0]), text)
+                topic=TutorialTopic.TutorialTopic(topic_id, string.strip(lines[0]), spacestrip(text))
                 context.registerHelpTopic(topic_id, topic)            
             lines=[line]
         else:
@@ -148,6 +148,21 @@ def initialize(context):
             break
     f.close()
 
+
+def spacestrip(txt):
+    """ dedent text by 2 spaces !
+
+    We need this to workaround a nasty bug in STXNG. 
+    STXNG creates empty <pre>..</pre> when then text start
+    if a level > 1
+    """
+    
+    l = []
+    for x in string.split(txt,"\n"):
+        if len(x)>2 and x[:2]=='  ':
+            l.append(x[2:])
+
+    return string.join(l,'\n')
 
 
 # Glossary functions
