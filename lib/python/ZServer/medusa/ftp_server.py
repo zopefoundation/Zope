@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: ftp_server.py,v 1.19 2002/03/21 15:48:53 htrd Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.20 2002/04/08 17:03:57 shane Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -832,6 +832,7 @@ class passive_acceptor (asyncore.dispatcher):
         
     def handle_accept (self):
         conn, addr = self.accept()
+        conn.setblocking(0)
         dc = self.control_channel.client_dc
         if dc is not None:
             dc.set_socket (conn)
