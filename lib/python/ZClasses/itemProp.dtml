@@ -13,6 +13,11 @@ will need to be adjusted if the class is moved.</p>
       ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">Base classes</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var "_.string.join(ZClassBaseClassNames(), ', ')"-->
+  </TD>
+</TR>
+<TR>
   <TH ALIGN="LEFT" VALIGN="TOP">meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40"
@@ -23,7 +28,7 @@ will need to be adjusted if the class is moved.</p>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>icon</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="icon" SIZE="40"
-     value="<!--#var icon-->">
+     value="<!--#var classIcon-->">
   </TD>
 </TR>
 <TR>
@@ -31,6 +36,9 @@ will need to be adjusted if the class is moved.</p>
   <STRONG>Icon image</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#if classIcon-->
+  <img src="<!--#var SCRIPT_NAME-->/<!--#var classIcon-->" border="0">
+  <!--#/if--><br>
   <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
   </TD>
 </TR>
