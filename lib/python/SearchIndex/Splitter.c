@@ -296,7 +296,7 @@ Splitter_indexes(Splitter *self, PyObject *args)
   Splitter_reset(self);
   while(1)
     {
-      UNLESS_ASSIGN(w=next_word(self, NULL, NULL)) goto err;
+      UNLESS_ASSIGN(w,next_word(self, NULL, NULL)) goto err;
       UNLESS(PyString_Check(w)) break;
       if(PyObject_Compare(word,w)==0)
 	{
@@ -395,14 +395,14 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.4 1997/12/10 20:47:47 jim Exp $\n"
+"$Id: Splitter.c,v 1.5 1997/12/10 20:51:51 jim Exp $\n"
 ;
 
 void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.5 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
