@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.20 $'[11:-2]
+__version__ = '$Revision: 1.21 $'[11:-2]
 
 
 import string, re
@@ -355,6 +355,18 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
                 source = str(source)
         except (AttributeError, TypeError):
             return 0
+
+        # sniff the object for 'id'+'_encoding'
+        
+        try:
+            encoding = getattr(obj, self.id+'_encoding')
+            if callable(encoding ):
+                encoding = str(encoding())
+            else:
+                encoding = str(encoding)
+        except (AttributeError, TypeError):
+            encoding = 'latin1'
+
         
         lexicon = self.getLexicon()
 
@@ -365,7 +377,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         
         # Run through the words and score them
 
-        for word in list(splitter(source)):
+        for word in list(splitter(source,encoding=encoding)):
             if word[0] == '\"':
                 last = self._subindex(word[1:-1], wordScores, last, splitter)
             else:

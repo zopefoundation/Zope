@@ -303,13 +303,13 @@ class GlobbingLexicon(Lexicon):
 
         return q
 
-    def Splitter(self, astring, words=None):
+    def Splitter(self, astring, words=None, encoding="latin1"):
         """ wrap the splitter """
 
         ## don't do anything, less efficient but there's not much
         ## sense in stemming a globbing lexicon.
 
-        return self.SplitterFunc(astring)
+        return self.SplitterFunc(astring,encoding=encoding)
 
 
     def createRegex(self, pat):

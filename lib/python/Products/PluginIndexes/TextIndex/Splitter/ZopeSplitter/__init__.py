@@ -1,1 +1,4 @@
-from ZopeSplitter import ZopeSplitter as Splitter
+from ZopeSplitter import ZopeSplitter 
+
+def Splitter(txt,stopwords={},encoding="latin1"):
+    return ZopeSplitter(txt,stopwords)

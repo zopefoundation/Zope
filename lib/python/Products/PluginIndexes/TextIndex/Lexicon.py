@@ -223,11 +223,11 @@ class Lexicon(Persistent, Implicit):
         return len(self._lexicon)
 
 
-    def Splitter(self, astring, words=None):
+    def Splitter(self, astring, words=None, encoding = "latin1"):
         """ wrap the splitter """
         if words is None:
             words = self.stop_syn
-        return self.SplitterFunc(astring, words)
+        return self.SplitterFunc(astring, words, encoding)
 
 
     def query_hook(self, q):
