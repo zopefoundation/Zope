@@ -11,16 +11,16 @@
 #
 ##############################################################################
 
-"""Commonly used utility functions."""
+"""Stick directory information in the built-in namespace."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import __builtin__
 import os
 import sys
 
 import Products
-from Common import package_home
+from App.Common import package_home
 
 
 try:
@@ -44,8 +44,7 @@ try:
 except KeyError:
     zhome = os.path.join(home, '..', '..')
 
-zhome = os.path.realpath(zhome)
-__builtin__.ZOPE_HOME = ZOPE_HOME = zhome
+__builtin__.ZOPE_HOME = ZOPE_HOME = os.path.realpath(zhome)
 
 try:
     chome = os.environ['INSTANCE_HOME']
