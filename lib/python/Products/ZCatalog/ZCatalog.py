@@ -33,7 +33,7 @@ from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
 from Products.PluginIndexes.TextIndex import Splitter
 import urllib, os, sys, time, types
-
+import string
 
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
@@ -473,7 +473,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     "A cataloged object must support the 'getPhysicalPath' "
                     "method if no unique id is provided when cataloging"
                     )
-            else: uid=string.join(uid(), '/')
+            else: uid='/'.join(uid())
         elif not isinstance(uid,types.StringType):
             raise CatalogError('The object unique id must be a string.')
 
@@ -682,7 +682,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  string.find(ob.PrincipiaSearchSource(), obj_searchterm) >= 0
+                  ob.PrincipiaSearchSource().find(obj_searchterm) >= 0
                   ))
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
@@ -719,7 +719,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         No exceptions are raised.
         """
         script=REQUEST.script
-        if string.find(path, script) != 0:
+        if path.find(script) != 0:
             path='%s/%s' % (script, path) 
         try: return REQUEST.resolve_url(path)
         except: pass
@@ -755,7 +755,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 if ob is None:
                     removed.append(path)
                     continue
-            ppath = string.join(ob.getPhysicalPath(), '/')
+            ppath = '/'.join(ob.getPhysicalPath())
             if path != ppath:
                 fixed.append((path, ppath))
             else:
