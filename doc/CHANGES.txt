@@ -41,7 +41,14 @@ Zope changes
 
         - Implemented the "emergency user" concept, which is the new
           name for what was called the superuser.
+        
+        - Added new "WebDAV source view" HTTP handler, enabled by new
+          '-W' (note uppercase) switch to z2.py.  This handler is *not*
+          enabled by default.
 
+        - Implemented "hookable PUT creation" (allows containers to
+          override webdav.NullResource's guess at the type of object
+          to create when PUT is done to an unknown ID).
 
 
       Bugs Fixed

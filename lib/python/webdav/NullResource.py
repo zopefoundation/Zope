@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals
 import Acquisition, OFS.content_types
@@ -130,23 +130,38 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     # Most methods return 404 (Not Found) for null resources.
     DELETE=OPTIONS=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
 
+    def _default_PUT_factory( self, name, typ, body ):
+        #   Return DTMLDoc/Image/File, based on sniffing.
+        from OFS.Image import Image, File
+        from OFS.DTMLDocument import DTMLDocument
+        if typ in ('text/html', 'text/xml', 'text/plain'):
+            ob = DTMLDocument( '', __name__=name )
+        elif typ[:6]=='image/':
+            ob=Image(name, '', body, content_type=typ)
+        else:
+            ob=File(name, '', body, content_type=typ)
+        return ob
+
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource."""
         self.dav__init(REQUEST, RESPONSE)
-        type=REQUEST.get_header('content-type', None)
-        body=REQUEST.get('BODY', '')
+
         name=self.__name__
-        if type is None:
-            type, enc=OFS.content_types.guess_content_type(name, body)
-        from OFS.Image import Image, File
-        if type in ('text/html', 'text/xml', 'text/plain'):
-            self.__parent__.manage_addDTMLDocument(name, '', body)
-        elif type[:6]=='image/':
-            ob=Image(name, '', body, content_type=type)
-            self.__parent__._setObject(name, ob)
-        else:
-            ob=File(name, '', body, content_type=type)
-            self.__parent__._setObject(name, ob)
+        parent=self.__parent__
+        body=REQUEST.get('BODY', '')
+        typ=REQUEST.get_header('content-type', None)
+        if typ is None:
+            typ, enc=OFS.content_types.guess_content_type(name, body)
+
+        factory = getattr( parent, 'PUT_factory'
+                         , self._default_PUT_factory )
+        ob = ( factory( name, typ, body )
+            or self._default_PUT_factory( name, typ, body )
+             )
+
+        # Delegate actual PUT handling to the new object.
+        ob.PUT( REQUEST, RESPONSE )
+        self.__parent__._setObject(name, ob)
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
