@@ -11,6 +11,9 @@ Zope Changes
         - Made the meta-type in the upper-left corner of ZClass instances'
           management interface into a link to the ZClass definition.
 
+        - Collector #2316: introduced new environment variable ZSYSLOG_FACILITY
+          to override the default syslog facility 'user'
+
       Bugs fixed
 
         - Corrections to the code that adds interface information to the

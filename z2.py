@@ -604,6 +604,10 @@ try:
         lg = logger.file_logger('-') # log to stdout
     elif os.environ.has_key('ZSYSLOG'):
         lg = logger.syslog_logger(os.environ['ZSYSLOG'])
+        if os.environ.has_key("ZSYSLOG_FACILITY"):
+            lg = logger.syslog_logger(os.environ['ZSYSLOG'],facility=os.environ['ZSYSLOG_FACILITY'])
+        else:
+            lg = logger.syslog_logger(os.environ['ZSYSLOG'])
     elif os.environ.has_key('ZSYSLOG_SERVER'):
         (addr, port) = string.split(os.environ['ZSYSLOG_SERVER'], ':')
         lg = logger.syslog_logger((addr, int(port)))
