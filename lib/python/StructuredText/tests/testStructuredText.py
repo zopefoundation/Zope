@@ -166,20 +166,20 @@ class BasicTests(unittest.TestCase):
 
     
     def testUnderscoresInLiteral1(self):
-        """ underscores in literals shouldn't do unterlining """
+        """ underscores in literals shouldn't do underlining """
 
         self._test("def __init__(self)",
                    "def __init__(self)")
 
     def testUnderscoresInLiteral2(self):
-        """ underscores in literals shouldn't do unterlining """
+        """ underscores in literals shouldn't do underlining """
 
         self._test("this is '__a_literal__' eh",
                    "<code>__a_literal__</code>")
 
 
     def testUnderlinesWithoutWithspaces(self):
-        """ underscores in literals shouldn't do unterlining """
+        """ underscores in literals shouldn't do underlining """
 
         self._test("Zopes structured_text is sometimes a night_mare",
                    "Zopes structured_text is sometimes a night_mare")
