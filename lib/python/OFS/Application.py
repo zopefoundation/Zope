@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.147 2001/05/23 19:08:16 brian Exp $'''
-__version__='$Revision: 1.147 $'[11:-2]
+$Id: Application.py,v 1.148 2001/05/23 19:31:36 evan Exp $'''
+__version__='$Revision: 1.148 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -674,8 +674,8 @@ def install_product(app, product_dir, product_name, meta_types,
 
                 for name,method in pgetattr(
                     product, 'methods', {}).items():
-                    if not hasattr(Folder, name):
-                        setattr(Folder, name, method)
+                    if not hasattr(Folder.Folder, name):
+                        setattr(Folder.Folder, name, method)
                         if name[-9:]!='__roles__': # not Just setting roles
                             if (permissions.has_key(name) and
                                 not folder_permissions.has_key(
