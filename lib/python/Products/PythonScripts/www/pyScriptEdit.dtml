@@ -4,6 +4,8 @@
 <form action="&dtml-URL1;" method="post">
 <input type="hidden" name=":default_method" value="ZPythonScriptHTML_changePrefs">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
+
+<dtml-with keyword_args mapping>
   <tr>
     <td align="left" valign="top">
     <div class="form-optional">
@@ -12,7 +14,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="title" size="40" 
-     value="<dtml-var title html_quote>" />
+     value="&dtml-title;" />
     </td>
   </tr>
   <tr>
@@ -23,9 +25,10 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="params" size="40" 
-     value="<dtml-var params html_quote>" />
+     value="&dtml-params;" />
     </td>
   </tr>
+</dtml-with>
 <dtml-with getBindingAssignments>
 <dtml-if getAssignedNamesInOrder>
   <tr>
@@ -37,7 +40,7 @@
     <td align="left" valign="top">
     <div class="form-text">
 <dtml-in getAssignedNamesInOrder>
-<dtml-var sequence-item html_quote><dtml-unless sequence-end>, </dtml-unless>
+&dtml-sequence-item;<dtml-unless sequence-end>, </dtml-unless>
 </dtml-in>
     </div>
     </td>
@@ -56,16 +59,17 @@
     </div>
     </td>
   </tr>
+<dtml-with keyword_args mapping>
   <tr>
     <td align="left" valign="top" colspan="2">
   <div style="width: 100%;">
   <textarea name="body:text" wrap="off" style="width: 100%;"
    cols=<dtml-var dtpref_cols html_quote missing="50">
-   rows=<dtml-var dtpref_rows html_quote missing="20">><dtml-var 
-   body html_quote></textarea>
+   rows=<dtml-var dtpref_rows html_quote missing="20">>&dtml-body;</textarea>
   </div>
     </td>
   </tr>
+</dtml-with>
 
 <tr>
   <td align="left" valign="top" colspan="2">
