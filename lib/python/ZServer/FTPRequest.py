@@ -125,16 +125,21 @@ class FTPRequest(HTTPRequest):
             args=command[1:]
             command=command[0]
         if command in ('LST','CWD','PASS'):
-            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_FTPlist')
+            env['PATH_INFO']=self._join_paths(channel.path, 
+                                              path, 'manage_FTPlist')
         elif command in ('MDTM','SIZE'):
-            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_FTPstat')
+            env['PATH_INFO']=self._join_paths(channel.path, 
+                                              path, 'manage_FTPstat')
         elif command=='RETR':
-            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_FTPget')
+            env['PATH_INFO']=self._join_paths(channel.path, 
+                                              path, 'manage_FTPget')
         elif command in ('RMD','DELE'):
-            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_delObjects')
+            env['PATH_INFO']=self._join_paths(channel.path, 
+                                              path, 'manage_delObjects')
             env['QUERY_STRING']='ids=%s' % args[0]
         elif command=='MKD':
-            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_addFolder')
+            env['PATH_INFO']=self._join_paths(channel.path, 
+                                              path, 'manage_addFolder')
             env['QUERY_STRING']='id=%s' % args[0]
         elif command=='STOR':
             env['PATH_INFO']=self._join_paths(channel.path, path)
@@ -151,3 +156,9 @@ class FTPRequest(HTTPRequest):
             path=string.replace(path,os.sep,'/')
         return path
         
+
+
+
+
+
+
