@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.39 1999/11/12 16:25:49 brian Exp $'
-__version__='$Revision: 1.39 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.40 2000/04/05 13:21:19 tseaver Exp $'
+__version__='$Revision: 1.40 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -115,7 +115,8 @@ class Tree:
                           # opened_decoration=None,
                           # closed_decoration=None,
                           # childless_decoration=None,
-                          assume_children=1)
+                          assume_children=1,
+                          urlparam=None)
         has_key=args.has_key
 
         if has_key('name'): name=args['name']
@@ -381,15 +382,23 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             ####################################
 
             script=md['SCRIPT_NAME']
+
+            # Propagate extra args through tree.
+            if args.has_key( 'urlparam' ):
+                param = args['urlparam']
+                param = "%s&" % param
+            else:
+                param = ""
+
             if exp:
                 treeData['tree-item-expanded']=1
-                output('<A NAME="%s" HREF="%s?tree-c=%s#%s">'
+                output('<A NAME="%s" HREF="%s?%stree-c=%s#%s">'
                        '<IMG SRC="%s/p_/mi" ALT="-" BORDER=0></A>' %
-                       (id, root_url, s, id, script))
+                       (id, root_url, param, s, id, script))
             else:
-                output('<A NAME="%s" HREF="%s?tree-e=%s#%s">'
+                output('<A NAME="%s" HREF="%s?%stree-e=%s#%s">'
                        '<IMG SRC="%s/p_/pl" ALT="+" BORDER=0></A>' %
-                       (id, root_url, s, id, script))
+                       (id, root_url, param, s, id, script))
             output('</TD>\n')
 
         else:
@@ -413,8 +422,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
         level=level+1
         dataspan=colspan-level
-        if level > 3:   h=_td_colspan % (level-1)
-        elif level > 1: h=_td_single  * (level-1)
+        if level > 2:   h=_td_colspan % level
+        elif level > 0: h=_td_single  * level
         else: h=''
 
         if have_arg('header'):
