@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.18 1997/11/25 15:20:30 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.19 1997/11/25 15:26:34 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -209,6 +209,15 @@ Python expression support
 
      - The Python 'math' module. 
 
+     - A special function, 'test', that supports if-then expressions.
+       The 'test' function accepts any number of arguments.  If the
+       first argument is true, then the second argument is returned,
+       otherwise if the third argument is true, then the fourth
+       argument is returned, and so on.  If there is an odd number of
+       arguments, then the last argument is returned in the case that
+       none of the tested arguments is true, otherwise None is
+       returned. 
+
      For example, to convert a value to lower case::
 
        <!--#var expr="_.string.lower(title)"-->
@@ -290,6 +299,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.19  1997/11/25 15:26:34  jim
+# Added test to expr documentation.
+#
 # Revision 1.18  1997/11/25 15:20:30  jim
 # Expanded test function to allow any number of arguments.
 #
