@@ -669,7 +669,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         No exceptions are raised.
         """
         try:
-            return self.restrictedTraverse(path)
+            return self.unrestrictedTraverse(path)
         except:
             return None
 
