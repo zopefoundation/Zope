@@ -80,7 +80,7 @@ Using Zope in multi-threaded mode with ZServer
   requires to install and configure a CGI script.
 
   Note: For more information on PCGI check out Jeff Bauer's "PCGI pages", 
-  http://starship.skyport.net/crew/jbauer/persistcgi/.
+  http://starship.python.net/crew/jbauer/persistcgi/.
 
   When your Zope.cgi file is correctly configured as a CGI script with
   your web server, you are ready to access Zope through the web. You
@@ -264,7 +264,7 @@ Using Zope in single-threaded mode with pcgi_publisher
   requires to install and configure a CGI script.
 
   Note: For more information on PCGI check out Jeff Bauer's "PCGI pages", 
-  http://starship.skyport.net/crew/jbauer/persistcgi/.
+  http://starship.python.net/crew/jbauer/persistcgi/.
 
   When your Zope.cgi file is correctly configured as a CGI script with
   your web server, you are ready to access Zope through the web. You
