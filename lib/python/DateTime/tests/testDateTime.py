@@ -7,20 +7,21 @@ from DateTime import DateTime
 import string
 import math
 
-def _compare(dt1, dt2):
-    '''Compares the internal representation of dt1 with
-    the representation in dt2.  Allows sub-millisecond variations.
-    Primarily for testing.'''
-    assert dt1.millis() == dt2.millis(), \
-           '%s != %s' % (dt1.millis(),dt2.millis())
-    assert math.floor(dt1._t * 1000.0) == \
-               math.floor(dt2._t * 1000.0)
-    assert math.floor(dt1._d * 86400000.0) == \
-               math.floor(dt2._d * 86400000.0)
-    assert math.floor(dt1.time * 86400000.0) == \
-               math.floor(dt2.time * 86400000.0)
 
 class DateTimeTests (unittest.TestCase):
+
+    def _compare(self, dt1, dt2, ms=1):
+        '''Compares the internal representation of dt1 with
+        the representation in dt2.  Allows sub-millisecond variations.
+        Primarily for testing.'''
+        if ms:
+            self.assertEqual(dt1.millis(),dt2.millis())
+        self.assertEqual(math.floor(dt1._t * 1000.0),
+                         math.floor(dt2._t * 1000.0))
+        self.assertEqual(math.floor(dt1._d * 86400000.0),
+                         math.floor(dt2._d * 86400000.0))
+        self.assertEqual(math.floor(dt1.time * 86400000.0),
+                         math.floor(dt2.time * 86400000.0))
 
     def testBug1203(self):
         '''01:59:60 occurred in old DateTime'''
@@ -54,13 +55,15 @@ class DateTimeTests (unittest.TestCase):
             dt.second(),
             dt.timezone())
         dt1 = DateTime(dt1s)
-        _compare(dt, dt1)
+        # Compare representations as it's the
+        # only way to compare the dates to the same accuracy
+        self.assertEqual(repr(dt),repr(dt1))
 
     def testConstructor4(self):
         '''Constructor from time float'''
         dt = DateTime()
         dt1 = DateTime(float(dt))
-        assert dt.debugCompare(dt1), (dt, dt1)
+        self._compare(dt,dt1)
 
     def testConstructor5(self):
         '''Constructor from time float and timezone'''
@@ -74,7 +77,7 @@ class DateTimeTests (unittest.TestCase):
         # DST changes!
         dt1 = DateTime(2000, 5.500000578705)
         dt = DateTime('2000/1/5 12:00:00.050 pm %s' % dt1.localZone())
-        _compare(dt, dt1)
+        self._compare(dt, dt1)
 
     def testConstructor7(self):
         '''Constructor from parts'''
@@ -87,7 +90,9 @@ class DateTimeTests (unittest.TestCase):
             dt.minute(),
             dt.second(),
             dt.timezone())
-        assert dt.debugCompare(dt1), (dt, dt1)
+        # Compare representations as it's the
+        # only way to compare the dates to the same accuracy
+        self.assertEqual(repr(dt),repr(dt1))
         
     def testDayOfWeek(self):
         '''strftime() used to always be passed a day of week of 0.'''
