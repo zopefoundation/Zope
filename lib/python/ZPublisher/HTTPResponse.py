@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.69 2002/08/21 03:09:31 chrism Exp $'''
-__version__ = '$Revision: 1.69 $'[11:-2]
+$Id: HTTPResponse.py,v 1.70 2002/09/24 22:13:26 jeremy Exp $'''
+__version__ = '$Revision: 1.70 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -290,7 +290,7 @@ class HTTPResponse(BaseResponse):
             try:
                 body = str(body)
             except UnicodeError:
-                body = _encode_unicode(unicode(body))
+                body = self._encode_unicode(unicode(body))
 
         l = len(body)
         if ((l < 200) and body[:1] == '<' and body.find('>') == l-1 and
