@@ -84,9 +84,7 @@
 ##############################################################################
 
 import sys,os
-sys.path.append(os.path.join(__path__[0],"medusa/test"))
-
-import max_sockets
+from medusa.test import max_sockets
 
 
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
