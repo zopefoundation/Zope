@@ -52,7 +52,7 @@ Summarizing the default operator rules:
 - words connected by punctuation implies phrase search, e.g. ``foo-bar''
 - a leading hyphen implies NOT, e.g. ``foo -bar''
 - these can be combined, e.g. ``foo -"foo bar"'' or ``foo -foo-bar''
-- a trailing * means globbing (i.e. prefix search), e.g. ``foo*''
+- * and ? are used for globbing (i.e. prefix search), e.g. ``foo*''
 """
 
 import re

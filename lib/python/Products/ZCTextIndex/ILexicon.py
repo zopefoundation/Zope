@@ -42,8 +42,6 @@ class ILexicon(Interface):
         The argument should be a single word using globbing syntax,
         e.g. 'foo*' meaning anything starting with 'foo'.
 
-        NOTE: Currently only a single trailing * is supported.
-
         Return the wids for all words in the lexicon that match the
         pattern.
         """

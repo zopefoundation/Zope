@@ -46,8 +46,6 @@ class IIndex(Interface.Base):
         example, "foo*" represents the set of all words in the lexicon
         starting with "foo".
 
-        NOTE: Currently only a single trailing * is supported.
-
         Return an IIBTree mapping docid to score.
         """
 
