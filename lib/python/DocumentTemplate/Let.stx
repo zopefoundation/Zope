@@ -1,0 +1,36 @@
+The let tag:
+
+ is a new tag that lets you create blocks like:
+
+ <!--#in "1,2,3,4"-->
+ <!--#let num=sequence-item 
+	  index=sequence-index
+	  result="num*index"-->
+ <!--#var num--> * <!--#var index--> = <!--#var result-->
+ <!--#/let-->
+ <!--#/in-->
+
+ Which yields:
+
+ 1 * 0 = 0
+ 2 * 1 = 2
+ 3 * 2 = 6
+ 4 * 3 = 12
+
+ The #let tag works like the #with tag, but is more flexible in that
+ it allows you to make multiple assignments, and allows you to chain
+ assignments, using earlier declarations in later assignments.  Notice
+ inthe ablove example, the 'result' variable is based on 'num' and
+ 'index', both of which are assigned in the same #let expression.
+
+ Syntacticly, each argument to be evalulated in the head of the let
+ tag must be seperated by a newline.  Enclosing an argument in double
+ quotes causes it to be evaluated by the DTML expression machinery.
+ Un-quoted arguments are referenced by name.
+
+ Evaluation is in sequence with the result of earlier assignments
+ available to later ones.  Later assignments can also override earlier
+ ones, which can be helpful for longer step-by-step calculations.  The
+ variables thus set are in effect for the life of the <!--#let-->
+ block.
+
