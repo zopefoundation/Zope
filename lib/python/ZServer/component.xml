@@ -11,7 +11,7 @@
   <sectiontype name="http-server"
                datatype=".HTTPServerFactory"
                implements="ZServer.server">
-     <key name="address" datatype="inet-address"/>
+     <key name="address" datatype="inet-address" default="8080"/>
      <key name="force-connection-close" datatype="boolean" default="off"/>
      <key name="webdav-source-clients">
        <description>
@@ -24,7 +24,7 @@
   <sectiontype name="webdav-source-server"
                datatype=".WebDAVSourceServerFactory"
                implements="ZServer.server">
-     <key name="address" datatype="inet-address"/>
+     <key name="address" datatype="inet-address" default="9080"/>
      <key name="force-connection-close" datatype="boolean" default="off"/>
   </sectiontype>
 
@@ -43,7 +43,7 @@
   <sectiontype name="ftp-server"
                datatype=".FTPServerFactory"
                implements="ZServer.server">
-     <key name="address" datatype="inet-address"/>
+     <key name="address" datatype="inet-address" default="8021"/>
   </sectiontype>
 
   <sectiontype name="monitor-server"
