@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.7 1997/12/01 22:58:48 jeffrey Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: TextIndex.py,v 1.8 1997/12/02 19:36:19 jeffrey Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -164,7 +164,7 @@ class TextIndex(Persistent):
 	self._reindex()
 
     def clear(self):
-	self._init()
+	self._index=BTree()
 
     def positions(self, docid, words):
 	"""Return the positions in the document for the given document
@@ -626,6 +626,9 @@ for word in stop_words: stop_word_dict[word]=None
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.8  1997/12/02 19:36:19  jeffrey
+# fixed bug in .clear() method
+#
 # Revision 1.7  1997/12/01 22:58:48  jeffrey
 # Allow indexing of non-text fields
 #
