@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.166 $'[11:-2]
+__version__='$Revision: 1.167 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -487,7 +487,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def getUserById(self, id, default=_marker):
         """Return the user corresponding to the given id.
         """
-        try: return self.getUser(id)
+        # The connection between getting by ID and by name is not a strong
+        # one
+        try:
+            result=self.getUser(id)
+            return result.__of__(self) # Wrap in our context
         except:
            if default is _marker: raise
            return default

@@ -53,6 +53,9 @@ Zope Changes
       - Collector #250: applied several patches for TextIndex for better
         unicode support for the GlobbingLexicon
 
+      - Collector #254: user object was being returned without wrapping
+        context
+
 
   Zope 2.5.1 beta 1
     
