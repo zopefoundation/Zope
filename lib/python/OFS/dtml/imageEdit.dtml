@@ -9,7 +9,8 @@ button and click <em>upload</em> to update the contents of the <dtml-var
 kind>.
 </p>
 
-<form action="<dtml-var URL1>" method="post" enctype="multipart/form-data">
+<form action="<dtml-var URL1>/manage_edit" method="post"
+  enctype="multipart/form-data">
 <table cellpadding="2" cellspacing="0" width="100%" border="0">
 <tr>
   <td align="left" valign="top">
@@ -65,12 +66,18 @@ kind>.
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input class="form-element" type="submit" name="manage_edit:method" 
+  <input class="form-element" type="submit" name="submit"
    value="Save Changes">
   </div>
   </td>
 </tr>
 
+</table>
+</form>
+
+<form action="<dtml-var URL1>/manage_upload" method="post"
+  enctype="multipart/form-data">
+<table cellpadding="2" cellspacing="0" width="100%" border="0">
 <tr>
   <td align="left" valign="top">
   <br />
@@ -88,7 +95,7 @@ kind>.
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input class="form-element" type="submit" name="manage_upload:method" 
+  <input class="form-element" type="submit" name="submit"
    value="Upload">
   </div>
   </td>
