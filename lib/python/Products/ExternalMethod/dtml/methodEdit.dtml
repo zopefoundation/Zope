@@ -11,7 +11,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="id" size="40"
-     value="<dtml-var id html_quote>" />
+     value="<dtml-var name="id" html_quote>" />
     </td>
   </tr>
   <tr>
