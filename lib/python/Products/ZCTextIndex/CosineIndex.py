@@ -88,13 +88,8 @@ class CosineIndex(BaseIndex):
             wids += self._lexicon.termToWordIds(term)
         N = float(len(self._docweight))
         sum = 0.0
-        for wid in wids:
-            if wid == 0:
-                continue
-            map = self._wordinfo.get(wid)
-            if map is None:
-                continue
-            wt = math.log(1.0 + N / len(map))
+        for wid in self._remove_oov_wids(wids):
+            wt = inverse_doc_frequency(len(self._wordinfo[wid]), N)
             sum += wt ** 2.0
         return scaled_int(math.sqrt(sum))
 

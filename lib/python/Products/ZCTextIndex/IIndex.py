@@ -55,6 +55,10 @@ class IIndex(Interface.Base):
         'terms' is a sequence of all terms included in the query,
         although not terms with a not.  If a term appears more than
         once in a query, it should appear more than once in terms.
+
+        Nothing is defined about what "weight" means, beyond that the
+        result is an upper bound on document scores returned for the
+        query.
         """
 
     def index_doc(docid, text):

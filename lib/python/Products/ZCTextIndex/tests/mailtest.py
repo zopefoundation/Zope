@@ -161,8 +161,10 @@ def query(rt, query_str):
     print "query:", query_str
     print "# results:", len(results), "of", num_results, \
           "in %.2f ms" % (elapsed * 1000)
+    qw = idx.index.query_weight([query_str])
     for docid, score in results:
-        print "docid %4d score %2d" % (docid, score)
+        scaled = 100.0 * score / qw
+        print "docid %7d score %6d scaled %5.2f%%" % (docid, score, scaled)
         if VERBOSE:
             msg = docs[docid]
             ctx = msg.text.split("\n", CONTEXT)

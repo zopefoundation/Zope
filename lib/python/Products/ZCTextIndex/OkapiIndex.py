@@ -142,11 +142,22 @@ class OkapiIndex(BaseIndex):
         return L
 
     def query_weight(self, terms):
-        # This method was inherited from the cosine measure, and doesn't
-        # make sense for Okapi measures in the way the cosine measure uses
-        # it.  See the long comment at the end of the file for how full
-        # Okapi BM25 deals with weighting query terms.
-        return 10   # arbitrary
+        # Get the wids.
+        wids = []
+        for term in terms:
+            termwids = self._lexicon.termToWordIds(term)
+            wids.extend(termwids)
+        # The max score for term t is the maximum value of
+        #     TF(D, t) * IDF(Q, t)
+        # We can compute IDF directly, and as noted in the comments below
+        # TF(D, t) is bounded above by 1+K1.
+        N = float(len(self._docweight))
+        tfmax = 1.0 + self.K1
+        sum = 0
+        for t in self._remove_oov_wids(wids):
+            idf = inverse_doc_frequency(len(self._wordinfo[t]), N)
+            sum += scaled_int(idf * tfmax)
+        return sum
 
     def _get_frequencies(self, wids):
         d = {}

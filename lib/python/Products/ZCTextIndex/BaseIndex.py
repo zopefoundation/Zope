@@ -199,8 +199,13 @@ class BaseIndex(Persistent):
         raise NotImplementedError
 
     # Subclass must override.
-    # It's not clear what it should do; so far, it only makes real sense
-    # for the cosine indexer.
+    # It's not clear what it should do.  It must return an upper bound on
+    # document scores for the query.  It would be nice if a document score
+    # divided by the query's query_weight gave the proabability that a
+    # document was relevant, but nobody knows how to do that.  For
+    # CosineIndex, the ratio is the cosine of the angle between the document
+    # and query vectors.  For OkapiIndex, the ratio is a (probably
+    # unachievable) upper bound with no "intuitive meaning" beyond that.
     def query_weight(self, terms):
         raise NotImplementedError
 
