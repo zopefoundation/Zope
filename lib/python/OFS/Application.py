@@ -11,11 +11,11 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.66 1998/07/13 12:11:34 jim Exp $'''
-__version__='$Revision: 1.66 $'[11:-2]
+$Id: Application.py,v 1.67 1998/08/03 13:28:24 jim Exp $'''
+__version__='$Revision: 1.67 $'[11:-2]
 
 
-import Globals,Folder,os,regex,sys
+import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
 import time, rotor, marshal
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
@@ -55,7 +55,8 @@ page.  Thank you for your patience.</P>
 <!--#endif-->
 <!--#var standard_html_footer-->'''
 
-class Application(Globals.ApplicationDefaultPermissions, Folder.Folder):
+class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
+                  App.ProductRegistry.ProductRegistry):
     title    ='Principia'
     __roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous')
@@ -87,6 +88,12 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder):
 	rtab=ImageFile('App/www/rtab.gif')
 	ltab=ImageFile('App/www/ltab.gif')
 	ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
+	ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
+	DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
+	InstalledProduct_icon=ImageFile('App/www/installedProduct.gif')
+	Product_icon=ImageFile('App/www/product.gif')
+	Factory_icon=ImageFile('App/www/factory.gif')
+	ProductFolder_icon=ImageFile('App/www/productFolder.gif')
 	PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
 
 	#up=ImageFile('www/UpFolder_icon.gif', globals())
@@ -119,16 +126,25 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder):
         cpl._init()
 	self._setObject('Control_Panel', cpl)
 
-        self.manage_addDocument('standard_html_header',
-	                        'Standard Html Header',
-				'<HTML><HEAD><TITLE><!--#var title_or_id-->' \
-				'</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">')
-        self.manage_addDocument('standard_html_footer',
-				'Standard Html Footer',
-				'</BODY></HTML>')
-	self.manage_addDocument('standard_error_message',
-				'Standard Error Message',
-				_standard_error_msg)
+        # Note that this may happen before products are
+        # installed, so we have to use addDocument as stand-alone.
+        import Document
+        Document.manage_addDocument(
+            self,
+            'standard_html_header',
+            'Standard Html Header',
+            '<HTML><HEAD><TITLE><!--#var title_or_id-->' \
+            '</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">')
+        Document.manage_addDocument(
+            self,
+            'standard_html_footer',
+            'Standard Html Footer',
+            '</BODY></HTML>')
+	Document.manage_addDocument(
+            self,
+            'standard_error_message',
+            'Standard Error Message',
+            _standard_error_msg)
 
 
     def id(self):
@@ -197,9 +213,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder):
                 self.PrincipiaFind(o,_initial,p,type,substring,name)
 
         return _initial
-
-
-
+    
 class Expired(Persistent):
     icon='p_/broken'
 
@@ -217,17 +231,12 @@ class Expired(Persistent):
 
     __inform_commit__=__save__
 
-
-
-
-
 def open_bobobase():
     # Open the application database
+
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
 
     product_dir=os.path.join(SOFTWARE_HOME,'lib/python/Products')
-
-    install_products()
 
     __traceback_info__=sys.path
     
@@ -245,18 +254,21 @@ def open_bobobase():
 	app._setObject('Control_Panel', cpl)
 	get_transaction().commit()
     if not hasattr(app, 'standard_error_message'):
-	app.manage_addDocument('standard_error_message',
-			       'Standard Error Message',
-			       _standard_error_msg)
+        import Document
+	Document.manage_addDocument(
+            app,
+            'standard_error_message',
+            'Standard Error Message',
+            _standard_error_msg)
 	get_transaction().commit()
+
+    import jim; jim.debug()
+    install_products(app)
+    get_transaction().commit()
 
     return Bobobase
 
-
-
-
-
-def install_products():
+def install_products(app):
     # Install a list of products into the basic folder class, so
     # that all folders know about top-level objects, aka products
 
@@ -326,6 +338,9 @@ def install_products():
 	misc_=pgetattr(product, 'misc_', {})
 	if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
 	Application.misc_.__dict__[product_name]=misc_
+
+        # Set up dynamic project information.
+        App.Product.initializeProduct(product_name, package_dir, app)
 
     Folder.dynamic_meta_types=tuple(meta_types)
 
@@ -428,6 +443,12 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.67  1998/08/03 13:28:24  jim
+#       - New folderish control panel that separates database and
+#         product management into separate interfaces.
+#
+#       - Through-the-web creation of products and factories.
+#
 # Revision 1.66  1998/07/13 12:11:34  jim
 # Added PrincipiaFind.
 #
