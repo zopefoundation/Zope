@@ -13,6 +13,9 @@ Zope Changes
 
       - Collector #207: fixed problem with inner links in STXNG
 
+      - Collector #210: HTML() function of StructuredText produced wrong
+        <h0> tags. 
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

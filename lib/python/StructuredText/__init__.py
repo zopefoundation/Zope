@@ -17,13 +17,14 @@ from StructuredText import html_with_references, HTML, html_quote
 from ST import Basic
 import DocBookClass
 import HTMLWithImages
+from types import StringType
 import DocumentWithImages
 
 ClassicHTML=HTML
 HTMLNG=HTMLClass.HTMLClass()
 
-def HTML(src, level=0, type=type, StringType=type('')):
-    if type(src) is StringType:
+def HTML(src, level=1): 
+    if isinstance(src, StringType):
         return ClassicHTML(src, level)
     return HTMLNG(src, level)
 
