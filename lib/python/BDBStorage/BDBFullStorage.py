@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.34 $'.split()[-2:][0]
+__version__ = '$Revision: 1.35 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -952,24 +952,33 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             reachables[oid] = 1
             # Get the pickle data for the object's current version
             revid = self._serials.get(oid)
+            if revid is None:
+                # BAW: how can this happen?!  This means that an object is
+                # holding references to an object that we know nothing about.
+                continue
             lrevid = self._metadata[oid+revid][16:24]
             pickle = self._pickles[oid+lrevid]
             refdoids = []
             referencesf(pickle, refdoids)
-            # BAW: recursion might be bad, but it's easy to implement. :(
             for oid in refdoids:
                 lookingat[oid] = 1
         return reachables
 
     def _zapobject(self, oid, decrefoids, referencesf):
         # Delete all records referenced by this object
-        self._serials.delete(oid)
+        try:
+            self._serials.delete(oid)
+        except db.DBNotFoundError:
+            pass
         # This oid should not be in the decrefoids set because it would have
         # had to have been popitem()'d off to even get here.  Let's just make
         # sure of that invariant...
         assert not decrefoids.has_key(oid)
         # We don't need to track reference counts to this object anymore
-        self._refcounts.delete(oid)
+        try:
+            self._refcounts.delete(oid)
+        except db.DBNotFoundError:
+            pass
         # Run through all the metadata records associated with this object,
         # and iterate through all its revisions, zapping them.  Keep track of
         # the tids and vids referenced by the metadata record, so we can clean
@@ -978,7 +987,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         vids = {}
         c = self._metadata.cursor()
         try:
-            rec = c.set_range(oid)
+            try:
+                rec = c.set_range(oid)
+            except db.DBNotFoundError:
+                rec = None
             while rec and rec[0][:8] == oid:
                 key, data = rec
                 rec = c.next()
@@ -994,7 +1006,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         c = self._txnoids.cursor()
         try:
             for tid in tids.keys():
-                rec = c.set_both(tid, oid)
+                try:
+                    rec = c.set_both(tid, oid)
+                except db.DBNotFoundError:
+                    rec = None
                 while rec:
                     k, v = rec
                     if k <> tid or v <> oid:
@@ -1007,7 +1022,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         c = self._currentVersions.cursor()
         try:
             for vid in vids.keys():
-                rec = c.set_both(vid, oid)
+                try:
+                    rec = c.set_both(vid, oid)
+                except db.DBNotFoundError:
+                    rec = None
                 while rec:
                     k, v = rec
                     if k <> vid or v <> oid:
