@@ -13,7 +13,7 @@
 
 """ Wrapper to integrate reStructuredText into Zope """
 
-__all__ = ["HTML" ]
+__all__ = ("HTML", ) 
 
 import docutils.core 
 from docutils.io import StringOutput, StringInput 
@@ -24,7 +24,6 @@ default_input_encoding = os.environ.get("REST_INPUT_ENCODING",
 default_output_encoding = os.environ.get("REST_OUTPUT_ENCODING", 
                                          sys.getdefaultencoding())
 
-
 class Warnings:
 
     def __init__(self):
@@ -34,9 +33,13 @@ class Warnings:
         self.messages.append(message)
 
 
-def HTML(src, writer='html4zope', report_level=1, stylesheet='default.css',
+def HTML(src, 
+         writer='html4zope', 
+         report_level=1, 
+         stylesheet='default.css',
          input_encoding=default_input_encoding, 
          output_encoding=default_output_encoding):
+
     """ render HTML from a reStructuredText string 
 
         - 'src'  -- string containing a valid reST document
