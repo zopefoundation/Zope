@@ -13,39 +13,14 @@
 ##############################################################################
 """Test Bindings
 
-$Id: testBindings.py,v 1.2 2004/01/15 23:09:06 tseaver Exp $
+$Id: testBindings.py,v 1.3 2004/01/21 19:05:33 Brian Exp $
 """
 
 import unittest
-import Zope
-import AccessControl.SecurityManagement
-from AccessControl import Unauthorized
-from Testing.makerequest import makerequest
-from Products.PythonScripts.PythonScript import PythonScript
-
-
-class TransactionalTest( unittest.TestCase ):
-
-    def setUp( self ):
-        if hasattr(Zope, 'startup'):
-            Zope.startup()
-        get_transaction().begin()
-        self.connection = Zope.DB.open()
-        self.root =  self.connection.root()[ 'Application' ]
-
-    def tearDown( self ):
-        get_transaction().abort()
-        self.connection.close()
-
-
-class RequestTest( TransactionalTest ):
-
-    def setUp(self):
-        TransactionalTest.setUp(self)
-        root = self.root = makerequest(self.root)
-        self.REQUEST  = root.REQUEST
-        self.RESPONSE = root.REQUEST.RESPONSE
-
+import ZODB
+from Acquisition import Implicit
+from OFS.ObjectManager import ObjectManager
+from OFS.Folder import Folder
 
 class SecurityManager:
 
@@ -54,12 +29,14 @@ class SecurityManager:
         self.reject = reject
 
     def validate(self, *args):
+        from AccessControl import Unauthorized
         self.calls.append(('validate', args))
         if self.reject:
             raise Unauthorized
         return 1
 
     def validateValue(self, *args):
+        from AccessControl import Unauthorized
         self.calls.append(('validateValue', args))
         if self.reject:
             raise Unauthorized
@@ -68,58 +45,180 @@ class SecurityManager:
     def checkPermission(self, *args):
         self.calls.append(('checkPermission', args))
         return not self.reject
-        
+
     def addContext(self, *args):
         self.calls.append(('addContext', args))
         return 1
-        
+
     def removeContext(self, *args):
         self.calls.append(('removeContext', args))
         return 1
-        
-class GuardTestCase(RequestTest):
 
-    def setSecurityManager(self, manager):
-        key = AccessControl.SecurityManagement.get_ident()
-        old = AccessControl.SecurityManagement._managers.get(key)
-        if manager is None:
-            del AccessControl.SecurityManagement._managers[key]
-        else:
-            AccessControl.SecurityManagement._managers[key] = manager
+class UnderprivilegedUser:
+    def getId(self):
+        return 'underprivileged'
 
-        return old
-        
-        
-class TestBindings(GuardTestCase):
+    def allowed(self, object, object_roles=None):
+        return 0
+
+class RivilegedUser:
+    def getId(self):
+        return 'privileged'
+
+    def allowed(self, object, object_roles=None):
+        return 1
+
+class FauxRoot(ObjectManager):
+    def __repr__(self):
+        return '<FauxRoot>'
+
+class FauxFolder(Folder):
+    def __repr__(self):
+        return '<FauxFolder: %s>' % self.getId()
+
+class TestBindings(unittest.TestCase):
 
     def setUp(self):
-        RequestTest.setUp(self)
-        self.sm = SecurityManager(reject=1)
-        self.old = self.setSecurityManager(self.sm)
+        from Testing.ZODButil import makeDB
+        get_transaction().begin()
+        self.connection = makeDB().open()
 
     def tearDown(self):
-        self.setSecurityManager(self.old)
-        TransactionalTest.tearDown(self)
+        from Testing.ZODButil import cleanDB
+        from AccessControl.SecurityManagement import noSecurityManager
+        noSecurityManager()
+        get_transaction().abort()
+        self.connection.close()
+        cleanDB()
+
+    def _getRoot(self):
+        from Testing.makerequest import makerequest
+        #true_root = self.connection.root()[ 'Application' ]
+        #true_root = self.connection.root()
+        #return makerequest(true_root)
+        return makerequest(FauxRoot())
+
+    def _makeTree(self):
+
+        root = self._getRoot()
+
+        guarded = FauxFolder()
+        guarded._setId('guarded')
+        guarded.__roles__ = ( 'Manager', )
+        root._setOb('guarded', guarded)
+        guarded = root._getOb('guarded')
+
+        open = FauxFolder()
+        open._setId('open')
+        open.__roles__ = ( 'Anonymous', )
+        guarded._setOb('open', open)
+
+        bound_unused_container_ps = self._newPS('return 1')
+        guarded._setOb('bound_unused_container_ps', bound_unused_container_ps)
+
+        bound_used_container_ps = self._newPS('return container.id')
+        guarded._setOb('bound_used_container_ps', bound_used_container_ps)
+
+        bound_used_container_ok_ps = self._newPS('return container.id')
+        open._setOb('bound_used_container_ok_ps', bound_used_container_ok_ps)
+
+        bound_unused_context_ps = self._newPS('return 1')
+        guarded._setOb('bound_unused_context_ps', bound_unused_context_ps)
+
+        bound_used_context_ps = self._newPS('return context.id')
+        guarded._setOb('bound_used_context_ps', bound_used_context_ps)
+
+        container_ps = self._newPS('return container')
+        guarded._setOb('container_ps', container_ps)
+
+        context_ps = self._newPS('return context')
+        guarded._setOb('context_ps', context_ps)
+
+        return root
 
     def _newPS(self, txt, bind=None):
+        from Products.PythonScripts.PythonScript import PythonScript
         ps = PythonScript('ps')
         #ps.ZBindings_edit(bind or {})
         ps.write(txt)
         ps._makeFunction()
         return ps
-    
-    def test_fail_container(self):
-        container_ps = self._newPS('return container')
-        self.root._setOb('container_ps', container_ps)
-        container_ps = self.root._getOb('container_ps')
-        self.assertRaises(Unauthorized, container_ps)
 
-    def test_fail_context(self):
-        context_ps = self._newPS('return context')
-        self.root._setOb('context_ps', context_ps)
-        context_ps = self.root._getOb('context_ps')
-        self.assertRaises(Unauthorized, context_ps)
-    
+    # These test that the mere binding of context or container, when the
+    # user doesn't have access to them, doesn't raise an unauthorized. An
+    # exception *will* be raised if the script attempts to use them. This
+    # is a b/w compatibility hack: see Bindings.py for details.
+
+    def test_bound_unused_container(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        ps = guarded._getOb('bound_unused_container_ps')
+        self.assertEqual(ps(), 1)
+
+    def test_bound_used_container(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        from AccessControl import Unauthorized
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        ps = guarded._getOb('bound_used_container_ps')
+        self.assertRaises(Unauthorized, ps)
+
+    def test_bound_used_container_allowed(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        open = guarded._getOb('open')
+        ps = open.unrestrictedTraverse('bound_used_container_ok_ps')
+        self.assertEqual(ps(), 'open')
+
+    def test_bound_unused_context(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        ps = guarded._getOb('bound_unused_context_ps')
+        self.assertEqual(ps(), 1)
+
+    def test_bound_used_context(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        from AccessControl import Unauthorized
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        ps = guarded._getOb('bound_used_context_ps')
+        self.assertRaises(Unauthorized, ps)
+
+    def test_bound_used_context_allowed(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        open = guarded._getOb('open')
+        ps = open.unrestrictedTraverse('bound_used_context_ps')
+        self.assertEqual(ps(), 'open')
+
+    def test_ok_no_bindings(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+        boundless_ps = self._newPS('return 42')
+        guarded._setOb('boundless_ps', boundless_ps)
+        boundless_ps = guarded._getOb('boundless_ps')
+        #
+        #   Clear the bindings, so that the script may execute.
+        #
+        boundless_ps.ZBindings_edit( {'name_context': '',
+                                      'name_container': '',
+                                      'name_m_self': '',
+                                      'name_ns': '',
+                                      'name_subpath': ''})
+        self.assertEqual(boundless_ps(), 42)
+
 
 def test_suite():
     suite = unittest.TestSuite()

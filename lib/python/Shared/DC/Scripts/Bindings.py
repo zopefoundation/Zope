@@ -142,6 +142,39 @@ class NameAssignments:
         return self._generateCodeBlock(text, assigned_names)
 
 
+from AccessControl.unauthorized import Unauthorized
+
+class UnauthorizedBinding:
+    """Explanation: as of Zope 2.6.3 a security hole was closed - no
+       security check was happening when 'context' and 'container'
+       were bound to a script. Adding the check broke lots of sites
+       where existing scripts had the container binding but the users
+       of the scripts didn't have access to the container (e.g. workflow
+       scripts). This meant getting unauthorized even if the container
+       binding wasn't used in the script.
+
+       Now, instead of raising unauthorized at binding time, we bind
+       to an UnauthorizedBinding that will allow the script to run if
+       it doesn't actually use the binding, but will raise a meaningful
+       unauthorized error if the binding is accessed. This makes the
+       backward compatibility problem less painful because only those
+       actually using the container binding (for ex. workflow scripts)
+       need to take explicit action to fix existing sites."""
+
+    def __init__(self, name):
+        self._name = name
+
+    __allow_access_to_unprotected_subobjects__ = 1
+
+    def __getattr__(self, name, default=None):
+        name = self.__dict__['_name']
+        raise Unauthorized('Not authorized to access binding: %s' % name)
+
+    def __getitem__(self, key, default=None):
+        name = self.__dict__['_name']
+        raise Unauthorized('Not authorized to access binding: %s' % name)
+
+
 class Bindings:
 
     __ac_permissions__ = (
@@ -221,7 +254,9 @@ class Bindings:
                 parent = getattr(self, 'aq_parent', None)
                 inner = getattr(self, 'aq_inner', None)
                 container = getattr(inner, 'aq_parent', None)
-                getSecurityManager().validate(parent, container, '', self)
+                try: getSecurityManager().validate(parent, container, '', self)
+                except Unauthorized:
+                    return UnauthorizedBinding('context')
                 return self
 
     def _getContainer(self):
@@ -232,7 +267,9 @@ class Bindings:
                 parent = getattr(self, 'aq_parent', None)
                 inner = getattr(self, 'aq_inner', None)
                 container = getattr(inner, 'aq_parent', None)
-                getSecurityManager().validate(parent, container, '', self)
+                try: getSecurityManager().validate(parent, container, '', self)
+                except Unauthorized:
+                    return UnauthorizedBinding('container')
                 return self
 
     def _getTraverseSubpath(self):
