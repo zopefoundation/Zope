@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.10 1997/01/22 16:36:51 jim Exp $
+     $Id: cPickle.c,v 1.11 1997/01/22 19:40:29 chris Exp $
 
      Copyright 
 
@@ -193,7 +193,7 @@ write_cStringIO(ARG(Picklerobject *, self), ARG(char *, s), ARG(int, n))
      ARGDECL(char *, s)
      ARGDECL(int, n)
 {
-    if ((*PycStringIO_cwrite)((PyObject *)self->file, s, n) != n)
+    if (PycStringIO->cwrite((PyObject *)self->file, s, n) != n)
     {
         return -1;
     }
@@ -349,7 +349,7 @@ read_cStringIO(ARG(Unpicklerobject *, self), ARG(int, n))
         self->buf_size = n;
     }
 
-    if ((*PycStringIO_cread)((PyObject *)self->file, &ptr, n) != n)
+    if (PycStringIO->cread((PyObject *)self->file, &ptr, n) != n)
     {
         PyErr_SetNone(PyExc_EOFError);
         return -1;
@@ -367,7 +367,7 @@ readline_cStringIO(ARG(Unpicklerobject *, self))
     int n, size;
     char *ptr;
 
-    if ((n = (*PycStringIO_creadline)((PyObject *)self->file, &ptr)) < 0)
+    if ((n = PycStringIO->creadline((PyObject *)self->file, &ptr)) < 0)
     {
         return -1;
     }
@@ -3590,7 +3590,7 @@ dumps(ARG(PyObject *, self), ARG(PyObject *, args))
     UNLESS(PyArg_ParseTuple(args, "O|i", &ob, &bin))
         goto finally;
 
-    UNLESS(file = (*PycStringIO_NewOutput)(128))
+    UNLESS(file = PycStringIO->NewOutput(128))
         goto finally;
 
     UNLESS(pickler = newPicklerobject(file, bin))
@@ -3599,7 +3599,7 @@ dumps(ARG(PyObject *, self), ARG(PyObject *, args))
     UNLESS(Pickler_dump(pickler, ob))
         goto finally;
 
-    res = (*PycStringIO_cgetvalue)(file);
+    res = PycStringIO->cgetvalue(file);
 
 finally:
     Py_XDECREF(pickler);
@@ -3643,7 +3643,7 @@ loads(ARG(PyObject *, self), ARG(PyObject *, args))
     UNLESS(PyArg_Parse(args, "O", &args))
         goto finally;
 
-    UNLESS(file = (*PycStringIO_NewInput)(args))
+    UNLESS(file = PycStringIO->NewInput(args))
         goto finally;
   
     UNLESS(unpickler = newUnpicklerobject(file))
