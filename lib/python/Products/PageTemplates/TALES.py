@@ -15,9 +15,10 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import re, sys, ZTUtils
+from weakref import ref
 from MultiMapping import MultiMapping
 from DocumentTemplate.DT_Util import ustr
 from GlobalTranslationService import getGlobalTranslationService
@@ -63,11 +64,13 @@ class Iterator(ZTUtils.Iterator):
     def __init__(self, name, seq, context):
         ZTUtils.Iterator.__init__(self, seq)
         self.name = name
-        self._context = context
+        self._context_ref = ref(context)
 
     def next(self):
         if ZTUtils.Iterator.next(self):
-            self._context.setLocal(self.name, self.item)
+            context = self._context_ref()
+            if context is not None:
+                context.setLocal(self.name, self.item)
             return 1
         return 0
 
