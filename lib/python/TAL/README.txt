@@ -98,6 +98,6 @@ TO DO
 - If use-macro fails, it seems to omit the entire macro except for
   slots, instead of leaving the existing text alone.
 
-- We shouldn't be adding slashes to empty tags ('<br>' => '<br />'),
-  and we definitely should not be abbreviating non-empty tags
-  ('<td></td>' => '<td />').
+- Create more unittest testcases.  The XML side has no testcases;
+  neither do TAL and METAL.  Plus many endcases of HTML parsing and
+  TAL intermediate code generation aren't tested properly.
