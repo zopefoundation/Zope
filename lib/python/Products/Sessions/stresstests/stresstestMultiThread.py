@@ -35,13 +35,13 @@ from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 import time, threading, random
 from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
-from Products.TemporaryFolder.TemporaryStorage import TemporaryStorage
+from tempstorage.TemporaryStorage import TemporaryStorage
 from OFS.Application import Application
 import sys
 from zLOG import log_time
 sys.setcheckinterval(200)
 
-import fauxtime
+from Products.Transience.tests import fauxtime
 import Products.Transience.Transience
 import Products.Transience.TransientObject
 Products.Transience.Transience.time = fauxtime
