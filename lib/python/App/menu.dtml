@@ -4,6 +4,21 @@
 <TITLE>Navigator</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<dtml-if AUTHENTICATED_USER>
+  <table cellpadding="0" cellspacing="0" width="100%" border="0">
+    <tr>
+      <td bgcolor="#003366" valign="bottom" align="left">
+        <font face="Verdana, Arial, Helvetica" color="#ffffff" size="1">
+          <strong> &nbsp; <dtml-var AUTHENTICATED_USER> </strong>
+        </font>
+        <img src="/p_/sp" width="2" height="1">
+      </td>
+      <td bgcolor="#003366">
+        <img src="/p_/sp" width="1" height="5">
+      </td>
+    </tr>
+  </table>
+</dtml-if>
 <TABLE CELLSPACING="0">
 <TR>
   <TD VALIGN="TOP" NOWRAP>
