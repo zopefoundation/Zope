@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.138 2001/07/03 18:18:34 andreas Exp $"""
+$Id: ObjectManager.py,v 1.139 2001/07/05 13:19:02 andreas Exp $"""
 
-__version__='$Revision: 1.138 $'[11:-2]
+__version__='$Revision: 1.139 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -594,12 +594,14 @@ class ObjectManager(
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
 
+        
         if REQUEST is not None:
-            return MessageDialog(
-                title='Object imported',
-                message='<EM>%s</EM> sucessfully imported' % id,
-                action='manage_main'
-                )
+            return self.manage_main(self, REQUEST, 
+                manage_tabs_message='<em>%s</em> sucessfully imported' % id,
+                title = 'Object imported',
+                update_menu=1)
+
+        
 
     # FTP support methods
     
