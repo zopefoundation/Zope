@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.50 $'.split()[-2:][0]
+__version__ = '$Revision: 1.51 $'.split()[-2:][0]
 
 import sys
 import time
@@ -1504,7 +1504,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # Delete the object from the serials table
             c = self._serials.cursor(txn)
             try:
-                rec = c.set(oid)
+                try:
+                    rec = c.set(oid)
+                except db.DBNotFoundError:
+                    rec = None
                 while rec and rec[0] == oid:
                     c.delete()
                     rec = c.next_dup()
@@ -1520,7 +1523,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # Collect all metadata records for this object
             c = self._metadata.cursor(txn)
             try:
-                rec = c.set_range(oid)
+                try:
+                    rec = c.set_range(oid)
+                except db.DBNotFoundError:
+                    rec = None
                 while rec and rec[0][:8] == oid:
                     revid, metadata = rec
                     tid = revid[8:]
@@ -1593,25 +1599,26 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # root references, and then for each of those, find all the objects it
         # references, and so on until we've traversed the entire object graph.
         while oid:
-            if self._packmark.has_key(oid):
-                # We've already seen this object
-                continue
-            self._packmark.put(oid, PRESENT, txn=txn)
-            # Get the pickle data for the most current revision of this object
-            # as of the pack time.
-            tid = self._findrev(oid, packtid, txn)
-            # Say there's no root object (as is the case in some of the unit
-            # tests), and we're looking up oid ZERO.  Then serial will be None.
-            if tid is not None:
-                lrevid = self._metadata[oid+tid][16:24]
-                data = self._pickles[oid+lrevid]
-                # Now get the oids of all the objects referenced by this pickle
-                refdoids = []
-                referencesf(data, refdoids)
-                # And append them to the queue for later
-                for oid in refdoids:
-                    self._oidqueue.append(oid, txn)
-                # Pop the next oid off the queue and do it all again
+            if not self._packmark.has_key(oid):
+                # We haven't seen this object yet
+                self._packmark.put(oid, PRESENT, txn=txn)
+                # Get the pickle data for the most current revision of this
+                # object as of the pack time.
+                tid = self._findrev(oid, packtid, txn)
+                # Say there's no root object (as is the case in some of the
+                # unit tests), and we're looking up oid ZERO.  Then serial
+                # will be None.
+                if tid is not None:
+                    lrevid = self._metadata[oid+tid][16:24]
+                    data = self._pickles[oid+lrevid]
+                    # Now get the oids of all the objects referenced by this
+                    # pickle
+                    refdoids = []
+                    referencesf(data, refdoids)
+                    # And append them to the queue for later
+                    for oid in refdoids:
+                        self._oidqueue.append(oid, txn)
+            # Pop the next oid off the queue and do it all again
             rec = self._oidqueue.consume()
             oid = rec and rec[1]
         assert len(self._oidqueue) == 0

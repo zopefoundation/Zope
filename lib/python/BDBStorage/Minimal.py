@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.14 $'[-2:][0]
+__version__ = '$Revision: 1.15 $'[-2:][0]
 
 import time
 import threading
@@ -440,23 +440,24 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
         # root references, and then for each of those, find all the objects it
         # references, and so on until we've traversed the entire object graph.
         while oid:
-            if self._packmark.has_key(oid):
-                # We've already seen this object
-                continue
-            self._packmark.put(oid, PRESENT, txn=txn)
-            # Get the pickle data for this object
-            tid = self._getCurrentSerial(oid)
-            # Say there's no root object (as is the case in some of the unit
-            # tests), and we're looking up oid ZERO.  Then serial will be None.
-            if tid is not None:
-                data = self._pickles[oid+tid]
-                # Now get the oids of all the objects referenced by this pickle
-                refdoids = []
-                referencesf(data, refdoids)
-                # And append them to the queue for later
-                for oid in refdoids:
-                    self._oidqueue.append(oid, txn)
-                # Pop the next oid off the queue and do it all again
+            if not self._packmark.has_key(oid):
+                # We've haven't yet seen this object
+                self._packmark.put(oid, PRESENT, txn=txn)
+                # Get the pickle data for this object
+                tid = self._getCurrentSerial(oid)
+                # Say there's no root object (as is the case in some of the
+                # unit tests), and we're looking up oid ZERO.  Then serial
+                # will be None.
+                if tid is not None:
+                    data = self._pickles[oid+tid]
+                    # Now get the oids of all the objects referenced by this
+                    # pickle
+                    refdoids = []
+                    referencesf(data, refdoids)
+                    # And append them to the queue for later
+                    for oid in refdoids:
+                        self._oidqueue.append(oid, txn)
+            # Pop the next oid off the queue and do it all again
             rec = self._oidqueue.consume()
             oid = rec and rec[1]
         assert len(self._oidqueue) == 0
@@ -482,10 +483,14 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
         orec = self._oidqueue.consume()
         while orec:
             oid = orec[1]
+            serial = self._getCurrentSerial(oid)
             # Delete the object from the serials table
             c = self._serials.cursor(txn)
             try:
-                rec = c.set(oid)
+                try:
+                    rec = c.set(oid)
+                except db.DBNotFoundError:
+                    rec = None
                 while rec and rec[0] == oid:
                     c.delete()
                     rec = c.next_dup()
@@ -501,7 +506,10 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
             # Now collect the pickle data and do reference counting
             c = self._pickles.cursor(txn)
             try:
-                rec = c.set_range(oid)
+                try:
+                    rec = c.set_range(oid)
+                except db.DBNotFoundError:
+                    rec = None
                 while rec and rec[0][:8] == oid:
                     data = rec[1]
                     c.delete()
@@ -510,8 +518,7 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
                     self._update(deltas, data, -1)
                     for oid, delta in deltas.items():
                         refcount = U64(self._refcounts.get(oid, ZERO)) + delta
-                        assert refcount >= 0
-                        if refcount == 0:
+                        if refcount <= 0:
                             self._oidqueue.append(oid, txn)
                         else:
                             self._refcounts.put(oid, p64(refcount), txn=txn)
