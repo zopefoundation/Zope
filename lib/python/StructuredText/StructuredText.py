@@ -96,12 +96,12 @@ from STletters import letters
 Document = DocumentClass.DocumentClass()
 HTMLNG = HTMLClass.HTMLClass()
 
-def HTML(aStructuredString, level=0, header=1):
+def HTML(aStructuredString, level=1, header=1):
     st = Basic(aStructuredString)
     doc = Document(st)
     return HTMLNG(doc,header=header,level=level)
 
-def StructuredText(aStructuredString, level=0):
+def StructuredText(aStructuredString, level=1):
     return HTML(aStructuredString,level)
 
 def html_with_references(text, level=1, header=1):
