@@ -18,7 +18,7 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
@@ -52,5 +52,19 @@ class DTML(RestrictedDTML, HTML):
             return apply(HTML.__call__, (self, client, REQUEST), kw)
 
         finally: security.removeContext(self)
+
+from ZPublisher.HTTPRequest import record
+
+security.declarePublic('Object')
+
+# We don't expose classes directly to restricted code
+class _Object(record):
+    _guarded_writes = 1
+
+    def __setitem__(self, key, value):
+        self.__dict__[str(key)] = value
+
+def Object():
+    return _Object()
 
 security.apply(globals())
