@@ -12,8 +12,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.50 2002/02/07 18:06:25 andreasjung Exp $'
-__version__='$Revision: 1.50 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.51 2002/02/07 18:13:17 andreasjung Exp $'
+__version__='$Revision: 1.51 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -24,7 +24,7 @@ from zlib import compress, decompress
 from binascii import b2a_base64, a2b_base64
 import re
 
-tbl=''.join(map(chr, range(256))
+tbl=''.join(map(chr, range(256)))
 tplus=tbl[:ord('+')]+'-'+tbl[ord('+')+1:]
 tminus=tbl[:ord('-')]+'+'+tbl[ord('-')+1:]
 
