@@ -67,7 +67,6 @@ class TestTopicIndex(TestBase):
 
 
     def testOr(self):
-        """ test 1 """
 
         self._searchOr('doc1',[1,2])
         self._searchOr(['doc1'],[1,2])
@@ -77,7 +76,6 @@ class TestTopicIndex(TestBase):
 
 
     def testAnd(self):
-        """ test 1 """
 
         self._searchAnd('doc1',[1,2])
         self._searchAnd(['doc1'],[1,2])
@@ -107,20 +105,17 @@ class ZCatalogTopicTests(TestBase):
         self.cat.catalog_object(Obj('5','doc3'))
         self.cat.catalog_object(Obj('6','doc3'))
 
-
     def testOr(self):
-        """ testing or (catalog)"""
+
         self._searchOr('doc1',[1,2])
         self._searchOr('doc2',[3,4])
         self._searchOr(['doc1','doc2'],[1,2,3,4])
 
-
     def testAnd(self):
-        """ testing And (catalog)"""
+
         self._searchAnd('doc1',[1,2])
         self._searchAnd('doc2',[3,4])
         self._searchAnd(['doc1','doc2'],[])
-
 
     def _search(self,query,operator,expected):
 

@@ -32,13 +32,9 @@ class Dummy:
     __repr__ = __str__
 
 class TestCase( unittest.TestCase ):
-    """
-        Test PathIndex objects.
-    """
+    """ Test PathIndex objects """
 
-    def setUp( self ):
-        """
-        """
+    def setUp(self):
         self._index = PathIndex( 'path' )
         self._values = {
           1 : Dummy("/aa/aa/aa/1.html"),
@@ -61,27 +57,18 @@ class TestCase( unittest.TestCase ):
           18 : Dummy("/bb/cc/cc/18html")
         }
 
-
-    def tearDown( self ):
-        """
-        """
-
-    def _populateIndex( self ):
+    def _populateIndex(self):
         for k, v in self._values.items():
             self._index.index_object( k, v )
 
-           
-    def testEmpty( self ):
-        "Test an empty PathIndex."
+    def testEmpty(self):
 
         assert len( self._index ) == 0
         assert self._index.getEntryForObject( 1234 ) is None
         self._index.unindex_object( 1234 ) # nothrow
         assert self._index._apply_index( {"suxpath":"xxx"} ) is None
 
-
-    def testUnIndex( self ):
-        "Test to UnIndex PathIndex."
+    def testUnIndex(self):
 
         self._populateIndex()
 
@@ -92,7 +79,7 @@ class TestCase( unittest.TestCase ):
         assert len(self._index._unindex)==0
 
     
-    def testSimpleTests( self ):
+    def testSimpleTests(self):
 
         self._populateIndex()
         
@@ -123,8 +110,7 @@ class TestCase( unittest.TestCase ):
                 lst = list(res[0].keys())
                 self.assertEqual(lst,results)
                 
-
-    def testComplexOrTests( self ):
+    def testComplexOrTests(self):
 
         self._populateIndex()
         
@@ -141,7 +127,7 @@ class TestCase( unittest.TestCase ):
             lst = list(res[0].keys())
             self.assertEqual(lst,results)
 
-    def testComplexANDTests( self ):
+    def testComplexANDTests(self):
 
         self._populateIndex()
         
@@ -157,7 +143,6 @@ class TestCase( unittest.TestCase ):
                             {"path":{'query':lst,"level":level,"operator":"and"}})
             lst = list(res[0].keys())
             self.assertEqual(lst,results)
-
 
 def test_suite():
     return unittest.makeSuite( TestCase )
