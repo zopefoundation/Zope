@@ -1,0 +1,32 @@
+<HTML><HEAD><TITLE>New Search Interface</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+
+<H2>New Search Interface</H2>
+
+<form action="manage_addAqueductSearch" method="POST">
+
+You can create a search interface, consisting of a search-input form
+and a report for a searchable object.
+
+<table>
+            
+<tr>    <th>Select one or more searchable objects</th>
+        <td><select name="queries:list" size=5 multiple>
+        <!--#in aqueductQueryIds-->
+           <option><!--#var sequence-item--></option>
+        <!--#/in aqueductQueryIds-->
+        </select></td></tr>
+<tr>    <th>Report ID</th>
+        <td><input name="report_id" size="40"></td></tr>
+<tr>	<th><em>Report Title<em></th>
+        <td><input name="report_title" size="40"></td></tr>
+<tr>    <th>Search Input ID</th>
+        <td><input name="input_id" size="40"></td></tr>
+<tr>	<th><em>Search Input Title</em></th>
+        <td><input name="input_title" size="40"></td></tr>
+<!--#var smallRolesWidget-->
+
+<tr><td></td><td><input type="SUBMIT" name="SUBMIT" value="Add"></td></tr>
+
+</table></form></body></html>
+
