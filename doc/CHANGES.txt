@@ -34,6 +34,10 @@ Zope Changes
 
       - The last entry in the breadcrumb path in the ZMI is now an
         underlined hyperlink.
+
+      - Added a new script "utitilies/check_catalog.py" to perform
+        some consistency checks on a ZCatalog instance
+
   
     Bugs Fixed
     
