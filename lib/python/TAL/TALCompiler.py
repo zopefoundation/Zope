@@ -301,7 +301,7 @@ class TALCompiler(METALCompiler):
         if replace: n = n+1
         if repeat: n = n+1
         if n > 1:
-            raise TALError("can't use z:insert, z:replace, z:repeat together")
+            raise TALError("can't use insert/replace/repeat together")
         ok = 0
         if insert:
             ok = self.doInsert(node, insert)

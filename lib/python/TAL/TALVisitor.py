@@ -156,7 +156,7 @@ class TALVisitor(CopyingDOMVisitor):
         if replace: n = n+1
         if repeat: n = n+1
         if n > 1:
-            print "Please use only one of z:insert, z:replace, z:repeat"
+            print "Please use only one of insert, replace, repeat"
         ok = 0
         if insert:
             ok = self.doInsert(node, insert, attrDict)
@@ -194,7 +194,7 @@ class TALVisitor(CopyingDOMVisitor):
             m = re.match(
                 r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
-                print "Bad syntax in z:define argument:", `part`
+                print "Bad syntax in define argument:", `part`
             else:
                 scope, name, expr = m.group(1, 2, 3)
                 scope = scope or "local"
@@ -224,7 +224,7 @@ class TALVisitor(CopyingDOMVisitor):
     def doSubstitution(self, key, expr, attrDict):
         if key == "text":
             if attrDict:
-                print "Warning: z:attributes unused for text replacement"
+                print "Warning: attributes unused for text replacement"
             data = self.engine.evaluateText(expr)
             newChild = self.newDocument.createTextNode(str(data))
             self.curNode.appendChild(newChild)
@@ -241,15 +241,15 @@ class TALVisitor(CopyingDOMVisitor):
                     attrDone = 1
             if not attrDone:
                 # Apparently no element nodes were inserted
-                print "Warning: z:attributes unused for struct replacement"
+                print "Warning: attributes unused for struct replacement"
 
     def doRepeat(self, node, arg, attrDict):
         if not self.newDocument:
-            print "Can't have z:repeat on the documentElement"
+            print "Can't have repeat on the documentElement"
             return 0
         m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
         if not m:
-            print "Bad syntax in z:repeat:", `arg`
+            print "Bad syntax in repeat:", `arg`
             return 0
         name, expr = m.group(1, 2)
         iterator = self.engine.setRepeat(name, expr)

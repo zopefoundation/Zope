@@ -176,7 +176,7 @@ class TALParser(XMLParser):
         if replace: n + n+1
         if repeat: n = n+1
         if n > 1:
-            raise TALError("can't use z:insert, z:replace, z:repeat together")
+            raise TALError("can't use insert, replace, repeat together")
         if defineMacro:
             self.gen.pushProgram()
             todo["defineMacro"] = defineMacro
