@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.18 1997/10/22 14:48:26 jim Exp $'''
+$Id: Response.py,v 1.19 1997/10/29 18:46:55 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.18 1997/10/22 14:48:26 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.19  1997/10/29 18:46:55  jim
+# Fixed leak in exception handler.
+#
 # Revision 1.18  1997/10/22 14:48:26  jim
 # Added simple repr method top support printing requests.
 #
@@ -133,7 +136,7 @@ $Id: Response.py,v 1.18 1997/10/22 14:48:26 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -515,6 +518,7 @@ class Response:
 	    if type(v) == types.StringType and absuri_re.match(v) >= 0:
 		if self.status==300: self.setStatus(302)
 		self.setHeader('location', v)
+		tb=None
 		return self
 	    else:
 		try:
@@ -523,31 +527,35 @@ class Response:
 			if self.status==300: self.setStatus(302)
 			self.setHeader('location', l)
 			self.setBody(b)
+			tb=None
 			return self
 		except: pass
 
 	b=v
 	if fatal:
 	    if t is SystemExit and v==0:
-		return self.setBody(
+		tb=self.setBody(
 		    (str(t),
 		    'This application has exited normally.<p>'
 		     + self._traceback(t,v,tb)))
 	    else:
-		return self.setBody(
+		tb=self.setBody(
 		    (str(t),
 		    'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
 		     + self._traceback(t,v,tb)))
 
-	if type(b) is not types.StringType or regex.search('[ \t\n]',b) < 0:
-	    return self.setBody(
+	elif type(b) is not types.StringType or regex.search('[a-zA-Z]>',b) < 0:
+	    tb=self.setBody(
 		(str(t),
 		 'Sorry, an error occurred.<p>'
 		 + self._traceback(t,v,tb)))
 
-	if self.isHTML(b): return self.setBody(b+self._traceback(t,v,tb))
+	elif self.isHTML(b):
+	    tb=self.setBody(b+self._traceback(t,v,tb))
+	else:
+	    tb=self.setBody((str(t),b+self._traceback(t,v,tb)))
 
-	return self.setBody((str(t),b+self._traceback(t,v,tb)))
+	return tb
 
     _wrote=None
 
@@ -568,7 +576,7 @@ class Response:
 		elif name=='secure': cookie = '%s; Secure' % cookie
 		elif name!='value':
 		    raise ValueError, (
-			'Invalid cookie attribute, %s' % name)
+			'Invalid cookie attribute, <em>%s</em>' % name)
 	    cookie_list.append(cookie)
 	return cookie_list
 
