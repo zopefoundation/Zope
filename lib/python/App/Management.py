@@ -85,25 +85,116 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.19 1999/04/06 19:11:43 brian Exp $"""
+$Id: Management.py,v 1.20 1999/05/10 16:29:45 jim Exp $"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
 from Globals import HTMLFile
-from string import split, join
+from string import split, join, find
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
 
-    __ac_permissions__=(
-        ('View management screens', ('manage_tabs',)),
-        )
-
+    manage_tabs__roles__=('Anonymous',)
     manage_tabs     =HTMLFile('manage_tabs', globals())
     
+    __ac_permissions__=(
+        ('View management screens', ('manage_help', )),
+        )
+
+    def manage_help(self, RESPONSE, SCRIPT_NAME):
+        "Help!"
+        RESPONSE.redirect(SCRIPT_NAME+'HelpSys/hs_index')
+        return ''
+
     manage_options  =()
+
+    def filtered_manage_options(
+        self, REQUEST=None,
+        help_option_=({'label': 'Help', 'action': 'manage_help'},),
+        ):
+        if REQUEST is None: REQUEST=self.aq_acquire('REQUEST')
+        try: user=REQUEST['AUTHENTICATED_USER']
+        except: user=None
+        
+        result=[]
+        seen_roles={}
+
+        try: options=tuple(self.manage_options)+help_option_
+        except: options=tuple(self.manage_options())+help_option_
+
+        for d in options:
+
+            path=d.get('path', None)
+            if path is None: path=d['action']
+
+            try:
+                # Traverse to get the action:
+                o=self
+                for a in split(path,'/'):
+                    if not a: continue
+                    if a=='..':
+                        o=o.aq_parent
+                        continue
+                    if hasattr(o, '__bobo_traverse__'):
+                        o=o.__bobo_traverse__(o, a)
+                    elif hasattr(o,a):
+                        o=getattr(o,a)
+                    else:
+                        o=o[a]
+            except:
+                o=None
+
+            if o is None: result.append(d) # Waaaa
+
+            # Get the roles and check for public methods
+            try: roles=o.__roles__
+            except: roles=None
+            if roles is None or 'Anonymous' in roles:
+                result.append(d)
+                continue
+
+            # Do the validation check, trying to
+            # optimize things for the common case of
+            # many actions with the same roles.
+            for r in roles:
+                ok=seen_roles.get(r,None)
+                if ok is None:
+                    if user is None: break
+                    else:
+                        try: ok=user.allowed(o, (r,))
+                        except: ok=0
+                    seen_roles[r]=ok
+
+                if ok:
+                    result.append(d)
+                    break
+
+
+        return result
+                    
+            
+    manage_workspace__roles__=('Anonymous',)
+    def manage_workspace(self, REQUEST):
+        """Dispatch to first interface in manage_options
+        """
+        options=self.filtered_manage_options(REQUEST)
+        try:
+            m=options[0]['action']
+            if m=='manage_workspace': raise TypeError
+        except:
+            raise 'Unauthorized', (
+                'You are not authorized to view this object.<p>')
+
+        if find(m,'/'):
+            raise 'Redirect', (
+                "%s/%s" % (REQUEST['URL1'], m))
+        
+        return getattr(self, m)(self, REQUEST)
+    
+    
     def tabs_path_info(self, script, path):
         url=script
         out=[]
