@@ -91,7 +91,7 @@ def version_txt():
 
     try: 
         s = open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
-        s = re.sub("\(.*?)\?","",s)
+        s = re.sub("\(.*?\)\?","",s)
         s= '(%s, python %d.%d.%d, %s)' % (s,v[0],v[1],v[2],sys.platform)
         return s
     except: 
