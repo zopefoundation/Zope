@@ -3,6 +3,6 @@
 @set INSTANCE_HOME=<<INSTANCE_HOME>>
 @set SOFTWARE_HOME=<<SOFTWARE_HOME>>
 @set CONFIG_FILE=<<INSTANCE_HOME>>\etc\zope.conf
-@set PYTHONPATH=%SOFTWARE_HOME%
+@set PYTHONPATH=%SOFTWARE_HOME%:%SOFTWARE_HOME%\third_party/docutils:%SOFTWARE_HOME%\third_party\docutils\extras
 @set ZOPE_RUN=%SOFTWARE_HOME%\Zope\Startup\run.py
 "%PYTHON%" "%ZOPE_RUN%" -C "%CONFIG_FILE%" %1 %2 %3 %4 %5 %6 %7

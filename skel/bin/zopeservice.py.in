@@ -96,6 +96,8 @@ CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
 PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZOPE_HOME
 
 sys.path.insert(0, SOFTWARE_HOME)
+sys.path.insert(1, os.path.join(SOFTWARE_HOME, 'third_party', 'docutils'))
+sys.path.insert(2, os.path.join(SOFTWARE_HOME, 'third_party', 'docutils', 'extras'))
 
 from nt_svcutils.service import Service
 

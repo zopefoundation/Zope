@@ -281,14 +281,14 @@ setup(
                   sources=['DocumentTemplate/cDocumentTemplate.c'])]
     )
 
-# docutils
+# third_party.docutils.docutils
 setup(
-    name='docutils',
+    name='third_party.docutils.docutils',
     author='David Goodger and contributors',
-    packages=['docutils', 'docutils.languages', 'docutils.parsers',
-              'docutils.parsers.rst', 'docutils.parsers.rst.directives',
-              'docutils.parsers.rst.languages', 'docutils.readers',
-              'docutils.transforms', 'docutils.writers'],
+    packages=['third_party.docutils.docutils', 'third_party.docutils.docutils.languages', 'third_party.docutils.docutils.parsers',
+              'third_party.docutils.docutils.parsers.rst', 'third_party.docutils.docutils.parsers.rst.directives',
+              'third_party.docutils.docutils.parsers.rst.languages', 'third_party.docutils.docutils.readers',
+              'third_party.docutils.docutils.transforms', 'third_party.docutils.docutils.writers'],
     )
 
 # ExtensionClass
