@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.87 $'[11:-2]
+__version__='$Revision: 1.88 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -716,7 +716,7 @@ def rolejoin(roles, other):
     return roles
 
 addr_match=regex.compile('[0-9\.\*]*').match #TS
-host_match=regex.compile('[A-Za-z0-9\.\*]*').match #TS
+host_match=regex.compile('[-A-Za-z0-9\.\*]*').match #TS
 
 
 def domainSpecMatch(spec, request):
