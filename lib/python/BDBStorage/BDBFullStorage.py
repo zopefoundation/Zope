@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.12 $
+# $Revision: 1.13 $
 __version__ = '0.1'
 
 import struct
@@ -33,8 +33,8 @@ from CommitLog import FullLog
 UNDOABLE_TRANSACTION = 'Y'
 PROTECTED_TRANSACTION = 'N'
 
-zero = '\0'*8
-dne = '\377'*8                                    # does not exist
+ZERO = '\0'*8
+DNE = '\377'*8                                    # does not exist
 
 
 
@@ -194,7 +194,6 @@ class Full(BerkeleyBase):
         self._commitlog.promise()
 
     def _finish(self, tid, u, d, e):
-        global zero
         # This is called from the storage interface's tpc_finish() method.
         # Its responsibilities are to finish the transaction with the
         # underlying database.
@@ -267,7 +266,7 @@ class Full(BerkeleyBase):
                         refdoids = []
                         referencesf(pickle, refdoids)
                         for roid in refdoids:
-                            refcount = self._refcounts.get(roid, zero, txn=txn)
+                            refcount = self._refcounts.get(roid, ZERO, txn=txn)
                             refcount = utils.p64(utils.U64(refcount) + 1)
                             self._refcounts.put(roid, refcount, txn=txn)
                     # Update the metadata table
@@ -277,14 +276,14 @@ class Full(BerkeleyBase):
                     # ends up putting multiple copies of the vid/oid records
                     # in the table, but it's easier to weed those out later
                     # than to weed them out now.
-                    if vid <> zero:
+                    if vid <> ZERO:
                         self._currentVersions.put(vid, oid, txn=txn)
                     self._serials.put(oid, tid, txn=txn)
                     self._txnoids.put(tid, oid, txn=txn)
                     # Update the pickle's reference count.  Remember, the
                     # refcount is stored as a string, so we have to do the
                     # string->long->string dance.
-                    refcount = self._pickleRefcounts.get(key, zero, txn=txn)
+                    refcount = self._pickleRefcounts.get(key, ZERO, txn=txn)
                     refcount = utils.p64(utils.U64(refcount) + 1)
                     self._pickleRefcounts.put(key, refcount, txn=txn)
                 elif op == 'v':
@@ -320,7 +319,6 @@ class Full(BerkeleyBase):
     #
 
     def abortVersion(self, version, transaction):
-        global zero
         # Abort the version, but retain enough information to make the abort
         # undoable.
         if transaction is not self._transaction:
@@ -358,7 +356,7 @@ class Full(BerkeleyBase):
                 # the vid we sucked out of the vids table.
                 if curvid <> vid:
                     raise POSException.StorageSystemError
-                if nvrevid == zero:
+                if nvrevid == ZERO:
                     # This object was created in the version, so we don't need
                     # to do anything about it.
                     continue
@@ -367,7 +365,7 @@ class Full(BerkeleyBase):
                 curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', nvmeta[:24])
                 # We expect curvid to be zero because we just got the
                 # non-version entry.
-                if curvid <> zero:
+                if curvid <> ZERO:
                     raise POSException.StorageSystemError
                 # Write the object id, live revision id, the current revision
                 # id (which serves as the previous revid to this transaction)
@@ -386,7 +384,6 @@ class Full(BerkeleyBase):
             self._lock_release()
 
     def commitVersion(self, src, dest, transaction):
-        global zero
         # Commit a source version `src' to a destination version `dest'.  It's
         # perfectly valid to move an object from one version to another.  src
         # and dest are version strings, and if we're committing to a
@@ -405,7 +402,7 @@ class Full(BerkeleyBase):
             # version strings.
             svid = self._vids[src]
             if not dest:
-                dvid = zero
+                dvid = ZERO
             else:
                 # Find the vid for the destination version, or create one if
                 # necessary.
@@ -434,7 +431,7 @@ class Full(BerkeleyBase):
                 # revision id ought to be zero also, regardless of what it was
                 # for the source version.
                 if not dest:
-                    nvrevid = zero
+                    nvrevid = ZERO
                 self._commitlog.write_moved_object(
                     oid, dvid, nvrevid, lrevid, revid)
                 # Remember to return the oid...
@@ -448,7 +445,6 @@ class Full(BerkeleyBase):
             self._lock_release()
 
     def modifiedInVersion(self, oid):
-        global zero
         # Return the version string of the version that contains the most
         # recent change to the object.  The empty string means the change
         # isn't in a version.
@@ -457,7 +453,7 @@ class Full(BerkeleyBase):
             # Let KeyErrors percolate up
             revid = self._serials[oid]
             vid = self._metadata[oid+revid][:8]
-            if vid == zero:
+            if vid == ZERO:
                 # Not in a version
                 return ''
             return self._versions[vid]
@@ -469,7 +465,6 @@ class Full(BerkeleyBase):
     #
 
     def load(self, oid, version):
-        global zero, dne
         # BAW: in the face of application level conflict resolution, it's
         # /possible/ to load an object that is sitting in the commit log.
         # That's bogus though because there's no way to know what to return;
@@ -494,12 +489,12 @@ class Full(BerkeleyBase):
             # object is living in is equal to the version that's being
             # requested, then we can simply return the pickle referenced by
             # the revid.
-            if vid == zero and version:
+            if vid == ZERO and version:
                 raise POSException.VersionError(
                     'Object not found in version: %s' % version)
-            if lrevid == dne:
+            if lrevid == DNE:
                 raise ObjectDoesNotExist('Object no longer exists', revid)
-            if vid == zero or self._versions[vid] == version:
+            if vid == ZERO or self._versions[vid] == version:
                 return self._pickles[oid+lrevid], revid
             # Otherwise, we recognize that an object cannot be stored in more
             # than one version at a time (although this may change if/when
@@ -547,8 +542,6 @@ class Full(BerkeleyBase):
         return vid
 
     def store(self, oid, serial, data, version, transaction):
-        global zero
-
         # Transaction equivalence guard
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
@@ -564,8 +557,8 @@ class Full(BerkeleyBase):
             if oserial is None:
                 # There's never been a previous revision of this object, so
                 # set its non-version revid to zero.
-                nvrevid = zero
-                oserial = zero
+                nvrevid = ZERO
+                oserial = ZERO
             elif serial <> oserial:
                 # The object exists in the database, but the serial number
                 # given in the call is not the same as the last stored serial
@@ -581,8 +574,8 @@ class Full(BerkeleyBase):
                 vid = self.__findcreatevid(version)
             else:
                 # vid 0 means no explicit version
-                vid = zero
-                nvrevid = zero
+                vid = ZERO
+                nvrevid = ZERO
             # A VersionLockError occurs when a particular object is being
             # stored on a version different than the last version it was
             # previously stored on (as long as the previous version wasn't
@@ -593,7 +586,7 @@ class Full(BerkeleyBase):
             if orevid:
                 rec = self._metadata[oid+orevid]
                 ovid, onvrevid = struct.unpack('>8s8s', rec[:16])
-                if ovid == zero:
+                if ovid == ZERO:
                     # The old revision's vid was zero any version is okay.
                     # But if we're storing this on a version, then the
                     # non-version revid will be the previous revid for the
@@ -616,8 +609,6 @@ class Full(BerkeleyBase):
         return self._serial
 
     def transactionalUndo(self, tid, transaction):
-        global zero, dne
-
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
@@ -655,9 +646,9 @@ class Full(BerkeleyBase):
                     # We can always undo the last transaction
                     vid, nvrevid, lrevid, prevrevid = struct.unpack(
                         '>8s8s8s8s', self._metadata[oid+tid])
-                    if prevrevid == zero:
+                    if prevrevid == ZERO:
                         # We're undoing the object's creation
-                        newrevs.append((oid, vid+nvrevid+dne+tid))
+                        newrevs.append((oid, vid+nvrevid+DNE+tid))
                     else:
                         newrevs.append((oid, self._metadata[oid+prevrevid]))
                 else:
@@ -666,7 +657,7 @@ class Full(BerkeleyBase):
                     # transaction previous to the one we want to undo.  If
                     # their lrevids are the same, it's undoable.
                     target_prevrevid = self._metadata[oid+tid][24:]
-                    if target_prevrevid == zero:
+                    if target_prevrevid == ZERO:
                         raise POSException.UndoError, 'Nothing to undo'
                     target_metadata  = self._metadata[oid+target_prevrevid]
                     target_lrevid    = target_metadata[16:24]
@@ -696,14 +687,13 @@ class Full(BerkeleyBase):
     def undoLog(self, first, last, filter=None):
         # Get a list of transaction ids that can be undone, based on the
         # determination of the filter.  filter is a function which takes a
-        # transaction id and returns true or false.
+        # transaction description and returns true or false.
         #
         # Note that this method has been deprecated by undoInfo() which itself
         # has some flaws, but is the best we have now.  We don't actually need
         # to implement undoInfo() because BaseStorage (which we eventually
         # inherit from) mixes in the UndoLogCompatible class which provides an
         # implementation written in terms of undoLog().
-        #
         c = None                                  # tnxMetadata cursor
         txnDescriptions = []                      # the return value
         i = 0                                     # first <= i < last
