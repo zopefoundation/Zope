@@ -6,14 +6,13 @@
 <BODY BGCOLOR="#FFFFFF">
 <TABLE>
 <TR>
-    <TD ALIGN=RIGHT><H3><I>All about me:</I></H3></TD>
+    <TD ALIGN=RIGHT><H3><I>About MailHost <U><!--#var title--></U>:</I></H3></TD>
 </TR>
 <TR>
 	<TD BGCOLOR="#CCCCCC">
 	<B>Title: </B><FONT COLOR="#CC0000"><!--#var title--></FONT><BR>
 	<B>Mail Host: </B><FONT COLOR="#CC0000"><!--#var smtpHost--></FONT><BR>
 	<B>Mail Port: </B><FONT COLOR="#CC0000"><!--#var smtpPort--></FONT><BR>
-	<B>Messages sent: </B><FONT COLOR="#CC0000"><!--#var sentMessages--></FONT>
 	</TD>
 </TR>
 </TABLE>

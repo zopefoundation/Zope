@@ -1,9 +1,9 @@
 from Globals import Persistent, HTMLFile, HTML
 from socket import *
-import Acquisition, sys, regex, string
+import Acquisition, sys, regex, string, types
 
-#$Id: MailHost.py,v 1.4 1997/09/10 15:07:18 jeffrey Exp $ 
-__version__ = "$Revision: 1.4 $"[11:-2]
+#$Id: MailHost.py,v 1.5 1997/09/10 18:41:19 jeffrey Exp $ 
+__version__ = "$Revision: 1.5 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -16,7 +16,7 @@ def add(self, id='aMailHost', title='Some mail thing', smtp_host=None,
     i.title=title           #title
     i._init(localHost=localhost, smtpHost=smtp_host, smtpPort=smtp_port)
     self._setObject(id,i)   #register it
-    return self.manage_main(self,REQUEST)   #and whatever this does..  :)
+    return self.manage_main(self,REQUEST)   #and whatever this does.. :)
 
 
 class MailHost(Persistent, Acquisition.Implicit):
@@ -41,11 +41,8 @@ class MailHost(Persistent, Acquisition.Implicit):
         self.localHost=localHost
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
-        return self.manage(self,REQUEST)
+        return self.manage_main(self,self.REQUEST)
     
-    def __log(self):
-        self.sentMessages=self.sentMessages + 1
-
     def sendTemplate(trueself, self, messageTemplate, 
                      statusTemplate=None, mto=None, mfrom=None, REQUEST):
         'render a mail template, then send it...'
@@ -66,13 +63,13 @@ class MailHost(Persistent, Acquisition.Implicit):
                         subj=headers['subject'], body=messageText
                         )
 
-        self.__log()
-        return ("sent","sent...")
-        #return getattr(self,statusTemplate)(self, self.REQUEST, 
-        #                                   messageText=message)
+        if statusTemplate:
+            return getattr(self,statusTemplate)(self, self.REQUEST, 
+                                                messageText=message)
+        else:
+            return "SEND OK"
         
     def send(self, messageText, mto=None, mfrom=None):
-        'send a rendered message'
         headers, message = newDecapitate(messageText)
         if mto: headers['to'] = mto
         if mfrom: headers['from'] = mfrom
@@ -84,19 +81,11 @@ class MailHost(Persistent, Acquisition.Implicit):
         SendMail(self.smtpHost, self.smtpPort, self.localHost).send( 
                             mfrom=headers['from'], mto=headers['to'],
                             subj=headers['subject'], body=messageText)
-                        
-        self.__log()
-        return ("sent","sent...")
-        #return getattr(self,statusTemplate)(self, self.REQUEST, 
-        #                                   messageText=message)
 
     def simple_send(self, mto, mfrom, subject, body):
-        'like the simplist send or something'
         body="subject: %s\n\n%s" % (subject, body)
         SendMail(self.smtpHost, self.smtpPort, self.localHost).send( 
                         mfrom=mfrom, mto=mto, subj=subject, body=body)
-        self.__log()
-        return ("sent","sent...")
         
 class SendMail:     
     def __init__(self, smtpHost, smtpPort, localHost="localhost"):
@@ -116,7 +105,7 @@ class SendMail:
     def send(self, mfrom, mto, subj, body):
         self.conn.send("mail from:<%s>\n"%mfrom)
         self._check()
-        if type(mto) == type([1,2]):
+        if type(mto) in [types.ListType, types.TupleType]:
             for person in mto:
                 self.conn.send("rcpt to:<%s>\n" % person)
                 self._check()
@@ -147,6 +136,12 @@ def newDecapitate(message):
             headerDict[string.lower(header_re.group('headerName'))] =\
                         string.strip(header_re.group('headerText'))
         linecount=linecount+1
+
+    if headerDict.has_key('to'):
+        headerDict['to']=map(
+            lambda x: string.strip(x),
+            string.split(headerDict['to'], ',')
+            )
     
     body=string.join(maxwell[linecount:],'\n')
     return headerDict, body
@@ -198,6 +193,6 @@ def decapitate(message,
     return (headerDict, body)
 
 #$Log: MailHost.py,v $
-#Revision 1.4  1997/09/10 15:07:18  jeffrey
-#and converted tabs back to spaces in source..  sorry!
+#Revision 1.5  1997/09/10 18:41:19  jeffrey
+#The grand "Should Be Working" version...
 ##
