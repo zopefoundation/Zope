@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.22 1999/03/10 16:32:38 brian Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: __init__.py,v 1.23 1999/03/22 16:59:33 jim Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
-import Version, Draft, ZClasses
+import Version, Draft
 import OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument
 from ImageFile import ImageFile
@@ -99,25 +99,22 @@ classes=('OFS.DTMLMethod.DTMLMethod', 'OFS.DTMLDocument.DTMLDocument',
 klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 
 meta_types=(
-    ZClasses.meta_types+
-    (
-        {'name': Draft.Draft.meta_type,
-         'action':'manage_addPrincipiaDraftForm'},
-        {'name': 'User Folder',
-         'action':'manage_addUserFolder'},
-        {'name': 'Version',
-         'action':'manage_addVersionForm'},
-        {'name': 'File',
-         'action':'manage_addFileForm'},
-        {'name': 'Image',
-         'action':'manage_addImageForm'},
-        {'name': 'Folder',
-         'action':'manage_addFolderForm'},
-        {'name': 'DTML Method',
-         'action':'manage_addDTMLMethodForm'},
-        {'name': 'DTML Document',
-         'action':'manage_addDTMLDocumentForm'},
-        )
+    {'name': Draft.Draft.meta_type,
+     'action':'manage_addPrincipiaDraftForm'},
+    {'name': 'User Folder',
+     'action':'manage_addUserFolder'},
+    {'name': 'Session',
+     'action':'manage_addSessionForm'},
+    {'name': 'File',
+     'action':'manage_addFileForm'},
+    {'name': 'Image',
+     'action':'manage_addImageForm'},
+    {'name': 'Folder',
+     'action':'manage_addFolderForm'},
+    {'name': 'DTML Method',
+     'action':'manage_addDTMLMethodForm'},
+    {'name': 'DTML Document',
+     'action':'manage_addDTMLDocumentForm'},
     )
 
 
@@ -140,15 +137,12 @@ methods={
     'manage_addPrincipiaDraftForm': Draft.manage_addPrincipiaDraftForm,
     'manage_addPrincipiaDraft': Draft.manage_addPrincipiaDraft,
     }
-methods.update(ZClasses.methods)
 
 misc_={
     'version': ImageFile('images/version.gif', globals()),
     }
-misc_.update(ZClasses.misc_)
 
 __ac_permissions__=(
-    ZClasses.__ac_permissions__+
     (
         ('Add Versions',('manage_addVersionForm', 'manage_addVersion')),
         ('Add Documents, Images, and Files',
