@@ -16,6 +16,8 @@
 
 import os
 import errno
+
+from bsddb3Storage.BerkeleyBase import BerkeleyConfig
 from ZODB.tests.StorageTestBase import StorageTestBase
 
 DBHOME = 'test-db'
@@ -37,9 +39,14 @@ class BerkeleyTestBase(StorageTestBase):
                 raise
 
     def _mk_dbhome(self, dir):
+        # Checkpointing just slows the tests down because we have to wait for
+        # the thread to properly shutdown.  This can take up to 10 seconds, so
+        # for the purposes of the test suite we shut off this thread.
+        config = BerkeleyConfig()
+        config.interval = 0
         os.mkdir(dir)
         try:
-            return self.ConcreteStorage(dir)
+            return self.ConcreteStorage(dir, config=config)
         except:
             self._zap_dbhome(dir)
             raise
