@@ -1,0 +1,25 @@
+<html><head><title>Create a product</title></head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+
+<h2>Create a Product</h2>
+
+<form action="manage_addProduct" method="POST">
+<table cellspacing="2">
+
+  <tr>
+    <th align="LEFT" valign="TOP">Id</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="id"
+     size="40"></td>
+  </tr>
+
+  <tr>
+    <th align="LEFT" valign="TOP">Title</th>
+    <td align="LEFT" valign="TOP">
+      <input type="TEXT" name="title" size="40">
+    </td>
+  </tr>
+
+  <tr><td></td><td><br><input type="submit" value="Generate"></td></tr>
+
+</table></form>
+</body></html>

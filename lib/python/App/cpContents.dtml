@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>Contents</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<FORM ACTION="manage_shutdown" METHOD="POST" TARGET="_top">
+The Control Panel provides access to system management functions,
+such as database and product management.  The system has been running
+(with a process ID of <!--#var process_id-->) for <!--#var
+process_time-->.  Click &quot;Shutdown&quot; to shutdown the Principia 
+process. It will be restarted on the next web request.
+<BR><INPUT TYPE="SUBMIT" VALUE="Shutdown">
+</FORM>
+
+<!--#if Principia-Session-->
+<EM>You are currently working in session <!--#var Principia-Session--></EM>
+<!--#/if Principia-Session-->
+<P>
+
+<TABLE>
+<!--#in objectItems-->
+<TR>
+  <td> </td>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var sequence-key-->/manage_main">
+  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
+   ALT="Click to open this item" BORDER="0"></A>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var sequence-key-->/manage_main">
+  <!--#var title--> 
+  </A>
+  <!--#if locked_in_session-->
+    <!--#if modified_in_session-->
+      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
+       ALT="This item has been modified in this session">
+    <!--#else-->
+      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
+       ALT="This item has been modified in another session">
+    <!--#/if-->
+  <!--#/if-->
+  </TD>
+</TR>
+<!--#/in objectValues-->
+</TABLE>
+
+</BODY>
+</HTML>

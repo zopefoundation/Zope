@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var title--></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<P>
+The Database Manager allows you to view database status information.
+It also allows you to perform maintenance tasks such as
+database packing, cache management, 
+and &quot;undoing&quot; previous changes to your site.
+<P>
+<TABLE CELLPADDING="4" BORDER="1">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Database Size</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var db_size-->
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Database Location</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <font size="-1"><!--#var db_name--></font>
+  </TD>
+</TR>
+</TABLE>
+
+
+<TABLE CELLPADDING="4">
+<TR>
+<FORM ACTION="manage_pack" METHOD="POST" TARGET="manage_main">
+<TD ALIGN="LEFT" VALIGN="TOP">
+<BR>Click &quot;Pack&quot; to pack the Principia database, removing 
+previous revisions of objects that are older than
+<INPUT TYPE="TEXT" VALUE="0" NAME="days:float" SIZE="3"> days.
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<BR><INPUT TYPE="SUBMIT" VALUE=" Pack ">
+</TD>
+</FORM>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,33 @@
+<html><head>
+  <title>Create a Distribution Archive</title>
+</head><body>
+<!--#var manage_tabs-->
+
+<H2>Create a Distribution Archive</H2>
+
+<form action="manage_distribute"><table>
+  <tr><th align="LEFT" valign="TOP">Version</th>
+      <td align="LEFT" valign="TOP">
+        <input type=text name="version" value="<!--#var new_version-->">
+      </td>
+  </tr>
+  <tr><th align="LEFT" valign="TOP">Configurable objects</th>
+      <td align="LEFT" valign="TOP">
+        <select name="configurable_objects:list" size=10 multiple>
+        <!--#in objectItems-->
+           <option value="<!--#var sequence-key-->" <!--#
+              if "_['sequence-key'] in configurable_objects_"
+                -->SELECTED<!--#/if-->><!--#
+            var title_and_id--></option>
+        <!--#/in-->
+        </select>
+      </td>
+  </tr>
+  <tr><th></th>
+      <td align="LEFT" valign="TOP">
+        <input type=submit value="Create a distribution archive"
+      </td>
+  </tr>
+</table></form>
+
+</body></html>

@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>Cache</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<h2>Cache Parameters and Statistics</h2>
+<table>
+<tr><th align=right>Total number of objects in the database:</th>
+<td><!--#var database_size--></td></tr>
+
+<tr><th align=right>Number of objects in the cache:</th>
+<td><!--#var cache_length--></td></tr>
+
+<tr><th valign=top align=right>Target size:</th><td>
+<form action="<!--#var URL1-->/manage_cache_size" method=GET>
+<input type="text" name="value:int" value="<!--#var cache_size-->" size=6>
+<input type="submit" value="Change">
+</form></td></tr>
+
+<tr><th align=right>Mean time since last access:</th>
+    <td><!--#var cache_mean_age--></td></tr>
+
+<tr><th valign=top align=right>Target maximum time between accesses:</th><td>
+<form action="<!--#var URL1-->/manage_cache_age" method=GET>
+<input type="text" name="value:int" value="<!--#var cache_age-->" size=6>
+<input type="submit" value="Change">
+</form></td></tr>
+
+<tr><th align=right>Deactivation rate (objects/second):</th>
+    <td><!--#var cache_mean_deac--></td></tr>
+
+<tr><th align=right>Deallocation rate (objects/second):</th>
+    <td><!--#var cache_mean_deal--></td></tr>
+
+<tr><th align=right>Time of last cache garbage collection:</th>
+    <td><!--#var cache_last_gc_time--></td></tr>
+
+</table>
+
+<!--#if show_cache_detail-->
+  <h4>Cache Details</h4><P>
+
+  <table border><tr><th>Object Class</th><th>Count</th></tr>
+    <!--#in cache_detail-->
+      <tr><td><!--#var sequence-key--></td><td><!--#var sequence-item--></td></tr>
+    <!--#/in-->
+  </table>
+<!--#/if-->
+
+<!--#if show_cache_extreme_detail-->
+  <h4>Objects in the cache</h4><P>
+
+  <table border><tr><th>Object ID</th>
+             <th>Object Class</th>
+             <th>Reference Count</th>
+             <th>References</th>
+          </tr>
+    <!--#in cache_extreme_detail mapping-->
+      <tr><td><!--#var oid--></td>
+          <td><!--#var klass--></td>
+          <td><!--#var rc--></td>
+          <td><!--#var references--></td>
+      </tr>
+    <!--#/in-->
+  </table>
+<!--#/if-->
+
+</BODY></HTML>
+

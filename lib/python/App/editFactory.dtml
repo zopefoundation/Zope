@@ -1,0 +1,45 @@
+<html><head><title>Change a factory</title></head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+<!--#var manage_tabs-->
+
+<form action="manage_edit" method="POST">
+<table cellspacing="2">
+
+  <tr>
+    <th align="LEFT" valign="TOP">Id</th>
+    <td align="LEFT" valign="TOP"><!--#var id--></td>
+    </tr>
+
+  <tr>
+    <th align="LEFT" valign="TOP">Title</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="title"
+     size="40" value="<!--#var title-->"></td>
+    </tr>
+  
+  <tr>
+    <th align="LEFT" valign="TOP">
+      Name of new object type, which is the name that will appear in
+      the folder "add" list
+      </th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="object_type"
+     size="40" value="<!--#var object_type-->"></td>
+    </tr>
+  
+  <tr><th ALIGN="LEFT">
+	  Select a method to begin the process of adding
+	  new objects. This is the method that will be invoked when a
+	  user adds a new object.
+      </th>
+      <td ALIGN="LEFT"><select name="initial">
+	<!--#in objectIds-->
+	   <option
+	   <!--#if expr="_['sequence-item']==initial"-->SELECTED<!--#/if-->
+           ><!--#var sequence-item--></option>
+	<!--#/in-->
+      </select></td></tr>
+
+  <tr><td></td><td><br><input type="SUBMIT" value="Change"></td></tr>
+
+</table></form>
+
+</body></html>

@@ -1,0 +1,52 @@
+<html><head><title>Create a factory</title></head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+
+<h2>Create an object factory</h2>
+
+<!--#if objectIds-->
+<form action="manage_addPrincipiaFactory" method="POST">
+<table cellspacing="2">
+
+  <tr>
+    <th align="LEFT" valign="TOP">Id</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="id"
+     size="40"></td>
+    </tr>
+
+  <tr>
+    <th align="LEFT" valign="TOP">Title</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="title"
+     size="40"></td>
+    </tr>
+  
+  <tr>
+    <th align="LEFT" valign="TOP">Add list name</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="object_type"
+     size="40"></td>
+    </tr>
+  
+  <tr><th ALIGN="LEFT">Method</th>
+      <td ALIGN="LEFT"><select name="initial">
+	<!--#in objectItems-->
+           <!--#if "meta_type != 'Principia Factory'"-->
+	     <option><!--#var sequence-key--></option>
+	   <!--#/if-->
+	<!--#/in-->
+      </select></td></tr>
+
+  <tr><td></td><td><br><input type="SUBMIT" value="Generate"></td></tr>
+
+</table></form>
+
+The <strong>Method</strong> is the method that will be invoked when a
+user adds a new object.  This must be one of the objects in the
+product, typically a Document.
+      
+<!--#else-->
+
+Before you can define a factory, you have to define one or more "methods", 
+such as Document or other objects that do the factory's work.
+
+<!--#/if-->
+
+</body></html>
