@@ -566,3 +566,53 @@ def p_name(name):
 def absattr(attr):
     if callable(attr): return attr()
     return attr
+
+
+class td(TemplateDict, cDocument):
+    pass
+
+def expr_match(ob, ed, c=InstanceDict, r=0):
+    e, md, push, pop=ed
+    push(c(ob, md))
+    try: r=e.eval(md)
+    finally:
+        pop()
+        return r
+
+def mtime_match(ob, t, q, fn=hasattr):
+    if not fn(ob, '_p_mtime'):
+        return 0    
+    return q=='<' and (ob._p_mtime < t) or (ob._p_mtime > t)
+
+def role_match(ob, permission, roles, lt=type([]), tt=type(())):
+    pr=[]
+    fn=pr.append
+    
+    while 1:
+        if hasattr(ob, permission):
+            p=getattr(ob, permission)
+            if type(p) is lt:
+                map(fn, p)
+                if hasattr(ob, 'aq_parent'):
+                    ob=ob.aq_parent
+                    continue
+                break
+            if type(p) is tt:
+                map(fn, p)
+                break
+            if p is None:
+                map(fn, ('Manager', 'Anonymous'))
+                break
+
+        if hasattr(ob, 'aq_parent'):
+            ob=ob.aq_parent
+            continue
+        break
+
+    for role in roles:
+        if not (role in pr):
+            return 0
+    return 1
+
+
+
