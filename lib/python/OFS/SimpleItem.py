@@ -16,13 +16,12 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.9 1997/12/18 16:45:42 jeffrey Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: SimpleItem.py,v 1.10 1997/12/19 19:11:17 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
 from CopySupport import CopySource
-from ImageFile import ImageFile
 
 class Item(CopySource):
 
@@ -30,18 +29,13 @@ class Item(CopySource):
 
     # Name, relative to SOFTWARE_URL of icon used to display item
     # in folder listings.
-    icon='ItemIcon'
-    ItemIcon=ImageFile('App/www/arrow.jpg')
+    icon='Product/icon'
 
     # Meta type used for selecting all objects of a given type.
     meta_type='simple item'
 
     # Default title.  
     title=''
-
-    # cute little tab images
-    tabs_rtab=ImageFile('App/www/rtab.gif')
-    tabs_ltab=ImageFile('App/www/ltab.gif')
 
     manage_tabs   =Globals.HTMLFile('App/manage_tabs')
     manage_info   =Globals.HTMLFile('App/manage_info')
@@ -124,6 +118,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.10  1997/12/19 19:11:17  jim
+# updated icon management strategy
+#
 # Revision 1.9  1997/12/18 16:45:42  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #

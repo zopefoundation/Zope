@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.2 1997/12/19 17:06:22 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1997/12/19 19:14:15 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -31,18 +31,17 @@ methods={
     }
 
 misc_={
-    'image': ImageFile('images/Image_icon.gif', globals()),
-    'file': ImageFile('images/File_icon.gif', globals()),
-    'doc': ImageFile('images/Document_icon.gif', globals()),
     'draft': ImageFile('images/DraftFolder.gif', globals()),
     'sup': ImageFile('images/DraftFolderControl.gif', globals()),
     'session': ImageFile('images/session.gif', globals()),
-    'folder': ImageFile('images/folder.gif', globals()),
     }
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.3  1997/12/19 19:14:15  jim
+# updated icon management strategy
+#
 # Revision 1.2  1997/12/19 17:06:22  jim
 # moved Sessions and Daft folders here.
 #

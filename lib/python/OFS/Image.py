@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -8,14 +8,12 @@ from Globals import MessageDialog
 from AccessControl.Role import RoleManager
 import SimpleItem
 import Acquisition
-from ImageFile import ImageFile
 
 class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	   Acquisition.Implicit):
     """Image object"""
     meta_type='File'
-    icon='FileIcon'
-    FileIcon=ImageFile('www/File_icon.gif', globals())
+    icon='p_/file'
 
     manage_editForm   =HTMLFile('imageEdit', globals(), Kind='File', kind='file')
     manage_uploadForm =HTMLFile('imageUpload', globals(), Kind='File', kind='file')
@@ -94,8 +92,7 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 class Image(File):
 
     meta_type='Image'
-    icon='ImageIcon'
-    ImageIcon=ImageFile('www/Image_icon.gif', globals())
+    icon='p_/image'
 
     manage_editForm   =HTMLFile('imageEdit', globals(), Kind='Image', kind='image')
     manage_uploadForm =HTMLFile('imageUpload', globals(), Kind='Image', kind='image')

@@ -18,7 +18,7 @@ that user.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="manage_editForm?name=<!--#var sequence-item fmt=url-quote-->">
-  <IMG SRC="UserIcon"
+  <IMG SRC="<!--#var SCRIPT_NAME-->/p_/User_icon"
    ALT="Click to edit this user" BORDER="0">
   </A>
   <A HREF="manage_editForm?name=<!--#var sequence-item fmt=url-quote-->">

@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.25 1997/12/18 16:45:40 jeffrey Exp $"""
+$Id: Folder.py,v 1.26 1997/12/19 19:11:16 jim Exp $"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -17,9 +17,6 @@ import SimpleItem
 from string import rfind, lower
 from content_types import content_type, find_binary, text_type
 import Image
-from ImageFile import ImageFile
-
-
 
 class FolderHandler:
     """Folder object handler"""
@@ -77,11 +74,9 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     meta_type='Folder'
     id       ='folder'
     title    ='Folder object'
-    icon='FolderIcon'
-    FolderIcon=ImageFile('www/Folder_icon.gif', globals())
+    icon='p_/folder'
 
-    Modified_Gif=ImageFile('www/modified.gif', globals())
-
+    
     _properties=({'id':'title', 'type': 'string'},)
 
     meta_types=()

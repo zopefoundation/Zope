@@ -8,33 +8,19 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.3 1997/11/11 19:26:37 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 1997/12/19 19:11:18 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Session, DraftFolder
 
-__.meta_types=(
-    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
-    {'name':'Session', 'action':'manage_addSessionForm'},
-    {'name':'File', 'action':'manage_addFileForm'},
-    {'name':'Image', 'action':'manage_addImageForm'},
-    {'name':'Folder', 'action':'manage_addFolderForm'},
-    {'name':'Document', 'action':'manage_addDocumentForm'},
-    )
-__.methods={
-    'manage_addSessionForm': Session.addForm,
-    'manage_addSession': Session.add,
-    'manage_addDraftFolderForm': DraftFolder.addForm,
-    'manage_addDraftFolder': DraftFolder.add,
-    }
-
-
-
-
+p_={}
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.4  1997/12/19 19:11:18  jim
+# updated icon management strategy
+#
 # Revision 1.3  1997/11/11 19:26:37  jim
 # Added DraftFolder.
 #

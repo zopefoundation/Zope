@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -7,9 +7,6 @@ from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
 from OFS import SimpleItem
-from ImageFile import ImageFile
-
-
 
 class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     """System management"""
@@ -34,8 +31,7 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     id        ='Control_Panel'
     name=title='Control Panel'
     meta_type ='Control Panel'
-    icon='Icon'
-    Icon      =ImageFile('OFS/www/ControlPanel_icon.gif')
+    icon='p_/ControlPanel_icon'
 
     process_id=os.getpid()
     process_start=int(time.time())

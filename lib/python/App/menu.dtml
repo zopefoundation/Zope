@@ -7,7 +7,7 @@
 <TR>
   <TD VALIGN="TOP" NOWRAP>
   <A HREF="manage_main" TARGET="manage_main">
-  <IMG SRC="<!--#var icon-->" BORDER="0"
+  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
    ALT="Click to open this item"></A> 
   <STRONG>
   <A HREF="manage_main" TARGET="manage_main">
@@ -19,7 +19,7 @@
 </TABLE>
 <!--#tree sort=title_or_id nowrap=1-->
 <A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
-<IMG SRC="<!--#var tree-item-url-->/<!--#var icon-->" BORDER="0"
+<IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
  ALT="Click to open this item"></A> 
 <A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
 <!--#var id-->

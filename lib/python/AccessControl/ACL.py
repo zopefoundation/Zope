@@ -1,6 +1,6 @@
 """Access control objects"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 from Persistence import Persistent
@@ -8,8 +8,6 @@ from DocumentTemplate import HTML
 from Globals import MessageDialog
 from Acquisition import Acquirer
 from string import join, strip, split
-from ImageFile import ImageFile
-
 
 class SafeDtml(HTML):
     """Lobotomized document template w/no editing"""
@@ -28,9 +26,6 @@ class SafeDtml(HTML):
 
 
 
-
-
-
 class ACL(Persistent, Acquirer):
     """An object which stores and provides a user 
        interface to access control information"""
@@ -42,8 +37,8 @@ class ACL(Persistent, Acquirer):
 
     id         ='AccessControl'
     title      ='Access Control'
-    icon='AccessControlIcon'
-    AccessControlIcon=ImageFile('www/AccessControl_icon.gif', globals())
+    #icon='p_/AccessControlIcon'
+    #AccessControlIcon=ImageFile('www/AccessControl_icon.gif', globals())
 
     _groupsForm=SafeDtml('groupsForm')
     _groupForm =SafeDtml('groupForm')

@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -93,9 +93,7 @@ class UserFolder(Persistent, Item, Implicit, Management):
     meta_type='User Folder'
     id       ='acl_users'
     title    ='User Folder'
-    icon='UserFolderIcon'
-    UserFolderIcon=ImageFile('www/UserFolder_icon.gif', globals())
-    UserIcon=ImageFile('www/User_icon.gif', globals())
+    icon='p_/UserFolder'
 
     isPrincipiaFolderish=1
     isAUserFolder=1
@@ -267,6 +265,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.24  1997/12/19 19:03:54  jim
+# updated icon management strategy
+#
 # Revision 1.23  1997/12/18 21:12:47  jeffrey
 # more ImageFile tweaks
 #

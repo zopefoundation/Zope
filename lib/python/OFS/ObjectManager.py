@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.26 1997/12/18 21:12:49 jeffrey Exp $"""
+$Id: ObjectManager.py,v 1.27 1997/12/19 19:11:17 jim Exp $"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -16,7 +16,6 @@ from urllib import quote
 from DocumentTemplate import html_quote
 from cgi_module_publisher import type_converters
 from DateTime import DateTime
-from ImageFile import ImageFile
 
 class ObjectManager(Acquirer,Management,Persistent):
     """Generic object manager
@@ -28,20 +27,12 @@ class ObjectManager(Acquirer,Management,Persistent):
     meta_types = dynamic_meta_types = ()
     id       ='default'
     title=''
-    icon='FolderIcon'
-    FolderIcon=ImageFile('www/Folder_icon.gif', globals())
+    icon='p_/folder'
     _objects   =()
     _properties =({'id':'title', 'type': 'string'},)
 
     manage_main          =HTMLFile('main', globals())
     manage_propertiesForm=HTMLFile('properties', globals())
-
-    Blank_icon=ImageFile('TreeDisplay/www/Blank_icon.gif')
-    Plus_icon=ImageFile('TreeDisplay/www/Plus_icon.gif')
-    Minus_icon=ImageFile('TreeDisplay/www/Minus_icon.gif')
-
-    UpFolderIcon=ImageFile('www/UpFolder_icon.gif', globals())
-    Help_icon   =ImageFile('www/Help_icon.gif', globals())
 
     manage_options=(
     {'icon':icon,              'label':'Objects',
@@ -464,6 +455,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.27  1997/12/19 19:11:17  jim
+# updated icon management strategy
+#
 # Revision 1.26  1997/12/18 21:12:49  jeffrey
 # more ImageFile tweaks
 #

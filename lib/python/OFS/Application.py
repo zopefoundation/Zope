@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.32 1997/12/19 17:04:21 jim Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: Application.py,v 1.33 1997/12/19 19:11:15 jim Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -21,6 +21,7 @@ from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
 
+from ImageFile import ImageFile
 
 class Application(Folder.Folder):
     title    ='Principia'
@@ -36,6 +37,26 @@ class Application(Folder.Folder):
     class p_:
 	"Shared Principia information"
 	__roles__=None
+
+	folder=ImageFile('www/Folder_icon.gif', globals())
+	image =ImageFile('www/Image_icon.gif', globals())
+	file  =ImageFile('www/File_icon.gif', globals())
+	doc   =ImageFile('www/Document_icon.gif', globals())
+
+	UserFolder=ImageFile('AccessControl/www/UserFolder_icon.gif')
+	User_icon =ImageFile('AccessControl/www/User_icon.gif')
+
+	locked=ImageFile('www/modified.gif', globals())
+
+	pl=ImageFile('TreeDisplay/www/Plus_icon.gif')
+	mi=ImageFile('TreeDisplay/www/Minus_icon.gif')
+	rtab=ImageFile('App/www/rtab.gif')
+	ltab=ImageFile('App/www/ltab.gif')
+	ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
+	PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
+
+	#up=ImageFile('www/UpFolder_icon.gif', globals())
+	#help=ImageFile('www/Help_icon.gif', globals())
 
     manage_options=(
     {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
@@ -263,6 +284,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.33  1997/12/19 19:11:15  jim
+# updated icon management strategy
+#
 # Revision 1.32  1997/12/19 17:04:21  jim
 # Make Products a Package.
 #

@@ -20,7 +20,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var id-->/manage_main">
-  <IMG SRC="<!--#var SCRIPT_NAME-->/misc_/<!--#var icon-->"
+  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -31,7 +31,7 @@
   <!--#/if title-->
   </A> 
   <!--#if modified_in_session-->
-  <IMG SRC="Modified_Gif"
+  <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
    ALT="This item has been modified in a session">
   <!--#/if modified_in_session-->
   </TD>

@@ -1,20 +1,18 @@
 """Document object"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
 import SimpleItem, regex
 import Acquisition
-from ImageFile import ImageFile
 
 class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	       Acquisition.Explicit):
     """Document object"""
     meta_type      ='Document'
-    icon='DocumentIcon'
-    DocumentIcon=ImageFile('www/Document_icon.gif', globals())
+    icon='p_/doc'
     __state_names__=HTML.__state_names__+('title','__roles__')
 
     # Documents masquerade as functions:
