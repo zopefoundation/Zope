@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -132,14 +132,9 @@ from App.Dialogs import MessageDialog
 
 SessionNameName='Principia-Session'
 
-if atof(sys.version[:3]) >= 1.5:
-    def package_home(globals_dict):
-	__name__=globals_dict['__name__']
-	return sys.modules[__name__].__path__[0]
-else:
-    # ni
-    def package_home(globals_dict):
-	return globals_dict['__'].__path__[0]
+def package_home(globals_dict):
+    __name__=globals_dict['__name__']
+    return sys.modules[__name__].__path__[0]
     
 # utility stuff
 
