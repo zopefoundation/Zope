@@ -30,7 +30,7 @@
 	 >&last_transaction:int=<dtml-var first_transaction
          >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
          >">
-       Later Transactions</h>
+       Later Transactions</a>
        </td></tr>
     </dtml-if>
     <dtml-in undoable_transactions mapping>
