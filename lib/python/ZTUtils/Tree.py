@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.11 2002/10/04 20:06:52 mj Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Tree.py,v 1.12 2002/10/05 02:10:01 mj Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -187,6 +187,7 @@ def simple_type(ob,
 
 from binascii import b2a_base64, a2b_base64
 from string import translate, maketrans
+import zlib
 
 a2u_map = maketrans('+/=', '-._')
 u2a_map = maketrans('-._', '+/=')
@@ -214,7 +215,7 @@ def a2b(s):
         frags.append(a2b_base64(s[i:i + 76]))
     return ''.join(frags)
 
-def encodeExpansion(nodes):
+def encodeExpansion(nodes, compress=1):
     '''Encode the expanded node ids of a tree into a string.
 
     Accepts a list of nodes, such as that produced by root.flat().
@@ -234,7 +235,10 @@ def encodeExpansion(nodes):
         steps.append(node.id)
         node.expansion_number = n
         n = n + 1
-    return ':'.join(steps)
+    result = ':'.join(steps)
+    if compress:
+        result = ':'  + b2a(zlib.compress(result, 9))
+    return result
 
 def decodeExpansion(s, nth=None):
     '''Decode an expanded node map from a string.
@@ -243,6 +247,9 @@ def decodeExpansion(s, nth=None):
     '''
     if len(s) > 8192: # Set limit to 8K, to avoid DoS attacks.
         raise ValueError('Encoded node map too large')
+
+    if s[0] == ':': # Compressed state
+        s = zlib.decompress(a2b(s[1:]))
     
     map = m = {}
     mstack = []
