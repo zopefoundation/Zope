@@ -31,11 +31,12 @@ PERFORMANCE OF THIS SOFTWARE.
 
 #include "Python.h"
 #include "xmlparse.h"
+#include <setjmp.h>
 
 /*
 ** The version number should match the one in _checkversion
 */
-#define VERSION "1.2"
+#define VERSION "1.3"
 
 static PyObject *ErrorObject;
 
@@ -50,6 +51,8 @@ typedef struct {
 	PyObject *EndElementHandler;
 	PyObject *CharacterDataHandler;
 	PyObject *ProcessingInstructionHandler;
+	int jmpbuf_valid;
+	jmp_buf jmpbuf;
 } xmlparseobject;
 
 staticforward PyTypeObject Xmlparsetype;
@@ -87,6 +90,12 @@ my_StartElementHandler(userdata, name, atts)
 		if (!args) return;
 		rv = PyEval_CallObject(self->StartElementHandler, args);
 		Py_XDECREF(args);
+		if (rv == NULL) {
+			if (self->jmpbuf_valid)
+				longjmp(self->jmpbuf, 1);
+			PySys_WriteStderr("Exception in StartElementHandler()\n");
+			PyErr_Clear();
+		}
 		Py_XDECREF(rv);
 	}
 }
@@ -106,6 +115,12 @@ my_EndElementHandler(userdata, name)
 		if (!args) return;
 		rv = PyEval_CallObject(self->EndElementHandler, args);
 		Py_XDECREF(args);
+		if (rv == NULL) {
+			if (self->jmpbuf_valid)
+				longjmp(self->jmpbuf, 1);
+			PySys_WriteStderr("Exception in EndElementHandler()\n");
+			PyErr_Clear();
+		}
 		Py_XDECREF(rv);
 	}
 }
@@ -127,6 +142,12 @@ my_CharacterDataHandler(userdata, data, len)
 		if (!args) return;
 		rv = PyEval_CallObject(self->CharacterDataHandler, args);
 		Py_XDECREF(args);
+		if (rv == NULL) {
+			if (self->jmpbuf_valid)
+				longjmp(self->jmpbuf, 1);
+			PySys_WriteStderr("Exception in CharacterDataHandler()\n");
+			PyErr_Clear();
+		}
 		Py_XDECREF(rv);
 	}
 }
@@ -148,6 +169,12 @@ my_ProcessingInstructionHandler(userdata, target, data)
 		rv = PyEval_CallObject(self->ProcessingInstructionHandler,
 				       args);
 		Py_XDECREF(args);
+		if (rv == NULL) {
+			if (self->jmpbuf_valid)
+				longjmp(self->jmpbuf, 1);
+			PySys_WriteStderr("Exception in ProcessingInstructionHandler()\n");
+			PyErr_Clear();
+		}
 		Py_XDECREF(rv);
 	}
 }
@@ -171,7 +198,13 @@ xmlparse_Parse(self, args)
 	
 	if (!PyArg_ParseTuple(args, "s#|i", &s, &slen, &isFinal))
 		return NULL;
+	if (setjmp(self->jmpbuf)) {
+		/* Error in callback routine */
+		return NULL;
+	}
+	self->jmpbuf_valid = 1;
 	rv = XML_Parse(self->itself, s, slen, isFinal);
+	self->jmpbuf_valid = 0;
 	return Py_BuildValue("i", rv);
 }
 
