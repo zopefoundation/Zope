@@ -282,7 +282,7 @@ class RaceConditionBase(BerkeleyTestBase):
         get_transaction().abort()
 
     def _getPackThread(self, storage):
-        raise NotImplemented
+        raise NotImplementedError
 
     def testRaceCondition(self):
         unless = self.failUnless
