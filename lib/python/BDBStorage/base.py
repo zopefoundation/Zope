@@ -84,11 +84,19 @@
 ##############################################################################
 """ Base module for BerkeleyStorage implementations """
 
-__version__ ='$Revision: 1.3 $'[11:-2]
+__version__ ='$Revision: 1.4 $'[11:-2]
 
 from ZODB.BaseStorage import BaseStorage
+from ZODB import POSException
 from bsddb3 import db
 import os, tempfile
+
+class BerkeleyDBError(POSException.POSError):
+    """ A BerkeleyDB exception occurred.  This probably indicates that
+    there is a low memory condition, a tempfile space shortage, or
+    a space shortage in the directory which houses the BerkeleyDB log
+    files.  Check available tempfile space, logfile space, and RAM and
+    restart the server process."""
 
 class Base(BaseStorage):
 
@@ -175,8 +183,11 @@ def envFromString(name):
     except:
         raise "Error creating BerkeleyDB environment dir: %s" % name
     e=db.DbEnv()
-    e.open(name,
-           db.DB_CREATE | db.DB_RECOVER
-           | db.DB_INIT_MPOOL | db.DB_INIT_LOCK | db.DB_INIT_TXN
-           )
+    try:
+        e.open(name,
+               db.DB_CREATE | db.DB_RECOVER
+               | db.DB_INIT_MPOOL | db.DB_INIT_LOCK | db.DB_INIT_TXN
+               )
+    except db.error, msg:
+        raise BerkeleyDBError, "%s (%s)" % (BerkeleyDBError.__doc__, msg)
     return e
