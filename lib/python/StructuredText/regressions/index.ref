@@ -27,7 +27,7 @@
       to implement "synchonized" classes and could be used to
       implement argument type checking.</p></li>
 <li><p>A protocol for class initialization that supports execution of a
-      special '_<u>class</u>init__' method after a class has been
+      special <code>__class_init__</code> method after a class has been
       initialized. </p></li>
 
 </ul>

@@ -8,7 +8,7 @@
 </th>
 </tr>
 <tr>
-<td colspan=1 align=left valign=top><p> '_<u>str</u>_' </p>
+<td colspan=1 align=left valign=top><p> <code>__str__</code> </p>
 </td>
 <td colspan=1 align=left valign=middle><p>  This method converts the            
    the object to a string.            </p>

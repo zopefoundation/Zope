@@ -363,9 +363,9 @@
 </p>
 <p>  This version includes <code>ExtensionClass.h</code>.  The two declarations of
   <code>MMtype</code> have been changed from <code>PyTypeObject</code> to <code>PyExtensionClass</code>.
-  The 'METHOD<u>CHAIN' macro has been used to add methods to the end of
+  The <code>METHOD_CHAIN</code> macro has been used to add methods to the end of
   the definition for <code>MMtype</code>.  The module function, newMMobject has
-  been replaced by the <code>MMtype</code> method, 'MM</u><u>init</u>_'.  Note that this
+  been replaced by the <code>MMtype</code> method, <code>MM__init__</code>.  Note that this
   method does not create or return a new object.  Finally, the lines:
 <pre>
     d = PyModule_GetDict(m);

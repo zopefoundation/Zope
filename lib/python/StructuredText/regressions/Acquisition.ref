@@ -55,7 +55,7 @@
     that performs attribute lookup in <code>c</code> when an attribute
     cannot be found in <code>a</code>.</p>
 <p>    Aquisition wrappers provide access to the wrapped objects
-    through the attributes 'aq<u>parent', 'aq</u>self', <code>aq_base</code>.  
+    through the attributes <code>aq_parent</code>, <code>aq_self</code>, <code>aq_base</code>.  
     In the example above, the expressions:
 <pre>
        'c.a.aq_parent is c'
@@ -73,8 +73,8 @@
 </p>
 <p>    evaluates to false, because the expression <code>c.a</code> evaluates
     to an acquisition wrapper around <code>c</code> and <code>a</code>, not <code>a</code> itself.</p>
-<p>    The attribute 'aq<u>base' is similar to 'aq</u>self'.  Wrappers may be
-    nested and 'aq<u>self' may be a wrapped object.  The 'aq</u>base'
+<p>    The attribute <code>aq_base</code> is similar to <code>aq_self</code>.  Wrappers may be
+    nested and <code>aq_self</code> may be a wrapped object.  The <code>aq_base</code>
     attribute is the underlying object with all wrappers removed.</p>
 <h2>  Acquisition Control</h2>
 <p>    Two styles of acquisition are supported in the current
@@ -117,8 +117,8 @@
 </pre>
 </p>
 <p>        The <em>only</em> attributes that are automatically acquired from
-        containing objects are <code>color</code>, and '_<u>roles</u><u><code>.  Note also
-        that the </code></u><u>roles</u>_' attribute is acquired even though it's
+        containing objects are <code>color</code>, and <code>__roles__</code>.  Note also
+        that the <code>__roles__</code> attribute is acquired even though it's
         name begins with an underscore.  In fact, the special
         <code>Acquisition.Acquired</code> value can be used in
         <code>Acquisition.Implicit</code> objects to implicitly acquire selected
@@ -232,23 +232,23 @@
     would have failed.</p>
 <p>    If desired, the current rules for looking up attributes in complex
     expressions can best be understood through repeated application of
-    the '_<u>of</u>_' method:</p>
+    the <code>__of__</code> method:</p>
 <dl>
 <dt>    <code>a.x</code></dt>
-<dd>'x._<u>of</u>_(a)'</dd>
+<dd><code>x.__of__(a)</code></dd>
 <dt>    <code>a.b</code></dt>
-<dd>'b._<u>of</u>_(a)'</dd>
+<dd><code>b.__of__(a)</code></dd>
 <dt>    <code>a.b.x</code></dt>
-<dd>'x._<u>of</u><u>(a).</u><u>of</u><u>(b.</u><u>of</u>_(a))'</dd>
+<dd><code>x.__of__(a).__of__(b.__of__(a))</code></dd>
 <dt>    <code>a.b.c</code></dt>
-<dd>'c._<u>of</u><u>(b.</u><u>of</u>_(a))'</dd>
+<dd><code>c.__of__(b.__of__(a))</code></dd>
 <dt>    <code>a.b.c.x</code></dt>
-<dd>'x._<u>of</u><u>(a).</u><u>of</u><u>(b.</u><u>of</u><u>(a)).</u><u>of</u><u>(c.</u><u>of</u><u>(b.</u><u>of</u>_(a)))'</dd>
+<dd><code>x.__of__(a).__of__(b.__of__(a)).__of__(c.__of__(b.__of__(a)))</code></dd>
 </dl>
 <p>    and by keeping in mind that attribute lookup in a wrapper
     is done by trying to lookup the attribute in the wrapped object
     first and then in the parent object.  In the expressions above
-    involving the '_<u>of</u>_' method, lookup proceeds from left to right.</p>
+    involving the <code>__of__</code> method, lookup proceeds from left to right.</p>
 <p>    Note that heuristics are used to avoid most of the repeated
     lookups. For example, in the expression: <code>a.b.c.x.foo</code>, the object
     <code>a</code> is searched no more than once, even though it is wrapped three

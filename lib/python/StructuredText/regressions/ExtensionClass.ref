@@ -32,7 +32,7 @@
       to implement "synchonized" classes and could be used to
       implement argument type checking.</p></li>
 <li><p>A protocol for class initialization that supports execution of a
-      special '_<u>class</u>init__' method after a class has been
+      special <code>__class_init__</code> method after a class has been
       initialized. </p></li>
 
 </ul>
@@ -80,10 +80,10 @@
     slightly different than the usual class and instance semantics,
     yet we don't want to do most of our development in C.  For
     example, we have developed a persistence mechanism <a href="#1">[1]</a> that
-    redefines '_<u>getattr</u><u><code> and </code></u><u>setattr</u>_' to take storage-related
+    redefines <code>__getattr__</code> and <code>__setattr__</code> to take storage-related
     actions when object state is accessed or modified.  We want to be
     able to take certain actions on <em>every</em> attribute reference, but
-    for python class instances, '_<u>getattr</u>_' is only called when
+    for python class instances, <code>__getattr__</code> is only called when
     attribute lookup fails by normal means.</p>
 <p>    As another example, we would like to have greater control over how
     methods are bound.  Currently, when accessing a class
@@ -196,15 +196,15 @@
 <p>      Like standard python classes, extension classes have the following
       attributes containing meta-data:</p>
 <dl>
-<dt>      '_<u>doc</u>_'</dt>
+<dt>      <code>__doc__</code></dt>
 <dd>a documentation string for the class,</dd>
-<dt>      '_<u>name</u>_'</dt>
+<dt>      <code>__name__</code></dt>
 <dd>the class name,</dd>
-<dt>      '_<u>bases</u>_'</dt>
+<dt>      <code>__bases__</code></dt>
 <dd>a sequence of base classes,</dd>
-<dt>      '_<u>dict</u>_'</dt>
+<dt>      <code>__dict__</code></dt>
 <dd>a class dictionary, and</dd>
-<dt>      '_<u>module</u>_'</dt>
+<dt>      <code>__module__</code></dt>
 <dd>the name of the module in which the class was
                       defined. </dd>
 </dl>
@@ -240,7 +240,7 @@
       <code>ExtensionClass.h</code> that converts a method list to a method chain.
       (See the example below.)</p></li>
 <li><p>Module functions that create new instances must be replaced by 
-      '_<u>init</u>_' methods that initialize, but does not create storage for 
+      <code>__init__</code> methods that initialize, but does not create storage for 
       instances.</p></li>
 <li><p>The extension class must be initialized and exported to the module
       with:
@@ -264,9 +264,9 @@
 </pre>
 </p>
 <p>      where <code>name</code> is a C string containing the attribute name.</p>
-<p>      In addition, a macro is provided that replaces 'Py<u>FindMethod'
+<p>      In addition, a macro is provided that replaces <code>Py_FindMethod</code>
       calls with logic to perform the same sort of lookup that is
-      provided by 'Py</u>FindAttrString'.</p>
+      provided by <code>Py_FindAttrString</code>.</p>
 <p>      If an attribute name is contained in a Python string object,
       rather than a C string object, then the macro <code>Py_FindAttr</code> should
       be used to look up an attribute value.</p>
@@ -317,10 +317,10 @@
 </pre>
 </p>
 <p>    This implementation will fail when an <code>ECSpam</code> object is
-    instantiated.  The problem is that 'ECSpam._<u>init</u><u>' calls
-    'Spam.</u><u>init</u><u>', and 'Spam.</u><u>init</u><u>' can only be called with a
+    instantiated.  The problem is that <code>ECSpam.__init__</code> calls
+    <code>Spam.__init__</code>, and <code>Spam.__init__</code> can only be called with a
     Python instance (an object of type <code>"instance"</code>) as the first
-    argument.  The first argument passed to 'Spam.</u><u>init</u>_' will be an
+    argument.  The first argument passed to <code>Spam.__init__</code> will be an
     <code>ECSpam</code> instance (an object of type <code>ECSPam</code>).</p>
 <p>    To overcome this problem, extension classes provide a class method
     <code>inheritedAttribute</code> that can be used to obtain an inherited
@@ -367,8 +367,8 @@
 <p>        Extension classes provide a similar mechanism for attributes that
         are Python functions or inherited extension functions.  In
         addition, if an extension class attribute is an instance of an
-        extension class that defines an '_<u>of</u><u>' method, then when the
-        attribute is accessed through an instance, it's '</u><u>of</u>_' method
+        extension class that defines an <code>__of__</code> method, then when the
+        attribute is accessed through an instance, it's <code>__of__</code> method
         will be called to create a bound method.</p>
 <p>        Consider the following example:
 <pre>
@@ -400,15 +400,15 @@
 <h4>      Computed Attributes</h4>
 <p>        It is not uncommon to wish to expose information via the
         attribute interface without affecting implementation data
-        structures.  One can use a custom '_<u>getattr</u><u><code> method to
+        structures.  One can use a custom <code>__getattr__</code> method to
         implement computed attributes, however, this can be a bit
-        cumbersome and can interfere with other uses of </code></u><u>getattr</u>_',
+        cumbersome and can interfere with other uses of <code>__getattr__</code>,
         such as for persistence.</p>
-<p>        The '_<u>of</u><u>' protocol provides a convenient way to implement
+<p>        The <code>__of__</code> protocol provides a convenient way to implement
         computed attributes. First, we define a ComputedAttribute
         class.  a ComputedAttribute is constructed with a function to
         be used to compute an attribute, and calls the function when
-        it's '</u><u>of</u>_' method is called:<p>          import ExtensionClass</p>
+        it's <code>__of__</code> method is called:<p>          import ExtensionClass</p>
 <h5>          class ComputedAttribute(ExtensionClass.Base):</h5>
 <p>            def _<u>init</u>_(self, func): self.func=func</p>
 <p>            def _<u>of</u>_(self, parent): return self.func(parent)</p>
@@ -429,15 +429,15 @@
       function call.  Extension classes introduce a new protocol that
       provides extension classes greater control over how their
       methods are called.  If an extension class defines a special
-      method, '_<u>call</u>method_<u><code>, then this method will be called to
+      method, <code>__call_method__</code>, then this method will be called to
       call the functions (or other callable object) wrapped by the
-      method.  The method. </code></u><u>call</u>method__' should provide the same
+      method.  The method. <code>__call_method__</code> should provide the same
       interface as provided by the Python builtin <code>apply</code> function.</p>
 <p>      For example, consider the expression: <code>x.meth(arg1, arg2)</code>.  The
       expression is evaluated by first computing a method object that
       wraps <code>x</code> and the attribute of <code>x</code> stored under the name <code>meth</code>.
-      Assuming that <code>x</code> has a '_<u>call</u>method_<u><code> method defined, then
-      the </code></u><u>call</u>method__' method of <code>x</code> will be called with two
+      Assuming that <code>x</code> has a <code>__call_method__</code> method defined, then
+      the <code>__call_method__</code> method of <code>x</code> will be called with two
       arguments, the attribute of <code>x</code> stored under the name <code>meth</code>,
       and a tuple containing <code>x</code>, <code>arg1</code>, and <code>arg2</code>.</p>
 <p>      To see how this feature may be used, see the Python module,
@@ -470,21 +470,21 @@
 </p>
 <p>      A bound method attribute is set by setting an attribute in it's
       instance with a name consisting of the concatination of the
-      method's '_<u>name</u>_' attribute and the attribute name.
+      method's <code>__name__</code> attribute and the attribute name.
       Attributes cannot be set on unbound methods.</p>
 <h3>    Class initialization</h3>
 <p>      Normal Python class initialization is similar to but subtley
-      different from instance initialization.  An instance '_<u>init</u>_'
+      different from instance initialization.  An instance <code>__init__</code>
       function is called on an instance immediately <em>after</em> it is
-      created.  An instance '_<u>init</u>_' function can use instance
+      created.  An instance <code>__init__</code> function can use instance
       information, like it's class and can pass the instance to other
       functions.  On the other hand, the code in class statements is
       executed immediately <em>before</em> the class is created.  This means
       that the code in a class statement cannot use class attributes,
-      like '_<u>bases</u>_', or pass the class to functions.</p>
+      like <code>__bases__</code>, or pass the class to functions.</p>
 <p>      Extension classes provide a mechanism for specifying code to be
       run <em>after</em> a class has been created.  If a class or one of it's
-      base classes defines a '_<u>class</u>init__' method, then this method
+      base classes defines a <code>__class_init__</code> method, then this method
       will be called just after a class has been created.  The one
       argument passed to the method will be the class, <em>not</em> an
       instance of the class.</p>
