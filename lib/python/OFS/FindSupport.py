@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__="""Principia Find support"""
-__version__='$Revision: 1.13 $'[11:-2]
+__doc__="""Find support"""
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass

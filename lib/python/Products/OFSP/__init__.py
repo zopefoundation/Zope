@@ -82,9 +82,9 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Base Principia
-$Id: __init__.py,v 1.31 1999/08/11 13:43:27 jim Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+__doc__='''Object system core
+$Id: __init__.py,v 1.32 1999/11/03 14:40:12 brian Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, ZClasses.ObjectManager
