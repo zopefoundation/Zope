@@ -13,14 +13,14 @@
 ##############################################################################
 """Global Translation Service for providing I18n to Page Templates.
 
-$Id: GlobalTranslationService.py,v 1.2 2002/09/18 15:12:46 efge Exp $
+$Id: GlobalTranslationService.py,v 1.3 2002/10/06 17:21:07 efge Exp $
 """
 
 class DummyTranslationService:
-    """Translation service that does nothing and returns the message id."""
+    """Translation service that doesn't know anything about translation."""
     def translate(self, domain, msgid, mapping=None,
                   context=None, target_language=None):
-        return msgid
+        return None
     # XXX Not all of Zope.I18n.ITranslationService is implemented.
 
 translationService = DummyTranslationService()

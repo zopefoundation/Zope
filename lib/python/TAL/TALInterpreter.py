@@ -47,6 +47,23 @@ def normalize(text):
     return ' '.join(text.split())
 
 
+NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
+_interp_regex = re.compile(r'(?<!\$)(\$(?:%(n)s|{%(n)s}))' %({'n': NAME_RE}))
+_get_var_regex = re.compile(r'%(n)s' %({'n': NAME_RE}))
+
+def interpolate(text, mapping):
+    """Interpolate ${keyword} substitutions."""
+    if not mapping:
+        return text
+    # Find all the spots we want to substitute.
+    to_replace = _interp_regex.findall(text)
+    # Now substitute with the variables in mapping.
+    for string in to_replace:
+        var = _get_var_regex.findall(string)[0]
+        text = text.replace(string, mapping.get(var))
+    return text
+
+
 class AltTALGenerator(TALGenerator):
 
     def __init__(self, repldict, expressionCompiler=None, xml=0):
@@ -348,7 +365,11 @@ class TALInterpreter:
     def i18n_attribute(self, s):
         # s is the value of an attribute before translation
         # it may have been computed
-        return self.translate(s, {})
+        xlated = self.translate(s, {})
+        if xlated is None:
+            return s
+        else:
+            return xlated
 
     def no_tag(self, start, program):
         state = self.saveState()
@@ -518,25 +539,35 @@ class TALInterpreter:
         # subnodes, which should /not/ go to the output stream.
         tmpstream = self.StringIO()
         self.interpretWithStream(stuff[1], tmpstream)
+        content = None
         # We only care about the evaluated contents if we need an implicit
         # message id.  All other useful information will be in the i18ndict on
         # the top of the i18nStack.
         if msgid == '':
-            msgid = normalize(tmpstream.getvalue())
+            content = tmpstream.getvalue()
+            msgid = normalize(content)
         self.i18nStack.pop()
         # See if there is was an i18n:data for msgid
         if len(stuff) > 2:
             obj = self.engine.evaluate(stuff[2])
         xlated_msgid = self.translate(msgid, i18ndict, obj)
-        # XXX I can't decide whether we want to cgi escape the translated
-        # string or not.  OT1H not doing this could introduce a cross-site
-        # scripting vector by allowing translators to sneak JavaScript into
-        # translations.  OTOH, for implicit interpolation values, we don't
-        # want to escape stuff like ${name} <= "<b>Timmy</b>".
-        #s = escape(xlated_msgid)
-        s = xlated_msgid
+        # If there is no translation available, use evaluated content.
+        if xlated_msgid is None:
+            if content is None:
+                content = tmpstream.getvalue()
+            # We must do potential substitutions "by hand".
+            s = interpolate(content, i18ndict)
+        else:
+            # XXX I can't decide whether we want to cgi escape the translated
+            # string or not.  OT1H not doing this could introduce a cross-site
+            # scripting vector by allowing translators to sneak JavaScript into
+            # translations.  OTOH, for implicit interpolation values, we don't
+            # want to escape stuff like ${name} <= "<b>Timmy</b>".
+            #s = escape(xlated_msgid)
+            s = xlated_msgid
         # If there are i18n variables to interpolate into this string, better
         # do it now.
+        # XXX efge: actually, this is already done by the translation service.
         self._stream_write(s)
     bytecode_handlers['insertTranslation'] = do_insertTranslation
 

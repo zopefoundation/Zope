@@ -277,7 +277,9 @@ Zope Changes
       - xmlrpclib has been updated to the Python 2.2 version, which includes
         support for the Expat parser for unmarshalling data, which speeds up
         things considerably.
-      
+
+      - Added i18n support in TAL processing
+
   Zope 2.6.0 alpha 1
 
     Features Added
