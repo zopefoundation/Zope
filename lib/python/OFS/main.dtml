@@ -45,12 +45,14 @@
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16"></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#unless dontAllowCopyAndPaste-->
   <INPUT TYPE="SUBMIT" NAME="manage_renameForm:method" VALUE="Rename">
   <INPUT TYPE="SUBMIT" NAME="manage_cutObjects:method" VALUE="Cut"> 
   <INPUT TYPE="SUBMIT" NAME="manage_copyObjects:method" VALUE="Copy">
   <!--#if cb_dataValid-->
   <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
   <!--#/if-->
+  <!--#/unless-->
   <INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
   <INPUT TYPE="SUBMIT" NAME="manage_importExportForm:method" VALUE="Export...">
   </TD>
@@ -62,9 +64,11 @@
 <TD>
 There are currently no items in <EM><!--#var title_or_id--></EM>
 <P>
+<!--#unless dontAllowCopyAndPaste-->
 <!--#if cb_dataValid-->
 <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
 <!--#/if-->
+  <!--#/unless-->
 </TD>
 </TABLE>
 <!--#/if-->
