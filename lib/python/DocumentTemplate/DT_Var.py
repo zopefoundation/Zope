@@ -96,7 +96,7 @@ __doc__='''Variable insertion parameters
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.5 1997/10/27 17:39:27 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.6 1997/12/12 16:19:06 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -150,9 +150,11 @@ __rcs_id__='$Id: DT_Var.py,v 1.5 1997/10/27 17:39:27 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DT_Util import *
+
+from string import find, split, join
 
 class Var: 
     name='var'
@@ -185,19 +187,12 @@ class Var:
 
 	# handle special formats defined using fmt= first
 	if have_arg('fmt'):
-	    try:
-		# first try a parameterless method of val
-		val = getattr(val,args['fmt'])()
-	    except AttributeError:
-		try:
-		    # failing that, try a special format
-		    val = special_formats[args['fmt']](val)
-		except KeyError:
-		    try:
-			# last chance - a format string itself?
-			val = args['fmt'] % val
-		    except:
-			pass
+	    fmt=args['fmt']
+	    if hasattr(val, fmt):
+		val = getattr(val,fmt)()
+	    elif special_formats.has_key(fmt):
+		val = special_formats[fmt](val, name, md)
+	    else: val = fmt % val
 
 	# next, look for upper, lower, etc
 	if have_arg('upper'):
@@ -235,7 +230,7 @@ class Var:
 
     __call__=render
 
-def html_quote(v,
+def html_quote(v, name='(Unknown name)', md={},
 	       character_entities=(
 		       (regex.compile('&'), '&amp;'),
 		       (regex.compile("<"), '&lt;' ),
@@ -246,42 +241,59 @@ def html_quote(v,
 	    text=gsub(re,name,text)
 	return text
 
-def url_quote(v):
+def url_quote(v, name='(Unknown name)', md={}):
     import urllib
     return urllib.quote(str(v))
 
-def multi_line(v, nl=regex.compile('\r?\n')):
+def multi_line(v, name='(Unknown name)', md={},
+	       nl=regex.compile('\r?\n')):
     return gsub(nl,'<br>\n',str(v))
 
-def whole_dollars(v):
+def whole_dollars(v, name='(Unknown name)', md={}):
     try: return "$%d" % v
     except: return ''
 
-def dollars_and_cents(v):
+def dollars_and_cents(v, name='(Unknown name)', md={}):
     try: return "$%.2f" % v
     except: return ''
 
-def commatify(v,thou=regex.compile("\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)")):
+def commatify(v, name='(Unknown name)', md={},
+	      thou=regex.compile("\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)")):
     v=str(v)
     while thou.search(v) >= 0:
 	v=sub(thou,"\\1,\\2",v)
     return v
     
-def whole_dollars_with_commas(v):
+def whole_dollars_with_commas(v, name='(Unknown name)', md={}):
     try: v= "$%d" % v
     except: v=''
     return commatify(v)
 
-def dollars_and_cents_with_commas(v):
+def dollars_and_cents_with_commas(v, name='(Unknown name)', md={}):
     try: v= "$%.2f" % v
     except: v= ''
     return commatify(v)
 
-def len_format(v):
+def len_format(v, name='(Unknown name)', md={}):
     return str(len(v))
 
-def len_comma(v):
+def len_comma(v, name='(Unknown name)', md={}):
     return commatify(str(len(v)))
+
+StructuredText=None
+def structured_text(v, name='(Unknown name)', md={}):
+    global StructuredText
+    if StructuredText is None: import StructuredText
+    return str(StructuredText.html_with_references(str(v), 3))
+
+def sql_quote(v, name='(Unknown name)', md={}):
+    """Quote single quotes in a string by doubling them.
+
+    This is needed to securely insert values into sql
+    string literals in templates that generate sql.
+    """
+    if find(c,"'") >= 0: return join(split(v,"'"),"''")
+    return v
 
 special_formats={
     'html-quote': html_quote,
@@ -294,10 +306,18 @@ special_formats={
     'dollars-and-cents-with-commas': dollars_and_cents_with_commas,
     'collection-length': len_format,
     'collection-length-with-commas': len_comma,
+    'structured-text': structured_text,
+    'sql-quote': sql_quote,
     }
+
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.6  1997/12/12 16:19:06  jim
+# Added additional special formats, structured-text and sql-quote.
+# Also changed the way formats are handled.  This has (and will)
+# reveal now hidden fmt=invalid-thing errors.
+#
 # Revision 1.5  1997/10/27 17:39:27  jim
 # removed a comment burp.
 #
