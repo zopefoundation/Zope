@@ -231,7 +231,9 @@ class GlobbingLexicon(Lexicon):
                     digrams.append( (pattern[i] + self.eow) )
 
         if not globbing:
-            result =  self._lexicon.get(pattern, ())
+            result =  self._lexicon.get(pattern, None)
+            if result is None:
+                return ()
             return (result, )
         
         ## now get all of the intsets that contain the result digrams
