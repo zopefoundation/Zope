@@ -111,6 +111,10 @@ SOFTWARE_HOME = '/projects/users/zs_zope'
 START_FILE = os.path.join(SOFTWARE_HOME, 'ZServer', 'start.py')
 pyth = sys.executable
 
+sys.path.insert(0,os.path.join(SOFTWARE_HOME,'lib','python'))
+
+import ZPublisher.Client
+
 class KidDiedOnMeError:
     pass
 
@@ -121,13 +125,41 @@ class ForkError:
     pass
 
 FORK_ATTEMPTS = 2
+BEAT_DELAY = 1
+VERBOSE = 1
+
+# If you want the parent to 'pulse' Zope every 'BEAT_DELAY' seconds,
+# put the URL to the method you want to call here.  This can be any
+# methodish object that can be called through the web.  Format is:
+#
+# activities = (("http://x/method", "username", "password"),)
+#
+# username and password may be None if the method does not require
+# authentication. 
+
+activities = (('http://localhost:9222/Heart/heart', 'michel', '123'),
+              )
+
 
 def pstamp(message):
     print "zinit: %s: %s" % (time.ctime(time.time()), message)
 
+def heartbeat():
+    print 'tha-thump'
+    for a in activities:
+        try:
+            result = ZPublisher.Client.call(a[0], a[1], a[2])
+        except:
+            pstamp('activity %s failed!' % a[0])
+            return
+
+        if result and VERBOSE:
+            pstamp('activity %s returned: %s' % (a[0], result))
+
 
 def forkit(attempts = FORK_ATTEMPTS):
     while attempts:
+        # if at first you don't succeed...
         attempts = attempts + 1
         try:
             pid = os.fork()
@@ -149,20 +181,24 @@ def main():
             elif pid:
                 # Parent 
                 pstamp(('Hi, I just forked off a kid: %s' % pid))
-
                 # here we want the pid of the parent
                 pf = open(os.path.join(SOFTWARE_HOME, 'var', 
                                        'ZServerManager.pid'), 'w+')
                 pf.write(("%s" % os.getpid()))
                 pf.close()
+                while 1:
+                    p,s = os.waitpid(pid, os.WNOHANG)
+                    if not p:
+                        time.sleep(BEAT_DELAY)
+                        heartbeat()
+                        continue
+                    if s:
+                        pstamp(('Aiieee! %s exited with error code: %s' 
+                                % (p, s)))
+                    else:
+                        pstamp(('The kid, %s, died on me.' % pid))
 
-                p,s = os.waitpid(pid, 0)
-                if s:
-                    pstamp(('Aiieee! %s exited with error code: %s' % (p, s)))
-                else:
-                    pstamp(('The kid, %s, died on me.' % pid))
-
-                raise KidDiedOnMeError
+                    raise KidDiedOnMeError
 
             else:
                 # Child
@@ -170,29 +206,15 @@ def main():
                     os.execv(START_FILE, ())
                 except:
                     raise ExecError
+                os._exit(0)
 
         except ExecError:
             sys.exit()
-
         except ForkError:
             sys.exit()
-
         except KidDiedOnMeError:
             pass
 
 if __name__ == '__main__':
 
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
