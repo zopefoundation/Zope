@@ -17,21 +17,21 @@ A TALES Iterator with the ability to use first() and last() on
 subpaths of elements.
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import TALES
 from Expressions import restrictedTraverse, Undefs, getSecurityManager
+from string import split
 
 class Iterator(TALES.Iterator):
     def __bobo_traverse__(self, REQUEST, name):
         if name in ('first', 'last'):
             path = REQUEST['TraversalRequestNameStack']
             names = list(path)
-            del path[:]
             names.reverse()
-            return getattr(self, name)(names)
+            path[:] = [tuple(names)]
         return getattr(self, name)
-            
+
     def same_part(self, name, ob1, ob2):
         if name is None:
             return ob1 == ob2

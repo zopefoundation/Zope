@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -272,7 +272,8 @@ class DeferExpr:
 
 
 def restrictedTraverse(self, path, securityManager,
-                       get=getattr, has=hasattr, N=None, M=[]):
+                       get=getattr, has=hasattr, N=None, M=[],
+                       TupleType=type(()) ):
 
     REQUEST = {'path': path}
     REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
@@ -289,6 +290,10 @@ def restrictedTraverse(self, path, securityManager,
     while path:
         __traceback_info__ = REQUEST
         name = path.pop()
+
+        if isinstance(name, TupleType):
+            object = apply(object, name)
+            continue
 
         if name[0] == '_':
             # Never allowed in a URL.

@@ -42,6 +42,10 @@ repeat: Repeat an element
 
       o *end* - true for the ending, or final, repetition.
 
+      o *first* - true for the first item in a group - see note below
+
+      o *last* - true for the last item in a group - see note below
+
       o *length* - length of the sequence, which will be the total number
         of repetitions.
 
@@ -64,6 +68,15 @@ repeat: Repeat an element
     normal dictionary notation to get the repeat variable, then
     attribute access to get the information, for example,
     'python:repeat['item'].start'.
+
+    Note that 'first' and 'last' are intended for use with sorted
+    sequences.  They try to divide the sequence into group of items
+    with the same value.  If you provide a path, then the value
+    obtained by following that path from a sequence item is used for
+    grouping, otherwise the value of the item is used.  You can
+    provide the path by passing it as a parameter, as in
+    "python:repeat['item'].first('color')", or by appending it to the
+    path from the repeat variable, as in "repeat/item/first/color".
 
   Examples
 
@@ -94,5 +107,14 @@ repeat: Repeat an element
                               z python:x*y"
                   tal:replace="string:$x * $y = $z">1 * 1 = 1</span>
           </td>
+        </tr>
+      </table>
+
+    Objects (already sorted by meta-type) in groups by meta-type::
+
+      <table border="1">
+        <tr tal:repeat="object objects">
+          <td><span tal:condition="repeat/object/first/meta_type"
+                    tal:replace="object/meta_type">Meta Type</span></td>
         </tr>
       </table>
