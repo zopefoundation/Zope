@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -177,7 +177,8 @@ class _cache:
            'GMT-0300','GMT-0400','GMT-0500','GMT-0600','GMT-0700',
            'GMT-0800','GMT-0900','GMT-1000','GMT-1100','GMT-1200']
 
-    _zmap={'brazil/acre':'Brazil/Acre',
+    _zmap={'aest':'GMT+1000', 'aedt':'GMT+1100',
+           'brazil/acre':'Brazil/Acre',
            'brazil/denoronha':'Brazil/Denoronha',
            'brazil/east':'Brazil/East','brazil/west':'Brazil/West',
            'canada/atlantic':'Canada/Atlantic',
