@@ -6,6 +6,15 @@ Zope Changes
 
   Releases
 
+    Zope  x.x.x
+
+      Features Added
+
+
+      Bugs Fixed
+
+        - Added small fixes to ZopeHTTPServer in anticipation of DAV.
+
     Zope  1.10.2
 
       Bugs Fixed
