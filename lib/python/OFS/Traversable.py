@@ -23,7 +23,7 @@ from urllib import quote
 
 NotFound = 'NotFound'
 
-_marker=[]
+_marker = object()
 
 class Traversable:
 
@@ -106,100 +106,130 @@ class Traversable:
 
     unrestrictedTraverse__roles__=() # Private
     def unrestrictedTraverse(self, path, default=_marker, restricted=0):
+        """Lookup an object by path,
+        
+        path -- The path to the object. May be a sequence of strings or a slash
+        separated string. If the path begins with an empty path element
+        (i.e., an empty string or a slash) then the lookup is performed
+        from the application root. Otherwise, the lookup is relative to
+        self. Two dots (..) as a path element indicates an upward traversal
+        to the acquisition parent.
+        
+        default -- If provided, this is the value returned if the path cannot
+        be traversed for any reason (i.e., no object exists at that path or
+        the object is inaccessible).
+        
+        restricted -- If false (default) then no security checking is performed.
+        If true, then all of the objects along the path are validated with
+        the security machinery. Usually invoked using restrictedTraverse().
+        """
+        if not path:
+            return self
+        
+        _getattr = getattr
+        _hasattr = hasattr
+        _none = None
+        marker = _marker
 
-        if not path: return self
+        if isinstance(path, str):
+            # Unicode paths are not allowed
+            path = path.split('/')
+        else: 
+            path = list(path)
 
-        get=getattr
-        has=hasattr
-        N=None
-        M=_marker
-
-        if isinstance(path, str): path = path.split('/')
-        else: path=list(path)
-
-        REQUEST={'TraversalRequestNameStack': path}
+        REQUEST = {'TraversalRequestNameStack': path}
         path.reverse()
-        pop=path.pop
+        path_pop=path.pop
 
         if len(path) > 1 and not path[0]:
             # Remove trailing slash
             path.pop(0)
 
-        if restricted: securityManager=getSecurityManager()
-        else: securityManager=N
+        if restricted: 
+            securityManager = getSecurityManager()
+        else: 
+            securityManager = _none
 
         if not path[-1]:
             # If the path starts with an empty string, go to the root first.
-            pop()
-            self=self.getPhysicalRoot()
-            if (restricted and not securityManager.validate(
-                None, None, None, self)):
+            path_pop()
+            self = self.getPhysicalRoot()
+            if (restricted 
+                and not securityManager.validate(None, None, None, self)):
                 raise Unauthorized, name
 
         try:
-            object = self
+            obj = self
             while path:
-                name=pop()
+                name = path_pop()
                 __traceback_info__ = path, name
 
                 if name[0] == '_':
                     # Never allowed in a URL.
                     raise NotFound, name
 
-                if name=='..':
-                    o=getattr(object, 'aq_parent', M)
-                    if o is not M:
-                        if (restricted and not securityManager.validate(
-                            object, object,name, o)):
+                if name == '..':
+                    next = aq_parent(obj)
+                    if next is not _none:
+                        if restricted and not securityManager.validate(
+                            obj, obj,name, next):
                             raise Unauthorized, name
-                        object=o
+                        obj = next
                         continue
 
-                t=get(object, '__bobo_traverse__', N)
-                if t is not N:
-                    o=t(REQUEST, name)
-
+                bobo_traverse = _getattr(obj, '__bobo_traverse__', _none)
+                if bobo_traverse is not _none:
+                    next = bobo_traverse(REQUEST, name)
                     if restricted:
-                        container = N
-                        if aq_base(o) is not o:
+                        if aq_base(next) is not next:
                             # The object is wrapped, so the acquisition
-                            # context determines the container.
-                            container = aq_parent(aq_inner(o))
-                        elif has(o, 'im_self'):
-                            container = o.im_self
-                        elif (has(get(object, 'aq_base', object), name)
-                              and get(object, name) == o):
-                            container = object
-                        if (not securityManager.validate(object,
-                                                         container, name, o)):
+                            # context is the container.
+                            container = aq_parent(aq_inner(next))
+                        elif _getattr(next, 'im_self', _none) is not _none:
+                            # Bound method, the bound instance
+                            # is the container
+                            container = next.im_self
+                        elif _getattr(aq_base(obj), name, marker) == next:
+                            # Unwrapped direct attribute of the object so
+                            # object is the container
+                            container = obj
+                        else:
+                            # Can't determine container
+                            container = _none
+                        if not securityManager.validate(
+                            obj, container, name, next):
                             raise Unauthorized, name
-
                 else:
                     if restricted:
-                        o = guarded_getattr(object, name, M)
+                        next = guarded_getattr(obj, name, marker)
                     else:
-                        o = get(object, name, M)
-                    if o is M:
+                        next = _getattr(obj, name, marker)
+                    if next is marker:
                         try:
-                            o=object[name]
+                            next=obj[name]
                         except AttributeError:
                             # Raise NotFound for easier debugging
+                            # instead of AttributeError: __getitem__
                             raise NotFound, name
-                        if (restricted and not securityManager.validate(
-                            object, object, N, o)):
+                        if restricted and not securityManager.validate(
+                            obj, obj, _none, next):
                             raise Unauthorized, name
 
-                object=o
+                obj = next
 
-            return object
+            return obj
 
-        except ConflictError: raise
+        except ConflictError:
+            raise
         except:
-            if default==_marker: raise
-            return default
+            if default is not marker:
+                return default
+            else:
+                raise
 
     restrictedTraverse__roles__=None # Public
     def restrictedTraverse(self, path, default=_marker):
+        # Trusted code traversal code, always enforces security
         return self.unrestrictedTraverse(path, default, restricted=1)
 
 def path2url(path):

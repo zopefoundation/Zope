@@ -84,8 +84,20 @@ class BoboTraversable(SimpleItem):
     def __bobo_traverse__(self, request, name):
         if name == 'bb_subitem':
             return BoboTraversable().__of__(self)
+        elif name == 'bb_method':
+            return self.bb_method
+        elif name == 'bb_status':
+            return self.bb_status
+        elif name == 'manufactured':
+            return 42
         else:
             raise KeyError
+    
+    def bb_method(self):
+        """Test Method"""
+        pass
+        
+    bb_status = 'screechy'
 
 
 def makeConnection():
@@ -152,13 +164,17 @@ class TestTraverse( unittest.TestCase ):
 
     def testTraversePath( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
-        self.failUnless( self.folder1.unrestrictedTraverse( ('', 'folder1', 'file' ) ))
-        self.failUnless( self.folder1.unrestrictedTraverse( ('', 'folder1' ) ))
+        self.failUnless( 
+            self.folder1.unrestrictedTraverse( ('', 'folder1', 'file' ) ))
+        self.failUnless( 
+            self.folder1.unrestrictedTraverse( ('', 'folder1' ) ))
 
     def testTraverseURLNoSlash( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
-        self.failUnless( self.folder1.unrestrictedTraverse( '/folder1/file' ))
-        self.failUnless( self.folder1.unrestrictedTraverse( '/folder1' ))
+        self.failUnless( 
+            self.folder1.unrestrictedTraverse( '/folder1/file' ))
+        self.failUnless( 
+            self.folder1.unrestrictedTraverse( '/folder1' ))
 
     def testTraverseURLSlash( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
@@ -166,11 +182,15 @@ class TestTraverse( unittest.TestCase ):
         self.failUnless( self.folder1.unrestrictedTraverse( '/folder1/' ))
 
     def testTraverseToNone( self ):
-        self.failUnlessRaises( KeyError, self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2' ) )
-        self.failUnlessRaises( KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
-        self.failUnlessRaises( KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
+        self.failUnlessRaises( 
+            KeyError, 
+            self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2' ) )
+        self.failUnlessRaises( 
+            KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
+        self.failUnlessRaises( 
+            KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
 
-    def testTraverseThroughBoboTraverse(self):
+    def testBoboTraverseToWrappedSubObj(self):
         # Verify it's possible to use __bobo_traverse__ with the
         # Zope security policy.
         noSecurityManager()
@@ -178,6 +198,33 @@ class TestTraverse( unittest.TestCase ):
         bb = BoboTraversable()
         self.failUnlessRaises(KeyError, bb.restrictedTraverse, 'notfound')
         bb.restrictedTraverse('bb_subitem')
+
+    def testBoboTraverseToMethod(self):
+        # Verify it's possible to use __bobo_traverse__ to a method.
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        bb = BoboTraversable()
+        self.failUnless(
+            bb.restrictedTraverse('bb_method') is not bb.bb_method)
+
+    def testBoboTraverseToSimpleAttrValue(self):
+        # Verify it's possible to use __bobo_traverse__ to a simple
+        # python value
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        bb = BoboTraversable()
+        self.assertEqual(bb.restrictedTraverse('bb_status'), 'screechy')
+
+    def testBoboTraverseToNonAttrValue(self):
+        # Verify it's possible to use __bobo_traverse__ to an
+        # arbitrary manufactured object
+        noSecurityManager()
+        # Default security policy always seems to deny in this case, which
+        # is fine, but to test the code branch we sub in the forgiving one
+        SecurityManager.setSecurityPolicy(UnitTestSecurityPolicy())
+        bb = BoboTraversable()
+        self.failUnless(
+            bb.restrictedTraverse('manufactured') is 42)
 
     def testAcquiredAttributeDenial(self):
         # Verify that restrictedTraverse raises the right kind of exception
@@ -190,6 +237,24 @@ class TestTraverse( unittest.TestCase ):
         self.root.stuff = 'stuff here'
         self.failUnlessRaises(Unauthorized,
                               self.root.folder1.restrictedTraverse, 'stuff')
+    
+    def testDefaultValueWhenUnathorized(self):
+        # Test that traversing to an unauthorized object returns
+        # the default when provided
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy(CruelSecurityPolicy())
+        newSecurityManager( None, UnitTestUser().__of__( self.root ) )
+        self.root.stuff = 'stuff here'
+        self.assertEqual(
+            self.root.folder1.restrictedTraverse('stuff', 42), 42)
+    
+    def testDefaultValueWhenNotFound(self):
+        # Test that traversing to a non-existent object returns
+        # the default when provided
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        self.assertEqual(
+            self.root.restrictedTraverse('happy/happy', 'joy'), 'joy')
 
 
 def test_suite():
