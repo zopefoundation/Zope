@@ -76,6 +76,4 @@ class DefaultConfiguration:
         self.softwarehome = FindHomes.SOFTWARE_HOME
         self.zopehome = FindHomes.ZOPE_HOME
         self.debug_mode = True
-
-
-    
+        self.enable_product_installation = True
