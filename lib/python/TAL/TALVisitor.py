@@ -229,7 +229,10 @@ class TALVisitor(CopyingDOMVisitor):
             newChild = self.newDocument.createTextNode(str(data))
             self.curNode.appendChild(newChild)
         elif key == "structure":
+            # XXX need to copy the nodes
             data = self.engine.evaluateStructure(expr)
+            # XXX maybe data needs to be a documentFragment node;
+            # then the implementation here isn't quite right
             attrDone = not attrDict
             for newChild in data:
                 self.curNode.appendChild(newChild)
