@@ -59,7 +59,7 @@ Zope Changes
 
   Releases
 
-    Zope 2.X
+    Zope 2.0.1
 
       Features Added
 
@@ -79,9 +79,13 @@ Zope Changes
 
       Bugs Fixed
 
+        - A significant security problem: Users with local roles could
+          gain priviledges on acquired objects.
+
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
+	  
 
     Zope 2.0
 
