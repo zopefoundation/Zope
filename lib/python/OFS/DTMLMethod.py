@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -182,7 +182,10 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
 
     def get_size(self):
         return len(self.raw)
-    
+
+    # deprecated; use get_size!
+    getSize=get_size
+
     def validate(self, inst, parent, name, value, md):
         return getSecurityManager().validate(inst, parent, name, value)
 

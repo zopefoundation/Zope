@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.105 $'[11:-2]
+__version__='$Revision: 1.106 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -370,8 +370,10 @@ class File(Persistent,Implicit,PropertyManager,
         size=self.size
         if size is None: size=len(self.data)
         return size
-    
-    
+
+    # deprecated; use get_size!
+    getSize=get_size
+
     def getContentType(self):
         """Get the content type of a file or image.
 
