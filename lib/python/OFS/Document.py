@@ -1,16 +1,15 @@
 """Document object"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
 import SimpleItem, regex
+import Acquisition
 
-
-
-
-class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
+class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
+	       Acquisition.Implicit):
     """Document object"""
     meta_type      ='Document'
     icon           ='OFS/Document_icon.gif'
