@@ -83,17 +83,10 @@
 # 
 ##############################################################################
 
-import sys
+import os, sys
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
-try: import ZODB
-except:
-    import os
-    sys.path.insert(0, os.getcwd())
-    sys.path.insert(0, '../..')
-    import ZODB
-
-import unittest
-from Products.PluginIndexes.TextIndex import Splitter
+from TextIndex import Splitter
 
 Splitter = Splitter.getSplitter()
 
@@ -122,22 +115,4 @@ class TestSplitter(unittest.TestCase):
        r = map(None, a)
        assert r == ['without', 'you', 'nothing'], r
        
-def test_suite():
-   return unittest.makeSuite(TestSplitter, 'test')
-
-def main():
-   unittest.TextTestRunner().run(test_suite())
-
-def debug():
-   test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-   
-if __name__=='__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
-
+framework()

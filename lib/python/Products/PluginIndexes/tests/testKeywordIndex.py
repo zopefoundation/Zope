@@ -83,15 +83,9 @@
 # 
 ##############################################################################
 import os, sys
-        
-sys.path.insert(0, os.getcwd())
-try: import unittest
-except:
-    sys.path[0]=os.path.join(sys.path[0],'..','..')
-    import unittest
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
-import ZODB
-from Products.PluginIndexes.KeywordIndex.KeywordIndex  import KeywordIndex
+from KeywordIndex.KeywordIndex import KeywordIndex
 
 class Dummy:
 
@@ -153,21 +147,12 @@ class TestCase( unittest.TestCase ):
 
     def testAddObjectWOKeywords(self):
 
-
-        import zLOG
-
-        def log_write(subsystem, severity, summary, detail, error,
-                      PROBLEM=zLOG.PROBLEM):
-            if severity >= PROBLEM:
-                assert 0, "%s(%s): %s" % (subsystem, severity, summary)
-
-        old_log_write=zLOG.log_write
-        zLOG.log_write=log_write
+        catch_log_errors()
         try:
             self._populateIndex()
             self._index.index_object(999, None)
         finally:
-            zLOG.log_write=old_log_write
+            ignore_log_errors()
     
     def testEmpty( self ):
         assert len( self._index ) == 0
@@ -249,22 +234,4 @@ class TestCase( unittest.TestCase ):
         assert len(result) == 1
         assert result[0] == 8
 
-def test_suite():
-    return unittest.makeSuite( TestCase )
-
-def main():
-    unittest.TextTestRunner().run( test_suite() )
-
-def debug():
-    test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
-    
+framework()    

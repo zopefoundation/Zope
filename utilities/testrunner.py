@@ -65,13 +65,11 @@ class TestRunner:
         return function()
 
     def smellsLikeATest(self, filepath, find=string.find):
-        file=open(filepath, 'r')
-        lines=file.readlines()
+        file = open(filepath, 'r')
+        text = file.read()
         file.close()
-        for line in lines:
-            if find(line, 'def test_suite(') > -1:
-                return 1
-        return 0
+        return ((find(text, 'unittest') > -1) or
+                (find(text, 'framework.py') > -1))
 
     def runSuite(self, suite):
         runner=pyunit.TextTestRunner()

@@ -82,30 +82,21 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-import sys
+import os, sys
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
-try:
-    sys.path.insert(0, '.')
-    import ZODB
-except:
-    sys.path.insert(0, '../../..')
-    import ZODB
-
+import ZODB
 from Products.PythonScripts.PythonScript import PythonScript
 from AccessControl.SecurityManagement import newSecurityManager
 
 newSecurityManager(None, None)
-
-from unittest import TestCase, TestSuite, VerboseTextTestRunner, makeSuite
-
-TextTestRunner = VerboseTextTestRunner
 
 # Test Classes
 
 def readf(name):
     return open('tscripts/%s%s' % (name, '.ps'), 'r').read()
 
-class TestPythonScriptNoAq(TestCase):
+class TestPythonScriptNoAq(unittest.TestCase):
     def _newPS(self, txt, bind=None):
         ps = PythonScript('ps')
         ps.ZBindings_edit(bind or {})
@@ -217,29 +208,5 @@ class TestPythonScriptNoAq(TestCase):
         true = self._newPS(readf('boolean_map'))()
         assert true
 
-
-test_classes = (TestPythonScriptNoAq,)
-
-# unit test machinery
-
-def test_suite():
-    ts = []
-    for tclass in test_classes:
-        ts.append(makeSuite(tclass, 'test'))
-    
-    return TestSuite(tuple(ts))
-
-def main():
-    alltests=test_suite()
-    runner = TextTestRunner()
-    runner.run(alltests)
-
-def debug():
-   test_suite().debug()
-    
-if __name__=='__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
+framework()
 

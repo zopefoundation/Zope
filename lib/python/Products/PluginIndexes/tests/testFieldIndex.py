@@ -83,17 +83,11 @@
 # 
 ##############################################################################
 
-import sys
-sys.path.insert(0, '.')
-try:
-    import Testing
-except ImportError:
-    sys.path[0] = '../../'
-    import Testing
+import os, sys
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
 import ZODB
-import unittest
-from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
+from FieldIndex.FieldIndex import FieldIndex
 
 class Dummy:
 
@@ -167,7 +161,7 @@ class TestCase( unittest.TestCase ):
         for k, v in expectedValues:
             assert k in result
     
-    def testEmpty( self ):
+    def checkEmpty( self ):
         "Test an empty FieldIndex."
 
         assert len( self._index ) == 0
@@ -188,7 +182,7 @@ class TestCase( unittest.TestCase ):
         self._checkApply( self._max_req, [] )
         self._checkApply( self._range_req, [] )
     
-    def testPopulated( self ):
+    def checkPopulated( self ):
         """ Test a populated FieldIndex """
         self._populateIndex()
         values = self._values
@@ -213,21 +207,21 @@ class TestCase( unittest.TestCase ):
         self._checkApply( self._max_req, values[ :3 ] + values[ -2: ] )
         self._checkApply( self._range_req, values[ 2:5 ] )
 
-    def testZero( self ):
+    def checkZero( self ):
         """ Make sure 0 gets indexed """
         self._populateIndex()
         values = self._values
         self._checkApply( self._zero_req, values[ -2:-1 ] )
         assert 0 in self._index.uniqueValues( 'foo' )
 
-    def testNone(self):
+    def checkNone(self):
         """ make sure None gets indexed """
         self._populateIndex()
         values = self._values
         self._checkApply(self._none_req, values[-1:])
         assert None in self._index.uniqueValues('foo')
 
-    def testRange(self):
+    def checkRange(self):
         """Test a range search"""
         index = FieldIndex( 'foo' )
         for i in range(100):
@@ -249,21 +243,4 @@ class TestCase( unittest.TestCase ):
         assert r==expect, r 
             
         
-def test_suite():
-    return unittest.makeSuite( TestCase )
-
-def debug():
-    return test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-def main():
-    unittest.TextTestRunner().run( test_suite() )
-
-if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
+framework()

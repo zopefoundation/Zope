@@ -83,29 +83,12 @@
 # 
 ##############################################################################
 
-import sys, os
+import os, sys
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
-sys.path.insert(0, os.getcwd())
-try: import unittest
-except:
-    sys.path[0]=os.path.join(sys.path[0],'..','..')
-    import unittest
+from Testing.ZODButil import makeDB, cleanDB
 
-class Dummy:
-
-    def __init__(self, **kw):
-        self.__dict__.update(kw)
-
-import zLOG
-
-def log_write(subsystem, severity, summary, detail, error):
-    if severity >= zLOG.PROBLEM:
-        assert 0, "%s(%s): %s" % (subsystem, severity, summary)
-
-zLOG.log_write=log_write
-
-import ZODB, ZODB.DemoStorage, ZODB.FileStorage
-from Products.PluginIndexes.TextIndex import TextIndex,GlobbingLexicon
+from TextIndex import TextIndex, GlobbingLexicon
 
 class Tests(unittest.TestCase):
 
@@ -114,14 +97,12 @@ class Tests(unittest.TestCase):
        self.doc=Dummy(text='this is the time, when all good zopes')
 
    def dbopen(self):
-       n = 'fs_tmp__%s' % os.getpid()
-       s = ZODB.FileStorage.FileStorage(n)
-       db=self.db=ZODB.DB(s)
-       self.jar=db.open()
-       if not self.jar.root().has_key('index'):
-           self.jar.root()['index']=TextIndex.TextIndex('text')
+       db = self.db = makeDB()
+       jar = self.jar = db.open()
+       if not jar.root().has_key('index'):
+           jar.root()['index'] = TextIndex.TextIndex('text')
            get_transaction().commit()
-       return self.jar.root()['index']
+       return jar.root()['index']
 
    def dbclose(self):
        self.jar.close()
@@ -133,18 +114,19 @@ class Tests(unittest.TestCase):
        get_transaction().abort()
        if hasattr(self, 'jar'):
            self.dbclose()
-           os.system('rm -f fs_tmp__*')
+           cleanDB()
+       self.__dict__.clear()
 
-   def checkSimpleAddDelete(self):
-       "Check that we can add and delete an object without error"
+   def testSimpleAddDelete(self):
+       "Test that we can add and delete an object without error"
        self.index.index_object(0, self.doc)
        self.index.index_object(1, self.doc)
        self.doc.text='spam is good, spam is fine, span span span'
        self.index.index_object(0, self.doc)
        self.index.unindex_object(0)
 
-   def checkPersistentUpdate1(self):
-       "Check simple persistent indexing"
+   def testPersistentUpdate1(self):
+       "Test simple persistent indexing"
        index=self.dbopen()
 
        self.doc.text='this is the time, when all good zopes'
@@ -169,8 +151,8 @@ class Tests(unittest.TestCase):
        r=list(r[0].keys())
        assert  r == [0,1], r
 
-   def checkPersistentUpdate2(self):
-       "Check less simple persistent indexing"
+   def testPersistentUpdate2(self):
+       "Test less simple persistent indexing"
        index=self.dbopen()
 
        self.doc.text='this is the time, when all good zopes'
@@ -216,197 +198,79 @@ class Tests(unittest.TestCase):
        """This license has been certified as Open Source(tm).""",
        """I hope I get to work on time""",
        ]
+
+   def globTest(self, qmap, rlist):
+       "Test a glob query"
+       index = getattr(self, '_v_index', None)
+       if index is None:
+           index=self.dbopen()
+           index._lexicon = GlobbingLexicon.GlobbingLexicon()
+
+           for i in range(len(self.sample_texts)):
+               self.doc.text=self.sample_texts[i]
+               index.index_object(i, self.doc)
+               get_transaction().commit()
+
+           self.dbclose()
+
+           index = self._v_index = self.dbopen()
+
+       r = list(index._apply_index(qmap)[0].keys())
+       assert  r == rlist, r
        
-   def checkGlobQuery(self):
-       "Check a glob query"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
+   def testStarQuery(self):
+       "Test a star query"
+       self.globTest({'text':'m*n'}, [0,2])
 
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
+   def testAndQuery(self):
+       "Test an AND query"
+       self.globTest({'text':'time and country'}, [0,])
 
-       self.dbclose()
+   def testOrQuery(self):
+       "Test an OR query"
+       self.globTest({'text':'time or country'}, [0,1,6])
 
-       index=self.dbopen()
+   def testDefOrQuery(self):
+       "Test a default OR query"
+       self.globTest({'text':'time country'}, [0,1,6])
 
-       r = index._apply_index({'text':'m*n'})
-       r=list(r[0].keys())
-       assert  r == [0,2], r
+   def testNearQuery(self):
+       """Test a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!)"""
+       # NEAR never worked, so Zopes post-2.3.1b3 define near to mean AND
+       self.globTest({'text':'time ... country'}, [0,])
 
-   def checkAndQuery(self):
-       "Check an AND query"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
+   def testQuotesQuery(self):
+       """Test a quoted query"""
+       self.globTest({'text':'"This is the time"'}, [0,])
+       self.globTest({'text':'"now is the time"'}, [])
 
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
+   def testAndNotQuery(self):
+       "Test an ANDNOT query"
+       self.globTest({'text':'time and not country'}, [6,])
 
-       self.dbclose()
+   def testParenMatchingQuery(self):
+       "Test a query with parens"
+       self.globTest({'text':'(time and country) men'}, [0,])
+       self.globTest({'text':'(time and not country) or men'}, [0, 6])
 
-       index=self.dbopen()
+   def testTextIndexOperatorQuery(self):
+       "Test a query with 'operator' in the request"
+       self.globTest({'text': {'query': 'time men', 'operator':'and'}}, [0,])
 
-       r = index._apply_index({'text':'time and country'})
-       r=list(r[0].keys())
-       assert  r == [0,], r
-
-   def checkOrQuery(self):
-       "Check an OR query"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-       r = index._apply_index({'text':'time or country'})
-       r=list(r[0].keys())
-       assert  r == [0,1,6], r
-
-   def checkNearQuery(self):
-       """Check a NEAR query.. (NOTE:ACTUALLY AN 'OR' TEST!!)"""
-       # NEAR never worked, so Zopes post-2.3.1b3 define near to mean OR
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-       r = index._apply_index({'text':'time near country'})
-       r=list(r[0].keys())
-       assert  r == [0,1,6], r
-
-   def checkAndNotQuery(self):
-       "Check an ANDNOT query"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-       r = index._apply_index({'text':'time and not country'})
-       r=list(r[0].keys())
-       assert  r == [6], r
-
-   def checkParenMatchingQuery(self):
-       "Check a query with parens"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-       r = index._apply_index({'text':'(time and country) men'})
-       r=list(r[0].keys())
-       assert  r == [0], r
-
-       r = index._apply_index({'text':'(time and not country) or men'})
-       r=list(r[0].keys())
-       assert  r == [0, 6], r
-
-   def checkQuoteMatchingQuery(self):
-       "Check a query with quotes.. this is known to fail under 2.3.1b3-"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-
-
-       r = index._apply_index({'text':'"now is the time"'})
-       r=list(r[0].keys())
-       assert  r == [], r
-
-       r = index._apply_index({'text':'"This is the time"'})
-       r=list(r[0].keys())
-       assert  r == [0], r
-
-   def checkTextIndexOperatorQuery(self):
-       "Check a query with 'textindex_operator' in the request"
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-       r = index._apply_index({'text':'time men','textindex_operator':'and'})
-       r=list(r[0].keys())
-       assert  r == [0], r
-
-   def checkNonExistentWord(self):
-       """ Check for nonexistent word """
-       index=self.dbopen()
-       index._lexicon = GlobbingLexicon.GlobbingLexicon()
-
-       for i in range(len(self.sample_texts)):
-           self.doc.text=self.sample_texts[i]
-           index.index_object(i, self.doc)
-           get_transaction().commit()
-
-       self.dbclose()
-
-       index=self.dbopen()
-
-       r = index._apply_index({'text':'zop'})
-       r=list(r[0].keys())
-       assert  r == [], r
+   def testNonExistentWord(self):
+       """ Test for nonexistent word """
+       self.globTest({'text':'zop'}, [])
        
+   def testShortWord(self):
+       """ Test for short word """
+       self.globTest({'text':'to'}, [0, 2, 6])
+       self.globTest({'text':'*to'}, [0, 2, 6])
+       self.globTest({'text':'to*'}, [0, 2, 6])
+       self.globTest({'text':'*to*'}, [0, 2, 6])
+       
+   def testComplexQuery1(self):
+       """ Test complex query 1 """
+       self.globTest({'text':'((?ount* or get) and not wait) '
+                      '"been *ert*"'}, [0, 1, 5, 6])
 
-def test_suite():
-   return unittest.makeSuite(Tests, 'check')
-
-def main():
-   unittest.TextTestRunner().run(test_suite())
-
-def debug():
-   test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-   
-if __name__=='__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
-
+framework()

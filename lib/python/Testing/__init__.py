@@ -85,29 +85,20 @@
 """
 Set up testing environment
 
-$Id: __init__.py,v 1.2 2001/03/15 13:16:25 jim Exp $
+$Id: __init__.py,v 1.3 2001/08/06 17:20:30 evan Exp $
 """
-import os, sys
-startfrom = head = os.getcwd()
+import os
 
-while 1:
-    sys.path[0]=startfrom
-    try:
-        import ZODB
-    except ImportError:
-        head = os.path.split(startfrom)[0]
-        if head == '':
-            raise "Couldn't import ZODB"
-        startfrom = head
-        continue
-    else:
-        break
+def pdir(path):
+    return os.path.split(path)[0]
 
-os.environ['SOFTWARE_HOME']=os.environ.get('SOFTWARE_HOME', startfrom)
+# Set the INSTANCE_HOME to the Testing package directory
+os.environ['INSTANCE_HOME'] = INSTANCE_HOME = pdir(__file__)
 
-os.environ['INSTANCE_HOME']=os.environ.get(
-    'INSTANCE_HOME',
-    os.path.join(os.environ['SOFTWARE_HOME'],'..','..')
-    )
+# Set the SOFTWARE_HOME to the directory containing the Testing package
+os.environ['SOFTWARE_HOME'] = SOFTWARE_HOME = pdir(INSTANCE_HOME)
+
+# Prevent useless initialization by pretending to be a ZEO client
+os.environ['ZEO_CLIENT'] = '1'
 
 
