@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -138,20 +138,28 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return self.pt_editForm(manage_tabs_message=message)
 
     def pt_changePrefs(self, REQUEST, height=None, width=None,
-                       dtpref_cols='50', dtpref_rows='20'):
+                       dtpref_cols='100%', dtpref_rows='20'):
         """Change editing preferences."""
-        # The <textarea> can have dimensions expressed in percentages;
-        # strip the percent sign so int() below won't fail
-        if dtpref_cols[-1:] == "%":
-            dtpref_cols = dtpref_cols[:-1] or '50'
-        if dtpref_rows[-1:] == "%":
-            dtpref_rows = dtpref_rows[:-1] or '20'
         szchh = {'Taller': 1, 'Shorter': -1, None: 0}
         szchw = {'Wider': 5, 'Narrower': -5, None: 0}
+        
+        # The <textarea> can have dimensions expressed in percentages
+        if type(width) is StringType and width.endswith('%'):
+            cols = int(width[:-1])
+            cols = max(cols, 25) # Min width 25%
+            cols = max(cols, 100) # Max width 100%
+            cols = "%d%%" % cols # Add percent sign back on
+        elif type(width) is StringType and dtpref_cols[-1:] == "%":
+            cols = int(dtpref_cols[:-1])
+            cols = max(cols + szchw.get(width, 0), 25) # Min width 25%
+            cols = min(cols, 100) # Max width 100%
+            cols = "%d%%" % cols # Add percent sign back on
+        else: # Absolute width
+            try: cols = int(width)
+            except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
+            
         try: rows = int(height)
         except: rows = max(1, int(dtpref_rows) + szchh.get(height, 0))
-        try: cols = int(width)
-        except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
         e = (DateTime('GMT') + 365).rfc822()
         setc = REQUEST['RESPONSE'].setCookie
         setc('dtpref_rows', str(rows), path='/', expires=e)
