@@ -102,5 +102,5 @@ Instantiating Multiple Browser Id Managers (Optional)
 
 See Also
 
-  - "Session Tracking":Sessions.stx
+  - "Session API":SessionInterfaces.py
 

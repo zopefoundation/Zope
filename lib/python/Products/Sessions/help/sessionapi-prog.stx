@@ -63,6 +63,5 @@ See Also
 
   - "Session API":SessionInterfaces.py
 
-  - "Session Tracking":Sessions.stx
-
   - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
+
