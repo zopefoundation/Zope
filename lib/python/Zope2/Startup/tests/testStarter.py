@@ -108,7 +108,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
                 raise
             starter = self.get_starter(conf)
             starter.setupLocale()
-            self.assertEqual(locale.getlocale(), ['en_GB', 'ISO8859-1'])
+            self.assertEqual(tuple(locale.getlocale()), ('en_GB', 'ISO8859-1'))
         finally:
             # reset to system-defined locale
             locale.setlocale(locale.LC_ALL, '')
