@@ -177,22 +177,23 @@ Usage:
 TODO:
 
   * Integrate it into the Windows installer.
-  * Fix event logging, probably switch to new Zope logging framework
+  * Add ZLOG logging in addition to event log logging.
   * Make it easier to run multiple Zope services with one Zope install
 
-This script does for NT the same sort of thing zdeamon.py does for UNIX.
+This script does for NT the same sort of thing zdaemon.py does for UNIX.
 Requires Python win32api extensions.
 """
 
 import win32api, win32serviceutil, win32service, win32event, win32process
-import win32evtlog, win32evtlogutil
+try: import servicemanager
+except: pass
 import time, imp, sys
 
 try:
     import App.version_txt
     ZOPE_VERSION=App.version_txt.version_txt()
 except:
-    ZOPE_VERSION='1.10'
+    ZOPE_VERSION='1.10.x'
 
 # pythoncom and pywintypes are special, and require these hacks when
 # we dont have a standard Python installation around.
@@ -218,8 +219,8 @@ def magic_import(modulename, filename):
 magic_import('pywintypes','pywintypes15.dll')
 
 class ZServerService(win32serviceutil.ServiceFramework):
-    _svc_name_ = "ZServerService"
-    _svc_display_name_ = "Zope (%s) %s" % (ZOPE_VERSION, _svc_name_)
+    _svc_name_ = "Zope%s" % ZOPE_VERSION
+    _svc_display_name_ = "Zope (%s)" % ZOPE_VERSION
     
     restart_min_time=5 # if ZServer restarts before this many
                        # seconds then we have a problem, and
@@ -228,9 +229,6 @@ class ZServerService(win32serviceutil.ServiceFramework):
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        # win32evtlog.pyd doesn't seem to be a good event source, hmm
-        dll = win32api.GetModuleFileName(win32api.GetModuleHandle("win32evtlog.pyd"))
-        win32evtlogutil.AddSourceToRegistry(self._svc_name_, dll)
     
     def SvcDoRun(self):
         self.start_zserver()
@@ -244,12 +242,9 @@ class ZServerService(win32serviceutil.ServiceFramework):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING, 5000)   
 
     def SvcStop(self):
+        servicemanager.LogInfoMsg('Stopping Zope.') 
         try:
-            self.stop_zserver()
-            win32evtlogutil.ReportEvent(self._svc_name_, 2,
-                 eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
-                 strings=["Stopping Zope."]
-             )
+            self.stop_zserver()              
         except:
             pass
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
@@ -260,20 +255,14 @@ class ZServerService(win32serviceutil.ServiceFramework):
                 None, None, 0, 0, None, None, win32process.STARTUPINFO())
         self.hZServer=result[0]
         self.last_start_time=time.time()
-        win32evtlogutil.ReportEvent(self._svc_name_, 1,
-            eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
-            strings=["Starting Zope."]
-            )    
+        servicemanager.LogInfoMsg('Starting Zope.')
         
     def stop_zserver(self):
         win32process.TerminateProcess(self.hZServer,0)
         
     def restart_zserver(self):
         if time.time() - self.last_start_time < self.restart_min_time:
-            win32evtlogutil.ReportEvent(self._svc_name_, 4,
-                eventType=win32evtlog.EVENTLOG_ERROR_TYPE,
-                strings=["Zope died and could not be restarted."]
-            ) 
+            servicemanager.LogErrorMsg('Zope died and could not be restarted.')
             self.SvcStop()
         code=win32process.GetExitCodeProcess(self.hZServer)
         if code == 0:
@@ -281,23 +270,24 @@ class ZServerService(win32serviceutil.ServiceFramework):
             # assume that shutdown is intentional.
             self.SvcStop()
         else:
-            win32evtlogutil.ReportEvent(self._svc_name_, 3,
-                eventType=win32evtlog.EVENTLOG_WARNING_TYPE,
-                strings=["Restarting Zope."]
-            ) 
+            servicemanager.LogWarningMsg('Restarting Zope.')
             self.start_zserver()
 
     def get_start_command(self):
         return win32serviceutil.GetServiceCustomOption(self,'start')
         
         
-def option_handler(options):
-    for opt, value in options:
-        if opt == '-z':
-            win32serviceutil.SetServiceCustomOption(ZServerService,'start',value)
-            print "Setting ZServer start command"
+def set_start_command(value):
+    "sets the ZServer start command"
+    win32serviceutil.SetServiceCustomOption(ZServerService,'start',value)
+            
 
 if __name__=='__main__':
-    win32serviceutil.HandleCommandLine(ZServerService, 
-            customInstallOptions='z:', customOptionHandler=option_handler)
-    
+    win32serviceutil.HandleCommandLine(ZServerService)
+    if sys.argv[1]=='install':
+        if win32serviceutil.GetServiceCustomOption(ZServerService,'start') is None:
+            import string, os.path
+            home=string.split(sys.argv[0],'ZServer')[0]
+            command='"%s" "%s"' % (sys.executable, os.path.join(home,'z2.py'))
+            set_start_command(command)
+            print "Setting ZServer start command to:", command
