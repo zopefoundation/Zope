@@ -1438,6 +1438,8 @@ def parse_cookie(text,
                     '([\x00- ]*([^\x00- ;,="]+)="([^"]*)"([\x00- ]*[;,])?[\x00- ]*)'),
                  parmre=re.compile(
                     '([\x00- ]*([^\x00- ;,="]+)=([^\x00- ;,"]*)([\x00- ]*[;,])?[\x00- ]*)'),
+                 paramlessre=re.compile(
+                    '([\x00- ]*([^\x00- ;,="]+)[\x00- ]*[;,][\x00- ]*)'),
 
                  acquire=parse_cookie_lock.acquire,
                  release=parse_cookie_lock.release,
@@ -1469,7 +1471,15 @@ def parse_cookie(text,
                 value = mo_p.group(3)
 
             else:
-                return result
+                # Broken Cookie without = nor value.
+ 		broken_p = paramlessre.match(text)
+ 		if broken_p:
+ 		    l = len(broken_p.group(1))
+ 		    name = broken_p.group(2)
+ 		    value = ''
+
+                else:
+                    return result
 
     finally: release()
 

@@ -183,6 +183,43 @@ class TestCopySupport( CopySupportTestBase ):
         self.failUnless( 'copy_of_file' in self.folder2.objectIds() )
         self.failUnless( result == [{'id':'file', 'new_id':'copy_of_file'}])
 
+    def testPasteSingleSameIDMultipleTimes(self):
+        cookie = self.folder1.manage_copyObjects(ids=('file',))
+        result = self.folder1.manage_pasteObjects(cookie)
+        self.assertEqual(self.folder1.objectIds(), ['file', 'copy_of_file'])
+        self.assertEqual(result, [{'id':'file', 'new_id':'copy_of_file'}])
+        # make another copy of file
+        cookie = self.folder1.manage_copyObjects(ids=('file',))
+        result = self.folder1.manage_pasteObjects(cookie)
+        self.assertEqual(self.folder1.objectIds(),
+                         ['file', 'copy_of_file', 'copy2_of_file'])
+        self.assertEqual(result, [{'id':'file', 'new_id':'copy2_of_file'}])
+        # now copy the copy
+        cookie = self.folder1.manage_copyObjects(ids=('copy_of_file',))
+        result = self.folder1.manage_pasteObjects(cookie)
+        self.assertEqual(self.folder1.objectIds(),
+                         ['file', 'copy_of_file', 'copy2_of_file',
+                         'copy3_of_file'])
+        self.assertEqual(result, [{'id':'copy_of_file',
+                                   'new_id':'copy3_of_file'}])
+        # or copy another copy
+        cookie = self.folder1.manage_copyObjects(ids=('copy2_of_file',))
+        result = self.folder1.manage_pasteObjects(cookie)
+        self.assertEqual(self.folder1.objectIds(),
+                         ['file', 'copy_of_file', 'copy2_of_file',
+                         'copy3_of_file', 'copy4_of_file'])
+        self.assertEqual(result, [{'id':'copy2_of_file',
+                                   'new_id':'copy4_of_file'}])
+
+    def testPasteSpecialName(self):
+        manage_addFile(self.folder1, 'copy_of_',
+                       file='', content_type='text/plain')
+        cookie = self.folder1.manage_copyObjects(ids=('copy_of_',))
+        result = self.folder1.manage_pasteObjects(cookie)
+        self.assertEqual(self.folder1.objectIds(),
+                         ['file', 'copy_of_', 'copy2_of_'])
+        self.assertEqual(result, [{'id':'copy_of_', 'new_id':'copy2_of_'}])
+
     def testPasteMultiNotSameID( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
         self.failIf( 'file1' in self.folder1.objectIds() )

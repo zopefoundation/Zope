@@ -14,7 +14,7 @@
 
 $Id$
 """
-import re, sys,  Globals, Moniker, tempfile, ExtensionClass
+import re, sys, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
@@ -28,6 +28,8 @@ from webdav.Lockable import ResourceLockedError
 from cgi import escape
 
 CopyError='Copy Error'
+
+copy_re = re.compile('^copy([0-9]*)_of_(.*)')
 
 _marker=[]
 class CopyContainer(ExtensionClass.Base):
@@ -113,19 +115,17 @@ class CopyContainer(ExtensionClass.Base):
             return self.manage_main(self, REQUEST)
         return cp
 
-    copy_re=re.compile('^copy[0-9]*_of_')
-
     def _get_id(self, id):
         # Allow containers to override the generation of
         # object copy id by attempting to call its _get_id
         # method, if it exists.
-        copy_match=self.copy_re.match(id)
-        if (copy_match) and (copy_match.end() < len(id)):
-            n=1
-            orig_id=self.copy_re.sub('', id)
+        match = copy_re.match(id)
+        if match:
+            n = int(match.group(1) or '1')
+            orig_id = match.group(2)
         else:
-            n=0
-            orig_id=id
+            n = 0
+            orig_id = id
         while 1:
             if self._getOb(id, None) is None:
                 return id

@@ -45,11 +45,16 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
-    
+
+      - Collector #1498: Don't choke on malformed cookies. Cookies of
+        the form "foo=bar; hmm; baz=gee" will give an empty value for
+        'hmm' instead of silently discarding it and the rest of the
+        string. (Thanks to 'sirilyan' for the patch.)
+
       - bin/zopectl test now uses os.execv, instead os os.system,
         so that options with characters that needs shell quoting
         doesn't break the command.
-      
+
       - Collector #945:  Allow adding empty PythonScript instances
         programmatically.
 

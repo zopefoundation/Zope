@@ -564,6 +564,25 @@ class ProcessInputsTests(unittest.TestCase):
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
+    def testCookieParsing(self):
+        env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
+
+        env['HTTP_COOKIE'] = 'foo=bar; baz=gee'
+        req = self._getHTTPRequest(env)
+        self.assertEquals(req.cookies['foo'], 'bar')
+        self.assertEquals(req.cookies['baz'], 'gee')
+
+        env['HTTP_COOKIE'] = 'foo=bar; baz="gee, like, e=mc^2"'
+        req = self._getHTTPRequest(env)
+        self.assertEquals(req.cookies['foo'], 'bar')
+        self.assertEquals(req.cookies['baz'], 'gee, like, e=mc^2')
+
+        # Collector #1498: empty cookies
+        env['HTTP_COOKIE'] = 'foo=bar; hmm; baz=gee'
+        req = self._getHTTPRequest(env)
+        self.assertEquals(req.cookies['foo'], 'bar')
+        self.assertEquals(req.cookies['hmm'], '')
+        self.assertEquals(req.cookies['baz'], 'gee')
 
 TEST_ENVIRON = {
     'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
