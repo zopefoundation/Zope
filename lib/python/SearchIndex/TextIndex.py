@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -217,7 +217,7 @@ import string, regex, regsub
 
 class TextIndex(Persistent):
 
-    def __init__(self,data,schema,id):
+    def __init__(self,data=None,schema=None,id=None):
         """Create an index
 
         The arguments are:
@@ -230,12 +230,17 @@ class TextIndex(Persistent):
           'id' -- the name of the item attribute to index.  This is either
               an attribute name or a record key.
         """
-        self._data=data
-        self._schema=schema
-        self.id=id
-        self._index=BTree()
-        self._syn=stop_word_dict
-        self._reindex()
+	######################################################################
+	# For b/w compatability, have to allow __init__ calls with zero args
+	if not data==schema==id==None:
+	    self._data=data
+	    self._schema=schema
+	    self.id=id
+	    self._index=BTree()
+	    self._syn=stop_word_dict
+	    self._reindex()
+	else:
+	    pass
 
     # for backwards compatability
     _init = __init__
