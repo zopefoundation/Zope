@@ -533,8 +533,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                             append((k,LazyMap(self.__getitem__, intset)))
                 else:
                     for r in rs:
-                        append(sort_index._unindex[r],
-                               LazyMap(self.__getitem__,[r]))
+                        append((sort_index._unindex[r],
+                               LazyMap(self.__getitem__,[r])))
 
         return used
 
