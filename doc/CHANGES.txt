@@ -37,6 +37,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #670: applied patch from Dieter Maurer to enhance
+        the Zope profiling support
+
       - Collector #651: WebDAV Lock Manager was broken.
 
       - Collector #646: metal:slot was lost during the I18n merge.

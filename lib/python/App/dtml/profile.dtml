@@ -3,7 +3,9 @@
 
 <dtml-let sort="REQUEST.get('sort', 'time')"
           limit="REQUEST.get('limit', 100)" 
-          stats="manage_profile_stats(sort, limit)">
+          mode="REQUEST.get('mode', 'stats')" 
+          stripDirs="REQUEST.get('stripDirs', 1)" 
+          stats="manage_profile_stats(sort, limit, stripDirs, mode)">
 <dtml-if stats>
 <p class="form-help">
 Profiling information is generated using the standard Python 
@@ -31,6 +33,19 @@ Python profiler documentation</a>.
     <dtml-in "(100, 200, 300, 400, 500)">
     <option value="<dtml-var sequence-item>"<dtml-if 
      "limit==_['sequence-item']"> selected</dtml-if>><dtml-var 
+    sequence-item>
+    </dtml-in>
+    </select>
+</td>
+<td><strong>strip Dirs</strong>: 
+    <input type=hidden name="stripDirs:int:default" value="0">
+    <input type=checkbox name="stripDirs:int" value="1" <dtml-if stripDirs>checked</dtml-if>>
+</td>
+<td><strong>Mode</strong>: 
+    <select name="mode">
+    <dtml-in "('stats', 'callees', 'callers',)">
+    <option value="<dtml-var sequence-item>"<dtml-if 
+     "mode==_['sequence-item']"> selected</dtml-if>><dtml-var 
     sequence-item>
     </dtml-in>
     </select>

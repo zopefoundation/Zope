@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 
 import sys,os,time,Globals, Acquisition, os, Undo
@@ -176,15 +176,19 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
     manage_profile=DTMLFile('dtml/profile', globals())
 
-    def manage_profile_stats(self, sort='time', limit=200):
+    def manage_profile_stats(self, sort='time', limit=200, stripDirs=1, mode='stats'):
         """Return profile data if available"""
         stats=getattr(sys, '_ps_', None)
         if stats is None:
             return None
         output=StringIO()
         stdout=sys.stdout
+        if stripDirs:
+            from copy import copy; stats= copy(stats)
+            stats.strip_dirs()
+        stats.sort_stats(sort)
         sys.stdout=output
-        stats.strip_dirs().sort_stats(sort).print_stats(limit)
+        getattr(stats,'print_%s' % mode)(limit)
         sys.stdout.flush()
         sys.stdout=stdout
         return output.getvalue()
