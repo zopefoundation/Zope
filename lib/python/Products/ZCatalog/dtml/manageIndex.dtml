@@ -185,7 +185,7 @@ function toggleSelect() {
     <td>
       <div class="list-item">
       <dtml-try>
-      <dtml-var numObjects>
+      <dtml-var numObjects missing="not available">
       <dtml-except>n/a
       </dtml-try>
     </div>
