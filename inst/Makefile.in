@@ -128,3 +128,8 @@ sdist_tgz:
 
 # clobber:     Make the source tree 'pristine' again.
 clobber: clean uninstance
+
+# distclean:     Make the source tree *really* 'pristine' again.
+distclean: clobber
+       ${RM} makefile Makefile
+       ${RMRF} build-base
