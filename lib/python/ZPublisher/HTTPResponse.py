@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.19 1999/08/18 00:23:50 amos Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: HTTPResponse.py,v 1.20 1999/09/01 00:25:48 brian Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -557,6 +557,7 @@ class HTTPResponse(BaseResponse):
                       "$"
                       ).match,
                   tag_search=regex.compile('[a-zA-Z]>').search,
+                  abort=1
                   ):
         if type(info) is type(()) and len(info)==3: t,v,tb = info
         else: t,v,tb = sys.exc_info()
@@ -565,9 +566,10 @@ class HTTPResponse(BaseResponse):
 
         stb=tb
 
-        # Abort running transaction, if any:
-        try: get_transaction().abort()
-        except: pass
+        # Abort running transaction, if any
+        if abort:
+            try: get_transaction().abort()
+            except: pass
 
         try:
             # Try to capture exception info for bci calls

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -627,13 +627,22 @@ class HTTPRequest(BaseRequest):
         rsp=req.response
         req['PATH_INFO']=path
         object=None
+        
+        # Try to traverse to get an object. Note that we call
+        # the exception method on the response, but we don't
+        # want to actually abort the current transaction
+        # (which is usually the default when the exception
+        # method is called on the response).
         try: object=req.traverse(path)
-        except: rsp.exception(0)
-        if object is None: raise rsp.errmsg, sys.exc_value
+        except: rsp.exception(abort=0)
+        if object is None:
+            raise rsp.errmsg, sys.exc_value
 
-        # waaa - traversal may return a "default object"
-        # like an index_html document, though you really
-        # wanted to get a Folder back :(
+        # The traversal machinery may return a "default object"
+        # like an index_html document. This is not appropriate
+        # in the context of the resolve_url method so we need
+        # to ensure we are getting the actual object named by
+        # the given url, and not some kind of default object.
         if hasattr(object, 'id'):
             if callable(object.id):
                 name=object.id()
