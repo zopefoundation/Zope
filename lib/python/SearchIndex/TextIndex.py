@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.8 1997/12/02 19:36:19 jeffrey Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: TextIndex.py,v 1.9 1998/02/05 15:24:22 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -222,26 +222,23 @@ class TextIndex(Persistent):
 		else: d[s]=1
 
 	index=self._index
+	indexed=index.has_key
 	if un:
 	    for word,score in d.items():
-		try:
+		if indexed(word):
 		    r=index[word]
 		    if type(r) is tupleType: del index[word]
-		    elif type(r) is dictType:
-			try: del r[id]
-			except: pass
-			if len(r) < 2:
-			    if r:
-				for k, v in r.items(): index[word]=k,v
-			    else: del index[word]
-			else: index[word]=r
 		    else:
-			try: del r[id]
-			except: pass
-		except KeyError: pass
+			if r.has_key(id): del r[id]
+			if type(r) is dictType:
+			    if len(r) < 2:
+				if r:
+				    for k, v in r.items(): index[word]=k,v
+				else: del index[word]
+			    else: index[word]=r
 	else:
 	    for word,score in d.items():
-		try:
+		if indexed(word):
 		    r=index[word]
 		    if type(r) is tupleType:
 			r={r[0]:r[1]}
@@ -255,8 +252,7 @@ class TextIndex(Persistent):
 			r[id]=score
 			index[word]=r
 		    else: r[id]=score
-		except KeyError:
-		    index[word]=id,score
+		else: index[word]=id,score
 
     def _subindex(self, isrc, d, old, last):
 
@@ -278,8 +274,9 @@ class TextIndex(Persistent):
 	if len(src) == 1:
 	    src=src[0]
 	    if src[:1]=='"' and src[-1:]=='"': return self[src]
-	    try: r=self._index[word]
-	    except: r={}
+	    index=self._index
+	    if index.has_key(word): r=self._index[word]
+	    else: r={}
 	    return ResultList(r,(word,),self)
 	    
 	r=None
@@ -306,10 +303,11 @@ class TextIndex(Persistent):
 
 	id=self.id
 
-	try: keys=request["%s/%s" % (cid,id)]
-	except:
-	    try: keys=request[id]
-	    except: return None
+	cidid="%s/%s" % (cid,id)
+	has_key=request.has_key
+	if has_key(cidid): keys=request[cidid]
+	elif has_key(id): keys=request[id]
+	else: return None
 
 	if type(keys) is not ListType: keys=[keys]
 	r=None
@@ -448,6 +446,7 @@ def parse2(q, default_operator,
 	   ):
     '''Find operators and operands'''
     i = 0
+    isop=operator_dict.has_key
     while (i < len(q)):
         if (type(q[i]) is ListType): q[i] = parse2(q[i], default_operator)
 
@@ -455,8 +454,9 @@ def parse2(q, default_operator,
         if ((i % 2) != 0):
             # This word should be an operator; if it is not, splice in
             # the default operator.
-            try: q[i] = operator_dict[q[i]]
-            except: q[i : i] = [ default_operator ]
+	    
+	    if isop(q[i]): q[i] = operator_dict[q[i]]
+            else: q[i : i] = [ default_operator ]
 
         i = i + 1
 
@@ -626,6 +626,9 @@ for word in stop_words: stop_word_dict[word]=None
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.9  1998/02/05 15:24:22  jim
+# Got rid of most try/excepts.
+#
 # Revision 1.8  1997/12/02 19:36:19  jeffrey
 # fixed bug in .clear() method
 #
