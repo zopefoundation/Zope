@@ -49,6 +49,9 @@ Zope Changes
         attribute with the same name as the index name to provide
         a customized path information other than using getPhysicalPath().
 
+      - Selecting "Clear Catalog" from the ZCatalog "Advanced" did not clear
+        the vocabulary associated with a TextIndex. 
+
 
     Bugs fixed
 
