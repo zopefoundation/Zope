@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.4 1999/01/18 22:44:49 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.5 1999/03/12 19:21:40 brian Exp $'
 
 # python modules
 import os
@@ -244,12 +244,14 @@ class http_request:
 		204: "No Content",
 		205: "Reset Content",
 		206: "Partial Content",
+		207: "Multi-Status",
 		300: "Multiple Choices",
 		301: "Moved Permanently",
 		302: "Moved Temporarily",
 		303: "See Other",
 		304: "Not Modified",
 		305: "Use Proxy",
+		307: "Temporary Redirect",
 		400: "Bad Request",
 		401: "Unauthorized",
 		402: "Payment Required",
@@ -271,7 +273,8 @@ class http_request:
 		502: "Bad Gateway",
 		503: "Service Unavailable",
 		504: "Gateway Time-out",
-		505: "HTTP Version not supported"
+		505: "HTTP Version not supported",
+		507: "Insufficient Storage"
 		}
 
 	# Default error message
