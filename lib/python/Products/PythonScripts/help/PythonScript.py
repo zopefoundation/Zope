@@ -83,6 +83,10 @@
 # 
 ##############################################################################
 
+def manage_addPythonScript(self, id, REQUEST=None):
+    """Add a Python script to a folder.
+    """
+
 class PythonScript:
     """
 
@@ -175,6 +179,13 @@ class PythonScript:
         script.
 
     """
+
+    __constructor__ = manage_addPythonScript
+
+    __extends__=(
+        'PythonScripts.Script.Script',
+        )
+    
 
     def ZPythonScriptHTML_editAction(REQUEST, title, params, body):
         """

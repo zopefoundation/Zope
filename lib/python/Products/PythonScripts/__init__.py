@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.2 2000/12/05 21:41:16 evan Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 2000/12/07 22:35:12 michel Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import PythonScript
 import standard
@@ -98,3 +98,6 @@ def initialize(context):
         constructors=(PythonScript.manage_addPythonScriptForm,
                       PythonScript.manage_addPythonScript),
         icon='www/pyscript.gif')
+
+    context.registerHelp()
+    context.registerHelpTitle('Zope Help')    
