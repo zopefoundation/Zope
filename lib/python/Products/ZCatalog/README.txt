@@ -86,4 +86,7 @@ ZCatalog
         The constructor of the handler can be given an optional parameter 
         'steps' (default is 100) that specifies after how much iterations 
         the progress should be reported.
+
+        You might also checkout utilities/reindex_catalog.py (a script to perform
+        ZCatalog maintenance operations from the command line).
          
