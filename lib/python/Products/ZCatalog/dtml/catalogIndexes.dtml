@@ -103,17 +103,7 @@ function toggleSelect() {
    ><strong>Index type</strong><dtml-else>Index type</dtml-if></a></div>
   </td>
 
-  <td width="10%" align="left"><div class="list-item"><a 
-   href="./manage_catalogIndexes?skey=numObjects<dtml-if 
-   "rkey == ''">&rkey=numObjects</dtml-if
-   >"
-   onMouseOver="window.status='Sort objects by number of indexed objects'; return true"
-   onMouseOut="window.status=''; return true"><dtml-if 
-   "skey == 'numObjects' or rkey == 'numObjects'"
-   ><strong># objects</strong><dtml-else># objects</dtml-if></a></div>
-  </td>
-
-  <td width="10%" align="left"><div class="list-item"><a 
+  <td width="20%" align="left"><div class="list-item"><a 
    href="./manage_catalogIndexes?skey=indexSize<dtml-if 
    "rkey == ''">&rkey=indexSize</dtml-if
    >"
@@ -179,12 +169,6 @@ function toggleSelect() {
 
     <td>
       <div class="list-item">
-        <dtml-var numObjects missing="n/a">
-      </div>
-    </td>
-
-    <td>
-      <div class="list-item">
         <dtml-var indexSize missing="n/a">
       </div>
     </td>
@@ -199,6 +183,7 @@ function toggleSelect() {
 
 </tr>
 </dtml-in>
+
 </table>
 
 <table cellspacing="0" cellpadding="2" border="0">
