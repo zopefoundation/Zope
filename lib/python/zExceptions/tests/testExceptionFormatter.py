@@ -15,7 +15,7 @@
 ExceptionFormatter tests.
 
 Revision information:
-$Id: testExceptionFormatter.py,v 1.2 2002/04/03 20:44:00 shane Exp $
+$Id: testExceptionFormatter.py,v 1.3 2002/06/10 20:18:45 shane Exp $
 """
 
 from __future__ import nested_scopes
@@ -23,7 +23,7 @@ from __future__ import nested_scopes
 from unittest import TestCase, TestSuite, main, makeSuite
 
 try:
-    from Zope.Testing.CleanUp import CleanUp # Base class w registry cleanup
+    from Testing.CleanUp import CleanUp # Base class w registry cleanup
 except ImportError:
     class CleanUp:
         pass
