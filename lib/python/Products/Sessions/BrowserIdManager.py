@@ -85,6 +85,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     icon = 'misc_/Sessions/idmgr.gif'
 
     security = ClassSecurityInfo()
+    security.declareObjectPublic()
     ok = {'meta_type':1, 'id':1, 'title': 1, 'icon':1,
           'bobobase_modification_time':1, 'title_or_id':1 }
     security.setDefaultAccess(ok)
