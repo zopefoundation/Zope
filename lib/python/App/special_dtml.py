@@ -207,7 +207,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 req = self.aq_acquire('REQUEST')
             except: pass
             bound_data['REQUEST'] = req
-
+            ns.this = bound_data['context']
         # Bind 'keyword_args' to the complete set of keyword arguments.
         bound_data['keyword_args'] = kw_bind
 
