@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.125 2001/01/19 20:12:21 brian Exp $"""
+$Id: ObjectManager.py,v 1.126 2001/02/13 20:26:09 brian Exp $"""
 
-__version__='$Revision: 1.125 $'[11:-2]
+__version__='$Revision: 1.126 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -546,13 +546,6 @@ class ObjectManager(
         connection=self._p_jar
         obj=self
 
-
-        # store away the length of the ZGlobals registry to compare
-        # later to decide if dependency fixups are needed for ZClasses
-        zglobals=connection.root()['ZGlobals']
-        try:    keys_len=len(zglobals.keys())
-        except: keys_len=None
-
         while connection is None:
             obj=obj.aq_parent
             connection=obj._p_jar
@@ -570,26 +563,6 @@ class ObjectManager(
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
 
-        # This is to ensure that dependencies between ZClasses are
-        # fixed up after imports - otherwise things like base class
-        # dependencies are never fixed if two separate imports are
-        # used to add 2 ZClasses with a dependency. Somewhat hacky,
-        # but we sniff the ZGlobals registry to see if any ZClasses
-        # were added on this import. If so, we run a fixup method.
-        #
-        # If the previous registry size is None, it means that there
-        # is something already broken :( That really shouldn't happen,
-        # since a cleaning will happen at startup if the reg has
-        # dead pointers in it, and any ZClass import should kick off
-        # this fixup code.
-        try:    new_len=len(zglobals.keys())
-        except: new_len=None
-        if (keys_len is not None) and (new_len is not None):
-            if new_len > keys_len:
-                # Looks like one or more ZClasses registered themselves
-                # (in their manage_afterAdd called after the import).
-                self.getPhysicalRoot().fixupZClassDependencies()
-        
         if REQUEST is not None:
             return MessageDialog(
                 title='Object imported',
