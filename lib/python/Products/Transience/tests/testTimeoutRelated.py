@@ -17,7 +17,7 @@ from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
-import  threading, whrandom
+import  threading
 import fauxtime
 import time as oldtime
 
