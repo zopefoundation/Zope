@@ -17,7 +17,7 @@ named 'test_suite' that returns a PyUnit TestSuite object. By convention,
 we put test suites in 'tests' subdirectories of the packages they test.
 
 Testrunner is used to run all checked in test suites before (final) releases
-aremade, and can be used to quickly run a particular suite or all suites in
+are made, and can be used to quickly run a particular suite or all suites in
 a particular directory."""
 
 import sys, os, imp, string, getopt
