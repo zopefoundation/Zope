@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.21 1997/06/19 18:51:42 jim Exp $
+  $Id: cStringIO.c,v 1.22 1997/09/04 19:51:03 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -85,7 +85,7 @@ static char cStringIO_module_documentation[] =
 "If someone else wants to provide a more complete implementation,\n"
 "go for it. :-)  \n"
 "\n"
-"$Id: cStringIO.c,v 1.21 1997/06/19 18:51:42 jim Exp $\n"
+"$Id: cStringIO.c,v 1.22 1997/09/04 19:51:03 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -314,7 +314,10 @@ static char O_close__doc__[] = "close(): explicitly release resources held.";
 
 static PyObject *
 O_close(Oobject *self, PyObject *args) {
-  free(self->buf);
+  if(self->buf) {
+    free(self->buf);
+    self->buf=NULL;
+  }
 
   self->pos = self->string_size = self->buf_size = 0;
   self->closed = 1;
@@ -392,7 +395,7 @@ static struct PyMethodDef O_methods[] = {
 
 static void
 O_dealloc(Oobject *self) {
-  free(self->buf);
+  if(self->buf) free(self->buf);
   PyMem_DEL(self);
 }
 
@@ -475,7 +478,11 @@ newOobject(int  size) {
 
 static PyObject *
 I_close(Iobject *self, PyObject *args) {
-  Py_DECREF(self->pbuf);
+  if(self->pbuf)
+    {
+      Py_DECREF(self->pbuf);
+      self->pbuf=0;
+    }
 
   self->pos = self->string_size = 0;
   self->closed = 1;
@@ -499,7 +506,7 @@ static struct PyMethodDef I_methods[] = {
 
 static void
 I_dealloc(Iobject *self) {
-  Py_DECREF(self->pbuf);
+  Py_XDECREF(self->pbuf);
   PyMem_DEL(self);
 }
 
@@ -627,6 +634,9 @@ initcStringIO() {
 /******************************************************************************
 
   $Log: cStringIO.c,v $
+  Revision 1.22  1997/09/04 19:51:03  jim
+  Fixed bug in close/dealloc.
+
   Revision 1.21  1997/06/19 18:51:42  jim
   Added ident string.
 
