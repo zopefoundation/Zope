@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -364,9 +364,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
             name, type=item['id'], item.get('type','string')
             value=self.getProperty(name)
             if type=='tokens':
-                value=join(value, ' ')
+                value=join(str(value), ' ')
             elif type=='lines':
-                value=join(value, '\n')
+                value=join(str(value), '\n')
             # check for xml property
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
@@ -414,9 +414,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
             name, type=item['id'], item.get('type','string')
             value=self.getProperty(name)
             if type=='tokens':
-                value=join(value, ' ')
+                value=join(str(value), ' ')
             elif type=='lines':
-                value=join(value, '\n')
+                value=join(str(value), '\n')
             # allow for xml properties
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
@@ -815,9 +815,7 @@ def xml_escape(v):
     to entities to keep the properties XML compliant. 
     """
     v = str(v)
-    
-    if v.count('<') != v.count('>'): 
-        v = v.replace('<','&lt;')
-        v = v.replace('>','&gt;')
-
+    v = v.replace('&', '&amp;')
+    v = v.replace('<', '&lt;')
+    v = v.replace('>', '&gt;')
     return  unicode(v,"latin-1").encode("utf-8")
