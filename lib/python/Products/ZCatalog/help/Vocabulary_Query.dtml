@@ -1,0 +1,9 @@
+<dtml-var standard_html_header> 
+
+<h1>Vocabulary Query</h1> 
+
+<p>This form lets you query the Vocabulary for words that match a
+certain pattern.</p>
+
+
+<dtml-var standard_html_footer>
