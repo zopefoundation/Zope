@@ -76,6 +76,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     precondition=''
     size=None
+    alt=''
 
     manage_editForm  =DTMLFile('dtml/fileEdit',globals(),
                                Kind='File',kind='file')

@@ -807,15 +807,12 @@ def absattr(attr):
         return attr()
     return attr
 
-
-def xml_escape(v):
-    """ convert any content from ISO-8859-1 to UTF-8
-    The main use is to escape non-US object property values
-    (e.g. containing accented characters). Also we convert "<" and ">"
-    to entities to keep the properties XML compliant.
-    """
-    v = str(v)
-    v = v.replace('&', '&amp;')
-    v = v.replace('<', '&lt;')
-    v = v.replace('>', '&gt;')
-    return  unicode(v,"latin-1").encode("utf-8")
+def xml_escape(value):
+    from webdav.xmltools import escape
+    if not isinstance(value, basestring):
+        value = unicode(value)
+    if not isinstance(value, unicode):
+        # XXX It really shouldn't be hardcoded to latin-1 here.
+        value = value.decode('latin-1')
+    value = escape(value)
+    return value.encode('utf-8')

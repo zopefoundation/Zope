@@ -30,19 +30,32 @@ Zope Changes
         the docutils package except some GPLed files which can not be included
         with the Zope distribution due to license constraints on svn.zope.org.
 
-      - docutils: moved from lib/python/docutils to 
-        lib/python/third_party/docutils 
+      - docutils: moved from lib/python/docutils to
+        lib/python/third_party/docutils
 
       - Collector #1557/OFS.Image: Introducing new 'alt' property. The 'alt'
         attribute is no longer taken from the 'title' property but from the new
-        'alt' property.  The border="0" attribute is no longer part of the HTML 
+        'alt' property.  The border="0" attribute is no longer part of the HTML
         output except specified otherwise.
-           
-      - Collector #1511: made IPCServer show up in the Control Panel under 
+
+      - Set a default value of '' for the new 'alt' property as not to
+        break existing content.
+
+      - Collector #1511: made IPCServer show up in the Control Panel under
         "Network Services"
 
-      - Collector #1443: Applied patch by Simon Eisenmann that reimplements 
+      - Collector #1443: Applied patch by Simon Eisenmann that reimplements
         the XML parser used in WebDAV fixing a memory leak.
+
+      - Always unescape element contents on webdav.xmltools
+
+      - Use saxutils to escape/unescape values for/from
+        PROPFIND/PROPPATCH.
+
+      - Make OFS.PropertySheet use the escaping function from
+        webdav.xmltools.
+
+      - Escape/unescape &quot; and &apos;
 
   Zope 2.8a1
 
@@ -77,14 +90,14 @@ Zope Changes
      - The DateTime parser now throws a SyntaxError upon any parsing errors.
 
      - ZCatalog: added a new configuration option in the "Advanced" tab
-       to provide optional logging of the progress of long running 
+       to provide optional logging of the progress of long running
        reindexing or recataloging operations.
 
      - made Zope.configure return the starter instance to enable other
        methods to be called, such as starter.setupConfiguredLoggers()
 
      - Improved Unicode handling in Page Templates. Template contents
-       and title will now be saved as a Unicode string if 
+       and title will now be saved as a Unicode string if
        the management_page_charset variable can be acquired and is true.
        The character set of an uploaded file can now be specified.
 
@@ -191,11 +204,11 @@ Zope Changes
        (for pre-Zope 2.5 instances) has been removed. If you want to migrate
        from such an old version to Zope 2.8, you need to clear and reindex
        your ZCatalog).
- 
-     - Collector #1457: ZCTextIndex's QueryError and ParseError 
+
+     - Collector #1457: ZCTextIndex's QueryError and ParseError
        are now available for import from untrusted code.
 
-     - Collector #1473: zpasswd.py can now accept --username 
+     - Collector #1473: zpasswd.py can now accept --username
        without --password
 
      - Collector #1491: talgettext.py did not create a proper header
@@ -213,15 +226,15 @@ Zope Changes
      - Removed DWIM'y attempt to filter acquired-but-not-aceessible
        results from 'guarded_getattr'.
 
-     - Collector #1267: applied patch to fix segmentation faults on 
+     - Collector #1267: applied patch to fix segmentation faults on
        x86_64 systems
 
-     - ZReST: the charset used in the rendered HTML was not set to the 
+     - ZReST: the charset used in the rendered HTML was not set to the
        corresponding output_encoding property of the ZReST instance. In addition
-       changing the encodings through the Properties tab did not re-render 
+       changing the encodings through the Properties tab did not re-render
        the HTML.
 
-     - Collector #1234: an exception triple passed to LOG() was not 
+     - Collector #1234: an exception triple passed to LOG() was not
        propagated properly to the logging module of Python
 
      - Collector #1441: Removed headers introduced to make Microsoft
@@ -246,8 +259,8 @@ Zope Changes
      - added "version.txt" to setup.py to avoid untrue "unreleased version"
        messages within the control panel
 
-     - Collector #1436: applied patch to fix a memory leak in 
-       cAccessControl. 
+     - Collector #1436: applied patch to fix a memory leak in
+       cAccessControl.
 
      - Collector #1431: fixed NetBSD support in initgroups.c
 
@@ -261,17 +274,17 @@ Zope Changes
      - Zope can now be embedded in C/C++ without exceptions being raised
        in zdoptions.
 
-     - Collector #1213: Fixed wrong labels of cache parameters 
+     - Collector #1213: Fixed wrong labels of cache parameters
 
      - Collector #1265: Fixed handling of orphans in ZTUtil.Batch
 
      - Collector #1293: missing 'address' parameters within one of the server
-       sections raise an exception. 
+       sections raise an exception.
 
      - Collector #1345: AcceleratedHTTPCacheManager now sends the
        Last-Modified header.
 
-     - Collector #1126: ZPublisher.Converters.field2lines now using 
+     - Collector #1126: ZPublisher.Converters.field2lines now using
        splitlines() instead of split('\n').
 
      - Collector #1322: fixed HTML quoting problem with ZSQL methods
@@ -283,14 +296,14 @@ Zope Changes
 
      - Collector #1259: removed the "uninstall" target from the Makefile
        since the uninstall routine could also remove non-Zope files. Because
-       this was to dangerous it has been removed completely. 
+       this was to dangerous it has been removed completely.
 
      - Collector #1299: Fixed bug in sequence.sort()
 
      - Collector #1159: Added test for __MACH__ to initgroups.c so the
        initgroups method becomes available on Mac OS X.
 
-     - Collector #1004: text,token properties were missing in 
+     - Collector #1004: text,token properties were missing in
        PropertyManager management page.
 
      - Display index name on error message when index can't be used as

@@ -10,13 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
-
-""" 
+"""
 WebDAV XML request parsing tool using xml.minidom as xml parser.
 Code contributed by Simon Eisenmann, struktur AG, Stuttgart, Germany
 """
-
 __version__='$Revision: 1.15.2.1 $'[11:-2]
 
 """
@@ -26,55 +23,88 @@ TODO:
    and find out if some code uses/requires these methods.
 
    => If yes implement them, else forget them.
-   
+
    NOTE: So far i didn't have any problems.
          If you have problems please report them.
 
 """
 
 from xml.dom import minidom
+from xml.sax.saxutils import escape as _escape, unescape as _unescape
+
+escape_entities = {'"': '&quot;',
+                   "'": '&apos;',
+                   }
+
+unescape_entities = {'&quot;': '"',
+                     '&apos;': "'",
+                     }
+
+def escape(value, entities=None):
+    _ent = escape_entities
+    if entities is not None:
+        _ent = _ent.copy()
+        _ent.update(entities)
+    return _escape(value, entities)
+
+def unescape(value, entities=None):
+    _ent = unescape_entities
+    if entities is not None:
+        _ent = _ent.copy()
+        _ent.update(entities)
+    return _unescape(value, entities)
+
+# XXX latin-1 is hardcoded on OFS.PropertySheets as the expected
+# encoding properties will be stored in. Optimally, we should use the
+# same encoding as the 'default_encoding' property that is used for
+# the ZMI.
+zope_encoding = 'latin-1'
 
 class Node:
-    """ our nodes no matter what type """
-    
+    """ Our nodes no matter what type
+    """
+
     node = None
-    
+
     def __init__(self, node):
         self.node=node
-        
+
     def elements(self, name=None, ns=None):
-        nodes=[ Node(n) for n in self.node.childNodes if n.nodeType == n.ELEMENT_NODE and \
-                                                   ((name is None) or ((n.localName.lower())==name)) and \
-                                                   ((ns is None) or (n.namespaceURI==ns)) ]
+        nodes = []
+        for n in self.node.childNodes:
+            if (n.nodeType == n.ELEMENT_NODE and
+                ((name is None) or ((n.localName.lower())==name)) and
+                ((ns is None) or (n.namespaceURI==ns))):
+                nodes.append(Element(n))
         return nodes
 
     def qname(self):
-        return '%s%s' % (self.namespace(), self.name()) 
-        
+        return '%s%s' % (self.namespace(), self.name())
+
     def addNode(self, node):
         # XXX: no support for adding nodes here
         raise NotImplementedError, 'addNode not implemented'
 
     def toxml(self):
         return self.node.toxml()
-        
+
     def strval(self):
-        return self.toxml()
-        
+        return self.toxml().encode(zope_encoding)
+
     def name(self):  return self.node.localName
     def attrs(self): return self.node.attributes
     def value(self): return self.node.nodeValue
     def nodes(self): return self.node.childNodes
     def nskey(self): return self.node.namespaceURI
-    
+
     def namespace(self): return self.nskey()
-  
+
     def del_attr(self, name):
-        # XXX: no support for removing attributes 
+        # XXX: no support for removing attributes
 	#      zope can calls this after remapping to remove namespace
 	#      haven't seen this happening though
         return None
-  
+
     def remap(self, dict, n=0, top=1):
         # XXX: this method is used to do some strange remapping of elements
         #      and namespaces .. not sure how to do this with minidom
@@ -87,18 +117,31 @@ class Node:
             return "<Node %s (from %s)>" % (self.name(), self.namespace())
         else: return "<Node %s>" % self.name()
 
+class Element(Node):
+
+    def toxml(self):
+        # When dealing with Elements, we only want the Element's content.
+        result = u''
+        for n in self.node.childNodes:
+            value = n.toxml()
+            # Use unescape possibly escaped values.  We do this
+            # because the value is *always* escaped in it's XML
+            # representation, and if we store it escaped it will come
+            # out *double escaped* when doing a PROPFIND.
+            value = unescape(value, entities=unescape_entities)
+            result += value
+        return result
 
 class XmlParser:
-    """ simple wrapper around minidom to support the required 
-        interfaces for zope.webdav
+    """ Simple wrapper around minidom to support the required
+    interfaces for zope.webdav
     """
 
     dom = None
-    
+
     def __init__(self):
         pass
-        
+
     def parse(self, data):
-        self.dom=minidom.parseString(data)
+        self.dom = minidom.parseString(data)
         return Node(self.dom)
-        
