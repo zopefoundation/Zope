@@ -101,6 +101,9 @@ Zope Changes
       - Collector #285: Zope changes its working directory
         to the var directory at startup
 
+      - Fixed a bug in TM.py that would cause database adapters to hang
+        on errors in the second phase of the two-phase commit.
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
