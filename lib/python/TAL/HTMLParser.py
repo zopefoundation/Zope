@@ -243,6 +243,10 @@ class HTMLParser:
         rawdata = self.rawdata
         j = i + 2
         assert rawdata[i:j] == "<!", "unexpected call to parse_declaration"
+        if rawdata[j:j+1] in ("-", ""):
+            # Start of comment followed by buffer boundary,
+            # or just a buffer boundary.
+            return -1
         # in practice, this should look like: ((name|stringlit) S*)+ '>'
         n = len(rawdata)
         while j < n:
@@ -340,14 +344,24 @@ class HTMLParser:
             next = rawdata[j:j+1]
             if next == ">":
                 return j + 1
-            if rawdata[j:j+2] == "/>":
-                return j + 2
+            if next == "/":
+                s = rawdata[j:j+2]
+                if s == "/>":
+                    return j + 2
+                if s == "/":
+                    # buffer boundary
+                    return -1
+                # else bogus input
+                self.updatepos(i, j + 1)
+                raise HTMLParseError("malformed empty start tag",
+                                     self.getpos())
             if next == "":
                 # end of input
                 return -1
-            if next in ("abcdefghijklmnopqrstuvwxyz="
+            if next in ("abcdefghijklmnopqrstuvwxyz=/"
                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
-                # end of input in or before attribute value
+                # end of input in or before attribute value, or we have the
+                # '/' from a '/>' ending
                 return -1
             self.updatepos(i, j)
             raise HTMLParseError("malformed start tag", self.getpos())
