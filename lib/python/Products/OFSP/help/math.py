@@ -1,4 +1,5 @@
-math: DTML Math Functions
+"""
+math: Python 'math' module
 
   The 'math' module provides trigonometric and other math
   functions. It is a standard Python module.
@@ -11,7 +12,7 @@ math: DTML Math Functions
     "Python 'math'
     module":http://www.python.org/doc/current/lib/module-math.html
     documentation at Python.org
-
+"""
 
 
 

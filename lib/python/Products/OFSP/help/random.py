@@ -1,4 +1,5 @@
-random: DTML Pseudo-Random Number Functions
+"""
+random: Python 'random' module
 
   The 'random' module provides pseudo-random number functions. With
   it, you can generate random numbers and select random elements from
@@ -12,6 +13,6 @@ random: DTML Pseudo-Random Number Functions
     "Python 'random'
     module":http://www.python.org/doc/current/lib/module-whrandom.html
     documentation at Python.org
-
+"""
 
 

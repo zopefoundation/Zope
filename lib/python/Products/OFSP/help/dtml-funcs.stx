@@ -207,13 +207,13 @@ functions: DTML Functions
 
   See Also
 
-    "'string' module":dtml-string.stx
+    "'string' module":string.py
 
-    "'random' module":dtml-random.stx
+    "'random' module":random.py
 
-    "'math' module":dtml-math.stx
+    "'math' module":math.py
 
-    "'sequence' module":dtml-sequence.stx
+    "'sequence' module":sequence.py
 
     "Built-in Python Functions":http://www.python.org/doc/current/lib/built-in-funcs.html
 
