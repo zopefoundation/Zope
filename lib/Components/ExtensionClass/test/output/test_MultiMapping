@@ -3,5 +3,5 @@ test_MultiMapping
 2
 3
 2
-{'spam': 3}
-{'eggs': 2, 'spam': 1}
+[('spam', 3)]
+[('eggs', 2), ('spam', 1)]

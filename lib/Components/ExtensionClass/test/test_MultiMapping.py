@@ -11,8 +11,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-from pprint import pprint
 from MultiMapping import *
+
+def sortprint(L):
+    L.sort()
+    print L
 
 m=MultiMapping()
 
@@ -26,8 +29,8 @@ m.push({'spam':3})
 print m['spam']
 print m['eggs']
 
-pprint(m.pop())
-pprint(m.pop())
+sortprint(m.pop().items())
+sortprint(m.pop().items())
 
 try:
     print m.pop()
