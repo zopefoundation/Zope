@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.193 2003/07/20 16:16:07 chrism Exp $'''
-__version__='$Revision: 1.193 $'[11:-2]
+$Id: Application.py,v 1.194 2003/11/05 05:54:12 fdrake Exp $'''
+__version__='$Revision: 1.194 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -268,9 +268,6 @@ def initialize(app):
         app._setObject('Control_Panel', cpl)
         get_transaction().note('Added Control_Panel')
         get_transaction().commit()
-
-    # Initialize the cache:
-    app.Control_Panel.initialize_cache()
 
     # b/c: Ensure that a ProductFolder exists.
     if not hasattr(aq_base(app.Control_Panel), 'Products'):

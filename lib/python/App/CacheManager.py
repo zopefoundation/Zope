@@ -14,8 +14,8 @@
 
 This class is mixed into the database manager in App.ApplicationManager.
 
-$Id: CacheManager.py,v 1.29 2003/11/03 19:08:44 fdrake Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: CacheManager.py,v 1.30 2003/11/05 05:54:12 fdrake Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
 import time
 
@@ -128,10 +128,6 @@ class CacheManager:
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
             response.redirect(REQUEST['URL1']+'/manage_cacheGC')
-
-    def initialize_cache(self):
-        # Cache is always initialized from the configuration file.
-        pass
 
     def cache_detail(self, REQUEST=None):
         """
