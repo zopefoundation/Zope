@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.6 1997/11/03 18:59:59 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: TextIndex.py,v 1.7 1997/12/01 22:58:48 jeffrey Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -194,7 +194,7 @@ class TextIndex(Persistent):
 	    id=self._schema[id]
 
 	row=self._data[i]
-	k=f(row,id)
+	k=str(f(row,id))
 
 	self._index_document(k,i,un)
 
@@ -626,6 +626,9 @@ for word in stop_words: stop_word_dict[word]=None
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.7  1997/12/01 22:58:48  jeffrey
+# Allow indexing of non-text fields
+#
 # Revision 1.6  1997/11/03 18:59:59  jim
 # Fixed several bugs in handling query parsing and proximity search.
 #
