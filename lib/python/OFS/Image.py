@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.133 $'[11:-2]
+__version__='$Revision: 1.134 $'[11:-2]
 
 import Globals, string, struct
 from OFS.content_types import guess_content_type
@@ -171,6 +171,11 @@ class File(Persistent, Implicit, PropertyManager,
 
         # HTTP Range header handling
         range = REQUEST.get_header('Range', None)
+        request_range = REQUEST.get_header('Request-Range', None)
+        if request_range is not None:
+            # Netscape 2 through 4 and MSIE 3 implement a draft version
+            # Later on, we need to serve a different mime-type as well.
+            range = request_range
         if_range = REQUEST.get_header('If-Range', None)
         if range is not None:
             ranges = HTTPRangeSupport.parseRange(range)
@@ -284,12 +289,17 @@ class File(Persistent, Implicit, PropertyManager,
                             end - start)
                             
                     
+                    # Some clients implement an earlier draft of the spec, they
+                    # will only accept x-byteranges.
+                    draftprefix = (request_range is not None) and 'x-' or ''
+
                     RESPONSE.setHeader('Content-Length', size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setHeader('Last-Modified',
                         rfc1123_date(self._p_mtime))
                     RESPONSE.setHeader('Content-Type',
-                        'multipart/byteranges; boundary=%s' % boundary)
+                        'multipart/%sbyteranges; boundary=%s' % (
+                            draftprefix, boundary))
                     RESPONSE.setStatus(206) # Partial content
 
                     pos = 0

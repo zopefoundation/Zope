@@ -171,13 +171,16 @@ class TestRequestRange(unittest.TestCase):
             'Incorrect range returned, expected %s, got %s' % (
                 `self.data[start:end]`, `body`))
 
-    def expectMultipleRanges(self, range, sets, 
+    def expectMultipleRanges(self, range, sets, draft=0,
             rangeParse=re.compile('bytes\s*(\d+)-(\d+)/(\d+)')):
         req = self.app.REQUEST
         rsp = req.RESPONSE
 
         # Add headers
         req.environ['HTTP_RANGE'] = 'bytes=%s' % range
+
+        if draft:
+            req.environ['HTTP_REQUEST_RANGE'] = 'bytes=%s' % range
 
         body = self.doGET(req, rsp)
         
@@ -187,9 +190,10 @@ class TestRequestRange(unittest.TestCase):
             'The Content-Range header should not be set!')
 
         ct = string.split(rsp.getHeader('content-type'), ';')[0]
-        self.failIf(ct != 'multipart/byteranges',
-            "Incorrect Content-Type set. Expected 'multipart/byteranges', "
-            "got %s" % ct)
+        draftprefix = draft and 'x-' or ''
+        self.failIf(ct != 'multipart/%sbyteranges' % draftprefix,
+            "Incorrect Content-Type set. Expected 'multipart/%sbyteranges', "
+            "got %s" % (draftprefix, ct))
         if rsp.getHeader('content-length'):
             self.failIf(rsp.getHeader('content-length') != len(body),
                 'Incorrect Content-Length is set! Expected %d, got %d.' % (
@@ -303,6 +307,9 @@ class TestRequestRange(unittest.TestCase):
 
     def testMultipleRanges(self):
         self.expectMultipleRanges('3-7,10-15', [(3, 8), (10, 16)])
+
+    def testMultipleRangesDraft(self):
+        self.expectMultipleRanges('3-7,10-15', [(3, 8), (10, 16)], draft=1)
 
     def testMultipleRangesBigFile(self):
         self.uploadBigFile()
