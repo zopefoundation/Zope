@@ -135,5 +135,6 @@ class CallbackPipe:
 
 def make_response(callback,*args):
     # XXX should this be the FTPResponse constructor instead?
-	return FTPResponse(stdout=CallbackPipe(callback, args), stderr=StringIO())
-    
+    r=FTPResponse(stdout=CallbackPipe(callback, args), stderr=StringIO())
+    r.setHeader('content-type','text/plain')
+    return r
