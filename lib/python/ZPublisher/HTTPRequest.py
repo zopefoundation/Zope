@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -1357,18 +1357,6 @@ def sane_environment(env):
         try: del dict['HTTP_CGI_AUTHORIZATION']
         except: pass
     return dict
-
-
-def str_field(v):
-    if type(v) is ListType:
-        return map(str_field,v)
-
-    if isinstance(v, FieldStorage):
-        v=v.value
-    elif type(v) is not StringType:
-        if hasattr(v,'file') and v.file: v=v.file
-        elif hasattr(v,'value'): v=v.value
-    return v
 
 
 class FileUpload:
