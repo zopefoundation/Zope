@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -279,7 +279,7 @@ class CopyContainer(ExtensionClass.Base):
     def manage_renameObjects(self, ids, new_ids, REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
-            raise 'BadRequst','Please rename each listed object.'
+            raise 'Bad Request','Please rename each listed object.'
         for i in range(len(ids)):
             if ids[i] != new_ids[i]:
                 self.manage_renameObject(ids[i], new_ids[i], REQUEST)
