@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.2 1998/08/14 16:48:52 brian Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Factory.py,v 1.3 1998/09/08 18:28:39 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 
@@ -31,6 +31,15 @@ class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
         self.object_type=object_type
         self.initial=initial
         self.__of__(product)._register()
+
+    def manage_edit(self, title, object_type, initial, REQUEST=None):
+        "Modify factory properties."
+        self._unregister()
+        self.title=title
+        self.object_type=object_type
+        self.initial=initial
+        self._register()
+        if REQUEST is not None: return self.manage_main(self, REQUEST)
 
     def _notifyOfCopyTo(self, container, op=0):
         if container.__class__ is not Product:
@@ -62,6 +71,9 @@ class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: Factory.py,v $
+# Revision 1.3  1998/09/08 18:28:39  jim
+# Added manage_edit.
+#
 # Revision 1.2  1998/08/14 16:48:52  brian
 # Updated copy support in leverish things
 #
