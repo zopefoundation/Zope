@@ -85,11 +85,12 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
 from urllib import quote, unquote
+from AccessControl import getSecurityManager
 import Globals, time
 
 class Resource(ExtensionClass.Base):
