@@ -99,10 +99,17 @@ def default__class_init__(self):
     for name, v in dict_items:
         if hasattr(v,'_need__name__') and v._need__name__:
             v.__dict__['__name__']=name
-        if ((name=='manage' or name[:7]=='manage_') and
-            not hasattr(v, '__roles__')):
-            try: v.__roles__ = ('Manager',)
-            except: dict[name+'__roles__'] = ('Manager',)
+        if name=='manage' or name[:7]=='manage_':
+            if not hasattr(v, '__roles__'):
+                try: v.__roles__ = ('Manager',)
+                except:
+                    # This attribute can't hold a __roles__
+                    # attribute.  Try to store __roles__ in the
+                    # class instead.
+                    nr = name + '__roles__'
+                    if not have(nr):
+                        try: dict[nr] = ('Manager',)
+                        except: pass
 
     # Look for a SecurityInfo object on the class. If found, call its
     # apply() method to generate __ac_permissions__ for the class. We
