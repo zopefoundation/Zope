@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.71 1998/08/24 20:30:48 jim Exp $'''
-__version__='$Revision: 1.71 $'[11:-2]
+$Id: Application.py,v 1.72 1998/09/22 16:42:13 jim Exp $'''
+__version__='$Revision: 1.72 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -59,6 +59,7 @@ page.  Thank you for your patience.</P>
 
 class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
                   App.ProductRegistry.ProductRegistry, FindSupport):
+    "Top-level object in a Principia installation"
     title    ='Principia'
     __roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous')
@@ -432,6 +433,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.72  1998/09/22 16:42:13  jim
+# Added doc string to allow trversal from "..".
+#
 # Revision 1.71  1998/08/24 20:30:48  jim
 # Made PrincipiaTime accept arguments.
 #
