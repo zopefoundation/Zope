@@ -38,36 +38,6 @@
 
 </PRE>
 
-<p>  The <a href="ExtensionClass.html">ExtensionClass</a>. release includes mix-in
-  extension base classes that can be used to add acquisition as a
-  feature to extension subclasses.  These mix-in classes use the
-  context-wrapping feature of ExtensionClasses to implement
-  acquisition. Consider the following example::</p>
-<p>    import ExtensionClass, Acquisition</p>
-
-<p>    class C(ExtensionClass.Base):
-      color='red'</p>
-
-<p>    class A(Acquisition.Implicit):</p>
-<p>      def report(self):
-        print self.color</p>
-
-
-<p>    a=A()
-    c=C()
-    c.a=A()</p>
-
-<p>    c.a.report() # prints <code>red</code></p>
-
-<p>    d=C()
-    d.color='green'
-    d.a=a</p>
-
-<p>    d.a.report() # prints <code>green</code></p>
-
-<p>    a.report() # raises an attribute error</p>
-
-
 <p>  The class <code>A</code> inherits acquisition behavior from
   <code>Acquisition.Implicit</code>.  The object, <code>a</code>, "has" the color of
   objects <code>c</code> and <code>d</code> when it is accessed through them, but it
@@ -92,31 +62,17 @@
 
 </PRE>
 
-<p>    Aquisition wrappers provide access to the wrapped objects
-    through the attributes <code>aq_parent</code>, <code>aq_self</code>, <code>aq_base</code>.  
-    In the example above, the expressions::</p>
-<p>       <code>c.a.aq_parent is c</code></p>
-
-
 <p>    and:</p>
 <PRE>
        'c.a.aq_self is a'
 
 </PRE>
 
-<p>    and::</p>
-<p>       <code>c.a.aq_self is a</code></p>
-
-
 <p>    both evaluate to true, but the expression:</p>
 <PRE>
        'c.a is a'
 
 </PRE>
-
-<p>    both evaluate to true, but the expression::</p>
-<p>       <code>c.a is a</code></p>
-
 
 <p>    evaluates to false, because the expression <code>c.a</code> evaluates
     to an acquisition wrapper around <code>c</code> and <code>a</code>, not <code>a</code> itself.</p>
@@ -152,12 +108,6 @@
 
 </PRE>
 
-<p>      When explicit acquisition is used, attributes are not
-      automatically obtained from the environment.  Instead, the
-      method <code>aq_aquire</code> must be used, as in::</p>
-<p>        print c.a.aq_acquire(<code>color</code>)</p>
-
-
 <p>      To support explicit acquisition, an object should inherit
       from the mix-in class <code>Acquisition.Explicit</code>.</p>
 
@@ -182,14 +132,6 @@
              __roles__=Acquisition.Acquired
 
 </PRE>
-
-<p>        For example, in::</p>
-<p>          class C(Acquisition.Explicit):
-             id=1
-             secret=2
-             color=Acquisition.Acquired
-             __roles__=Acquisition.Acquired</p>
-
 
 <p>        The <em>only</em> attributes that are automatically acquired from
         containing objects are <code>color</code>, and <code>__roles__</code>.  Note also
@@ -261,35 +203,6 @@
 
 </PRE>
 
-<p>      For example, in::</p>
-<p>        from Acquisition import Explicit</p>
-
-<p>        class HandyForTesting:
-            def __init__(self, name): self.name=name
-            def __str__(self):
-                return "%s(%s)" % (self.name, self.__class__.__name__)
-            __repr__=__str__</p>
-
-<p>        class E(Explicit, HandyForTesting): pass</p>
-
-<p>        class Nice(HandyForTesting):
-            isNice=1
-            def __str__(self):
-                return HandyForTesting.__str__(self)+' and I am nice!'
-            __repr__=__str__</p>
-
-<p>        a=E(<code>a</code>)
-        a.b=E(<code>b</code>)
-        a.b.c=E(<code>c</code>)
-        a.p=Nice(<code>spam</code>)
-        a.b.p=E(<code>p</code>)</p>
-
-<p>        def find_nice(self, ancestor, name, object, extra):
-            return hasattr(object,'isNice') and object.isNice</p>
-
-<p>        print a.b.c.aq_acquire(<code>p</code>, find_nice)</p>
-
-
 <p>      The filtered acquisition in the last line skips over the first
       attribute it finds with the name <code>p</code>, because the attribute
       doesn't satisfy the condition given in the filter. The output of
@@ -298,13 +211,6 @@
         spam(Nice) and I am nice!
 
 </PRE>
-
-<p>      The filtered acquisition in the last line skips over the first
-      attribute it finds with the name <code>p</code>, because the attribute
-      doesn't satisfy the condition given in the filter. The output of
-      the last line is::</p>
-<p>        spam(Nice) and I am nice!</p>
-
 
 
 
@@ -345,26 +251,6 @@
       o=a.b.c.x
 
 </PRE>
-
-<p>    Consider the following example::</p>
-<p>      from Acquisition import Implicit</p>
-
-<p>      class C(Implicit):
-          def __init__(self, name): self.name=name
-          def __str__(self):
-              return "%s(%s)" % (self.name, self.__class__.__name__)
-          __repr__=__str__</p>
-
-<p>      a=C("a")
-      a.b=C("b")
-      a.b.pref="spam"
-      a.b.c=C("c")
-      a.b.c.color="red"
-      a.b.c.pref="eggs"
-      a.x=C("x")</p>
-
-<p>      o=a.b.c.x</p>
-
 
 <p>    The expression <code>o.color</code> might be expected to return <code>"red"</code>. In
     earlier versions of ExtensionClass, however, this expression
