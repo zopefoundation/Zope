@@ -115,6 +115,10 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         get_word = self.lexicon.get_word
         return [get_word(wid) for wid in word_ids]
         
+    def clear(self):
+        """reinitialize the index"""
+        self.index = Index(self.lexicon)
+        
     def _get_object_text(self, obj):
         x = getattr(obj, self._fieldname)
         if callable(x):
