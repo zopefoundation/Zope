@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.111 1999/07/21 13:16:54 jim Exp $'''
-__version__='$Revision: 1.111 $'[11:-2]
+$Id: Application.py,v 1.112 1999/07/23 14:03:29 cathi Exp $'''
+__version__='$Revision: 1.112 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -103,7 +103,9 @@ from cStringIO import StringIO
 from AccessControl.PermissionRole import PermissionRole
 from App.ProductContext import ProductContext
 from misc_ import Misc_
+import ZDOM
 from zLOG import LOG, ERROR
+
 
 
 _standard_error_msg='''\
@@ -163,7 +165,8 @@ _standard_error_msg='''\
 <!--#var standard_html_footer-->'''
 
 
-class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
+class Application(Globals.ApplicationDefaultPermissions,
+                  ZDOM.Root, Folder.Folder,
                   App.ProductRegistry.ProductRegistry, FindSupport):
     """Top-level system object"""
     title    ='Zope'
