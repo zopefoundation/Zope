@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -290,8 +290,8 @@ class Image(File):
 
     _properties=({'id':'title', 'type': 'string'},
                  {'id':'content_type', 'type':'string'},
-                 {'id':'height', 'type':'int'},
-                 {'id':'width', 'type':'int'},
+                 {'id':'height', 'type':'string'},
+                 {'id':'width', 'type':'string'},
                  )
     
     manage_options=({'label':'Edit', 'action':'manage_main'},
