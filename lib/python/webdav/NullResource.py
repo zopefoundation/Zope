@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -113,14 +113,6 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     def __init__(self, parent, name, request=None):
         self.__name__=name
         self.__parent__=parent
-
-#        if hasattr(parent, '__ac_permissions__'):
-#            for p in parent.__ac_permissions__:
-#                n, v=p[:2]
-#                if n=='Add Documents, Images, and Files':
-#                    roles=Permission(n, v, parent).getRoles()
-#                    break
-#            self.PUT__roles__=roles
 
     def __bobo_traverse__(self, REQUEST, name=None):
         # We must handle traversal so that we can recognize situations
