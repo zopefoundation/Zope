@@ -46,7 +46,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is emphasized.
 
-$Id: StructuredText.py,v 1.2 1996/10/28 13:56:02 jim Exp $'''
+$Id: StructuredText.py,v 1.3 1996/12/06 15:57:37 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,15 @@ $Id: StructuredText.py,v 1.2 1996/10/28 13:56:02 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.3  1996/12/06 15:57:37  jim
+# Fixed bugs in character tags.
+#
+# Added -t command-line option to generate title if:
+#
+#    - The first paragraph is one line (i.e. a heading) and
+#
+#    - All other paragraphs are indented.
+#
 # Revision 1.2  1996/10/28 13:56:02  jim
 # Fixed bug in ordered lists.
 # Added option for either HTML-style headings or descriptive-list style
@@ -110,6 +119,7 @@ $Id: StructuredText.py,v 1.2 1996/10/28 13:56:02 jim Exp $'''
 # 
 
 import regex, regsub
+from regsub import gsub
 
 indent_tab  =regex.compile('\(\n\|^\)\( *\)\t')
 indent_space=regex.compile('\n\( *\)')
@@ -175,13 +185,8 @@ dl=regex.compile('\([^\n]+\)[ \t]+--[ \t\n]+\([^\0]*\)')
 nl=regex.compile('\n')
 ol=regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)')
 olp=regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)')
-em=regex.compile("[ \t\n]\*\([^ \t][^\n*]*[^ \t]\)\*\([ \t\n,.:;!?]\)")
-code=regex.compile("[ \t\n(]'\([^ \t']\([^\n']*[^ \t']\)?\)'\([) \t\n,.:;!?]\)")
-#'
-strong=regex.compile("[ \t\n]\*\*\([^ \t][^\n*]*[^ \t]\)\*\*\([ \t\n,.:;!?]\)")
-extra_dl=regex.compile("</dl>\n<dl>")
-extra_ul=regex.compile("</ul>\n<ul>")
-extra_ol=regex.compile("</ol>\n<ol>")
+
+
 
 class StructuredText:
 
@@ -212,12 +217,20 @@ class StructuredText:
 
     def __str__(self):
 	return str(self.structure)
+
+
+ctag_prefix="\([\0- (]\|^\)"
+ctag_suffix="\([\0- ,.:;!?)]\|$\)"
+ctag_middle="[%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s]"
+em    =regex.compile(ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix)
+strong=regex.compile(ctag_prefix+(ctag_middle % (("**",)*6))+ctag_suffix)
+code  =regex.compile(ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix)
 	
 def ctag(s):
     if s is None: s=''
-    s=regsub.gsub(strong,' <strong>\\1</strong>\\2',s)
-    s=regsub.gsub(code,' <code>\\1</code>\\3',s)
-    s=regsub.gsub(em,' <em>\\1</em>\\2',s)
+    s=gsub(strong,'\\1<strong>\\2</strong>\\3',s)
+    s=gsub(code,  '\\1<code>\\2</code>\\3',s)
+    s=gsub(em,    '\\1<em>\\2</em>\\3',s)
     return s	
 
 class HTML(StructuredText):
@@ -226,15 +239,19 @@ class HTML(StructuredText):
     An HTML structured text formatter.
     '''\
 
-    def __str__(self):
+    def __str__(self,
+		extra_dl=regex.compile("</dl>\n<dl>"),
+		extra_ul=regex.compile("</ul>\n<ul>"),
+		extra_ol=regex.compile("</ol>\n<ol>"),
+		):
 	'''\
 	Return an HTML string representation of the structured text data.
 
 	'''
 	s=self._str(self.structure,self.level)
-	s=regsub.gsub(extra_dl,'\n',s)
-	s=regsub.gsub(extra_ul,'\n',s)
-	s=regsub.gsub(extra_ol,'\n',s)
+	s=gsub(extra_dl,'\n',s)
+	s=gsub(extra_ul,'\n',s)
+	s=gsub(extra_ol,'\n',s)
 	return s
 
     def ul(self, before, p, after):
@@ -285,7 +302,7 @@ class HTML(StructuredText):
 	    elif s[0][-2:]=='::' and s[1]:
 		# Introduce an example, using pre tags:
 		r=self.normal(r,s[0][:-1],self.pre(s[1]))
-	    elif nl.search(s[0]) < 0 and s[1]:
+	    elif nl.search(s[0]) < 0 and s[1] and s[0][-1:] != ':':
 		# Treat as a heading
 		t=s[0]
 		r=self.head(r,t,level,
@@ -299,26 +316,36 @@ class HTML(StructuredText):
 	if tagged:
 	    r=''
 	else:
-	    r='<XMP>\n'
+	    r='<PRE>\n'
 	for s in structure:
-	    r="%s%s\n\n%s" % (r,s[0],self.pre(s[1],1))
-	if not tagged: r=r+'</XMP>\n'
+	    r="%s%s\n\n%s" % (r,html_quote(s[0]),self.pre(s[1],1))
+	if not tagged: r=r+'</PRE>\n'
 	return r
 	
 
+def html_quote(v,
+	       character_entities=(
+		       (regex.compile('&'), '&amp;'),
+		       (regex.compile("<"), '&lt;' ),
+		       (regex.compile(">"), '&gt;' ),
+		       (regex.compile('"'), '&quot;'))): #"
+        text=str(v)
+	for re,name in character_entities:
+	    text=gsub(re,name,text)
+	return text
+
 def html_with_references(text):
-    import regsub
-    text = regsub.gsub(
+    text = gsub(
 	'[\0\n].. \[\([-_0-9_a-zA-Z]+\)\]',
 	'\n  <a name="\\1">[\\1]</a>',
 	text)
     
-    text = regsub.gsub(
+    text = gsub(
 	'\([\0- ,]\)\[\([0-9_a-zA-Z]+\)\]\([\0- ,.:]\)',
 	'\\1<a href="#\\2">[\\2]</a>\\3',
 	text)
     
-    text = regsub.gsub(
+    text = gsub(
 	'\([\0- ]\)\([a-z]+://[^\0- ]+\)',
 	'\\1<a href="\\2">\\2</a>',
 	text)
@@ -328,7 +355,24 @@ def html_with_references(text):
 def main():
     import sys
 
-    print html_with_references(sys.stdin.read())
+    if '-t' in sys.argv:
+	import regex, string
+
+	s=sys.stdin.read()
+	r=regex.compile('\([\0-\n]*\n\)')
+	if r.match(s) >= 0:
+	    s=s[len(r.group(1)):]
+	s=str(html_with_references(s))
+	if s[:4]=='<h1>':
+	    t=s[4:string.find(s,'</h1>')]
+	    s='''<html><head><title>%s</title>
+	    </head><body>
+	    %s
+	    </body></html>
+	    ''' % (t,s)
+	print s
+    else:
+	print html_with_references(sys.stdin.read())
 
 if __name__=="__main__": main()
 
