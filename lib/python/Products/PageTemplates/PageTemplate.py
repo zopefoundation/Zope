@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -117,7 +117,7 @@ class PageTemplate:
     macros = MacroCollection()
 
     def pt_edit(self, text, content_type):
-        if content_type and content_type != self.content_type:
+        if content_type:
             self.content_type = str(content_type)
         if hasattr(text, 'read'):
             text = text.read()

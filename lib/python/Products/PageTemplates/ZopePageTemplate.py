@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -101,6 +101,7 @@ from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
+from OFS.PropertyManager import PropertyManager
 from PageTemplate import PageTemplate
 
 try:
@@ -111,7 +112,7 @@ except ImportError:
     SUPPORTS_WEBDAV_LOCKS = 0
 
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
-                       Traversable):
+                       Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
      
     if SUPPORTS_WEBDAV_LOCKS:
@@ -129,8 +130,15 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     manage_options = (
         {'label':'Edit', 'action':'pt_editForm'},
         {'label':'Test', 'action':'ZScriptHTML_tryForm'},
-        ) + Historical.manage_options + SimpleItem.manage_options + \
-        Cacheable.manage_options
+        ) + PropertyManager.manage_options \
+        + Historical.manage_options \
+        + SimpleItem.manage_options \
+        + Cacheable.manage_options
+
+    _properties=({'id':'title', 'type': 'string'},
+                 {'id':'content_type', 'type':'string'},
+                 {'id':'expand', 'type':'boolean'},
+                 )
 
     def __init__(self, id, text=None, content_type=None):
         self.id = str(id)
@@ -138,6 +146,10 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if text is None:
             text = open(self._default_content_fn).read()
         self.pt_edit(text, content_type)
+
+    def _setPropValue(self, id, value):
+        Cache._setPropValue(self, id, value)
+        self.ZCacheable_invalidate()
 
     security = AccessControl.ClassSecurityInfo()
 
@@ -167,10 +179,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return self.pt_editForm(manage_tabs_message=message)
 
     def pt_setTitle(self, title):
-        title = str(title)
-        if self.title != title:
-            self.title = title
-            self.ZCacheable_invalidate()
+        self._setPropValue('title', str(title))
 
     def pt_upload(self, REQUEST, file=''):
         """Replace the document with the text in file."""
@@ -236,12 +245,28 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                                             self.content_type)
         except AttributeError: pass
 
-        # Execute the template in a new security context.
         security=getSecurityManager()
         bound_names['user'] = security.getUser()
+
+        # Retrieve the value from the cache.
+        keyset = None
+        if self.ZCacheable_isCachingEnabled():
+            # Prepare a cache key.
+            keyset = {'here': self._getContext(),
+                      'bound_names': bound_names}
+            result = self.ZCacheable_get(keywords=keyset)
+            if result is not None:
+                # Got a cached value.
+                return result
+
+        # Execute the template in a new security context.
         security.addContext(self)
         try:
-            return self.pt_render(extra_context=bound_names)
+            result = self.pt_render(extra_context=bound_names)
+            if keyset is not None:
+                # Store the result in the cache.
+                self.ZCacheable_set(result, keywords=keyset)
+            return result
         finally:
             security.removeContext(self)
 
