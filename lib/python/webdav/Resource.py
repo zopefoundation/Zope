@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -185,8 +185,7 @@ class Resource:
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         self.dav__init(REQUEST, RESPONSE)
-        try: cmd=xmlcmds.PropFind(REQUEST)
-        except: raise 'Bad Request', 'Invalid xml request.'
+        cmd=xmlcmds.PropFind(REQUEST)
         result=cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
@@ -200,8 +199,7 @@ class Resource:
             raise 'Method Not Allowed', (
                   'Method not supported for this resource.')
         # TODO: add lock checking here
-        try: cmd=xmlcmds.PropPatch(REQUEST)
-        except: raise 'Bad Request', 'Invalid xml request.'
+        cmd=xmlcmds.PropPatch(REQUEST)
         result=cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
@@ -225,14 +223,16 @@ class Resource:
            not self.cb_isCopyable():
             raise 'Method Not Allowed', 'This object may not be copied.'
         depth=REQUEST.get_header('Depth', 'infinity')
+        if not depth in ('0', 'infinity'):
+            raise 'Bad Request', 'Invalid Depth header.'
         dest=REQUEST.get_header('Destination', '')
         while dest and dest[-1]=='/':
             dest=dest[:-1]
         if not dest:
-            raise 'Bad Request', 'No destination given'
-        flag=REQUEST.get_header('Overwrite', 'F')
-        flag=string.upper(flag)
-        body=REQUEST.get('BODY', '')
+            raise 'Bad Request', 'Invalid Destination header.'
+        oflag=string.upper(REQUEST.get_header('Overwrite', 'F'))
+        if not oflag in ('T', 'F'):
+            raise 'Bad Request', 'Invalid Overwrite header.'
         path, name=os.path.split(dest)
         try: parent=REQUEST.resolve_url(path)
         except ValueError:
@@ -243,8 +243,8 @@ class Resource:
         if hasattr(parent, '__dav_null__'):
             raise 'Conflict', 'Object ancestors must already exist.'
         existing=hasattr(aq_base(parent), name)
-        if existing and flag=='F':
-            raise 'Precondition Failed', 'Resource %s exists.' % dest
+        if existing and oflag=='F':
+            raise 'Precondition Failed', 'Destination resource exists.'
         try: parent._checkId(name, allow_dup=1)
         except: raise 'Forbidden', sys.exc_value
         try: parent._verifyObjectPaste(self, REQUEST)
@@ -253,6 +253,13 @@ class Resource:
         except: raise 'Forbidden', sys.exc_value
         ob=self._getCopy(parent)
         ob._setId(name)
+        if depth=='0' and hasattr(ob, '__dav_collection__'):
+            for id in ob.objectIds():
+                ob._delObject(id)
+        if existing:
+            object=getattr(parent, name)
+            obj.dav__validate(object, 'DELETE', request)
+            parent._delObject(name)
         parent._setObject(name, ob)
         ob=ob.__of__(parent)
         ob._postCopy(parent, op=0)
@@ -304,8 +311,7 @@ class Resource:
         if existing:
             object=getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
-            parent._delObject(name)
-            
+            parent._delObject(name)            
         parent._setObject(name, ob)
         ob=ob.__of__(parent)
         ob._postCopy(parent, op=1)

@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -108,26 +108,38 @@ class PropFind:
     """Model a PROPFIND request."""
     def __init__(self, request):
         self.request=request
-        data=request.get('BODY', '')
-        self.depth=request.get_header('Depth', 'infinity')
-        self.allprop=(not len(data))
+        self.depth='infinity'
+        self.allprop=0
         self.propname=0
         self.propnames=[]
-        self.parse(data)
+        self.parse(request)
         
-    def parse(self, data, dav='DAV:'):
-        if not data: return
-        root=XmlParser().parse(data)
-        e=root.elements('propfind', ns=dav)[0]
+    def parse(self, request, dav='DAV:'):
+        self.depth=request.get_header('Depth', 'infinity')
+        if not (self.depth in ('0','1','infinity')):
+            raise 'Bad Request', 'Invalid Depth header.'
+        body=request.get('BODY', '')
+        self.allprop=(not len(body))
+        if not body: return
+        try:    root=XmlParser().parse(body)
+        except: raise 'Bad Request', sys.exc_value
+        e=root.elements('propfind', ns=dav)
+        if not e: raise 'Bad Request', 'Invalid xml request.'
+        e=e[0]
         if e.elements('allprop', ns=dav):
             self.allprop=1
             return
         if e.elements('propname', ns=dav):
             self.propname=1
             return
-        prop=e.elements('prop', ns=dav)[0]
+        prop=e.elements('prop', ns=dav)
+        if not prop: raise 'Bad Request', 'Invalid xml request.'
+        prop=prop[0]
         for val in prop.elements():
             self.propnames.append((val.name(), val.namespace()))
+        if (not self.allprop) and (not self.propname) and \
+           (not self.propnames):
+            raise 'Bad Request', 'Invalid xml request.'
         return
 
     def apply(self, obj, url=None, depth=0, result=None, top=1):
@@ -196,17 +208,22 @@ class PropPatch:
     """Model a PROPPATCH request."""
     def __init__(self, request):
         self.request=request
-        data=request.get('BODY', '')
         self.values=[]
-        self.parse(data)
+        self.parse(request)
 
-    def parse(self, data, dav='DAV:'):
-        root=XmlParser().parse(data)
+    def parse(self, request, dav='DAV:'):
+        body=request.get('BODY', '')
+        try:    root=XmlParser().parse(body)
+        except: raise 'Bad Request', sys.exc_value
         vals=self.values
-        e=root.elements('propertyupdate', ns=dav)[0]
+        e=root.elements('propertyupdate', ns=dav)
+        if not e: raise 'Bad Request', 'Invalid xml request.'
+        e=e[0]
         for ob in e.elements():
             if ob.name()=='set' and ob.namespace()==dav:
-                proptag=ob.elements('prop', ns=dav)[0]
+                proptag=ob.elements('prop', ns=dav)
+                if not proptag: raise 'Bad Request', 'Invalid xml request.'
+                proptag=proptag[0]
                 for prop in proptag.elements():
                     # We have to ensure that all tag attrs (including
                     # an xmlns attr for all xml namespaces used by the
@@ -227,9 +244,10 @@ class PropPatch:
                         md={'__xml_attrs__':attrs}
                         item=(name, ns, prop.strval(), md)
                         vals.append(item)
-
             if ob.name()=='remove' and ob.namespace()==dav:
-                proptag=ob.elements('prop', ns=dav)[0]
+                proptag=ob.elements('prop', ns=dav)
+                if not proptag: raise 'Bad Request', 'Invalid xml request.'
+                proptag=proptag[0]
                 for prop in proptag.elements():
                     item=(prop.name(), prop.namespace())
                     vals.append(item)
@@ -295,6 +313,7 @@ class PropPatch:
         get_transaction().abort()
         result=string.replace(result, '200 OK', '424 Failed Dependency')
         return result
+
 
 
 
