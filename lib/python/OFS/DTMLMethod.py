@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -158,8 +158,12 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
             return self.raise_standardErrorMessage(client, REQUEST)
                 
         if RESPONSE is None: return r
-        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
-        # Try to handle content types intelligently...
+
+        # This was bad for dynamic content!
+        #    RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
+
+        # Ick.  I don't like this. But someone can override it with
+        # a header if they have to.
         c, e=guess_content_type(self.__name__, r)
         RESPONSE.setHeader('Content-Type', c)
         return decapitate(r, RESPONSE)
