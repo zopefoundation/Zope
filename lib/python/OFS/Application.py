@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.134 2000/12/05 18:49:43 shane Exp $'''
-__version__='$Revision: 1.134 $'[11:-2]
+$Id: Application.py,v 1.135 2000/12/20 15:01:25 mj Exp $'''
+__version__='$Revision: 1.135 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -261,7 +261,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         button along with a link to the Zope site."""
         return '<a href="http://www.zope.org/Credits" target="_top"><img ' \
                'src="%s/p_/ZopeButton" width="115" height="50" ' \
-               'border="0" alt="Powered by Zope"></a>' % self.REQUEST.BASE1
+               'border="0" alt="Powered by Zope" /></a>' % self.REQUEST.BASE1
 
 
     def DELETE(self, REQUEST, RESPONSE):

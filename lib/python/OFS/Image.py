@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.120 $'[11:-2]
+__version__='$Revision: 1.121 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -617,7 +617,7 @@ class Image(File):
             value = args.get(key)
             result = '%s %s="%s"' % (result, key, value)
 
-        return '%s>' % result
+        return '%s />' % result
 
 
 def cookId(id, title, file):

@@ -37,6 +37,10 @@ Zope changes
           that need access to this information remotely should be modified 
           so that a Python Script or DTML Method can explicitly pass 
           the data. 
+          
+        - The Image.tag() and ZopeAttributionButton methods now return an
+          image tag that is XHTML compatible; a space and a slash have been
+          added.
 
       Bugs Fixed
 
