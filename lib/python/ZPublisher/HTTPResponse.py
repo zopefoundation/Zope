@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.50 2001/10/22 20:07:40 jeremy Exp $'''
-__version__='$Revision: 1.50 $'[11:-2]
+$Id: HTTPResponse.py,v 1.51 2001/11/13 19:28:33 evan Exp $'''
+__version__='$Revision: 1.51 $'[11:-2]
 
 import string, types, sys,  re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -472,7 +472,9 @@ class HTTPResponse(BaseResponse):
         tb = join(tb, '\n')
         tb = self.quoteHTML(tb)
         if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
-        else:               _tbopen, _tbclose = '<!--',  '-->'
+        else:               _tbopen, _tbclose = '''<pre
+          onclick="this.firstChild.data=this.lastChild.data">
+        &sect;<!--''',  '--></pre>'
         return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
     def redirect(self, location, status=302, lock=0):
