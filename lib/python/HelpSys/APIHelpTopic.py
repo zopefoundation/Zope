@@ -105,6 +105,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
     """
 
     isAPIHelpTopic=1
+    funcs=() # for backward compatibility
     
     def __init__(self, id, title, file):
         self.id=id
@@ -114,6 +115,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         self.doc=dict.get('__doc__','')
 
         self.apis=[]
+        self.funcs=[]
         for k, v in dict.items():
             if (not _ignore_objects.has_key(k) or
                 _ignore_objects[k] is not v):
@@ -123,7 +125,9 @@ class APIHelpTopic(HelpTopic.HelpTopic):
                 elif (hasattr(v, 'isImplementedByInstancesOf')):
                     # A scarecrow interface.
                     self.apis.append(APIDoc(v, 1))
-
+                elif type(v)==types.FunctionType:
+                    # A function
+                    self.funcs.append(MethodDoc(v, 0))
         # try to get title from first non-blank line
         # of module docstring
         if not self.title:
@@ -145,7 +149,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
         text="%s %s" % (self.title, self.doc)
-        for api in self.apis:
+        for api in self.apis + self.funcs:
             text="%s %s" % (text, api.SearchableText())
         return text
 
