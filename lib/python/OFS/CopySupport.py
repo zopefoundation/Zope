@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -196,6 +196,7 @@ class CopyContainer(ExtensionClass.Base):
                 if not ob.cb_isCopyable():
                      raise CopyError, eNotSupported % absattr(ob.id)
                 ob=ob._getCopy(self)
+                __traceback_info__=(`ob`, `ob.manage_afterClone`)
                 ob.manage_afterClone(ob)
                 id=_get_id(self, absattr(ob.id))
                 ob._setId(id)
@@ -213,7 +214,7 @@ class CopyContainer(ExtensionClass.Base):
                 id=absattr(ob.id)
                 if not ob.cb_isMoveable():
                     raise CopyError, eNotSupported % id
-                ob.aq_parent._delObject(id, dp=0)
+                ob.aq_parent._delObject(id)
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
                 id=_get_id(self, id)
@@ -249,7 +250,7 @@ class CopyContainer(ExtensionClass.Base):
                       title='Rename Error',
                       message=sys.exc_value,
                       action ='manage_main')
-        self._delObject(id, dp=0)
+        self._delObject(id)
         if hasattr(ob, 'aq_base'):
             ob=ob.aq_base
         ob._setId(new_id)
