@@ -262,10 +262,11 @@ class BaseIndex(Persistent):
     def _del_wordinfo(self, wid, docid):
         doc2score = self._wordinfo[wid]
         del doc2score[docid]
-        if len(doc2score) == 0:
+        numdocs = len(doc2score)
+        if numdocs == 0:
             del self._wordinfo[wid]
             return
-        if len(doc2score) == self.DICT_CUTOFF:
+        if numdocs == self.DICT_CUTOFF:
             new = {}
             for k, v in doc2score.items():
                 new[k] = v
