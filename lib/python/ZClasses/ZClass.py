@@ -631,7 +631,7 @@ addDefault="""<HTML>
 
   <dtml-comment>
 
-     You can ad code that modifies the new instance here.
+     You can add code that modifies the new instance here.
 
      For example, if you have a property sheet that you want to update
      from form values, you can call it here:
