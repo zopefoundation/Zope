@@ -7,6 +7,35 @@ Zope Changes
   after Zope 2.5.1
 
     new Features:
+
+      - Signal handling and log rotation
+
+        All Zope process will respond to signals in the specified manner:
+
+        SIGHUP  - close open database connections and sockets, then restart the
+                  process
+
+        SIGTERM - close open database connections and sockets, then shut down.
+
+        SIGINT  - same as SIGTERM
+
+        SIGUSR2 - rotate all Zope log files (z2.log, event log, detailed log)
+
+        The common idiom for doing automated logfile rotation will become:
+
+         kill -USR2 `cat /path/to/var/z2.pid`
+
+        The common idiom for doing "prophylactic" restarts will become:
+
+         kill -HUP `cat /path/to/var/z2.pid`
+
+        When a process is interrupted via ctrl-C or via a TERM signal
+        (INT, TERM), all open database connections and sockets will be closed 
+        before the process dies.  This will speed up restart time for sites
+        that use a FileStorage as its index will be written to the filesystem 
+        before shutdown.
+
+        Unspecified signals kill the process without doing cleanup.
     
       - ZCatalog no longer has a hand in managing text index vocabularies.
         The cruft associated with this functionality has been exorcised.
