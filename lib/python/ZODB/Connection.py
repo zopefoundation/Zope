@@ -477,13 +477,25 @@ class Connection(ExportImport, object):
                 del obj._p_jar
                 del obj._p_oid
             else:
-                
-                # XXX Need to change strategy to acount for
-                # non-ghostifiables that need to load right away.
-                # We need to simply call self.invalidate and let
-                # _flush_invalidations actually perform the
-                # invalidations. I'd do this now if I had a test for
-                # it. :)                
+
+                # Note: If we invalidate a non-ghostifiable object
+                # (i.e. a persistent class), the object will
+                # immediately reread it's state.  That means that the
+                # following call could result in a call to
+                # self.setstate, which, of course, must suceed.
+                # In general, it would be better if the read could be
+                # delayed until the start of the next transaction.  If
+                # we read at the end of a transaction and if the
+                # object was invalidated during this transaction, then
+                # we'll read non-current data, which we'll discard
+                # later in transaction finalization.  Unfortnately, we
+                # can only delay the read if this abort corresponds to
+                # a top-level-transaction abort.  We can't tell if
+                # this is a top-level-transaction abort, so we have to
+                # go ahead and invalidate now. Fortunatekly, it's
+                # pretty unlikely that the object we are invalidating
+                # was invalidated by another thread, so the risk of a
+                # reread is pretty low.
 
                 self._cache.invalidate(oid)
 
@@ -695,12 +707,21 @@ class Connection(ExportImport, object):
         self._storage = self._tmp
         self._tmp = None
 
-                
-        # XXX Need to change strategy to acount for non-ghostifiables
-        # that need to load right away.  We need to simply call
-        # self.invalidate and let _flush_invalidations actually
-        # perform the invalidations. I'd do this now if I had a test
-        # for it. :)
+        # Note: If we invalidate a non-justifiable object (i.e. a
+        # persistent class), the object will immediately reread it's
+        # state.  That means that the following call could result in a
+        # call to self.setstate, which, of course, must succeed.  In
+        # general, it would be better if the read could be delayed
+        # until the start of the next transaction.  If we read at the
+        # end of a transaction and if the object was invalidated
+        # during this transaction, then we'll read non-current data,
+        # which we'll discard later in transaction finalization.  We
+        # could, theoretically queue this invalidation by calling
+        # self.invalidate.  Unfortunately, attempts to make that
+        # change resulted in mysterious test failures.  It's pretty
+        # unlikely that the object we are invalidating was invalidated
+        # by another thread, so the risk of a reread is pretty low.
+        # It's really not worth the effort to pursue this.
 
         self._cache.invalidate(src._index.keys())
         self._invalidate_creating(src._creating)
@@ -1081,12 +1102,22 @@ class Connection(ExportImport, object):
         if self._import:
             self._import = None
         self._storage.tpc_abort(transaction)
-                
-        # XXX Need to change strategy to acount for non-ghostifiables
-        # that need to load right away.  We need to simply call
-        # self.invalidate and let _flush_invalidations actually
-        # perform the invalidations. I'd do this now if I had a test
-        # for it. :)
+
+        # Note: If we invalidate a non-justifiable object (i.e. a
+        # persistent class), the object will immediately reread it's
+        # state.  That means that the following call could result in a
+        # call to self.setstate, which, of course, must succeed.  In
+        # general, it would be better if the read could be delayed
+        # until the start of the next transaction.  If we read at the
+        # end of a transaction and if the object was invalidated
+        # during this transaction, then we'll read non-current data,
+        # which we'll discard later in transaction finalization.  We
+        # could, theoretically queue this invalidation by calling
+        # self.invalidate.  Unfortunately, attempts to make that
+        # change resulted in mysterious test failures.  It's pretty
+        # unlikely that the object we are invalidating was invalidated
+        # by another thread, so the risk of a reread is pretty low.
+        # It's really not worth the effort to pursue this.
 
         self._cache.invalidate(self._modified)
         self._invalidate_creating()
