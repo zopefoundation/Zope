@@ -82,7 +82,11 @@ the various kinds of components you'll find in Zope.
 <p>
 Go directly to the <a href="<dtml-var BASEPATH1>/manage" target="_top">
 Zope Management Interface</a> if you'd like to start working with Zope 
-right away.
+right away.  <strong>NOTE:  Some versions of Microsoft Internet Explorer,
+(specifically IE 5.01 and early versions of IE 5.5) may have problems
+displaying Zope management pages.  If you cannot view the management pages,
+try upgrading your IE installation to the latest release version, or use
+a different browser.</strong>
 </p>
 </li>
 
