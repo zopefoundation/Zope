@@ -15,8 +15,10 @@
 # Unit test for database creation
 
 import os
+import time
 import unittest
 import BerkeleyTestBase    
+from bsddb3Storage.BerkeleyBase import BerkeleyConfig
 
 
 
@@ -25,21 +27,16 @@ class TestMixin:
         self.failUnless(os.path.isdir(BerkeleyTestBase.DBHOME))
 
 
-class MinimalCreateTest(BerkeleyTestBase.BerkeleyTestBase,
-                        BerkeleyTestBase.MinimalTestBase,
-                        TestMixin):
+class MinimalCreateTest(BerkeleyTestBase.MinimalTestBase, TestMixin):
     pass
 
 
-class FullCreateTest(BerkeleyTestBase.BerkeleyTestBase,
-                     BerkeleyTestBase.FullTestBase,
-                     TestMixin):
+class FullCreateTest(BerkeleyTestBase.FullTestBase, TestMixin):
     pass
 
 
 
-class FullOpenExistingTest(BerkeleyTestBase.BerkeleyTestBase,
-                           BerkeleyTestBase.FullTestBase):
+class FullOpenExistingTest(BerkeleyTestBase.FullTestBase):
     def checkOpenWithExistingVersions(self):
         version = 'test-version'
         oid = self._storage.new_oid()
@@ -71,11 +68,29 @@ class FullOpenExistingTest(BerkeleyTestBase.BerkeleyTestBase,
 
 
 
+class FullOpenCloseTest(BerkeleyTestBase.FullTestBase):
+    def _mk_dbhome(self, dir):
+        config = BerkeleyConfig
+        config.interval = 10
+        os.mkdir(dir)
+        try:
+            return self.ConcreteStorage(dir, config=config)
+        except:
+            self._zap_dbhome(dir)
+            raise
+
+    def checkCloseWithCheckpointingThread(self):
+        # All the interesting stuff happens in the setUp and tearDown
+        time.sleep(20)
+
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
     suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
     suite.addTest(unittest.makeSuite(FullOpenExistingTest, 'check'))
+    suite.addTest(unittest.makeSuite(FullOpenCloseTest, 'check'))
     return suite
 
 
