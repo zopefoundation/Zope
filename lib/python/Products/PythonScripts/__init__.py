@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.5 2001/01/09 21:48:42 evan Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 2001/01/10 21:33:06 brian Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import PythonScript
 try:
@@ -103,10 +103,12 @@ __allow_access_to_unprotected_subobjects__ = 1
 
 def initialize(context):
     context.registerClass(
-        instance_class=PythonScript.PythonScript,
+        PythonScript.PythonScript,
+        permission='Add Python Scripts',
         constructors=(PythonScript.manage_addPythonScriptForm,
                       PythonScript.manage_addPythonScript),
-        icon='www/pyscript.gif')
+        icon='www/pyscript.gif'
+        )
 
     context.registerHelp()
     context.registerHelpTitle('Zope Help')    
