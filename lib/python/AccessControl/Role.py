@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -307,7 +307,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         dict={}
         _notfound = []
         while 1:
-            aclu = getattr(aq_base(item), 'acl_users', _notfound)
+            aclu = getattr(aq_base(item), '__allow_groups__', _notfound)
             if aclu is not _notfound:
                 mlu = getattr(aclu, 'maxlistusers', _notfound)
                 if type(mlu) != type(1): mlu = DEFAULTMAXLISTUSERS
