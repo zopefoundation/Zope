@@ -1,0 +1,239 @@
+<HTML>
+<HEAD>
+<TITLE>
+Gadfly/kwParsing Downloads and Documentation
+</TITLE>
+
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<table>
+<tr>
+<td valign="top"><img src="gadfly.JPG"></td>
+<td>
+<h1>Gadfly 1.0: An SQL Database in Python</h1>
+Gadfly/kwParsing downloads and documentation.
+<p>
+<b>Gadfly requires the kwParsing parser/parser generator package.
+   The "two packages" are released as one distribution (kwP) with the
+   same generous copyright.
+<p>
+<a href="kwP.tar.gz">Download kwP.tar.gz in tar-gz format with tar.gz extension.</a>
+<p>
+<a href="kwP.tgz">Download kwP.tgz in tar-gz format with tgz extension.</a>
+<p>
+<a href="kjbuckets.pyd">Separately download kjbuckets.pyd data structure
+accellerator extension module for Python 1.5 on Windows NT or Windows 95/98
+only.</a>
+</b>
+<p>
+[The tar.gz extension doesn't always work for MSIE browsers.]
+<p>
+<a href="gffaq.html">Gadfly frequently asked questions (FAQ).</a>
+<p>
+<a href="gadfly.html">General information with links to other documentation,
+<em>including installation instructions</em>.</a>
+</td>
+</tr></table>
+<hr><br>
+<table BORDER>
+<tr>
+<td width="40%">
+
+ <a href="gadfly.py">gadfly.py</a> main module<br>
+ <a href="gfserve.py">gfserve.py</a> main TCP/IP server mode<br>
+ <a href="gfclient.py">gfclient.py</a> main TCP/IP client mode<br>
+ <a href="gfsocket.py">gfsocket.py</a> client/server support module<br>
+ <a href="gfstest.py">gfstest.py</a> client/server test module<br>
+ <a href="gfinstall.py">gfinstall.py</a> installation script<br> 
+ <a href="gftest.py">gftest.py</a> test suite<br> 
+ <a href="sqlbind.py">sqlbind.py</a> grammar bindings<br> 
+ <a href="sqlgen.py">sqlgen.py</a> grammar generation<br> 
+ <a href="sqlgram.py">sqlgram.py</a> SQL grammar<br> 
+ <a href="sqlgtest.py">sqlgtest.py</a> grammar tests<br> 
+ <a href="sqlsem.py">sqlsem.py</a> main semantic objects<br> 
+ <a href="sqlmod.py">sqlmod.py</a> update semantic objects<br> 
+ <a href="gfdb0.py">gfdb0.py</a> data and file archiving<br> 
+ <a href="gfintrospect.py">gfintrospect.py</a> introspection and remote table support<br>
+ <a href="remotetest.py">remotetest.py</a> remote table implementation demo and test</a><br>
+ <a href="relalg.py">relalg.py</a> relational algebra interpreter (toy)<br> 
+ <a href="kjbuckets0.py">kjbuckets0.py</a> base data structures
+(python version)<br>
+
+</td>
+<td valign="top">
+These are the core files to the 
+<a href="gadfly.html">
+Gadfly SQL database engine
+</a>
+A relational database query engine that supports
+the Structured Query Language (SQL), implemented entirely
+in Python (with optional builtin support from the
+<a href="../kjbuckets">
+kjbuckets builtin data structure accelerator</a>).
+<hr>
+Gadfly has been tested on Windows 95, Windows NT, Linux, and Unix
+(solaris),
+and it should run anywhere that Python runs (bebox,
+maybe Palm Pilot/WinCE eventually...)
+<hr>
+Supports <a href="gfrecover.html">transactions and recovery</a>
+<hr>
+Supports <a href="gfSQL.html">a LARGE subset of SQL</a>
+<hr>
+Supports <a href="server.html">client/server access
+via TCP/IP sockets.</a>
+<hr>
+<em>Many thanks to users who have used Gadfly in previous
+    releases and who have offered suggestions and bug reports!</em>
+
+</td>
+</tr>
+<caption align="top"><b>Gadfly source modules and documentation</b></caption>
+</table>
+<h2>kwParser, Python lint, IDL, etc...</h2>
+
+kwParser is a parser generator for Python.  It transforms an
+abstract specification of a language grammar (for example the
+CORBA Interface Definition Language) together with "interpretation
+functions" that define the semantics of the language into a
+compiler or translator or interpreter.  In the case of CORBA IDL
+a python program using kwParser could generate stubs and support
+code (in Python or some other language) to talk to a CORBA interface.
+<p>
+The release given here has had some micro-optimizations (26 June 1997)
+which with luck don't break anything.  In particular regexen are
+used more intelligently and the generation phase will use 
+<a href="../kjbuckets">kjbuckets</a>
+if it's available.
+</p>
+This is moderately heavy computer science.  Not for the timid.
+<p>
+<TABLE BORDER>
+  <TR>
+
+      <TD><a href="COPYRIGHT">COPYRIGHT</a>
+    </TD>
+           <td>Do what you like, just don't sue me (roughly translated).
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="DLispShort.py">DLispShort.py</a>
+    </TD>
+           <td>A very simple example language specification.
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="DumbLispGen.py">DumbLispGen.py</a>
+    </TD>
+           <td>Another example specification
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="arefize.py">arefize.py</a>
+    </TD>
+           <td>(not related: simple program used to generate this page)
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="idl.py">idl.py</a>
+    </TD>
+           <td>A very complex example: CORBA IDL parser generator.
+               This is a good example of a complex grammar.  The
+               interpretation functions and terminal regexes are
+               all stubbed.
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="pygram.py">pygram.py</a>
+    </TD>
+           <td>A very complex example: The python grammar.
+		This module uses a hand written lexer to handle
+		Python's beautiful peculiarities.  Used by kypylint.py.<br>
+                Look at the top of the module for editable parameters.
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="kjpylint.py">kjpylint.py</a>
+    </TD>
+           <td>An attempt to use the pygram parser to do simple
+		checking on python source files.  Reports references
+		not set, assignments not used, etcetera.  not all warnings
+		indicate real problems of course.  Used like this:
+<pre>
+% python kjpylint.py /home/app/arw/Python-1.5a1/Lib/SocketServer.py
+setup
+loading
+now parsing
+(verify_request) 'request' defined before 225 not used
+(verify_request) 'self' defined before 225 not used
+(verify_request) 'client_address' defined before 225 not used
+(handle_error) 'request' defined before 245 not used
+(handle_error) 'self' defined before 245 not used
+(collect_children) 'status' defined before 293 not used
+(setup) 'self' defined before 368 not used
+(__del__) 'self' defined before 371 not used
+(handle) 'self' defined before 374 not used
+(finish) 'self' defined before 377 not used
+(<module global>) '__version__' defined before 104 not used
+269: (qref) 'max_packet_size' not defined in module?
+</pre>
+  Here only the last line indicates a possible real bug
+  in SocketServer.py
+<hr>
+  <em>Bugs/Features: <br>
+      Barfs on inconsistent indentation (ie space-tab is not the same as tab).
+      <br>
+      Grumpy about one line for loops and lambdas.<br>
+      For very weird cases may not parse strings correctly.<br>
+      See top of module for more info.<br>
+      Right now kjpylint might like to see an extra newline
+      at the end of the file.  I'll look into this, sorry.</em>
+      <br>
+      Latest: Thu Jul 17 13:50:03 EDT 1997
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="kjParseBuild.py">kjParseBuild.py</a>
+    </TD>
+           <td>The Parser generator module, used only to generate
+               the data structures required for parsing.
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="kjParser.py">kjParser.py</a>
+    </TD>
+           <td>The Parser module, used both during the generation
+               phase and also after generation when the generated
+               parser is used.
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="kwParsing.html">kwParsing.html</a>
+    </TD>
+           <td>HTML documentation for the package.
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="kjSet.py">kjSet.py</a>
+    </TD>
+           <td>support module for parser generation.
+               (uses <a href="../kjbuckets">kjbuckets</a>
+               builtin if available, or uses a straight
+               Python implementation if not.)
+           </td>
+    </TR>
+  <TR>
+      <TD><a href="kwP.tar.gz">kwP.tar.gz</a>
+    </TD>
+           <td>The package (tarred, gzipped)
+           </td>
+    </TR>
+  <CAPTION ALIGN="top">kwParsing parser generator related files.
+  </CAPTION>
+  </TABLE>
+
+<a href="mailto:arw@ifu.net">feedback</a><br>
+<a href="../index.html">home</a>
+</BODY>
+</HTML>
