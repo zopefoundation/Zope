@@ -39,6 +39,10 @@ Zope Changes
     
       - Collector #1127: strftime did not take timezone into account.
 
+      - Collector #1569/DateTime: Added a new ISO8601-method that will
+        return correctly formatted ISO 8601-representations to augment
+        the ISO method which isn't compliant with ISO 8601.
+
       - ZPublisher: changed some hardcoded 'latin1' arguments to 'iso-8859-15'
         since latin1 is obsolete.
 

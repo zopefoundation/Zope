@@ -272,6 +272,10 @@ class DateTimeTests(unittest.TestCase):
         for tbad in '08:00', 'T8:00': #, 'T08:00Z-04:00':
             self.assertRaises(DateTime.SyntaxError, DateTime, dgood + tbad)
 
+        iso8601_string = '2002-05-02T08:00:00-04:00'
+        iso8601DT = DateTime(iso8601_string)
+        self.assertEqual(iso8601_string, iso8601DT.ISO8601())
+
     def testJulianWeek(self):
         """ check JulianDayWeek function """
 

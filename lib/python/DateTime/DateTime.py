@@ -443,6 +443,12 @@ def _tzoffset2rfc822zone(seconds):
        _tzoffset() is the negative of what time.localzone and time.altzone is."""
     return "%+03d%02d" % divmod( (seconds/60), 60) 
 
+def _tzoffset2iso8601zone(seconds):
+    """Takes an offset, such as from _tzoffset(), and returns an ISO 8601
+       compliant zone specification. Please note that the result of
+       _tzoffset() is the negative of what time.localzone and time.altzone is."""
+    return "%+03d:%02d" % divmod( (seconds/60), 60)
+
 
 class DateTime:
     """DateTime objects represent instants in time and provide
@@ -1574,13 +1580,33 @@ class DateTime:
 
 
     def ISO(self):
-        """Return the object in ISO standard format
+        """Return the object in ISO standard format. Note:
+        this is *not* ISO 8601-format! See the ISO8601 and
+        HTML4 methods below for ISO 8601-compliant output
 
         Dates are output as: YYYY-MM-DD HH:MM:SS
         """
         return "%.4d-%.2d-%.2d %.2d:%.2d:%.2d" % (
             self._year, self._month, self._day,
             self._hour, self._minute, self._second)
+
+    def ISO8601(self):
+        """Return the object in ISO 8601-compatible format containing
+        the date, time with seconds-precision and the time zone
+        identifier - see http://www.w3.org/TR/NOTE-datetime
+
+        Dates are output as: YYYY-MM-DDTHH:MM:SSTZD
+            T is a literal character.
+            TZD is Time Zone Designator, format +HH:MM or -HH:MM
+
+        The HTML4 method below offers the same formatting, but converts
+        to UTC before returning the value and sets the TZD "Z"
+        """
+        tzoffset = _tzoffset2iso8601zone(_tzoffset(self._tz, self._t))
+
+        return  "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d%s" % (
+            self._year, self._month, self._day,
+            self._hour, self._minute, self._second, tzoffset)
 
     def HTML4(self):
         """Return the object in the format used in the HTML4.0 specification,
