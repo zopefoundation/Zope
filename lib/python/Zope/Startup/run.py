@@ -5,7 +5,7 @@ def run():
     from Zope.Startup import handlers, options, start_zope
 
     opts = options.ZopeOptions()
-    opts.realize()
+    opts.realize(doc="Sorry, no option docs yet.")
     handlers.handleConfig(opts.configroot, opts.confighandlers)
     App.config.setConfiguration(opts.configroot)
     start_zope(opts.configroot)
