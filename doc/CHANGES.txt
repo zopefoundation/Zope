@@ -12,6 +12,12 @@ Zope Changes
         - Added links in the "debugging information" control panel
           for viewing the contents of the ZODB cache.
 
+        - Added user password encryption capability, fulfilling the
+          needs described in the proposal at:
+          http://dev.zope.org/Wikis/DevSite/Proposals/EncryptedUserfolderPasswords
+          There is now a "properties" tab in user folders where you
+          can select whether passwords are stored encrypted.
+
 
     Bugs fixed
 
