@@ -57,6 +57,10 @@ Zope Changes
 
     Bugs Fixed
 
+     - Product initialization would only consult a file named "version.txt"
+       to read version information. Now it will check version.txt, VERSION.txt
+       and VERSION.TXT.
+
      - Collector #928: DateIndex ignored timezones when indexing and
        querying
 

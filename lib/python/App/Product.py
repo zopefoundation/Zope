@@ -489,12 +489,22 @@ class Distribution:
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
     products=app.Control_Panel.Products
+    fver = ''
 
     if hasattr(productp, '__import_error__'): ie=productp.__import_error__
     else: ie=None
 
-    try: fver=open(home+'/version.txt').read().strip()
-    except: fver=''
+    # Retrieve version number from any suitable version.txt
+    for fname in ('version.txt', 'VERSION.txt', 'VERSION.TXT'):
+        try:
+            fpath = os.path.join(home, fname)
+            fhandle = open(fpath, 'r')
+            fver = fhandle.read().strip()
+            fhandle.close()
+            break
+        except IOError:
+            continue
+
     old=None
     try:
         if ihasattr(products,name):
