@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.66 2000/05/30 15:59:50 brian Exp $''' 
-__version__='$Revision: 1.66 $'[11:-2]
+'''$Id: DT_Util.py,v 1.67 2000/06/16 19:31:37 shane Exp $''' 
+__version__='$Revision: 1.67 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -208,7 +208,6 @@ import string, math, whrandom
 try:
     import ExtensionClass
     from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
-    from cDocumentTemplate import cDocument
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 
@@ -260,12 +259,7 @@ class namespace_:
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whos attributes are
     provided as keyword arguments."""
-    try: return self(kw) # Try to use the cDocumentTemplate implementation.
-    except AttributeError:
-        r=namespace_()
-        d=r.__dict__
-        for k, v in kw.items(): d[k]=v
-        return r,
+    return apply(self, (), kw)
 
 d['namespace']=namespace
 

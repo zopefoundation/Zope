@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.86 2000/05/23 19:20:20 brian Exp $'''
-__version__='$Revision: 1.86 $'[11:-2]
+$Id: DA.py,v 1.87 2000/06/16 19:31:38 shane Exp $'''
+__version__='$Revision: 1.87 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -97,7 +97,6 @@ from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split
 import DocumentTemplate, sqlvar, sqltest, sqlgroup
-from DocumentTemplate.DT_Util import cDocument
 from time import time
 from zlib import compress, decompress
 from DateTime.DateTime import DateTime
@@ -124,11 +123,11 @@ class nvSQL(DocumentTemplate.HTML):
     _proxy_roles=()
 
 
-class SQL(cDocument, nvSQL):
+class SQL(nvSQL):
     # Validating SQL template for Zope SQL Methods.
-    pass
 
-
+    def validate(self, inst, parent, name, value, md):
+        return getSecurityManager().validate(inst, parent, name, value)
 
 class DA(
     Aqueduct.BaseQuery,Acquisition.Implicit,

@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.32 2000/05/11 18:54:14 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.33 2000/06/16 19:31:37 shane Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -611,7 +611,7 @@ newDictInstance(PyObject *data)
 static PyObject *
 MM_call(MM *self, PyObject *args, PyObject *kw)
 {
-  PyObject *r;
+  PyObject *r, *t;
   int i, l=0;
 
   if (args && (l=PyTuple_Size(args)) < 0) return NULL;
@@ -635,7 +635,9 @@ MM_call(MM *self, PyObject *args, PyObject *kw)
     }
 
   ASSIGN(r, OBJECT(newDictInstance(r)));
-  return r;
+  UNLESS(t=PyTuple_New(1)) goto err;
+  PyTuple_SET_ITEM(t, 0, r);
+  return t;
 
 err:
   Py_XDECREF(r);
@@ -872,201 +874,11 @@ static struct PyMethodDef Module_Level__methods[] = {
   {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
 };
 
-static PyObject *
-validate(PyObject *self, PyObject *args)
-{
-  PyObject *inst, *parent, *name, *value, *md, *__roles__, *i, *p;
-  char *cname="";
-  long ir;
-
-  /* def validate(self, inst, parent, name, value, md): */
-  UNLESS(PyArg_ParseTuple(args,"OOOOO",&inst,&parent,&name,&value,&md))
-    return NULL;
-
-  if (PyString_Check(name))
-    {
-      UNLESS(cname=PyString_AsString(name)) return NULL;
-      if (*cname=='a' && cname[1]=='q' && cname[2]=='_'
-	  && strcmp(cname, "aq_explicit") && strcmp(cname, "aq_parent"))
-	/* We disallow names beginning with "aq_" unless they are
-	   aq_parent or aq_explicit */
-	return PyInt_FromLong(0);
-    }
-
-  /*
-        if hasattr(value, '__roles__'): roles=value.__roles__
-	else:
-            
-            if (name[:5]=='func_' and
-	        type(parent) in (
-                types.MethodType, types.FunctionType,
-                type(DTMLMethod.validate) )
-                ):
-                # we don't want any function attributes
-                return 0
-
-	    if hasattr(parent,'__roles__'): roles=parent.__roles__
-            elif hasattr(parent, 'aq_acquire'):
-                try: roles=parent.aq_acquire('__roles__')
-                except AttributeError:
-                    if hasattr(inst, 'aq_base'): inst=inst.aq_base
-                    if hasattr(parent, 'aq_base'): parent=parent.aq_base
-                    return inst is parent
-            else:
-                if hasattr(inst, 'aq_base'): inst=inst.aq_base
-                if hasattr(parent, 'aq_base'): parent=parent.aq_base
-                return inst is parent
-            value=parent
-   */
-  UNLESS(__roles__=PyObject_GetAttr(value,py___roles__))
-    {
-      PyErr_Clear();
-
-      if (
-	  (*cname=='f' && 
-	   cname[1]=='u' && cname[2]=='n' && cname[3]=='c' && cname[4]=='_')
-	  && 
-	  (PyECMethod_Check(parent) 
-	   || PyFunction_Check(parent)
-	   || PyMethod_Check(parent)
-	   )
-	  )
-	return PyInt_FromLong(0);
-
-      UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
-	{
-	  PyErr_Clear();
-	  if (__roles__=PyObject_GetAttr(parent,py_acquire))
-	    {
-	      ASSIGN(__roles__, 
-		     PyObject_CallFunction(__roles__, "O", py___roles__));
-	    }
-	}
-      value=parent;
-    }
-  if (! __roles__) 
-    {
-      PyErr_Clear();
-
-      /* Waaaa, check for wrapped objects, waaaaa! */
-      UNLESS(i=PyObject_GetAttr(inst, py_aq_base))
-	{
-	  PyErr_Clear();
-	  Py_INCREF(inst);
-	  i=inst;
-	}
-      UNLESS(p=PyObject_GetAttr(parent, py_aq_base))
-	{
-	  PyErr_Clear();
-	  Py_INCREF(parent);
-	  p=parent;
-	}
-
-      ir = i==p;
-      Py_DECREF(i);
-      Py_DECREF(p);
-
-      return PyInt_FromLong(ir);
-    }
-
-  /* if roles is None: return 1 */
-  if (__roles__==Py_None)
-    {
-      Py_DECREF(__roles__);
-      return PyInt_FromLong(1);
-    }
-
-  /*    try: 
-	    if md.AUTHENTICATED_USER.hasRole(value, roles):
-		return 1
-	    
-	except AttributeError: pass
-   */
-  if (md=PyObject_GetAttr(md,py_AUTHENTICATED_USER))
-    {
-      ASSIGN(md,PyObject_GetAttr(md,py_hasRole));
-      if (md) ASSIGN(md,PyObject_CallFunction(md,"OO",value,__roles__));
-      if (md)
-	{
-	  if (PyObject_IsTrue(md))
-	    {
-	      Py_DECREF(__roles__);
-	      return md;
-	    }
-	  Py_DECREF(md);
-	}
-      else PyErr_Clear();
-    }
-  else PyErr_Clear();
-
-  /*    for r in self._proxy_roles:
-	    if r in roles: return 1
-   */
-  if (PyObject_IsTrue(__roles__))
-     if ((md=PyObject_GetAttr(self, py__proxy_roles)))
-     {
-       int i,l, isIn;
-       PyObject *role;
-       
-       if ((l=PyObject_Length(md)) < 0) PyErr_Clear();
-       else
-	 {
-	   for (i=0; i < l; i++)
-	     {
-	       UNLESS(role=PySequence_GetItem(md,i))
-		 {
-		   PyErr_Clear();
-		   break;
-		 }
-	       isIn=PySequence_In(__roles__,role);
-	       Py_DECREF(role);
-	       if (isIn < 0)
-		 {
-		   PyErr_Clear();
-		   break;
-		 }
-	       if (isIn)
-		 {
-		   Py_DECREF(md);
-		   return __roles__; /* Any true object would do. */
-		 }
-	     }
-	 }
-       Py_DECREF(md);
-     }
-     else PyErr_Clear();
-
-  Py_DECREF(__roles__);
-
-  /*     raise 'Unauthorized', (
-		'You are not authorized to access <em>%s</em>.' % name)
-   */
-  if (name=PyString_Format(py_Unauthorized_fmt, name))
-    {
-      PyErr_SetObject(py_Unauthorized, name);
-      Py_DECREF(name);
-    }
-  return NULL;
-}
-
-  
-static struct PyMethodDef Document_methods[] = {
-  {"validate", (PyCFunction)validate,	METH_VARARGS,
-   ""},
-  {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
-};
-
-
-/* Initialization function for the module (*must* be called initcDocumentTemplate) */
-
 void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.32 $";
-  PURE_MIXIN_CLASS(cDocument,
-	"Base class for documents that adds fast validation method",
-	Document_methods);
+  char *rev="$Revision: 1.33 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
@@ -1100,7 +912,6 @@ initcDocumentTemplate()
 
   d = PyModule_GetDict(m);
 
-  PyExtensionClass_Export(d,"cDocument",cDocumentType);
   PyExtensionClass_Export(d,"InstanceDict",InstanceDictType);
   PyExtensionClass_Export(d,"TemplateDict",MMtype);
 

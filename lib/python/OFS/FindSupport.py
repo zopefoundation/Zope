@@ -83,14 +83,14 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
 from Globals import HTMLFile
-from DocumentTemplate.DT_Util import InstanceDict, TemplateDict, cDocument
+from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DateTime import DateTime
 from string import find
 from AccessControl import getSecurityManager

@@ -84,14 +84,13 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
 from SimpleItem import Item_w__name__, pretty_tb
 from OFS.content_types import guess_content_type
-from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
@@ -103,7 +102,7 @@ from AccessControl import getSecurityManager
 
 
 
-class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
+class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
                  ElementWithTitle, Item_w__name__,
                  History.Historical,
                  ):

@@ -4,6 +4,131 @@ Zope history
   Zope. Change information for the current release can be found
   in the file CHANGES.txt.
 
+    Zope 2.2.0 beta 1
+    
+      Features Changed
+
+        - Split the old CHANGES.txt into two files. CHANGES.txt will 
+          now contain only change information for the current Zope 
+          release. Change information for older versions is now in 
+          the file HISTORY.txt.
+
+        - Added basic internal support for mountable databases. A separate 
+          product will still be required to make use of this ability.
+
+        - Added a new "history" tab to selected objects (DTML methods and
+          documents for now) that provides access to previous versions 
+          through the web.
+
+        - The property management screens now include the types for
+          existing properties.
+
+        - Added support at Python level for user-defined
+          __get/set/delattr__ methods on persistent objects. These
+          have essentially the same semantics as for Python, except
+          that overridden __set/delattr__ methods must explicitly
+          signal changes that should be persistent.
+
+        - Better error messages and syslog capabilities were added to 
+          pcgi-wrapper (thanks to Jeff Rush).
+
+        - Calls to the ZLogger system were added to the user authentication
+          process to help sys admins diagnose login problems (thanks again
+          to Jeff Rush).
+
+        - The Undo view shows *only* transactions performed in the
+          place where undo was performed. (As before, it also
+          shows only transactions performed by users defined in the
+          place where the undo user is defined.)
+
+        - The way that transaction logging is done was changed to make
+          transaction logs based on "physical" object and user
+          paths. This was necessary to make undo work properly in the
+          presense of virtual hosts.
+
+        - A number of hooks have been added and changes made to
+          support products that implement virtual hosts. Keep an eye on
+          http://www.zope.org/Members/michel/Projects/Interfaces/ImplementingVirtualHosts
+
+        - The distributions now have an Extensions directory by default.
+
+      Bugs Fixed
+
+        - Added type checking to the constructor and edit methods of
+          builtin Zope object types to prevent inappropriate passing
+          of acquisition-wrapped objects for standard attributes (like 
+          title, etc.). A similar restriction was added to prevent the
+          adding of wrapped objects as properties.
+
+        - Fixed a naming bug in MailHost that caused simple_send to
+          fail.
+
+        - Fixed a buglet in the rename form that caused the form to submit
+          to the old manage_renameObject if the user just hit the enter 
+          key in the browser on a single item rename.
+
+        - A bug that caused the tabs to disappear after performing cache
+          management operations was fixed.
+
+        - A problem that prevented multiple Zope instances from running 
+          at the same time on win32 was fixed.
+
+        - An algorithm in medusa's max_sockets.py code was updated to 
+          improve startup time on certain platforms.
+
+        - The behavior of manage_editProperties on PropertyManagers and
+          PropertySheets has been fixed so that existing properties that
+          are not found in the update request are not reset to empty 
+          values.
+
+        - A problem that disallowed access to the individual records in 
+          a result set from a SQL method was fixed.
+
+        - A problem that caused the query template for an SQL method to
+          be rendered twice when used from the "test" tab has been fixed.
+
+        - Fix for bug #1270: Netscape Image Problems. Added casts to long 
+          to avoid an overflow error caused when trying to convert dates 
+          sent by certain versions of Netscape in the If-Modified-Since 
+          header.
+
+        - Corrected DateTime.py to recognize years specified as 00 through
+          69 as 2000 through 2069.
+
+        - A bug that made objects named in dtml namespaces always fail 
+          security validation was fixed. This was noticed by folks trying
+          to use manage_tabs from ZClasses who hit the bug because the
+          manage_tags document uses a namespace: 
+          <dtml-with "_(manage_options=...">
+
+        - A change to pcgi_publisher was made to support FreeBSD, where
+          send() will send only 8192 bytes at a time.
+
+        - A bug that broke import in the alpha was fixed.
+
+        - A bug in the transaction handling logic could cause infinite
+          loops if objects were registered incorrectly.
+
+        - A bug in the transaction machinery could cause objects to
+          be aborted multiple times if errors occurred.
+
+        - Logging via syslog now correctly captures the process id.
+
+        - Adding User Folders and MailHosts from the management screens 
+          didn't redirect to the correct URL after adding the object.
+
+        - A form problem that prevented joining or leaving versions 
+          has been fixed.
+
+        - A more reasonable default content type is now used for HEAD 
+          requests on DTML objects if the object does not have a 
+          content_type attribute or a file-extension-like id that can 
+          be used to determine content type.
+
+        - HTTP HEAD handling was inconsistent for collections, depending
+          on whether the "default document" (index_html) was acquired or
+          not.
+
     Zope 2.2.0 alpha 1
 
       Features Changed

@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.23 1999/03/10 00:15:08 klm Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.24 2000/06/16 19:31:37 shane Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -175,6 +175,15 @@ class MultiMapping:
             kz = kz + d.keys()
         return kz
 
+class DictInstance:
+    
+    def __init__(self, mapping):
+        self.__d=mapping
+
+    def __getattr__(self, name):
+        try: return self.__d[name]
+        except KeyError: raise AttributeError, name
+        
 class TemplateDict:
 
     level=0
@@ -219,6 +228,17 @@ class TemplateDict:
         return 1
     
     getitem=__getitem__
+
+    def __call__(self, *args, **kw):
+        if args:
+            if len(args)==1 and not kw:
+                m=args[0]
+            else:
+                m=self.__class__()
+                for a in args: m._push(a)
+                if kw: m._push(kw)
+        else: m=kw
+        return DictInstance(m)
 
 def render_blocks(blocks, md):
     rendered = []
