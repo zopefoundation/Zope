@@ -29,6 +29,7 @@ SETUP_OLD_BTREE = 1
 SETUP_CACCESSCONTROL = 1
 SETUP_DCPYEXPAT = 1
 SETUP_SPLITTERS = 1
+SETUP_ZCTEXTINDEX = 1
 
 
 # a few constants
@@ -40,6 +41,7 @@ top_dir = os.path.abspath(os.getcwd())
 ec_root = os.path.join(top_dir, 'lib', 'Components', 'ExtensionClass')
 ec_src = os.path.join(ec_root, 'src')
 py_root = os.path.join(top_dir, 'lib', 'python')
+zct_src = os.path.join(py_root, 'Products', 'ZCTextIndex')
 ec_include = [ec_src]
 
 # ExtensionClass
@@ -269,6 +271,16 @@ if SETUP_SPLITTERS:
           )
 
 
+if SETUP_ZCTEXTINDEX and os.path.isdir(zct_src):
+    stopper = Extension(name = "Products.ZCTextIndex.stopper",
+                        sources = ["Products/ZCTextIndex/stopper.c"])
+    okascore = Extension(name = "Products.ZCTextIndex.okascore",
+                         sources = ["Products/ZCTextIndex/okascore.c"])
+
+    setup(name = "Products.ZCTextIndex",
+          ext_modules = [stopper, okascore])
+
+
 # Lib -- misc. support files
 # This might be expanded with other Zope packages.
 setup(name = "Other libraries",
@@ -280,4 +292,3 @@ setup(name = "Other libraries",
       )
 
 os.chdir(top_dir)
-
