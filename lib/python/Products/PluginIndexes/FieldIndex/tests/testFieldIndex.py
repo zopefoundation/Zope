@@ -57,14 +57,14 @@ class TestCase( unittest.TestCase ):
 
         self._noop_req  = { 'bar': 123 }
         self._request   = { 'foo': 'abce' }
-        self._min_req   = { 'foo': 'abc'
-                          , 'foo_usage': 'range:min'
+        self._min_req   = { 'foo': {'query': 'abc'
+                          , 'range': 'min'}
                           }
-        self._max_req   = { 'foo': 'abc'
-                          , 'foo_usage': 'range:max'
+        self._max_req   = { 'foo': {'query': 'abc'
+                          , 'range': 'max' }
                           }
-        self._range_req = { 'foo': ( 'abc', 'abcd' )
-                          , 'foo_usage': 'range:min:max'
+        self._range_req = { 'foo': {'query': ( 'abc', 'abcd' )
+                          , 'range': 'min:max' }
                           }
         self._zero_req  = { 'foo': 0 }
         self._none_req  = { 'foo': None }

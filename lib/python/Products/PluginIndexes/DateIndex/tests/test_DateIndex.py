@@ -50,13 +50,13 @@ class DI_Tests(unittest.TestCase):
         self._index = DateIndex('date')
         self._noop_req  = {'bar': 123}
         self._request   = {'date': DateTime(0)}
-        self._min_req   = {'date': DateTime('2032-05-08 15:16:17'),
-            'date_usage': 'range:min'}
-        self._max_req   = {'date': DateTime('2032-05-08 15:16:17'),
-            'date_usage': 'range:max'}
-        self._range_req = {'date': (DateTime('2002-05-08 15:16:17'),
+        self._min_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),  
+            'range': 'min'}}
+        self._max_req   = {'date': {'query': DateTime('2032-05-08 15:16:17'),
+            'range': 'max'}}
+        self._range_req = {'date': {'query':(DateTime('2002-05-08 15:16:17'),
                                     DateTime('2062-05-08 15:16:17')),
-                           'date_usage': 'range:min:max'}
+                           'range': 'min:max'}}
         self._zero_req  = {'date': 0}
         self._none_req  = {'date': None}
         self._float_req = {'date': 1072742620.0}
