@@ -60,9 +60,27 @@ __doc__='''Package wrapper for Document Template
 This wrapper allows the (now many) document template modules to be
 segregated in a separate package.
 
-$Id: __init__.py,v 1.3 1997/09/02 20:35:53 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 1997/09/24 16:42:35 brian Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
+
+import sys, string, os
+
+__path__=__.__path__
+
+for o in 's', 'r':
+    try: 
+	s=os.popen('uname -s').read()[:-1]
+	r=os.popen('uname -r').read()[:-1]
+	if r and s:
+	    p=(string.lower(s)+r)
+	    if p: __path__.append("%s/bin-%s/%s" % (
+		__path__[0], string.split(sys.version)[0], p))
+    except: pass
+
+__path__.append("%s/bin-%s/%s" % (
+    __path__[0], string.split(sys.version)[0], sys.platform))
+    
 
 import DocumentTemplate
 __.String=DocumentTemplate.String
@@ -75,6 +93,9 @@ __.html_quote=DocumentTemplate.html_quote
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.4  1997/09/24 16:42:35  brian
+# Fixed setup
+#
 # Revision 1.3  1997/09/02 20:35:53  jim
 # export html_quote
 #

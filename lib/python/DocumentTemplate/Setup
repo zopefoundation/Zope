@@ -2,7 +2,6 @@
 
 cDocumentTemplate cDocumentTemplate.c -I/projects/_/ExtensionClass
 
-# install DT_Dict.py
 # install DT_Doc.py
 # install DT_HTML.py
 # install DT_If.py
@@ -11,13 +10,11 @@ cDocumentTemplate cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install DT_UI.py
 # install DT_Util.py
 # install DT_Var.py
-# install DT_render.py
 # install DTtest.py
 # install DTtest_basicIn.py
 # install DTtestExpr.py
 # install VSEval.py
 # install DocumentTemplate.py
-# install Setup
 # install __init__.py
 # install cDocumentTemplate.c
 # install pDocumentTemplate.py
