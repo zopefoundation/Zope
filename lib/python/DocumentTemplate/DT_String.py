@@ -1,6 +1,6 @@
 
 from string import *
-import DT_Doc, DT_Var, DT_In, DT_If, regex, DT_Raise, DT_With
+import DT_Doc, DT_Var, DT_In, DT_If, regex, ts_regex, DT_Raise, DT_With
 Var=DT_Var.Var
 
 from DT_Util import *
@@ -39,7 +39,7 @@ class String:
     def SubTemplate(self, name): return String('', __name__=name)
 
     def tagre(self):
-	return regex.symcomp(
+	return ts_regex.symcomp(
 	    '%('                                     # beginning
 	    '\(<name>[a-zA-Z0-9_/.-]+\)'                       # tag name
 	    '\('

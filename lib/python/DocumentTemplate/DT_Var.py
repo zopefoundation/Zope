@@ -114,7 +114,7 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.14 1998/04/14 11:58:21 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.15 1998/08/11 19:36:54 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -168,10 +168,10 @@ __rcs_id__='$Id: DT_Var.py,v 1.14 1998/04/14 11:58:21 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from DT_Util import *
-
+import ts_regex
 from string import find, split, join
 
 class Var: 
@@ -282,13 +282,13 @@ class Call:
 
 def html_quote(v, name='(Unknown name)', md={},
 	       character_entities=(
-		       (regex.compile('&'), '&amp;'),
-		       (regex.compile("<"), '&lt;' ),
-		       (regex.compile(">"), '&gt;' ),
-		       (regex.compile('"'), '&quot;'))): #"
+		       (('&'), '&amp;'),
+		       (("<"), '&lt;' ),
+		       ((">"), '&gt;' ),
+		       (('"'), '&quot;'))): #"
         text=str(v)
 	for re,name in character_entities:
-	    text=gsub(re,name,text)
+            if find(text, re) >= 0: text=join(split(text,re),name)
 	return text
 
 def url_quote(v, name='(Unknown name)', md={}):
@@ -296,7 +296,7 @@ def url_quote(v, name='(Unknown name)', md={}):
     return urllib.quote(str(v))
 
 def newline_to_br(v, name='(Unknown name)', md={},
-	       nl=regex.compile('\r?\n')):
+                  nl=ts_regex.compile('\r?\n')):
     return gsub(nl,'<br>\n',str(v))
 
 def whole_dollars(v, name='(Unknown name)', md={}):
@@ -308,7 +308,7 @@ def dollars_and_cents(v, name='(Unknown name)', md={}):
     except: return ''
 
 def thousands_commas(v, name='(Unknown name)', md={},
-	      thou=regex.compile("\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)")):
+                     thou=ts_regex.compile("\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)")):
     v=str(v)
     while thou.search(v) >= 0:
 	v=sub(thou,"\\1,\\2",v)
@@ -370,6 +370,9 @@ modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.15  1998/08/11 19:36:54  jim
+# Made use (or non-use) of regex thread safe.
+#
 # Revision 1.14  1998/04/14 11:58:21  jim
 # Fixed bug in handling: %(foo)d
 # and in handling <!--#var foo--> where foo is a tuple.

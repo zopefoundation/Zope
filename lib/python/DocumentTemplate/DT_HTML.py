@@ -1,13 +1,13 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.6 1998/04/02 17:37:35 jim Exp $"""
+$Id: DT_HTML.py,v 1.7 1998/08/11 19:32:38 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_Doc, DT_String, regex
 from DT_Util import *
 from regsub import gsub
-from string import strip, find
+from string import strip, find, split, join
 
 class dtml_re_class:
 
@@ -108,13 +108,13 @@ class HTML(DT_String.String):
     def quotedHTML(self,
 		   text=None,
 		   character_entities=(
-		       (regex.compile('&'), '&amp;'),
-		       (regex.compile("<"), '&lt;' ),
-		       (regex.compile(">"), '&gt;' ),
-		       (regex.compile('"'), '&quot;'))): #"
+		       (('&'), '&amp;'),
+		       (("<"), '&lt;' ),
+		       ((">"), '&gt;' ),
+		       (('"'), '&quot;'))): #"
         if text is None: text=self.read_raw()
 	for re,name in character_entities:
-	    text=gsub(re,name,text)
+            if find(text, re) >= 0: text=join(split(text,re),name)
 	return text
 
     errQuote=quotedHTML
@@ -192,11 +192,13 @@ class HTMLFile(FileMixin, HTML):
     manage_editDocument=manage=manage_editForm
 
     def manage_edit(self,data,
-		    PARENTS=[],URL1='',URL2='',REQUEST='', SUBMIT='',
-		    crlf=regex.compile('\r\n\|\n\r')):
+		    PARENTS=[],URL1='',URL2='',REQUEST='', SUBMIT=''):
 	'edit a template'
 	if SUBMIT==FactoryDefaultString: return self.manage_default(REQUEST)
-	data=gsub(crlf,'\n',data)
+        if find(data,'\r'):
+            data=join(split(data,'\r\n'),'\n\r')
+            data=join(split(data,'\n\r'),'\n')
+            
 	if self.edited_source:
 	    self.edited_source=data
 	    self.cooked=self.cook()
@@ -211,6 +213,9 @@ class HTMLFile(FileMixin, HTML):
 ##########################################################################
 #
 # $Log: DT_HTML.py,v $
+# Revision 1.7  1998/08/11 19:32:38  jim
+# Made use (or non-use) of regex thread safe.
+#
 # Revision 1.6  1998/04/02 17:37:35  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and

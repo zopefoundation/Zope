@@ -296,7 +296,7 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.24 1998/04/08 17:45:59 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.25 1998/08/11 19:34:48 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -350,11 +350,11 @@ __rcs_id__='$Id: DT_In.py,v 1.24 1998/04/08 17:45:59 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
-import regex
+import ts_regex
 from regsub import gsub
 from DT_InSV import sequence_variables, opt
 
@@ -402,7 +402,7 @@ class InClass:
 	    if type(v)==type(''):
 		try: atoi(v)
 		except:
-		    self.start_name_re=regex.compile(
+		    self.start_name_re=ts_regex.compile(
 			'&+'+
 			join(map(lambda c: "[%s]" % c, v),'')+
 			'=[0-9]+&+')
@@ -690,6 +690,9 @@ def int_param(params,md,name,default=0):
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.25  1998/08/11 19:34:48  jim
+# Made use (or non-use) of regex thread safe.
+#
 # Revision 1.24  1998/04/08 17:45:59  jim
 # Now check security of items, and new skip_unauthorized attr.
 #
