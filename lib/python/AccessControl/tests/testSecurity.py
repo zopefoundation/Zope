@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.6 2001/10/17 21:06:17 shane Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.7 2001/10/18 20:22:33 shane Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os, sys, unittest
 
@@ -157,14 +157,6 @@ class SecurityTests (DTMLTests):
             y = 10
         res = html(c=c)
         assert res == '10', res
-
-    def testAqNames(self):
-        from AccessControl.ZopeSecurityPolicy import ZopeSecurityPolicy
-        policy = ZopeSecurityPolicy()
-        assert not policy.validate('', '', 'aq_self', '', None)
-        assert not policy.validate('', '', 'aq_base', '', None)
-        assert policy.validate('', '', 'aq_parent', '', None)
-        assert policy.validate('', '', 'aq_explicit', '', None)
 
     # Note: we need more tests!
 

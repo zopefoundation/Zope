@@ -85,13 +85,16 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.1 2001/10/18 20:12:48 shane Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.2 2001/10/18 20:22:33 shane Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
 import os, sys, unittest
 
 import ZODB
-from zExceptions import Unauthorized
+try:
+    from zExceptions import Unauthorized
+except ImportError:
+    Unauthorized = 'Unauthorized'
 from AccessControl.ZopeSecurityPolicy import ZopeSecurityPolicy
 from AccessControl.User import UserFolder
 from AccessControl.SecurityManagement import SecurityContext
@@ -286,7 +289,12 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         v = self.policy.checkPermission('View', r_item, o_context)
         assert v, '_View_Permission should grant access to theowner'
         
-        
+    def testAqNames(self):
+        policy = self.policy
+        assert not policy.validate('', '', 'aq_self', '', None)
+        assert not policy.validate('', '', 'aq_base', '', None)
+        assert policy.validate('', '', 'aq_parent', '', None)
+        assert policy.validate('', '', 'aq_explicit', '', None)
 
     if 0:
         # This test purposely generates a log entry.
