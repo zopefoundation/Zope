@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -202,8 +202,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         bound_names['options'] = kw
 
         try:
-            self.REQUEST.RESPONSE.setHeader('content-type',
-                                            self.content_type)
+            response = self.REQUEST.RESPONSE
+            if not response.headers.has_key('content-type'):
+                response.setHeader('content-type', self.content_type)
         except AttributeError:
             pass
 
