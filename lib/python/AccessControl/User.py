@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -435,7 +435,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	if not roles: roles=[]
         if not domains: domains=[]
 
-        if domains and not domainSpecValidate(domains):
+        if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Illegal domain specification',
