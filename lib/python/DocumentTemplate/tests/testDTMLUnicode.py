@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTMLUnicode.py,v 1.3 2002/08/14 22:29:53 mj Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: testDTMLUnicode.py,v 1.4 2002/09/16 10:09:11 htrd Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os
 import unittest
@@ -79,6 +79,12 @@ class DTMLUnicodeTests (unittest.TestCase):
         html=self.doc_class('<dtml-var a html_quote><dtml-var b>')
         expected = u'he&gt;llo\xc8'
         res = html(a=u'he>llo',b=chr(200))
+        assert res == expected, `res`
+
+    def testSize(self):
+        html=self.doc_class('<dtml-var "_.unichr(200)*4" size=2>')
+        expected = unichr(200)*2+'...'
+        res = html()
         assert res == expected, `res`
 
 def test_suite():

@@ -151,8 +151,8 @@ Evaluating expressions without rendering results
 
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.57 2002/08/14 22:29:52 mj Exp $'
-__version__='$Revision: 1.57 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.58 2002/09/16 10:09:11 htrd Exp $'
+__version__='$Revision: 1.58 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -284,7 +284,7 @@ class Var:
         if fmt=='s':
             # Keep tainted strings as tainted strings here.
             if not isinstance(val, TaintedString):
-                val=str(val)
+                val=ustr(val)
         else:
             # Keep tainted strings as tainted strings here.
             wastainted = 0
@@ -350,7 +350,7 @@ def newline_to_br(v, name='(Unknown name)', md={}):
     # Unsafe data is explicitly quoted here; we don't expect this to be HTML
     # quoted later on anyway.
     if isinstance(v, TaintedString): v = v.quoted()
-    v=str(v)
+    v=ustr(v)
     if v.find('\r') >= 0: v=''.join(v.split('\r'))
     if v.find('\n') >= 0: v='<br />\n'.join(v.split('\n'))
     return v
