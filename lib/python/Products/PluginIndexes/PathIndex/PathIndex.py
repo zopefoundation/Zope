@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.33 2003/02/20 19:48:03 jeremy Exp $'
+__version__ = '$Id: PathIndex.py,v 1.34 2003/05/27 05:31:21 caseman Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -25,7 +25,7 @@ from BTrees.IIBTree import IITreeSet, IISet, intersection, union
 from OFS.SimpleItem import SimpleItem
 from zLOG import LOG, ERROR
 from types import StringType, ListType, TupleType
-import re, warnings
+import warnings
 
 _marker = []
 
@@ -54,7 +54,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
          'help': ('PathIndex','PathIndex_Settings.stx')},
     )
 
-    query_options = ["query","level","operator"]
+    query_options = ["query", "level", "operator"]
 
 
     def __init__(self,id,caller=None):
@@ -65,9 +65,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         self.useOperator = 'or'
 
         self.clear()
-
-
-    def getId(self): return self.id
+        
 
     def clear(self):
         """ clear everything """
@@ -75,7 +73,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         self._depth   = 0
         self._index   = OOBTree()
         self._unindex = IOBTree()
-
+        
 
     def insertEntry(self, comp, id, level):
         """Insert an entry.
@@ -85,10 +83,10 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         level is the level of the component inside the path
         """
 
-        if self._index.has_key(comp) == 0:
+        if not self._index.has_key(comp):
             self._index[comp] = IOBTree()
 
-        if self._index[comp].has_key(level) == 0:
+        if not self._index[comp].has_key(level):
             self._index[comp][level] = IITreeSet()
 
         self._index[comp][level].insert(id)
@@ -102,43 +100,40 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         # first we check if the object provide an attribute or
         # method to be used as hook for the PathIndex
 
-        if hasattr(obj,self.id):
-            f = getattr(obj,self.id)
+        if hasattr(obj, self.id):
+            f = getattr(obj, self.id)
+            
+            if callable(f):
+                try:
+                    path = f()
+                except AttributeError:
+                    return 0
+            else:
+                path = f
 
-            try:
-                if callable(f): path = f()
-                else:           path = f
-            except:
-                return 0
-
-            if not (isinstance(path,StringType) or
-                    isinstance(path,TupleType)):
-                raise TypeError, "attribute/method must be/return string or tuple"
-
+            if not (isinstance(path, StringType) or
+                    isinstance(path, TupleType)):
+                raise TypeError('path value must be string or tuple of strings')
         else:
-
             try:
                 path = obj.getPhysicalPath()
-            except:
+            except AttributeError:
                 return 0
 
-        if type(path) in (ListType,TupleType):
+        if type(path) in (ListType, TupleType):
             path = '/'+ '/'.join(path[1:])
 
-        comps = self.splitPath(path,obj)
-
-#        if obj.meta_type != 'Folder':
-#            comps = comps[:-1]
+        comps = self.splitPath(path, obj)
 
         for i in range(len(comps)):
-            self.insertEntry( comps[i],documentId,i)
+            self.insertEntry(comps[i], documentId, i)
 
         self._unindex[documentId] = path
 
         return 1
 
 
-    def unindex_object(self,documentId):
+    def unindex_object(self, documentId):
         """ hook for (Z)Catalog """
 
         if not self._unindex.has_key(documentId):
@@ -156,16 +151,15 @@ class PathIndex(Persistent, Implicit, SimpleItem):
             try:
                 self._index[comp][level].remove(documentId)
 
-                if len(self._index[comp][level])==0:
+                if not self._index[comp][level]:
                     del self._index[comp][level]
 
-                if len(self._index[comp])==0:
+                if not self._index[comp]:
                     del self._index[comp]
             except KeyError:
                 LOG(self.__class__.__name__, ERROR,
                     'Attempt to unindex document'
                     ' with id %s failed' % documentId)
-
 
         del self._unindex[documentId]
 
@@ -180,21 +174,21 @@ class PathIndex(Persistent, Implicit, SimpleItem):
             print
 
 
-    def splitPath(self,path,obj=None):
+    def splitPath(self, path, obj=None):
         """ split physical path of object. If the object has
         as function splitPath() we use this user-defined function
         to split the path
         """
 
-        if hasattr(obj,"splitPath"):
+        if hasattr(obj, "splitPath"):
             comps = obj.splitPath(path)
         else:
-            comps = filter(lambda x: x , re.split("/",path))
+            comps = filter(None, path.split('/'))
 
         return comps
 
 
-    def search(self,path,default_level=0):
+    def search(self, path, default_level=0):
         """
         path is either a string representing a
         relative URL or a part of a relative URL or
@@ -259,33 +253,31 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
     def __len__(self):
         """ len """
+        # XXX REALLY inefficient
         return len(self._index)
 
 
     def numObjects(self):
         """ return the number of indexed objects"""
+        # XXX REALLY inefficient
         return len(self._unindex)
 
 
     def keys(self):
         """ return list of all path components """
-        keys = []
-        for k in self._index.keys(): keys.append(k)
-        return keys
+        # XXX Could this be lazy, does it need to be a list?
+        return list(self._index.keys())
 
 
     def values(self):
-        values = []
-        for k in self._index.values(): values.append(k)
-        return values
+        # XXX Could this be lazy, does it need to be a list?
+        return list(self._index.values())
 
 
     def items(self):
         """ mapping path components : documentIds """
-
-        items = []
-        for k in self._index.items(): items.append(k)
-        return items
+        # XXX Could this be lazy, does it need to be a list?
+        return list(self._index.items())
 
 
     def _apply_index(self, request, cid=''):
@@ -330,14 +322,11 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
     def hasUniqueValuesFor(self, name):
         """has unique values for column name"""
-        if name == self.id:
-            return 1
-        else:
-            return 0
-
-    def uniqueValues(self,name=None,withLength=0):
+        return name == self.id
+        
+        
+    def uniqueValues(self, name=None, withLength=0):
         """ needed to be consistent with the interface """
-
         return self._index.keys()
 
 
@@ -346,13 +335,13 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         return ('getPhysicalPath', )
 
 
-    def getEntryForObject(self,documentId,default=_marker):
+    def getEntryForObject(self, documentId, default=_marker):
         """ Takes a document ID and returns all the information we have
         on that specific object. """
-
         try:
             return self._unindex[documentId]
-        except:
+        except KeyError:
+            # XXX Why is default ignored?
             return None
 
 
