@@ -85,9 +85,9 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
-import sys, os, string, Globals, davcmds, Lockable
+import sys, os, string, Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date
 from Resource import Resource
 from AccessControl import getSecurityManager
@@ -144,6 +144,8 @@ class Collection(Resource):
         may return either 200 (OK) or 204 (No Content) to indicate total
         success, or may return 207 (Multistatus) to indicate partial
         success. Note that in Zope a DELETE currently never returns 207."""
+
+
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
@@ -151,6 +153,12 @@ class Collection(Resource):
         parent = self.aq_parent
         user = getSecurityManager().getUser()
         token = None
+
+        if re.match("/Control_Panel",REQUEST['PATH_INFO']):
+            RESPONSE.setStatus(403)
+            RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+            return RESPONSE
+
         # Level 1 of lock checking (is the collection or its parent locked?)
         if Lockable.wl_isLocked(self):
             if ifhdr:
