@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -103,8 +103,6 @@ class FindSupport(ExtensionClass.Base):
     manage_findForm=HTMLFile('findForm', globals())
     manage_findAdv=HTMLFile('findAdv', globals())
     manage_findResult=HTMLFile('findResult', globals())
-#    manage_findOpt=HTMLFile('findOpt', globals())
-
 
     __ac_permissions__=(
         ('View management screens',
@@ -116,7 +114,7 @@ class FindSupport(ExtensionClass.Base):
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
                  obj_permission=None, obj_roles=None,
-                 search_sub=0, search_sup=0,
+                 search_sub=0,
                  REQUEST=None, result=None, pre=''):
         """Zope Find interface"""
 
@@ -198,21 +196,10 @@ class FindSupport(ExtensionClass.Base):
                                    REQUEST, result, p)
             if dflag: ob._p_deactivate()
 
-        if search_sup and not search_sub and hasattr(obj, 'aq_parent'):
-            obj=obj.aq_parent
-            if pre: p="%s/%s" % ('..',pre)
-            else:   p='..'
-            if hasattr(obj, 'ZopeFind'):
-                self.ZopeFind(obj, obj_ids, obj_metatypes,
-                                   obj_searchterm, obj_expr,
-                                   obj_mtime, obj_mspec,
-                                   obj_permission, obj_roles,
-                                   search_sub, search_sup,
-                                   REQUEST, result, p)
-
         return result
+
     
-    ZopeFind=ZopeFind
+    PrincipiaFind=ZopeFind
  
 
 
