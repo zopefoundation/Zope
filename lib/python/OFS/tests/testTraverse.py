@@ -1,10 +1,25 @@
-import os, sys, unittest
+##############################################################################
+#
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
 
+import os, sys, unittest
 import string, cStringIO, re
+
 import ZODB, Acquisition
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
+from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
@@ -45,6 +60,17 @@ class UnitTestUser( Acquisition.Implicit ):
 
     def allowed( self, object, object_roles=None ):
         return 1
+
+
+class BoboTraversable(SimpleItem):
+    __allow_access_to_unprotected_subobjects__ = 1
+
+    def __bobo_traverse__(self, request, name):
+        if name == 'bb_subitem':
+            return BoboTraversable().__of__(self)
+        else:
+            raise KeyError
+
 
 def makeConnection():
     import ZODB
@@ -126,6 +152,16 @@ class TestTraverse( unittest.TestCase ):
         self.failUnlessRaises( KeyError, self.folder1.unrestrictedTraverse, ('', 'folder1', 'file2' ) )
         self.failUnlessRaises( KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2' )
         self.failUnlessRaises( KeyError, self.folder1.unrestrictedTraverse,  '/folder1/file2/' )
+
+    def testTraverseThroughBoboTraverse(self):
+        # Verify it's possible to use __bobo_traverse__ with the
+        # Zope security policy.
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        bb = BoboTraversable()
+        self.failUnlessRaises(KeyError, bb.restrictedTraverse, 'notfound')
+        bb.restrictedTraverse('bb_subitem')
+
 
 def test_suite():
     suite = unittest.TestSuite()

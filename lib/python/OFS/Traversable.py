@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.15 2002/08/14 21:42:56 mj Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Traversable.py,v 1.16 2002/09/12 21:20:52 shane Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -99,6 +99,7 @@ class Traversable:
             object = self
             while path:
                 name=pop()
+                __traceback_info__ = path, name
 
                 if name[0] == '_':
                     # Never allowed in a URL.
@@ -119,7 +120,11 @@ class Traversable:
 
                     if restricted:
                         container = N
-                        if has(o, 'im_self'):
+                        if aq_base(o) is not o:
+                            # The object is wrapped, so the acquisition
+                            # context determines the container.
+                            container = aq_parent(aq_inner(o))
+                        elif has(o, 'im_self'):
                             container = o.im_self
                         elif (has(get(object, 'aq_base', object), name)
                               and get(object, name) == o):
