@@ -9,6 +9,7 @@
 # install content_types.py
 # install documentAdd.dtml
 # install documentEdit.dtml
+# install documentProxy.dtml
 # install documentUpload.dtml
 # install editedDialog.dtml
 # install folderAdd.dtml
