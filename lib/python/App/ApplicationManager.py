@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -61,9 +61,14 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
         d=int(s/86400)
         s=s-(d*86400)
         h=int(s/3600)
-        m=int((s-(h*3600))/60)
-        d=d and ('%s day%s'  % (d,(d!=1 and 's' or ''))) or ''
-        return '%s %02d:%02d' % (d,h,m)
+	s=s-(h*3600)
+        m=int(s/60)
+	s=s-(m*60)	
+        d=d and ('%d day%s'  % (d, (d != 1 and 's' or ''))) or ''
+	h=h and ('%d hour%s' % (h, (h != 1 and 's' or ''))) or ''
+	m=m and ('%d min' % m) or ''
+	s='%d sec' % s
+	return '%s %s %s %s' % (d, h, m, s)
 
     def db_name(self): return Globals.Bobobase._jar.db.file_name
 
@@ -82,14 +87,14 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	db.file.close()
 	sys.exit(0)
 
-    def manage_pack(self, days=0, REQUEST):
+    def manage_pack(self, days=0, REQUEST=None):
 	"""Pack the database"""
 	if self._p_jar.db is not Globals.Bobobase._jar.db:
 	    raise 'Session Error', (
 		'''You may not pack the application database while
 		working in a <em>session</em>''')
-	Globals.Bobobase._jar.db.pack(time.time()-days*86400,1)
-	return self.manage_main(self, REQUEST)
+	Globals.Bobobase._jar.db.pack(time.time()-days*86400,0)
+	if REQUEST: return self.manage_main(self, REQUEST)
 
     def revert_points(self): return ()
 
