@@ -24,6 +24,14 @@ What is Medusa?
   
     http://www.nightmare.com:8080/nm/apps/medusa/docs/programming.html
 
+ZServer HTTP support
+
+  ZServer offers HTTP 1.1 publishing for Zope. It does not support
+  publishing files from the file system. You can specify the HTTP port
+  using the -w command line argument for the z2.py start script. You
+  can also specify CGI environment variables on the command line using
+  z2.py
+
 ZServer FTP support
 
   What you can do with FTP
@@ -50,7 +58,7 @@ ZServer FTP support
     default ZServer serves FTP on port 9221. So to connect to Zope you
     would issue a command like so::
     
-      ftp localhost 9221
+      $ ftp localhost 9221
       
     When logging in to FTP, you have some choices. You can connect
     anonymously by using a username of 'anonymous' and any password.
@@ -129,6 +137,34 @@ ZServer PCGI support
 
   ZServer's PCGI support will work with mod_pcgi.
 
+ZServer monitor server
+
+  ZServer now includes the Medusa monitor server. This basically gives
+  you a remote, secure Python prompt. You can interactively access Zope.
+  This is a very powerful, but dangerous tool. Be careful.
+  
+  To use the monitor server specify a monitor port number using the -m
+  option with the z2.py start script. The default port is 9999.
+  
+  To connect to the monitor server use the 'ZServer/medusa/monitor_client.py'
+  or 'ZServer/medusa/monitor_client_win32.py' script. For example::
+  
+    $ python1.5.2 ZServer/medusa/monitor_client.py
+	
+  You will then be asked to enter a password. This is the Zope super manager
+  password which is stored in the 'access' file.
+  
+  Then you will be greeted with a Python prompt. To access Zope import
+  the Zope module::
+  
+    >>> import Zope
+	
+  The Zope top level Zope object is available via the 'Zope.app' function::
+  
+    >>> a=Zope.app()
+	
+  From this object you can reach all other Zope objects as subobjects.
+  
 ZServer WebDAV support
 
   WebDAV is a new protocol for managing web resources. WebDAV operates
@@ -141,14 +177,15 @@ ZServer WebDAV support
 
 Differences between ZopeHTTPServer and ZServer
 
+  ZopeHTTPServer is old and no longer being actively maintained.
+  
   Both ZopeHTTPServer and ZServer are Python HTTP servers.
   ZopeHTTPServer is built on the standard Python SimpleHTTPServer
   framework. ZServer is built on Medusa.
 
   ZopeHTTPServer is very limited. It can only publish one module at a
   time. It can only publish via HTTP. It has no support for thread
-  pools. And more importantly, it is no longer being actively
-  developed, since its author has moved on the ZServer.
+  pools.
   
   ZServer on the other hand is more complex and supports publishing
   multiple modules, thread pools, and it uses a new threaded
@@ -158,7 +195,8 @@ Running ZServer as nobody
 
   Normally ZServer will run with the userid of the user who starts
   it. However, if ZServer is started by root, it will attempt to
-  become nobody.
+  become nobody or any userid you specify with the -w argument to the
+  z2.py start script.
  
   ZServer is similar to ZopeHTTPServer in these respects.
 
@@ -186,10 +224,8 @@ License
 
 Outstanding issues
 
-  The FTP interface for Zope objects may be changed, i.e.
-  'manage_FTPlist' and 'manage_FTPstat' maybe changed and/or renamed.
-  When FTP support for properties is added, this may change a lot.
-
-  HTTP 1.1 support is ZServer is rather spotty, though it does handle
-  pipelined requests.
+  The FTP interface for Zope objects may be changed.
+  
+  HTTP 1.1 support is ZServer is incomplete, though it should work for
+  most HTTP 1.1 clients.
   
