@@ -6,39 +6,33 @@ from ZPublisher.HTTPResponse import HTTPResponse
 
 
 class DummyObjectBasic(Implicit):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     def _setObject(self, id, object):
         setattr(self, id, object)
         return getattr(self, id)
 
     def view(self):
-        """ Atrribute with docstring.
-        """
+        """Attribute with docstring."""
         return 'view content'
 
 
 class DummyObjectWithDefault(DummyObjectBasic):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     def index_html(self):
-        """ Atrribute with docstring.
-        """
+        """Attribute with docstring."""
         return 'index_html content'
 
 
 class DummyObjectWithDefaultNone(DummyObjectWithDefault):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     index_html = None
 
 
 class DummyObjectWithBPTH(DummyObjectBasic):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     def __before_publishing_traverse__(self, object, REQUEST):
         if REQUEST['_test_counter'] < 100:
@@ -50,8 +44,7 @@ class DummyObjectWithBPTH(DummyObjectBasic):
 
 
 class DummyObjectWithBD(DummyObjectBasic):
-    """ Dummy class with docstring.
-    """
+    """Dummy class with docstring."""
 
     def __browser_default__(self, REQUEST):
         if REQUEST['_test_counter'] < 100:
