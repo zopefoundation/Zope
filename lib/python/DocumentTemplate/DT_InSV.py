@@ -85,8 +85,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.17 2000/05/12 18:36:39 tseaver Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: DT_InSV.py,v 1.18 2001/01/16 21:57:19 chrism Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 from string import lower, rfind, split, join
 from math import sqrt
@@ -113,6 +113,7 @@ class sequence_variables:
             }
 
 
+    def __len__(self): return 1
     def number(self,index): return index+1
     def even(self,index): return index%2 == 0
     def odd(self,index): return index%2
@@ -405,6 +406,8 @@ class sequence_variables:
         if key=='sequence-query': return self.query()
             
         raise KeyError, key
+
+
 
 
 def sub(s1, s2, src):
