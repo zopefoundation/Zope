@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -682,6 +682,9 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         
     def __len__(self):
         return len(self.__propsets__())
+
+    def getId(self):
+        return self.id
 
 
     # Management interface:
