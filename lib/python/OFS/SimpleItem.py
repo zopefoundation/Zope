@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.109 2003/12/13 07:57:49 Zen Exp $'''
-__version__='$Revision: 1.109 $'[11:-2]
+$Id: SimpleItem.py,v 1.110 2003/12/14 05:08:25 fdrake Exp $'''
+__version__='$Revision: 1.110 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -27,7 +27,7 @@ from ExtensionClass import Base
 from CopySupport import CopySource
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, Unauthorized
 from Traversable import Traversable
 from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from DocumentTemplate.ustr import ustr
