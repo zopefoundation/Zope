@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.6 $"[11:-2]
+__version__ = "$Revision: 1.7 $"[11:-2]
 
 
 import time, Interface, re
@@ -84,10 +84,7 @@ class EtagSupport:
         # returns a tuple of Etags.
         matchlist = REQUEST.get_header(header)
         if matchlist is None:
-            # capitalize the words of the header, splitting on '-'
-            tmp = [x.capitalize() for x in  header.split('-')]
-            tmp = '-'.join(tmp)
-            matchlist = REQUEST.get_header(tmp)
+            matchlist = REQUEST.get_header(header.title())
             if matchlist is None:
                 return None
         matchlist = [ x.strip() for x in matchlist.split(',')]
