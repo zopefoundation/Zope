@@ -14,13 +14,13 @@ class IStreamIterator(Interface):
     but it has a chance of going insane if it happens to be loading 
     or storing something in the other thread at the same time.                      """
 
-    def next(self):
+    def next():
         """
         Return a sequence of bytes out of the bytestream, or raise
         StopIeration if we've reached the end of the bytestream.
         """
 
-    def __len__(self):
+    def __len__():
         """
         Return an integer representing the length of the object
         in bytes.
