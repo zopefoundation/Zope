@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1376,7 +1376,16 @@ class DateTime:
         return millis
 
     def strftime(self, format):
-        return strftime(format, gmtime(self.timeTime()))
+        # Format the date/time using the *current timezone representation*.
+        jfirst = _julianday(self._year, 1, 1) - 1
+        jtoday = _julianday(self._year, self._month, self._day)
+        julian = jtoday - jfirst        
+        time_info=(self._year, self._month, self._day,
+                   self._hour, self._minute, self._nearsec,
+                   (self._dayoffset + 6) % 7,
+                   julian,
+                   0)
+        return strftime(format, time_info)
 
     # General formats from previous DateTime
     def Date(self):
