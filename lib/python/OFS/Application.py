@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.144 2001/05/17 18:35:09 shane Exp $'''
-__version__='$Revision: 1.144 $'[11:-2]
+$Id: Application.py,v 1.145 2001/05/17 18:37:40 shane Exp $'''
+__version__='$Revision: 1.145 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -719,6 +719,7 @@ def reinstall_product(app, product_name):
             removeProductMetaTypes(product_name)
             install_product(app, product_dir, product_name, meta_types,
                             folder_permissions, raise_exc=1, log_exc=0)
+            break
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
     Globals.default__class_init__(Folder.Folder)
