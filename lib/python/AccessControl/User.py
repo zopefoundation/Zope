@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.126 $'[11:-2]
+__version__='$Revision: 1.127 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -643,30 +643,21 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         c is the physical container of the object
         """
         n = request.steps[-1]
+        # default to accessed and container as v.aq_parent
+        a = c = request['PARENTS'][0]
+        # try to find actual container
         if hasattr(v, 'aq_parent'):
             # this is not a method, we needn't treat it specially
-            a = v.aq_parent
             c = v.aq_inner.aq_parent
         elif hasattr(v, 'im_self'):
             # this is a method, we need to treat it specially
-            a = getattr(v.im_self, 'aq_parent', None)
-            try:
-                c = v.im_self.aq_inner.aq_parent
-            except:
-                c = None
-        else:
-            # punt on setting accessed or container if its neither a
-            # method nor a regular object or if it's not aq-wrapped.
-            a = c = None
-
+            try: c = v.im_self.aq_inner.aq_parent
+            except: pass
         request_container = getattr(request['PARENTS'][-1], 'aq_parent', [])
-
         if a is request_container:
             # if pub's aq_parent is the request container, it
-            # means pub was accessed from and is contained in the root
-            root = request['PARENTS'][-1]
-            a = c = root
-
+            # means pub was accessed from the root
+            a = request['PARENTS'][-1]
         return a, c, n, v
 
     def _isTop(self):
