@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.19 1999/02/08 16:51:28 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.20 1999/03/04 21:20:40 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -101,6 +101,7 @@ static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
 #define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if (!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
+#define OBJECT(O)(((PyObject*)O))
 
 typedef struct {
   PyObject_HEAD
@@ -535,6 +536,95 @@ MM_subscript(MM *self, PyObject *key)
   return MM_cget(self, key, 1);
 }
 
+typedef struct {
+  PyObject_HEAD
+  PyObject *data;
+} DictInstance;
+
+static void
+DictInstance_dealloc(DictInstance *self)
+{
+  Py_DECREF(self->data);
+  PyMem_DEL(self);
+}
+
+static PyObject *
+DictInstance_getattr(DictInstance *self, PyObject *name)
+{
+  PyObject *r;
+
+  if ((r=PyObject_GetItem(self->data, name))) return r;
+  PyErr_SetObject(PyExc_AttributeError, name);
+  return NULL;
+}
+
+static PyTypeObject DictInstanceType = {
+  PyObject_HEAD_INIT(NULL)
+  0,				/*ob_size*/
+  "DictInstance",			/*tp_name*/
+  sizeof(DictInstance),		/*tp_basicsize*/
+  0,				/*tp_itemsize*/
+  (destructor)DictInstance_dealloc,
+  (printfunc)0,
+  (getattrfunc)0,
+  (setattrfunc)0,
+  (cmpfunc)0,
+  (reprfunc)0,
+  0, 0, 0,
+  (hashfunc)0,
+  (ternaryfunc)0,
+  (reprfunc)0,
+  (getattrofunc)DictInstance_getattr,
+  (setattrofunc)0,
+  0L,0L,
+  "Wrap a mapping object to look like an instance"
+};
+
+static DictInstance *
+newDictInstance(PyObject *data)
+{
+  DictInstance *self;
+	
+  UNLESS(self = PyObject_NEW(DictInstance, &DictInstanceType)) return NULL;
+  self->data=data;
+  Py_INCREF(data);
+  return self;
+}
+
+static PyObject *
+MM_call(MM *self, PyObject *args, PyObject *kw)
+{
+  PyObject *r;
+  int i, l=0;
+
+  if (args && (l=PyTuple_Size(args)) < 0) return NULL;
+  if (l)
+    {
+      UNLESS(r=PyObject_CallObject(OBJECT(self->ob_type), NULL)) return NULL;
+      for (i=0; i < l; i++) 
+	if (PyList_Append(((MM*)r)->data, PyTuple_GET_ITEM(args, i)) < 0) 
+	  goto err;
+      if (kw && PyList_Append(((MM*)r)->data, kw) < 0) goto err;
+    }
+  else
+    {
+      if (!kw) 
+	{
+	  Py_INCREF(Py_None);
+	  return Py_None;
+	}
+      r=kw;
+      Py_INCREF(r);
+    }
+
+  ASSIGN(r, OBJECT(newDictInstance(r)));
+  return r;
+
+err:
+  Py_XDECREF(r);
+  return NULL;
+}
+
 static PyMappingMethods MM_as_mapping = {
 	(inquiry)MM_length,		/*mp_length*/
 	(binaryfunc)MM_subscript,      	/*mp_subscript*/
@@ -564,7 +654,7 @@ static PyExtensionClass MMtype = {
 	0,				/*tp_as_sequence*/
 	&MM_as_mapping,			/*tp_as_mapping*/
 	(hashfunc)0,			/*tp_hash*/
-	(ternaryfunc)0,			/*tp_call*/
+	(ternaryfunc)MM_call,		/*tp_call*/
 	(reprfunc)0,			/*tp_str*/
 	(getattrofunc)MM_getattro,	/*tp_getattro*/
 	(setattrofunc)MM_setattro,	/*tp_setattro*/
@@ -916,7 +1006,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.19 $";
+  char *rev="$Revision: 1.20 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
