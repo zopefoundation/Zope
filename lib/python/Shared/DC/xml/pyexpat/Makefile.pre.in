@@ -2,7 +2,7 @@
 #
 # Instructions:
 #
-# 0) Build and install the basic Python 1.4 distribution.  You must
+# 0) Build and install the basic Python 1.5 distribution.  You must
 # also install the headers ("make inclinstall") and the binary library
 # files ("make libainstall").
 #
@@ -36,13 +36,13 @@
 #
 # Hint: if you want to use VPATH, you can start in an empty
 # subdirectory and say (e.g.):
-# make -f ../Makefile.pre.in VERSION=1.4 srcdir=.. VPATH=.. Makefile
+# make -f ../Makefile.pre.in VERSION=1.5 srcdir=.. VPATH=.. Makefile
 
 
 # === Variables that you just *have* to customize manually ===
 
 # (You can also specify their values on the command line for
-# "make -f Makefile.pre.in VERSION=1.4 Makefile".)
+# "make -f Makefile.pre.in VERSION=1.5 Makefile".)
 
 # The prefix used by "make inclinstall libainstall" of core python
 installdir=	/ufs/jack/src/python/build.irix6/tmp
