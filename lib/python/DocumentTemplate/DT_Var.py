@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.36 2000/08/31 23:57:02 amos Exp $'
-__version__='$Revision: 1.36 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.37 2000/09/05 22:03:12 amos Exp $'
+__version__='$Revision: 1.37 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -280,8 +280,8 @@ class Var:
 
         __traceback_info__=name, val, args
 
-        if val is None or (not val and val != 0) and have_arg('null'):
-            # Treat None as special case wrt null
+        if have_arg('null') and not val and val != 0:
+            # check for null (false but not zero, including None, [], '')
             return args['null']
             
 
