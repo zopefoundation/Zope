@@ -98,7 +98,12 @@ Default = []
 
 name_match = re.compile(r"(?s)(%s):(.*)\Z" % NAME_RE).match
 
+class CompilerError(Exception):
+    pass
+
 class DummyEngine:
+
+    position = None
 
     def __init__(self, macros=None):
         if macros is None:
@@ -107,6 +112,12 @@ class DummyEngine:
         dict = {'nothing': None, 'default': Default}
         self.locals = self.globals = dict
         self.stack = [dict]
+
+    def getCompilerError(self):
+        return CompilerError
+
+    def setPosition(self, position):
+        self.position = position
 
     def compile(self, expr):
         return "$%s$" % expr
