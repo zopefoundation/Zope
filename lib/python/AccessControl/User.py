@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -25,13 +25,35 @@ class User(Implicit, Persistent):
     def authenticate(self, password):
 	return password==self.__
 
-    def hasRole(self,inst,roles=None):
-	if roles is None:
-	    return 1
-	for role in roles:
-	    if role in self.roles:
+    def hasRole(self,parent,roles=None):
+	obj=parent
+	obj_roles=roles
+	usr_roles=self.roles
+
+	while 1:
+	    if (obj_roles is None) or ('Anonymous' in obj_roles):
 		return 1
-	return 0
+	    for role in obj_roles:
+		if role in usr_roles:
+		    return 1
+	    if 'Shared' in obj_roles:
+		if not hasattr(obj, 'aq_parent'):
+		    return 0
+		obj=obj.aq_parent
+		if hasattr(obj, '__roles__'):
+		    obj_roles=obj.__roles__
+		else:
+		    obj_roles=['Shared',]
+		continue
+	    return 0
+
+
+# 	if (roles is None) or ('Anonymous' in roles):
+# 	    return 1
+# 	for role in roles:
+# 	    if role in self.roles:
+# 		return 1
+# 	return 0
 
     def __len__(self): return 1
     def __str__(self): return self.name
@@ -87,25 +109,35 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 	return keys
 
     def validate(self,request,auth='',roles=None):
+	parent=request['PARENTS'][0]
+
+	# If no authorization, only nobody can match
 	if not auth:
-	    if roles is None:
+	    if nobody.hasRole(parent, roles):
 		return nobody
 	    return None
+
+	# Only do basic authentication
 	if lower(auth[:6])!='basic ':
 	    return None
 	name,password=tuple(split(decodestring(split(auth)[-1]), ':'))
+
+	# Check for superuser
 	if self._isTop() and (name==super.name) and \
 	super.authenticate(password):
 	    return super
+
+	# Try to get user
 	try:    user=self.data[name]
 	except: return None
+
+	# Try to authenticate user
 	if not user.authenticate(password):
 	    return None
-	if roles is None:
+
+	# Try to authorize user
+	if user.hasRole(parent, roles):
 	    return user
-	for role in roles:
-	    if role in user.roles:
-		return user
 	return None
 
     _mainUser=HTMLFile('mainUser', globals())

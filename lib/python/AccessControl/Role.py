@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -17,13 +17,13 @@ class RoleManager:
 			('Add properties', []),
 			('Change properties', []),
 			('Delete properties', []),
-			('Default permission',['']),
+			('Shared permission',['']),
 		       )
    
     __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
 		 )
 
-    __ac_roles__=('Manager', 'Anonymous')
+    __ac_roles__=('Manager', 'Anonymous', 'Shared')
 
     def access_info(self):
 	# Return access summary info
@@ -32,8 +32,6 @@ class RoleManager:
 	    name=t.name
 	    for role in t.getRoles():
 		data[role]=name
-#        try:    del data['Manager']
-#	except: pass
 	keys=data.keys()
 	for i in range(len(keys)):
 	    key=keys[i]
