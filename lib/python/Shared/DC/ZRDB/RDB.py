@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.20 1998/12/15 21:08:34 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: RDB.py,v 1.21 1998/12/16 15:10:22 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -64,7 +64,7 @@ class DatabaseResults:
 	while line and comment_pattern.match(line) >= 0: line=readline()
 
 	line=line[:-1]
-	if line[-1:] in '\r\n': line=line[:-1]
+	if line and line[-1:] in '\r\n': line=line[:-1]
 	self._names=names=split(line,'\t')
 	if not names: raise ValueError, 'No column names'
 
