@@ -9,11 +9,12 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.6 1997/11/10 16:32:48 jeffrey Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.7 1997/11/19 15:27:40 jim Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
+
 
 class Tree:
     name='tree'
@@ -22,20 +23,26 @@ class Tree:
 
     def __init__(self, blocks):
 	tname, args, section = blocks[0]
-	args=parse_params(args, name='', expand='')
-	name=name_param(args)
+	args=parse_params(args, name=None, expr=None,
+			  expand=None, leaves=None,
+			  header=None, footer=None)
 	self.__name__ = name
 	self.section=section
-	if args.has_key('expand') and args['expand']:
-	    self.expand=args['expand']
+	self.args=args
+	if args.has_key('expr'):
+	    if args.has_key('name'):
+		raise ParseError, _tm('name and expr given', 'tree')
+	    args['expr']=VSEval.Eval(args['expr'], expr_globals)
+	    
 
     def render(self,md):
-	try: v=md[self.__name__]
-	except: v=None
-	if v is None: return ''
-	expand=self.expand
-	if expand: expand=md.getitem(expand,0)
-	return tpRender(v,md,self.section, expand)
+	args=self.args
+	have=args.has_key
+
+	if have('name'): v=md[args['name']]
+	elif have('expr'): v=args['expr'].eval(md)
+	else: v=md.this
+	return tpRender(v,md,self.section, self.args)
 
     __call__=render
 
@@ -46,8 +53,7 @@ from urllib import quote, unquote
 
 pyid=id # Copy builtin
 
-
-def tpRender(self, md, section, expand):
+def tpRender(self, md, section, args):
     data=[]
 
     try:
@@ -100,7 +106,7 @@ def tpRender(self, md, section, expand):
     try:
 	for item in self.tpValues():
 	    data=tpRenderTABLE(item,root,url,state,substate,data,colspan,
-			       section,md,treeData, level, expand)
+			       section,md,treeData, level, args)
 	if state is substate: data.append('</TABLE>\n')
 	result=join(data,'')
     finally: md.pop(1)
@@ -132,9 +138,12 @@ def tpValuesIds(self):
     
 
 def tpRenderTABLE(self, root_url, url, state, substate, data,
-                  colspan, section, md, treeData, level=0, expand=None):
+                  colspan, section, md, treeData, level=0, args=None):
+
+    have_arg=args.has_key
     try:    items=self.tpValues()
     except: items=None
+    if not items and have_arg('leaves'): items=1
 
     tpUrl=self.tpURL()
     url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
@@ -155,10 +164,13 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 
     # Add prefix
     output('<TR>\n')
-    if level: output('<TD WIDTH="16"></TD>\n' * level)
 
     # Add +/- icon
     if items:
+	if level:
+	    if level > 3: output(  '<TD COLSPAN="%s"></TD>' % (level-1))
+	    elif level > 1: output('<TD></TD>' * (level-1))
+	    output('<TD WIDTH="16"></TD>\n')
         output('<TD WIDTH="16" VALIGN="TOP">')
         for i in range(len(substate)):
             sub=substate[i]
@@ -176,28 +188,78 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
             output('<A HREF="%s?tree-state=%s">%s</A>' %
                    (root_url,quote(str(state)[1:-1]+','), icoPlus))
             del substate[-1]
+	output('</TD>\n')
     else:
-        output('<TD WIDTH="16">')
-    output('</TD>\n')
+	level=level+1
+	if level > 3: output('<TD COLSPAN="%s"></TD>' % (level-1))
+	elif level > 1: output('<TD></TD>' * (level-1))
+	output('<TD WIDTH="16"></TD>\n')
+
 
     # add item text
-    output('<TD COLSPAN="%s" VALIGN="TOP">' % (colspan-level))
+    dataspan=colspan-level
+    output('<TD COLSPAN="%s" VALIGN="TOP">' % dataspan)
     output(section(self, md))
     output('</TD>\n</TR>\n')
-    
+
+
     if exp:
-	if expand is not None:
+
+	level=level+1
+	if level > 2: h='<TD COLSPAN="%s"></TD>' % (level-1)
+	elif level > 1: h='<TD></TD>' * (level-1)
+	else: h=''
+
+	if have_arg('header'):
+	    if md.has_key(args['header']):
+		output(md.getitem(args['header'],0)(
+		    self, md,
+		    standard_html_header=(
+			'<TR>%s<TD WIDTH="16"></TD>'
+			'<TD COLSPAN="%s" VALIGN="TOP">'
+			% (h, dataspan-1)),
+		    standard_html_footer='</TD></TR>',
+		    ))
+	    
+	if items==1:
+	    # leaves
 	    treeData['-tree-substate-']=sub
-	    treeData['tree-level']=level+1
+	    treeData['tree-level']=level
 	    md.push(treeData)
-	    output(expand(self,md))
+	    output(md.getitem(args['leaves'],0)(
+		self,md,
+		standard_html_header=(
+		    '<TR>%s<TD WIDTH="16"></TD>'
+		    '<TD COLSPAN="%s" VALIGN="TOP">'
+		    % (h, dataspan-1)),
+		standard_html_footer='</TD></TR>',
+		))
+	    md.pop(1)
+	elif have_arg('expand'):
+	    treeData['-tree-substate-']=sub
+	    treeData['tree-level']=level
+	    md.push(treeData)
+	    output(md.getitem(args['expand'],0)(self,md))
 	    md.pop(1)
 	else:
+	    __traceback_info__=sub, args, state, substate
 	    for item in items:
 		if len(sub)==1: sub.append([])
 		data=tpRenderTABLE(item, root_url,url,state,sub[1],data,
-				   colspan, section, md, treeData, level+1)
+				   colspan, section, md, treeData, level, args)
 		if not sub[1]: del sub[1]
+
+	if have_arg('footer'):
+	    if md.has_key(args['footer']):
+		output(md.getitem(args['footer'],0)(
+		    self, md,
+		    standard_html_header=(
+			'<TR>%s<TD WIDTH="16"></TD>'
+			'<TD COLSPAN="%s" VALIGN="TOP">'
+			% (h, dataspan-1)),
+		    standard_html_footer='</TD></TR>',
+		    ))
+
     return data
 
 
