@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:09 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:57 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -87,15 +87,6 @@ class Writer(html4css1.Writer):
 
 
 class HTMLTranslator(html4css1.HTMLTranslator):
-
-    def get_stylesheet_reference(self, relative_to=None):
-        settings = self.settings
-        if relative_to == None:
-            relative_to = settings._destination
-        if settings.stylesheet_path:
-            return utils.relative_path(relative_to, settings.stylesheet_path)
-        else:
-            return settings.stylesheet
 
     def depart_field_list(self, node):
         html4css1.HTMLTranslator.depart_field_list(self, node)

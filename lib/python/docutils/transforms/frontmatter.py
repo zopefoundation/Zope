@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:09 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:55 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -334,10 +334,10 @@ class DocInfo(Transform):
         return 1
 
     rcs_keyword_substitutions = [
-          (re.compile(r'\$' r'Date: (\d\d\d\d)/(\d\d)/(\d\d) [\d:]+ \$$',
+          (re.compile(r'\$' r'Date: (\d\d\d\d)/(\d\d)/(\d\d) [\d:]+ \$',
                       re.IGNORECASE), r'\1-\2-\3'),
-          (re.compile(r'\$' r'RCSfile: (.+),v \$$', re.IGNORECASE), r'\1'),
-          (re.compile(r'\$[a-zA-Z]+: (.+) \$$'), r'\1'),]
+          (re.compile(r'\$' r'RCSfile: (.+),v \$', re.IGNORECASE), r'\1'),
+          (re.compile(r'\$[a-zA-Z]+: (.+) \$'), r'\1'),]
 
     def extract_authors(self, field, name, docinfo):
         try:

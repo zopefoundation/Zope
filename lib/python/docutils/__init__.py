@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:04 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:37 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -51,12 +51,14 @@ Subpackages:
 
 __docformat__ = 'reStructuredText'
 
-__version__ = '0.3.1'
-"""``major.minor.micro`` version number.  The micro number is bumped any time
-there's a change in the API incompatible with one of the front ends or
-significant new functionality.  The minor number is bumped whenever there is a
+__version__ = '0.3.4'
+"""``major.minor.micro`` version number.  The micro number is bumped
+any time there's a change in the API incompatible with one of the
+front ends or significant new functionality, and at any alpha or beta
+release.  The minor number is bumped whenever there is a stable
 project release.  The major number will be bumped when the project is
-feature-complete, and perhaps if there is a major change in the design."""
+feature-complete, and perhaps if there is a major change in the
+design."""
 
 
 class ApplicationError(StandardError): pass
@@ -122,6 +124,22 @@ class TransformSpec:
 
     default_transforms = ()
     """Transforms required by this class.  Override in subclasses."""
+    
+    unknown_reference_resolvers = ()
+    """List of functions to try to resolve unknown references.  Called when
+    FinalCheckVisitor is unable to find a correct target.  The list should
+    contain functions which will try to resolve unknown references, with the
+    following signature::
+
+        def reference_resolver(node):
+            '''Returns boolean: true if resolved, false if not.'''
+
+    Each function must have a "priority" attribute which will affect the order
+    the unknown_reference_resolvers are run::
+
+        reference_resolver.priority = 100
+
+    Override in subclasses."""
 
 
 class Component(SettingsSpec, TransformSpec):
@@ -129,11 +147,12 @@ class Component(SettingsSpec, TransformSpec):
     """Base class for Docutils components."""
 
     component_type = None
-    """Override in subclasses."""
+    """Name of the component type ('reader', 'parser', 'writer').  Override in
+    subclasses."""
 
     supported = ()
     """Names for this component.  Override in subclasses."""
-
+    
     def supports(self, format):
         """
         Is `format` supported by this component?

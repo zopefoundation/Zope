@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:04 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:39 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -324,7 +324,9 @@ def assemble_option_dict(option_list, options_spec):
     """
     options = {}
     for name, value in option_list:
-        convertor = options_spec[name]       # raises KeyError if unknown
+        convertor = options_spec[name]  # raises KeyError if unknown
+        if convertor is None:
+            raise KeyError(name)        # or if explicitly disabled
         if options.has_key(name):
             raise DuplicateOptionError('duplicate option "%s"' % name)
         try:
@@ -406,7 +408,7 @@ def clean_rcs_keywords(paragraph, keyword_substitutions):
     if len(paragraph) == 1 and isinstance(paragraph[0], nodes.Text):
         textnode = paragraph[0]
         for pattern, substitution in keyword_substitutions:
-            match = pattern.match(textnode.data)
+            match = pattern.search(textnode.data)
             if match:
                 textnode.data = pattern.sub(substitution, textnode.data)
                 return

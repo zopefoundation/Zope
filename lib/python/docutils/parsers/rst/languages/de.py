@@ -1,8 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 # Author: Engelbert Gruber
 # Contact: grubert@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:50 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -37,6 +37,7 @@ directives = {
       'epigraph (translation required)': 'epigraph',
       'highlights (translation required)': 'highlights',
       'pull-quote (translation required)': 'pull-quote', # kasten too ?
+      'table (translation required)': 'table',
       #'questions': 'questions',
       #'qa': 'questions',
       #'faq': 'questions',
@@ -49,7 +50,8 @@ directives = {
                             # einfügung would be the noun. 
       'ersetzung': 'replace', # ersetzen, ersetze
       'unicode': 'unicode',
-      'klasse': 'class',    # offer class too ?
+      'klasse': 'class',    # offer "class" too ?
+      'role (translation required)': 'role',
       'inhalt': 'contents',
       'sectnum': 'sectnum',
       'section-numbering': 'sectnum',

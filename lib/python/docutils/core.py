@@ -1,7 +1,7 @@
 # Authors: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:04 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:38 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -180,6 +180,7 @@ class Publisher:
                                         self.settings)
             self.apply_transforms(document)
             output = self.writer.write(document, self.destination)
+            self.writer.assemble_parts()
         except utils.SystemMessage, error:
             if self.settings.traceback:
                 raise
@@ -376,3 +377,63 @@ def publish_string(source, source_path=None, destination_path=None,
     pub.set_source(source, source_path)
     pub.set_destination(destination_path=destination_path)
     return pub.publish(enable_exit=enable_exit)
+
+def publish_parts(source, source_path=None, destination_path=None, 
+                  reader=None, reader_name='standalone',
+                  parser=None, parser_name='restructuredtext',
+                  writer=None, writer_name='pseudoxml',
+                  settings=None, settings_spec=None,
+                  settings_overrides=None, config_section=None,
+                  enable_exit=None):
+    """
+    Set up & run a `Publisher`, and return a dictionary of document parts.
+    Dictionary keys are the names of parts, and values are Unicode strings;
+    encoding is up to the client.  For programmatic use with string I/O.
+
+    For encoded string input, be sure to set the "input_encoding" setting to
+    the desired encoding.  Set it to "unicode" for unencoded Unicode string
+    input.  Here's how::
+
+        publish_string(..., settings_overrides={'input_encoding': 'unicode'})
+
+    Parameters:
+
+    - `source`: An input string; required.  This can be an encoded 8-bit
+      string (set the "input_encoding" setting to the correct encoding) or a
+      Unicode string (set the "input_encoding" setting to "unicode").
+    - `source_path`: Path to the file or object that produced `source`;
+      optional.  Only used for diagnostic output.
+    - `destination_path`: Path to the file or object which will receive the
+      output; optional.  Used for determining relative paths (stylesheets,
+      source links, etc.).
+    - `reader`: A `docutils.readers.Reader` object.
+    - `reader_name`: Name or alias of the Reader class to be instantiated if
+      no `reader` supplied.
+    - `parser`: A `docutils.parsers.Parser` object.
+    - `parser_name`: Name or alias of the Parser class to be instantiated if
+      no `parser` supplied.
+    - `writer`: A `docutils.writers.Writer` object.
+    - `writer_name`: Name or alias of the Writer class to be instantiated if
+      no `writer` supplied.
+    - `settings`: Runtime settings object.
+    - `settings_spec`: Extra settings specification; a `docutils.SettingsSpec`
+      subclass.  Used only if no `settings` specified.
+    - `settings_overrides`: A dictionary containing program-specific overrides
+      of component settings.
+    - `config_section`: Name of configuration file section for application.
+      Used only if no `settings` or `settings_spec` specified.
+    - `enable_exit`: Boolean; enable exit status at end of processing?
+    """
+    pub = Publisher(reader, parser, writer, settings=settings,
+                    source_class=io.StringInput,
+                    destination_class=io.NullOutput)
+    pub.set_components(reader_name, parser_name, writer_name)
+    if settings is None:
+        settings = pub.get_settings(settings_spec=settings_spec,
+                                    config_section=config_section)
+    if settings_overrides:
+        settings._update(settings_overrides, 'loose')
+    pub.set_source(source, source_path)
+    pub.set_destination(destination_path=destination_path)
+    pub.publish(enable_exit=enable_exit)
+    return pub.writer.parts

@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:09 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:55 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -111,6 +111,29 @@ class Messages(Transform):
             self.document += section
 
 
+class FilterMessages(Transform):
+
+    """
+    Remove system messages below verbosity threshold.
+    """
+
+    default_priority = 870
+
+    def apply(self):
+        visitor = SystemMessageFilterVisitor(self.document)
+        self.document.walk(visitor)
+
+
+class SystemMessageFilterVisitor(nodes.SparseNodeVisitor):
+
+    def unknown_visit(self, node):
+        pass
+
+    def visit_system_message(self, node):
+        if node['level'] < self.document.reporter['writer'].report_level:
+            node.parent.remove(node)
+
+
 class TestMessages(Transform):
 
     """
@@ -136,7 +159,9 @@ class FinalChecks(Transform):
     default_priority = 840
 
     def apply(self):
-        visitor = FinalCheckVisitor(self.document)
+        visitor = FinalCheckVisitor(
+            self.document,
+            self.document.transformer.unknown_reference_resolvers)
         self.document.walk(visitor)
         if self.document.settings.expose_internals:
             visitor = InternalAttributeExposer(self.document)
@@ -144,6 +169,11 @@ class FinalChecks(Transform):
 
 
 class FinalCheckVisitor(nodes.SparseNodeVisitor):
+    
+    def __init__(self, document, unknown_reference_resolvers):
+        nodes.SparseNodeVisitor.__init__(self, document)
+        self.document = document
+        self.unknown_reference_resolvers = unknown_reference_resolvers
 
     def unknown_visit(self, node):
         pass
@@ -154,15 +184,24 @@ class FinalCheckVisitor(nodes.SparseNodeVisitor):
         refname = node['refname']
         id = self.document.nameids.get(refname)
         if id is None:
-            msg = self.document.reporter.error(
-                  'Unknown target name: "%s".' % (node['refname']),
-                  base_node=node)
-            msgid = self.document.set_id(msg)
-            prb = nodes.problematic(
-                  node.rawsource, node.rawsource, refid=msgid)
-            prbid = self.document.set_id(prb)
-            msg.add_backref(prbid)
-            node.parent.replace(node, prb)
+            for resolver_function in self.unknown_reference_resolvers:
+                if resolver_function(node):
+                    break
+            else:
+                if self.document.nameids.has_key(refname):
+                    msg = self.document.reporter.error(
+                        'Duplicate target name, cannot be used as a unique '
+                        'reference: "%s".' % (node['refname']), base_node=node)
+                else:
+                    msg = self.document.reporter.error(
+                        'Unknown target name: "%s".' % (node['refname']),
+                        base_node=node)
+                msgid = self.document.set_id(msg)
+                prb = nodes.problematic(
+                      node.rawsource, node.rawsource, refid=msgid)
+                prbid = self.document.set_id(prb)
+                msg.add_backref(prbid)
+                node.parent.replace(node, prb)
         else:
             del node['refname']
             node['refid'] = id

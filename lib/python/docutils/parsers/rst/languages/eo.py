@@ -1,7 +1,7 @@
 # Author: Marcelo Huerta San Martin
 # Contact: richieadler@users.sourceforge.net
-# Revision: $Revision: 1.1 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.1.2.1.8.1 $
+# Date: $Date: 2004/05/12 19:57:50 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -40,6 +40,7 @@ directives = {
       u'elstara\u0135oj': 'highlights',
       u'ekstera-citajxo': 'pull-quote',
       u'ekstera-cita\u0135o': 'pull-quote',
+      u'tabelo': 'table',
       #'questions': 'questions',
       #'qa': 'questions',
       #'faq': 'questions',
@@ -53,6 +54,7 @@ directives = {
       u'anstata\u016di': 'replace',
       u'unicode': 'unicode',
       u'klaso': 'class',
+      u'rolo': 'role',
       u'enhavo': 'contents',
       u'seknum': 'sectnum',
       u'sekcia-numerado': 'sectnum',

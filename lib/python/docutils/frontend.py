@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.7 $
-# Date: $Date: 2003/11/30 15:06:04 $
+# Revision: $Revision: 1.2.10.4.8.1 $
+# Date: $Date: 2004/05/12 19:57:38 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -126,8 +126,7 @@ def validate_boolean(setting, value, option_parser,
 def validate_threshold(setting, value, option_parser,
                        config_parser=None, config_section=None):
     try:
-        int(value)
-        return value
+        return int(value)
     except ValueError:
         try:
             return option_parser.thresholds[value.lower()]
@@ -294,6 +293,10 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
          ('Disable backlinks from footnotes and citations.',
           ['--no-footnote-backlinks'],
           {'dest': 'footnote_backlinks', 'action': 'store_false'}),
+         ('Disable Docutils section numbering',
+          ['--no-section-numbering'],
+          {'action': 'store_false', 'dest': 'sectnum_xform',
+           'default': 1, 'validator': validate_boolean}),
          ('Set verbosity threshold; report system messages at or higher than '
           '<level> (by name or number: "info" or "1", warning/2, error/3, '
           'severe/4; also, "none" or "5").  Default is 2 (warning).',
@@ -346,7 +349,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           {'metavar': '<name[:handler]>', 'default': 'utf-8',
            'validator': validate_encoding_and_error_handler}),
          (SUPPRESS_HELP,                # usually handled by --output-encoding
-          ['--output_encoding_error_handler'],
+          ['--output-encoding-error-handler'],
           {'default': 'strict', 'validator': validate_encoding_error_handler}),
          ('Specify the text encoding for error output.  Default is ASCII.  '
           'Optionally also specify the encoding error handler for unencodable '
@@ -357,7 +360,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           {'metavar': '<name[:handler]>', 'default': 'ascii',
            'validator': validate_encoding_and_error_handler}),
          (SUPPRESS_HELP,                # usually handled by --error-encoding
-          ['--error_encoding_error_handler'],
+          ['--error-encoding-error-handler'],
           {'default': default_error_encoding_error_handler,
            'validator': validate_encoding_error_handler}),
          ('Specify the language of input text (ISO 639 2-letter identifier).'

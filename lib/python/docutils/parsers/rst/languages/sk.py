@@ -1,7 +1,7 @@
 # Author: Miroslav Vasko
 # Contact: zemiak@zoznam.sk
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:51 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -36,6 +36,7 @@ directives = {
       u'epigraph (translation required)': 'epigraph',
       u'highlights (translation required)': 'highlights',
       u'pull-quote (translation required)': 'pull-quote',
+      u'table (translation required)': 'table',
       #u'questions': 'questions',
       #u'qa': 'questions',
       #u'faq': 'questions',
@@ -48,6 +49,7 @@ directives = {
       u'nahradi\x9d': 'replace',
       u'unicode': 'unicode',
       u'class (translation required)': 'class',
+      u'role (translation required)': 'role',
       u'obsah': 'contents',
       u'\xe8as\x9d': 'sectnum',
       u'\xe8as\x9d-\xe8\xedslovanie': 'sectnum',

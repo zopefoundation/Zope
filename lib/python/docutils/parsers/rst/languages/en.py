@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:50 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -37,6 +37,7 @@ directives = {
       'epigraph': 'epigraph',
       'highlights': 'highlights',
       'pull-quote': 'pull-quote',
+      'table': 'table',
       #'questions': 'questions',
       #'qa': 'questions',
       #'faq': 'questions',
@@ -49,6 +50,7 @@ directives = {
       'replace': 'replace',
       'unicode': 'unicode',
       'class': 'class',
+      'role': 'role',
       'contents': 'contents',
       'sectnum': 'sectnum',
       'section-numbering': 'sectnum',

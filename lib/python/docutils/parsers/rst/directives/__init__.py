@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.6 $
-# Date: $Date: 2003/11/30 15:06:06 $
+# Revision: $Revision: 1.2.10.4.8.1 $
+# Date: $Date: 2004/05/12 19:57:48 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -102,6 +102,7 @@ _directive_registry = {
       'epigraph': ('body', 'epigraph'),
       'highlights': ('body', 'highlights'),
       'pull-quote': ('body', 'pull_quote'),
+      'table': ('body', 'table'),
       #'questions': ('body', 'question_list'),
       'image': ('images', 'image'),
       'figure': ('images', 'figure'),
@@ -117,6 +118,7 @@ _directive_registry = {
       'replace': ('misc', 'replace'),
       'unicode': ('misc', 'unicode_directive'),
       'class': ('misc', 'class_directive'),
+      'role': ('misc', 'role'),
       'restructuredtext-test-directive': ('misc', 'directive_test_function'),}
 """Mapping of directive name to (module name, function name).  The directive
 name is canonical & must be lowercase.  Language-dependent names are defined
@@ -165,23 +167,37 @@ def directive(directive_name, language_module, document):
     try:
         modulename, functionname = _directive_registry[canonicalname]
     except KeyError:
+        messages.append(document.reporter.error(
+            'Directive "%s" not registered (canonical name "%s").'
+            % (directive_name, canonicalname), line=document.current_line))
         return None, messages
     if _modules.has_key(modulename):
         module = _modules[modulename]
     else:
         try:
             module = __import__(modulename, globals(), locals())
-        except ImportError:
+        except ImportError, detail:
+            messages.append(document.reporter.error(
+                'Error importing directive module "%s" (directive "%s"):\n%s'
+                % (modulename, directive_name, detail),
+                line=document.current_line))
             return None, messages
     try:
         function = getattr(module, functionname)
         _directives[normname] = function
     except AttributeError:
+        messages.append(document.reporter.error(
+            'No function "%s" in module "%s" (directive "%s").'
+            % (functionname, modulename, directive_name),
+            line=document.current_line))
         return None, messages
     return function, messages
 
 def register_directive(name, directive):
-    """Register a nonstandard application-defined directive function."""
+    """
+    Register a nonstandard application-defined directive function.
+    Language lookups are not needed for such functions.
+    """
     _directives[name] = directive
 
 def flag(argument):
@@ -257,7 +273,10 @@ def class_option(argument):
     """
     if argument is None:
         raise ValueError('argument required but none supplied')
-    return nodes.make_id(argument)
+    class_name = nodes.make_id(argument)
+    if not class_name:
+        raise ValueError('cannot make "%s" into a class name' % argument)
+    return class_name
 
 def format_values(values):
     return '%s, or "%s"' % (', '.join(['"%s"' % s for s in values[:-1]]),

@@ -1,8 +1,8 @@
 """
 :Author: Engelbert Gruber
 :Contact: grubert@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2003/11/30 15:06:09 $
+:Revision: $Revision: 1.1.2.3.8.1 $
+:Date: $Date: 2004/05/12 19:57:57 $
 :Copyright: This module has been placed in the public domain.
 
 LaTeX2e document tree Writer.
@@ -11,7 +11,7 @@ LaTeX2e document tree Writer.
 __docformat__ = 'reStructuredText'
 
 # code contributions from several people included, thanks too all.
-# some named: David Abrahams, Julien Letessier, who is missing.
+# some named: David Abrahams, Julien Letessier, Lele Gaifax, and others.
 #
 # convention deactivate code by two # e.g. ##.
 
@@ -76,13 +76,43 @@ class Writer(writers.Writer):
           ['--use-latex-toc'],
           {'default': 0, 'action': 'store_true',
            'validator': frontend.validate_boolean}),
-         ('Let LaTeX print author and date, donot show it in docutils document info.',
+         ('Let LaTeX print author and date, do not show it in docutils '
+          'document info.',
           ['--use-latex-docinfo'],
           {'default': 0, 'action': 'store_true',
            'validator': frontend.validate_boolean}),
          ('Color of any hyperlinks embedded in text '
           '(default: "blue", "0" to disable).',
-          ['--hyperlink-color'], {'default': 'blue'}),))
+          ['--hyperlink-color'], {'default': 'blue'}),
+         ('Enable compound enumerators for nested enumerated lists '
+          '(e.g. "1.2.a.ii").  Default: disabled.',
+          ['--compound-enumerators'],
+          {'default': None, 'action': 'store_true',
+           'validator': frontend.validate_boolean}),
+         ('Disable compound enumerators for nested enumerated lists.  This is '
+          'the default.',
+          ['--no-compound-enumerators'],
+          {'action': 'store_false', 'dest': 'compound_enumerators'}),
+         ('Enable section ("." subsection ...) prefixes for compound '
+          'enumerators.  This has no effect without --compound-enumerators.  '
+          'Default: disabled.',
+          ['--section-prefix-for-enumerators'],
+          {'default': None, 'action': 'store_true',
+           'validator': frontend.validate_boolean}),
+         ('Disable section prefixes for compound enumerators.  '
+          'This is the default.',
+          ['--no-section-prefix-for-enumerators'],
+          {'action': 'store_false', 'dest': 'section_prefix_for_enumerators'}),
+         ('Set the separator between section number and enumerator '
+          'for compound enumerated lists.  Default is "-".',
+          ['--section-enumerator-separator'],
+          {'default': '-', 'metavar': '<char>'}),
+         ('When possibile, use verbatim for literal-blocks.'
+          'Default is to always use the mbox environment.',
+          ['--use-verbatim-when-possible'],
+          {'default': 0, 'action': 'store_true',
+           'validator': frontend.validate_boolean}),
+          ))
 
     settings_defaults = {'output_encoding': 'latin-1'}
 
@@ -245,9 +275,37 @@ latex_headings = {
             '% some commands, that could be overwritten in the style file.\n'
             '\\newcommand{\\rubric}[1]'
             '{\\subsection*{~\\hfill {\\it #1} \\hfill ~}}\n'
+            '\\newcommand{\\titlereference}[1]{\\textsl{#1}}\n'
             '% end of "some commands"\n',
          ]
         }
+
+class DocumentClass:
+    """Details of a LaTeX document class."""
+
+    # BUG: LaTeX has no deeper sections (actually paragrah is no
+    # section either).
+    _class_sections = {
+        'book': ( 'chapter', 'section', 'subsection', 'subsubsection' ),
+        'report': ( 'chapter', 'section', 'subsection', 'subsubsection' ),
+        'article': ( 'section', 'subsection', 'subsubsection' ),
+        }
+    _deepest_section = 'subsubsection'
+
+    def __init__(self, document_class):
+        self.document_class = document_class
+
+    def section(self, level):
+        """ Return the section name at the given level for the specific
+            document class.
+
+            Level is 1,2,3..., as level 0 is the title."""
+
+        sections = self._class_sections[self.document_class]
+        if level <= len(sections):
+            return sections[level-1]
+        else:
+            return self._deepest_section
 
 
 class LaTeXTranslator(nodes.NodeVisitor):
@@ -277,6 +335,16 @@ class LaTeXTranslator(nodes.NodeVisitor):
     # list environment for docinfo. else tabularx
     use_optionlist_for_docinfo = 0 # NOT YET IN USE
 
+    # Use compound enumerations (1.A.1.)
+    compound_enumerators = 0
+
+    # If using compound enumerations, include section information.
+    section_prefix_for_enumerators = 0
+
+    # This is the character that separates the section ("." subsection ...)
+    # prefix from the regular list enumerator.
+    section_enumerator_separator = '-'
+
     # default link color
     hyperlink_color = "blue"
 
@@ -287,6 +355,11 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.use_latex_docinfo = settings.use_latex_docinfo
         self.use_latex_footnotes = settings.use_latex_footnotes
         self.hyperlink_color = settings.hyperlink_color
+        self.compound_enumerators = settings.compound_enumerators
+        self.section_prefix_for_enumerators = (
+            settings.section_prefix_for_enumerators)
+        self.section_enumerator_separator = (
+            settings.section_enumerator_separator.replace('_', '\\_'))
         if self.hyperlink_color == '0':
             self.hyperlink_color = 'black'
             self.colorlinks = 'false'
@@ -302,6 +375,9 @@ class LaTeXTranslator(nodes.NodeVisitor):
         if self.babel.get_language():
             self.d_options += ',%s' % \
                     self.babel.get_language()
+
+        self.d_class = DocumentClass(settings.documentclass)
+
         self.head_prefix = [
               self.latex_head % (self.d_options,self.settings.documentclass),
               '\\usepackage{babel}\n',     # language is in documents settings.
@@ -333,7 +409,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
               '\\newlength{\\docinfowidth}\n',
               '\\setlength{\\docinfowidth}{0.9\\textwidth}\n'
               # linewidth of current environment, so tables are not wider
-              # than the sidebar: using locallinewidth seams to defer evaluation
+              # than the sidebar: using locallinewidth seems to defer evaluation
               # of linewidth, this is fixing it.
               '\\newlength{\\locallinewidth}\n',
               # will be set later.
@@ -368,6 +444,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.topic_class = ''
         # column specification for tables
         self.colspecs = []
+        self.table_caption = None
         # do we have one or more authors
         self.author_stack = None
         # Flags to encode
@@ -383,11 +460,24 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
         # enumeration is done by list environment.
         self._enum_cnt = 0
+
+        # Stack of section counters so that we don't have to use_latex_toc.
+        # This will grow and shrink as processing occurs.
+        # Initialized for potential first-level sections.
+        self._section_number = [0]
+
+        # The current stack of enumerations so that we can expand
+        # them into a compound enumeration
+        self._enumeration_counters = []
+
         # docinfo.
         self.docinfo = None
         # inside literal block: no quote mangling.
         self.literal_block = 0
+        self.literal_block_stack = []
         self.literal = 0
+        # true when encoding in math mode
+        self.mathmode = 0
 
     def get_stylesheet_reference(self):
         if self.settings.stylesheet_path:
@@ -465,7 +555,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
         # then dollar
         text = text.replace("$", '{\\$}')
-        if not ( self.literal_block or self.literal ):
+        if not ( self.literal_block or self.literal or self.mathmode ):
             # the vertical bar: in mathmode |,\vert or \mid
             #   in textmode \textbar
             text = text.replace("|", '{\\textbar}')
@@ -492,7 +582,13 @@ class LaTeXTranslator(nodes.NodeVisitor):
             # ! LaTeX Error: There's no line here to end.
             text = text.replace("\n", '~\\\\\n')
         elif self.mbox_newline:
-            text = text.replace("\n", '}\\\\\n\\mbox{')
+            if self.literal_block:
+                closings = "}" * len(self.literal_block_stack)
+                openings = "".join(self.literal_block_stack)
+            else:
+                closings = ""
+                openings = ""
+            text = text.replace("\n", "%s}\\\\\n\\mbox{%s" % (closings,openings))
         if self.insert_none_breaking_blanks:
             text = text.replace(' ', '~')
         # unicode !!!
@@ -528,14 +624,15 @@ class LaTeXTranslator(nodes.NodeVisitor):
     def depart_address(self, node):
         self.depart_docinfo_item(node)
 
-    def visit_admonition(self, node, name):
+    def visit_admonition(self, node, name=''):
         self.body.append('\\begin{center}\\begin{sffamily}\n')
         self.body.append('\\fbox{\\parbox{\\admonitionwidth}{\n')
-        self.body.append('\\textbf{\\large '+ self.language.labels[name] + '}\n');
+        if name:
+            self.body.append('\\textbf{\\large '+ self.language.labels[name] + '}\n');
         self.body.append('\\vspace{2mm}\n')
 
 
-    def depart_admonition(self):
+    def depart_admonition(self, node=None):
         self.body.append('}}\n') # end parbox fbox
         self.body.append('\\end{sffamily}\n\\end{center}\n');
 
@@ -582,6 +679,24 @@ class LaTeXTranslator(nodes.NodeVisitor):
         else:
             self.body.append( '\\end{itemize}\n' )
 
+    # Imperfect superscript/subscript handling: mathmode italicizes
+    # all letters by default.
+    def visit_superscript(self, node):
+        self.body.append('$^{')
+        self.mathmode = 1
+
+    def depart_superscript(self, node):
+        self.body.append('}$')
+        self.mathmode = 0
+
+    def visit_subscript(self, node):
+        self.body.append('$_{')
+        self.mathmode = 1
+
+    def depart_subscript(self, node):
+        self.body.append('}$')
+        self.mathmode = 0
+
     def visit_caption(self, node):
         self.body.append( '\\caption{' )
 
@@ -601,11 +716,10 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.depart_footnote(node)
 
     def visit_title_reference(self, node):
-        # BUG title-references are what?
-        pass
+        self.body.append( '\\titlereference{' )
 
     def depart_title_reference(self, node):
-        pass
+        self.body.append( '}' )
 
     def visit_citation_reference(self, node):
         href = ''
@@ -767,9 +881,11 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
     def visit_emphasis(self, node):
         self.body.append('\\emph{')
+        self.literal_block_stack.append('\\emph{')
 
     def depart_emphasis(self, node):
         self.body.append('}')
+        self.literal_block_stack.pop()
 
     def visit_entry(self, node):
         # cell separation
@@ -781,13 +897,15 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
         # multi{row,column}
         if node.has_key('morerows') and node.has_key('morecols'):
-            raise NotImplementedError('LaTeX can\'t handle cells that'
+            raise NotImplementedError('LaTeX can\'t handle cells that '
             'span multiple rows *and* columns, sorry.')
         atts = {}
         if node.has_key('morerows'):
+            raise NotImplementedError('multiple rows are not working (yet), sorry.')
             count = node['morerows'] + 1
             self.body.append('\\multirow{%d}*{' % count)
             self.context.append('}')
+            # BUG following rows must have empty cells.
         elif node.has_key('morecols'):
             # the vertical bar before column is missing if it is the first column.
             # the one after always.
@@ -830,13 +948,22 @@ class LaTeXTranslator(nodes.NodeVisitor):
         enum_prefix = ""
         if node.has_key('prefix'):
             enum_prefix = node['prefix']
-
+        if self.compound_enumerators:
+            pref = ""
+            if self.section_prefix_for_enumerators and self.section_level:
+                for i in range(self.section_level):
+                    pref += '%d.' % self._section_number[i]
+                pref = pref[:-1] + self.section_enumerator_separator
+                enum_prefix += pref
+            for counter in self._enumeration_counters:
+                enum_prefix += counter + '.'
         enum_type = "arabic"
         if node.has_key('enumtype'):
             enum_type = node['enumtype']
         if enum_style.has_key(enum_type):
             enum_type = enum_style[enum_type]
         counter_name = "listcnt%d" % self._enum_cnt;
+        self._enumeration_counters.append("\\%s{%s}" % (enum_type,counter_name))
         self.body.append('\\newcounter{%s}\n' % counter_name)
         self.body.append('\\begin{list}{%s\\%s{%s}%s}\n' % \
             (enum_prefix,enum_type,counter_name,enum_suffix))
@@ -852,6 +979,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
     def depart_enumerated_list(self, node):
         self.body.append('\\end{list}\n')
+        self._enumeration_counters.pop()
 
     def visit_error(self, node):
         self.visit_admonition(node, 'error')
@@ -964,6 +1092,7 @@ class LaTeXTranslator(nodes.NodeVisitor):
             return
         self.body.append('}%s' % self.context.pop())
 
+    # elements generated by the framework e.g. section numbers.
     def visit_generated(self, node):
         pass
 
@@ -987,17 +1116,15 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.depart_admonition()
 
     def visit_image(self, node):
-        attrs = node.attributes.copy()
+        attrs = node.attributes
         pre = []                        # in reverse order
         post = ['\\includegraphics{%s}' % attrs['uri']]
-        def prepost(pre_append, post_append):
-            pre.append(pre_append)
-            post.append(post_append)
         inline = isinstance(node.parent, nodes.TextElement)
         if 'scale' in attrs:
             # Could also be done with ``scale`` option to
             # ``\includegraphics``; doing it this way for consistency.
-            prepost('\\scalebox{%f}{' % (attrs['scale'] / 100.0,), '}')
+            pre.append('\\scalebox{%f}{' % (attrs['scale'] / 100.0,))
+            post.append('}')
         if 'align' in attrs:
             align_prepost = {
                 # By default latex aligns the top of an image.
@@ -1011,11 +1138,13 @@ class LaTeXTranslator(nodes.NodeVisitor):
                 (0, 'left'): ('{', '\\hfill}'),
                 (0, 'right'): ('{\\hfill', '}'),}
             try:
-                prepost(*align_prepost[inline, attrs['align']])
+                pre.append(align_prepost[inline, attrs['align']][0])
+                post.append(align_prepost[inline, attrs['align']][1])
             except KeyError:
-                pass                    # complain here?
+                pass                    # XXX complain here?
         if not inline:
-            prepost('\n', '\n')
+            pre.append('\n')
+            post.append('\n')
         pre.reverse()
         self.body.extend(pre + post)
 
@@ -1054,6 +1183,8 @@ class LaTeXTranslator(nodes.NodeVisitor):
         * whitespace (including linebreaks) is significant
         * inline markup is supported.
         * serif typeface
+
+        mbox would stop LaTeX from wrapping long lines.
         """
         self.body.append('\\begin{flushleft}\n')
         self.insert_none_breaking_blanks = 1
@@ -1074,7 +1205,9 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.body.append('\n\\end{flushleft}\n')
 
     def visit_list_item(self, node):
-        self.body.append('\\item ')
+        # HACK append "{}" in case the next character is "[", which would break
+        # LaTeX's list environment (no numbering and the "[" is not printed).
+        self.body.append('\\item {} ')
 
     def depart_list_item(self, node):
         self.body.append('\n')
@@ -1089,31 +1222,51 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
     def visit_literal_block(self, node):
         """
-        .. parsed-literal::
+        Render a literal-block.
+
+        Literal blocks are used for "::"-prefixed literal-indented
+        blocks of text, where the inline markup is not recognized,
+        but are also the product of the parsed-literal directive,
+        where the markup is respected.
+        
+        mbox stops LaTeX from wrapping long lines.
         """
-        # typically in a typewriter/monospaced typeface.
-        # care must be taken with the text, because inline markup is recognized.
+        # In both cases, we want to use a typewriter/monospaced typeface.
+        # For "real" literal-blocks, we can use \verbatim, while for all
+        # the others we must use \mbox.
         #
-        # possibilities:
-        # * verbatim: is no possibility, as inline markup does not work.
-        # * obey..: is from julien and never worked for me (grubert).
-        self.use_for_literal_block = "mbox"
-        self.literal_block = 1
-        if (self.use_for_literal_block == "mbox"):
-            self.mbox_newline = 1
-            self.insert_none_breaking_blanks = 1
-            self.body.append('\\begin{ttfamily}\\begin{flushleft}\n\\mbox{')
+        # We can distinguish between the two kinds by the number of
+        # siblings the compose this node: if it is composed by a
+        # single element, it's surely is either a real one, otherwise
+        # it's a parsed-literal that does not contain any markup.
+        # 
+        if (self.settings.use_verbatim_when_possible and (len(node) == 1)
+              # in case of a parsed-literal containing just a "**bold**" word:
+              and isinstance(node[0], nodes.Text)):
+            self.verbatim = 1
+            self.body.append('\\begin{verbatim}\n')
         else:
-            self.body.append('{\\obeylines\\obeyspaces\\ttfamily\n')
+            self.literal_block = 1
+            self.insert_none_breaking_blanks = 1
+            self.body.append('\\begin{ttfamily}\\begin{flushleft}\n')
+            self.mbox_newline = 1
+            if self.mbox_newline:
+                self.body.append('\\mbox{')
+            # * obey..: is from julien and never worked for me (grubert).
+            #   self.body.append('{\\obeylines\\obeyspaces\\ttfamily\n')
 
     def depart_literal_block(self, node):
-        if (self.use_for_literal_block == "mbox"):
-            self.body.append('}\n\\end{flushleft}\\end{ttfamily}\n')
+        if self.verbatim:
+            self.body.append('\n\\end{verbatim}\n')
+            self.verbatim = 0
+        else:
+            if self.mbox_newline:
+                self.body.append('}')
+            self.body.append('\n\\end{flushleft}\\end{ttfamily}\n')
             self.insert_none_breaking_blanks = 0
             self.mbox_newline = 0
-        else:
-            self.body.append('}\n')
-        self.literal_block = 0
+            # obey end: self.body.append('}\n')
+            self.literal_block = 0
 
     def visit_meta(self, node):
         self.body.append('[visit_meta]\n')
@@ -1226,13 +1379,14 @@ class LaTeXTranslator(nodes.NodeVisitor):
         # BUG: hash_char "#" is trouble some in LaTeX.
         # mbox and other environment do not like the '#'.
         hash_char = '\\#'
-
         if node.has_key('refuri'):
-            href = node['refuri']
+            href = node['refuri'].replace('#',hash_char)
         elif node.has_key('refid'):
             href = hash_char + node['refid']
         elif node.has_key('refname'):
             href = hash_char + self.document.nameids[node['refname']]
+        else:
+            raise AssertionError('Unknown reference.')
         self.body.append('\\href{%s}{' % href)
 
     def depart_reference(self, node):
@@ -1250,11 +1404,18 @@ class LaTeXTranslator(nodes.NodeVisitor):
     def depart_row(self, node):
         self.context.pop()  # remove cell counter
         self.body.append(' \\\\ \\hline\n')
+        # BUG if multirow cells \cline{x-y}
 
     def visit_section(self, node):
         self.section_level += 1
+        # Initialize counter for potential subsections:
+        self._section_number.append(0)
+        # Counter for this section's level (initialized by parent section):
+        self._section_number[self.section_level - 1] += 1
 
     def depart_section(self, node):
+        # Remove counter for potential subsections:
+        self._section_number.pop()
         self.section_level -= 1
 
     def visit_sidebar(self, node):
@@ -1292,9 +1453,11 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
     def visit_strong(self, node):
         self.body.append('\\textbf{')
+        self.literal_block_stack.append('\\textbf{')
 
     def depart_strong(self, node):
         self.body.append('}')
+        self.literal_block_stack.pop()
 
     def visit_substitution_definition(self, node):
         raise nodes.SkipNode
@@ -1328,13 +1491,20 @@ class LaTeXTranslator(nodes.NodeVisitor):
         Return column specification for longtable.
 
         Assumes reST line length being 80 characters.
+        Table width is hairy.
+
+        === ===
+        ABC DEF
+        === ===
+
+        usually gets to narrow, therefore we add 1 (fiddlefactor).
         """
         width = 80
 
         total_width = 0.0
         # first see if we get too wide.
         for node in self.colspecs:
-            colwidth = float(node['colwidth']) / width
+            colwidth = float(node['colwidth']+1) / width
             total_width += colwidth
         # donot make it full linewidth
         factor = 0.93
@@ -1343,8 +1513,8 @@ class LaTeXTranslator(nodes.NodeVisitor):
 
         latex_table_spec = ""
         for node in self.colspecs:
-            colwidth = factor * float(node['colwidth']) / width
-            latex_table_spec += "|p{%.2f\\locallinewidth}" % colwidth
+            colwidth = factor * float(node['colwidth']+1) / width
+            latex_table_spec += "|p{%.2f\\locallinewidth}" % (colwidth+0.005)
         self.colspecs = []
         return latex_table_spec+"|"
 
@@ -1369,6 +1539,9 @@ class LaTeXTranslator(nodes.NodeVisitor):
     def table_preamble(self):
         if self.use_longtable:
             self.body.append('{%s}\n' % self.get_colspecs())
+            if self.table_caption:
+                self.body.append('\\caption{%s}\\\\\n' % self.table_caption)
+                self.table_caption = None
         else:
             if self.context[-1] != 'table_sentinel':
                 self.body.append('{%s}' % ('|X' * self.context.pop() + '|'))
@@ -1476,6 +1649,10 @@ class LaTeXTranslator(nodes.NodeVisitor):
         elif isinstance(node.parent, nodes.sidebar):
             self.body.append('\\textbf{\\large ')
             self.context.append('}\n\\smallskip\n')
+        elif isinstance(node.parent, nodes.table):
+            # caption must be written after column spec
+            self.table_caption = node.astext()
+            raise nodes.SkipNode
         elif self.section_level == 0:
             # document title
             self.title = self.encode(node.astext())
@@ -1487,21 +1664,15 @@ class LaTeXTranslator(nodes.NodeVisitor):
             self.body.append('%' + '_' * 75)
             self.body.append('\n\n')
             self.bookmark(node)
-            # section_level 0 is title and handled above.
-            # BUG: latex has no deeper sections (actually paragrah is no section either).
+
             if self.use_latex_toc:
                 section_star = ""
             else:
                 section_star = "*"
-            if (self.section_level<=3):  # 1,2,3
-                self.body.append('\\%ssection%s{' % ('sub'*(self.section_level-1),section_star))
-            elif (self.section_level==4):
-                #self.body.append('\\paragraph*{')
-                self.body.append('\\subsubsection%s{' % (section_star))
-            else:
-                #self.body.append('\\subparagraph*{')
-                self.body.append('\\subsubsection%s{' % (section_star))
-            # BUG: self.body.append( '\\label{%s}\n' % name)
+
+            section_name = self.d_class.section(self.section_level)
+            self.body.append('\\%s%s{' % (section_name, section_star))
+
             self.context.append('}\n')
 
     def depart_title(self, node):

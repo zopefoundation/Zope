@@ -1,7 +1,7 @@
 # Author: Roman Suzi
 # Contact: rnd@onego.ru
-# Revision: $Revision: 1.3 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.1.2.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:51 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -23,6 +23,7 @@ directives = {
  u'parsed-literal',
  u'\u0432\u044b\u0434\u0435\u043b\u0435\u043d\u043d\u0430\u044f-\u0446\u0438\u0442\u0430\u0442\u0430':
  u'pull-quote',
+ u'table (translation required)': 'table',
  u'\u0441\u044b\u0440\u043e\u0439': u'raw',
  u'\u0437\u0430\u043c\u0435\u043d\u0430': u'replace',
  u'\u0442\u0435\u0441\u0442\u043e\u0432\u0430\u044f-\u0434\u0438\u0440\u0435\u043a\u0442\u0438\u0432\u0430-restructuredtext':
@@ -40,6 +41,7 @@ directives = {
  u'\u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435':
  u'image',
  u'\u043a\u043b\u0430\u0441\u0441': u'class',
+ u'role (translation required)': 'role',
  u'\u043d\u043e\u043c\u0435\u0440-\u0440\u0430\u0437\u0434\u0435\u043b\u0430':
  u'sectnum',
  u'\u043d\u0443\u043c\u0435\u0440\u0430\u0446\u0438\u044f-\u0440\u0430\u0437'

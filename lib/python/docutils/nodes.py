@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:04 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:38 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -517,6 +517,9 @@ class TextElement(Element):
     its immediate parent is a `TextElement` instance (including subclasses).
     This is handy for nodes like `image` that can appear both inline and as
     standalone body elements.
+
+    If passing children to `__init__()`, make sure to set `text` to
+    ``''`` or some other suitable value.
     """
 
     child_text_separator = ''
@@ -598,6 +601,9 @@ class Referential(Resolvable): pass
 class Targetable(Resolvable):
 
     referenced = 0
+
+    indirect_reference_name = None
+    """Holds the whitespace_normalized_name (contains mixed case) of a target"""
 
 class Labeled:
     """Contains a `label` as its first element."""
@@ -820,6 +826,7 @@ class document(Root, Structural, Element):
     def has_name(self, name):
         return self.nameids.has_key(name)
 
+    # "note" here is an imperative verb: "take note of".
     def note_implicit_target(self, target, msgnode=None):
         id = self.set_id(target, msgnode)
         self.set_name_id_map(target, id, msgnode, explicit=None)
@@ -939,6 +946,7 @@ class rubric(Titular, TextElement): pass
 # ========================
 
 class docinfo(Bibliographic, Element): pass
+class info(Bibliographic, Element): pass
 class author(Bibliographic, TextElement): pass
 class authors(Bibliographic, Element): pass
 class organization(Bibliographic, TextElement): pass
@@ -1182,7 +1190,7 @@ class raw(Special, Inline, PreBibliographic, FixedTextElement):
 class emphasis(Inline, TextElement): pass
 class strong(Inline, TextElement): pass
 class literal(Inline, TextElement): pass
-class reference(Inline, Referential, TextElement): pass
+class reference(General, Inline, Referential, TextElement): pass
 class footnote_reference(Inline, Referential, TextElement): pass
 class citation_reference(Inline, Referential, TextElement): pass
 class substitution_reference(Inline, TextElement): pass
@@ -1222,7 +1230,7 @@ node_class_names = """
         footnote footnote_reference
     generated
     header hint
-    image important inline
+    image important info inline
     label legend line_block list_item literal literal_block
     note
     option option_argument option_group option_list option_list_item
@@ -1273,8 +1281,8 @@ class NodeVisitor:
 
         Raise an exception unless overridden.
         """
-        raise NotImplementedError('visiting unknown node type: %s'
-                                  % node.__class__.__name__)
+        raise NotImplementedError('%s visiting unknown node type: %s'
+                                  % (self.__class__, node.__class__.__name__))
 
     def unknown_departure(self, node):
         """
@@ -1282,8 +1290,8 @@ class NodeVisitor:
 
         Raise exception unless overridden.
         """
-        raise NotImplementedError('departing unknown node type: %s'
-                                  % node.__class__.__name__)
+        raise NotImplementedError('%s departing unknown node type: %s'
+                                  % (self.__class__, node.__class__.__name__))
 
 
 class SparseNodeVisitor(NodeVisitor):
@@ -1294,16 +1302,6 @@ class SparseNodeVisitor(NodeVisitor):
     implemented for *all* node types (such as for `docutils.writers.Writer`
     subclasses), subclass `NodeVisitor` instead.
     """
-
-def _nop(self, node):
-    pass
-
-# Save typing with dynamic assignments:
-for _name in node_class_names:
-    setattr(SparseNodeVisitor, "visit_" + _name, _nop)
-    setattr(SparseNodeVisitor, "depart_" + _name, _nop)
-del _name, _nop
-
 
 class GenericNodeVisitor(NodeVisitor):
 
@@ -1337,12 +1335,18 @@ def _call_default_visit(self, node):
 def _call_default_departure(self, node):
     self.default_departure(node)
 
-# Save typing with dynamic assignments:
-for _name in node_class_names:
-    setattr(GenericNodeVisitor, "visit_" + _name, _call_default_visit)
-    setattr(GenericNodeVisitor, "depart_" + _name, _call_default_departure)
-del _name, _call_default_visit, _call_default_departure
+def _nop(self, node):
+    pass
 
+def _add_node_class_names(names):
+    """Save typing with dynamic assignments:"""
+    for _name in names:
+        setattr(GenericNodeVisitor, "visit_" + _name, _call_default_visit)
+        setattr(GenericNodeVisitor, "depart_" + _name, _call_default_departure)
+        setattr(SparseNodeVisitor, 'visit_' + _name, _nop)
+        setattr(SparseNodeVisitor, 'depart' + _name, _nop)
+
+_add_node_class_names(node_class_names)
 
 class TreeCopyVisitor(GenericNodeVisitor):
 

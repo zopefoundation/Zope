@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:04 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:38 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -12,7 +12,10 @@ will exist for a variety of input/output mechanisms.
 __docformat__ = 'reStructuredText'
 
 import sys
-import locale
+try:
+    import locale
+except:
+    pass
 from types import UnicodeType
 from docutils import TransformSpec
 
@@ -156,7 +159,7 @@ class FileInput(Input):
                     print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
                                                     error)
                     print >>sys.stderr, (
-                        'Unable to open source file for reading (%s).  Exiting.'
+                        'Unable to open source file for reading (%r).  Exiting.'
                         % source_path)
                     sys.exit(1)
             else:
@@ -224,7 +227,7 @@ class FileOutput(Output):
             print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
                                             error)
             print >>sys.stderr, ('Unable to open destination file for writing '
-                                 '(%s).  Exiting.' % source_path)
+                                 '(%r).  Exiting.' % self.destination_path)
             sys.exit(1)
         self.opened = 1
 

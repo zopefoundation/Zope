@@ -1,7 +1,8 @@
 """
 `schemes` is a dictionary with lowercase URI addressing schemes as
 keys and descriptions as values. It was compiled from the index at
-http://www.w3.org/Addressing/schemes.html (revised 2001-08-20).
+http://www.iana.org/assignments/uri-schemes (revised 2003-11-26)
+and an older list at http://www.w3.org/Addressing/schemes.html.
 """
 
 # Many values are blank and should be filled in with useful descriptions.
@@ -26,10 +27,12 @@ schemes = {
               'specialized to justify their own schemes'),
       'fax': ('a connection to a terminal that can handle telefaxes '
               '(facsimiles); RFC 2806'),
+      'feed' : 'NetNewsWire feed',
       'file': 'Host-specific file names',
       'finger': '',
       'freenet': '',
       'ftp': 'File Transfer Protocol',
+      'go': 'go; RFC3368',
       'gopher': 'The Gopher Protocol',
       'gsm-sms': ('Global System for Mobile Communications Short Message '
                   'Service'),
@@ -40,16 +43,19 @@ schemes = {
       'hnews': 'an HTTP-tunneling variant of the NNTP news protocol',
       'http': 'Hypertext Transfer Protocol',
       'https': 'HTTP over SSL',
+      'hydra': 'SubEthaEdit URI.  See http://www.codingmonkeys.de/subethaedit.',
       'iioploc': 'Internet Inter-ORB Protocol Location?',
       'ilu': 'Inter-Language Unification',
+      'im': 'Instant Messaging',
       'imap': 'Internet Message Access Protocol',
       'ior': 'CORBA interoperable object reference',
       'ipp': 'Internet Printing Protocol',
       'irc': 'Internet Relay Chat',
+      'iseek' : 'See www.ambrosiasw.com;  a little util for OS X.',
       'jar': 'Java archive',
       'javascript': ('JavaScript code; evaluates the expression after the '
                      'colon'),
-      'jdbc': '',
+      'jdbc': 'JDBC connection URI.',
       'ldap': 'Lightweight Directory Access Protocol',
       'lifn': '',
       'livescript': '',
@@ -62,6 +68,7 @@ schemes = {
       'mocha': '',
       'modem': ('a connection to a terminal that can handle incoming data '
                 'calls; RFC 2806'),
+      'mupdate': 'Mailbox Update (MUPDATE) Protocol',
       'news': 'USENET news',
       'nfs': 'Network File System protocol',
       'nntp': 'USENET news using NNTP access',
@@ -69,8 +76,10 @@ schemes = {
       'phone': '',
       'pop': 'Post Office Protocol',
       'pop3': 'Post Office Protocol v3',
+      'pres': 'Presence',
       'printer': '',
       'prospero': 'Prospero Directory Service',
+      'rdar' : 'URLs found in Darwin source (http://www.opensource.apple.com/darwinsource/).',
       'res': '',
       'rtsp': 'real time streaming protocol',
       'rvp': '',
@@ -80,8 +89,12 @@ schemes = {
       'service': 'service location',
       'shttp': 'secure hypertext transfer protocol',
       'sip': 'Session Initiation Protocol',
-      'smb': '',
+      'sips': 'secure session intitiaion protocol',
+      'smb': 'SAMBA filesystems.',
       'snews': 'For NNTP postings via SSL',
+      'soap.beep': '',
+      'soap.beeps': '',
+      'ssh': 'Reference to interactive sessions via ssh.',
       't120': 'real time data conferencing (audiographics)',
       'tcp': '',
       'tel': ('a connection to a terminal that handles normal voice '
@@ -90,6 +103,7 @@ schemes = {
               'RFC 2806.'),
       'telephone': 'telephone',
       'telnet': 'Reference to interactive sessions',
+      'tftp': 'Trivial File Transfer Protocol',
       'tip': 'Transaction Internet Protocol',
       'tn3270': 'Interactive 3270 emulation sessions',
       'tv': '',
@@ -101,5 +115,8 @@ schemes = {
       'wais': 'Wide Area Information Servers',
       'whodp': '',
       'whois++': 'Distributed directory service.',
+      'x-man-page': 'Opens man page in Terminal.app on OS X (see macosxhints.com)',
+      'xmlrpc.beep': '',
+      'xmlrpc.beeps': '',
       'z39.50r': 'Z39.50 Retrieval',
       'z39.50s': 'Z39.50 Session',}

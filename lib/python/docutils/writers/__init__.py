@@ -1,7 +1,7 @@
 # Authors: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:09 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:57 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -26,25 +26,43 @@ class Writer(Component):
     Each writer must support all standard node types listed in
     `docutils.nodes.node_class_names`.
 
-    Call `write()` to process a document.
+    The `write()` method is the main entry point.
     """
 
     component_type = 'writer'
     config_section = 'writers'
 
     document = None
-    """The document to write."""
+    """The document to write (Docutils doctree); set by `write`."""
+
+    output = None
+    """Final translated form of `document`; set by `translate`."""
 
     language = None
-    """Language module for the document."""
+    """Language module for the document; set by `write`."""
 
     destination = None
-    """`docutils.io` IO object; where to write the document."""
+    """`docutils.io` IO object; where to write the document.  Set by `write`."""
 
     def __init__(self):
-        """Initialize the Writer instance."""
+
+        # Currently only used by HTML writer for output fragments:
+        self.parts = {}
+        """Mapping of document part names to fragments of `self.output`.
+        Values are Unicode strings; encoding is up to the client.  The 'whole'
+        key should contain the entire document output.
+        """
 
     def write(self, document, destination):
+        """
+        Process a document into its final form.
+
+        Translate `document` (a Docutils document tree) into the Writer's
+        native format, and write it out to its `destination` (a
+        `docutils.io.Output` subclass object).
+
+        Normally not overridden or extended in subclasses.
+        """
         self.document = document
         self.language = languages.get_language(
             document.settings.language_code)
@@ -55,9 +73,10 @@ class Writer(Component):
 
     def translate(self):
         """
-        Override to do final document tree translation.
+        Do final translation of `self.document` into `self.output`.
+        Called from `write`.  Override in subclasses.
 
-        This is usually done with a `docutils.nodes.NodeVisitor` subclass, in
+        Usually done with a `docutils.nodes.NodeVisitor` subclass, in
         combination with a call to `docutils.nodes.Node.walk()` or
         `docutils.nodes.Node.walkabout()`.  The ``NodeVisitor`` subclass must
         support all standard elements (listed in
@@ -65,6 +84,10 @@ class Writer(Component):
         used by the current Reader as well.
         """
         raise NotImplementedError('subclass must override this method')
+
+    def assemble_parts(self):
+        """Assemble the `self.parts` dictionary.  Extend in subclasses."""
+        self.parts['whole'] = self.output
 
 
 _writer_aliases = {

@@ -1,8 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 # Author: Marcelo Huerta San Martín
 # Contact: mghsm@uol.com.ar
-# Revision: $Revision: 1.3 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.1.2.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:51 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -42,6 +42,7 @@ directives = {
       u'epigrafe': 'epigraph',
       u'destacado': 'highlights',
       u'cita-destacada': 'pull-quote',
+      u'tabla': 'table',
       #'questions': 'questions',
       #'qa': 'questions',
       #'faq': 'questions',
@@ -54,6 +55,7 @@ directives = {
       u'reemplazar': 'replace',
       u'unicode': 'unicode',
       u'clase': 'class',
+      u'rol': 'role',
       u'contenido': 'contents',
       u'numseccion': 'sectnum',
       u'numsecci\u00f3n': 'sectnum',
@@ -74,8 +76,10 @@ roles = {
     u'ac': 'acronym',
     u'indice': 'index',
     u'i': 'index',
-    u'subscript (translation required)': 'subscript',
-    u'superscript (translation required)': 'superscript',
+    u'subindice': 'subscript',
+    u'sub\u00edndice': 'subscript',
+    u'superindice': 'superscript',
+    u'super\u00edndice': 'superscript',
     u'referencia-titulo': 'title-reference',
     u'titulo': 'title-reference',
     u't': 'title-reference',

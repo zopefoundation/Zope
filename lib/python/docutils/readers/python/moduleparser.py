@@ -1,17 +1,16 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.3 $
-# Date: $Date: 2003/11/30 15:06:08 $
+# Revision: $Revision: 1.3.2.1.8.1 $
+# Date: $Date: 2004/05/12 19:57:53 $
 # Copyright: This module has been placed in the public domain.
 
 """
 Parser for Python modules.
 
-The `parse_module()` function takes a module's text and file name, runs it
-through the module parser (using compiler.py and tokenize.py) and produces a
-"module documentation tree": a high-level AST full of nodes that are
-interesting from an auto-documentation standpoint.  For example, given this
-module (x.py)::
+The `parse_module()` function takes a module's text and file name,
+runs it through the module parser (using compiler.py and tokenize.py)
+and produces a parse tree of the source code, using the nodes as found
+in pynodes.py.  For example, given this module (x.py)::
 
     # comment
 
@@ -50,69 +49,95 @@ module (x.py)::
 
 The module parser will produce this module documentation tree::
 
-    <Module filename="test data">
-        <Comment lineno=1>
-            comment
-        <Docstring>
+    <module_section filename="test data">
+        <docstring>
             Docstring
-        <Docstring lineno="5">
+        <docstring lineno="5">
             Additional docstring
-        <Attribute lineno="7" name="__docformat__">
-            <Expression lineno="7">
+        <attribute lineno="7">
+	    <object_name>
+	        __docformat__
+            <expression_value lineno="7">
                 'reStructuredText'
-        <Attribute lineno="9" name="a">
-            <Expression lineno="9">
+        <attribute lineno="9">
+	    <object_name>
+	        a
+            <expression_value lineno="9">
                 1
-            <Docstring lineno="10">
+            <docstring lineno="10">
                 Attribute docstring
-        <Class bases="Super" lineno="12" name="C">
-            <Docstring lineno="12">
+        <class_section lineno="12">
+	    <object_name>
+	        C
+            <class_base>
+	        Super
+            <docstring lineno="12">
                 C's docstring
-            <Attribute lineno="16" name="class_attribute">
-                <Expression lineno="16">
+            <attribute lineno="16">
+	        <object_name>
+		    class_attribute
+                <expression_value lineno="16">
                     1
-                <Docstring lineno="17">
+                <docstring lineno="17">
                     class_attribute's docstring
-            <Method lineno="19" name="__init__">
-                <Docstring lineno="19">
+            <method_section lineno="19">
+	        <object_name>
+		    __init__
+                <docstring lineno="19">
                     __init__'s docstring
-                <ParameterList lineno="19">
-                    <Parameter lineno="19" name="self">
-                    <Parameter lineno="19" name="text">
-                        <Default lineno="19">
+                <parameter_list lineno="19">
+                    <parameter lineno="19">
+		        <object_name>
+			    self
+                    <parameter lineno="19">
+		        <object_name>
+			    text
+                        <parameter_default lineno="19">
                             None
-                <Attribute lineno="22" name="self.instance_attribute">
-                    <Expression lineno="22">
+                <attribute lineno="22">
+		    <object_name>
+		        self.instance_attribute
+                    <expression_value lineno="22">
                         (text * 7 + ' whaddyaknow')
-                    <Docstring lineno="24">
+                    <docstring lineno="24">
                         instance_attribute's docstring
-        <Function lineno="27" name="f">
-            <Docstring lineno="27">
+        <function_section lineno="27">
+	    <object_name>
+	        f
+            <docstring lineno="27">
                 f's docstring
-            <ParameterList lineno="27">
-                <Parameter lineno="27" name="x">
-                    <Comment>
+            <parameter_list lineno="27">
+                <parameter lineno="27">
+		    <object_name>
+		        x
+                    <comment>
                         # parameter x
-                <Parameter lineno="27" name="y">
-                    <Default lineno="27">
+                <parameter lineno="27">
+		    <object_name>
+		        y
+                    <parameter_default lineno="27">
                         a * 5
-                    <Comment>
+                    <comment>
                         # parameter y
-                <ExcessPositionalArguments lineno="27" name="args">
-                    <Comment>
+                <parameter excess_positional="1" lineno="27">
+		    <object_name>
+		        args
+                    <comment>
                         # parameter args
-        <Attribute lineno="33" name="f.function_attribute">
-            <Expression lineno="33">
+        <attribute lineno="33">
+	    <object_name>
+	        f.function_attribute
+            <expression_value lineno="33">
                 1
-            <Docstring lineno="34">
+            <docstring lineno="34">
                 f.function_attribute's docstring
 
 (Comments are not implemented yet.)
 
 compiler.parse() provides most of what's needed for this doctree, and
-"tokenize" can be used to get the rest.  We can determine the line number from
-the compiler.parse() AST, and the TokenParser.rhs(lineno) method provides the
-rest.
+"tokenize" can be used to get the rest.  We can determine the line
+number from the compiler.parse() AST, and the TokenParser.rhs(lineno)
+method provides the rest.
 
 The Docutils Python reader component will transform this module doctree into a
 Python-specific Docutils doctree, and then a `stylist transform`_ will
@@ -190,6 +215,8 @@ import token
 from compiler.consts import OP_ASSIGN
 from compiler.visitor import ASTVisitor
 from types import StringType, UnicodeType, TupleType
+from docutils.readers.python import pynodes
+from docutils.nodes import Text
 
 
 def parse_module(module_text, filename):
@@ -199,168 +226,6 @@ def parse_module(module_text, filename):
     visitor = ModuleVisitor(filename, token_parser)
     compiler.walk(ast, visitor, walker=visitor)
     return visitor.module
-
-
-class Node:
-
-    """
-    Base class for module documentation tree nodes.
-    """
-
-    def __init__(self, node):
-        self.children = []
-        """List of child nodes."""
-
-        self.lineno = node.lineno
-        """Line number of this node (or ``None``)."""
-
-    def __str__(self, indent='    ', level=0):
-        return ''.join(['%s%s\n' % (indent * level, repr(self))] +
-                       [child.__str__(indent, level+1)
-                        for child in self.children])
-
-    def __repr__(self):
-        parts = [self.__class__.__name__]
-        for name, value in self.attlist():
-            parts.append('%s="%s"' % (name, value))
-        return '<%s>' % ' '.join(parts)
-
-    def attlist(self, **atts):
-        if self.lineno is not None:
-            atts['lineno'] = self.lineno
-        attlist = atts.items()
-        attlist.sort()
-        return attlist
-
-    def append(self, node):
-        self.children.append(node)
-
-    def extend(self, node_list):
-        self.children.extend(node_list)
-
-
-class TextNode(Node):
-
-    def __init__(self, node, text):
-        Node.__init__(self, node)
-        self.text = trim_docstring(text)
-
-    def __str__(self, indent='    ', level=0):
-        prefix = indent * (level + 1)
-        text = '\n'.join([prefix + line for line in self.text.splitlines()])
-        return Node.__str__(self, indent, level) + text + '\n'
-
-
-class Module(Node):
-
-    def __init__(self, node, filename):
-        Node.__init__(self, node)
-        self.filename = filename
-
-    def attlist(self):
-        return Node.attlist(self, filename=self.filename)
-
-
-class Docstring(TextNode): pass
-
-
-class Comment(TextNode): pass
-
-
-class Import(Node):
-
-    def __init__(self, node, names, from_name=None):
-        Node.__init__(self, node)
-        self.names = names
-        self.from_name = from_name
-
-    def __str__(self, indent='    ', level=0):
-        prefix = indent * (level + 1)
-        lines = []
-        for name, as in self.names:
-            if as:
-                lines.append('%s%s as %s' % (prefix, name, as))
-            else:
-                lines.append('%s%s' % (prefix, name))
-        text = '\n'.join(lines)
-        return Node.__str__(self, indent, level) + text + '\n'
-
-    def attlist(self):
-        if self.from_name:
-            atts = {'from': self.from_name}
-        else:
-            atts = {}
-        return Node.attlist(self, **atts)
-
-
-class Attribute(Node):
-
-    def __init__(self, node, name):
-        Node.__init__(self, node)
-        self.name = name
-
-    def attlist(self):
-        return Node.attlist(self, name=self.name)
-
-
-class AttributeTuple(Node):
-
-    def __init__(self, node, names):
-        Node.__init__(self, node)
-        self.names = names
-
-    def attlist(self):
-        return Node.attlist(self, names=' '.join(self.names))
-
-
-class Expression(TextNode):
-
-    def __str__(self, indent='    ', level=0):
-        prefix = indent * (level + 1)
-        return '%s%s%s\n' % (Node.__str__(self, indent, level),
-                             prefix, self.text.encode('unicode-escape'))
-
-
-class Function(Attribute): pass
-
-
-class ParameterList(Node): pass
-
-
-class Parameter(Attribute): pass
-
-
-class ParameterTuple(AttributeTuple):
-
-    def attlist(self):
-        return Node.attlist(self, names=normalize_parameter_name(self.names))
-
-
-class ExcessPositionalArguments(Parameter): pass
-
-
-class ExcessKeywordArguments(Parameter): pass
-
-
-class Default(Expression): pass
-
-
-class Class(Node):
-
-    def __init__(self, node, name, bases=None):
-        Node.__init__(self, node)
-        self.name = name
-        self.bases = bases or []
-
-    def attlist(self):
-        atts = {'name': self.name}
-        if self.bases:
-            atts['bases'] = ' '.join(self.bases)
-        return Node.attlist(self, **atts)
-
-
-class Method(Function): pass
-
 
 class BaseVisitor(ASTVisitor):
 
@@ -389,7 +254,7 @@ class DocstringVisitor(BaseVisitor):
     def visitConst(self, node):
         if self.documentable:
             if type(node.value) in (StringType, UnicodeType):
-                self.documentable.append(Docstring(node, node.value))
+                self.documentable.append(make_docstring(node.value, node.lineno))
             else:
                 self.documentable = None
 
@@ -418,25 +283,28 @@ class ModuleVisitor(AssignmentVisitor):
         self.module = None
 
     def visitModule(self, node):
-        self.module = module = Module(node, self.filename)
-        if node.doc is not None:
-            module.append(Docstring(node, node.doc))
+        self.module = module = pynodes.module_section()
+        module['filename'] = self.filename
+        append_docstring(module, node.doc, node.lineno)
         self.context.append(module)
         self.documentable = module
         self.visit(node.node)
         self.context.pop()
 
     def visitImport(self, node):
-        self.context[-1].append(Import(node, node.names))
+        self.context[-1] += make_import_group(names=node.names,
+                                              lineno=node.lineno)
         self.documentable = None
 
     def visitFrom(self, node):
         self.context[-1].append(
-            Import(node, node.names, from_name=node.modname))
+            make_import_group(names=node.names, from_name=node.modname,
+                              lineno=node.lineno))
         self.documentable = None
 
     def visitFunction(self, node):
-        visitor = FunctionVisitor(self.token_parser)
+        visitor = FunctionVisitor(self.token_parser,
+                                  function_class=pynodes.function_section)
         compiler.walk(node, visitor, walker=visitor)
         self.context[-1].append(visitor.function)
 
@@ -450,29 +318,32 @@ class AttributeVisitor(BaseVisitor):
 
     def __init__(self, token_parser):
         BaseVisitor.__init__(self, token_parser)
-        self.attributes = []
+        self.attributes = pynodes.class_attribute_section()
 
     def visitAssign(self, node):
         # Don't visit the expression itself, just the attribute nodes:
         for child in node.nodes:
             self.dispatch(child)
         expression_text = self.token_parser.rhs(node.lineno)
-        expression = Expression(node, expression_text)
+        expression = pynodes.expression_value()
+        expression.append(Text(expression_text))
         for attribute in self.attributes:
             attribute.append(expression)
 
     def visitAssName(self, node):
-        self.attributes.append(Attribute(node, node.name))
+        self.attributes.append(make_attribute(node.name,
+                                              lineno=node.lineno))
 
     def visitAssTuple(self, node):
         attributes = self.attributes
         self.attributes = []
         self.default_visit(node)
-        names = [attribute.name for attribute in self.attributes]
-        att_tuple = AttributeTuple(node, names)
-        att_tuple.lineno = self.attributes[0].lineno
+        n = pynodes.attribute_tuple()
+        n.extend(self.attributes)
+        n['lineno'] = self.attributes[0]['lineno']
+        attributes.append(n)
         self.attributes = attributes
-        self.attributes.append(att_tuple)
+        #self.attributes.append(att_tuple)
 
     def visitAssAttr(self, node):
         self.default_visit(node, node.attrname)
@@ -481,13 +352,17 @@ class AttributeVisitor(BaseVisitor):
         self.default_visit(node, node.attrname + '.' + suffix)
 
     def visitName(self, node, suffix):
-        self.attributes.append(Attribute(node, node.name + '.' + suffix))
+        self.attributes.append(make_attribute(node.name + '.' + suffix,
+                                              lineno=node.lineno))
 
 
 class FunctionVisitor(DocstringVisitor):
 
     in_function = 0
-    function_class = Function
+
+    def __init__(self, token_parser, function_class):
+        DocstringVisitor.__init__(self, token_parser)
+        self.function_class = function_class
 
     def visitFunction(self, node):
         if self.in_function:
@@ -495,9 +370,11 @@ class FunctionVisitor(DocstringVisitor):
             # Don't bother with nested function definitions.
             return
         self.in_function = 1
-        self.function = function = self.function_class(node, node.name)
-        if node.doc is not None:
-            function.append(Docstring(node, node.doc))
+        self.function = function = make_function_like_section(
+            name=node.name,
+            lineno=node.lineno,
+            doc=node.doc,
+            function_class=self.function_class)
         self.context.append(function)
         self.documentable = function
         self.parse_parameter_list(node)
@@ -509,10 +386,11 @@ class FunctionVisitor(DocstringVisitor):
         special = []
         argnames = list(node.argnames)
         if node.kwargs:
-            special.append(ExcessKeywordArguments(node, argnames[-1]))
+            special.append(make_parameter(argnames[-1], excess_keyword=1))
             argnames.pop()
         if node.varargs:
-            special.append(ExcessPositionalArguments(node, argnames[-1]))
+            special.append(make_parameter(argnames[-1],
+                                          excess_positional=1))
             argnames.pop()
         defaults = list(node.defaults)
         defaults = [None] * (len(argnames) - len(defaults)) + defaults
@@ -521,17 +399,21 @@ class FunctionVisitor(DocstringVisitor):
         #print >>sys.stderr, function_parameters
         for argname, default in zip(argnames, defaults):
             if type(argname) is TupleType:
-                parameter = ParameterTuple(node, argname)
+                parameter = pynodes.parameter_tuple()
+                for tuplearg in argname:
+                    parameter.append(make_parameter(tuplearg))
                 argname = normalize_parameter_name(argname)
             else:
-                parameter = Parameter(node, argname)
+                parameter = make_parameter(argname)
             if default:
-                parameter.append(Default(node, function_parameters[argname]))
+                n_default = pynodes.parameter_default()
+                n_default.append(Text(function_parameters[argname]))
+                parameter.append(n_default)
             parameters.append(parameter)
         if parameters or special:
             special.reverse()
             parameters.extend(special)
-            parameter_list = ParameterList(node)
+            parameter_list = pynodes.parameter_list()
             parameter_list.extend(parameters)
             self.function.append(parameter_list)
 
@@ -554,9 +436,9 @@ class ClassVisitor(AssignmentVisitor):
         #pdb.set_trace()
         for base in node.bases:
             self.visit(base)
-        self.klass = klass = Class(node, node.name, self.bases)
-        if node.doc is not None:
-            klass.append(Docstring(node, node.doc))
+        self.klass = klass = make_class_section(node.name, self.bases,
+                                                doc=node.doc,
+                                                lineno=node.lineno)
         self.context.append(klass)
         self.documentable = klass
         self.visit(node.code)
@@ -578,19 +460,17 @@ class ClassVisitor(AssignmentVisitor):
 
     def visitFunction(self, node):
         if node.name == '__init__':
-            visitor = InitMethodVisitor(self.token_parser)
+            visitor = InitMethodVisitor(self.token_parser,
+                                        function_class=pynodes.method_section)
+            compiler.walk(node, visitor, walker=visitor)
         else:
-            visitor = MethodVisitor(self.token_parser)
-        compiler.walk(node, visitor, walker=visitor)
+            visitor = FunctionVisitor(self.token_parser,
+                                      function_class=pynodes.method_section)
+            compiler.walk(node, visitor, walker=visitor)
         self.context[-1].append(visitor.function)
 
 
-class MethodVisitor(FunctionVisitor):
-
-    function_class = Method
-
-
-class InitMethodVisitor(MethodVisitor, AssignmentVisitor): pass
+class InitMethodVisitor(FunctionVisitor, AssignmentVisitor): pass
 
 
 class TokenParser:
@@ -744,6 +624,85 @@ class TokenParser:
         return parameters
 
 
+def make_docstring(doc, lineno):
+    n = pynodes.docstring()
+    if lineno:
+        # Really, only module docstrings don't have a line
+        # (@@: but maybe they should)
+        n['lineno'] = lineno
+    n.append(Text(doc))
+    return n
+
+def append_docstring(node, doc, lineno):
+    if doc:
+        node.append(make_docstring(doc, lineno))
+
+def make_class_section(name, bases, lineno, doc):
+    n = pynodes.class_section()
+    n['lineno'] = lineno
+    n.append(make_object_name(name))
+    for base in bases:
+        b = pynodes.class_base()
+        b.append(make_object_name(base))
+        n.append(b)
+    append_docstring(n, doc, lineno)
+    return n
+
+def make_object_name(name):
+    n = pynodes.object_name()
+    n.append(Text(name))
+    return n
+
+def make_function_like_section(name, lineno, doc, function_class):
+    n = function_class()
+    n['lineno'] = lineno
+    n.append(make_object_name(name))
+    append_docstring(n, doc, lineno)
+    return n
+
+def make_import_group(names, lineno, from_name=None):
+    n = pynodes.import_group()
+    n['lineno'] = lineno
+    if from_name:
+        n_from = pynodes.import_from()
+        n_from.append(Text(from_name))
+        n.append(n_from)
+    for name, alias in names:
+        n_name = pynodes.import_name()
+        n_name.append(Text(name))
+        if alias:
+            n_alias = pynodes.import_alias()
+            n_alias.append(Text(alias))
+            n_name.append(n_alias)
+        n.append(n_name)
+    return n
+
+def make_class_attribute(name, lineno):
+    n = pynodes.class_attribute()
+    n['lineno'] = lineno
+    n.append(Text(name))
+    return n
+
+def make_attribute(name, lineno):
+    n = pynodes.attribute()
+    n['lineno'] = lineno
+    n.append(make_object_name(name))
+    return n
+
+def make_parameter(name, excess_keyword=0, excess_positional=0):
+    """
+    excess_keyword and excess_positional must be either 1 or 0, and
+    not both of them can be 1.
+    """
+    n = pynodes.parameter()
+    n.append(make_object_name(name))
+    assert not excess_keyword or not excess_positional
+    if excess_keyword:
+        n['excess_keyword'] = 1
+    if excess_positional:
+        n['excess_positional'] = 1
+    return n
+
 def trim_docstring(text):
     """
     Trim indentation and blank lines from docstring text & return it.
@@ -782,3 +741,18 @@ def normalize_parameter_name(name):
         return '(%s)' % ', '.join([normalize_parameter_name(n) for n in name])
     else:
         return name
+
+if __name__ == '__main__':
+    import sys
+    args = sys.argv[1:]
+    if args[0] == '-v':
+        filename = args[1]
+        module_text = open(filename).read()
+        ast = compiler.parse(module_text)
+        visitor = compiler.visitor.ExampleASTVisitor()
+        compiler.walk(ast, visitor, walker=visitor, verbose=1)
+    else:
+        filename = args[0]
+        content = open(filename).read()
+        print parse_module(content, filename).pformat()
+

@@ -1,7 +1,7 @@
 # Author: Marcelo Huerta San Martin
 # Contact: richieadler@users.sourceforge.net
-# Revision: $Revision: 1.1 $
-# Date: $Date: 2003/11/30 15:06:05 $
+# Revision: $Revision: 1.1.2.1.8.1 $
+# Date: $Date: 2004/05/12 19:57:42 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

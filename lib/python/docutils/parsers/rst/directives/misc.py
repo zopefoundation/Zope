@@ -1,7 +1,7 @@
 # Authors: David Goodger, Dethe Elza
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:06 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:48 $
 # Copyright: This module has been placed in the public domain.
 
 """Miscellaneous directives."""
@@ -11,10 +11,14 @@ __docformat__ = 'reStructuredText'
 import sys
 import os.path
 import re
-from urllib2 import urlopen, URLError
 from docutils import io, nodes, statemachine, utils
-from docutils.parsers.rst import directives, states
+from docutils.parsers.rst import directives, roles, states
 from docutils.transforms import misc
+
+try:
+    import urllib2
+except ImportError:
+    urllib2 = None
 
 
 def include(name, arguments, options, content, lineno,
@@ -97,9 +101,16 @@ def raw(name, arguments, options, content, lineno,
         raw_file.close()
         attributes['source'] = path
     elif options.has_key('url'):
+        if not urllib2:
+            severe = state_machine.reporter.severe(
+                  'Problems with the "%s" directive and its "url" option: '
+                  'unable to access the required functionality (from the '
+                  '"urllib2" module).' % name,
+                  nodes.literal_block(block_text, block_text), line=lineno)
+            return [severe]
         try:
-            raw_file = urlopen(options['url'])
-        except (URLError, IOError, OSError), error:
+            raw_file = urllib2.urlopen(options['url'])
+        except (urllib2.URLError, IOError, OSError), error:
             severe = state_machine.reporter.severe(
                   'Problems with "%s" directive URL "%s":\n%s.'
                   % (name, options['url'], error),
@@ -209,7 +220,7 @@ def class_directive(name, arguments, options, content, lineno,
         return [pending]
     else:
         error = state_machine.reporter.error(
-            'Invalid class attribute value for "%s" directive: %s'
+            'Invalid class attribute value for "%s" directive: "%s".'
             % (name, arguments[0]),
             nodes.literal_block(block_text, block_text), line=lineno)
         return [error]
@@ -217,8 +228,67 @@ def class_directive(name, arguments, options, content, lineno,
 class_directive.arguments = (1, 0, 0)
 class_directive.content = 1
 
+role_arg_pat = re.compile(r'(%s)\s*(\(\s*(%s)\s*\)\s*)?$'
+                          % ((states.Inliner.simplename,) * 2))
+def role(name, arguments, options, content, lineno,
+         content_offset, block_text, state, state_machine):
+    """Dynamically create and register a custom interpreted text role."""
+    if content_offset > lineno or not content:
+        error = state_machine.reporter.error(
+            '"%s" directive requires arguments on the first line.'
+            % name, nodes.literal_block(block_text, block_text), line=lineno)
+        return [error]
+    args = content[0]
+    match = role_arg_pat.match(args)
+    if not match:
+        error = state_machine.reporter.error(
+            '"%s" directive arguments not valid role names: "%s".'
+            % (name, args), nodes.literal_block(block_text, block_text),
+            line=lineno)
+        return [error]
+    new_role_name = match.group(1)
+    base_role_name = match.group(3)
+    messages = []
+    if base_role_name:
+        base_role, messages = roles.role(
+            base_role_name, state_machine.language, lineno, state.reporter)
+        if base_role is None:
+            error = state.reporter.error(
+                'Unknown interpreted text role "%s".' % base_role_name,
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return messages + [error]
+    else:
+        base_role = roles.generic_custom_role
+    assert not hasattr(base_role, 'arguments'), ( 
+        'Supplemental directive arguments for "%s" directive not supported'
+        '(specified by "%r" role).' % (name, base_role))
+    try:
+        (arguments, options, content, content_offset) = (
+            state.parse_directive_block(content[1:], content_offset, base_role,
+                                        option_presets={}))
+    except states.MarkupError, detail:
+        error = state_machine.reporter.error(
+            'Error in "%s" directive:\n%s.' % (name, detail),
+            nodes.literal_block(block_text, block_text), line=lineno)
+        return messages + [error]
+    if not options.has_key('class'):
+        try:
+            options['class'] = directives.class_option(new_role_name)
+        except ValueError, detail:
+            error = state_machine.reporter.error(
+                'Invalid argument for "%s" directive:\n%s.'
+                % (name, detail),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return messages + [error]
+    role = roles.CustomRole(new_role_name, base_role, options, content)
+    roles.register_local_role(new_role_name, role)
+    return messages
+
+role.content = 1
+
 def directive_test_function(name, arguments, options, content, lineno,
                             content_offset, block_text, state, state_machine):
+    """This directive is useful only for testing purposes."""
     if content:
         text = '\n'.join(content)
         info = state_machine.reporter.info(

@@ -1,7 +1,7 @@
 # Author:    Adam Chodorowski
 # Contact:   chodorowski@users.sourceforge.net
-# Revision:  $Revision: 1.5 $
-# Date:      $Date: 2003/11/30 15:06:07 $
+# Revision:  $Revision: 1.2.10.3.8.1 $
+# Date:      $Date: 2004/05/12 19:57:51 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -35,6 +35,7 @@ directives = {
       u'epigraph (translation required)': 'epigraph',
       u'highlights (translation required)': 'highlights',
       u'pull-quote (translation required)': 'pull-quote',
+      u'table (translation required)': 'table',
       # u'fr\u00e5gor': 'questions',
       # NOTE: A bit long, but recommended by http://www.nada.kth.se/dataterm/:
       # u'fr\u00e5gor-och-svar': 'questions',
@@ -48,6 +49,7 @@ directives = {
       u'ers\u00e4tt': 'replace', 
       u'unicode': 'unicode',
       u'class (translation required)': 'class',
+      u'role (translation required)': 'role',
       u'inneh\u00e5ll': 'contents',
       u'sektionsnumrering': 'sectnum',
       u'target-notes (translation required)': 'target-notes',

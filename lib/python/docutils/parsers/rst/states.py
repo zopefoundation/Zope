@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:07:46 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:46 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -107,13 +107,14 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import re
-from docutils import roman
+import roman
 from types import TupleType
 from docutils import nodes, statemachine, utils, urischemes
 from docutils import ApplicationError, DataError
 from docutils.statemachine import StateMachineWS, StateWS
 from docutils.nodes import fully_normalize_name as normalize_name
-from docutils.parsers.rst import directives, languages, tableparser
+from docutils.nodes import whitespace_normalize_name
+from docutils.parsers.rst import directives, languages, tableparser, roles
 from docutils.parsers.rst.languages import en as _fallback_language_module
 
 
@@ -274,7 +275,7 @@ class RSTState(StateWS):
         state_machine.unlink()
         new_offset = state_machine.abs_line_offset()
         # No `block.parent` implies disconnected -- lines aren't in sync:
-        if block.parent:
+        if block.parent and (len(block) - block_length) != 0:
             # Adjustment for block if modified in nested parse:
             self.state_machine.next_line(len(block) - block_length)
         return new_offset
@@ -475,46 +476,6 @@ class Inliner:
     Parse inline markup; call the `parse()` method.
     """
 
-    _interpreted_roles = {
-        # Values of ``None`` mean "not implemented yet":
-        'title-reference': 'generic_interpreted_role',
-        'abbreviation': 'generic_interpreted_role',
-        'acronym': 'generic_interpreted_role',
-        'index': None,
-        'subscript': 'generic_interpreted_role',
-        'superscript': 'generic_interpreted_role',
-        'emphasis': 'generic_interpreted_role',
-        'strong': 'generic_interpreted_role',
-        'literal': 'generic_interpreted_role',
-        'named-reference': None,
-        'anonymous-reference': None,
-        'uri-reference': None,
-        'pep-reference': 'pep_reference_role',
-        'rfc-reference': 'rfc_reference_role',
-        'footnote-reference': None,
-        'citation-reference': None,
-        'substitution-reference': None,
-        'target': None,
-        'restructuredtext-unimplemented-role': None}
-    """Mapping of canonical interpreted text role name to method name.
-    Initializes a name to bound-method mapping in `__init__`."""
-
-    default_interpreted_role = 'title-reference'
-    """The role to use when no explicit role is given.
-    Override in subclasses."""
-
-    generic_roles = {'abbreviation': nodes.abbreviation,
-                     'acronym': nodes.acronym,
-                     'emphasis': nodes.emphasis,
-                     'literal': nodes.literal,
-                     'strong': nodes.strong,
-                     'subscript': nodes.subscript,
-                     'superscript': nodes.superscript,
-                     'title-reference': nodes.title_reference,}
-    """Mapping of canonical interpreted text role name to node class.
-    Used by the `generic_interpreted_role` method for simple, straightforward
-    roles (simple wrapping; no extra processing)."""
-
     def __init__(self, roles=None):
         """
         `roles` is a mapping of canonical role name to role function or bound
@@ -524,17 +485,6 @@ class Inliner:
         self.implicit_dispatch = [(self.patterns.uri, self.standalone_uri),]
         """List of (pattern, bound method) tuples, used by
         `self.implicit_inline`."""
-
-        self.interpreted_roles = {}
-        """Mapping of canonical role name to role function or bound method.
-        Items removed from this mapping will be disabled."""
-
-        for canonical, method in self._interpreted_roles.items():
-            if method:
-                self.interpreted_roles[canonical] = getattr(self, method)
-            else:
-                self.interpreted_roles[canonical] = None
-        self.interpreted_roles.update(roles or {})
 
     def init_customizations(self, settings):
         """Setting-based customizations; run when parsing begins."""
@@ -546,6 +496,8 @@ class Inliner:
                                            self.rfc_reference))
 
     def parse(self, text, lineno, memo, parent):
+        # Needs to be refactored for nested inline markup.
+        # Add nested_parse() method?
         """
         Return 2 lists: nodes (text and inline elements), and system_messages.
 
@@ -601,11 +553,12 @@ class Inliner:
     non_whitespace_after = r'(?![ \n])'
     # Alphanumerics with isolated internal [-._] chars (i.e. not 2 together):
     simplename = r'(?:(?!_)\w)+(?:[-._](?:(?!_)\w)+)*'
-    # Valid URI characters (see RFC 2396 & RFC 2732):
-    uric = r"""[-_.!~*'()[\];/:@&=+$,%a-zA-Z0-9]"""
+    # Valid URI characters (see RFC 2396 & RFC 2732);
+    # final \x00 allows backslash escapes in URIs:
+    uric = r"""[-_.!~*'()[\];/:@&=+$,%a-zA-Z0-9\x00]"""
     # Last URI character; same as uric but no punctuation:
     urilast = r"""[_~/a-zA-Z0-9]"""
-    emailc = r"""[-_!~*'{|}/#?^`&=+$%a-zA-Z0-9]"""
+    emailc = r"""[-_!~*'{|}/#?^`&=+$%a-zA-Z0-9\x00]"""
     email_pattern = r"""
           %(emailc)s+(?:\.%(emailc)s+)*   # name
           @                               # at
@@ -659,10 +612,10 @@ class Inliner:
           embedded_uri=re.compile(
               r"""
               (
-                [ \n]+                  # spaces or beginning of line
+                (?:[ \n]+|^)            # spaces or beginning of line/string
                 <                       # open bracket
                 %(non_whitespace_after)s
-                ([^<>\0]+)              # anything but angle brackets & nulls
+                ([^<>\x00]+)            # anything but angle brackets & nulls
                 %(non_whitespace_before)s
                 >                       # close bracket w/o whitespace before
               )
@@ -823,26 +776,11 @@ class Inliner:
                 return self.phrase_ref(string[:matchstart], string[textend:],
                                        rawsource, escaped, text)
             else:
-                try:
-                    return self.interpreted(
-                        string[:rolestart], string[textend:],
-                        rawsource, text, role, lineno)
-                except UnknownInterpretedRoleError, detail:
-                    msg = self.reporter.error(
-                        'Unknown interpreted text role "%s".' % role,
-                        line=lineno)
-                    text = unescape(string[rolestart:textend], 1)
-                    prb = self.problematic(text, text, msg)
-                    return (string[:rolestart], [prb], string[textend:],
-                            detail.args[0] + [msg])
-                except InterpretedRoleNotImplementedError, detail:
-                    msg = self.reporter.error(
-                        'Interpreted text role "%s" not implemented.' % role,
-                        line=lineno)
-                    text = unescape(string[rolestart:textend], 1)
-                    prb = self.problematic(text, text, msg)
-                    return (string[:rolestart], [prb], string[textend:],
-                            detail.args[0] + [msg])
+                rawsource = unescape(string[rolestart:textend], 1)
+                nodelist, messages = self.interpreted(rawsource, text, role,
+                                                      lineno)
+                return (string[:rolestart], nodelist,
+                        string[textend:], messages)
         msg = self.reporter.warning(
               'Inline interpreted text or phrase reference start-string '
               'without end-string.', line=lineno)
@@ -861,10 +799,13 @@ class Inliner:
                 target = nodes.target(match.group(1), refuri=uri)
             else:
                 raise ApplicationError('problem with URI: %r' % uri_text)
+            if not text:
+                text = uri
         else:
             target = None
         refname = normalize_name(text)
-        reference = nodes.reference(rawsource, text)
+        reference = nodes.reference(rawsource, text,
+                                    name=whitespace_normalize_name(text))
         node_list = [reference]
         if rawsource[-2:] == '__':
             if target:
@@ -891,50 +832,18 @@ class Inliner:
         else:
             return uri
 
-    def interpreted(self, before, after, rawsource, text, role, lineno):
-        role_function, canonical, messages = self.get_role_function(role,
-                                                                    lineno)
-        if role_function:
-            nodelist, messages2 = role_function(canonical, rawsource, text,
-                                                lineno)
-            messages.extend(messages2)
-            return before, nodelist, after, messages
+    def interpreted(self, rawsource, text, role, lineno):
+        role_fn, messages = roles.role(role, self.language, lineno,
+                                       self.reporter)
+        if role_fn:
+            nodes, messages2 = role_fn(role, rawsource, text, lineno, self)
+            return nodes, messages + messages2
         else:
-            raise InterpretedRoleNotImplementedError(messages)
-
-    def get_role_function(self, role, lineno):
-        messages = []
-        msg_text = []
-        if role:
-            name = role.lower()
-        else:
-            name = self.default_interpreted_role
-        canonical = None
-        try:
-            canonical = self.language.roles[name]
-        except AttributeError, error:
-            msg_text.append('Problem retrieving role entry from language '
-                            'module %r: %s.' % (self.language, error))
-        except KeyError:
-            msg_text.append('No role entry for "%s" in module "%s".'
-                            % (name, self.language.__name__))
-        if not canonical:
-            try:
-                canonical = _fallback_language_module.roles[name]
-                msg_text.append('Using English fallback for role "%s".'
-                                % name)
-            except KeyError:
-                msg_text.append('Trying "%s" as canonical role name.'
-                                % name)
-                # Should be an English name, but just in case:
-                canonical = name
-        if msg_text:
-            message = self.reporter.info('\n'.join(msg_text), line=lineno)
-            messages.append(message)
-        try:
-            return self.interpreted_roles[canonical], canonical, messages
-        except KeyError:
-            raise UnknownInterpretedRoleError(messages)
+            msg = self.reporter.error(
+                'Unknown interpreted text role "%s".' % role,
+                line=lineno)
+            return ([self.problematic(rawsource, rawsource, msg)],
+                    messages + [msg])
 
     def literal(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inline_obj(
@@ -1014,8 +923,9 @@ class Inliner:
     def reference(self, match, lineno, anonymous=None):
         referencename = match.group('refname')
         refname = normalize_name(referencename)
-        referencenode = nodes.reference(referencename + match.group('refend'),
-                                        referencename)
+        referencenode = nodes.reference(
+            referencename + match.group('refend'), referencename,
+            name=whitespace_normalize_name(referencename))
         if anonymous:
             referencenode['anonymous'] = 1
             self.document.note_anonymous_ref(referencenode)
@@ -1103,44 +1013,6 @@ class Inliner:
                 '|': substitution_reference,
                 '_': reference,
                 '__': anonymous_reference}
-
-    def generic_interpreted_role(self, role, rawtext, text, lineno):
-        try:
-            role_class = self.generic_roles[role]
-        except KeyError:
-            msg = self.reporter.error('Unknown interpreted text role: "%s".'
-                                      % role, line=lineno)
-            prb = self.problematic(text, text, msg)
-            return [prb], [msg]
-        return [role_class(rawtext, text)], []
-
-    def pep_reference_role(self, role, rawtext, text, lineno):
-        try:
-            pepnum = int(text)
-            if pepnum < 0 or pepnum > 9999:
-                raise ValueError
-        except ValueError:
-            msg = self.reporter.error(
-                'PEP number must be a number from 0 to 9999; "%s" is invalid.'
-                % text, line=lineno)
-            prb = self.problematic(text, text, msg)
-            return [prb], [msg]
-        ref = self.pep_url % pepnum
-        return [nodes.reference(rawtext, 'PEP ' + text, refuri=ref)], []
-
-    def rfc_reference_role(self, role, rawtext, text, lineno):
-        try:
-            rfcnum = int(text)
-            if rfcnum <= 0:
-                raise ValueError
-        except ValueError:
-            msg = self.reporter.error(
-                'RFC number must be a number greater than or equal to 1; '
-                '"%s" is invalid.' % text, line=lineno)
-            prb = self.problematic(text, text, msg)
-            return [prb], [msg]
-        ref = self.rfc_url % rfcnum
-        return [nodes.reference(rawtext, 'RFC ' + text, refuri=ref)], []
 
 
 class Body(RSTState):
@@ -1472,15 +1344,15 @@ class Body(RSTState):
 
     def field_marker(self, match, context, next_state):
         """Field list item."""
-        fieldlist = nodes.field_list()
-        self.parent += fieldlist
+        field_list = nodes.field_list()
+        self.parent += field_list
         field, blank_finish = self.field(match)
-        fieldlist += field
+        field_list += field
         offset = self.state_machine.line_offset + 1   # next line
         newline_offset, blank_finish = self.nested_list_parse(
               self.state_machine.input_lines[offset:],
               input_offset=self.state_machine.abs_line_offset() + 1,
-              node=fieldlist, initial_state='FieldList',
+              node=field_list, initial_state='FieldList',
               blank_finish=blank_finish)
         self.goto_line(newline_offset)
         if not blank_finish:
@@ -1492,14 +1364,15 @@ class Body(RSTState):
         lineno = self.state_machine.abs_line_number()
         indented, indent, line_offset, blank_finish = \
               self.state_machine.get_first_known_indented(match.end())
-        fieldnode = nodes.field()
-        fieldnode.line = lineno
-        fieldnode += nodes.field_name(name, name)
-        fieldbody = nodes.field_body('\n'.join(indented))
-        fieldnode += fieldbody
+        field_node = nodes.field()
+        field_node.line = lineno
+        name_nodes, name_messages = self.inline_text(name, lineno)
+        field_node += nodes.field_name(name, '', *name_nodes)
+        field_body = nodes.field_body('\n'.join(indented), *name_messages)
+        field_node += field_body
         if indented:
-            self.parse_field_body(indented, line_offset, fieldbody)
-        return fieldnode, blank_finish
+            self.parse_field_body(indented, line_offset, field_body)
+        return field_node, blank_finish
 
     def parse_field_marker(self, match):
         """Extract & return field name from a field marker match."""
@@ -1876,39 +1749,59 @@ class Body(RSTState):
                 raise MarkupError('malformed hyperlink target.', lineno)
         del block[:blockindex]
         block[0] = (block[0] + ' ')[targetmatch.end()-len(escaped)-1:].strip()
+        target = self.make_target(block, blocktext, lineno,
+                                  targetmatch.group('name'))
+        return [target], blank_finish
+
+    def make_target(self, block, block_text, lineno, target_name):
+        target_type, data = self.parse_target(block, block_text, lineno)
+        if target_type == 'refname':
+            target = nodes.target(block_text, '', refname=normalize_name(data))
+            target.indirect_reference_name = data
+            self.add_target(target_name, '', target, lineno)
+            self.document.note_indirect_target(target)
+            return target
+        elif target_type == 'refuri':
+            target = nodes.target(block_text, '')
+            self.add_target(target_name, data, target, lineno)
+            return target
+        else:
+            return data
+
+    def parse_target(self, block, block_text, lineno):
+        """
+        Determine the type of reference of a target.
+
+        :Return: A 2-tuple, one of:
+
+            - 'refname' and the indirect reference name
+            - 'refuri' and the URI
+            - 'malformed' and a system_message node
+        """
         if block and block[-1].strip()[-1:] == '_': # possible indirect target
             reference = ' '.join([line.strip() for line in block])
             refname = self.is_reference(reference)
             if refname:
-                target = nodes.target(blocktext, '', refname=refname)
-                target.line = lineno
-                self.add_target(targetmatch.group('name'), '', target)
-                self.document.note_indirect_target(target)
-                return [target], blank_finish
-        nodelist = []
+                return 'refname', refname
         reference = ''.join([line.strip() for line in block])
-        if reference.find(' ') != -1:
+        if reference.find(' ') == -1:
+            return 'refuri', unescape(reference)
+        else:
             warning = self.reporter.warning(
                   'Hyperlink target contains whitespace. Perhaps a footnote '
                   'was intended?',
-                  nodes.literal_block(blocktext, blocktext), line=lineno)
-            nodelist.append(warning)
-        else:
-            unescaped = unescape(reference)
-            target = nodes.target(blocktext, '')
-            target.line = lineno
-            self.add_target(targetmatch.group('name'), unescaped, target)
-            nodelist.append(target)
-        return nodelist, blank_finish
+                  nodes.literal_block(block_text, block_text), line=lineno)
+            return 'malformed', warning
 
     def is_reference(self, reference):
         match = self.explicit.patterns.reference.match(
-            normalize_name(reference))
+            whitespace_normalize_name(reference))
         if not match:
             return None
         return unescape(match.group('simple') or match.group('phrase'))
 
-    def add_target(self, targetname, refuri, target):
+    def add_target(self, targetname, refuri, target, lineno):
+        target.line = lineno
         if targetname:
             name = normalize_name(unescape(targetname))
             target['name'] = name
@@ -1988,17 +1881,18 @@ class Body(RSTState):
             return [msg], blank_finish
 
     def directive(self, match, **option_presets):
+        """Returns a 2-tuple: list of nodes, and a "blank finish" boolean."""
         type_name = match.group(1)
         directive_function, messages = directives.directive(
             type_name, self.memo.language, self.document)
         self.parent += messages
         if directive_function:
-            return self.parse_directive(
+            return self.run_directive(
                 directive_function, match, type_name, option_presets)
         else:
             return self.unknown_directive(type_name)
 
-    def parse_directive(self, directive_fn, match, type_name, option_presets):
+    def run_directive(self, directive_fn, match, type_name, option_presets):
         """
         Parse a directive then run its directive function.
 
@@ -2020,13 +1914,6 @@ class Body(RSTState):
 
         Returns a 2-tuple: list of nodes, and a "blank finish" boolean.
         """
-        arguments = []
-        options = {}
-        argument_spec = getattr(directive_fn, 'arguments', None)
-        if argument_spec and argument_spec[:2] == (0, 0):
-            argument_spec = None
-        option_spec = getattr(directive_fn, 'options', None)
-        content_spec = getattr(directive_fn, 'content', None)
         lineno = self.state_machine.abs_line_number()
         initial_line_offset = self.state_machine.line_offset
         indented, indent, line_offset, blank_finish \
@@ -2034,6 +1921,30 @@ class Body(RSTState):
                                                                 strip_top=0)
         block_text = '\n'.join(self.state_machine.input_lines[
             initial_line_offset : self.state_machine.line_offset + 1])
+        try:
+            arguments, options, content, content_offset = (
+                self.parse_directive_block(indented, line_offset,
+                                           directive_fn, option_presets))
+        except MarkupError, detail:
+            error = self.reporter.error(
+                'Error in "%s" directive:\n%s.' % (type_name, detail),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return [error], blank_finish
+        result = directive_fn(type_name, arguments, options, content, lineno,
+                              content_offset, block_text, self,
+                              self.state_machine)
+        return (result,
+                blank_finish or self.state_machine.is_next_line_blank())
+
+    def parse_directive_block(self, indented, line_offset, directive_fn,
+                              option_presets):
+        arguments = []
+        options = {}
+        argument_spec = getattr(directive_fn, 'arguments', None)
+        if argument_spec and argument_spec[:2] == (0, 0):
+            argument_spec = None
+        option_spec = getattr(directive_fn, 'options', None)
+        content_spec = getattr(directive_fn, 'content', None)
         if indented and not indented[0].strip():
             indented.trim_start()
             line_offset += 1
@@ -2055,24 +1966,15 @@ class Body(RSTState):
         while content and not content[0].strip():
             content.trim_start()
             content_offset += 1
-        try:
-            if option_spec:
-                options, arg_block = self.parse_directive_options(
-                    option_presets, option_spec, arg_block)
-            if argument_spec:
-                arguments = self.parse_directive_arguments(argument_spec,
-                                                           arg_block)
-            if content and not content_spec:
-                raise MarkupError('no content permitted')
-        except MarkupError, detail:
-            error = self.reporter.error(
-                'Error in "%s" directive:\n%s.' % (type_name, detail),
-                nodes.literal_block(block_text, block_text), line=lineno)
-            return [error], blank_finish
-        result = directive_fn(
-            type_name, arguments, options, content, lineno, content_offset,
-            block_text, self, self.state_machine)
-        return result, blank_finish or self.state_machine.is_next_line_blank()
+        if option_spec:
+            options, arg_block = self.parse_directive_options(
+                option_presets, option_spec, arg_block)
+        if argument_spec:
+            arguments = self.parse_directive_arguments(
+                argument_spec, arg_block)
+        if content and not content_spec:
+            raise MarkupError('no content permitted')
+        return (arguments, options, content, content_offset)
 
     def parse_directive_options(self, option_presets, option_spec, arg_block):
         options = option_presets.copy()
@@ -2251,38 +2153,14 @@ class Body(RSTState):
         return [], next_state, []
 
     def anonymous_target(self, match):
+        lineno = self.state_machine.abs_line_number()
         block, indent, offset, blank_finish \
               = self.state_machine.get_first_known_indented(match.end(),
                                                             until_blank=1)
         blocktext = match.string[:match.end()] + '\n'.join(block)
-        if block and block[-1].strip()[-1:] == '_': # possible indirect target
-            reference = escape2null(' '.join([line.strip()
-                                              for line in block]))
-            refname = self.is_reference(reference)
-            if refname:
-                target = nodes.target(blocktext, '', refname=refname,
-                                      anonymous=1)
-                self.document.note_anonymous_target(target)
-                self.document.note_indirect_target(target)
-                return [target], blank_finish
-        nodelist = []
-        reference = escape2null(''.join([line.strip() for line in block]))
-        if reference.find(' ') != -1:
-            lineno = self.state_machine.abs_line_number() - len(block) + 1
-            warning = self.reporter.warning(
-                  'Anonymous hyperlink target contains whitespace. Perhaps a '
-                  'footnote was intended?',
-                  nodes.literal_block(blocktext, blocktext),
-                  line=lineno)
-            nodelist.append(warning)
-        else:
-            target = nodes.target(blocktext, '', anonymous=1)
-            if reference:
-                unescaped = unescape(reference)
-                target['refuri'] = unescaped
-            self.document.note_anonymous_target(target)
-            nodelist.append(target)
-        return nodelist, blank_finish
+        block = [escape2null(line) for line in block]
+        target = self.make_target(block, blocktext, lineno, '')
+        return [target], blank_finish
 
     def line(self, match, context, next_state):
         """Section title overline or transition marker."""
@@ -2660,19 +2538,28 @@ class Text(RSTState):
         """Return a list of nodes."""
         indented, indent, offset, blank_finish = \
               self.state_machine.get_indented()
-        nodelist = []
         while indented and not indented[-1].strip():
             indented.trim_end()
-        if indented:
-            data = '\n'.join(indented)
-            nodelist.append(nodes.literal_block(data, data))
-            if not blank_finish:
-                nodelist.append(self.unindent_warning('Literal block'))
-        else:
-            nodelist.append(self.reporter.warning(
-                  'Literal block expected; none found.',
-                  line=self.state_machine.abs_line_number()))
+        if not indented:
+            return self.quoted_literal_block()
+        nodelist = []
+        data = '\n'.join(indented)
+        nodelist.append(nodes.literal_block(data, data))
+        if not blank_finish:
+            nodelist.append(self.unindent_warning('Literal block'))
         return nodelist
+
+    def quoted_literal_block(self):
+        abs_line_offset = self.state_machine.abs_line_offset()
+        offset = self.state_machine.line_offset
+        parent_node = nodes.Element()
+        new_abs_offset = self.nested_parse(
+            self.state_machine.input_lines[offset:],
+            input_offset=abs_line_offset, node=parent_node, match_titles=0,
+            state_machine_kwargs={'state_classes': (QuotedLiteralBlock,),
+                                  'initial_state': 'QuotedLiteralBlock'})
+        self.goto_line(new_abs_offset)
+        return parent_node.children
 
     def definition_list_item(self, termline):
         indented, indent, line_offset, blank_finish = \
@@ -2687,8 +2574,8 @@ class Text(RSTState):
         definitionlistitem += definition
         if termline[0][-2:] == '::':
             definition += self.reporter.info(
-                  'Blank line missing before literal block? Interpreted as a '
-                  'definition list item.', line=line_offset + 1)
+                  'Blank line missing before literal block (after the "::")? '
+                  'Interpreted as a definition list item.', line=line_offset+1)
         self.nested_parse(indented, input_offset=line_offset, node=definition)
         return definitionlistitem, blank_finish
 
@@ -2888,6 +2775,77 @@ class Line(SpecializedText):
         self.state_machine.previous_line(lines)
         context[:] = []
         raise statemachine.StateCorrection('Body', 'text')
+
+
+class QuotedLiteralBlock(RSTState):
+
+    """
+    Nested parse handler for quoted (unindented) literal blocks.
+
+    Special-purpose.  Not for inclusion in `state_classes`.
+    """
+
+    patterns = {'initial_quoted': r'(%(nonalphanum7bit)s)' % Body.pats,
+                'text': r''}
+    initial_transitions = ('initial_quoted', 'text')
+
+    def __init__(self, state_machine, debug=0):
+        RSTState.__init__(self, state_machine, debug)
+        self.messages = []
+        self.initial_lineno = None
+
+    def blank(self, match, context, next_state):
+        if context:
+            raise EOFError
+        else:
+            return context, next_state, []
+
+    def eof(self, context):
+        if context:
+            text = '\n'.join(context)
+            literal_block = nodes.literal_block(text, text)
+            literal_block.line = self.initial_lineno
+            self.parent += literal_block
+        else:
+            self.parent += self.reporter.warning(
+                'Literal block expected; none found.',
+                line=self.state_machine.abs_line_number())
+            self.state_machine.previous_line()
+        self.parent += self.messages
+        return []
+
+    def indent(self, match, context, next_state):
+        assert context, ('QuotedLiteralBlock.indent: context should not '
+                         'be empty!')
+        self.messages.append(
+            self.reporter.error('Unexpected indentation.',
+                                line=self.state_machine.abs_line_number()))
+        self.state_machine.previous_line()
+        raise EOFError
+
+    def initial_quoted(self, match, context, next_state):
+        """Match arbitrary quote character on the first line only."""
+        self.remove_transition('initial_quoted')
+        quote = match.string[0]
+        pattern = re.compile(re.escape(quote))
+        # New transition matches consistent quotes only:
+        self.add_transition('quoted',
+                            (pattern, self.quoted, self.__class__.__name__))
+        self.initial_lineno = self.state_machine.abs_line_number()
+        return [match.string], next_state, []
+
+    def quoted(self, match, context, next_state):
+        """Match consistent quotes on subsequent lines."""
+        context.append(match.string)
+        return context, next_state, []
+
+    def text(self, match, context, next_state):
+        if context:
+            self.messages.append(
+                self.reporter.error('Inconsistent literal block quoting.',
+                                    line=self.state_machine.abs_line_number()))
+            self.state_machine.previous_line()
+        raise EOFError
 
 
 state_classes = (Body, BulletList, DefinitionList, EnumeratedList, FieldList,

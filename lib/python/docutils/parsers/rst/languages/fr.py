@@ -1,7 +1,7 @@
 # Authors: David Goodger; William Dode
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.5 $
-# Date: $Date: 2003/11/30 15:06:07 $
+# Revision: $Revision: 1.2.10.3.8.1 $
+# Date: $Date: 2004/05/12 19:57:51 $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -38,6 +38,7 @@ directives = {
       u'\u00E9pigraphe': 'epigraph',
       u'chapeau': 'highlights',
       u'accroche': 'pull-quote',
+      u'tableau': 'table',
       #u'questions': 'questions',
       #u'qr': 'questions',
       #u'faq': 'questions',
@@ -51,6 +52,7 @@ directives = {
       u'remplace': 'replace',
       u'unicode': 'unicode',
       u'classe': 'class',
+      u'role (translation required)': 'role',
       u'sommaire': 'contents',
       u'table-des-mati\u00E8res': 'contents',
       u'sectnum': 'sectnum',
