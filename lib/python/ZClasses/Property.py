@@ -264,6 +264,8 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
     isPrincipiaFolderish=1
     icon="p_/Propertysheets_icon"
 
+    def tpURL(self): return 'propertysheets/common'
+
     def _setOb(self, id, value):
         setattr(self, id, value)
         pc=self.aq_inner.aq_parent.aq_parent._zclass_propertysheets_class

@@ -102,6 +102,7 @@ class ZClassMethodsSheet(
     id='contents'
     icon='p_/Methods_icon'
 
+    def tpURL(self): return 'propertysheets/methods'
 
     ######################################################################
     # Hijinks to let us create factories and classes within classes.
