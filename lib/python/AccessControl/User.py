@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -207,8 +207,11 @@ class UserFolderHandler:
         """ """
         i=UserFolder()
         i._init()
-        self._setObject('acl_users', i)
-        self.__allow_groups__=self.UserFolder
+	try:    self._setObject('acl_users', i)
+	except: return MessageDialog(title='Item Exists',
+                       message='This object already contains a User Folder',
+                       action='%s/manage_main' % REQUEST['PARENT_URL'])
+        self.__allow_groups__=self.acl_users
         return self.manage_main(self,REQUEST)
 
     def UserFolderIds(self):
@@ -237,6 +240,10 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.6  1997/08/27 13:44:00  brian
+# Added a nicer dialog to return if users try to create more than one
+# UserFolder in an object.
+#
 # Revision 1.5  1997/08/27 13:31:28  brian
 # Fixed a name boo-boo
 #
