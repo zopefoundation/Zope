@@ -252,7 +252,8 @@ class ChannelPipe:
         if response.headers.get('bobo-exception-type', '') == \
                 'exceptions.SystemExit':
             self._shutdown=1
-        if response.headers.get('connection','')=='close':
+        if response.headers.get('connection','') == 'close' or \
+                response.headers.get('Connection','') == 'close':
             self._close=1
         self._request.reply_code=response.status
         
