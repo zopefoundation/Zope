@@ -164,9 +164,9 @@ class TestRequestRange(unittest.TestCase):
         self.failUnless(content_range == expect_content_range,
             'Received incorrect Content-Range header. Expected %s, got %s' % (
                 `expect_content_range`, `content_range`))
-        self.failIf(rsp.getHeader('content-length') != len(body),
-            'Incorrect Content-Length is set! Expected %d, got %d.' % (
-                rsp.getHeader('content-length'), len(body)))
+        self.failIf(rsp.getHeader('content-length') != str(len(body)),
+            'Incorrect Content-Length is set! Expected %s, got %s.' % (
+                str(len(body)), rsp.getHeader('content-length')))
 
         self.failUnless(body == self.data[start:end],
             'Incorrect range returned, expected %s, got %s' % (
@@ -196,9 +196,9 @@ class TestRequestRange(unittest.TestCase):
             "Incorrect Content-Type set. Expected 'multipart/%sbyteranges', "
             "got %s" % (draftprefix, ct))
         if rsp.getHeader('content-length'):
-            self.failIf(rsp.getHeader('content-length') != len(body),
-                'Incorrect Content-Length is set! Expected %d, got %d.' % (
-                    len(body), rsp.getHeader('content-length')))
+            self.failIf(rsp.getHeader('content-length') != str(len(body)),
+                'Incorrect Content-Length is set! Expected %s, got %s.' % (
+                    str(len(body)), rsp.getHeader('content-length')))
 
         # Decode the multipart message
         bodyfile = cStringIO.StringIO('Content-Type: %s\n\n%s' % (

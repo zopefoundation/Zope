@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.71 2002/12/17 00:38:17 andym Exp $'''
-__version__ = '$Revision: 1.71 $'[11:-2]
+$Id: HTTPResponse.py,v 1.72 2002/12/22 18:31:46 efge Exp $'''
+__version__ = '$Revision: 1.72 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -233,6 +233,8 @@ class HTTPResponse(BaseResponse):
         literal flag is true, the case of the header name is preserved,
         otherwise word-capitalization will be performed on the header
         name on output.'''
+        name = str(name)
+        value = str(value)
         key = name.lower()
         if accumulate_header(key):
             self.accumulated_headers = (
@@ -245,6 +247,8 @@ class HTTPResponse(BaseResponse):
         '''\
         Set a new HTTP return header with the given value, while retaining
         any previously set headers with the same name.'''
+        name = str(name)
+        value = str(value)
         self.accumulated_headers = (
             "%s%s: %s\n" % (self.accumulated_headers, name, value))
 
@@ -429,7 +433,7 @@ class HTTPResponse(BaseResponse):
             base = ''
         elif not base.endswith('/'):          
             base = base+'/'
-        self.base = base            
+        self.base = str(base)
 
     def insertBase(self,
                    base_re_search=re.compile('(<base.*?>)',re.I).search
@@ -459,6 +463,9 @@ class HTTPResponse(BaseResponse):
         cookie has previously been set in the response object, the new
         value is appended to the old one separated by a colon. '''
 
+        name = str(name)
+        value = str(value)
+
         cookies = self.cookies
         if cookies.has_key(name):
             cookie = cookies[name]
@@ -481,6 +488,8 @@ class HTTPResponse(BaseResponse):
         when creating the cookie. The path can be specified as a keyword
         argument.
         '''
+        name = str(name)
+
         dict = {'max_age':0, 'expires':'Wed, 31-Dec-97 23:59:59 GMT'}
         for k, v in kw.items():
             dict[k] = v
@@ -495,6 +504,9 @@ class HTTPResponse(BaseResponse):
         "value". This overwrites any previously set value for the
         cookie in the Response object.
         '''
+        name = str(name)
+        value = str(value)
+
         cookies = self.cookies
         if cookies.has_key(name):
             cookie = cookies[name]
@@ -511,6 +523,9 @@ class HTTPResponse(BaseResponse):
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header. '''
+        name = str(name)
+        value = str(value)
+
         headers = self.headers
         if headers.has_key(name):
             h = headers[name]
@@ -547,6 +562,8 @@ class HTTPResponse(BaseResponse):
         """Cause a redirection without raising an error"""
         self.setStatus(status)
         self.setHeader('Location', location)
+
+        location = str(location)
 
         if lock:
             # Don't let anything change the status code.
