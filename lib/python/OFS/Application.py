@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.29 1997/12/18 17:17:46 jim Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: Application.py,v 1.30 1997/12/18 18:42:07 jim Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -138,6 +138,10 @@ def open_bobobase():
     product_dir=os.path.join(SOFTWARE_HOME,'Products')
     sys.path.append(product_dir)
     
+    install_products()
+
+    __traceback_info__=sys.path
+    
     try: app=Bobobase['Application']
     except KeyError:
 	app=Application()
@@ -155,8 +159,6 @@ def open_bobobase():
         cpl._init()
 	app._setObject('Control_Panel', cpl)
 	get_transaction().commit()
-    
-    install_products()
 
     return Bobobase
 
@@ -173,7 +175,10 @@ def install_products():
     meta_types=list(Folder.Folder.dynamic_meta_types)
     role_names=list(app.__defined_roles__)
 
-    for product_name in os.listdir(product_dir):
+    product_names=os.listdir(product_dir)
+    product_names.sort()
+
+    for product_name in product_names:
 	package_dir=path_join(product_dir, product_name)
 	if not isdir(package_dir): continue
 	if not exists(path_join(package_dir, '__init__.py')): continue
@@ -238,6 +243,9 @@ def install_products():
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.30  1997/12/18 18:42:07  jim
+# Rearranged things to make fixup "products" work.
+#
 # Revision 1.29  1997/12/18 17:17:46  jim
 # Added rule: only treat a directory in Products as a product if it
 # has __init__.py
