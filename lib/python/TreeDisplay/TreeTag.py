@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.40 2000/04/05 13:21:19 tseaver Exp $'
-__version__='$Revision: 1.40 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.41 2000/04/12 13:44:28 tseaver Exp $'
+__version__='$Revision: 1.41 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -208,7 +208,22 @@ def tpRender(self, md, section, args,
         if md.has_key('collapse_all'):
             state=[id,[]],
         elif md.has_key('expand_all'):
-            state=[id, tpValuesIds(self, args['branches'], args)],
+            have_arg=args.has_key
+            if have_arg('branches'):
+                def get_items(node, branches=args['branches'], md=md):
+                    validate=md.validate
+                    if validate is None or not hasattr(node, 'aq_acquire'):
+                        items=getattr(node, branches)
+                    else:
+                        items=node.aq_acquire(branches, validate, md)
+                    return items()
+            elif have_arg('branches_expr'):
+                def get_items(node, branches_expr=args['branches_expr'], md=md):
+                    md._push(InstanceDict(node, md))
+                    items=branches_expr(md)
+                    md._pop()
+                    return items
+            state=[id, tpValuesIds(self, get_items, args)],
         else:
             if md.has_key('tree-s'):
                 state=md['tree-s']
@@ -632,20 +647,22 @@ def tpStateLevel(state, level=0):
         else: level=max(level,1)
     return level
 
-def tpValuesIds(self, branches, args,
+def tpValuesIds(self, get_items, args,
                 simple_type={type(''):0, type(1):0, type(1.0):0}.has_key,
                 ):
+    # get_item(node) is a function that returns the subitems of node
+
     # This should build the ids of subitems which are
     # expandable (non-empty). Leaves should never be
     # in the state - it will screw the colspan counting.
     r=[]
     idattr=args['id']
     try:
-        try: items=getattr(self, branches)()
+        try: items=get_items(self)
         except AttributeError: items=()
         for item in items:
             try:
-                if getattr(item, branches)():
+                if get_items(item):
 
                     if hasattr(item, idattr):
                         id=getattr(item, idattr)
@@ -653,7 +670,7 @@ def tpValuesIds(self, branches, args,
                     elif hasattr(item, '_p_oid'): id=oid(item)
                     else: id=pyid(item)
 
-                    e=tpValuesIds(item, branches, args)
+                    e=tpValuesIds(item, get_items, args)
                     if e: id=[id,e]
                     else: id=[id]
                     r.append(id)
