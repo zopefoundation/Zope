@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -677,7 +677,7 @@ class UserFolder(BasicUserFolder):
             del self.data[name]
 
 
-
+Globals.default__class_init__(UserFolder)
 
 
 
