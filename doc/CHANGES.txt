@@ -144,6 +144,9 @@ Zope Changes
 
     Bugs fixed
 
+     - OFS.CopySupport: Enforced "Delete objects" permission during
+       move (CMF Collector #259).
+
      - Removed DWIM'y attempt to filter acquired-but-not-aceessible
        results from 'guarded_getattr'.
 

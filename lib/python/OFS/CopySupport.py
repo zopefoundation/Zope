@@ -21,6 +21,7 @@ from zlib import compress, decompress
 
 from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
+from AccessControl.Permissions import delete_objects as DeleteObjects
 from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import Unauthorized, BadRequest
 from webdav.Lockable import ResourceLockedError
@@ -152,7 +153,7 @@ class CopyContainer(ExtensionClass.Base):
             m = Moniker.loadMoniker(mdata)
             try: ob = m.bind(app)
             except: raise CopyError, eNotFound
-            self._verifyObjectPaste(ob)
+            self._verifyObjectPaste(ob, validate_src=op+1)
             oblist.append(ob)
 
         if op==0:
@@ -379,12 +380,22 @@ class CopyContainer(ExtensionClass.Base):
                   action = 'manage_main')
 
             if validate_src:
+
+                sm = getSecurityManager()
+
                 # Ensure the user is allowed to access the object on the
                 # clipboard.
-                try:    parent = aq_parent(aq_inner(object))
-                except: parent = None
-                if not getSecurityManager().validate(None,parent,None,object):
+                try:
+                    parent = aq_parent(aq_inner(object))
+                except:
+                    parent = None
+
+                if not sm.validate(None,parent,None,object):
                     raise Unauthorized, absattr(object.id)
+
+                if validate_src == 2: # moving
+                    if not sm.checkPermission(DeleteObjects, parent):
+                        raise Unauthorized, 'Delete not allowed.'
 
         else: # /if method_name
             raise CopyError, MessageDialog(
