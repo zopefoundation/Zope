@@ -108,7 +108,8 @@ This script does for NT the same sort of thing zdeamon.py does for UNIX.
 Requires Python win32api extensions.
 
 """
-import win32serviceutil, win32service, win32event, win32process
+import win32api, win32serviceutil, win32service, win32event, win32process
+import win32evtlog, win32evtlogutil
 import time
 
 def get_zope_version():
@@ -126,6 +127,8 @@ class ZServerService(win32serviceutil.ServiceFramework):
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
+        dll = win32api.GetModuleFileName(win32api.GetModuleHandle("win32evtlog.pyd"))
+        win32evtlogutil.AddSourceToRegistry("Zope",dll)
     
     def SvcDoRun(self):
         self.start_zserver()
@@ -141,23 +144,34 @@ class ZServerService(win32serviceutil.ServiceFramework):
     def SvcStop(self):
         try:
             self.stop_zserver()
+            win32evtlogutil.ReportEvent('Zope', 2,
+                 eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
+                 strings=["Stopping Zope."]
+             )
         except:
             pass
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
     def start_zserver(self):
-        result=win32process.CreateProcess(None, '"%s" "%s" %s' %
-                (self.get_executable(), self.get_script(), self.get_args()),
+        result=win32process.CreateProcess(None, self.get_start_command(),
                 None, None, 0, 0, None, None, win32process.STARTUPINFO())
         self.hZServer=result[0]
         self.last_start_time=time.time()
+        win32evtlogutil.ReportEvent('Zope', 1,
+            eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
+            strings=["Starting Zope."]
+            )    
         
     def stop_zserver(self):
         win32process.TerminateProcess(self.hZServer,0)
         
     def restart_zserver(self):
         if time.time() - self.last_start_time < self.restart_min_time:
+            win32evtlogutil.ReportEvent('Zope', 4,
+                eventType=win32evtlog.EVENTLOG_ERROR_TYPE,
+                strings=["Zope died and could not be restarted."]
+            ) 
             self.SvcStop()
         code=win32process.GetExitCodeProcess(self.hZServer)
         if code == 0:
@@ -165,19 +179,16 @@ class ZServerService(win32serviceutil.ServiceFramework):
             # assume that shutdown is intentional.
             self.SvcStop()
         else:
+            win32evtlogutil.ReportEvent('Zope', 3,
+                eventType=win32evtlog.EVENTLOG_WARNING_TYPE,
+                strings=["Restarting Zope."]
+            ) 
             self.start_zserver()
 
-    def get_executable(self):
+    def get_start_command(self):
         # where should this info be stored, the registry?
-        return "d:\\program files\\zope1.11.0pr0\\bin\\python.exe"
-
-    def get_script(self):
-        # where should this info be stored, the registry?
-        return "d:\\program files\\zope1.11.0pr0\\zserver\\mystart.py"
-    
-    def get_args(self):
-        # where should this info be stored, the registry?
-        return "-w 8888"
-
+        return '"d:\\program files\\zope1.11.0pr0\\bin\\python.exe" "d:\\program files\\zope1.11.0pr0\\zserver\\mystart.py" -w 8888'
+        
 if __name__=='__main__':
     win32serviceutil.HandleCommandLine(ZServerService)
+    
