@@ -13,7 +13,7 @@
 
 """Signal handling dispatcher."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os
 import signal, zLOG
@@ -80,7 +80,7 @@ def get_signal_name(n):
                 continue
             if startswith('SIG') and not startswith('SIG_'):
                 _signals[v] = k
-    return _signals.get(n, 'unknown')
+    return _signals.get(n, 'signal %d' % n)
 
 # The SignalHandler is actually a singleton.
 SignalHandler = SignalHandler()
