@@ -9,6 +9,8 @@ Page Template changes
       Features Added
 
         - Allow any false value in tal:repeat to act as an empty sequence.
+        - manage_addPageTemplate accepts optional title and text
+          arguments, and returns the new object if REQUEST is None.
 
       Bugs Fixed
 

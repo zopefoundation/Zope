@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -308,12 +308,17 @@ SecureModuleImporter = _SecureModuleImporter()
 # Product registration and Add support
 from urllib import quote
 
-def manage_addPageTemplate(self, id, REQUEST=None, submit=None):
+def manage_addPageTemplate(self, id, title=None, text=None,
+                           REQUEST=None, submit=None):
     "Add a Page Template with optional file content."
 
     id = str(id)
     if REQUEST is None:
-        self._setObject(id, ZopePageTemplate(id))
+        self._setObject(id, ZopePageTemplate(id, text))
+        ob = getattr(self, id)
+        if title:
+            ob.pt_setTitle(title)
+        return ob
     else:
         file = REQUEST.form.get('file')
         headers = getattr(file, 'headers', None)
