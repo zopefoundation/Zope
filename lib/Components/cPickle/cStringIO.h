@@ -2,7 +2,7 @@
 #define CSTRINGIO_INCLUDED
 /*
 
-  $Id: cStringIO.h,v 1.2 1997/01/27 14:13:05 jim Exp $
+  $Id: cStringIO.h,v 1.3 1997/06/13 19:44:02 jim Exp $
 
   cStringIO C API
 
@@ -70,6 +70,10 @@
   This would typically be done in your init function.
 
   $Log: cStringIO.h,v $
+  Revision 1.3  1997/06/13 19:44:02  jim
+  - changed to avoid warning of multiple declarations in 1.5 and
+    our 1.4.
+
   Revision 1.2  1997/01/27 14:13:05  jim
   Changed the way the C API was exported.
 
@@ -115,14 +119,14 @@ static struct PycStringIO_CAPI {
   ((O)->ob_type==PycStringIO->OutputType)
 
 static void *
-PyCObject_Import(char *module_name, char *name)
+xxxPyCObject_Import(char *module_name, char *name)
 {
   PyObject *m, *c;
   void *r=NULL;
   
-  if(m=PyImport_ImportModule(module_name))
+  if((m=PyImport_ImportModule(module_name)))
     {
-      if(c=PyObject_GetAttrString(m,name))
+      if((c=PyObject_GetAttrString(m,name)))
 	{
 	  r=PyCObject_AsVoidPtr(c);
 	  Py_DECREF(c);
@@ -134,6 +138,6 @@ PyCObject_Import(char *module_name, char *name)
 }
 
 #define PycString_IMPORT \
-  PycStringIO=PyCObject_Import("cStringIO", "cStringIO_CAPI")
+  PycStringIO=xxxPyCObject_Import("cStringIO", "cStringIO_CAPI")
 
 #endif /* CSTRINGIO_INCLUDED */
