@@ -482,14 +482,14 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.104 1998/11/11 22:48:11 jim Exp $"""
+$Id: Publish.py,v 1.105 1998/11/14 02:48:34 amos Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.104 $'[11:-2]
+__version__='$Revision: 1.105 $'[11:-2]
 
 import sys, os, string, cgi, regex
-from string import * # Shame on me. :[
+from string import *
 import CGIResponse
 from CGIResponse import Response
 from urllib import quote, unquote
@@ -660,6 +660,12 @@ class ModulePublisher:
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
 
+    def debugError(self,entry):
+        raise 'NotFound',self.html(
+            "Debugging Notice",
+            "Bobo has encountered a problem publishing your object.<p>"
+            "\n%s" % entry)
+
     def badRequestError(self,name):
         if regex.match('^[A-Z_0-9]+$',name) >= 0:
             raise 'InternalError', self.html(
@@ -672,13 +678,16 @@ class ModulePublisher:
             "<!--%s-->"
             % (name,self.request))
 
-    def unauthorized(self, realm):
+    def unauthorized(self, realm,debug_mode=None):
         if not (self.request.has_key('REMOTE_USER') and
                 self.request['REMOTE_USER']):
             self.response['WWW-authenticate']='basic realm="%s"' % realm
         m="<strong>You are not authorized to access this resource.</strong>"
-        if not self.HTTP_AUTHORIZATION:
-            m=m+'\n<!-- No Authorization header-->'
+        if debug_mode:
+            if self.HTTP_AUTHORIZATION:
+                m=m+'\nUsername and password are not correct.'
+            else:
+                m=m+'\nNo Authorization header found.'
         raise 'Unauthorized', m
 
     def forbiddenError(self,object=None):
@@ -709,9 +718,32 @@ class ModulePublisher:
 
         (bobo_before, bobo_after, request_params,
          inherited_groups, groups, roles,
-         object, doc, published, realm, module_name
-         ) = get_module_info(module_name)
+         object, doc, published, realm, module_name,
+         hide_tracebacks, debug_mode)= get_module_info(module_name)
+        
+        # optinally get info from the environment
+        if request.environ.has_key('BOBO_DEBUG_MODE'):
+            debug_mode=request.environ['BOBO_DEBUG_MODE']
+            try: debug_mode=atoi(debug_mode)
+            except: pass
+            if debug_mode: debug_mode=1
+            else: debug_mode=None
+        
+        if request.environ.has_key('BOBO_HIDE_TRACEBACKS'):
+            hide_tracebacks=request.environ['BOBO_HIDE_TRACEBACKS']
+            try: hide_tracebacks=atoi(hide_tracebacks)
+            except: pass
+            if hide_tracebacks: hide_tracebacks=1
+            else: hide_tracebacks=None
             
+        if request.environ.has_key('BOBO_REALM'):
+            realm=request.environ['BOBO_REALM']
+        
+        # set traceback display mode
+        if debug_mode or not hide_tracebacks:
+            # is this safe for concurrent usage?
+            CGIResponse._tbopen, CGIResponse._tbclose = '<PRE>', '</PRE>'
+ 
         after_list[0]=bobo_after
 
         if bobo_before is not None: bobo_before();
@@ -720,36 +752,15 @@ class ModulePublisher:
 
         # Get a nice clean path list:
         path=strip(request_get('PATH_INFO'))
-
-        __traceback_info__=path
-
-        if path[:1] != '/': path='/'+path
-        if path[-1:] != '/': path=path+'/'
-        if find(path,'/.') >= 0:
-            path=join(split(path,'/./'),'/')
-            l=find(path,'/../',1)
-            while l > 0:
-                p1=path[:l]
-                path=path[:rfind(p1,'/')+1]+path[l+4:]
-                l=find(path,'/../',1)
-        path=path[1:-1]
-
+        if path[:1]=='/': path=path[1:]
+        if path[-1:]=='/': path=path[:-1]
         path=split(path,'/')
         while path and not path[0]: path = path[1:]
-
-        
 
         method=upper(request_get('REQUEST_METHOD'))
         if method=='GET' or method=='POST': method='index_html'
 
         URL=self.script
-
-        # if the top object has a __bobo_traverse__ method, then use it
-        # to possibly traverse to an alternate top-level object.
-        if hasattr(object,'__bobo_traverse__'):
-            request['URL']=URL
-            try: object=object.__bobo_traverse__(request)
-            except: pass            
 
         # Get default object if no path was specified:
         if not path:
@@ -769,6 +780,13 @@ class ModulePublisher:
         # Traverse the URL to find the object:
         request['PARENTS']=parents=[]
 
+        # if the top object has a __bobo_traverse__ method, then use it
+        # to possibly traverse to an alternate top-level object.
+        if hasattr(object,'__bobo_traverse__'):
+            request['URL']=URL
+            try: object=object.__bobo_traverse__(request)
+            except: pass            
+    
         if hasattr(object, '__of__'): 
             # Try to bind the top-level object to the request
             object=object.__of__(RequestContainer(REQUEST=request))
@@ -779,7 +797,10 @@ class ModulePublisher:
             URL="%s/%s" % (URL,quote(entry_name))
             got=0
             if entry_name:
-                if entry_name[:1]=='_': self.forbiddenError(entry_name)
+                if entry_name[:1]=='_':
+                    if debug_mode:
+                        self.debugError("Object name begins with an underscore at: %s" % URL)
+                    else: self.forbiddenError(entry_name)
 
                 if hasattr(object,'__bobo_traverse__'):
                     request['URL']=URL
@@ -797,28 +818,39 @@ class ModulePublisher:
                         try: subobject=object[entry_name]
                         except (KeyError, IndexError,
                                 TypeError, AttributeError):
-                            self.notFoundError(URL)
+                            if entry_name=='.': subobject=object
+                            elif entry_name=='..' and parents:
+                                subobject=parents[-1]
+                            elif debug_mode:
+                                self.debugError("Cannot locate object at: %s" %URL) 
+                            else: self.notFoundError(URL)
 
-                try:
-                    try: doc=subobject.__doc__
-                    except: doc=getattr(object, entry_name+'__doc__')
-                    if not doc: raise AttributeError, entry_name
-                except: self.notFoundError("%s" % (URL))
-
-                if hasattr(subobject,'__roles__'):
-                    roles=subobject.__roles__
+                if subobject is object and entry_name=='.':
+                    URL=URL[:rfind(URL,'/')]
                 else:
-                    if not got:
-                        roleshack=entry_name+'__roles__'
-                        if hasattr(object, roleshack):
-                            roles=getattr(object, roleshack)
+                    try:
+                        try: doc=subobject.__doc__
+                        except: doc=getattr(object, entry_name+'__doc__')
+                        if not doc: raise AttributeError, entry_name
+                    except:
+                        if debug_mode:
+                            self.debugError("Missing doc string at: %s" % URL)
+                        else: self.notFoundError("%s" % (URL))
 
-                # Promote subobject to object
-            
-                parents.append(object)
-                object=subobject
+                    if hasattr(subobject,'__roles__'):
+                        roles=subobject.__roles__
+                    else:
+                        if not got:
+                            roleshack=entry_name+'__roles__'
+                            if hasattr(object, roleshack):
+                                roles=getattr(object, roleshack)
+    
+                    # Promote subobject to object
+                
+                    parents.append(object)
+                    object=subobject
 
-                steps.append(entry_name)
+                    steps.append(entry_name)
     
                 # Check for method:
                 if not path:
@@ -834,7 +866,8 @@ class ModulePublisher:
                             if i > 0: response.setBase(URL[:i])
     
         if entry_name != method and method != 'index_html':
-            self.notFoundError(method)
+            if debug_mode: self.debugError("Method %s not found at: %s" % (method,URL))
+            else: self.notFoundError(method)
 
         request.steps=steps
         parents.reverse()
@@ -898,7 +931,7 @@ class ModulePublisher:
                     else: user=v(request, auth, roles)
                     
             if user is None and roles != UNSPECIFIED_ROLES:
-                self.unauthorized(realm)
+                self.unauthorized(realm,debug_mode)
 
         steps=join(steps[:-i],'/')
         if user is not None:
@@ -991,11 +1024,17 @@ def get_module_info(module_name, modules={},
         if hasattr(module,'__bobo_realm__'): realm=module.__bobo_realm__
         else: realm=module_name
 
+        # Check for debug mode
+        if (hasattr(module,'__bobo_debug_mode__')
+            and module.__bobo_debug_mode__):
+            debug_mode=1
+        else: debug_mode=None
+
         # Check whether tracebacks should be hidden:
         if (hasattr(module,'__bobo_hide_tracebacks__')
-            and not module.__bobo_hide_tracebacks__):
-            CGIResponse._tbopen, CGIResponse._tbclose = '<PRE>', '</PRE>'
-        
+            and not module.__bobo_hide_tracebacks__): hide_tracebacks=None
+        else: hide_tracebacks=1
+ 
         if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
         else: bobo_before=None
                 
@@ -1037,7 +1076,8 @@ def get_module_info(module_name, modules={},
     
         info= (bobo_before, bobo_after, request_params,
                 inherited_groups, groups, roles,
-                object, doc, published, realm, module_name)
+                object, doc, published, realm, module_name,
+                hide_tracebacks, debug_mode)
     
         modules[module_name]=modules[module_name+'.cgi']=info
 
@@ -1255,7 +1295,7 @@ class Request:
              else:
                  server_url=server_url+strip(environ['SERVER_NAME'])
                  server_port=environ['SERVER_PORT']
-                 if server_port!='80': server_url="%s:%s" % (server_url,server_port)
+                 if server_port!='80': server_url=server_url+':'+server_port
 
         if server_url[-1:]=='/': server_url=server_url[:-1]
                         
