@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.81 1999/10/12 17:40:20 amos Exp $"""
+$Id: ObjectManager.py,v 1.82 1999/11/04 19:34:20 brian Exp $"""
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -230,12 +230,15 @@ class ObjectManager(
         self._setOb(id,object)
         object=self._getOb(id)
         object.manage_afterAdd(object, self)
-        # Try to give user the local role "Owner".
+        
+        # Try to give user the local role "Owner", but only if
+        # no local roles have been set on the object yet.
         if hasattr(self, 'REQUEST') and hasattr(object, '__ac_local_roles__'):
-            user=self.REQUEST['AUTHENTICATED_USER']
-            name=user.getUserName()
-            if name != 'Anonymous User':
-                object.manage_setLocalRoles(name, ['Owner'])
+            if object.__ac_local_roles__ is None:
+                user=self.REQUEST['AUTHENTICATED_USER']
+                name=user.getUserName()
+                if name != 'Anonymous User':
+                    object.manage_setLocalRoles(name, ['Owner'])
         return id
 
     def manage_afterAdd(self, item, container):
