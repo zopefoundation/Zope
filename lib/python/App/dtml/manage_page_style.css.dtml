@@ -1,3 +1,4 @@
+<dtml-call "RESPONSE.setHeader('Content-Type','text/css')">
 h1 {
   font-family: Verdana, Helvetica, sans-serif; 
   font-size: 24pt; 
