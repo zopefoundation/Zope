@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.18 1999/12/02 00:43:34 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Undo.py,v 1.19 2000/05/09 19:06:39 jim Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -163,6 +163,9 @@ class UndoSupport(ExtensionClass.Base):
 Globals.default__class_init__(UndoSupport)               
 
 class Prefix:
+    
+    __no_side_effects__=1
+
     def __init__(self, v):
         self.value=len(v), v
         
