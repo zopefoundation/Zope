@@ -24,7 +24,6 @@ from thread import allocate_lock
 import time
 import Globals
 from Globals import DTMLFile
-from string import join, split
 
 try: from cPickle import Pickler
 except: from pickle import Pickler
@@ -246,7 +245,7 @@ class RAMCache (Cache):
                 if view not in views:
                     views.append(view)
             views.sort()
-            info = {'path': join(oc.physical_path, '/'),
+            info = {'path': '/'.join(oc.physical_path),
                     'hits': oc.hits,
                     'misses': oc.misses,
                     'size': size,
@@ -320,7 +319,7 @@ class RAMCache (Cache):
             self.writelock.release()
 
 caches = {}
-PRODUCT_DIR = split(__name__, '.')[-2]
+PRODUCT_DIR = __name__.split('.')[-2]
 
 class RAMCacheManager (CacheManager, SimpleItem):
     ' '

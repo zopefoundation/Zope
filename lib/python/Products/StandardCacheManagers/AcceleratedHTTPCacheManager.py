@@ -25,7 +25,6 @@ import Globals
 from Globals import DTMLFile
 import urlparse, httplib
 from urllib import quote
-from string import lower, join, split
 from App.Common import rfc1123_date
 
 
@@ -46,13 +45,13 @@ class AcceleratedHTTPCache (Cache):
         phys_path = ob.getPhysicalPath()
         if self.hit_counts.has_key(phys_path):
             del self.hit_counts[phys_path]
-        ob_path = quote(join(phys_path, '/'))
+        ob_path = quote('/'.join(phys_path))
         results = []
         for url in self.notify_urls:
             if not url:
                 continue
             # Send the PURGE request to each HTTP accelerator.
-            if lower(url[:7]) == 'http://':
+            if url[:7].lower() == 'http://':
                 u = url
             else:
                 u = 'http://' + url
@@ -68,7 +67,7 @@ class AcceleratedHTTPCache (Cache):
             errcode, errmsg, headers = h.getreply()
             h.getfile().read()  # Mandatory for httplib?
             results.append('%s %s' % (errcode, errmsg))
-        return 'Server response(s): ' + join(results, ';')
+        return 'Server response(s): ' + ';'.join(results)
 
     def ZCache_get(self, ob, view_name, keywords, mtime_func, default):
         return default
@@ -105,7 +104,7 @@ class AcceleratedHTTPCache (Cache):
 
 
 caches = {}
-PRODUCT_DIR = split(__name__, '.')[-2]
+PRODUCT_DIR = __name__.split('.')[-2]
 
 class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
     ' '
@@ -193,7 +192,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         c = self.ZCacheManager_getCache()
         rval = []
         for path, (anon, auth) in c.hit_counts.items():
-            rval.append({'path': join(path, '/'),
+            rval.append({'path': '/'.join(path),
                          'anon': anon,
                          'auth': auth})
         if sort_by:
