@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.72 2002/03/28 19:59:00 andreasjung Exp $"""
-__version__ = "$Revision: 1.72 $"[11:-2]
+$Id: MailHost.py,v 1.73 2002/08/12 21:50:31 jens Exp $"""
+__version__ = "$Revision: 1.73 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -124,8 +124,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self._send(mfrom, mto, messageText)
 
 
-    # This is here for backwards compatibility only. Possibly it could be used to send messages
-    # at a sceduled future time, or via a mail queue?
+    # This is here for backwards compatibility only. Possibly it could 
+    # be used to send messages at a scheduled future time, or via a mail queue?
     security.declareProtected( use_mailhost_services, 'scheduledSend' )
     scheduledSend = send
 
@@ -134,7 +134,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         body="From: %s\nTo: %s\nSubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
 
-        self._send( mto, mfrom, body )
+        self._send( mfrom, mto, body )
 
 
     security.declarePrivate( '_send' )
