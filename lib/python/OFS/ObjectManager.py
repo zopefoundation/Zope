@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.29 1998/01/02 17:40:12 jim Exp $"""
+$Id: ObjectManager.py,v 1.30 1998/01/02 18:45:06 jim Exp $"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo
 from Globals import HTMLFile, HTMLFile
@@ -17,7 +17,7 @@ from DateTime import DateTime
 class ObjectManager(
     App.Management.Navigation,
     App.Management.Tabs,
-    Acquisition.Explicit,
+    Acquisition.Implicit,
     Persistence.Persistent,
     App.Undo.UndoSupport,
     ):
@@ -458,6 +458,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.30  1998/01/02 18:45:06  jim
+# Ooops, want implicit acquisition.
+#
 # Revision 1.29  1998/01/02 17:40:12  jim
 # Factored old Management mix-in into Navigation and Tabs.
 #
