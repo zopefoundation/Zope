@@ -425,8 +425,8 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
 class ZObject:
 
     manage_options=(
-        {'label': 'Basic', 'action' :'propertysheets/basic/manage'},
         {'label': 'Methods', 'action' :'propertysheets/methods/manage'},
+        {'label': 'Basic', 'action' :'propertysheets/basic/manage'},
         {'label': 'Views', 'action' :'propertysheets/views/manage'},
         {'label': 'Property Sheets', 'action' :'propertysheets/common/manage'},
         {'label': 'Permissions',

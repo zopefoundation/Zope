@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -450,7 +450,7 @@ def marshal_list(name, seq, tname='list', lt=type([]), tt=type(())):
         tp=type(v)
         if tp in (lt, tt):
             raise TypeError, 'Invalid recursion in data to be marshaled.'
-        result.append(marshal_whatever("%s:%s" % (name, tname), v))    
+        result.append(marshal_var("%s:%s" % (name, tname), v))    
     return string.join(result, '&')
 
 def marshal_tuple(name, seq):

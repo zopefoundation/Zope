@@ -137,7 +137,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         return """
         <!--#in %s-->
            <!--#var sequence-item-->
-        <!--#in %s-->
+        <!--#/in %s-->
         """ % (id, id)
 
     def manage_createView(self, id, title='', ps_view_type=None, REQUEST=None):
