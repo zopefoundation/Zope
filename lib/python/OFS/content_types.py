@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -112,7 +112,7 @@ for l in filter(lambda s: s and s[:1] != '#', map(strip, split(src,'\n'))):
         content_type[e]=t
 
 
-find_binary=ts_regex.compile('[\0-\6\177-\277]').search
+find_binary=ts_regex.compile('[\0-\7]').search
 html_re=ts_regex.compile('<html>', ts_regex.casefold)
 def text_type(s):
     return "text/" + (html_re.search(s) >= 0 and 'html' or 'plain')
