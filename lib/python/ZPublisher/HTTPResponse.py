@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.14 1999/05/24 21:01:43 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: HTTPResponse.py,v 1.15 1999/06/30 12:47:31 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -270,6 +270,8 @@ class HTTPResponse(BaseResponse):
         If is_error is true then the HTML will be formatted as a Zope error
         message instead of a generic HTML page.
         '''
+        if not body: return self
+        
         if type(body) is types.TupleType:
             title,body=body
 
