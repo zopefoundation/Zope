@@ -14,13 +14,16 @@
 
 $Id$"""
 
+from types import MethodType
 
-# AccessControl.Implementation inserts ZopeSecurityPolicy, getRoles
+# AccessControl.Implementation inserts:
+#   ZopeSecurityPolicy, getRoles, rolesForPermissionOn
 from AccessControl.SimpleObjectPolicies import _noroles
 
 rolesForPermissionOn = None  # XXX:  avoid import loop
 
 tuple_or_list = tuple, list
+
 
 def getRoles(container, name, value, default):
 
@@ -33,6 +36,9 @@ def getRoles(container, name, value, default):
     if roles is _noroles:
         if not name or not isinstance(name, basestring):
             return default
+
+        if type(value) is MethodType:
+            container = value.im_self
 
         cls = getattr(container, '__class__', None)
         if cls is None:
