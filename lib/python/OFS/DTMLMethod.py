@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -118,7 +118,8 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
                    )
     __ac_permissions__=(
     ('View management screens', ('manage', 'manage_main', 'manage_editForm',
-                                 'manage_tabs', 'manage_uploadForm')),
+                                 'manage_tabs', 'manage_uploadForm',
+                                 'document_src')),
     ('Access contents information', ('PROPFIND',)),
     ('Change DTML Methods',     ('manage_edit', 'manage_upload', 'PUT')),
     ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
@@ -291,6 +292,10 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
         "Support for searching - the document's contents are searched."
         return self.read()
 
+    def document_src(self, REQUEST, RESPONSE):
+        """Return unprocessed document source."""
+        RESPONSE.setHeader('Content-Type', 'text/plain')
+        return self.read()
 
     ## Protocol handlers
 
