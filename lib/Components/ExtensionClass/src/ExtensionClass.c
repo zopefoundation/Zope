@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.9 1997/04/11 21:47:05 jim Exp $
+  $Id: ExtensionClass.c,v 1.10 1997/04/25 22:15:02 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.9 1997/04/11 21:47:05 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.10 1997/04/25 22:15:02 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2450,7 +2450,8 @@ subclass_dealloc(PyObject *self)
   Py_XDECREF(INSTANCE_DICT(self));
   Py_DECREF(self->ob_type);
 
-  dealloc_base(self,(PyExtensionClass*)self->ob_type);
+  UNLESS(dealloc_base(self,(PyExtensionClass*)self->ob_type))
+    PyMem_DEL(self);
 
   PyErr_Restore(t,v,tb);
 }
@@ -2875,7 +2876,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  char *rev="$Revision: 1.10 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -2912,6 +2913,10 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.10  1997/04/25 22:15:02  jim
+  Fixed memory leak in destruction of instances of subclasses of
+  pure mix-in (and only pure mix-in) base classes.
+
   Revision 1.9  1997/04/11 21:47:05  jim
   Got rid of class attributes.
   Added method hooks.
