@@ -11,40 +11,40 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.4 1998/05/11 15:00:46 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: __init__.py,v 1.5 1998/12/02 12:11:49 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 from ImageFile import ImageFile
-import Aqueduct.Search, SQL
+import Shared.DC.ZRDB.Search, SQL
 
 classes=('SQL.SQL',)
 
 meta_types=(
-    {'name':'Aqueduct SQL Database Method',
-     'action':'manage_addAqueductSQLMethodForm',
+    {'name':'Zope SQL Database Method',
+     'action':'manage_addZSQLMethodForm',
      },
-    {'name':'Aqueduct Search Interface',
-     'action':'manage_addAqueductSearchForm'
+    {'name':'Zope Search Interface',
+     'action':'manage_addZSearchForm'
      },
     )
 
 methods={
-    'manage_addAqueductSQLMethod': SQL.manage_addAqueductSQLMethod,
-    'manage_addAqueductSQLMethodForm': SQL.manage_addAqueductSQLMethodForm,
+    'manage_addZSQLMethod': SQL.manage_addZSQLMethod,
+    'manage_addZSQLMethodForm': SQL.manage_addZSQLMethodForm,
     'SQLConnectionIDs': SQL.SQLConnectionIDs,
 
     
-    'manage_addAqueductSearchForm': Aqueduct.Search.addForm,
-    'manage_addAqueductSearch':     Aqueduct.Search.add,
-    'aqueductQueryIds':             Aqueduct.Search.aqueductQueryIds,
+    'manage_addZSearchForm': Shared.DC.ZRDB.Search.addForm,
+    'manage_addZSearch':     Shared.DC.ZRDB.Search.add,
+    'ZQueryIds':             Shared.DC.ZRDB.Search.ZQueryIds,
     }
 
 misc_={
-    'icon': ImageFile('AqueductDA/www/DBAdapter_icon.gif'),
+    'icon': ImageFile('Shared/DC/ZRDB/www/DBAdapter_icon.gif'),
     }
 
 __ac_permissions__=(
     ('Add Database Methods',
-     ('manage_addAqueductSQLMethodForm', 'manage_addAqueductSQLMethod')),
+     ('manage_addZSQLMethodForm', 'manage_addZSQLMethod')),
     ('Open/Close Database Connections',   ()),
     ('Change Database Methods',           ()),
     ('Change Database Connections',           ()),
@@ -54,6 +54,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.5  1998/12/02 12:11:49  jim
+# new names, esp for Aqueduct
+#
 # Revision 1.4  1998/05/11 15:00:46  jim
 # Updated permissions.
 #

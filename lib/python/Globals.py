@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -23,10 +23,10 @@ except:
     SOFTWARE_URL=sys.modules['__builtin__'].SOFTWARE_URL=''
 
 
-from BoboPOS2 import Persistent, PickleDictionary
-import BoboPOS2.PersistentMapping
-sys.modules['PersistentMapping']=BoboPOS2.PersistentMapping # hack for bw comp
-from BoboPOS2.PersistentMapping import PersistentMapping
+from BoboPOS import Persistent, PickleDictionary
+import BoboPOS.PersistentMapping
+sys.modules['PersistentMapping']=BoboPOS.PersistentMapping # hack for bw comp
+from BoboPOS.PersistentMapping import PersistentMapping
 
 import DocumentTemplate, MethodObject
 from AccessControl.PermissionRole import PermissionRole

@@ -1,12 +1,12 @@
 
-'''$Id: db.py,v 1.2 1998/05/21 15:33:56 jim Exp $'''
+'''$Id: db.py,v 1.3 1998/12/02 12:11:48 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 # 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, sys, os
 from string import strip, split, find, join
@@ -24,14 +24,14 @@ def manage_DataSources():
         except:
             raise 'Gadfly Error', (
                 """
-                The Aqueduct Gadfly Database Adapter requires the
+                The Zope Gadfly Database Adapter requires the
                 existence of the directory, <code>%s</code>.  An error
                 occurred  while trying to create this directory.
                 """ % data_dir)
     if not os.path.isdir(data_dir):
         raise 'Gadfly Error', (
             """
-            The Aqueduct Gadfly Database Adapter requires the
+            The Zope Gadfly Database Adapter requires the
             existence of the directory, <code>%s</code>.  This
             exists, but is not a directory.
             """ % data_dir)
@@ -170,6 +170,9 @@ Defs={maybe_int: 'i', maybe_float:'n', maybe_string:'s', must_be_text:'t'}
 ##########################################################################
 #
 # $Log: db.py,v $
+# Revision 1.3  1998/12/02 12:11:48  jim
+# new names, esp for Aqueduct
+#
 # Revision 1.2  1998/05/21 15:33:56  jim
 # Added logic to set up gadfly area on first use.
 #

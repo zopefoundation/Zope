@@ -9,20 +9,20 @@
 ########################################################################### 
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.3 1998/06/04 15:49:46 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: DABase.py,v 1.4 1998/12/02 12:11:48 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from db import manage_DataSources
-import AqueductDA.Connection, sys
+import Shared.DC.ZRDB.Connection, sys
 from Globals import HTMLFile
 from ImageFile import ImageFile
 from ExtensionClass import Base
 import Acquisition
 
-class Connection(AqueductDA.Connection.Connection):
+class Connection(Shared.DC.ZRDB.Connection.Connection):
     _isAnSQLConnection=1
 
-    manage_options=AqueductDA.Connection.Connection.manage_options+(
+    manage_options=Shared.DC.ZRDB.Connection.Connection.manage_options+(
 	{'label': 'Browse', 'action':'manage_browse'},
 	# {'label': 'Design', 'action':'manage_tables'},
 	)
@@ -189,6 +189,9 @@ field_icons={
 ############################################################################## 
 #
 # $Log: DABase.py,v $
+# Revision 1.4  1998/12/02 12:11:48  jim
+# new names, esp for Aqueduct
+#
 # Revision 1.3  1998/06/04 15:49:46  jim
 # Commented design tab.
 #

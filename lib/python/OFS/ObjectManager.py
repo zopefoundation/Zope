@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.46 1998/11/20 18:16:37 jim Exp $"""
+$Id: ObjectManager.py,v 1.47 1998/12/02 12:11:48 jim Exp $"""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher
@@ -12,7 +12,7 @@ from Globals import MessageDialog, default__class_init__
 from string import find,join,lower,split
 from urllib import quote
 from DocumentTemplate import html_quote
-from HTTP_ORB.Converters import type_converters
+from ZPublisher.Converters import type_converters
 from DateTime import DateTime
 
 class ObjectManager(
@@ -505,6 +505,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.47  1998/12/02 12:11:48  jim
+# new names, esp for Aqueduct
+#
 # Revision 1.46  1998/11/20 18:16:37  jim
 # First crack at new layout and 1.5 support
 #

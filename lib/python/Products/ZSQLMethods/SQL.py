@@ -11,10 +11,10 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.5 1998/11/23 16:28:57 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: SQL.py,v 1.6 1998/12/02 12:11:49 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
-import AqueductDA.DA
+import Shared.DC.ZRDB.DA
 from Globals import HTMLFile
 
 def SQLConnectionIDs(self):
@@ -44,8 +44,8 @@ def SQLConnectionIDs(self):
     ids.sort()
     return ids
 
-manage_addAqueductSQLMethodForm=HTMLFile('add', globals())
-def manage_addAqueductSQLMethod(self, id, title,
+manage_addZSQLMethodForm=HTMLFile('add', globals())
+def manage_addZSQLMethod(self, id, title,
 				connection_id, arguments, template,
 				REQUEST=None):
     """Add an SQL Method
@@ -63,7 +63,7 @@ def manage_addAqueductSQLMethod(self, id, title,
     self._setObject(id, SQL(id, title, connection_id, arguments, template))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
-class SQL(AqueductDA.DA.DA):
+class SQL(Shared.DC.ZRDB.DA.DA):
     """SQL Database methods
 
     SQL Database methods are used to access external SQL databases.
@@ -101,8 +101,8 @@ class SQL(AqueductDA.DA.DA):
 	   employees/employee_id/1234/service_record
 
     """
-    meta_type='Aqueduct SQL Database Method'
-    icon='misc_/AqueductSQLMethods/icon'
+    meta_type='Z SQL Database Method'
+    icon='misc_/ZSQLMethods/icon'
 		
     manage_main=HTMLFile('edit', globals())
 

@@ -10,8 +10,8 @@ database_type='Gadfly'
 ########################################################################### 
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.2 1998/06/10 22:28:37 jim Exp $''' % database_type
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DA.py,v 1.3 1998/12/02 12:11:48 jim Exp $''' % database_type
+__version__='$Revision: 1.3 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -23,7 +23,7 @@ def data_sources():
 		  manage_DataSources())
 
 addConnectionForm=Globals.HTMLFile('connectionAdd',globals())
-def manage_addAqueductGadflyConnection(
+def manage_addZGadflyConnection(
     self, id, title, connection, check=None, REQUEST=None):
     """Add a DB connection to a folder"""
     self._setObject(id, Connection(
@@ -35,8 +35,8 @@ class Connection(DABase.Connection):
     " "
     database_type=database_type
     id='%s_database_connection' % database_type
-    meta_type=title='Aqueduct %s Database Connection' % database_type
-    icon='misc_/Aqueduct%s/conn' % database_type
+    meta_type=title='Zope %s Database Connection' % database_type
+    icon='misc_/Z%s/conn' % database_type
 
     def factory(self): return DB
 
@@ -65,6 +65,9 @@ class Connection(DABase.Connection):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.3  1998/12/02 12:11:48  jim
+# new names, esp for Aqueduct
+#
 # Revision 1.2  1998/06/10 22:28:37  jim
 # Added docstring to connection object so objects are publishable.
 #

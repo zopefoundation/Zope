@@ -8,10 +8,10 @@
 #       rights reserved. 
 #
 ########################################################################## 
-__doc__='''Aqueduct Search Interface Wizard
+__doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.5 1998/04/15 14:22:28 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Search.py,v 1.6 1998/12/02 12:11:49 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify, Args
@@ -69,7 +69,7 @@ def add(self, report_id, report_title, report_style,
 
     if REQUEST: return self.manage_main(self,REQUEST)
 
-def aqueductQueryIds(self):
+def ZQueryIds(self):
     # Note that report server configurations will expend on this
     t=[]
     ids={}
@@ -179,6 +179,9 @@ def default_input_form(arguments,action='query',
 ############################################################################## 
 #
 # $Log: Search.py,v $
+# Revision 1.6  1998/12/02 12:11:49  jim
+# new names, esp for Aqueduct
+#
 # Revision 1.5  1998/04/15 14:22:28  jim
 # Fixed up input form generation to use input arguments in order.
 # Also excluse decorations when 1 query used.

@@ -9,8 +9,8 @@
 ############################################################################## 
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.3 1998/11/23 15:48:18 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 1998/12/02 12:11:48 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals, ImageFile, os
 
@@ -18,7 +18,7 @@ classes=('DA.Connection',)
 database_type='Gadfly'
 
 misc_={'conn':
-       ImageFile.ImageFile('AqueductDA/www/DBAdapterFolder_icon.gif')}
+       ImageFile.ImageFile('Shared/DC/ZRDB/www/DBAdapterFolder_icon.gif')}
 
 
 for icon in ('table', 'view', 'stable', 'what',
@@ -27,8 +27,8 @@ for icon in ('table', 'view', 'stable', 'what',
     misc_[icon]=ImageFile.ImageFile('icons/%s.gif' % icon, globals())
 
 meta_types=(
-    {'name':'Aqueduct %s Database Connection' % database_type,
-     'action':'manage_addAqueduct%sConnectionForm' % database_type,
+    {'name':'Zope %s Database Connection' % database_type,
+     'action':'manage_addZ%sConnectionForm' % database_type,
      },
     )
 
@@ -44,7 +44,7 @@ def getDA():
 
 getDA()
 
-def manage_addAqueductGadflyConnectionForm(self, REQUEST, *args, **kw):
+def manage_addZGadflyConnectionForm(self, REQUEST, *args, **kw):
     " "
     DA=getDA()
     return DA.addConnectionForm(
@@ -52,23 +52,23 @@ def manage_addAqueductGadflyConnectionForm(self, REQUEST, *args, **kw):
 	database_type=database_type,
 	data_sources=DA.data_sources)
     
-def manage_addAqueductGadflyConnection(
+def manage_addZGadflyConnection(
     self, id, title, connection, check=None, REQUEST=None):
     " "
-    return getDA().manage_addAqueductGadflyConnection(
+    return getDA().manage_addZGadflyConnection(
 	self, id, title, connection, check, REQUEST)
 
 methods={
-    'manage_addAqueductGadflyConnection':
-    manage_addAqueductGadflyConnection,
-    'manage_addAqueductGadflyConnectionForm':
-    manage_addAqueductGadflyConnectionForm,
+    'manage_addZGadflyConnection':
+    manage_addZGadflyConnection,
+    'manage_addZGadflyConnectionForm':
+    manage_addZGadflyConnectionForm,
     }
 
 __ac_permissions__=(
-    ('Add Aqueduct Gadfly Database Connections',
-     ('manage_addAqueductGadflyConnectionForm',
-      'manage_addAqueductGadflyConnection')),
+    ('Add Zope Gadfly Database Connections',
+     ('manage_addZGadflyConnectionForm',
+      'manage_addZGadflyConnection')),
     )
 
 j=os.path.join

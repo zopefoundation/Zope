@@ -12,7 +12,7 @@ import sys, dcdb
 dcdb.debug() # Make it easy to set a breakpoint near here.
 
 import os
-from BoboPOS2 import SimpleDB, TJar, SingleThreadedTransaction
+from BoboPOS import SimpleDB, TJar, SingleThreadedTransaction
 import Globals
 
 import OFS.Application
@@ -21,8 +21,8 @@ import TreeDisplay.TreeTag
 import Scheduler.Scheduler
 
 # Setup support for broken objects:
-import OFS.Uninstalled, BoboPOS2.PickleJar
-BoboPOS2.PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
+import OFS.Uninstalled, BoboPOS.PickleJar
+BoboPOS.PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()

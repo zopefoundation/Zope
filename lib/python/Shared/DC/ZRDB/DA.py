@@ -11,13 +11,13 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.52 1998/11/23 16:12:08 jim Exp $'''
-__version__='$Revision: 1.52 $'[11:-2]
+$Id: DA.py,v 1.53 1998/12/02 12:11:49 jim Exp $'''
+__version__='$Revision: 1.53 $'[11:-2]
 
-import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
+import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
-from Aqueduct.Aqueduct import decodestring, parse, Rotor
-from Aqueduct.Aqueduct import custom_default_report, default_input_form
+from Aqueduct import decodestring, parse, Rotor
+from Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
@@ -29,7 +29,7 @@ md5new=md5.new
 import ExtensionClass
 import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
-from Aqueduct.Results import Results
+from Results import Results
 from App.Extensions import getBrain
 
 class SQL(DocumentTemplate.HTML):
@@ -41,7 +41,7 @@ class SQL(DocumentTemplate.HTML):
 
 
 class DA(
-    Aqueduct.Aqueduct.BaseQuery,Acquisition.Implicit,
+    Aqueduct.BaseQuery,Acquisition.Implicit,
     Globals.Persistent,
     AccessControl.Role.RoleManager,
     OFS.SimpleItem.Item,
@@ -80,7 +80,7 @@ class DA(
 	self.id=id
 	self.manage_edit(title, connection_id, arguments, template)
     
-    manage_advancedForm=HTMLFile('AqueductDA/advanced')
+    manage_advancedForm=HTMLFile('advanced', globals())
 
     test_url___roles__=None
     def test_url_(self):
@@ -313,7 +313,7 @@ class DA(
 	else:
             brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
         if type(result) is type(''): 
-            result=Aqueduct.RDB.File(StringIO(result),brain,self)
+            result=RDB.File(StringIO(result),brain,self)
         else:
             result=Results(result, brain, self)
 	columns=result._searchable_result_columns()
@@ -434,171 +434,3 @@ class Traverse(ExtensionClass.Base):
 	if hasattr(r, name): return getattr(r,name)
 	return getattr(self.__dict__['_da'], name)
 
-
-############################################################################## 
-#
-# $Log: DA.py,v $
-# Revision 1.52  1998/11/23 16:12:08  jim
-# rid of Persistence module reference
-#
-# Revision 1.51  1998/08/03 13:45:10  jim
-# Extensions management aspecs of brains have been moved to App/Extensions.
-#
-# Revision 1.50  1998/07/12 23:15:09  jim
-# Changed editing screen:
-#   - size prefs now separate from Document prefs
-#   - Fized bug that caused src changes to be lost
-#
-# Revision 1.49  1998/07/12 21:01:20  jim
-# Added support for DA's that return data directly as list of item descriptions
-# (i.e. schema) and list of rows.
-#
-# Began adding support for pickle-based network protocol that, alas, may
-# fall by the wayside. Waaaa.
-#
-# Revision 1.48  1998/06/26 21:51:28  jim
-# Added resize buttons.
-#
-# Revision 1.47  1998/05/11 15:00:13  jim
-# Updated permissions.
-#
-# Revision 1.46  1998/05/08 15:00:27  jim
-# Changed permission settings to be in line with new machinery.
-#
-# Revision 1.45  1998/04/29 21:17:51  jim
-# Changed to use acquired parent.
-#
-# Revision 1.44  1998/04/27 18:59:56  jim
-# Now use exported sql_quote__ function to quote strings.
-#
-# Revision 1.43  1998/04/27 18:56:13  jim
-# Now export an sql_quote function that is used by sqlvar and sqltest
-# to quote strings.
-#
-# Revision 1.42  1998/04/27 18:31:32  jim
-# Changed the way quoting was exported.
-#
-# Revision 1.41  1998/04/27 16:11:11  jim
-# Stuff DA into template dict so that sqlvar and sqltest can use it.
-#
-# Revision 1.40  1998/03/18 13:45:04  jim
-# Added doc strings.
-#
-# Revision 1.39  1998/03/17 21:16:08  brian
-# Changed __call__ to detect whether it is being called via the
-# web, or via dtml, and bind itself accordingly.
-#
-# Revision 1.38  1998/03/17 19:29:05  jim
-# Added support for sqlvar, sqltest, and sqlgroup tags.
-#
-# Changed the way template is invoked, so that the 'self' is the
-# folder containing the method.
-#
-# Revision 1.37  1998/03/10 21:18:03  jim
-# Traversal not stops when all arguments have been given.
-#
-# Revision 1.36  1998/02/23 14:41:26  jim
-# Added code to remove module from cache on reload.
-#
-# Revision 1.35  1998/02/20 22:25:35  jim
-# Fixed up traversal machinery to work correctly with acquisition,
-# especially method acquisition.
-#
-# Revision 1.34  1998/02/18 23:46:53  jim
-# Added reparenting magic for NE interface.
-#
-# Revision 1.33  1998/01/28 18:14:40  jim
-# Added logic to clear cache on edit.
-#
-# Revision 1.32  1998/01/28 18:13:48  jim
-# Fixed bug in clearing cache.
-#
-# Revision 1.31  1998/01/28 16:04:40  jim
-# Removed Cancel button from test input form.
-#
-# Revision 1.30  1998/01/27 20:08:19  jim
-# Fixed bugs in caching logic.
-#
-# Revision 1.29  1998/01/27 18:37:39  jim
-# Changed the way that errors are reported.
-#
-# Revision 1.28  1998/01/26 21:40:41  jim
-# Fixed bug in caching code.
-#
-# Revision 1.27  1998/01/22 20:50:53  jim
-# Fixed stupid typo in text output form.
-#
-# Revision 1.26  1998/01/22 20:32:50  jim
-# Fixed bug in testing code and added output of SQL query.
-#
-# Revision 1.25  1998/01/21 22:59:34  jim
-# Updated for latest security model.
-#
-# Revision 1.24  1998/01/21 20:56:55  brian
-# Changed Access Control tab to Security
-#
-# Revision 1.23  1998/01/16 21:33:48  jim
-# Now pass self to RDB.File so record constructors can acquire.
-#
-# Revision 1.22  1998/01/12 20:02:23  jim
-# Added support for keyword arguments to methods.
-#
-# Revision 1.21  1998/01/09 21:58:25  jim
-# Fixed bug in handling of arguments.
-#
-# Revision 1.20  1998/01/09 20:37:40  jim
-# Fixed stupid bug in manage_test.
-#
-# Revision 1.19  1998/01/08 21:28:21  jim
-# Fixed to show errors when run in testing mode.
-#
-# Revision 1.18  1998/01/07 16:27:16  jim
-# Brought up to date with latest Principia models.
-#
-# Revision 1.17  1997/12/18 13:35:31  jim
-# Added ImageFile usage.
-#
-# Revision 1.16  1997/12/05 21:33:13  jim
-# major overhall to add record addressing, brains, and support for new interface
-#
-# Revision 1.15  1997/11/26 20:06:03  jim
-# New Architecture, note that backward compatibility tools are needed
-#
-# Revision 1.12  1997/09/26 22:17:45  jim
-# more
-#
-# Revision 1.11  1997/09/25 21:11:52  jim
-# got rid of constructor
-#
-# Revision 1.10  1997/09/25 18:47:53  jim
-# made index_html public
-#
-# Revision 1.9  1997/09/25 18:41:20  jim
-# new interfaces
-#
-# Revision 1.8  1997/09/25 17:35:30  jim
-# Made some corrections for network behavior.
-#
-# Revision 1.7  1997/09/22 18:44:38  jim
-# Got rid of ManageHTML
-# Fixed bug in manage_test that caused extra database updates.
-#
-# Revision 1.6  1997/08/15 22:29:12  jim
-# Fixed bug in passing query arguments.
-#
-# Revision 1.5  1997/08/08 22:55:32  jim
-# Improved connection status management and added database close method.
-#
-# Revision 1.4  1997/08/06 18:19:29  jim
-# Renamed description->title and name->id and other changes
-#
-# Revision 1.3  1997/07/28 21:31:04  jim
-# Get rid of add method here and test scaffolding.
-#
-# Revision 1.2  1997/07/25 16:49:31  jim
-# Added manage_addDAFolder, which can be shared by various DAs.
-#
-# Revision 1.1  1997/07/25 16:43:05  jim
-# initial
-#
-#

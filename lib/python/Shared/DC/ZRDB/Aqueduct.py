@@ -8,11 +8,12 @@
 #       rights reserved.
 #
 ############################################################################## 
-__doc__='''Shared Aqueduct classes and functions
+__doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.25 1998/05/12 20:14:54 jim Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: Aqueduct.py,v 1.26 1998/12/02 12:11:49 jim Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
+import Globals, os
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, rotor
 import binascii, Acquisition
@@ -24,7 +25,7 @@ from DocumentTemplate import HTML
 
 from string import strip
 
-dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
+dtml_dir=Globals.package_home(globals())
 
 InvalidParameter='Invalid Parameter'
 
@@ -129,7 +130,7 @@ class Composite:
 	return map(
 	    lambda k, queries=self.queries:
 	    {'id': k, 'selected': k in queries},
-	    self.aqueductQueryIds())
+	    self.ZQueryIds())
 
 def default_input_form(id,arguments,action='query',
 		       tabs=''):
@@ -191,7 +192,7 @@ def default_input_form(id,arguments,action='query',
 
 
 custom_default_report_src=DocumentTemplate.File(
-    dtml_dir+'customDefaultReport.dtml')
+    os.path.join(dtml_dir,'customDefaultReport.dtml'))
 
 def custom_default_report(id, result, action='', no_table=0,
 			  goofy=regex.compile('[^a-zA-Z0-9_]').search
@@ -386,88 +387,3 @@ def delimited_output(results,REQUEST,RESPONSE):
 		 results),
 	     '\n')
 	)
-
-
-############################################################################## 
-#
-# $Log: Aqueduct.py,v $
-# Revision 1.25  1998/05/12 20:14:54  jim
-# Fixed report wizard to generate exprs when column names are goofy.
-#
-# Revision 1.24  1998/04/20 14:42:34  jim
-# Forgot __len__ in Args.
-#
-# Revision 1.23  1998/04/15 14:55:26  jim
-# Fixed InvalidParameter NameError
-#
-# Revision 1.22  1998/04/15 14:23:36  jim
-# Changed parse to return a mapping object that keeps its
-# items sorted in original order.
-#
-# Revision 1.21  1998/04/14 15:20:39  jim
-# No longer sort items in input form.
-#
-# Revision 1.20  1998/01/12 20:36:26  jim
-# Fixed bug in report generation.
-#
-# Revision 1.19  1998/01/12 19:19:48  jim
-# *** empty log message ***
-#
-# Revision 1.18  1998/01/12 19:18:34  jim
-# *** empty log message ***
-#
-# Revision 1.17  1998/01/09 13:58:14  jim
-# added option for tabular vs record reports
-#
-# Revision 1.16  1997/12/12 23:38:04  jim
-# Added debugging info.
-#
-# Revision 1.15  1997/12/05 21:26:54  jim
-# Minor change to help out testing DAs.
-#
-# Revision 1.14  1997/12/05 21:23:55  jim
-# Minor change to help out testing DAs.
-#
-# Revision 1.13  1997/10/09 15:10:37  jim
-# Added some attempts to provide backward compatibility with earlier
-# Principia version.
-#
-# Added support for empty string as default.
-#
-# Revision 1.12  1997/09/26 22:17:36  jim
-# more
-#
-# Revision 1.11  1997/09/25 22:33:01  jim
-# fixed argument handling bugs
-#
-# Revision 1.10  1997/09/25 21:45:08  jim
-# Fixed argument parse bug
-#
-# Revision 1.9  1997/09/25 21:11:13  jim
-# cleanup and other work
-#
-# Revision 1.8  1997/09/25 18:40:57  jim
-# new interfaces and RDB
-#
-# Revision 1.7  1997/09/22 18:43:46  jim
-# Got rid of ManageHTML
-#
-# Revision 1.6  1997/08/15 22:28:18  jim
-# Added machinery to get argument values from instance attributes.
-#
-# Revision 1.5  1997/08/06 18:19:14  jim
-# Renamed description->title and name->id and other changes
-#
-# Revision 1.4  1997/07/29 00:38:39  jim
-# Changed to use get due to odbc lamosity.
-#
-# Revision 1.3  1997/07/28 22:32:20  jim
-# *** empty log message ***
-#
-# Revision 1.2  1997/07/28 21:27:17  jim
-# Changed generated input forms to use post.
-#
-# Revision 1.1  1997/07/25 16:07:18  jim
-# initial
-#
-#
