@@ -11,7 +11,7 @@ random: Python 'random' module
   See Also
 
     "Python 'random'
-    module":http://www.python.org/doc/current/lib/module-whrandom.html
+    module":http://www.python.org/doc/current/lib/module-random.html
     documentation at Python.org
 """
 
