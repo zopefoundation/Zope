@@ -85,11 +85,18 @@
 __doc__='''Examples from the Acquisition Algebra Presentation
 
 
-$Id: AqAlg.py,v 1.2 2000/06/19 20:30:52 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
-
+$Id: test_AqAlg.py,v 1.1 2001/02/19 19:21:12 jeremy Exp $'''
+__version__='$Revision: 1.1 $'[11:-2]
 
 import Acquisition
+
+import sys
+
+def uid(obj, uids={}):
+    uid = uids.get(id(obj))
+    if uid is None:
+        uid = uids[id(obj)] = len(uids) + 1
+    return uid
 
 def pretty(self, indent=0):
     context=getattr(self, 'aq_parent', None)
@@ -107,12 +114,10 @@ class I(Acquisition.Implicit):
     def __init__(self, name):
         self.__name__=name
 
-        
-
     def __str__(self):
         context=getattr(self, 'aq_parent', None)
         if context is None: return self.__name__
-        return "(%s: %s of %s)" % (id(self), self.aq_self, context)
+        return "(%s: %s of %s)" % (uid(self), self.aq_self, context)
 
     __repr__=__str__
 

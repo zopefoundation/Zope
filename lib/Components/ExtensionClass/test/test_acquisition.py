@@ -5,7 +5,8 @@ class B(Base):
     color='red'
 
 class A(Acquisition.Implicit):
-    def hi(self): print self, self.color
+    def hi(self):
+        print "%s()" % self.__class__.__name__, self.color
 
 b=B()
 b.a=A()
