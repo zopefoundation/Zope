@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.116 $'[11:-2]
+__version__='$Revision: 1.117 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -272,7 +272,7 @@ class File(Persistent,Implicit,PropertyManager,
         """
         data, size = self._read_data(file)
         content_type=self._get_content_type(file, data, self.__name__,
-                                            self.content_type)
+                                            'application/octet-stream')
         self.update_data(data, content_type, size)
 
         if REQUEST: return MessageDialog(
