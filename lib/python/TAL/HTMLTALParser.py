@@ -90,16 +90,16 @@ class HTMLTALParser(SGMLParser):
         self.gen.emitEndTag(tag)
 
     def handle_charref(self, name):
-        self.gen.emit("rawtext", "&#%s;" % name)
+        self.gen.emitRawText("&#%s;" % name)
 
     def handle_entityref(self, name):
-        self.gen.emit("rawtext", "&%s;" % name)
+        self.gen.emitRawText("&%s;" % name)
 
     def handle_data(self, data):
-        self.gen.emit("text", data)
+        self.gen.emitText(data)
 
     def handle_comment(self, data):
-        self.gen.emit("rawtext", "<!--%s-->" % data)
+        self.gen.emitRawText("<!--%s-->" % data)
 
     def handle_pi(self, data):
-        self.gen.emit("rawtext", "<?%s>" % data)
+        self.gen.emitRawText("<?%s>" % data)
