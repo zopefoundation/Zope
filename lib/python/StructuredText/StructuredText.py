@@ -16,6 +16,7 @@ use of StructuredTextNG """
 
 
 import HTMLClass, DocumentClass, ClassicDocumentClass
+import DocumentWithImages, HTMLWithImages
 from ST import Basic
 
 import re, string,sys
@@ -24,10 +25,13 @@ from STletters import letters
 Document = DocumentClass.DocumentClass()
 HTMLNG = HTMLClass.HTMLClass()
 
+DocumentImages = DocumentWithImages.DocumentWithImages()
+HTMLNGImages = HTMLWithImages.HTMLWithImages()
+
 def HTML(aStructuredString, level=1, header=1):
     st = Basic(aStructuredString)
-    doc = Document(st)
-    return HTMLNG(doc,header=header,level=level)
+    doc = DocumentImages(st)
+    return HTMLNGImages(doc,header=header,level=level)
 
 def StructuredText(aStructuredString, level=1):
     return HTML(aStructuredString,level)
