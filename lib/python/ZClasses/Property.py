@@ -386,6 +386,7 @@ def klass_sequence(klass,attr,result=None):
 class ZInstanceSheets(OFS.PropertySheets.PropertySheets, Globals.Persistent):
     " "
     __propset_attrs__=()    
+    _implements_the_notional_subclassable_propertysheet_class_interface=1
 
     def __propsets__(self):
         propsets=ZInstanceSheets.inheritedAttribute('__propsets__')(self)
