@@ -1,5 +1,5 @@
 """Bobo call interface"""
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys,regex
 from httplib import HTTP
@@ -59,6 +59,7 @@ exceptmap   ={'AccessError'      :AccessError,
 	      'KeyError'         :KeyError,
 	      'MemoryError'      :MemoryError,
 	      'NameError'        :NameError,
+	      'NotAvailable'     :NotAvailable,
 	      'NotFound'         :NotFound,
 	      'OverflowError'    :OverflowError,
 	      'RuntimeError'     :RuntimeError,
@@ -161,9 +162,8 @@ class RemoteMethod:
 	    try:    t=exceptmap[headers.dict['bobo-exception-type']]
 	    except:
 		if   ec >= 400 and ec < 500: t=NotFound
-		elif ec >= 500 and ec < 600: t=ServerError
-		else:                        t=NotAvailable
-
+		elif ec == 503:              t=NotAvailable
+		else:                        t=ServerError
 	    raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
 
 
@@ -253,6 +253,11 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.8  1997/04/29 16:23:27  brian
+# Added logic to work with the pcgi-wrapper - bci.NotAvailable will be raised
+# by a RemoteMethod if the remote host is not reachable from a network problem
+# or if the request timed out at the other end.
+#
 # Revision 1.7  1997/04/18 19:45:47  jim
 # Brian's changes to try and get file name and line no in exceptions.
 #
