@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import regex, sys, os
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -350,12 +350,15 @@ class HTTPRequest(BaseRequest):
             # waaa - traversal may return a "default object"
             # like an index_html document, though you really
             # wanted to get a Folder back :(
-            if callable(object.id):
-                name=object.id()
-            else: name=object.id
-            if name != os.path.split(path)[-1] and \
-               hasattr(object, 'aq_parent'):
-                return object.aq_parent
+            if hasattr(object, 'id'):
+                if callable(object.id):
+                    name=object.id()
+                else: name=object.id
+            elif hasattr(object, '__name__'):
+                name=object.__name__
+            else: name=''
+            if name != os.path.split(path)[-1]:
+                return req.PARENTS[0]
             return object
         raise rsp.errmsg, sys.exc_value
 
