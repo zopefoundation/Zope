@@ -1,0 +1,28 @@
+<html><head><title>AcceleratedHTTPCacheManager statistics</title></head>
+<body bgcolor="#ffffff">
+<dtml-var manage_tabs>
+<h2>Statistics</h2>
+<table>
+<tr>
+  <td><dtml-var expr="sort_link('Path', 'path')"></td>
+  <td><dtml-var expr="sort_link('Anonymous hits', 'anon')"></td>
+  <td><dtml-var expr="sort_link('Authenticated hits', 'auth')"></td>
+</tr>
+<dtml-in getCacheReport mapping>
+<tr>
+  <td><a href="&dtml-path;/ZCacheable_manage">&dtml-path;</a></td>
+  <td>&dtml-anon;</td>
+  <td>&dtml-auth;</td>
+</tr>
+<dtml-else>
+  <tr><td colspan="3"><i>Nothing is in the cache.</i></td></tr>
+</dtml-in>
+</table>
+<p><i>Notes</i></p>
+<ul>
+<li>Cache manager hits generally correspond to HTTP accelerator misses.</li>
+<li>A hit is counted in the "authenticated hits" column even if
+headers are only set for anonymous requests.</li>
+</ul>
+</body>
+</html>

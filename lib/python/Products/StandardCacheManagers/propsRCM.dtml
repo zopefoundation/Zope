@@ -1,0 +1,37 @@
+<html><head><title>RAMCacheManager properties</title></head>
+<body bgcolor="#ffffff">
+<dtml-var manage_tabs>
+<h2>Properties</h2>
+<form action="manage_editProps" method="POST">
+<dtml-with getSettings mapping>
+<table>
+  <tr>
+     <th valign="top" align="left">Id</th>
+     <td>&dtml-id;</td>
+  </tr>
+  <tr>
+     <th valign="top" align="left">Title</th>
+     <td><input type="text" name="title" value="&dtml-title;"></td>
+  </tr>
+  <tr>
+     <th valign="top" align="left">REQUEST variables</th>
+     <td><textarea name="request_vars:lines" rows="5" cols="30"><dtml-in
+        request_vars>&dtml-sequence-item;
+</dtml-in></textarea></td>
+  </tr>
+  <tr>
+     <th valign="top" align="left">Threshold entries</th>
+     <td><input type="text" name="threshold"
+          value="&dtml-threshold;"></td>
+  </tr>
+  <tr>
+     <th valign="top" align="left">Cleanup interval (seconds)</th>
+     <td><input type="text" name="cleanup_interval"
+          value="&dtml-cleanup_interval;"></td>
+  </tr>
+</table>
+</dtml-with>
+<input type="submit" name="submit" value="Save">
+</form>
+</body>
+</html>

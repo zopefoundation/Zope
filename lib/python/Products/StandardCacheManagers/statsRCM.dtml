@@ -1,0 +1,37 @@
+<html><head><title>RAMCacheManager statistics</title></head>
+<body bgcolor="#ffffff">
+<dtml-var manage_tabs>
+<h2>Statistics</h2>
+<table>
+<tr>
+  <td><dtml-var expr="sort_link('Path', 'path')"></td>
+  <td><dtml-var expr="sort_link('Hits', 'hits')"></td>
+  <td><dtml-var expr="sort_link('Recent hits', 'counter')"></td>
+  <td><dtml-var expr="sort_link('Misses', 'misses')"></td>
+  <td><dtml-var expr="sort_link('Memory', 'size')"></td>
+  <td><dtml-var expr="sort_link('Views', 'views')"></td>
+  <td><dtml-var expr="sort_link('Entries', 'entries')"></td>
+</tr>
+<dtml-in getCacheReport mapping>
+<tr>
+  <td><a href="&dtml-path;/ZCacheable_manage">&dtml-path;</a></td>
+  <td>&dtml-hits;</td>
+  <td>&dtml-counter;</td>
+  <td>&dtml-misses;</td>
+  <td>&dtml-size;</td>
+  <td><dtml-var expr="_.string.join(views, ', ')" html_quote></td>
+  <td>&dtml-entries;</td>
+</tr>
+<dtml-else>
+  <tr><td colspan="7"><i>Nothing is in the cache.</i></td></tr>
+</dtml-in>
+</table>
+<ul>
+<li>Memory usage is approximate. It is based on the pickled value of the
+cached data.</li>
+<li>The cache is cleaned up by removing the least frequently accessed
+entries since the last cleanup operation. The determination is made using
+the <i>Recent hits</i> counter.</li>
+</ul>
+</body>
+</html>
