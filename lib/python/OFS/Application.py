@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.192 2003/07/08 17:03:52 evan Exp $'''
-__version__='$Revision: 1.192 $'[11:-2]
+$Id: Application.py,v 1.193 2003/07/20 16:16:07 chrism Exp $'''
+__version__='$Revision: 1.193 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -280,17 +280,19 @@ def initialize(app):
 
     # Ensure that a temp folder exists
     if not hasattr(app, 'temp_folder'):
-        from Products.TemporaryFolder.TemporaryFolder import \
-             MountedTemporaryFolder
-        tf = MountedTemporaryFolder('temp_folder','Temporary Folder')
-        app._setObject('temp_folder', tf)
-        get_transaction().note('Added temp_folder')
-        get_transaction().commit()
-        del tf
+        from Products.ZODBMountPoint.MountedObject import manage_addMounts
+        try:
+            manage_addMounts(app, ('/temp_folder',))
+            get_transaction().note('Added temp_folder')
+            get_transaction().commit()
+        except:
+            LOG('Zope Default Object Creation', ERROR,
+                'Could not add a /temp_folder mount point due to an error.',
+                error=sys.exc_info())
 
     # Ensure that there is a transient container in the temp folder
-    tf = app.temp_folder
-    if not hasattr(aq_base(tf), 'session_data'):
+    tf = getattr(app, 'temp_folder', None)
+    if tf is not None and not hasattr(aq_base(tf), 'session_data'):
         env_has = os.environ.get
         from Products.Transience.Transience import TransientObjectContainer
         addnotify = env_has('ZSESSION_ADD_NOTIFY', None)
