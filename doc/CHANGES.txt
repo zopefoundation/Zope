@@ -45,6 +45,9 @@ Zope Changes
 
         - Creation of a TextIndex ignored the vocabulary setting.
 
+        - Fixed broken aquisition of vocabularies from a Catalog
+          by a TextIndex.
+
     Zope 2.4 beta 2
 
       Bugs fixed
