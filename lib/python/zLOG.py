@@ -199,12 +199,14 @@ def LOG(subsystem, severity, summary, detail='', error=None, reraise=None):
     if reraise and error:
         raise error[0], error[1], error[2]
 
+_subsystems=[]
 def register_subsystem(subsystem):
     """Register a subsystem name
 
     A logging facility might replace this function to collect information about
     subsystems used in an application.
     """
+    _subsystems.append(subsystem)
 
 def log_time():
     """Return a simple time string without spaces suitable for logging
