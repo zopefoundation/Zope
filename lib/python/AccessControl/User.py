@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.169 $'[11:-2]
+__version__='$Revision: 1.170 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -42,7 +42,7 @@ class BasicUser(Implicit):
     # ----------------------------
     # Public User object interface
     # ----------------------------
-    
+
     # Maybe allow access to unprotected attributes. Note that this is
     # temporary to avoid exposing information but without breaking
     # everyone's current code. In the future the security will be
@@ -59,7 +59,7 @@ class BasicUser(Implicit):
         if name in deny_names:
             return 0
         return 1
-        
+
     def __init__(self,name,password,roles,domains):
         raise NotImplemented
 
@@ -71,7 +71,7 @@ class BasicUser(Implicit):
         """Get the ID of the user. The ID can be used, at least from
         Python, to get the user from the user's
         UserDatabase"""
-        return self.getUserName()        
+        return self.getUserName()
 
     def _getPassword(self):
         """Return the password of the user."""
@@ -117,7 +117,7 @@ class BasicUser(Implicit):
     # ------------------------------
     # Internal User object interface
     # ------------------------------
-    
+
     def authenticate(self, password, request):
         passwrd=self._getPassword()
         result = AuthEncoding.pw_validate(passwrd, password)
@@ -126,25 +126,25 @@ class BasicUser(Implicit):
             return result and domainSpecMatch(domains, request)
         return result
 
-    
+
     def _shared_roles(self, parent):
-          r=[]
-          while 1:
-              if hasattr(parent,'__roles__'):
-                  roles=parent.__roles__
-                  if roles is None: return 'Anonymous',
-                  if 'Shared' in roles:
-                      roles=list(roles)
-                      roles.remove('Shared')
-                      r=r+roles
-                  else:
-                      try: return r+list(roles)
-                      except: return r
-              if hasattr(parent, 'aq_parent'):
-                  while hasattr(parent.aq_self,'aq_self'):
-                      parent=parent.aq_self
-                  parent=parent.aq_parent
-              else: return r
+        r=[]
+        while 1:
+            if hasattr(parent,'__roles__'):
+                roles=parent.__roles__
+                if roles is None: return 'Anonymous',
+                if 'Shared' in roles:
+                    roles=list(roles)
+                    roles.remove('Shared')
+                    r=r+roles
+                else:
+                    try: return r+list(roles)
+                    except: return r
+            if hasattr(parent, 'aq_parent'):
+                while hasattr(parent.aq_self,'aq_self'):
+                    parent=parent.aq_self
+                parent=parent.aq_parent
+            else: return r
 
     def _check_context(self, object):
         # Check that 'object' exists in the acquisition context of
@@ -234,7 +234,7 @@ class BasicUser(Implicit):
 
     def hasRole(self, *args, **kw):
         """hasRole is an alias for 'allowed' and has been deprecated.
-        
+
         Code still using this method should convert to either 'has_role' or
         'allowed', depending on the intended behaviour.
 
@@ -246,7 +246,7 @@ class BasicUser(Implicit):
         self.allowed(*args, **kw)
 
     domains=[]
-    
+
     def has_role(self, roles, object=None):
         """Check to see if a user has a given role or roles."""
         if type(roles)==type('s'):
@@ -314,7 +314,7 @@ class UnrestrictedUser(SpecialUser):
 
     def hasRole(self, *args, **kw):
         """hasRole is an alias for 'allowed' and has been deprecated.
-        
+
         Code still using this method should convert to either 'has_role' or
         'allowed', depending on the intended behaviour.
 
@@ -366,7 +366,7 @@ class NullUnrestrictedUser(SpecialUser):
 
     def hasRole(self, *args, **kw):
         """hasRole is an alias for 'allowed' and has been deprecated.
-        
+
         Code still using this method should convert to either 'has_role' or
         'allowed', depending on the intended behaviour.
 
@@ -384,7 +384,7 @@ class NullUnrestrictedUser(SpecialUser):
     def has_permission(self, permission, object):
         return 0
 
-    
+
 
 def readUserAccessFile(filename):
     '''Reads an access file from INSTANCE_HOME.
@@ -471,7 +471,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # ----------------------------------
     # Public UserFolder object interface
     # ----------------------------------
-    
+
     def getUserNames(self):
         """Return a list of usernames"""
         raise NotImplemented
@@ -492,8 +492,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         try:
             return self.getUser(id)
         except:
-           if default is _marker: raise
-           return default
+            if default is _marker: raise
+            return default
 
     def _doAddUser(self, name, password, roles, domains, **kw):
         """Create a new user. This should be implemented by subclasses to
@@ -503,7 +503,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         raise NotImplemented
 
     def _doChangeUser(self, name, password, roles, domains, **kw):
-        """Modify an existing user. This should be implemented by subclasses 
+        """Modify an existing user. This should be implemented by subclasses
            to make the actual changes to a user. The 'password' will be the
            original input password, unencrypted. The implementation of this
            method is responsible for performing any needed encryption."""
@@ -658,9 +658,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 # we can't authorize the user, and we either can't authorize
                 # nobody against the published object or we're not top-level
                 return None
-            
+
     if _remote_user_mode:
-        
+
         def validate(self, request, auth='', roles=_noroles):
             v = request['PUBLISHED']
             a, c, n, v = self._getobcontext(v, request)
@@ -742,7 +742,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             a = request['PARENTS'][-1]
         if c is request_container:
             c = request['PARENTS'][-1]
-            
+
         return a, c, n, v
 
     def _isTop(self):
@@ -830,33 +830,33 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='A username must be specified',
                    action ='manage_main')
         if not password or not confirm:
             if not domains:
                 return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Password and confirmation must be specified',
                    action ='manage_main')
         if self.getUser(name) or (self._emergency_user and
                                   name == self._emergency_user.getUserName()):
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='A user with the specified name already exists',
                    action ='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Password and confirmation do not match',
                    action ='manage_main')
-        
+
         if not roles: roles=[]
         if not domains: domains=[]
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Illegal domain specification',
                    action ='manage_main')
         self._doAddUser(name, password, roles, domains)
@@ -869,23 +869,23 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             password = confirm = None
         if not name:
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='A username must be specified',
                    action ='manage_main')
         if password == confirm == '':
             if not domains:
                 return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Password and confirmation must be specified',
                    action ='manage_main')
         if not self.getUser(name):
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Unknown user',
                    action ='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Password and confirmation do not match',
                    action ='manage_main')
 
@@ -894,7 +894,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='Illegal domain specification',
                    action ='manage_main')
         self._doChangeUser(name, password, roles, domains)
@@ -903,7 +903,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def _delUsers(self,names,REQUEST=None):
         if not names:
             return MessageDialog(
-                   title  ='Illegal value', 
+                   title  ='Illegal value',
                    message='No users specified',
                    action ='manage_main')
         self._doDelUsers(names)
@@ -1131,7 +1131,7 @@ def domainSpecMatch(spec, request):
     _addr=addr.split('.')
     _hlen=len(_host)
     _alen=len(_addr)
-    
+
     for ob in spec:
         sz=len(ob)
         _ob=ob.split('.')
@@ -1139,7 +1139,7 @@ def domainSpecMatch(spec, request):
 
         mo = addr_match(ob)
         if mo is not None:
-            if mo.end(0)==sz: 
+            if mo.end(0)==sz:
                 fail=0
                 for i in range(_sz):
                     a=_addr[i]

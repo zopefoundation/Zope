@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Module Import Tests
 """
 
-__rcs_id__='$Id: testModuleSecurity.py,v 1.2 2002/01/11 17:14:27 evan Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: testModuleSecurity.py,v 1.3 2002/08/14 21:28:08 mj Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 import os, sys, unittest
 
@@ -65,7 +65,7 @@ class SecurityTests(unittest.TestCase):
             for fromlist in (), ('pub',):
                 self.assertAuth(
                     'AccessControl.tests.public_module%s' % name,
-                    fromlist)    
+                    fromlist)
 
 def test_suite():
     suite = unittest.TestSuite()

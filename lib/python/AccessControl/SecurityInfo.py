@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """SecurityInfo objects and access control constants.
 
@@ -19,7 +19,7 @@
    More information on using SecurityInfo and guide to Zope security
    for developers can be found in the dev.zope.org "Declarative Security"
    project:
-   
+
    http://dev.zope.org/Wikis/DevSite/Projects/DeclarativeSecurity
 
    While SecurityInfo objects largely remove the need for Python
@@ -28,7 +28,7 @@
    must set __roles__ attributes directly. (the constants are also
    accessible from the AccessControl namespace). The defined access
    control constants and their meanings are:
-   
+
    ACCESS_PUBLIC:  accessible from restricted code and possibly
                    through the web (if object has a docstring)
 
@@ -58,7 +58,7 @@ class SecurityInfo(Acquisition.Implicit):
     """Encapsulate security information."""
 
     __security_info__ = 1
-    
+
     __roles__ = ACCESS_PRIVATE
 
     def __init__(self):
@@ -76,7 +76,7 @@ class SecurityInfo(Acquisition.Implicit):
                 self._warnings = 1
             self.names[name] = access
 
-    declarePublic__roles__=ACCESS_PRIVATE    
+    declarePublic__roles__=ACCESS_PRIVATE
     def declarePublic(self, *names):
         """Declare names to be publicly accessible."""
         self._setaccess(names, ACCESS_PUBLIC)
@@ -91,7 +91,7 @@ class SecurityInfo(Acquisition.Implicit):
         """Declare names to be associated with a permission."""
         self._setaccess(names, permission_name)
 
-    declareObjectPublic__roles__=ACCESS_PRIVATE    
+    declareObjectPublic__roles__=ACCESS_PRIVATE
     def declareObjectPublic(self):
         """Declare the object to be publicly accessible."""
         self._setaccess((), ACCESS_PUBLIC)
@@ -144,7 +144,7 @@ class ClassSecurityInfo(SecurityInfo):
     apply__roles__ = ACCESS_PRIVATE
     def apply(self, classobj):
         """Apply security information to the given class object."""
-        
+
         dict = classobj.__dict__
 
         # Check the class for an existing __ac_permissions__ and
@@ -244,13 +244,13 @@ class _ModuleSecurityInfo(SecurityInfo):
         access = self.names.get(name, _marker)
         if access is not _marker:
             return access == ACCESS_PUBLIC
-        
+
         return getattr(self, 'access', 0)
 
     apply__roles__ = ACCESS_PRIVATE
     def apply(self, dict):
         """Apply security information to the given module dict."""
-        
+
         # Start with default attribute access policy
         access = getattr(self, 'access', _marker)
         if access is not _marker or len(self.names):

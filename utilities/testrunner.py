@@ -76,10 +76,10 @@ class TestRunner:
     def smellsLikeATest(self, filepath, find=string.find):
         path, name = os.path.split(filepath)
         fname, ext = os.path.splitext(name)
-        
+
         if name[:4]=='test' and name[-3:]=='.py' and \
            name != 'testrunner.py':
-            
+
             file=open(filepath, 'r')
             lines=file.readlines()
             file.close()
@@ -144,10 +144,10 @@ class TestRunner:
                     self.report('No test suite found in file:\n%s\n' % pathname)
                     if self.verbosity > 1:
                         traceback.print_exc()
-                    suite = None            
+                    suite = None
             finally:
                 os.chdir(working_dir)
-            
+
             return suite
 
         else: # no test there!
@@ -183,7 +183,7 @@ class TestRunner:
         try:    suite=self.getSuiteFromFile(name)
         except:
             traceback.print_exc()
-            suite=None            
+            suite=None
         if suite is not None:
             self.runSuite(suite)
         else:
@@ -219,7 +219,7 @@ def main(args):
           working directory. This is the default if no options are
           specified.
 
-       -m 
+       -m
 
           Run all tests in a single, giant suite (consolidates error
           reporting). [default]
@@ -259,7 +259,7 @@ def main(args):
             2 - Verbose (default - produces a line of output for each test)
 
        -q
-       
+
           Run tests without producing verbose output.  The tests are
           normally run in verbose mode, which produces a line of
           output for each test that includes the name of the test and
@@ -358,7 +358,7 @@ def main(args):
             msg += "total errors=%d" % errs
         msg += ")"
         err_exit(msg, 1)
-        
+
     sys.exit(0)
 
 

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Try to do all of the installation steps.
 
@@ -40,22 +40,22 @@ def main(args):
        -p   -- Supply the path to the PCGI resource file.
                This defaults to %s.
                Note that this path must include the file name.
-    
+
        -g   -- Supply the name of the unix group to which
                the user that runs your web server belongs.
                If not specified, the installer will attempt
                to determine the group itself. If no group
                is specified and the installer is unable to
                determine the group, the install will fail.
-    
+
        -u   -- Supply the name of the unix user used to
                run your web server. If not specified, this
                defaults to the userid of the current user,
                or 'nobody' is the current user is root.
-    
+
        -h   -- Show command summary
     """ % (pcgi)
-    
+
     try: options, args = getopt.getopt(sys.argv[1:], 'p:g:hu:')
     except: error(usage, sys.exc_info())
     if args: error('', ('Unexpected arguments', args))

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Load a Zope site from a collection of files or directories
 """
@@ -89,7 +89,7 @@ def main():
             here=os.path.join(here,'lib','python')
             if os.path.exists(os.path.join(here,'ZPublisher')):
                 sys.path.insert(0,here)
-        
+
 
     url=args[0]
     files=args[1:]
@@ -139,100 +139,100 @@ def upload_dir(object, f):
 from sgmllib import SGMLParser
 
 def join_attrs(attrs):
-   attr_list = []
-   for attrname, value in attrs:
-      attr_list.append('%s="%s"' % (attrname, string.strip(value)))
+    attr_list = []
+    for attrname, value in attrs:
+        attr_list.append('%s="%s"' % (attrname, string.strip(value)))
 
-   if attr_list:
-      s = " " + string.join(attr_list, " ")
-   else:
-      s = ""
+    if attr_list:
+        s = " " + string.join(attr_list, " ")
+    else:
+        s = ""
 
-   return s
+    return s
 
 
 class HeadParser(SGMLParser):
-   def __init__(self):
-      SGMLParser.__init__(self)
+    def __init__(self):
+        SGMLParser.__init__(self)
 
-      self.seen_starthead = 0
-      self.seen_endhead   = 0
-      self.seen_startbody = 0
+        self.seen_starthead = 0
+        self.seen_endhead   = 0
+        self.seen_startbody = 0
 
-      self.head = ""
-      self.title = ""
-      self.accumulator = ""
-
-
-   def handle_data(self, data):
-      if data:
-         self.accumulator = self.accumulator + data
-
-   def handle_charref(self, ref):
-       self.handle_data("&#%s;" % ref)
-
-   def handle_entityref(self, ref):
-       self.handle_data("&%s;" % ref)
-
-   def handle_comment(self, data):
-      if data:
-         self.accumulator = self.accumulator + "<!--%s-->" % data
+        self.head = ""
+        self.title = ""
+        self.accumulator = ""
 
 
-   def start_head(self, attrs):
-      if not self.seen_starthead:
-         self.seen_starthead = 1
-         self.head = ""
-         self.title = ""
-         self.accumulator = ""
+    def handle_data(self, data):
+        if data:
+            self.accumulator = self.accumulator + data
 
-   def end_head(self):
-      if not self.seen_endhead:
-         self.seen_endhead = 1
-         self.head = self.head + self.accumulator
-         self.accumulator = ""
+    def handle_charref(self, ref):
+        self.handle_data("&#%s;" % ref)
 
+    def handle_entityref(self, ref):
+        self.handle_data("&%s;" % ref)
 
-   def start_title(self, attrs):
-      self.head = self.head + self.accumulator
-      self.accumulator = ""
-
-   def end_title(self):
-      self.title = self.accumulator
-      self.accumulator = ""
+    def handle_comment(self, data):
+        if data:
+            self.accumulator = self.accumulator + "<!--%s-->" % data
 
 
-   def start_body(self, attrs):
-      if not self.seen_startbody:
-         self.seen_startbody = 1
-         self.accumulator = ""
+    def start_head(self, attrs):
+        if not self.seen_starthead:
+            self.seen_starthead = 1
+            self.head = ""
+            self.title = ""
+            self.accumulator = ""
 
-   def end_body(self): pass # Do not put </BODY> and </HTML>
-   def end_html(self): pass # into output stream
+    def end_head(self):
+        if not self.seen_endhead:
+            self.seen_endhead = 1
+            self.head = self.head + self.accumulator
+            self.accumulator = ""
 
 
-   # Pass other tags unmodified
-   def unknown_starttag(self, tag, attrs):
-      self.accumulator = self.accumulator + "<%s%s>" % (string.upper(tag), join_attrs(attrs))
+    def start_title(self, attrs):
+        self.head = self.head + self.accumulator
+        self.accumulator = ""
 
-   def unknown_endtag(self, tag):
-      self.accumulator = self.accumulator + "</%s>" % string.upper(tag)
+    def end_title(self):
+        self.title = self.accumulator
+        self.accumulator = ""
+
+
+    def start_body(self, attrs):
+        if not self.seen_startbody:
+            self.seen_startbody = 1
+            self.accumulator = ""
+
+    def end_body(self): pass # Do not put </BODY> and </HTML>
+    def end_html(self): pass # into output stream
+
+
+    # Pass other tags unmodified
+    def unknown_starttag(self, tag, attrs):
+        self.accumulator = self.accumulator + "<%s%s>" % (string.upper(tag), join_attrs(attrs))
+
+    def unknown_endtag(self, tag):
+        self.accumulator = self.accumulator + "</%s>" % string.upper(tag)
 
 
 
 def parse_html(infile):
-   parser = HeadParser()
+    parser = HeadParser()
 
-   while 1:
-      line = infile.readline()
-      if not line: break
-      parser.feed(line)
+    while 1:
+        line = infile.readline()
+        if not line: break
+        parser.feed(line)
 
-   parser.close()
-   infile.close()
+    parser.close()
+    infile.close()
 
-   return (string.strip(parser.title), string.strip(parser.head),
-           string.strip(parser.accumulator))
+    return (string.strip(parser.title), string.strip(parser.head),
+            string.strip(parser.accumulator))
 
 
 def upload_html(object, f):
@@ -271,14 +271,14 @@ def upload_html(object, f):
 
     # Now add META and other tags as property
     if head:
-      object=object.__class__(object.url+'/'+name,
-                            username=object.username,
-                            password=object.password)
-      call(object.manage_addProperty,
-           id="loadsite-head", type="text", value=head)
+        object=object.__class__(object.url+'/'+name,
+                              username=object.username,
+                              password=object.password)
+        call(object.manage_addProperty,
+             id="loadsite-head", type="text", value=head)
 
 # ----- /phd -----
-    
+
 upload_htm=upload_html
 
 def upload_dtml(object, f):
@@ -290,7 +290,7 @@ def upload_dtml(object, f):
         call(object.manage_addDocument, id=name, file=f)
     else:
         call(object.manage_addDTMLMethod, id=name, file=f)
-        
+
 
 def upload_gif(object, f):
     dir, name = os.path.split(f)
@@ -300,5 +300,3 @@ upload_jpg=upload_gif
 upload_png=upload_gif
 
 if __name__=='__main__': main()
-
-

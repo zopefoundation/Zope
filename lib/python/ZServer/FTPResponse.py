@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Response class for the FTP Server.
@@ -41,7 +41,7 @@ class FTPResponse(ZServerHTTPResponse):
         self.cookies[name]=self.cookies[name] + value
 
     def expireCookie(self, name, **kw):
-        if self.cookies.has_key(name):            
+        if self.cookies.has_key(name):
             del self.cookies[name]
 
     def _cookie_list(self):
@@ -55,7 +55,7 @@ class FTPResponse(ZServerHTTPResponse):
 
     def getMessage(self):
         return getattr(self, '_message', '')
- 
+
 class CallbackPipe:
     """
     Sends response object to a callback. Doesn't write anything.
@@ -65,27 +65,27 @@ class CallbackPipe:
         self._callback=callback
         self._args=args
         self._producers=[]
-        
+
     def close(self):
         pass
-        
+
     def write(self, text, l=None):
         if text:
             self._producers.append(text)
-    
+
     def finish(self, response):
         self._response=response
         Wakeup(self.apply) # move callback to medusas thread
-        
+
     def apply(self):
         result=apply(self._callback, self._args+(self._response,))
-       
+
         # break cycles
         self._callback=None
         self._response=None
         self._args=None
-        
-        return result    
+
+        return result
 
 def make_response(channel, callback, *args):
     # XXX should this be the FTPResponse constructor instead?

@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -177,24 +177,24 @@ class _cache:
            'gmt+130':'GMT+0130',  'gmt+0130':'GMT+0130',
            'gmt+230':'GMT+0230',  'gmt+0230':'GMT+0230',
            'gmt+330':'GMT+0330',  'gmt+0330':'GMT+0330',
-           'gmt+430':'GMT+0430',  'gmt+0430':'GMT+0430',           
+           'gmt+430':'GMT+0430',  'gmt+0430':'GMT+0430',
            'gmt+530':'GMT+0530',  'gmt+0530':'GMT+0530',
            'gmt+630':'GMT+0630',  'gmt+0630':'GMT+0630',
            'gmt+730':'GMT+0730',  'gmt+0730':'GMT+0730',
-           'gmt+830':'GMT+0830',  'gmt+0830':'GMT+0830',           
+           'gmt+830':'GMT+0830',  'gmt+0830':'GMT+0830',
            'gmt+930':'GMT+0930',  'gmt+0930':'GMT+0930',
            'gmt+1030':'GMT+1030',
            'gmt+1130':'GMT+1130',
-           'gmt+1230':'GMT+1230',      
+           'gmt+1230':'GMT+1230',
 
            'gmt-130':'GMT-0130',  'gmt-0130':'GMT-0130',
            'gmt-230':'GMT-0230',  'gmt-0230':'GMT-0230',
            'gmt-330':'GMT-0330',  'gmt-0330':'GMT-0330',
-           'gmt-430':'GMT-0430',  'gmt-0430':'GMT-0430',           
+           'gmt-430':'GMT-0430',  'gmt-0430':'GMT-0430',
            'gmt-530':'GMT-0530',  'gmt-0530':'GMT-0530',
            'gmt-630':'GMT-0630',  'gmt-0630':'GMT-0630',
            'gmt-730':'GMT-0730',  'gmt-0730':'GMT-0730',
-           'gmt-830':'GMT-0830',  'gmt-0830':'GMT-0830',           
+           'gmt-830':'GMT-0830',  'gmt-0830':'GMT-0830',
            'gmt-930':'GMT-0930',  'gmt-0930':'GMT-0930',
            'gmt-1030':'GMT-1030',
            'gmt-1130':'GMT-1130',
@@ -215,7 +215,7 @@ class _cache:
            'us/mountain':'US/Mountain','us/pacific':'US/Pacific',
            'us/samoa':'US/Samoa',
 
-           'ut':'Universal',      
+           'ut':'Universal',
            'bst':'GMT+1', 'mest':'GMT+2', 'sst':'GMT+2',
            'fst':'GMT+2', 'wadt':'GMT+8', 'eadt':'GMT+11', 'nzdt':'GMT+13',
            'wet':'GMT', 'wat':'GMT-1', 'at':'GMT-2', 'ast':'GMT-4',
@@ -272,7 +272,7 @@ def _findLocalTimeZoneName(isDST):
         except:
             _localzone = ''
     return _localzone
-    
+
 # Some utility functions for calculating dates:
 
 def _calcSD(t):
@@ -288,7 +288,7 @@ def _calcDependentSecond(tz, t):
     # from the timezone-independent second.
     fset = _tzoffset(tz, t)
     return fset + long(math.floor(t)) + long(EPOCH) - 86400L
-    
+
 def _calcDependentSecond2(yr,mo,dy,hr,mn,sc):
     # Calculates the timezone-dependent second (integer part only)
     # from the date given.
@@ -404,9 +404,9 @@ def safelocaltime(t):
 class DateTime:
     """DateTime objects represent instants in time and provide
        interfaces for controlling its representation without
-       affecting the absolute value of the object. 
+       affecting the absolute value of the object.
 
-       DateTime objects may be created from a wide variety of string 
+       DateTime objects may be created from a wide variety of string
        or numeric data, or may be computed from other DateTime objects.
        DateTimes support the ability to convert their representations
        to many major timezones, as well as the ablility to create a
@@ -431,7 +431,7 @@ class DateTime:
             object.
 
         DateTime objects may be converted to integer, long, or float
-        numbers of days since January 1, 1901, using the standard int, 
+        numbers of days since January 1, 1901, using the standard int,
         long, and float functions (Compatibility Note: int, long and
         float return the number of days since 1901 in GMT rather than
         local machine timezone). DateTime objects also provide access
@@ -450,7 +450,7 @@ class DateTime:
     def __init__(self,*args):
         """Return a new date-time object
 
-        A DateTime object always maintains its value as an absolute 
+        A DateTime object always maintains its value as an absolute
         UTC time, and is represented in the context of some timezone
         based on the arguments used to create the object. A DateTime
         object's methods return values based on the timezone context.
@@ -461,8 +461,8 @@ class DateTime:
         DateTimes may be created with from zero to seven arguments.
 
 
-          - If the function is called with no arguments, then the 
-            current date/time is returned, represented in the 
+          - If the function is called with no arguments, then the
+            current date/time is returned, represented in the
             timezone of the local machine.
 
           - If the function is invoked with a single string argument
@@ -474,7 +474,7 @@ class DateTime:
             representing a valid date/time, an object representing
             that date/time will be returned.
 
-            As a general rule, any date-time representation that is 
+            As a general rule, any date-time representation that is
             recognized and unambigous to a resident of North America is
             acceptable.(The reason for this qualification is that
             in North America, a date like: 2/1/1994 is interpreted
@@ -503,7 +503,7 @@ class DateTime:
 
 
             </PRE>
-            
+
             New in Zope 2.4:
             The DateTime constructor automatically detects and handles
             ISO8601 compliant dates (YYYY-MM-DDThh:ss:mmTZD).
@@ -524,7 +524,7 @@ class DateTime:
             as it is possible to distinguish the components. If all
             three components are numbers that are less than 13,
             then a a month-day-year ordering is assumed.
-        
+
             The time component consists of hour, minute, and second
             values separated by colons.  The hour value must be an
             integer between 0 and 23 inclusively. The minute value
@@ -536,20 +536,20 @@ class DateTime:
             case a 12-hour clock is assumed.
 
           - If the DateTime function is invoked with a single
-            Numeric argument, the number is assumed to be 
-            a floating point value such as that returned by 
+            Numeric argument, the number is assumed to be
+            a floating point value such as that returned by
             time.time().
 
-            A DateTime object is returned that represents 
+            A DateTime object is returned that represents
             the gmt value of the time.time() float represented in
             the local machine's timezone.
-        
+
           - If the function is invoked with two numeric arguments,
             then the first is taken to be an integer year and the
             second argument is taken to be an offset in days from
             the beginning of the year, in the context of the local
             machine timezone.
-            The date-time value returned is the given offset number of 
+            The date-time value returned is the given offset number of
             days from the beginning of the given year, represented in
             the timezone of the local machine. The offset may be positive
             or negative.
@@ -558,7 +558,7 @@ class DateTime:
 
           - If the function is invoked with two arguments, the first
             a float representing a number of seconds past the epoch
-            in gmt (such as those returned by time.time()) and the 
+            in gmt (such as those returned by time.time()) and the
             second a string naming a recognized timezone, a DateTime
             with a value of that gmt time will be returned, represented
             in the given timezone.
@@ -598,10 +598,10 @@ class DateTime:
         If a string argument passed to the DateTime constructor cannot be
         parsed, it will raise DateTime.SyntaxError. Invalid date components
         will raise a DateError, while invalid time or timezone components
-        will raise a DateTimeError. 
+        will raise a DateTimeError.
 
-        The module function Timezones() will return a list of the 
-        timezones recognized by the DateTime module. Recognition of 
+        The module function Timezones() will return a list of the
+        timezones recognized by the DateTime module. Recognition of
         timezone names is case-insensitive.""" #'
 
         d=t=s=None
@@ -625,13 +625,13 @@ class DateTime:
             s,d = _calcSD(t)
             yr,mo,dy,hr,mn,sc=lt[:6]
             sc=sc+ms
-            
+
         elif ac==1:
             arg=args[0]
-            
+
             if arg=='':
                 raise self.SyntaxError, arg
-            
+
             if type(arg) in [StringType,UnicodeType] and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
                 t,tz=time(),self._tzinfo._zmap[arg.lower()]
@@ -643,13 +643,13 @@ class DateTime:
 
             elif type(arg) in [StringType,UnicodeType]:
                 # Date/time string
-               
+
                 if arg.find(' ')==-1 and arg[4]=='-':
                     yr,mo,dy,hr,mn,sc,tz=self._parse_iso8601(arg)
                 else:
                     yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
 
-                
+
                 if not self._validDate(yr,mo,dy):
                     raise self.DateTimeError, 'Invalid date: %s' % arg
                 if not self._validTime(hr,mn,int(sc)):
@@ -774,7 +774,7 @@ class DateTime:
     name_pattern =re.compile(r'([a-zA-Z]+)', re.I) #AJ
     space_chars  =' \t\n'
     delimiters   ='-/.:,+'
-    _month_len  =((0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
+    _month_len  =((0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
                   (0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
     _until_month=((0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334),
                   (0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335))
@@ -814,7 +814,7 @@ class DateTime:
     # For backward compatibility only:
     _isDST = localtime(time())[8]
     _localzone  = _isDST and _localzone1 or _localzone0
-    
+
     _tzinfo     = _cache()
 
     def localZone(self, ltm=None):
@@ -827,7 +827,7 @@ class DateTime:
         isDST = ltm[8]
         lz = isDST and DateTime._localzone1 or DateTime._localzone0
         return lz
-        
+
     def _calcTimezoneName(self, x, ms):
         # Derive the name of the local time zone at the given
         # timezone-dependent second.
@@ -896,10 +896,10 @@ class DateTime:
                 i=i+len(s)
                 ints.append(float(s))
                 continue
-            
+
             #AJ
             ts_results = intpat.match(st, i)
-            if ts_results: 
+            if ts_results:
                 s=ts_results.group(0)
 
                 ls=len(s)
@@ -932,7 +932,7 @@ class DateTime:
                 # Check for and skip day of week:
                 if DayOfWeekNames.has_key(s):
                     continue
-                    
+
             raise self.SyntaxError, st
 
         day=None
@@ -985,14 +985,14 @@ class DateTime:
                 day=ints[1]
                 year=ints[2]
             del ints[:3]
-            
+
         if day is None:
             # Use today's date.
             year,month,day = localtime(time())[:3]
 
         year = _correctYear(year)
         if year < 1000: raise self.SyntaxError, st
-        
+
         leap = year%4==0 and (year%100!=0 or year%400==0)
         try:
             if not day or day > self._month_len[leap][month]:
@@ -1020,7 +1020,7 @@ class DateTime:
                     del ints[0]
                     if ints: raise self.SyntaxError,st
 
-        
+
         tod_int = int(math.floor(tod))
         ms = tod - tod_int
         hr,mn,sc = _calcHMS(tod_int, ms)
@@ -1150,8 +1150,8 @@ class DateTime:
 
     def greaterThan(self,t):
         """Compare this DateTime object to another DateTime object
-           OR a floating point number such as that which is returned 
-           by the python time module. Returns true if the object 
+           OR a floating point number such as that which is returned
+           by the python time module. Returns true if the object
            represents a date/time greater than the specified DateTime
            or time module style time.
            Revised to give more correct results through comparison of
@@ -1169,13 +1169,13 @@ class DateTime:
 
     def greaterThanEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
-           OR a floating point number such as that which is returned 
-           by the python time module. Returns true if the object 
-           represents a date/time greater than or equal to the 
+           OR a floating point number such as that which is returned
+           by the python time module. Returns true if the object
+           represents a date/time greater than or equal to the
            specified DateTime or time module style time.
            Revised to give more correct results through comparison of
            long integer milliseconds.
-           """           
+           """
         # Optimized for sorting speed
         try:
             return (self._millis >= t._millis)
@@ -1188,8 +1188,8 @@ class DateTime:
 
     def equalTo(self,t):
         """Compare this DateTime object to another DateTime object
-           OR a floating point number such as that which is returned 
-           by the python time module. Returns true if the object 
+           OR a floating point number such as that which is returned
+           by the python time module. Returns true if the object
            represents a date/time equal to the specified DateTime
            or time module style time.
            Revised to give more correct results through comparison of
@@ -1207,8 +1207,8 @@ class DateTime:
 
     def notEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
-           OR a floating point number such as that which is returned 
-           by the python time module. Returns true if the object 
+           OR a floating point number such as that which is returned
+           by the python time module. Returns true if the object
            represents a date/time not equal to the specified DateTime
            or time module style time.
            Revised to give more correct results through comparison of
@@ -1226,8 +1226,8 @@ class DateTime:
 
     def lessThan(self,t):
         """Compare this DateTime object to another DateTime object
-           OR a floating point number such as that which is returned 
-           by the python time module. Returns true if the object 
+           OR a floating point number such as that which is returned
+           by the python time module. Returns true if the object
            represents a date/time less than the specified DateTime
            or time module style time.
            Revised to give more correct results through comparison of
@@ -1245,9 +1245,9 @@ class DateTime:
 
     def lessThanEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
-           OR a floating point number such as that which is returned 
-           by the python time module. Returns true if the object 
-           represents a date/time less than or equal to the specified 
+           OR a floating point number such as that which is returned
+           by the python time module. Returns true if the object
+           represents a date/time less than or equal to the specified
            DateTime or time module style time.
            Revised to give more correct results through comparison of
            long integer milliseconds.
@@ -1317,7 +1317,7 @@ class DateTime:
         """Return the integer day"""
         return self._day
 
-    def Day(self): 
+    def Day(self):
         """Return the full name of the day of the week"""
         return self._fday
 
@@ -1399,7 +1399,7 @@ class DateTime:
         """Return the time string for an object to the nearest second."""
         return '%2.2d:%2.2d:%2.2d' % (self._hour,self._minute,self._nearsec)
 
-    def TimeMinutes(self): 
+    def TimeMinutes(self):
         """Return the time string for an object not showing seconds."""
         return '%2.2d:%2.2d' % (self._hour,self._minute)
 
@@ -1509,7 +1509,7 @@ class DateTime:
             newdate._hour, newdate._minute, newdate._second)
 
     def __add__(self,other):
-        """A DateTime may be added to a number and a number may be 
+        """A DateTime may be added to a number and a number may be
            added to a DateTime;  two DateTimes cannot be added."""
         if hasattr(other,'_t'):
             raise self.DateTimeError,'Cannot add two DateTimes'
@@ -1526,7 +1526,7 @@ class DateTime:
 
     def __sub__(self,other):
         """Either a DateTime or a number may be subtracted from a
-           DateTime, however, a DateTime may not be subtracted from 
+           DateTime, however, a DateTime may not be subtracted from
            a number."""
         if hasattr(other, '_d'):
             if 0:  # This logic seems right but is incorrect.
@@ -1538,7 +1538,7 @@ class DateTime:
             return self.__add__(-(other))
 
     def __repr__(self):
-        """Convert a DateTime to a string that 
+        """Convert a DateTime to a string that
            looks like a Python expression."""
         return '%s(\'%s\')' % (self.__class__.__name__,str(self))
 
@@ -1564,7 +1564,7 @@ class DateTime:
         """Compare a DateTime with another DateTime object, or
            a float such as those returned by time.time().
 
-           NOTE: __cmp__ support is provided for backward 
+           NOTE: __cmp__ support is provided for backward
            compatibility only, and mixing DateTimes with
            ExtensionClasses could cause __cmp__ to break.
            You should use the methods lessThan, greaterThan,
@@ -1607,29 +1607,29 @@ class DateTime:
         year=0
         month=day=1
         hour=minute=seconds=hour_off=min_off=0
-        
+
         datereg = re.compile('([0-9]{4})(-([0-9][0-9]))?(-([0-9][0-9]))?')
         timereg = re.compile('([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
-    
+
         # Date part
-    
+
         fields = datereg.split(s.strip())
-        
+
         if fields[1]:   year  = int(fields[1])
         if fields[3]:   month = int(fields[3])
         if fields[5]:   day   = int(fields[5])
-    
+
         if s.find('T')>-1:
             fields = timereg.split(s[s.find('T')+1:])
-    
+
             if fields[1]:   hour     = int(fields[1])
             if fields[3]:   minute   = int(fields[3])
             if fields[5]:   seconds  = int(fields[5])
             if fields[6]:   seconds  = seconds+float(fields[6])
-    
+
         if s.find('Z')>-1:
             pass
-    
+
         if s[-3]==':' and s[-6] in ['+','-']:
             hour_off = int(s[-6:-3])
             min_off  = int(s[-2:])
@@ -1671,6 +1671,3 @@ class strftimeFormatter:
 def Timezones():
     """Return the list of recognized timezone names"""
     return _cache._zlst
-
-
-

@@ -2,14 +2,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """ Pretty-Print an Interface object as structured text (Yum)
 
@@ -17,7 +17,7 @@ This module provides a function, asStructuredText, for rendering an
 interface as structured text.
 
 Revision information:
-$Id: Document.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: Document.py,v 1.3 2002/08/14 21:35:32 mj Exp $
 """
 
 from string import maketrans
@@ -26,7 +26,7 @@ def asStructuredText(I, munge=0):
     """ Output structured text format.  Note, this will wack any existing
     'structured' format of the text.  """
 
-    
+
     r = ["%s\n\n" % I.getName()]
     outp = r.append
     level = 1
@@ -83,12 +83,12 @@ def _trim_doc_string(text):
         for line in lines[1:]:
             indent=len(line) - len(line.lstrip())
             if indent < min_indent or min_indent is None:
-                min_indent=indent   
+                min_indent=indent
         for line in lines[1:]:
             nlines.append(line[min_indent:])
     return '\n'.join(nlines)
-    
-    
+
+
 _trans = maketrans("\r\n", "  ")
 def _justify_and_indent(text, level, munge=0, width=72):
     """ indent and justify text, rejustify (munge) if specified """
@@ -116,11 +116,3 @@ def _justify_and_indent(text, level, munge=0, width=72):
             lines.append( (" " * level) + line)
 
         return '\n'.join(lines)
-            
-
-
-
-    
-
-
-

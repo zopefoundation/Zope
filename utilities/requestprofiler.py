@@ -3,19 +3,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import string, sys, time, getopt, tempfile, math, cPickle
 try: import gzip
@@ -36,7 +36,7 @@ class Request:
         self.t_end = None
         self.elapsed = "I"
         self.active = 0
-        
+
     def put(self, code, t, desc):
         if code not in ('A', 'B', 'I', 'E'):
             raise "unknown request code %s" % code
@@ -52,7 +52,7 @@ class Request:
         elif code == 'E':
             self.t_end = t
             self.elapsed = int(self.t_end - self.start)
-            
+
     def isfinished(self):
         return not self.elapsed == "I"
 
@@ -69,13 +69,13 @@ class Request:
             return time.strftime('%H:%M:%S', t)
         else:
             return "NA"
-        
+
     def win(self):
         if self.t_recdinput is not None and self.start is not None:
             return self.t_recdinput - self.start
         else:
             return "NA"
-        
+
     def wout(self):
         if self.t_recdoutput is not None and self.t_recdinput is not None:
             return self.t_recdoutput - self.t_recdinput
@@ -130,7 +130,7 @@ class Request:
             self.total(), self.endstage(), self.prettyosize(),
             self.prettyhttpcode(), self.active, self.url
             )
-        return self.fmt % body 
+        return self.fmt % body
 
     fmt = "%19s %4s %4s %4s %3s %1s %7s %4s %4s %s"
 
@@ -142,7 +142,7 @@ class Request:
 class StartupRequest(Request):
     def endstage(self):
         return "U"
-        
+
     def total(self):
         return 0
 
@@ -152,12 +152,12 @@ class Cumulative:
         self.times = []
         self.hangs = 0
         self.allelapsed = None
-        
+
     def put(self, request):
         elapsed = request.elapsed
         if elapsed == "I": self.hangs = self.hangs + 1
         self.times.append(elapsed)
-        
+
     def all(self):
         if self.allelapsed == None:
             self.allelapsed = []
@@ -176,18 +176,18 @@ class Cumulative:
     def getheader(self):
         return self.fmt % ('Hangs', 'Hits', 'Total', 'Max', 'Min', 'Median',
                            'Mean', 'URL')
-        
+
     fmt = "%5s %5s %5s %5s %5s %6s %5s %s"
 
     def hits(self):
         return len(self.times)
-        
+
     def max(self):
         return max(self.all())
-        
+
     def min(self):
         return min(self.all())
-        
+
     def mean(self):
         l = len(self.times)
         if l == 0:
@@ -196,7 +196,7 @@ class Cumulative:
             t = self.total()
             if t == "I": return "I"
             return t/l
-        
+
     def median(self):
         all = self.all()
         l = len(all)
@@ -215,7 +215,7 @@ class Cumulative:
                 v2 = all[i2]
                 if type(v1) is type('') or type(v2) is type(''): return "I"
                 else: return (v1 + v2) / 2
-    
+
     def total(self):
         t = 0
         all = self.all()
@@ -335,7 +335,7 @@ def analyze(requests, top, sortf, start=None, end=None, mode='cumulative',
         requests = cumulative.values()
         requests.sort(sortf)
         write(requests, top)
-        
+
     elif mode=='timed':
         computed_start = requests[0].start
         computed_end = requests[-1].t_end
@@ -351,7 +351,7 @@ def analyze(requests, top, sortf, start=None, end=None, mode='cumulative',
     elif mode == 'urlfocus':
         requests.sort(sortf)
         urlfocuswrite(requests, urlfocusurl, urlfocustime)
-    
+
     else:
         requests.sort(sortf)
         write(requests, top)
@@ -472,7 +472,7 @@ def timewrite(requests, start, end, resolution):
         num = d.get(slice, 0)
         if num>max_requests: max_requests = num
         hits = hits + num
-        
+
         if avg_requests is None:
             avg_requests = num
         else:
@@ -480,24 +480,24 @@ def timewrite(requests, start, end, resolution):
 
         s = tick2str(slice)
         s = s + "     %6d         %4.2lf" % (num,num*1.0/resolution)
-        print s 
+        print s
 
-    print '='*78 
+    print '='*78
     print " Peak:                  %6d         %4.2lf" % \
         (max_requests,max_requests*1.0/resolution)
     print "  Avg:                  %6d         %4.2lf" % \
         (avg_requests,avg_requests*1.0/resolution)
     print "Total:                  %6d          n/a " % (hits)
-    
+
 def tick2str(t):
     return time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(t))
-    
+
 def codesort(v1, v2):
     v1 = v1.endstage()
     v2 = v2.endstage()
     if v1 == v2:
         return 0
-    
+
     if v1 == "B":
         return -1 # v1 is smaller than v2
     if v1 == "I":
@@ -527,7 +527,7 @@ class Sort:
         else:
             if self.ascending: return 1
             else: return -1
-            
+
 def detailedusage():
     details = usage(0)
     pname = sys.argv[0]
@@ -601,7 +601,7 @@ If the 'today' argument is specified, limit results to hits received today.
 If the 'daysago' argument is specified, limit results to hits received n days ago.
 
 The 'resolution' argument is used only for timed reports and specifies the
-number of seconds between consecutive lines in the report 
+number of seconds between consecutive lines in the report
 (default is 60 seconds).
 
 The 'urlfocustime' argument is used only for urlfocus reports and specifies the
@@ -648,7 +648,7 @@ Examples:
     Show 'urlfocus' report which displays statistics about requests
     surrounding the invocation of '/manage_main'.  Focus on the time periods
     60 seconds before and after each invocation of the '/manage_main' URL.
-    
+
   %(pname)s debug.log --detailed --start='2001/05/10 06:00:00'
     --end='2001/05/11 23:00:00'
 
@@ -686,12 +686,12 @@ Usage: %s filename1 [filename2 ...]
           [--sort=spec]
           [--top=n]
           [--verbose]
-          [--today | [--start=date] [--end=date] | --daysago=n ] 
+          [--today | [--start=date] [--end=date] | --daysago=n ]
           [--writestats=filename | --readstats=filename]
           [--urlfocus=url]
           [--urlfocustime=seconds]
           [--help]
-        
+
 Provides a profile of one or more Zope "-M" request log files.
 """ % sys.argv[0]
         )
@@ -719,7 +719,7 @@ if __name__ == '__main__':
     statsfname = None
     readstats = 0
     writestats = 0
-    
+
     files = []
     i = 1
     for arg in sys.argv[1:]:

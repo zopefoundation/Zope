@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.12 2001/12/13 14:23:44 andreasjung Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: SecurityManager.py,v 1.13 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import ZopeSecurityPolicy, os
 
@@ -30,7 +30,7 @@ else: authenticated=1
 _defaultPolicy=ZopeSecurityPolicy.ZopeSecurityPolicy(ownerous=ownerous,
     authenticated=authenticated)
 def setSecurityPolicy(aSecurityPolicy):
-    """Set the system default security policy. 
+    """Set the system default security policy.
 
     This method should only be caused by system startup code. It should
     never, for example, be called during a web request.

@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.17 2002/06/12 18:14:39 shane Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Owned.py,v 1.18 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
@@ -39,14 +39,14 @@ class Owned(ExtensionClass.Base):
          ('manage_takeOwnership','manage_changeOwnershipType'),
          ("Owner",)),
         )
-    
+
     manage_options=({'label':  'Ownership',
                      'action': 'manage_owner',
                      'help':   ('OFSP','Ownership.stx'),
                      'filter': ownableFilter
                      },
                    )
-    
+
     manage_owner=Globals.DTMLFile('dtml/owner', globals())
 
     def owner_info(self):
@@ -60,7 +60,7 @@ class Owned(ExtensionClass.Base):
            getSecurityManager().checkPermission('Take ownership', self)
            }
         return d
-    
+
     getOwner__roles__=()
     def getOwner(self, info=0,
                  aq_get=aq_get, None=None,
@@ -108,7 +108,7 @@ class Owned(ExtensionClass.Base):
             else:
                 # make ownership explicit
                 child._owner=new
-            
+
         if old is not UnownableOwner:
             self._owner=new
 
@@ -134,7 +134,7 @@ class Owned(ExtensionClass.Base):
         if (want_referer != got_referer or security.calledByExecutable()):
             raise Unauthorized, (
                 'manage_takeOwnership was called from an invalid context'
-                )    
+                )
 
         self.changeOwnership(security.getUser(), recursive)
 
@@ -159,7 +159,7 @@ class Owned(ExtensionClass.Base):
                 del self._owner
 
         if RESPONSE is not None: RESPONSE.redirect(REQUEST['HTTP_REFERER'])
-    
+
     def _deleteOwnershipAfterAdd(self):
 
         # Only delete _owner if it is an instance attribute.
@@ -172,7 +172,7 @@ class Owned(ExtensionClass.Base):
             try: object._deleteOwnershipAfterAdd()
             except: pass
             if s is None: object._p_deactivate()
-    
+
     def manage_fixupOwnershipAfterAdd(self):
 
         # Sigh, get the parent's _owner
@@ -216,7 +216,7 @@ class Owned(ExtensionClass.Base):
             except: pass
             if s is None: object._p_deactivate()
 
-  
+
 Globals.default__class_init__(Owned)
 
 class EmergencyUserCannotOwn(Exception):
@@ -224,7 +224,7 @@ class EmergencyUserCannotOwn(Exception):
 
 class EditUnowned(Exception):
     "Can't edit unowned executables"
-        
+
 
 def absattr(attr):
     if callable(attr): return attr()
@@ -253,4 +253,3 @@ def ownerInfo(user,
     path.reverse()
 
     return path, uid
-

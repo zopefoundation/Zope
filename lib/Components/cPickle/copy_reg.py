@@ -18,4 +18,3 @@ def pickle_complex(c):
     return complex, (c.real, c.imag)
 
 pickle(type(1j), pickle_complex, complex)
-

@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 
 import sys,os,time,Globals, Acquisition, os, Undo
@@ -82,7 +82,7 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
          'help':('OFSP','Version-Management_Version.stx')},
         )
         )
-        
+
 Globals.default__class_init__(VersionManager)
 
 
@@ -110,7 +110,7 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         )
 
     manage_debug=DTMLFile('dtml/debug', globals())
-    
+
     def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
         # return class reference info
         dict={}
@@ -212,7 +212,7 @@ class ApplicationManager(Folder,CacheManager):
     def version_txt(self):
         if not hasattr(self, '_v_version_txt'):
             self._v_version_txt=version_txt()
-                
+
         return self._v_version_txt
 
     def sys_version(self): return sys.version
@@ -238,7 +238,7 @@ class ApplicationManager(Folder,CacheManager):
         )
         +Undo.UndoSupport.manage_options
         )
-    
+
     id        ='Control_Panel'
     name=title='Control Panel'
     meta_type ='Control Panel'
@@ -284,13 +284,13 @@ class ApplicationManager(Folder,CacheManager):
         raise 'Redirect', URL2+'/manage'
 
     def process_time(self):
-        s=int(time.time())-self.process_start   
+        s=int(time.time())-self.process_start
         d=int(s/86400)
         s=s-(d*86400)
         h=int(s/3600)
         s=s-(h*3600)
         m=int(s/60)
-        s=s-(m*60)      
+        s=s-(m*60)
         d=d and ('%d day%s'  % (d, (d != 1 and 's' or ''))) or ''
         h=h and ('%d hour%s' % (h, (h != 1 and 's' or ''))) or ''
         m=m and ('%d min' % m) or ''
@@ -315,7 +315,7 @@ class ApplicationManager(Folder,CacheManager):
 
 
     if hasattr(sys, 'ZMANAGED'):
-        
+
         manage_restartable=1
         def manage_restart(self, URL1):
             """Shut down the application"""
@@ -412,7 +412,7 @@ class ApplicationManager(Folder,CacheManager):
             db.abortVersion(v)
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
-            
+
     def getSOFTWARE_HOME(self):
         return SOFTWARE_HOME
 
@@ -441,4 +441,3 @@ class ApplicationManager(Folder,CacheManager):
             self._objects = tuple(lst)
 
         return Folder.objectIds(self, spec)
-

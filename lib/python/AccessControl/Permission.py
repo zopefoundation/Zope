@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''short description
 
 
-$Id: Permission.py,v 1.9 2001/12/13 14:24:26 andreasjung Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Permission.py,v 1.10 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import string, Products, Globals
 
@@ -79,7 +79,7 @@ class Permission:
 
         if roles is None: return ['Manager','Anonymous']
         if roles is _marker: return ['Manager']
-                                
+
         return roles
 
     def setRoles(self, roles):
@@ -89,7 +89,7 @@ class Permission:
             if hasattr(obj, self._p): delattr(obj, self._p)
         else:
             setattr(obj, self._p, roles)
-        
+
         for name in self.data:
             if name=='': attr=obj
             else: attr=getattr(obj, name)
@@ -112,7 +112,7 @@ class Permission:
             if type(roles) is ListType: roles.append(role)
             else: roles=roles+(role,)
         self.setRoles(roles)
-                
+
     def __len__(self): return 1
     def __str__(self): return self.name
 

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """
@@ -34,7 +34,7 @@ class WebDAVSrcHandler( zhttp_handler ):
         # Set a flag to indicate this request came through the WebDAV source
         # port server.
         env['WEBDAV_SOURCE_PORT'] = 1
-        
+
         if env['REQUEST_METHOD'] == 'GET':
             path_info = env['PATH_INFO']
             path_info = os.path.join( path_info, 'manage_FTPget' )
@@ -51,9 +51,9 @@ class WebDAVSrcHandler( zhttp_handler ):
 
         if env.get("HTTP_USER_AGENT","").find("Microsoft Data Access Internet Publishing Provider")>-1:
             if env["PATH_INFO"][-1]=='.':
-                env["PATH_INFO"] = env["PATH_INFO"][:-1]             
+                env["PATH_INFO"] = env["PATH_INFO"][:-1]
 
             if env["PATH_TRANSLATED"][-1]=='.':
-                env["PATH_TRANSLATED"] = env["PATH_TRANSLATED"][:-1]             
+                env["PATH_TRANSLATED"] = env["PATH_TRANSLATED"][:-1]
 
         return env

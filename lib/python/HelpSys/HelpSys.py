@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import Acquisition
@@ -24,7 +24,7 @@ import Globals
 class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
     Zope Help System
-    
+
     Provides browsing and searching of Zope Product Help.
     """
     meta_type='Help System'
@@ -70,10 +70,10 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
         results=[]
         for ph in self.helpValues():
             results.append(apply(getattr(ph, '__call__'), (REQUEST,) , kw))
-        return LazyCat(results)   
-        
+        return LazyCat(results)
+
     searchResults=__call__
-    
+
     index_html=DTMLFile('dtml/frame', globals())
     menu=DTMLFile('dtml/menu', globals())
     search=DTMLFile('dtml/search', globals())
@@ -146,7 +146,7 @@ class TreeCollection:
         self.id=self.title=id
         self.objs=objs
         self.simple=simple
-        
+
     def tpValues(self):
         values=[]
         if self.simple:
@@ -169,7 +169,7 @@ class TreeCollection:
                 values=[]
                 for topic in v:
                     values=values + list(topic.tpValues())
-                results.append(TreeCollection(k, values)) 
+                results.append(TreeCollection(k, values))
         results.sort(lambda x, y: cmp(x.id, y.id))
         return results
 
@@ -180,7 +180,7 @@ class TreeCollection:
 class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
     Manages a collection of Help Topics for a given Product.
-    
+
     Provides searching services to HelpSystem.
     """
 
@@ -188,7 +188,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     icon='p_/ProductHelp_icon'
 
     lastRegistered=None
-    
+
     meta_types=({'name':'Help Topic',
                  'action':'addTopicForm',
                  'permission':'Add Documents, Images, and Files'},
@@ -202,7 +202,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     __ac_permissions__=(
         ('Add Documents, Images, and Files', ('addTopicForm', 'addTopic')),
         )
-    
+
     def __init__(self, id='Help', title=''):
         self.id=id
         self.title=title
@@ -275,7 +275,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         if zpttopics:
             topics = topics + [TreeCollection(' ZPT Reference', zpttopics)]
         return topics
-        
+
     def all_meta_types(self):
         f=lambda x: x['name'] in ('Image', 'File')
         return filter(f, Products.meta_types) + self.meta_types

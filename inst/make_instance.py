@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Make an INSTANCE_HOME."""
 
@@ -86,7 +86,7 @@ def main(me):
     print
     print ('Now to create a starting user. Leave the username '
            'blank if you want to skip this step.')
-    print 
+    print
     sys.path.insert(0, home)
     choose_inituser(ih)
 
@@ -100,7 +100,7 @@ def choose_inituser(home):
         username = raw_input("Username: ")
         if username == '':
             return
-               
+
         while 1:
             pw = getpass.getpass("Password: ")
             verify = getpass.getpass("Verify password: ")

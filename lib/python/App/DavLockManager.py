@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 import OFS, Acquisition, Globals
 from AccessControl import getSecurityManager, ClassSecurityInfo
@@ -37,7 +37,7 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
         {'label': 'Write Locks', 'action': 'manage_main',
          'help': ('OFSP', 'DavLocks-ManageLocks.stx'), },
         )
-    
+
     def locked_in_version(self): return 0
 
     def findLockedObjects(self, frompath=''):
@@ -104,5 +104,5 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
 
         return result
 
-    
+
 Globals.default__class_init__(DavLockManager)

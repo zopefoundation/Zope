@@ -2,14 +2,14 @@
 #
 # Copyright (c) 1996-2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 from ExtensionClass import Base
 import Acquisition
@@ -51,11 +51,11 @@ def checkContext(self, o):
     subob = self
     o = aq_base(o)
     while 1:
-      if aq_base(subob) is o: return 1
-      self = aq_inner(subob)
-      if self is None: break
-      subob = aq_parent(self)
-      if subob is None: break
+        if aq_base(subob) is o: return 1
+        self = aq_inner(subob)
+        if self is None: break
+        subob = aq_parent(self)
+        if subob is None: break
 
 
 assert checkContext(b.c, b)

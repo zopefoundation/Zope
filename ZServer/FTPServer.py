@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """ZServer FTP Channel for use the medusa's ftp server.
@@ -84,10 +84,10 @@ import time
 
 class zope_ftp_channel(ftp_channel):
     "Passes its commands to Zope, not a filesystem"
-    
+
     read_only=0
     anonymous=1
-    
+
     def __init__ (self, server, conn, addr, module):
         ftp_channel.__init__(self,server,conn,addr)
         requestCloseOnExec(conn)
@@ -96,26 +96,26 @@ class zope_ftp_channel(ftp_channel):
         self.password=''
         self.path='/'
         self.cookies={}
-    
+
     def _join_paths(self,*args):
         path=apply(os.path.join,args)
         path=os.path.normpath(path)
         if os.sep != '/':
             path=path.replace(os.sep,'/')
         return path
-    
+
     # Overriden async_chat methods
 
     def push(self, producer, send=1):
         # this is thread-safe when send is false
-        # note, that strings are not wrapped in 
+        # note, that strings are not wrapped in
         # producers by default
         self.producer_fifo.push(producer)
         if send: self.initiate_send()
-        
+
     push_with_producer=push
-    
-    
+
+
     # Overriden ftp_channel methods
 
     def cmd_nlst (self, line):
@@ -124,12 +124,12 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_list (self, line):
         'give list files in a directory'
-        
+
         # handles files as well as directories.
         # XXX also should maybe handle globbing, yuck.
-  
+
         self.get_dir_list(line,1)
-    
+
     def get_dir_list(self, line, long=0):
         self.globbing = None
         self.recursive = 0
@@ -142,14 +142,14 @@ class zope_ftp_channel(ftp_channel):
             args =[]
         path_args = []
 
-        # Extract globbing information 
+        # Extract globbing information
 
-       
+
         for i in range(len(args)):
             x = args[i]
             if x.find('*')!=-1 or x.find('?')!=-1:
                 self.globbing = x
-                args[i] = '.'     
+                args[i] = '.'
 
         for arg in args:
             if arg[0] != '-':
@@ -166,12 +166,12 @@ class zope_ftp_channel(ftp_channel):
             dir = path_args[0]
 
         self.listdir(dir, long)
-    
+
     def listdir (self, path, long=0):
         response=make_response(self, self.listdir_completion, long)
         request=FTPRequest(path, 'LST', self, response,globbing=self.globbing,recursive=self.recursive)
-        handle(self.module, request, response)         
-        
+        handle(self.module, request, response)
+
     def listdir_completion(self, long, response):
         status=response.getStatus()
         if status==200:
@@ -180,7 +180,7 @@ class zope_ftp_channel(ftp_channel):
             dir_list=''
             file_infos=response._marshalledBody()
             if type(file_infos[0])==type(''):
-                file_infos=(file_infos,)    
+                file_infos=(file_infos,)
             if long:
                 for id, stat_info in file_infos:
                     dir_list=dir_list+filesys.unix_longify(id,stat_info)+'\r\n'
@@ -189,12 +189,12 @@ class zope_ftp_channel(ftp_channel):
                     dir_list=dir_list+id+'\r\n'
             self.make_xmit_channel()
             self.client_dc.push(dir_list)
-            self.client_dc.close_when_done()                
+            self.client_dc.close_when_done()
             self.respond(
                 '150 Opening %s mode data connection for file list' % (
                     self.type_map[self.current_mode]
                     )
-                )   
+                )
         elif status==401:
             self.respond('530 Unauthorized.')
         else:
@@ -202,10 +202,10 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_cwd (self, line):
         'change working directory'
-        response=make_response(self, self.cwd_completion, 
+        response=make_response(self, self.cwd_completion,
                 self._join_paths(self.path,line[1]))
         request=FTPRequest(line[1],'CWD',self,response)
-        handle(self.module,request,response)       
+        handle(self.module,request,response)
 
     def cwd_completion(self,path,response):
         'cwd completion callback'
@@ -239,9 +239,9 @@ class zope_ftp_channel(ftp_channel):
                 self.path
                 )
             )
-    
+
     cmd_xpwd=cmd_pwd
-    
+
     def cmd_mdtm(self, line):
         'show last modification time of file'
         if len (line) != 2:
@@ -249,8 +249,8 @@ class zope_ftp_channel(ftp_channel):
             return
         response=make_response(self, self.mdtm_completion)
         request=FTPRequest(line[1],'MDTM',self,response)
-        handle(self.module,request,response)       
-    
+        handle(self.module,request,response)
+
     def mdtm_completion(self, response):
         status=response.getStatus()
         if status==200:
@@ -265,10 +265,10 @@ class zope_ftp_channel(ftp_channel):
                                 mtime[5]
                                 ))
         elif status==401:
-            self.respond('530 Unauthorized.') 
+            self.respond('530 Unauthorized.')
         else:
-            self.respond('550 Error getting file modification time.')  
-                
+            self.respond('550 Error getting file modification time.')
+
     def cmd_size(self, line):
         'return size of file'
         if len (line) != 2:
@@ -276,17 +276,17 @@ class zope_ftp_channel(ftp_channel):
             return
         response=make_response(self, self.size_completion)
         request=FTPRequest(line[1],'SIZE',self,response)
-        handle(self.module,request,response)       
-        
+        handle(self.module,request,response)
+
     def size_completion(self,response):
         status=response.getStatus()
         if status==200:
             self.respond('213 %d'% response._marshalledBody()[stat.ST_SIZE])
         elif status==401:
-            self.respond('530 Unauthorized.') 
+            self.respond('530 Unauthorized.')
         else:
-            self.respond('550 Error getting file size.')   
-            
+            self.respond('550 Error getting file size.')
+
             #self.client_dc.close_when_done()
 
     def cmd_retr(self,line):
@@ -299,9 +299,9 @@ class zope_ftp_channel(ftp_channel):
         # Support download restarts if possible.
         if self.restart_position > 0:
             request.environ['HTTP_RANGE'] = 'bytes=%d-' % self.restart_position
-        handle(self.module,request,response) 
+        handle(self.module,request,response)
 
-    def retr_completion(self, file, response):        
+    def retr_completion(self, file, response):
         status=response.getStatus()
         if status==200:
             self.make_xmit_channel()
@@ -320,7 +320,7 @@ class zope_ftp_channel(ftp_channel):
         elif status==401:
             self.respond('530 Unauthorized.')
         else:
-            self.respond('550 Error opening file.')    
+            self.respond('550 Error opening file.')
 
     def cmd_stor (self, line, mode='wb'):
         'store a file'
@@ -331,11 +331,11 @@ class zope_ftp_channel(ftp_channel):
             restart_position = 0
             self.respond ('553 restart on STOR not yet supported')
             return
-            
+
         # XXX Check for possible problems first?
         #     Right now we are limited in the errors we can issue, since
         #     we agree to accept the file before checking authorization
-        
+
         fd=ContentReceiver(self.stor_callback, line[1])
         self.respond (
             '150 Opening %s connection for %s' % (
@@ -344,13 +344,13 @@ class zope_ftp_channel(ftp_channel):
                 )
             )
         self.make_recv_channel(fd)
-    
+
     def stor_callback(self,path,data):
         'callback to do the STOR, after we have the input'
         response=make_response(self, self.stor_completion)
         request=FTPRequest(path,'STOR',self,response,stdin=data)
-        handle(self.module,request,response)       
-           
+        handle(self.module,request,response)
+
     def stor_completion(self,response):
         status=response.getStatus()
         message = response.getMessage()
@@ -382,9 +382,9 @@ class zope_ftp_channel(ftp_channel):
         patht,idt=os.path.split(line[1])
         response=make_response(self, self.rnto_completion)
         request=FTPRequest(pathf,('RNTO',idf,idt),self,response)
-        handle(self.module,request,response)       
+        handle(self.module,request,response)
 
-    def rnto_completion(self,response):   
+    def rnto_completion(self,response):
         status=response.getStatus()
         if status==200:
             self.respond ('250 RNTO command successful.')
@@ -398,16 +398,16 @@ class zope_ftp_channel(ftp_channel):
         path,id=os.path.split(line[1])
         response=make_response(self, self.dele_completion)
         request=FTPRequest(path,('DELE',id),self,response)
-        handle(self.module,request,response)       
-        
-    def dele_completion(self,response):   
+        handle(self.module,request,response)
+
+    def dele_completion(self,response):
         status=response.getStatus()
         if status==200 and response.body.find('Not Deletable')==-1:
             self.respond('250 DELE command successful.')
         elif status==401:
-            self.respond('530 Unauthorized.') 
+            self.respond('530 Unauthorized.')
         else:
-            self.respond('550 Error deleting file.')       
+            self.respond('550 Error deleting file.')
 
     def cmd_mkd(self, line):
         if len (line) != 2:
@@ -416,10 +416,10 @@ class zope_ftp_channel(ftp_channel):
         path,id=os.path.split(line[1])
         response=make_response(self, self.mkd_completion)
         request=FTPRequest(path,('MKD',id),self,response)
-        handle(self.module,request,response)       
-    
+        handle(self.module,request,response)
+
     cmd_xmkd=cmd_mkd
-    
+
     def mkd_completion(self,response):
         status=response.getStatus()
         if status==200:
@@ -438,8 +438,8 @@ class zope_ftp_channel(ftp_channel):
         path,id=os.path.split(line[1])
         response=make_response(self, self.rmd_completion)
         request=FTPRequest(path,('RMD',id),self,response)
-        handle(self.module,request,response)       
-        
+        handle(self.module,request,response)
+
     cmd_xrmd=cmd_rmd
 
     def rmd_completion(self,response):
@@ -447,9 +447,9 @@ class zope_ftp_channel(ftp_channel):
         if status==200 and response.body.find('Not Deletable')==-1:
             self.respond('250 RMD command successful.')
         elif status==401:
-            self.respond('530 Unauthorized.') 
+            self.respond('530 Unauthorized.')
         else:
-            self.respond('550 Error removing directory.')          
+            self.respond('550 Error removing directory.')
 
     def cmd_user(self, line):
         'specify user name'
@@ -476,14 +476,14 @@ class zope_ftp_channel(ftp_channel):
             else:
                 self.respond('421 User limit reached. Closing connection.')
                 self.close_when_done()
-        else:   
+        else:
             path=self.userid[i+1:]
             self.userid=self.userid[:i]
             self.anonymous=None
             response=make_response(self, self.pass_completion,
                     self._join_paths('/',path))
             request=FTPRequest(path,'PASS',self,response)
-            handle(self.module,request,response) 
+            handle(self.module,request,response)
 
 
     def pass_completion(self,path,response):
@@ -491,7 +491,7 @@ class zope_ftp_channel(ftp_channel):
         if status==200:
             if not self.server.limiter.check_limit(self):
                 self.close_when_done()
-                self.respond('421 User limit reached. Closing connection.')    
+                self.respond('421 User limit reached. Closing connection.')
                 return
             listing=response._marshalledBody()
             # check to see if we are cding to a non-foldoid object
@@ -502,17 +502,17 @@ class zope_ftp_channel(ftp_channel):
             self.authorized = 1
             if self.userid=='anonymous':
                 self.anonymous=1
-            self.log_info('Successful login.')           
+            self.log_info('Successful login.')
             self.respond('230 Login successful.')
         else:
             self.respond('530 Unauthorized.')
-        
+
     def cmd_appe(self, line):
         self.respond('502 Command not implemented.')
 
 
 
-# Override ftp server receive channel reponse mechanism 
+# Override ftp server receive channel reponse mechanism
 # XXX hack alert, this should probably be redone in a more OO way.
 
 def handle_close (self):
@@ -525,18 +525,18 @@ def handle_close (self):
 
 recv_channel.handle_close=handle_close
 
-  
+
 class ContentReceiver:
     "Write-only file object used to receive data from FTP"
-    
+
     def __init__(self,callback,*args):
         self.data=StringIO()
         self.callback=callback
         self.args=args
-        
+
     def write(self,data):
         self.data.write(data)
-    
+
     def close(self):
         self.data.seek(0)
         args=self.args+(self.data,)
@@ -556,12 +556,12 @@ class FTPLimiter:
     limit number of simultaneous connections. The total limit is the
     maximum number of simultaneous connections of any sort. Do *not*
     set the total limit lower than or equal to the anonymous limit."""
-    
+
     def __init__(self,anon_limit=10,user_limit=4,total_limit=25):
         self.anon_limit=anon_limit
         self.user_limit=user_limit
         self.total_limit=total_limit
-    
+
     def check_limit(self,channel):
         """Check to see if the user has exhausted their limit or not.
         Check for existing channels with the same userid and the same
@@ -577,7 +577,7 @@ class FTPLimiter:
                         class_total=class_total+1
             if class_total > self.anon_limit:
                 return None
-        else:                
+        else:
             for existing_channel in asyncore.socket_map.values():
                 if (hasattr(existing_channel,'server') and
                         existing_channel.server is channel.server):
@@ -589,10 +589,10 @@ class FTPLimiter:
         if total <= self.total_limit:
             return 1
 
-        
+
 class FTPServer(ftp_server):
     """FTP server for Zope."""
-    
+
     ftp_channel_class = zope_ftp_channel
     limiter=FTPLimiter(10,1)
     shutup=0
@@ -604,10 +604,10 @@ class FTPServer(ftp_server):
         self.module=module
         self.log_info('FTP server started at %s\n'
                       '\tHostname: %s\n\tPort: %d' % (
-			time.ctime(time.time()),
-			self.hostname,
-			self.port
-			))
+                        time.ctime(time.time()),
+                        self.hostname,
+                        self.port
+                        ))
 
     def log_info(self, message, type='info'):
         if self.shutup: return
@@ -626,7 +626,7 @@ class FTPServer(ftp_server):
             return
         self.total_sessions.increment()
         self.log_info('Incoming connection from %s:%d' % (addr[0], addr[1]))
-        self.ftp_channel_class (self, conn, addr, self.module)  
+        self.ftp_channel_class (self, conn, addr, self.module)
 
     def readable(self):
         return len(asyncore.socket_map) < CONNECTION_LIMIT

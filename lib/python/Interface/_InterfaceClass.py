@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """Interface object implementation
 
 Revision information:
-$Id: _InterfaceClass.py,v 1.5 2002/06/11 15:34:28 chrism Exp $
+$Id: _InterfaceClass.py,v 1.6 2002/08/14 21:35:32 mj Exp $
 """
 
 from inspect import currentframe
@@ -37,7 +37,7 @@ class Interface(Element):
 
     def __init__(self, name, bases=(), attrs=None, __doc__=None,
                  __module__=None):
-        
+
         if __module__ is None:
             if attrs is not None and attrs.has_key('__module__'):
                 __module__ = attrs['__module__']
@@ -90,7 +90,7 @@ class Interface(Element):
         """
         if not strict and self is other:
             return 1
-        
+
         for b in self.__bases__:
             if b == other: return 1
             if b.extends(other): return 1
@@ -134,7 +134,7 @@ class Interface(Element):
             for name in base.names(all):
                 r[name] = 1
         return r.keys()
-            
+
     def namesAndDescriptions(self, all=0):
         """Return the attribute names and descriptions defined by the interface
         """
@@ -144,7 +144,7 @@ class Interface(Element):
         r = {}
         for name, d in self.__attrs.items():
             r[name] = d
-            
+
         for base in self.__bases__:
             for name, d in base.namesAndDescriptions(all):
                 if not r.has_key(name):
@@ -158,7 +158,7 @@ class Interface(Element):
         r = self.queryDescriptionFor(name)
         if r is not None:
             return r
-        
+
         raise KeyError, name
 
     def queryDescriptionFor(self, name, default=None):
@@ -171,7 +171,7 @@ class Interface(Element):
             r = base.queryDescriptionFor(name, self)
             if r is not self:
                 return r
-            
+
         return default
 
     def deferred(self):
@@ -182,7 +182,7 @@ class Interface(Element):
         klass={}
         exec "class %s: pass" % self.__name__ in klass
         klass=klass[self.__name__]
-        
+
         self.__d(klass.__dict__)
 
         self._deferred=klass
@@ -194,7 +194,7 @@ class Interface(Element):
         Retrieve a named interface.
         '''
         return None
-            
+
     def __d(self, dict):
 
         for k, v in self.__attrs.items():

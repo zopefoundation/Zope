@@ -7,7 +7,7 @@
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #   o Redistributions of source code must retain the above copyright
 #     notice, this list of conditions, and the disclaimer that follows.
 #
@@ -86,7 +86,7 @@ class PCGIPublisher:
     def cleanup(self):
         if self.socketFile:
             import os
-            if os.path.exists(self.socketFile): 
+            if os.path.exists(self.socketFile):
                 try:
                     os.unlink(self.socketFile)
                 except os.error:
@@ -218,7 +218,7 @@ class PCGIPublisher:
 
     def insertSysPath(self, insertPath=None):
         import os, sys, string
-        if insertPath is None: 
+        if insertPath is None:
             insertPath = self.insertPath
         if insertPath:
             sys.path[0:0]=string.split(insertPath,':')
@@ -232,7 +232,7 @@ class PCGIPublisher:
             pass
 
         # The present assumption is that if the module path isn't in
-        # sys.path, we want it put there, even if the PCGI_INSERT_PATH 
+        # sys.path, we want it put there, even if the PCGI_INSERT_PATH
         # directive has been specified.
         if self.modulePath:
             d, s = os.path.split(self.modulePath)
@@ -274,7 +274,7 @@ class PCGIPublisher:
             stdin = TemporaryFile('w+b')
             bufsize = self.bufsize
             while size > 0:
-                if size < bufsize: 
+                if size < bufsize:
                     bufsize=size
                 data = conn.recv(bufsize)
                 size = size - len(data)
@@ -319,7 +319,7 @@ class PCGIPublisher:
                 else:
                     to_send = to_send - sent
                     stdout = stdout[sent:]
-                
+
         stderr_len=len(stderr)
         conn.send('%010d' % stderr_len)
         to_send=stderr_len
@@ -331,12 +331,12 @@ class PCGIPublisher:
                 else:
                     to_send = to_send - sent
                     stderr = stderr[sent:]
-                    
+
         conn.close()
 
     def listen(self):
         """
-        Note to sub-classes:  Aside from the constructor, listen() should 
+        Note to sub-classes:  Aside from the constructor, listen() should
         be the only method you *must* invoke.
         """
         if self.error:
@@ -381,7 +381,7 @@ def main():
         print "PCGIPublisher catastrophic import error"
 
 if __name__ == '__main__':
-    try: 
+    try:
         main()
     finally:
         import os

@@ -2,14 +2,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 
 from Exceptions import BrokenImplementation, DoesNotImplement
@@ -63,7 +63,7 @@ def _verify(iface, candidate, tentative=0, vtype=None):
         mess = _incompat(d, meth)
         if mess:
             raise BrokenMethodImplementation(n, mess)
-            
+
     return 1
 
 def verifyClass(iface, candidate, tentative=0):

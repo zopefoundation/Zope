@@ -1,28 +1,28 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.18 2002/02/07 17:37:10 andreasjung Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Extensions.py,v 1.19 2002/08/14 21:31:40 mj Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import os, zlib, rotor, imp
 import Products
 path_split=os.path.split
 path_join=os.path.join
 exists=os.path.exists
-    
+
 class FuncCode:
 
     def __init__(self, f, im=0):
@@ -71,20 +71,20 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
 
     The search takes on multiple homes which are INSTANCE_HOME,
     the directory containing the directory containing SOFTWARE_HOME, and
-    possibly product areas.     
+    possibly product areas.
     """
     d,n = path_split(name)
     if d: raise ValueError, (
         'The file name, %s, should be a simple file name' % name)
 
     if checkProduct:
-       l = name.find('.')
-       if l > 0:
-           p = name[:l]
-           n = name[l + 1:]
-           for product_dir in Products.__path__:
-               r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
-               if r is not None: return r
+        l = name.find('.')
+        if l > 0:
+            p = name[:l]
+            n = name[l + 1:]
+            for product_dir in Products.__path__:
+                r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
+                if r is not None: return r
 
     sw=path_split(path_split(SOFTWARE_HOME)[0])[0]
     for home in (INSTANCE_HOME, sw):
@@ -94,7 +94,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
 def getObject(module, name, reload=0,
               # The use of a mutable default is intentional here,
               # because modules is a module cache.
-              modules={} 
+              modules={}
               ):
 
     # The use of modules here is not thread safe, however, there is
@@ -134,7 +134,7 @@ def getObject(module, name, reload=0,
         execsrc=compile(data, module, 'exec')
         m={}
         exec execsrc in m
-        
+
     else:
         try: execsrc=open(p)
         except: raise "Module Error", (
@@ -169,5 +169,5 @@ def getBrain(module, class_name, reload=0):
 
     if not hasattr(c,'__bases__'): raise ValueError, (
         '%s, is not a class' % class_name)
-    
+
     return c

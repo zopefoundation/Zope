@@ -9,7 +9,7 @@
 #   - added NT compatibility
 #   - improved import checking
 #
-# 0.4a  July 27, 1998 
+# 0.4a  July 27, 1998
 #   - added checks for executable permissions
 #   - print versions of relevant modules
 
@@ -17,7 +17,7 @@ __version__ = "0.6a"
 Delimiter = '='
 
 # no class-based exceptions due to 1.4 compatbility
-PcgiFileException='PcgiFileException' 
+PcgiFileException='PcgiFileException'
 
 class PcgiFile:
     def __init__(self, pcgifile):
@@ -58,7 +58,7 @@ class PcgiFile:
                                        ('CGIResponse',
                                         CGIResponse.__version__,
                                         CGIResponse.__file__) )
-            self.module_version.append("%-20s %-7s  %s" % 
+            self.module_version.append("%-20s %-7s  %s" %
                                        ('pcgifile',
                                         __version__,
                                         sys.argv[0]) )
@@ -250,7 +250,7 @@ class PcgiFile:
 
     def environList(self):
         """
-        return a sorted list of how the environment would likely appear 
+        return a sorted list of how the environment would likely appear
         if run through the pcgi-wrapper.
         """
         e = []

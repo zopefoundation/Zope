@@ -3,13 +3,13 @@
 # Copyright(c) 1998, Jeff Bauer, All rights reserved.
 
 # killpcgi is a convenience script to kill a running
-# pcgi process, provided that it is running on a 
+# pcgi process, provided that it is running on a
 # Unix system.  You pass it the path of the pcgi info
-# file, and killpcgi will kill the running process and 
+# file, and killpcgi will kill the running process and
 # remove the socket/pid files.
 #
 # killpcgi has been built at the request of several users,
-# but you may want to first examine the script and modify it 
+# but you may want to first examine the script and modify it
 # to suit your environment.
 #
 # Bugs:  skimpy error handling
@@ -64,10 +64,10 @@ def killpcgi(pcgiInfoFile):
                     os.kill(pid, 15)
                     print "process %d killed" % pid
                     # conservative approach: don't remove pid/socket files
-                    # unless we're reasonably certain we have killed the 
+                    # unless we're reasonably certain we have killed the
                     # running process
                     os.unlink(pidFile)
-                    if socketFile is not None: 
+                    if socketFile is not None:
                         os.unlink(socketFile)
         else:
             print "kill not supported for platform:", os.name

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """
@@ -271,7 +271,7 @@ class FCGIChannel(asynchat.async_chat):
     """
     closed=0
     using_temp_stdin=None
-    
+
     def __init__(self, server, sock, addr):
         self.server = server
         self.addr = addr
@@ -361,7 +361,7 @@ class FCGIChannel(asynchat.async_chat):
         # Read some name-value pairs (the CGI environment)
         elif rec.recType == FCGI_PARAMS:
             if rec.contentLength == 0:  # end of the stream
-            
+
                 if self.env.has_key('REQUEST_METHOD'):
                     method=self.env['REQUEST_METHOD']
                 else:
@@ -370,8 +370,8 @@ class FCGIChannel(asynchat.async_chat):
                     path=self.env['PATH_INFO']
                 else:
                     path=''
-                DebugLogger.log('B', id(self), '%s %s' % (method, path))       
-     
+                DebugLogger.log('B', id(self), '%s %s' % (method, path))
+
                 self.remainingRecs = self.remainingRecs - 1
                 self.content_length=string.atoi(self.env.get(
                     'CONTENT_LENGTH','0'))
@@ -383,7 +383,7 @@ class FCGIChannel(asynchat.async_chat):
             if rec.contentLength == 0:  # end of the stream
                 self.remainingRecs = self.remainingRecs - 1
             else:
-                # see if stdin is getting too big, and 
+                # see if stdin is getting too big, and
                 # replace it with a tempfile if necessary
                 if len(rec.content) + self.stdin.tell() > 1048576 and \
                         not self.using_temp_stdin:
@@ -392,7 +392,7 @@ class FCGIChannel(asynchat.async_chat):
                     self.stdin=t
                     self.using_temp_stdin=1
                 self.stdin.write(rec.content)
- 
+
 
         # read some filter data
         elif rec.recType == FCGI_DATA:
@@ -435,7 +435,7 @@ class FCGIChannel(asynchat.async_chat):
 
 
     def log_request(self, bytes):
-        
+
         DebugLogger.log('E', id(self))
 
         if self.env.has_key('HTTP_USER_AGENT'):
@@ -446,7 +446,7 @@ class FCGIChannel(asynchat.async_chat):
             referer=self.env['HTTP_REFERER']
         else:
             referer=''
-       
+
         if self.env.has_key('PATH_INFO'):
             path=self.env['PATH_INFO']
         else:
@@ -525,7 +525,7 @@ class FCGIChannel(asynchat.async_chat):
             hdr = string.join(map(chr, hdr), '')
             self.push(hdr, 0)
             self.push(p, 0)
-            self.push(padLen * '\000', 0)            
+            self.push(padLen * '\000', 0)
 
     def sendStreamTerminator(self, recType):
         rec = FCGIRecord()
@@ -545,7 +545,7 @@ class FCGIChannel(asynchat.async_chat):
 
     def push(self, producer, send=1):
         # this is thread-safe when send is false
-        # note, that strings are not wrapped in 
+        # note, that strings are not wrapped in
         # producers by default
         if self.closed:
             return
@@ -660,17 +660,17 @@ class FCGIServer(asyncore.dispatcher):
 #----------------------------------------------------------------------
 
 class FCGIResponse(HTTPResponse):
-  
+
     _tempfile=None
     _templock=None
     _tempstart=0
-    
+
     def setChannel(self, channel):
         self.channel = channel
 
     def write(self, data):
         stdout=self.stdout
-        
+
         if not self._wrote:
             l=self.headers.get('content-length', None)
             if l is not None:
@@ -680,7 +680,7 @@ class FCGIResponse(HTTPResponse):
                         self._tempfile=TemporaryFile()
                         self._templock=thread.allocate_lock()
                 except: pass
-                    
+
             stdout.write(str(self))
             self._wrote=1
 
@@ -709,10 +709,10 @@ class FCGIResponse(HTTPResponse):
 
     def _finish(self):
         self.channel.reply_code=self.status
-    
+
         DebugLogger.log('A', id(self.channel), '%d %d' % (
                 self.status, self.stdout.length))
-    
+
         t=self._tempfile
         if t is not None:
             self.stdout.write((file_close_producer(t), 0))
@@ -764,6 +764,3 @@ class FCGIPipe:
 
 
 #----------------------------------------------------------------------
-
-
-

@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """
 
 Revision information:
-$Id: testVerify.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: testVerify.py,v 1.3 2002/08/14 21:35:33 mj Exp $
 """
 from __future__ import nested_scopes
 
@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
         class I(Interface):
             def f(): pass
 
-        class C: 
+        class C:
 
             __implements__=I
 
@@ -62,7 +62,7 @@ class Test(unittest.TestCase):
 
         class C:
 
-            def f(self, b): pass 
+            def f(self, b): pass
 
             __implements__=I
 
@@ -96,7 +96,7 @@ class Test(unittest.TestCase):
 
         class C:
 
-            def f(self, a, b): pass 
+            def f(self, a, b): pass
 
             __implements__=I
 
@@ -117,7 +117,7 @@ class Test(unittest.TestCase):
 
         class C:
 
-            def f(self, a): pass 
+            def f(self, a): pass
 
             __implements__=I
 
@@ -134,7 +134,7 @@ class Test(unittest.TestCase):
 
         class C:
 
-            def f(self, a): pass 
+            def f(self, a): pass
 
             __implements__=I
 
@@ -150,7 +150,7 @@ class Test(unittest.TestCase):
         from Interface.tests import dummy
 
         verifyObject(IFoo, dummy)
-        
+
 
 
 def test_suite():

@@ -3,14 +3,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """
 Generate method skeletins for intefaces.
@@ -25,7 +25,7 @@ Example:
 The dotted name is the module name and interface object name connected
 with a dot.
 
-Revision information: $Id: pyskel.py,v 1.5 2002/07/09 12:14:42 gvanrossum Exp $
+Revision information: $Id: pyskel.py,v 1.6 2002/08/14 21:35:32 mj Exp $
 """
 
 import sys, os, re
@@ -95,7 +95,7 @@ def skel(name):
     print
     print "    #"
     print "    ############################################################"
-    
+
 
 def resolve(name, _silly=('__doc__',), _globals={}):
     # Support for file path syntax; this way I can use TAB to search for
@@ -183,9 +183,7 @@ def getAttributesInOrder(interface, order):
         return map(lambda item: item[1:], items)
 
 
-        
+
 if __name__ == '__main__':
     for a in sys.argv[1:]:
         skel(a)
-    
-    

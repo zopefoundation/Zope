@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """
 
 Revision information:
-$Id: IInterface.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: IInterface.py,v 1.3 2002/08/14 21:35:32 mj Exp $
 """
 
 from IElement import IElement
@@ -43,7 +43,7 @@ class IInterface(IElement):
           are expected, optional arguments and their default values,
           the position or arguments in the signature, whether the
           method accepts arbitrary arguments and whether the method
-          accepts arbitrary keyword arguments. 
+          accepts arbitrary keyword arguments.
 
       o Optional tagged data.  Interface objects (and their attributes and
         methods) can have optional, application specific tagged data
@@ -142,7 +142,7 @@ class IInterface(IElement):
 
         A true value is returned in the interface extends the other
         interface, and false otherwise.
-        
+
         Normally, an interface doesn't extend itself. If a false value
         is passed as the second argument, or via the 'strict' keyword
         argument, then a true value will be returned if the interface

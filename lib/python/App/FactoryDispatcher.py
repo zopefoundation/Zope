@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -60,7 +60,7 @@ class FactoryDispatcher(Acquisition.Implicit):
         return self.__dict__['_d'] # we don't want to wrap the result!
     this=Destination
     this__roles__=Destination__roles__=None
-    
+
 
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
@@ -79,14 +79,14 @@ class FactoryDispatcher(Acquisition.Implicit):
             w=getattr(m, '_permissionMapper', None)
             if w is not None:
                 m=ofWrapper(aqwrap(m, getattr(w,'aq_base',w), self))
-    
+
             return m
 
         # Waaa
         m='Products.%s' % p.id
         if sys.modules.has_key(m) and sys.modules[m]._m.has_key(name):
             return sys.modules[m]._m[name]
-    
+
         raise AttributeError, name
 
     # Provide acquired indicators for critical OM methods:
@@ -99,7 +99,7 @@ class FactoryDispatcher(Acquisition.Implicit):
     def manage_main(trueself, self, REQUEST, update_menu=0):
         """Implement a contents view by redirecting to the true view
         """
-        d = update_menu and '/manage_main?update_menu=1' or '/manage_main' 
+        d = update_menu and '/manage_main?update_menu=1' or '/manage_main'
         REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
 
 
@@ -109,5 +109,3 @@ class ofWrapper(ExtensionClass.Base):
         self._o=o
 
     def __of__(self, parent): return self.__dict__['_o']
-
-

@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -61,7 +61,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
          'filter': _isBeingUsedAsAMethod,
          },
         )
-   
+
     __ac_roles__=('Manager', 'Owner', 'Anonymous', 'Authenticated')
 
     permissionMappingPossibleValues=Acquired
@@ -75,19 +75,19 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         d={}
         perms=self.__ac_permissions__
         for p in perms: d[p[0]]=None
-            
+
         r=gather_permissions(self.__class__, [], d)
         if all:
-           if hasattr(self, '_subobject_permissions'):
-               for p in self._subobject_permissions():
-                   pname=p[0]
-                   if not d.has_key(pname):
-                       d[pname]=1
-                       r.append(p)
-            
-           r=list(perms)+r
-           r.sort()
-            
+            if hasattr(self, '_subobject_permissions'):
+                for p in self._subobject_permissions():
+                    pname=p[0]
+                    if not d.has_key(pname):
+                        d[pname]=1
+                        r.append(p)
+
+            r=list(perms)+r
+            r.sort()
+
         return tuple(r)
 
     def permission_settings(self):
@@ -147,12 +147,12 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             else:                   p.setRoles(tuple(roles))
 
         if REQUEST is not None: return self.manage_access(REQUEST)
-        
+
     manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
                                    management_view='Security',
                                    help_topic='Security_Manage-Permission.stx',
                                    help_product='OFSP')
-    
+
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
         """Change the settings for the given permission
@@ -172,13 +172,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 return
 
         raise 'Invalid Permission', (
-            "The permission <em>%s</em> is invalid." % 
+            "The permission <em>%s</em> is invalid." %
                 escape(permission_to_manage))
-        
+
     _normal_manage_access=DTMLFile('dtml/access', globals())
 
     _method_manage_access=DTMLFile('dtml/methodAccess', globals())
-    
+
     def manage_access(self, REQUEST, **kw):
         "Return an interface for making permissions settings"
         if hasattr(self, '_isBeingUsedAsAMethod') and \
@@ -186,7 +186,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             return apply(self._method_manage_access,(), kw)
         else:
             return apply(self._normal_manage_access,(), kw)
-    
+
     def manage_changePermissions(self, REQUEST):
         "Change all permissions settings, called by management screen"
         self._isBeingUsedAsAMethod(REQUEST, 0)
@@ -244,7 +244,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                      'selected': role in roles and 'SELECTED' or '',
                      },
                     valid_roles)
-        
+
         raise 'Invalid Permission', (
             "The permission <em>%s</em> is invalid." % escape(permission))
 
@@ -256,7 +256,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 p=Permission(name,value,self)
                 roles=p.getRoles()
                 return type(roles) is ListType and 'CHECKED' or ''
-        
+
         raise 'Invalid Permission', (
             "The permission <em>%s</em> is invalid." % escape(permission))
 
@@ -268,7 +268,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     # of a particular object (and its children). When a user is given
     # extra roles in a particular object, an entry for that user is made
     # in the __ac_local_roles__ dict containing the extra roles.
-    
+
     __ac_local_roles__=None
 
     manage_listLocalRoles=DTMLFile('dtml/listLocalRoles', globals(),
@@ -384,13 +384,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             if key.find('__roles__') >= 0:
                 _add({'name': key, 'value': value, 'class': 0})
             if hasattr(value, '__roles__'):
-                _add({'name': '%s.__roles__' % key, 'value': value.__roles__, 
+                _add({'name': '%s.__roles__' % key, 'value': value.__roles__,
                       'class': 0})
         for key, value in clas.items():
             if key.find('__roles__') >= 0:
                 _add({'name': key, 'value': value, 'class' : 1})
             if hasattr(value, '__roles__'):
-                _add({'name': '%s.__roles__' % key, 'value': value.__roles__, 
+                _add({'name': '%s.__roles__' % key, 'value': value.__roles__,
                       'class': 1})
         return data
 
@@ -479,7 +479,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     def _has_user_defined_role(self, role):
         return role in self.__ac_roles__
-        
+
 
     # Compatibility names only!!
 
@@ -505,7 +505,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         d=d.keys()
         d.sort()
-        
+
         return d
 
 
@@ -562,4 +562,3 @@ def gather_permissions(klass, result, seen):
                 seen[name]=None
         gather_permissions(base, result, seen)
     return result
-

@@ -3,14 +3,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Support for Python classes implemented in C
 
@@ -18,16 +18,16 @@ A lightweight mechanism has been developed for making Python
 extension types more class-like.  Classes can be developed in an
 extension language, such as C or C++, and these classes can be
 treated like other python classes:
-  
+
 - They can be sub-classed in python,
-  
+
 - They provide access to method documentation strings, and
-  
+
 - They can be used to directly create new instances.
-  
+
 An example class shows how extension classes are implemented and how
 they differ from extension types.
-  
+
 Extension classes provide additional extensions to class and
 instance semantics, including:
 
@@ -41,11 +41,11 @@ instance semantics, including:
 
 - A protocol for class initialization that supports execution of a
   special '__class_init__' method after a class has been
-  initialized. 
-  
+  initialized.
+
 Extension classes illustrate how the Python class mechanism can be
 extended and may provide a basis for improved or specialized class
-models. 
+models.
 """
 
 # Setup file for ExtensionClass
@@ -79,7 +79,7 @@ Sync = Extension(name = 'Sync', sources = ['src/Sync.c'])
 ThreadLock = Extension(name = 'ThreadLock',
                        sources = ['src/ThreadLock.c'])
 
-setup(name = "ExtensionClass", 
+setup(name = "ExtensionClass",
       version = "1.3",
       description = "Support for Python classes implemented in C",
       maintainer = "Digital Creations",

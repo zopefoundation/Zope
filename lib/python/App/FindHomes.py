@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import os, sys, Products
 from Common import package_home, realpath
@@ -25,7 +25,7 @@ except:
     home=package_home(Products.__dict__)
     if not os.path.isabs(home):
         home=path_join(os.getcwd(), home)
-        
+
     home,e=path_split(home)
     if path_split(home)[1]=='.': home=path_split(home)[0]
     if path_split(home)[1]=='..':
@@ -76,7 +76,7 @@ if os.path.isdir(ip) and ip not in ppath:
     if disallow in ('no', 'off', '0', ''):
         ppath.insert(0, ip)
         ippart = 1
-        
+
 ppathpat = os.environ.get('PRODUCTS_PATH', None)
 if ppathpat is not None:
     psep = os.pathsep

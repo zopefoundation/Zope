@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os, time
 
@@ -85,7 +85,7 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
     if hasattr(parent, absId):
         # Consider direct attributes not acquired
         return 0
-        
+
     if hasattr(parent, '__getitem__'):
         # Use __getitem__ as opposed to has_key to avoid TTW namespace
         # issues, and to support the most minimal mapping objects
@@ -94,8 +94,8 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
                 # This object is an item of the aq_parent, its not acquired
                 return 0
         except KeyError:
-            pass 
-    
+            pass
+
     if hasattr(parent,'_objects'):
         # XXX This is really icky
         # This ugly mess is for ZClass methods I think
@@ -126,7 +126,7 @@ def attrget(o,name,default):
     return default
 
 def Dictionary(**kw): return kw # Sorry Guido
-    
+
 def realpath(p):
     """ Computes the 'real' path of a file or directory devoid of
     any symlink in any element of the path """

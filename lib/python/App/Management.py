@@ -1,21 +1,21 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Standard management interface support
 
-$Id: Management.py,v 1.60 2002/04/12 19:45:33 Brian Exp $"""
+$Id: Management.py,v 1.61 2002/08/14 21:31:40 mj Exp $"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -27,7 +27,7 @@ class Tabs(ExtensionClass.Base):
 
     manage_tabs__roles__=('Anonymous',)
     manage_tabs=DTMLFile('dtml/manage_tabs', globals())
-    
+
 
     manage_options  =()
 
@@ -35,7 +35,7 @@ class Tabs(ExtensionClass.Base):
     def filtered_manage_options(self, REQUEST=None):
 
         validate=getSecurityManager().validate
-        
+
         result=[]
 
         try: options=tuple(self.manage_options)
@@ -61,8 +61,8 @@ class Tabs(ExtensionClass.Base):
                     result.append(d)
 
         return result
-                    
-            
+
+
     manage_workspace__roles__=('Authenticated',)
     def manage_workspace(self, REQUEST):
         """Dispatch to first interface in manage_options
@@ -78,9 +78,9 @@ class Tabs(ExtensionClass.Base):
         if m.find('/'):
             raise 'Redirect', (
                 "%s/%s" % (REQUEST['URL1'], m))
-        
+
         return getattr(self, m)(self, REQUEST)
-    
+
     def tabs_path_default(self, REQUEST,
                           # Static var
                           unquote=urllib.unquote,

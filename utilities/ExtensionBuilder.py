@@ -202,7 +202,7 @@ class ExtensionBuilder:
 
         if 'Setup.in' in os.listdir(current_dir):
             self.doCommand('copy Setup.in Setup')
-        
+
         # Parse the Setup file. We have to do a lot of work because
         # NMAKE is very stupid about relative paths :( The only way
         # to get things to work relatively reliably is to turn all
@@ -246,10 +246,10 @@ class ExtensionBuilder:
                 args = tmplist
 
                 source = string.replace(source, '/', '\\')
-                
+
                 srcdir = filepath(source)
                 srcdir = os.path.normpath(os.path.join(os.getcwd(), srcdir))
-                
+
                 source = os.path.split(source)[-1]
 
                 os.chdir(srcdir)

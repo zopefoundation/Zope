@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """Implemantation assertion facilities.
 
 Revision information:
-$Id: Implements.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: Implements.py,v 1.3 2002/08/14 21:35:32 mj Exp $
 """
 
 import Exceptions
@@ -62,7 +62,7 @@ def visitImplements(implements, object, visitor, getInterface=None):
     # this allows us to work with proxy wrappers in Python 2.2,
     # yet remain compatible with earlier versions of python.
     implements_class = getattr(implements, '__class__', None)
-    
+
     if implements_class == InterfaceClass or \
        isInstance(implements, InterfaceClass):
         return visitor(implements)
@@ -156,4 +156,3 @@ def implements(klass, interface, check=1):
         klass.__implements__ = interface
     else:
         klass.__implements__ = old, interface
-

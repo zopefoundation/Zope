@@ -3,21 +3,21 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """ script to consistency of a ZCatalog """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
-import Zope    
+import Zope
 import os,sys,re,getopt
 from types import IntType
 from BTrees.IIBTree import IISet,difference,intersection
@@ -58,7 +58,7 @@ def checkCatalog(path,indexes):
         print "\tOK:  Mapping data equals Maaping paths"
     else:
         print "\tERR: Mapping data does not equal Maaping paths"
-    
+
 
     # check BTrees of indexes
 
@@ -71,18 +71,18 @@ def checkCatalog(path,indexes):
         if idx.meta_type in ['FieldIndex','KeywordIndex']:
 
             # check forward entries
-            RIDS = IISet() 
+            RIDS = IISet()
             for key, rids in idx._index.items():
-                if isinstance(rids,IntType): 
+                if isinstance(rids,IntType):
                     RIDS.insert(  rids  )
                 else:
                     map(RIDS.insert , rids.keys())
 
             diff = difference(RIDS, IISet(_cat.data.keys()))
             if len(diff)!=0:
-                print '\tERR: Problem with forward entries' 
+                print '\tERR: Problem with forward entries'
                 print '\tERR: too much forward entries:', diff
-            else:    
+            else:
                 print '\tOK:  Forward entries (%d entries)'  % (len(RIDS))
 
 
@@ -95,11 +95,11 @@ def checkCatalog(path,indexes):
 
             diff = difference(RIDS, IISet(_cat.data.keys()))
             if len(diff)!=0:
-                print '\tERR: Problem with forward entries' 
+                print '\tERR: Problem with forward entries'
                 print '\tERR: too much forward entries:', diff
-            else:    
+            else:
                 print '\tOK:  Forward entries (%d entries)'  % (len(RIDS))
-            
+
 
         if idx.meta_type in ['FieldIndex','KeywordIndex','PathIndex']:
 
@@ -107,7 +107,7 @@ def checkCatalog(path,indexes):
             RIDS = IISet(idx._unindex.keys())
             diff = difference(RIDS, IISet(_cat.data.keys()))
             if len(diff)!=0:
-                print '\tERR: Problem with backward entries' 
+                print '\tERR: Problem with backward entries'
                 print '\tERR: too much backward entries:', diff
             else:
                 print '\tOK:  Backward entries (%d entries)'  % (len(RIDS))
@@ -121,11 +121,11 @@ def checkCatalog(path,indexes):
 def usage():
     print "Usage: %s [--FieldIndex|KeywordIndex|PathIndex] /path/to/ZCatalog" % \
                 os.path.basename(sys.argv[0])
-    print 
+    print
     print "This scripts checks the consistency of the internal"
     print "BTrees of a ZCatalog and its indexes."
     sys.exit(1)
-    
+
 
 def main():
 
@@ -137,7 +137,7 @@ def main():
     for o,v in opts:
 
         if o in ['-h','--help']: usage()
-        if o in ['--FieldIndex','--KeywordIndex','--PathIndex']: 
+        if o in ['--FieldIndex','--KeywordIndex','--PathIndex']:
             indexes.append(o[2:])
 
     checkCatalog(args,indexes)

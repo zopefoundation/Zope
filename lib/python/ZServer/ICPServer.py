@@ -33,7 +33,7 @@ ICP_OP_DENIED = 22
 class BaseICPServer(asyncore.dispatcher):
 
     REQUESTS_PER_LOOP = 4
-   
+
     def __init__ (self,ip,port):
         asyncore.dispatcher.__init__(self)
         self.create_socket (socket.AF_INET, socket.SOCK_DGRAM)
@@ -44,7 +44,7 @@ class BaseICPServer(asyncore.dispatcher):
         else:
             addr = ip
         self.log_info('ICP server started\n\tAddress: %s\n\tPort: %s' % (addr,port) )
-        
+
     def handle_read(self):
         for i in range(self.REQUESTS_PER_LOOP):
             try:
@@ -90,7 +90,7 @@ class BaseICPServer(asyncore.dispatcher):
                             url = url[:-1]
                         out_opcode = self.check_url(url)
                     return struct.pack('!BBHIIII',out_opcode,2,20,number,0,0,0)
-                    
+
     def check_url(self,url):
         # derived classes replace this with a more
         # useful policy
@@ -103,7 +103,7 @@ class ICPServer(BaseICPServer):
     # they must return an ICP_OP code from above or None. The first
     # non-None return is used as the ICP response
     hooks = []
-    
+
     def check_url(self,url):
         for hook in self.hooks:
             r = hook(url)

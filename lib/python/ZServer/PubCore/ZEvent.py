@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Simple Event Manager Based on Pipes
@@ -31,8 +31,7 @@ def Wakeup(thunk=None):
         # this broken pipe as a result of perhaps a signal
         # we want to handle this gracefully so we get rid of the old
         # trigger and install a new one.
-        if why[0] == 32: 
+        if why[0] == 32:
             del socket_map[the_trigger._fileno]
             the_trigger = simple_trigger() # adds itself back into socket_map
             the_trigger.pull_trigger(thunk)
-

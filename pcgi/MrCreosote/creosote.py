@@ -63,4 +63,3 @@ if __name__ == '__main__':
     else:
         from string import joinfields
         spew(joinfields(sys.argv[1:],' '))
-

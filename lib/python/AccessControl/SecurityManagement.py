@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.6 2001/11/28 15:50:51 matt Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: SecurityManagement.py,v 1.7 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 def getSecurityManager():
     """Get a security manager, for the current thread.
@@ -26,7 +26,7 @@ def getSecurityManager():
             thread_id,
             SecurityContext(SpecialUsers.nobody))
         _managers[thread_id]=manager
-        
+
     return manager
 
 import SpecialUsers
@@ -49,10 +49,10 @@ def newSecurityManager(request, user):
 def noSecurityManager():
     try: del _managers[get_ident()]
     except: pass
-    
+
 
 def setSecurityPolicy(aSecurityPolicy):
-    """Set the system default security policy. 
+    """Set the system default security policy.
 
     This method should only be caused by system startup code. It should
     never, for example, be called during a web request.
@@ -68,5 +68,3 @@ class SecurityContext:
         self.stack=[]
         self.user=user
         self.objectCache = {}
-
-    

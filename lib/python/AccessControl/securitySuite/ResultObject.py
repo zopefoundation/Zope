@@ -1,22 +1,22 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
 class ResultObject:
-    """ result object used for keeping results from the 
-        ZPublisher.Zope() calls 
+    """ result object used for keeping results from the
+        ZPublisher.Zope() calls
 
-        $Id: ResultObject.py,v 1.3 2001/11/28 15:50:52 matt Exp $
+        $Id: ResultObject.py,v 1.4 2002/08/14 21:27:32 mj Exp $
     """
 
     def __str__(self,expected=-1,with_output=1):
@@ -31,9 +31,8 @@ class ResultObject:
         s+= "\n"
 
         return s
-    
+
     __repr__ = __str__
 
     def __call__(self,expected=-1):
         return self.__str__(expected)
-        

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Shared routines used by the various scripts.
 
@@ -49,13 +49,13 @@ def ch(path, user, group, mode=0600, quiet=0):
         do("chown %s %s" % (user, path), 0, quiet)
 
     do("chmod %s %s" % (oct(mode), path), 0, quiet)
-    
+
 
 def make(*args):
     print
     print '-'*48
     print 'Compiling extensions in %s' % string.join(args,'/')
-    
+
     for a in args: os.chdir(a)
     # Copy over and use the prototype extensions makefile from python dist:
     do("cp %s ." % wheres_Makefile_pre_in())

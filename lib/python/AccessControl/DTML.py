@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.9 2001/11/28 15:50:51 matt Exp $''' 
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: DTML.py,v 1.10 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DocumentTemplate import DT_Util
 import SecurityManagement, string, math, whrandom, random
@@ -46,7 +46,7 @@ else:
         '''
         A mix-in for derivatives of DT_String.String that adds Zope security.
         '''
-    
+
 
 # Allow access to unprotected attributes
 DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1
@@ -67,15 +67,15 @@ class DTMLSecurityAPI:
         """Validate access.
 
         Arguments:
-        
+
         accessed -- the object that was being accessed
-        
+
         container -- the object the value was found in
-        
+
         name -- The name used to access the value
-        
+
         value -- The value retrieved though the access.
-        
+
         The arguments may be provided as keyword arguments. Some of these
         arguments may be ommitted, however, the policy may reject access
         in some cases when arguments are ommitted.  It is best to provide
@@ -99,9 +99,9 @@ class DTMLSecurityAPI:
         the given object.
 
         Arguments:
-        
+
         permission -- A permission name
-        
+
         object -- The object being accessed according to the permission
         """
         return (SecurityManagement
@@ -127,4 +127,3 @@ class DTMLSecurityAPI:
         return r
 
 DT_Util.TemplateDict.__dict__.update(DTMLSecurityAPI.__dict__)
-

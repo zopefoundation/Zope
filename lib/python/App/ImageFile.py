@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -35,7 +35,7 @@ class ImageFile(Acquisition.Explicit):
         self.path=path
         if Globals.DevelopmentMode:
             # In development mode, a shorter time is handy
-            max_age = 60 # One minute 
+            max_age = 60 # One minute
         else:
             # A longer time reduces latency in production mode
             max_age = 3600 # One hour
@@ -96,8 +96,7 @@ class ImageFile(Acquisition.Explicit):
 
     def __len__(self):
         # This is bogus and needed because of the way Python tests truth.
-        return 1 
+        return 1
 
     def __str__(self):
-        return '<img src="%s" alt="" />' % self.__name__ 
-
+        return '<img src="%s" alt="" />' % self.__name__

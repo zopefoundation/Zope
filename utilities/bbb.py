@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Read and (re-)format BoboPOS 2 database files
 """
@@ -57,12 +57,12 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
                       "This script only works with ZODB 2 (BoboPOS) "
                       "data or export files."
                       ,1)
-            
+
     gmtime=time.gmtime
 
     if fromEnd: pos=file_size
     else:       pos=newpos=(not export) and len(packed_version)
-     
+
     tlast=0
     err=0
     tnamelast=None
@@ -79,7 +79,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
                     l=unpack(">i", read(4))[0]
 
                 pos=p+4
-                error("nulls skipped from %s to %s" % (pos,b)) 
+                error("nulls skipped from %s to %s" % (pos,b))
             p=pos-l
             if p < 0:
                 error('Corrupted data before %s' % pos)
@@ -100,7 +100,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
         if not h: break
         if len(h) !=  24: break
         oid,prev,start,tlen,plen=unpack(">iidii",h)
-        
+
         if prev < 0 or (prev and (prev >= pos)):
             error('Bad previous record pointer (%s) at %s' % (prev, pos))
             if show > 0: error(read(show))
@@ -149,7 +149,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
         seek(pos+24)
         if plen > 0:
             p=read(plen)
-            if p[-1:] != '.': 
+            if p[-1:] != '.':
                 error('Corrupted pickle at %s %s %s' % (pos,plen,len(p)))
                 if show > 0:
                     seek(pos+24)
@@ -177,10 +177,10 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
 
 def none(*ignored): pass
 
-def positions(pos, *ignored): 
+def positions(pos, *ignored):
     if pos is not None: sys.stdout.write("%s\n" % pos)
 
-def oids(pos, oid, *ignored): 
+def oids(pos, oid, *ignored):
     if pos is not None: sys.stdout.write("%s\n" % oid)
 
 def tab_delimited(*args):
@@ -188,10 +188,10 @@ def tab_delimited(*args):
 
 def undo_log(pos, oid, start, tname, user, t, p, first, newtrans):
     if not newtrans: return
-    
+
     sys.stdout.write("%s:\t%s\t%s\t%s\n" % (pos, start, user, t))
 
-        
+
 reports={
     'none': (none,
              ('Read a database file checking for errors',
@@ -225,7 +225,7 @@ def main(argv):
 
     items=reports.items()
     items.sort()
-    
+
     usage="""Usage: python %s [options] filename
 
     where filename is the name of the database file.
@@ -268,7 +268,7 @@ def main(argv):
 
           The input file is a ZODB 2 export file.
 
-          
+
     """ % (sys.argv[0],
            string.join(map(
                lambda i:
@@ -285,7 +285,7 @@ def main(argv):
 
     try: file=open(filename,'rb')
     except: error('Coud not open %s' % filename,1,1)
-    
+
     rpt=none
     fromEnd=0
     both=0
@@ -330,4 +330,3 @@ def main(argv):
                      forgive=1, export=export)
 
 if __name__=='__main__': main(sys.argv[1:])
-

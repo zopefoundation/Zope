@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 from AccessControl.PermissionRole import PermissionRole
@@ -18,7 +18,7 @@ class ApplicationDefaultPermissions:
     _View_Permission='Manager', 'Anonymous'
     _Access_contents_information_Permission='Manager', 'Anonymous'
 
-    
+
 def default__class_init__(self):
     dict=self.__dict__
     have=dict.has_key
@@ -56,7 +56,7 @@ def default__class_init__(self):
     # delete the SecurityInfo from the class dict after it has been
     # applied out of paranoia.
     for key, value in dict_items:
-        if hasattr(value, '__security_info__'):            
+        if hasattr(value, '__security_info__'):
             security_info=value
             security_info.apply(self)
             del dict[key]

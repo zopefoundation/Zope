@@ -1,35 +1,35 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Product objects
 """
 # The new Product model:
-# 
+#
 #   Products may be defined in the Products folder or by placing directories
 #   in lib/python/Products.
-# 
+#
 #   Products in lib/python/Products may have up to three sources of information:
-# 
+#
 #       - Static information defined via Python.  This information is
 #         described and made available via __init__.py.
-# 
+#
 #       - Dynamic object data that gets copied into the Bobobase.
 #         This is contained in product.dat (which is obfuscated).
-# 
+#
 #       - Static extensions supporting the dynamic data.  These too
 #         are obfuscated.
-# 
+#
 #   Products may be copied and pasted only within the products folder.
-# 
+#
 #   If a product is deleted (or cut), it is automatically recreated
 #   on restart if there is still a product directory.
 
@@ -106,8 +106,8 @@ class Product(Folder, PermissionManager):
         start = match.start()
         end = match.end()
         return v[:start] + str(1 + int(v[start:end])) + v[end:]
-                    
-    
+
+
     meta_types=(
         ZClasses.meta_types+PermissionManager.meta_types+
         (
@@ -117,7 +117,7 @@ class Product(Folder, PermissionManager):
                 },
             )
         )
-    
+
     manage_addZClassForm=ZClasses.methods['manage_addZClassForm']
     manage_addZClass    =ZClasses.methods['manage_addZClass']
     manage_subclassableClassNames=ZClasses.methods[
@@ -164,7 +164,7 @@ class Product(Folder, PermissionManager):
             self._setObject('Help', ProductHelp('Help', id))
         except:
             pass
-        
+
     def Destination(self):
         "Return the destination for factory output"
         return self
@@ -185,14 +185,14 @@ class Product(Folder, PermissionManager):
         self.redistributable=redistributable
         RESPONSE.redirect('Distributions/%s-%s.tar.gz' %
                           (quote(self.id), quote(version)))
-        
+
     def _distribution(self):
         # Return a distribution
         if self.__dict__.has_key('manage_options'):
             raise TypeError, 'This product is <b>not</b> redistributable.'
 
         id=self.id
-        
+
         import tar
         rot=rotor.newrotor(id+' shshsh')
         ar=tar.tgzarchive("%s-%s" % (id, self.version))
@@ -471,7 +471,7 @@ class CompressedInputFile:
 
 class Distribution:
     "A distribution builder"
-    
+
     def __init__(self, product):
         self._product=product
 
@@ -500,7 +500,7 @@ def initializeProduct(productp, name, home, app):
                     # Version hasn't changed. Don't reinitialize.
                     return old
     except: pass
-    
+
     disable_distribution = 1
     try:
         f=CompressedInputFile(open(home+'/product.dat','rb'), name+' shshsh')

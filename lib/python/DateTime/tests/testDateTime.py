@@ -1,4 +1,3 @@
-
 # To run these tests, use:
 #   python unittest.py DateTime.tests.suite
 
@@ -95,7 +94,7 @@ class DateTimeTests (unittest.TestCase):
         # Compare representations as it's the
         # only way to compare the dates to the same accuracy
         self.assertEqual(repr(dt),repr(dt1))
-        
+
     def testDayOfWeek(self):
         '''strftime() used to always be passed a day of week of 0.'''
         dt = DateTime('2000/6/16')
@@ -231,7 +230,7 @@ class DateTimeTests (unittest.TestCase):
 
         lines  = gzip.GzipFile(os.path.join(__basedir__,
                                 'julian_testdata.txt.gz')).readlines()
-    
+
         for line in lines:
             d = DateTime(line[:10])
             result_from_mx=tuple(map(int, line[12:-2].split(',')))
@@ -242,4 +241,4 @@ def test_suite():
     return unittest.makeSuite(DateTimeTests)
 
 if __name__=="__main__":
-   unittest.TextTestRunner().run(test_suite())
+    unittest.TextTestRunner().run(test_suite())

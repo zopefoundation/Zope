@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.25 2002/06/10 20:20:43 shane Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: CacheManager.py,v 1.26 2002/08/14 21:31:40 mj Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import Globals, time, sys
 from DateTime import DateTime
@@ -43,10 +43,10 @@ class CacheManager:
         else: return db.cacheSize()
 
     def cache_detail_length(self):
-      try: db=self._p_jar.db()
-      except:
-          return ()
-      else: return db.cacheDetailSize()
+        try: db=self._p_jar.db()
+        except:
+            return ()
+        else: return db.cacheDetailSize()
 
     def database_size(self):
         try: db=self._p_jar.db()
@@ -99,7 +99,7 @@ class CacheManager:
         "set cache size"
         try:
             v=self._p_jar.getVersion()
-        except: 
+        except:
             # BoboPOS2:
             if self._p_jar.db is not Globals.Bobobase._jar.db:
                 raise 'Version Error', (
@@ -137,7 +137,7 @@ class CacheManager:
                  ))
              ),
             )
-        
+
 
     # BoboPOS 2
     def cache_mean_age(self):
@@ -320,7 +320,7 @@ class CacheManager:
                 load_len = max(int(segment_height * loads / limit), 1)
             else:
                 load_len = 0
-            
+
             t = div['end'] - analysis[-1]['end']  # Show negative numbers.
             if segment_time >= 3600:
                 # Show hours.
@@ -362,4 +362,3 @@ class CacheManager:
 
 
 Globals.default__class_init__(CacheManager)
-

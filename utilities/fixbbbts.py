@@ -55,7 +55,7 @@ def main():
     write=output.write
     pack=struct.pack
     unpack=struct.unpack
-    
+
     h=read(len(packed_version))
     if h != packed_version:
         raise InvalidFormat, 'This is not a BoboPOS file'
@@ -73,7 +73,7 @@ def main():
             next=next+0.001
             start=None
         if plen > tlen or tlen < 28: raise Corrupted, pos
-        
+
         write(pack(">iidii", oid, prev, t, tlen, plen))
         l=tlen-28
         s=8196
@@ -89,4 +89,3 @@ def main():
         pos=pos+tlen
 
 if __name__=='__main__': main()
-

@@ -1,26 +1,26 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Simple module for writing tar files
 
-$Id: tar.py,v 1.5 2002/02/07 17:37:10 andreasjung Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: tar.py,v 1.6 2002/08/14 21:31:41 mj Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, time, zlib
 try:
     from newstruct import pack
 except:
     from struct import pack
-    
+
 
 def oct8(i):
     i=oct(i)
@@ -29,7 +29,7 @@ def oct8(i):
 def oct12(i):
     i=oct(i)
     return '0'*(11-len(i))+i+' '
-    
+
 def pad(s,l):
     ls=len(s)
     if ls >= l: raise ValueError, 'value, %s, too wide for field (%d)' % (s,l)
@@ -73,7 +73,7 @@ class TarEntry:
         l=len(data)
         if l%512: data=data+'\0'*(512-l%512)
         return self.header+data
-            
+
 def tar(entries):
     r=[]
     ra=r.append
@@ -103,7 +103,7 @@ class tgzarchive:
 
     def finish(self):
         self._f.write('\0'*1024)
-        
+
     def __str__(self):
         return self._f.getdata()
 

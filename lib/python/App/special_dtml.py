@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import DocumentTemplate, Common, Persistence, MethodObject, Globals, os, sys
@@ -75,7 +75,7 @@ from ComputedAttribute import ComputedAttribute
 
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
-    
+
     func_code = None
     func_defaults = None
     _need__name__=1
@@ -99,7 +99,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         self._setFuncSignature()
         apply(DTMLFile.inheritedAttribute('__init__'),
               (self, name, _prefix), kw)
-    
+
     def getOwner(self, info=0):
         '''
         This method is required of all objects that go into
@@ -110,14 +110,14 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     def _exec(self, bound_data, args, kw):
         # Cook if we haven't already
         self._cook_check()
-        
+
         # Get our caller's namespace, and set up our own.
         cns = bound_data['caller_namespace']
         ns = self._Bindings_ns_class()
         push = ns._push
         ns.guarded_getattr = None
         ns.guarded_getitem = None
-        
+
         req = None
         kw_bind = kw
         if cns:
@@ -173,9 +173,9 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             if value is _marker:
                 try: result = render_blocks(self._v_blocks, ns)
                 except DTReturn, v: result = v.v
-                except AttributeError: 
+                except AttributeError:
                     if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
-                        LOG("ZPublisher",WARNING,"DTML file '%s' could not be read" % self.raw) 
+                        LOG("ZPublisher",WARNING,"DTML file '%s' could not be read" % self.raw)
                         raise "DTML file error","Check logfile for details"
                     else:
                         raise
@@ -192,4 +192,3 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
 
 
 HTMLFile = ClassicHTMLFile
-

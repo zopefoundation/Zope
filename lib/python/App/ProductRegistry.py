@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 # Product registry and new product factory model.  There will be a new
@@ -28,7 +28,7 @@ class ProductRegistryMixin:
     # are defined through the web.
 
     # This class is a mix-in class for the top-level application object.
-    
+
     def _manage_remove_product_meta_type(self, product,
                                          id=None, meta_type=None):
         r=[]
@@ -40,12 +40,12 @@ class ProductRegistryMixin:
                     continue
                 elif meta_type==mt['name']: continue
                 r.append(mt)
-            
+
         self._setProductRegistryMetaTypes(tuple(r))
 
     def _constructor_prefix_string(self, pid):
         return 'manage_addProduct/%s/' % pid
-        
+
     def _manage_add_product_meta_type(self, product, id, meta_type,
                                       permission=''):
         pid=product.id
@@ -70,9 +70,9 @@ class ProductRegistryMixin:
             'product': pid
             }
         if permission: mt['permission']=permission
-        
+
         self._setProductRegistryMetaTypes(meta_types+(mt,))
-    
+
     def _manage_remove_product_permission(self, product, permission=None):
         r=[]
         r2=[]
@@ -85,7 +85,7 @@ class ProductRegistryMixin:
                 elif permission==d['name']: continue
                 r.append(d)
                 r2.append((d['name'], d['methods'], d['default']))
-            
+
         self._setProductRegistryData('permissions', tuple(r))
         self._setProductRegistryData('ac_permissions', tuple(r2))
 
@@ -100,10 +100,10 @@ class ProductRegistryMixin:
                 raise 'Type Exists', (
                     'The permission <em>%s</em> is already defined.'
                     % permission)
-        
+
         d={'name': permission, 'methods': methods, 'permission': permission,
                 'default': default, 'product': product.id}
-        
+
         self._setProductRegistryData('permissions', permissions + (d,))
         self._setProductRegistryData(
             'ac_permissions',
@@ -175,5 +175,3 @@ class ProductRegistry(ProductRegistryMixin):
             return setattr(self, name, v)
         else:
             raise AttributeError, name
-
-

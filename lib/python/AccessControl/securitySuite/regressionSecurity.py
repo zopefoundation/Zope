@@ -3,17 +3,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-# $Id: regressionSecurity.py,v 1.4 2001/11/28 15:50:52 matt Exp $
+# $Id: regressionSecurity.py,v 1.5 2002/08/14 21:27:32 mj Exp $
 
 import os, sys, unittest
 
@@ -91,9 +91,9 @@ class TestFolder(Folder):
 
     def __init__(self,id):
         self.id = id
-            
 
-    def getId(self): return self.id 
+
+    def getId(self): return self.id
 
     meta_type = 'TestFolder'
 
@@ -154,7 +154,7 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
         for user in USERS:
             try: acl._delUsers( user.username )
             except: pass
-   
+
         for user in USERS:
             acl._addUser(user.username,user.password,user.password,
                             user.roles, [])
@@ -162,7 +162,7 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
         # try to remove old crap
 
         if 'test' in self.root.objectIds():
-            self.root._delObject('test') 
+            self.root._delObject('test')
 
         # setup Folder hierarchy
 
@@ -185,12 +185,12 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
     def testNobody(self):
         """ check permissions for nobody user """
 
-        self._checkPermission(nobody,'test.f1',   'View',1) 
-        self._checkPermission(nobody,'test.f2',   'View',1) 
-        self._checkPermission(nobody,'test.f2.f3','View',1) 
-        self._checkPermission(nobody,'test.f1',   MAGIC_PERMISSION1, None) 
-        self._checkPermission(nobody,'test.f2',   MAGIC_PERMISSION1, None) 
-        self._checkPermission(nobody,'test.f2.f3',MAGIC_PERMISSION1, None) 
+        self._checkPermission(nobody,'test.f1',   'View',1)
+        self._checkPermission(nobody,'test.f2',   'View',1)
+        self._checkPermission(nobody,'test.f2.f3','View',1)
+        self._checkPermission(nobody,'test.f1',   MAGIC_PERMISSION1, None)
+        self._checkPermission(nobody,'test.f2',   MAGIC_PERMISSION1, None)
+        self._checkPermission(nobody,'test.f2.f3',MAGIC_PERMISSION1, None)
 
 
     def testPermissionAccess(self):
@@ -242,7 +242,7 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
 def test_suite():
     return unittest.makeSuite(AVeryBasicSecurityTest)
 
-        
+
 def main():
     unittest.TextTestRunner().run(test_suite())
 

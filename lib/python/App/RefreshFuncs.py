@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id: RefreshFuncs.py,v 1.5 2002/06/16 01:56:00 shane Exp $
+$Id: RefreshFuncs.py,v 1.6 2002/08/14 21:31:40 mj Exp $
 '''
 
 import os, sys
@@ -52,7 +52,7 @@ def _getCentralRefreshData(jar, create=0):
         if create:
             root['RefreshData'] = rd
     return rd
-    
+
 def isAutoRefreshEnabled(jar, productid):
     rd = _getCentralRefreshData(jar)
     ids = rd.get('auto', None)
@@ -118,7 +118,7 @@ def getReloadVar(module):
         reload_var = getattr(module, '__reload_module__', _marker)
     if reload_var is _marker:
         reload_var = 1
-    return reload_var    
+    return reload_var
 
 def listRefreshableModules(productid):
     prefix = "Products.%s" % productid
@@ -329,4 +329,3 @@ def setupAutoRefresh(jar):
     connection_open_hooks.append(autoRefresh)
     # Init mod times.
     checkAutoRefresh(jar)
-

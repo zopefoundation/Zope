@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 ZServer pipe utils. These producers basically function as callbacks.
@@ -19,14 +19,14 @@ import sys
 
 class ShutdownProducer:
     "shuts down medusa"
-    
+
     def more(self):
         asyncore.close_all()
 
 
 class LoggingProducer:
     "logs request"
-    
+
     def __init__(self, logger, bytes, method='log'):
         self.logger=logger
         self.bytes=bytes
@@ -36,14 +36,14 @@ class LoggingProducer:
         getattr(self.logger, self.method)(self.bytes)
         self.logger=None
         return ''
-    
+
 
 class CallbackProducer:
     "Performs a callback in the channel's thread"
-    
+
     def __init__(self, callback):
         self.callback=callback
-    
+
     def more(self):
         self.callback()
         self.callback=None
@@ -55,7 +55,7 @@ class file_part_producer:
 
     # match http_channel's outgoing buffer size
     out_buffer_size = 1<<16
-    
+
     def __init__(self, file, lock, start, end):
         self.file=file
         self.lock=lock
@@ -79,7 +79,7 @@ class file_part_producer:
             data = file.read(size)
         finally:
             self.lock.release()
-            
+
         if data:
             start=start+len(data)
             if start < end:
@@ -102,4 +102,3 @@ class file_close_producer:
             file.close()
             self.file=None
         return ''
-

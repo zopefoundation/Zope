@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 API documentation help topics
@@ -33,7 +33,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
 
     isAPIHelpTopic=1
     funcs=() # for backward compatibility
-    
+
     def __init__(self, id, title, file):
         self.id=id
         self.title=title
@@ -81,7 +81,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
             text="%s %s" % (text, api.SearchableText())
         return text
 
-      
+
 class APIDoc(Persistent):
     """
     Describes an API.
@@ -110,7 +110,7 @@ class APIDoc(Persistent):
         # constructor information
 ##        if hasattr(klass, '__constructor__'):
 ##            self.constructor=MethodDoc(klass.__constructor__)
-        
+
         # Get info on methods and attributes, ignore special items
         self.attributes=[]
         self.methods=[]
@@ -125,14 +125,14 @@ class APIDoc(Persistent):
         # Creates an APIDoc instance given a python class.
         # the class describes the API; it contains
         # methods, arguments and doc strings.
-        # 
+        #
         # The name of the API is deduced from the name
         # of the class.
         #
         # The base APIs are deduced from the __extends__
         # attribute.
-        
-        self.name=klass.__name__ 
+
+        self.name=klass.__name__
         self.doc=trim_doc_string(klass.__doc__)
 
         # inheritence information
@@ -146,7 +146,7 @@ class APIDoc(Persistent):
         # constructor information
         if hasattr(klass, '__constructor__'):
             self.constructor=MethodDoc(klass.__constructor__)
-        
+
         # Get info on methods and attributes, ignore special items
         self.attributes=[]
         self.methods=[]
@@ -156,7 +156,7 @@ class APIDoc(Persistent):
                     self.methods.append(MethodDoc(v, 0))
                 else:
                     self.attributes.append(AttributeDoc(k, v))
-        
+
     def SearchableText(self):
         """
         The full text of the API, for indexing purposes.
@@ -167,15 +167,15 @@ class APIDoc(Persistent):
         for method in self.methods:
             text="%s %s %s" % (text, method.name, method.doc)
         return text
-        
+
     view=DTMLFile('dtml/APIView', globals())
-    
-    
+
+
 class AttributeDoc(Persistent):
     """
     Describes an attribute of an API.
     """
-    
+
     def __init__(self, name, value):
         self.name=name
         self.value=value
@@ -186,16 +186,16 @@ class AttributeDoc(Persistent):
 class MethodDoc(Persistent):
     """
     Describes a method of an API.
-    
-    required - a sequence of required arguments 
+
+    required - a sequence of required arguments
     optional - a sequence of tuples (name, default value)
     varargs - the name of the variable argument or None
     kwargs - the name of the kw argument or None
     """
-    
+
     varargs=None
     kwargs=None
-    
+
     def __init__(self, func, isInterface=0):
         if isInterface:
             self._createFromInterfaceMethod(func)
@@ -221,7 +221,7 @@ class MethodDoc(Persistent):
 
         self.name=func.__name__
         self.doc=trim_doc_string(func.__doc__)
-        
+
         # figure out the method arguments
         # mostly stolen from pythondoc
         CO_VARARGS = 4
@@ -265,9 +265,7 @@ def trim_doc_string(text):
                 continue
             indent=len(line) - len(line.lstrip())
             if indent < min_indent or min_indent is None:
-                min_indent=indent   
+                min_indent=indent
         for line in lines[1:]:
             nlines.append(line[min_indent:])
     return '\n'.join(nlines)
-    
-    

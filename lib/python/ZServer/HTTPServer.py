@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """
@@ -18,7 +18,7 @@ changes from Medusa's http_server
 
     Request Threads -- Requests are processed by threads from a thread
     pool.
-    
+
     Output Handling -- Output is pushed directly into the producer
     fifo by the request-handling thread. The HTTP server does not do
     any post-processing such as chunking.
@@ -29,8 +29,8 @@ changes from Medusa's http_server
     doesn't wait for the response before sending another request. The
     server must ensure that responses are sent back in the same order
     as requests are received.
-    
-""" 
+
+"""
 import sys
 import re
 import os
@@ -105,17 +105,17 @@ class zhttp_handler:
     "A medusa style handler for zhttp_server"
 
     _force_connection_close = 0
-        
+
     def __init__ (self, module, uri_base=None, env=None):
         """Creates a zope_handler
-        
+
         module -- string, the name of the module to publish
         uri_base -- string, the base uri of the published module
                     defaults to '/<module name>' if not given.
-        env -- dictionary, environment variables to be overridden.        
+        env -- dictionary, environment variables to be overridden.
                     Replaces standard variables with supplied ones.
         """
-        
+
         self.module_name=module
         self.env_override=env or {}
         self.hits = counter.counter()
@@ -128,9 +128,9 @@ class zhttp_handler:
             uri_base='/'
         else:
             if uri_base[0] != '/':
-              uri_base='/'+uri_base
+                uri_base='/'+uri_base
             if uri_base[-1] == '/':
-              uri_base=uri_base[:-1]
+                uri_base=uri_base[:-1]
         self.uri_base=uri_base
         uri_regex='%s.*' % self.uri_base
         self.uri_regex = re.compile(uri_regex)
@@ -166,7 +166,7 @@ class zhttp_handler:
         (path, params, query, fragment) = request.split_uri()
 
         if params: path = path + params # undo medusa bug!
-    
+
         while path and path[0] == '/':
             path = path[1:]
         if '%' in path:
@@ -250,12 +250,12 @@ class zhttp_handler:
 
     def continue_request(self, sin, request):
         "continue handling request now that we have the stdin"
-       
+
         s=get_header(CONTENT_LENGTH, request.header)
         if s:
             s=int(s)
         else:
-            s=0    
+            s=0
         DebugLogger.log('I', id(request), s)
 
         env=self.get_environment(request)
@@ -283,22 +283,22 @@ class zhttp_channel(http_channel):
 
     closed=0
     zombie_timeout=100*60 # 100 minutes
-    
+
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
         requestCloseOnExec(conn)
         self.queue=[]
         self.working=0
-        
+
     def push(self, producer, send=1):
         # this is thread-safe when send is false
-        # note, that strings are not wrapped in 
+        # note, that strings are not wrapped in
         # producers by default
         if self.closed:
             return
         self.producer_fifo.push(producer)
         if send: self.initiate_send()
-        
+
     push_with_producer=push
 
     def work(self):
@@ -337,11 +337,11 @@ class zhttp_channel(http_channel):
                     channel.close()
 
 
-class zhttp_server(http_server):    
+class zhttp_server(http_server):
     "http server"
-    
+
     SERVER_IDENT='Zope/%s ZServer/%s' % (ZOPE_VERSION,ZSERVER_VERSION)
-    
+
     channel_class = zhttp_channel
     shutup=0
 
@@ -351,10 +351,10 @@ class zhttp_server(http_server):
         self.shutup=0
         self.log_info('HTTP server started at %s\n'
                       '\tHostname: %s\n\tPort: %d' % (
-			time.ctime(time.time()),
-			self.server_name,
-			self.server_port
-			))
+                        time.ctime(time.time()),
+                        self.server_name,
+                        self.server_port
+                        ))
 
     def log_info(self, message, type='info'):
         if self.shutup: return
@@ -372,4 +372,3 @@ class zhttp_server(http_server):
         # override asyncore limits for nt's listen queue size
         self.accepting = 1
         return self.socket.listen (num)
-

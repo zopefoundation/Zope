@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.18 2002/01/11 17:14:27 evan Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.19 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -59,7 +59,7 @@ if _use_python_impl:
                         The default is true.
 
             authenticated -- Allow access to resources based on the
-                        privaledges of the authenticated user.  
+                        privaledges of the authenticated user.
                         The argument must have a truth value.
                         The default is true.
 
@@ -70,7 +70,7 @@ if _use_python_impl:
                         clients allow only public access and other
                         clients allow full management.
             """
-            
+
             self._ownerous=ownerous
             self._authenticated=authenticated
 

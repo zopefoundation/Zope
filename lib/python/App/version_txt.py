@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import os,sys,re
@@ -37,7 +37,7 @@ def strval(dict, key):
 def _prep_version_data():
     global _version_string, _zope_version
     if _version_string is None:
-        try: 
+        try:
             s = open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
             ss = re.sub("\(.*?\)\?","",s)
             ss = '%s, python %d.%d.%d, %s' % (ss,v[0],v[1],v[2],sys.platform)
@@ -59,7 +59,7 @@ def _prep_version_data():
                 v[0],v[1],v[2],sys.platform)
             _version_string = ss
             _zope_version = (-1, -1, -1, '', -1)
-        
+
 
 def version_txt():
     _prep_version_data()
@@ -73,4 +73,3 @@ def getZopeVersion():
     """
     _prep_version_data()
     return _zope_version
-

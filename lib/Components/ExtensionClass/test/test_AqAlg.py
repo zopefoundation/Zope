@@ -2,20 +2,20 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Examples from the Acquisition Algebra Presentation
 
 
-$Id: test_AqAlg.py,v 1.4 2002/06/10 22:48:47 jeremy Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: test_AqAlg.py,v 1.5 2002/08/14 21:24:48 mj Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Acquisition
 
@@ -99,4 +99,3 @@ def main():
 
 if __name__=='__main__':
     main()
-

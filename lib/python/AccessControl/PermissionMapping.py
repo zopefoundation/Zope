@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Permission Mapping
 
@@ -40,14 +40,14 @@ class RoleManager:
         perms={}
         for p in self.possible_permissions():
             perms[pname(p)]=p
-        
+
         r=[]
         a=r.append
         for ac_perms in self.ac_inherited_permissions(1):
             p=perms.get(getPermissionMapping(ac_perms[0], wrapper), '')
             a({'permission_name': ac_perms[0], 'class_permission': p})
         return r
-    
+
     def manage_setPermissionMapping(self,
                                     permission_names=[],
                                     class_permissions=[], REQUEST=None):
@@ -66,7 +66,7 @@ class RoleManager:
                     """Attempted to map a permission to a permission, %s,
                     that is not valid. This should never happen. (Waaa).
                     """ % escape(p))
-            
+
 
             setPermissionMapping(name, wrapper, p)
 
@@ -74,7 +74,7 @@ class RoleManager:
 
         if REQUEST is not None:
             return self.manage_access(
-                REQUEST, 
+                REQUEST,
                 manage_tabs_message='The permission mapping has been updated')
 
     def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
@@ -94,9 +94,9 @@ class RoleManager:
         p=getattr(self,'aq_parent',None)
         if p is None: return 0          # Not wrapped
         base=getattr(p, 'aq_base', None)
-        return type(base) is PermissionMapper  
-              
- 
+        return type(base) is PermissionMapper
+
+
 def getPermissionMapping(name, obj, st=type('')):
     obj=getattr(obj, 'aq_base', obj)
     name=pname(name)
@@ -114,13 +114,13 @@ class PM(ExtensionClass.Base):
 
     _View_Permission='_View_Permission'
     _is_wrapperish = 1
-        
+
     def __getattr__(self, name):
         # We want to make sure that any non-explicitly set methods are
         # private!
         if name.startswith('_') and name.endswith("_Permission"): return ''
         raise AttributeError, escape(name)
-        
+
 PermissionMapper=PM
 
 def aqwrap(object, wrapper, parent):

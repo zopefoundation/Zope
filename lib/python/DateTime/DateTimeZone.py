@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 _data={
 
 
 'GMT':      ('GMT',      0, 1, [], '', [(0, 0, 0)],      'GMT\000'),
-'GMT+0':    ('GMT+0',    0, 1, [], '', [(0, 0, 0)],      'GMT+0000\000'), 
+'GMT+0':    ('GMT+0',    0, 1, [], '', [(0, 0, 0)],      'GMT+0000\000'),
 'GMT+1':    ('GMT+1',    0, 1, [], '', [(3600, 0, 0)],   'GMT+0100\000'),
 'GMT+2':    ('GMT+2',    0, 1, [], '', [(7200, 0, 0)],   'GMT+0200\000'),
 'GMT+3':    ('GMT+3',    0, 1, [], '', [(10800, 0, 0)],  'GMT+0300\000'),
@@ -25,7 +25,7 @@ _data={
 'GMT+8':    ('GMT+8',    0, 1, [], '', [(28800, 0, 0)],  'GMT+0800\000'),
 'GMT+9':    ('GMT+9',    0, 1, [], '', [(32400, 0, 0)],  'GMT+0900\000'),
 'GMT+10':   ('GMT+10',   0, 1, [], '', [(36000, 0, 0)],  'GMT+1000\000'),
-'GMT+11':   ('GMT+11',   0, 1, [], '', [(39600, 0, 0)],  'GMT+1100\000'), 
+'GMT+11':   ('GMT+11',   0, 1, [], '', [(39600, 0, 0)],  'GMT+1100\000'),
 'GMT+12':   ('GMT+12',   0, 1, [], '', [(43200, 0, 0)],  'GMT+1200\000'),
 'GMT+13':   ('GMT+13',   0, 1, [], '', [(46800, 0, 0)],  'GMT+1300\000'),
 

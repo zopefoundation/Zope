@@ -2,14 +2,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """Interfaces
 
@@ -34,7 +34,7 @@ To find out what you can do with interfaces, see the interface
 interface, IInterface in the IInterface module.
 
 The package has several public modules:
-    
+
   o Attribute has the implementation for interface attributes
     for people who want to build interfaces by hand.
     (Maybe someone should cry YAGNI for this. ;)
@@ -64,10 +64,9 @@ There is also a script, pyself.py in the package that can be used to
 create interface skeletins. Run it without arguments to get documentation.
 
 Revision information:
-$Id: __init__.py,v 1.8 2002/06/11 15:34:28 chrism Exp $
+$Id: __init__.py,v 1.9 2002/08/14 21:35:32 mj Exp $
 """
 
 from _Interface import Interface
 from Attribute import Attribute
 Base = Interface # XXX We need to stamp out Base usage
-

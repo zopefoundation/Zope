@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """Method interfaces
 
 Revision information:
-$Id: Method.py,v 1.11 2002/06/11 15:34:28 chrism Exp $
+$Id: Method.py,v 1.12 2002/08/14 21:35:32 mj Exp $
 """
 import Exceptions
 from Attribute import Attribute
@@ -44,7 +44,7 @@ class Method(Attribute):
     def getSignatureInfo(self):
         info = {}
         for t in sig_traits:
-            info[t] = getattr(self, t) 
+            info[t] = getattr(self, t)
 
         return info
 
@@ -104,28 +104,3 @@ def fromFunction(func, interface='', imlevel=0):
 def fromMethod(meth, interface=''):
     func = meth.im_func
     return fromFunction(func, interface, imlevel=1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

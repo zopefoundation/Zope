@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.11 2002/03/12 19:37:14 evan Exp $''' 
-__version__='$Revision: 1.11 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.12 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 _noroles=[] # this is imported from various places
 
@@ -58,4 +58,3 @@ def allow_type(Type, allowed=1):
     if not (isinstance(allowed, IntType) or isinstance(allowed, DictType)):
         raise ValueError, "The 'allowed' argument must be an int or dict."
     ContainerAssertions[Type] = allowed
-

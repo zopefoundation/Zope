@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Help system support module"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 import Globals, Acquisition
@@ -75,7 +75,7 @@ class object(Acquisition.Implicit):
             if len(doc) > 1:
                 doc[1]=doc[1].strip()
             doc='\n\n'.join(doc)
-        
+
         return str(stx_class(doc))
 
     def version(self):
@@ -113,12 +113,12 @@ class classobject(object):
         except:
             t, v = sys.exc_info()[:2]
             return '%s %s' % (t, v)
-    
+
     def get_module(self):
         if hasattr(self._obj_, '__module__'):
             module=sys.modules[self._obj_.__module__]
             return moduleobject(module.__name__, module)
-        
+
     def get_file(self):
         return self.get_module().get_file()
 
@@ -144,7 +144,7 @@ class classobject(object):
         for name in keys:
             ob=dict[name]
             if is_method(ob) and _chMethod(name, ob):
-               methods.append(methodobject(name, ob, self))
+                methods.append(methodobject(name, ob, self))
         return methods
 
     def get_method_dict(self, dict=None):
@@ -280,7 +280,7 @@ class methodobject(object):
             if mo is not None:
                 return doc[:mo.end(0)]
         return '%s()' % name
-                      
+
 
     def get_signature(self):
         try: return self.get_signaturex()
@@ -327,7 +327,7 @@ class methodobject(object):
 ##         for method in self._obj_Methods():
 ##             dict[method.obName()]=method
 ##         return dict
-            
+
 ##     def obMethodList(self):
 ##         # Return list of instance and superclass methods
 ##         dict=self._obj_MethodDict()
@@ -350,14 +350,14 @@ class methodobject(object):
 ##             if _isAttribute(ob) and _chAttribute(name, ob):
 ##                 attrs.append(AttributeObject(name, ob, self))
 ##         return attrs
-    
+
 ##     def obAttributeDict(self):
 ##         # Return dict of instance and superclass attributes
 ##         dict=self._obj_Class().obAttributeDict()
 ##         for attr in self._obj_Attributes():
 ##             dict[attr.obName()]=attr
 ##         return dict
-            
+
 ##     def obAttributeList(self):
 ##         # Return list of instance and superclass attributes
 ##         dict=self._obj_AttributeDict()
@@ -418,10 +418,3 @@ def _chAttribute(name, ob):
     if name[0]=='_':
         return 0
     return 1
-
-
-
-
-
-
-

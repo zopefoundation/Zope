@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Object Reference implementation"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 import sys, os,  Globals, Acquisition
@@ -38,7 +38,7 @@ class ObjectItem(HelpBase, classobject):
 
     def hs_url(self):
         return quote(self._obj_.meta_type)
-    
+
     hs_title=hs_id
 
     def __getattr__(self, name):
@@ -58,7 +58,7 @@ class ObjectItem(HelpBase, classobject):
                 if rdict.has_key(fname):
                     fn=rdict[fname]
                     fn.permission=pname
-                    mdict[fname]=fn                    
+                    mdict[fname]=fn
         keys=mdict.keys()
         keys.sort()
         for key in keys:
@@ -69,7 +69,7 @@ class ObjectItem(HelpBase, classobject):
             if hasattr(fn._obj_, '__class__') and \
                fn._obj_.__class__.__doc__ is doc:
                 continue
-            
+
             mlist.append(mdict[key])
         del rdict
         del mdict
@@ -79,7 +79,7 @@ class ObjectItem(HelpBase, classobject):
     def hs_objectvalues(self):
         return []
 
-    
+
 
 class ObjectRef(HelpBase):
     """ """
@@ -94,7 +94,7 @@ class ObjectRef(HelpBase):
     hs_id   ='ObjectRef'
     hs_title='Object Reference'
     hs_url  =hs_id
-    
+
     def hs_deferred__init__(self):
         # This is necessary because we want to wait until all
         # products have been installed (imported).
@@ -140,4 +140,3 @@ class ObjectRef(HelpBase):
 
     def __getitem__(self, key):
         return self.__dict__[key].__of__(self)
-

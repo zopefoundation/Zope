@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -38,8 +38,8 @@ __bobo_before__=AccessControl.SecurityManagement.noSecurityManager
 
 
 class SecurityBase(unittest.TestCase) :
-    """ Base class for all security tests 
-    $Id: SecurityBase.py,v 1.6 2001/11/28 15:50:52 matt Exp $
+    """ Base class for all security tests
+    $Id: SecurityBase.py,v 1.7 2002/08/14 21:27:32 mj Exp $
     """
 
     status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
@@ -66,7 +66,7 @@ class SecurityBase(unittest.TestCase) :
             if obj.meta_type in ['Folder','TestFolder']:
                 folderObjs.append(obj)
 
-            else:                
+            else:
                 print '    '*(1+len(root.getPhysicalPath())),obj.getId(),
                 print getattr(obj,"__roles__",(None,))
 
@@ -82,11 +82,11 @@ class SecurityBase(unittest.TestCase) :
         """ permission check on an objects for a given user.
 
            -- 'user' is a user object as returned from a user folder
- 
+
            -- 'hier' is the path to the object in the notation 'f1.f2.f3.obj'
-            
+
            -- 'perm' is a permission name
-        
+
            -- 'expected' is either 0 or 1
         """
 
@@ -95,7 +95,7 @@ class SecurityBase(unittest.TestCase) :
 
         res = user.has_permission(perm,obj)
 
-        if res != expected:        
+        if res != expected:
             raise AssertionError, \
                 self._perm_debug (s,perm,res,expected)
 
@@ -108,7 +108,7 @@ class SecurityBase(unittest.TestCase) :
            -- 'expected_roles' is a sequence of expected roles
 
         """
-        
+
         s = "self.root.%s.__roles__" % hier
         roles = eval(s)
 
@@ -127,18 +127,18 @@ class SecurityBase(unittest.TestCase) :
                 same = 1
         if not same:
             raise AssertionError, self._roles_debug(hier,roles,expected_roles)
-    
+
     def _checkRequest(self,*args,**kw):
         """ perform a ZPublisher request """
-        
+
 
         expected_code = kw.get('expected',200)
         del kw['expected']
         res = apply(self._request,args,kw)
 
         if expected_code != res.code:
-           raise AssertionError, \
-              self._request_debug(res,expected_code,args,kw) 
+            raise AssertionError, \
+               self._request_debug(res,expected_code,args,kw)
 
 
     ################################################################
@@ -147,12 +147,12 @@ class SecurityBase(unittest.TestCase) :
 
     def _perm_debug(self, obj , perm, res, expected):
         s+= 'Object: %s' % obj
-        s+= ', Permission: %s' % perm 
-        s+= ', has permission: %s' % res 
+        s+= ', Permission: %s' % perm
+        s+= ', has permission: %s' % res
         s+= ', expected: %s' % expected
 
         return s
-        
+
 
     def _roles_debug(self,hier,got_roles,expected_roles):
 
@@ -164,13 +164,13 @@ class SecurityBase(unittest.TestCase) :
 
 
     def _request_debug(self,res,expected,args,kw):
-        
-        s = 'Args: %s' % str(args)        
+
+        s = 'Args: %s' % str(args)
         s+= ', KW: %s' % str(kw)
         s+= '\n%s\n' % res.__str__(with_output=0,expected=expected)
 
         return s
- 
+
 
     def _request(self,*args,**kw):
         """ perform a Zope request """

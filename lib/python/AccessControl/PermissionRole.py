@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.15 2001/12/13 14:24:41 andreasjung Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: PermissionRole.py,v 1.16 2002/08/14 21:29:07 mj Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 _use_python_impl = 0
 import os
@@ -132,7 +132,7 @@ if _use_python_impl:
         def __getitem__(self, i):
             try:
                 v=self._v
-            except: 
+            except:
                 v=self._v=self.__of__(self._pa)
                 del self._pa
 
@@ -141,13 +141,13 @@ if _use_python_impl:
         def __len__(self):
             try:
                 v=self._v
-            except: 
+            except:
                 v=self._v=self.__of__(self._pa)
                 del self._pa
 
             return len(v)
 
-############################################################################## 
+##############################################################################
 # Test functions:
 #
 
@@ -177,7 +177,7 @@ def main():
     a._z_Permission=('zee',)
     a.b.c._y_Permission=('Manage',)
     a.b._z_Permission=['also']
-    
+
     print a.x.__roles__, list(a.x.__roles__)
     print a.b.x.__roles__
     print a.b.c.x.__roles__
@@ -185,7 +185,7 @@ def main():
     print a.b.q.x.__roles__
     print a.b.c.q.x.__roles__
     print
-    
+
     print a.y.__roles__, list(a.y.__roles__)
     print a.b.y.__roles__
     print a.b.c.y.__roles__
@@ -193,7 +193,7 @@ def main():
     print a.b.q.y.__roles__
     print a.b.c.q.y.__roles__
     print
-    
+
     print a.z.__roles__, list(a.z.__roles__)
     print a.b.z.__roles__
     print a.b.c.z.__roles__

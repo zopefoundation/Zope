@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import Acquisition
@@ -40,7 +40,7 @@ class HelpTopicBase:
         for m in self.permission_settings():
             perms.append(m['name'])
         return perms
-    
+
     permissions_values=ComputedAttribute(_permissions_values, 1)
 
     categories_values=(
@@ -60,7 +60,7 @@ class HelpTopicBase:
             if user.has_permission(perm, self):
                 return 1
         return 0
-    
+
     # Indexable methods
     # -----------------
 
@@ -74,7 +74,7 @@ class HelpTopicBase:
 
     # Private indexing methods
     # ------------------------
-    
+
     def manage_afterAdd(self, item, container):
         self.index_object()
 
@@ -106,7 +106,7 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
     """
     Abstract base class for Help Topics
     """
-    
+
     meta_type='Help Topic'
     icon='p_/HelpTopic_icon'
     _v_last_read = 0
@@ -155,7 +155,7 @@ class DTMLDocumentTopic(HelpTopicBase, DTMLDocument):
 
     def SearchableText(self):
         return '%s %s' % (self.title, self.read())
-   
+
 
 default_topic_content="""\
 <dtml-var standard_html_header>
@@ -178,12 +178,12 @@ class DTMLTopic(HelpTopic):
             self.permissions=permissions
         if categories is not None:
             self.categories=categories
-        
+
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
         return '%s %s' % (self.title, self.index_html.read())
 
-        
+
 class TextTopic(HelpTopic):
     """
     A basic Help Topic. Holds a text file.
@@ -199,7 +199,7 @@ class TextTopic(HelpTopic):
             self.permissions=permissions
         if categories is not None:
             self.categories=categories
-        
+
     def __call__(self, REQUEST=None):
         "View the Help Topic"
         self._check_for_update()
@@ -209,13 +209,13 @@ class TextTopic(HelpTopic):
         "The full text of the Help Topic, for indexing purposes"
         return '%s %s' % (self.title, self.obj)
 
-    
+
 class STXTopic(TextTopic):
     """
     A structured-text topic. Holds a HTMLFile object.
     """
     index_html = None
-    
+
     def __call__(self, REQUEST=None):
         """ View the STX Help Topic """
         self._check_for_update()
@@ -245,14 +245,13 @@ class ImageTopic(HelpTopic):
         if permissions is not None:
             self.permissions=permissions
         if categories is not None:
-            self.categories=categories  
-    
+            self.categories=categories
+
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
         self._check_for_update()
         return self.image.index_html(REQUEST, RESPONSE)
-        
+
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
         return ''
-

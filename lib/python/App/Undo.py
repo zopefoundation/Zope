@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.30 2002/02/08 18:58:23 andreasjung Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: Undo.py,v 1.31 2002/08/14 21:31:40 mj Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -74,10 +74,10 @@ class UndoSupport(ExtensionClass.Base):
                 first_transaction+PrincipiaUndoBatchSize)
 
         spec={}
-        
+
         # A user is allowed to undo transactions that were initiated
         # by any member of a user folder in the place where the user
-        # is defined.        
+        # is defined.
         user = getSecurityManager().getUser()
         if hasattr(user, 'aq_parent'):
             path = '/'.join(user.aq_parent.getPhysicalPath()[1:-1])
@@ -109,7 +109,7 @@ class UndoSupport(ExtensionClass.Base):
 
 
         return r
-    
+
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """
@@ -120,26 +120,26 @@ class UndoSupport(ExtensionClass.Base):
                 get_transaction().note("Undo %s" % ''.join(tid[1:]))
                 tid=decode64(tid[0])
                 undo(tid)
-            
+
         if REQUEST is None: return
         REQUEST['RESPONSE'].redirect("%s/manage_UndoForm" % REQUEST['URL1'])
         return ''
-                 
+
 Globals.default__class_init__(UndoSupport)
 
 
 class Prefix:
-    
+
     __no_side_effects__=1
 
     def __init__(self, path):
         self.value = len(path), path
-        
+
     def __cmp__(self, o):
         l,v = self.value
         rval = cmp(o[:l],v)
         return rval
-            
+
 
 
 ########################################################################

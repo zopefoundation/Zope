@@ -2,18 +2,18 @@
 #
 # Copyright (c) 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """Provide a halfway believable rendition of Python 2.2's object
 
-$Id: _object.py,v 1.3 2002/06/10 20:15:14 shane Exp $
+$Id: _object.py,v 1.4 2002/08/14 21:35:32 mj Exp $
 """
 
 class _x:
@@ -55,5 +55,4 @@ else:
         def m(self): pass
 
     ClassTypes  += (type(_x), )
-    MethodTypes += (type(_x.m), )            
-
+    MethodTypes += (type(_x.m), )

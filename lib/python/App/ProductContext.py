@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Objects providing context for product initialization
 """
@@ -41,7 +41,7 @@ class ProductContext:
         self.__app=app
         self.__pack=package
 
-    def registerClass(self, instance_class=None, meta_type='', 
+    def registerClass(self, instance_class=None, meta_type='',
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
                       visibility="Global",interfaces=_marker,
@@ -52,7 +52,7 @@ class ProductContext:
         Keyword arguments are used to provide meta data:
 
         instance_class -- The class of the object that will be created.
-        
+
           This is not currently used, but may be used in the future to
           increase object mobility.
 
@@ -81,7 +81,7 @@ class ProductContext:
         permissions -- Additional permissions to be registered
            If not provided, then permissions defined in the
            class will be registered.
-        
+
         legacy -- A list of legacy methods to be added to ObjectManager
                   for backward compatibility
 
@@ -95,7 +95,7 @@ class ProductContext:
            filter is called before showing ObjectManager's Add list,
            and before pasting (after object copy or cut), but not
            before calling an object's constructor.
- 
+
         """
         app=self.__app
         pack=self.__pack
@@ -216,18 +216,18 @@ class ProductContext:
 
         module=base_class.__module__
         name=base_class.__name__
-            
+
         key="%s/%s" % (module, name)
 
         if module[:9]=='Products.': module=module.split('.')[1]
         else: module=module.split('.')[0]
-            
+
         info="%s: %s" % (module, name)
 
         Products.meta_class_info[key]=info # meta_type
         Products.meta_classes[key]=Z
-        
-        
+
+
 
     def registerBaseClass(self, base_class, meta_type=None):
         #
@@ -274,7 +274,7 @@ class ProductContext:
         HelpTopics are created for these kind of files
 
         .dtml            -- DTMLHelpTopic
-        .html .htm       -- TextHelpTopic        
+        .html .htm       -- TextHelpTopic
         .stx .txt        -- STXHelpTopic
         .jpg .png .gif   -- ImageHelpTopic
         .py              -- APIHelpTopic
@@ -333,5 +333,3 @@ class ProductContext:
                     continue
                 ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
-            
-

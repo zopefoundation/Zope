@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 ZServer HTTPResponse
@@ -39,7 +39,7 @@ class ZServerHTTPResponse(HTTPResponse):
     # HTTP/1.1 should use chunked encoding
     http_chunk=1
     http_chunk_size=1024
-    
+
     # defaults
     _http_version='1.0'
     _http_connection='close'
@@ -75,16 +75,16 @@ class ZServerHTTPResponse(HTTPResponse):
                 not self._streaming:
             self.setHeader('content-length',len(body))
 
-        
+
         content_length= headers.get('content-length', None)
-        if content_length>0 : 
+        if content_length>0 :
             self.setHeader('content-length', content_length)
 
         headersl=[]
         append=headersl.append
-     
+
         status=headers.get('status', '200 OK')
-     
+
         # status header must come first.
         append("HTTP/%s %s" % (self._http_version or '1.0' , status))
         if headers.has_key('status'):
@@ -92,9 +92,9 @@ class ZServerHTTPResponse(HTTPResponse):
 
         if not headers.has_key("Etag"):
             self.setHeader('Etag','')
-        
+
         # add zserver headers
-        append('Server: %s' % self._server_version) 
+        append('Server: %s' % self._server_version)
         append('Date: %s' % build_http_date(time.time()))
 
         if self._http_version=='1.0':
@@ -103,7 +103,7 @@ class ZServerHTTPResponse(HTTPResponse):
                 self.setHeader('Connection','Keep-Alive')
             else:
                 self.setHeader('Connection','close')
-                
+
         # Close the connection if we have been asked to.
         # Use chunking if streaming output.
         if self._http_version=='1.1':
@@ -114,8 +114,8 @@ class ZServerHTTPResponse(HTTPResponse):
                     self.setHeader('Transfer-Encoding','chunked')
                     self._chunking=1
                 else:
-                    self.setHeader('Connection','close')                
-        
+                    self.setHeader('Connection','close')
+
         for key, val in headers.items():
             if key.lower()==key:
                 # only change non-literal header names
@@ -135,7 +135,7 @@ class ZServerHTTPResponse(HTTPResponse):
     _tempfile=None
     _templock=None
     _tempstart=0
-    
+
     def write(self,data):
         """\
         Return data as a stream
@@ -148,11 +148,11 @@ class ZServerHTTPResponse(HTTPResponse):
         cookies on the response object.
 
         Note that published objects must not generate any errors
-        after beginning stream-oriented output. 
+        after beginning stream-oriented output.
 
         """
         stdout=self.stdout
-        
+
         if not self._wrote:
             l=self.headers.get('content-length', None)
             if l is not None:
@@ -173,7 +173,7 @@ class ZServerHTTPResponse(HTTPResponse):
             data = '%x\r\n%s\r\n' % (len(data),data)
 
         l=len(data)
-        
+
         t=self._tempfile
         if t is None or l<200:
             stdout.write(data)
@@ -188,7 +188,7 @@ class ZServerHTTPResponse(HTTPResponse):
                 self._templock.release()
             self._tempstart=e
             stdout.write(file_part_producer(t,self._templock,b,e), l)
-    
+
     _retried_response = None
 
     def _finish(self):
@@ -204,10 +204,10 @@ class ZServerHTTPResponse(HTTPResponse):
         if t is not None:
             stdout.write(file_close_producer(t), 0)
             self._tempfile=None
-        
+
         stdout.finish(self)
         stdout.close()
-        
+
         self.stdout=None # need to break cycle?
         self._request=None
 
@@ -239,7 +239,7 @@ class ChannelPipe:
         self._shutdown=0
         self._close=0
         self._bytes=0
-    
+
     def write(self, text, l=None):
         if self._channel.closed:
             return
@@ -247,9 +247,9 @@ class ChannelPipe:
         self._bytes=self._bytes + l
         self._channel.push(text,0)
         Wakeup()
-        
+
     def close(self):
-        DebugLogger.log('A', id(self._request), 
+        DebugLogger.log('A', id(self._request),
                 '%s %s' % (self._request.reply_code, self._bytes))
         if not self._channel.closed:
             self._channel.push(LoggingProducer(self._request, self._bytes), 0)
@@ -277,7 +277,7 @@ class ChannelPipe:
         self._request=None
 
     def flush(self): pass # yeah, whatever
-    
+
     def finish(self, response):
         if response._shutdownRequested():
             self._shutdown = 1
@@ -285,15 +285,15 @@ class ChannelPipe:
                 response.headers.get('Connection','') == 'close':
             self._close=1
         self._request.reply_code=response.status
-        
+
 
 is_proxying_match = re.compile(r'[^ ]* [^ \\]*:').match
 proxying_connection_re = re.compile ('Proxy-Connection: (.*)', re.IGNORECASE)
-        
+
 def make_response(request, headers):
     "Simple http response factory"
     # should this be integrated into the HTTPResponse constructor?
-    
+
     response=ZServerHTTPResponse(stdout=ChannelPipe(request), stderr=StringIO())
     response._http_version=request.version
     if request.version=='1.0' and is_proxying_match(request.request):
@@ -308,4 +308,3 @@ def make_response(request, headers):
                                                        request.header).lower()
     response._server_version=request.channel.server.SERVER_IDENT
     return response
-

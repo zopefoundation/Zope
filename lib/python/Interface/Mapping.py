@@ -1,4 +1,3 @@
-
 import Basic, Util
 
 class Mapping(Basic.Base):
@@ -11,7 +10,7 @@ class Mapping(Basic.Base):
         """
 
 class QueryMapping(Mapping):
-    
+
     def has_key(key):
         """Check whether the object has an item with the given key"""
 
@@ -68,7 +67,7 @@ class MinimalDictionary(QueryMapping, Sized, MutableMapping,
         The type of the IReadSequence is not specified. It could be a
         list or a tuple or some other type.
         """
-    
+
 
 class Sequence(Mapping):
     "Keys must be integers in a sequence starting at 0."
@@ -79,4 +78,3 @@ class Sequential(Sequence):
 Util.assertTypeImplements(type(()), (Sequence, Sized, Basic.HashKey))
 Util.assertTypeImplements(type([]), (Sequence, Sized, MutableMapping))
 Util.assertTypeImplements(type({}), (Mapping, Sized, MutableMapping))
-

@@ -1,25 +1,25 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Common HTML dialog boxes
 
     MessageDialog(title, message, action, [target])
 
-    A very simple dialog used to display an HTML page titled title, 
-    displaying message message and an OK button. Clicking the OK 
-    button will take the browser to the URL specified in action. 
-    The *optional* target argument can be used to force a (frames 
-    capable) browser to load the URL specified in action into a specific 
+    A very simple dialog used to display an HTML page titled title,
+    displaying message message and an OK button. Clicking the OK
+    button will take the browser to the URL specified in action.
+    The *optional* target argument can be used to force a (frames
+    capable) browser to load the URL specified in action into a specific
     frame. (Specifying '_new' will cause the browser to load the
     specified URL into a new window, for example).
 
@@ -31,9 +31,9 @@
                          target='_top')
     </PRE>"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
- 
+
 from Globals import HTML
 
 MessageDialog = HTML("""
