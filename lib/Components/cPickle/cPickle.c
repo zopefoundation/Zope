@@ -1,5 +1,5 @@
 /*
- * $Id: cPickle.c,v 1.69 1999/05/17 18:17:24 jim Exp $
+ * $Id: cPickle.c,v 1.70 1999/06/15 14:09:35 jim Exp $
  * 
  * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
  * All rights reserved.
@@ -49,7 +49,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.69 1999/05/17 18:17:24 jim Exp $\n"
+"$Id: cPickle.c,v 1.70 1999/06/15 14:09:35 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -599,7 +599,6 @@ readline_cStringIO(Unpicklerobject *self, char **s) {
 static int 
 read_other(Unpicklerobject *self, char **s, int  n) {
     PyObject *bytes, *str=0;
-    int res = -1;
 
     UNLESS (bytes = PyInt_FromLong(n)) return -1;
 
@@ -2514,7 +2513,7 @@ finally:
 static int
 load_binfloat(Unpicklerobject *self) {
     PyObject *py_float = 0;
-    int s, e, res = -1;
+    int s, e;
     long fhi, flo;
     double x;
     char *p;
@@ -2630,7 +2629,6 @@ static int
 load_binstring(Unpicklerobject *self) {
     PyObject *py_string = 0;
     long l;
-    int res = -1;
     char *s;
 
     if ((*self->read_func)(self, &s, 4) < 0) return -1;
@@ -2652,7 +2650,6 @@ static int
 load_short_binstring(Unpicklerobject *self) {
     PyObject *py_string = 0;
     unsigned char l;  
-    int res = -1;
     char *s;
 
     if ((*self->read_func)(self, &s, 1) < 0)
@@ -2840,7 +2837,7 @@ load_obj(Unpicklerobject *self) {
 
 static int
 load_inst(Unpicklerobject *self) {
-    PyObject *tup, *class, *obj, *module_name, *class_name;
+    PyObject *tup, *class=0, *obj=0, *module_name, *class_name;
     int i, len;
     char *s;
 
@@ -2852,7 +2849,7 @@ load_inst(Unpicklerobject *self) {
 
     if ((len = (*self->readline_func)(self, &s)) >= 0) {
         if (len < 2) return bad_readline();
-        if (class_name = PyString_FromStringAndSize(s, len - 1)) {
+        if ((class_name = PyString_FromStringAndSize(s, len - 1))) {
             class = find_class(module_name, class_name, self->find_class);
             Py_DECREF(class_name);
         }
@@ -2861,7 +2858,7 @@ load_inst(Unpicklerobject *self) {
 
     if (! class) return -1;
       
-    if (tup=Pdata_popTuple(self->stack, i)) {
+    if ((tup=Pdata_popTuple(self->stack, i))) {
         obj = Instance_New(class, tup);
         Py_DECREF(tup);
     }
@@ -2886,7 +2883,7 @@ load_global(Unpicklerobject *self) {
 
     if ((len = (*self->readline_func)(self, &s)) >= 0) {
         if (len < 2) return bad_readline();
-        if (class_name = PyString_FromStringAndSize(s, len - 1)) {
+        if ((class_name = PyString_FromStringAndSize(s, len - 1))) {
             class = find_class(module_name, class_name, self->find_class);
             Py_DECREF(class_name);
         }
@@ -2902,7 +2899,7 @@ load_global(Unpicklerobject *self) {
 static int
 load_persid(Unpicklerobject *self) {
     PyObject *pid = 0;
-    int len, res = -1;
+    int len;
     char *s;
 
     if (self->pers_func) {
@@ -2941,7 +2938,6 @@ load_persid(Unpicklerobject *self) {
 static int
 load_binpersid(Unpicklerobject *self) {
     PyObject *pid = 0;
-    int res = -1;
 
     if (self->pers_func) {
         PDATA_POP(self->stack, pid);
@@ -3019,7 +3015,7 @@ load_dup(Unpicklerobject *self) {
 static int
 load_get(Unpicklerobject *self) {
     PyObject *py_str = 0, *value = 0;
-    int len, res = -1;
+    int len;
     char *s;
 
     if ((len = (*self->readline_func)(self, &s)) < 0) return -1;
@@ -3043,7 +3039,6 @@ static int
 load_binget(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     unsigned char key;
-    int res = -1;
     char *s;
 
     if ((*self->read_func)(self, &s, 1) < 0) return -1;
@@ -3068,7 +3063,6 @@ load_long_binget(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     unsigned char c, *s;
     long key;
-    int res = -1;
 
     if ((*self->read_func)(self, &s, 4) < 0) return -1;
 
@@ -3136,7 +3130,7 @@ load_long_binput(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     long key;
     unsigned char c, *s;
-    int len, res = -1;
+    int len;
 
     if ((*self->read_func)(self, &s, 4) < 0) return -1;
     UNLESS (len=self->stack->length) return stackUnderflow();
@@ -3343,7 +3337,7 @@ load_reduce(Unpicklerobject *self) {
     
 static PyObject *
 load(Unpicklerobject *self) {
-    PyObject *stack = 0, *err = 0, *val = 0;
+    PyObject *err = 0, *val = 0;
     char *s;
 
     self->num_marks = 0;
@@ -3623,7 +3617,7 @@ noload_build(Unpicklerobject *self) {
 
 static PyObject *
 noload(Unpicklerobject *self) {
-    PyObject *stack = 0, *err = 0, *val = 0;
+    PyObject *err = 0, *val = 0;
     char *s;
 
     self->num_marks = 0;
@@ -4234,21 +4228,6 @@ static struct PyMethodDef cPickle_methods[] = {
   { NULL, NULL }
 };
 
-
-#define CHECK_FOR_ERRORS(MESS) \
-if (PyErr_Occurred()) { \
-    PyObject *__sys_exc_type, *__sys_exc_value, *__sys_exc_traceback; \
-    PyErr_Fetch( &__sys_exc_type, &__sys_exc_value, &__sys_exc_traceback); \
-    fprintf(stderr, # MESS ":\n\t"); \
-    PyObject_Print(__sys_exc_type, stderr,0); \
-    fprintf(stderr,", "); \
-    PyObject_Print(__sys_exc_value, stderr,0); \
-    fprintf(stderr,"\n"); \
-    fflush(stderr); \
-    Py_FatalError(# MESS); \
-}
-
-
 static int
 init_stuff(PyObject *module, PyObject *module_dict) {
     PyObject *string, *copy_reg, *t, *r;
@@ -4381,7 +4360,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 DL_EXPORT(void)
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.69 $";
+    char *rev="$Revision: 1.70 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -4408,5 +4387,4 @@ initcPickle() {
     Py_XDECREF(compatible_formats);
 
     init_stuff(m, d);
-    CHECK_FOR_ERRORS("can't initialize module cPickle");
 }
