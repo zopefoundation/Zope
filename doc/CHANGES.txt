@@ -83,6 +83,10 @@ Zope Changes
 
       Bugs Fixed
 
+        - Removed the "feature" that allowed the REQUEST object to be
+          traversed through the web. While useful for debugging, this 
+          could be a security issue.
+
         - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
 
         - Fixed broken links in ZCatalog 'Cataloged objects' view.
