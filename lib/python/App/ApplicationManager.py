@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -94,6 +94,7 @@ from CacheManager import CacheManager
 from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
+from version_txt import version_txt
 
 class Fake:
     def locked_in_version(self): return 0
@@ -113,12 +114,6 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         {'label':'Undo', 'action':'manage_UndoForm'},
         )
     
-
-def version_txt():
-    try: return open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
-    except: return '(unreleased version)'
-        
-    return self._v_version_txt
 
 class ApplicationManager(Folder,CacheManager):
     """System management"""

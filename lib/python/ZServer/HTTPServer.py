@@ -124,8 +124,8 @@ CONNECTION = regex.compile ('Connection: \(.*\)', regex.casefold)
 
 ZSERVER_VERSION='1.1b1'
 try:
-    import App.ApplicationManager
-    ZOPE_VERSION=App.ApplicationManager.version_txt()
+    import App.version_txt
+    ZOPE_VERSION=App.version_txt.version_txt()
 except:
     ZOPE_VERSION='experimental'
     
