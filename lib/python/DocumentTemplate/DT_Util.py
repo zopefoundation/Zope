@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.25 1998/03/10 15:04:58 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.26 1998/03/12 20:52:11 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -146,6 +146,16 @@ def _attr(inst, name, md={}):
     return careful_getattr(md, inst, name)
 
 d['attr']=_attr
+
+class namespace_: pass
+
+def namespace(**kw):
+    r=namespace_()
+    d=r.__dict__
+    for k, v in kw.items(): d[k]=v
+    return r,
+
+d['namespace']=namespace
 
 expr_globals={
     '__builtins__':{},
@@ -319,6 +329,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.26  1998/03/12 20:52:11  jim
+# Added namespace function to _ module for exprs.
+#
 # Revision 1.25  1998/03/10 15:04:58  jim
 # Added better handling of case like:
 #
