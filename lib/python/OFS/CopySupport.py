@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -387,12 +387,16 @@ class CopyContainer(ExtensionClass.Base):
 
         if method_name is not None:
             meth=self.unrestrictedTraverse(method_name)
-            if getSecurityManager().validateValue(meth):
+            try:    parent=object.aq_inner.aq_parent
+            except: parent=None
+            if getSecurityManager().validate(None, parent, None, meth):
                 # Ensure the user is allowed to access the object on the
                 # clipboard.
                 if not validate_src:
                     return
-                if getSecurityManager().validateValue(object):
+                try:    parent=object.aq_inner.aq_parent
+                except: parent=None
+                if getSecurityManager().validate(None, parent, None, object):
                     return
 
         raise CopyError, MessageDialog(
