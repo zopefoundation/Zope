@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.173 2001/11/26 20:14:24 matt Exp $'''
-__version__='$Revision: 1.173 $'[11:-2]
+$Id: Application.py,v 1.174 2001/11/26 20:31:14 matt Exp $'''
+__version__='$Revision: 1.174 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -146,6 +146,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         cpl=ApplicationManager()
         cpl._init()
         self._setObject('Control_Panel', cpl)
+        get_transaction().note("Created Zope Application")
 
     def id(self):
         try:    return self.REQUEST['SCRIPT_NAME'][1:]
