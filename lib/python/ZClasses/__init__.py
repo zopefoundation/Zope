@@ -14,24 +14,24 @@ needed by a product and to define product meta data.
 
 This sample product publishes a folder-ish and a simple object.
 
-$Id: __init__.py,v 1.2 1999/02/22 20:50:02 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1999/03/22 17:45:37 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from ImageFile import ImageFile
-import Class
+import ZClass
 
 # Names of objects added by this product:
 meta_types=(
-    {'name': Class.ZClass.meta_type,
+    {'name': ZClass.ZClass.meta_type,
      'action':'manage_addZClassForm'},
     )
 
 # Attributes (usually "methods") to be added to folders to support
 # creating objects:
 methods={
-    'manage_addZClassForm': Class.manage_addZClassForm,
-    'manage_addZClass': Class.manage_addZClass,
-    'manage_subclassableClassNames': Class.manage_subclassableClassNames,
+    'manage_addZClassForm': ZClass.manage_addZClassForm,
+    'manage_addZClass': ZClass.manage_addZClass,
+    'manage_subclassableClassNames': ZClass.manage_subclassableClassNames,
     
     }
 

@@ -5,35 +5,81 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add ZClass</H2>
 
-<FORM ACTION="manage_addZClass" METHOD="POST">
-<TABLE CELLSPACING="2">
+<!--#with "_(selected=[], unselected=[], baseclasses=[], id='', title='',
+             all=manage_subclassableClassNames(),
+             )"-->
+<!--#with REQUEST-->
+<!--#with "_(
+    selected=_.reorder(
+       all,
+       with   = baseclasses+
+                (REQUEST.get('manage_addZClassForm','')=='    -> '
+                 and unselected or []),
+       without= (REQUEST.get('manage_addZClassForm','')==' <-    ' 
+                 and   selected or [])
+       ),
+    )"-->
+<!--#with "_(unselected=_.reorder(all, without=selected))"-->
+
+<FORM ACTION="." METHOD="POST"><TABLE CELLSPACING="2">
+
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="40"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
+    <INPUT TYPE="TEXT" NAME="id" SIZE="40" VALUE="<!--#var id-->">
+  </TD>
 </TR>
+
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="40"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+  </TD>
 </TR>
+
 <TR>
-  <TH ALIGN="LEFT" VALIGN="TOP"><EM>Base Class</EM></TH>
+  <TH ALIGN="LEFT" VALIGN="TOP"></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
-     <SELECT NAME="base:list">
-       <!--#in manage_subclassableClassNames-->
+     Unselected<BR>classes:<BR>
+     <SELECT NAME="unselected:list" size=9 multiple>
+       <!--#in unselected-->
          <OPTION VALUE="<!--#var sequence-key-->"
-	 <!--#if "_['sequence-key'] == default_class_"-->SELECTED
-	 <!--#/if-->
-	  ><!--#var sequence-item--></OPTION>
+	 ><!--#var sequence-item--></OPTION>
+       <!--#/in-->
+     </SELECT>
+  </TD>
+  <TD ALIGN="CENTER" VALIGN="MIDDLE">
+     <!--#in selected-->
+        <input type=hidden name="baseclasses:list"
+	       value="<!--#var sequence-key-->">
+     <!--#/in-->
+     <INPUT TYPE="SUBMIT" NAME="manage_addZClassForm:method" 
+            VALUE="    -> ">
+     <BR>
+     <INPUT TYPE="SUBMIT" NAME="manage_addZClassForm:method" 
+            VALUE=" <-    ">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+     <STRONG><EM>Selected<br>base classes:</EM></STRONG><BR>
+     <SELECT NAME="selected:list" size=9 multiple>
+       <!--#in selected-->
+         <OPTION VALUE="<!--#var sequence-key-->"
+         ><!--#var sequence-item--></OPTION>
        <!--#/in-->
      </SELECT>
   </TD>
 </TR>
 
 <TR><TD></TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE=" Add "></TD>
+<TD><BR><INPUT TYPE="SUBMIT" NAME="manage_addZClass:method" 
+         VALUE=" Add "></TD>
 </TR>
-</TABLE>
-</FORM>
-</BODY>
-</HTML>
+</TABLE></FORM>
+
+<!--#/with-->
+<!--#/with-->
+<!--#/with-->
+<!--#/with-->
+
+</BODY></HTML>
 

@@ -14,7 +14,7 @@
        <!--#with "_.namespace(methods=_['sequence-item'])"-->
 	  <select name="<!--#var "'methods%s:list' % _['sequence-index']"-->" 
 	      <!--#var selectops-->>
-	    <!--#in all_methods-->
+	    <!--#in zclass_candidate_view_actions-->
 	      <option
 		 <!--#if "_['sequence-item'] in methods"-->SELECTED
 		 <!--#/if-->><!--#var sequence-item--></option>
@@ -27,7 +27,7 @@
   <th align=left valign=top>New: <input type=text name="newname" size=20></th>
   <td align=left valign=top>
     <select name=newmethods:list <!--#var selectops-->>
-      <!--#in all_methods-->
+      <!--#in zclass_candidate_view_actions-->
 	   <option><!--#var sequence-item--></option>
       <!--#/in-->
     </select></td>

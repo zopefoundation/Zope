@@ -1,0 +1,30 @@
+<html><head><title>Security</title></head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#/if manage_tabs-->
+
+<form action=manage_edit>
+  <table>
+    <tr><td></td><th>Permission</th></tr>
+    <!--#in classDefinedPermissions-->
+      <tr>
+        <td><input type=checkbox name=selected:list 
+                   value="<!--#var sequence-item-->"></td>
+        <td><!--#var sequence-item--></td>
+      </tr>
+    <!--#/in-->
+    <tr>
+      <td></td>
+      <td>New permission: <input name=newPermission></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <input type=submit value=" Change ">
+      </td>
+    </tr>
+  </table>
+</form>
+
+</body></html>
