@@ -155,7 +155,7 @@ class ClassSecurityInfo(SecurityInfo):
                 permission_name = item[0]
                 self._setaccess(item[1], permission_name)
                 if len(item) > 2:
-                    self.setDefaultRoles(permission_name, item[2])
+                    self.setPermissionDefault(permission_name, item[2])
 
         # Set __roles__ for attributes declared public or private.
         # Collect protected attribute names in ac_permissions.
