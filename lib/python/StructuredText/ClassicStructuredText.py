@@ -234,9 +234,8 @@ class Table:
     CELL='  <TD ALIGN=CENTER COLSPAN=%i>%s</TD>\n'
     ROW=' <TR>\n%s </TR>\n'
     TABLE='\n<TABLE BORDER=1 CELLPADDING=2>\n%s</TABLE>'
-    
     def create(self,aPar,
-        td_reg=re.compile(r'[ \t\n]*\|\|([^\0x00|]*)')
+        td_reg=re.compile(r'[ \t\n]*\|\|([^\0|]*)')
         ):
         '''parses a table and returns nested list representing the
         table'''
