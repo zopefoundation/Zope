@@ -33,6 +33,7 @@
     <!--#else-->
       <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
        ALT="This item has been modified in another version">
+       (<em><!--#var locked_in_version--></em>)
     <!--#/if-->
   <!--#/if-->
   </TD>
