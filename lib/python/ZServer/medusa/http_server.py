@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.32 2002/06/11 22:02:47 chrism Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.33 2002/06/20 14:39:34 zigg Exp $'
 
 # python modules
 import os
@@ -578,7 +578,10 @@ class http_server (asyncore.dispatcher):
         host, port = self.socket.getsockname()
         if not ip:
             self.log_info('Computing default hostname', 'warning')
-            ip = socket.gethostbyname (socket.gethostname())
+            try:
+                ip = socket.gethostbyname(socket.gethostname())
+            except socket.error:
+                ip = socket.gethostbyname('localhost')
         try:
             self.server_name = socket.gethostbyaddr (ip)[0]
         except socket.error:

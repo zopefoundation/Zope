@@ -13,6 +13,9 @@ Zope Changes
         were bypassed when using medusa directly without importing 
         ZServer first (as when using monitor_client.py).
 
+      - Collector #72: Start on Windows 95 machines with no network
+        devices installed.
+
   Zope 2.6.0 alpha 1
 
     Features Added
