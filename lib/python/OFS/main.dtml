@@ -18,7 +18,7 @@
   The following items have been defined.  To edit an item, click
   on the item's icon.  To view an item, click on the item's id.
   <P>
-  <!--#in objectValues-->
+  <!--#in objectValues sort=title_or_id-->
     <A HREF="<!--#var URL1-->/<!--#var id-->/manage"
     <!--#if sequence-var-manage_options-->
     TARGET="_top"
@@ -55,7 +55,12 @@ To delete items, select one or more items and click &quot;Delete&quot;.
 <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
 <SELECT NAME="ids:list" MULTIPLE SIZE="4">
 <!--#in objectValues_d-->
-  <OPTION VALUE="<!--#var id-->"><!--#var title_and_id-->
+  <OPTION VALUE="<!--#var id-->">
+  <!--#if title-->
+    <!--#var title size=25--> (<!--#var id-->)
+  <!--#else-->
+    <!--#var id-->
+  <!--#endif-->
 <!--#/in objectValues_d-->
 </SELECT><BR>
 <INPUT TYPE="SUBMIT" VALUE="Delete">
