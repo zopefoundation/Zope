@@ -4,14 +4,14 @@
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.4 1997/12/05 21:33:16 jim Exp $'''
+$Id: dbi_db.py,v 1.5 1998/03/04 19:13:10 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1997 Digital Creations, Inc, 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved. 
 # 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string, sys
 from string import strip, split, find, join
@@ -26,6 +26,8 @@ nonselect_desc=[
     ]
 
 class DB:
+
+    _p_oid=_p_changed=_registered=None
 
     defs={'STRING':'s', 'NUMBER':'n', 'DATE':'d'}
 
@@ -47,11 +49,26 @@ class DB:
 	if r[-1:]=='L' and type(v) is not StringType: r=r[:-1]
 	return r
 
+    def __inform_commit__(self, *ignored):
+	self._registered=None
+	self.db.commit()
+
+    def __inform_abort__(self, *ignored):
+	self._registered=None
+	self.db.rollback()
+
+    def register(self):
+	if self._registered: return
+	get_transaction().register(self)
+	self._registered=1
+	
+
     def query(self,query_string, max_rows=9999999):
 	global failures, calls
 	calls=calls+1
 	try:
 	    c=self.cursor
+	    self.register()
 	    queries=filter(None, map(strip,split(query_string, '\0')))
 	    if not queries: raise 'Query Error', 'empty query'
 	    if len(queries) > 1:
@@ -74,7 +91,6 @@ class DB:
 		    desc=nonselect_desc
 	    failures=0
 	    c.close()
-	    self.db.commit()
 	except self.Database_Error, mess:
 	    c.close()
 	    self.db.rollback()
