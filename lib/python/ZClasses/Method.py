@@ -166,12 +166,18 @@ class ZClassMethodsSheet(
 
 
 
-    def _checkId(self, id, allow_dup=1,
-                 _reserved=('propertysheets',)):
+    def _checkId(self, id, allow_dup=0,
+                 _reserved=('propertysheets','manage_workspace')):
         if id in _reserved:
             raise 'Bad Request', 'The id, %s, is reseverd' % id
+
+        if not allow_dup and self.getClassAttr(id, self) is not self:
+            raise 'Bad Request', (
+                'The id %s is invalid - it is already in use.' % id)
+
         ZClassMethodsSheet.inheritedAttribute('_checkId')(
-            self, id, allow_dup)
+            self, id, 0)
+
         return id+' '
 
     def _setOb(self, id, object):
