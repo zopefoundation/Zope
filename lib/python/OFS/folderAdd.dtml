@@ -23,18 +23,18 @@
   <INPUT TYPE="TEXT" NAME="title" SIZE="40">
   </TD>
 </TR>
-<TR><TD COLSPAN=2><BR></TD></TR>
+<TR><TD COLSPAN="2"><BR></TD></TR>
 
 <TR>
- <TD ALIGN=TOP COLSPAN=2>
-<INPUT TYPE="CHECKBOX" NAME="createPublic:int" VALUE="1" CHECKED>
-  <STRONG>Create public interface</STRONG>
+ <TD ALIGN="TOP" COLSPAN="2">
+<INPUT TYPE="CHECKBOX" NAME="createPublic:int" VALUE="1" CHECKED ID="cbCreatePublic">
+  <STRONG><LABEL FOR="cbCreatePublic">Create public interface</LABEL></STRONG>
  </TD>
 </TR>
 <TR>
- <TD ALIGN=TOP COLSPAN=2>
-<INPUT TYPE="CHECKBOX" NAME="createUserF:int" VALUE="1" CHECKED>
-  <STRONG>Create user folder</STRONG>
+ <TD ALIGN="TOP" COLSPAN="2">
+<INPUT TYPE="CHECKBOX" NAME="createUserF:int" VALUE="1" CHECKED ID="cbCreateUserF">
+  <STRONG><LABEL FOR="cbCreateUserF">Create user folder</LABEL></STRONG>
  </TD>
 </TR>
 
