@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -347,8 +347,9 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         keys.sort()
         info=[]
         for key in keys:
-            info.append((key, dict[key]))
-        return info
+            value=tuple(dict[key])
+            info.append((key, value))
+        return tuple(info)
 
     def get_valid_userids(self):
         item=self
@@ -363,11 +364,11 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             item=item.aq_parent
         keys=dict.keys()
         keys.sort()
-        return keys
+        return tuple(keys)
 
     def get_local_roles_for_userid(self, userid):
         dict=self.__ac_local_roles__ or {}
-        return dict.get(userid, [])
+        return tuple(dict.get(userid, []))
 
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
@@ -411,6 +412,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     #------------------------------------------------------------
 
+    access_debug_info__roles__=()
     def access_debug_info(self):
         "Return debug info"
         clas=class_attrs(self)
@@ -449,7 +451,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             x=x+1
         roles=dict.keys()
         roles.sort()
-        return roles
+        return tuple(roles)
 
     def validate_roles(self, roles):
         "Return true if all given roles are valid"
@@ -465,7 +467,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         for role in classattr(self.__class__,'__ac_roles__'):
             try:    roles.remove(role)
             except: pass
-        return roles
+        return tuple(roles)
 
 
     def manage_defined_roles(self,submit=None,REQUEST=None):

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.113 $'[11:-2]
+__version__='$Revision: 1.114 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -281,11 +281,11 @@ class SimpleUser(BasicUser):
 
     def getRoles(self):
         """Return the list of roles assigned to a user."""
-        return self.roles
+        return tuple(self.roles)
 
     def getDomains(self):
         """Return the list of domain restrictions for a user"""
-        return self.domains
+        return tuple(self.domains)
 
 class SpecialUser(SimpleUser):
     """Class for special users, like super and nobody"""
