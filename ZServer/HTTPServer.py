@@ -364,7 +364,7 @@ class zhttp_channel(http_channel):
 
     def kill_zombies(self):
         now = int (time.time())
-        for channel in asyncore.socket_map.keys():
+        for channel in asyncore.socket_map.values():
             if channel.__class__ == self.__class__:
                 if (now - channel.creation_time) > channel.zombie_timeout:
                     channel.close()

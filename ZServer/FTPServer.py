@@ -586,7 +586,7 @@ class FTPLimiter:
         total=0
         class_total=0
         if channel.anonymous:
-            for existing_channel in asyncore.socket_map.keys():
+            for existing_channel in asyncore.socket_map.values():
                 if (hasattr(existing_channel,'server') and
                         existing_channel.server is channel.server):
                     total=total+1
@@ -595,7 +595,7 @@ class FTPLimiter:
             if class_total > self.anon_limit:
                 return None
         else:                
-            for existing_channel in asyncore.socket_map.keys():
+            for existing_channel in asyncore.socket_map.values():
                 if (hasattr(existing_channel,'server') and
                         existing_channel.server is channel.server):
                     total=total+1
