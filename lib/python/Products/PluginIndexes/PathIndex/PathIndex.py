@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.17 2002/04/02 14:57:20 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.18 2002/04/11 19:26:40 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -255,13 +255,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
 
     def numObjects(self):
         """ return the number of indexed objects"""
-
-        x = IISet()
-        for k,v in self._index.items():
-            for level,ids in v.items():
-                x = union(x,ids)
-
-        return len(x)
+        return len(self._unindex)
 
 
     def keys(self):   
