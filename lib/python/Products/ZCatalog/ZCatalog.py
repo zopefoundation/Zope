@@ -249,7 +249,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 	self.manage_catalogClear()
 
 	for p in paths:
-		self.catalog_object(REQUEST.resolve_url(p), p)
+	    try:
+		obj = REQUEST.resolve_url(p)
+		self.catalog_object(obj, p)		
+	    except:
+		pass
+		
 
 ##        for path, i in items:
 ##            try:
@@ -365,7 +370,10 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         if REQUEST is None:
             REQUEST=self.REQUEST
         url='%s/%s' %(REQUEST.script, self.getpath(rid))
-        obj = REQUEST.resolve_url(url)
+	try:
+	    obj = REQUEST.resolve_url(url)
+	except:
+	    return None
         return obj
 
     def schema(self):
