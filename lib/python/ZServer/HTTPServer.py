@@ -52,8 +52,8 @@ from medusa.test import  max_sockets
 from medusa.default_handler import unquote
 from asyncore import compact_traceback, dispatcher
 
-from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
-from ZServer import requestCloseOnExec, LARGE_FILE_THRESHOLD
+from ZServer import ZOPE_VERSION, ZSERVER_VERSION
+from ZServer import requestCloseOnExec
 from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
 import DebugLogger
 from medusa import logger
@@ -74,6 +74,7 @@ header2env={'content-length'    : 'CONTENT_LENGTH',
 
 class zhttp_collector:
     def __init__(self, handler, request, size):
+        from ZServer import LARGE_FILE_THRESHOLD
         self.handler = handler
         self.request = request
         if size > LARGE_FILE_THRESHOLD:
@@ -407,8 +408,9 @@ class zhttp_server(http_server):
         requestCloseOnExec(self.socket)
 
     def readable(self):
+        from ZServer import CONNECTION_LIMIT
         return self.accepting and \
-                len(asyncore.socket_map) < CONNECTION_LIMIT
+               len(asyncore.socket_map) < CONNECTION_LIMIT
 
     def listen(self, num):
         # override asyncore limits for nt's listen queue size

@@ -72,7 +72,7 @@ from medusa import filesys
 from FTPResponse import make_response
 from FTPRequest import FTPRequest
 
-from ZServer import CONNECTION_LIMIT, requestCloseOnExec
+from ZServer import requestCloseOnExec
 
 from cStringIO import StringIO
 import os
@@ -653,6 +653,7 @@ class FTPServer(ftp_server):
         self.ftp_channel_class (self, conn, addr, self.module)
 
     def readable(self):
+        from ZServer import CONNECTION_LIMIT
         return len(asyncore.socket_map) < CONNECTION_LIMIT
 
     def listen(self, num):

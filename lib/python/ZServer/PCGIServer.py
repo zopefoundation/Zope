@@ -35,7 +35,7 @@ from medusa.http_server import compute_timezone_for_log
 from asyncore import compact_traceback
 
 import ZServer
-from ZServer import CONNECTION_LIMIT, requestCloseOnExec
+from ZServer import requestCloseOnExec
 
 from PubCore import handle
 from PubCore.ZEvent import Wakeup
@@ -327,6 +327,7 @@ class PCGIServer(asyncore.dispatcher):
         self.channel_class(self, conn, addr)
 
     def readable(self):
+        from ZServer import CONNECTION_LIMIT
         return len(asyncore.socket_map) < CONNECTION_LIMIT
 
     def writable (self):
