@@ -3,6 +3,11 @@
     <title tal:content="template/title">The title</title>
   </head>
   <body>
-    This is Page Template <span tal:replace="template/title" />.
+    
+    <h2><span tal:replace="here/title_or_id">content title or id</span>
+        <span tal:condition="template/title"
+              tal:replace="template/title">optional template id</span></h2>
+
+    This is Page Template <em tal:content="template/id">template id</em>.
   </body>
 </html>
