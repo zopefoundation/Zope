@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.11 2001/10/15 21:40:25 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.12 2001/11/20 20:30:30 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -268,7 +268,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         if isinstance(path,StringType):
             level = default_level
         else:
-            level = path[1]
+            level = int(path[1])
             path  = path[0]
 
         comps = self.splitPath(path)
