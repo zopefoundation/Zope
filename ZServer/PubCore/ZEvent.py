@@ -24,6 +24,7 @@ class simple_trigger(trigger):
 the_trigger=simple_trigger()
 
 def Wakeup(thunk=None):
+    global the_trigger
     try:
         the_trigger.pull_trigger(thunk)
     except OSError, why:
@@ -32,7 +33,6 @@ def Wakeup(thunk=None):
         # trigger and install a new one.
         if why[0] == 32: 
             del socket_map[the_trigger._fileno]
-            global the_trigger
             the_trigger = simple_trigger() # adds itself back into socket_map
             the_trigger.pull_trigger(thunk)
 
