@@ -114,7 +114,7 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.12 1998/04/02 17:37:38 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.13 1998/04/02 19:06:21 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -168,7 +168,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.12 1998/04/02 17:37:38 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DT_Util import *
 
@@ -273,7 +273,8 @@ class Call:
     def __init__(self, args):
 	args = parse_params(args, name='', expr='')
 	name, expr = name_param(args,'call',1)
-	if expr is None: expr=None
+	if expr is None: expr=name
+	else: expr=expr.eval
 	self.simple_form=expr,None
 
 
@@ -367,6 +368,9 @@ modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.13  1998/04/02 19:06:21  jim
+# *** empty log message ***
+#
 # Revision 1.12  1998/04/02 17:37:38  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and

@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.8 1998/04/02 17:37:40 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.9 1998/04/02 19:06:39 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import regex, string
 from string import join
@@ -197,7 +197,7 @@ def render_blocks(blocks, md):
 			    except KeyError, v:
 				if n != v: raise KeyError, v, sys.exc_traceback
 				cond=None
-			else: cond=section(md)
+			else: cond=cond(md)
 			if cond:
 			    section=section[i+1]
 			    if section: section=render_blocks(section,md)
@@ -226,6 +226,9 @@ def render_blocks(blocks, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.9  1998/04/02 19:06:39  jim
+# *** empty log message ***
+#
 # Revision 1.8  1998/04/02 17:37:40  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and
