@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.42 1998/01/28 23:39:02 brian Exp $'''
-__version__='$Revision: 1.42 $'[11:-2]
+$Id: Application.py,v 1.43 1998/01/29 20:52:20 brian Exp $'''
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -205,9 +205,8 @@ def install_products():
 
 	product=getattr(__import__("Products.%s" % product_name), product_name)
 
-	if product_name not in ['OFSP','MailHost']:
-	    if not lic_check(product_name):
-		continue
+	if not lic_check(product_name):
+	    continue
 
 	for meta_type in pgetattr(product, 'meta_types', ()):
 	    if product_name=='OFSP': meta_types.insert(0,meta_type)
@@ -311,9 +310,12 @@ def lic_check(product_name):
 		p=rfind(s,'.')
 		m='Products.%s.%s' % (product_name, s[:p])
 		c=s[p+1:]
-		__import__(m)
+		try: __import__(m)
+		except:
+		    m=s[:p]
+		    __import__(m)
 		setattr(sys.modules[m], c, Expired)
-		return 0
+	    return 0
 
 
 
@@ -343,6 +345,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.43  1998/01/29 20:52:20  brian
+# Fixed up eval support
+#
 # Revision 1.42  1998/01/28 23:39:02  brian
 # Added licensing logic
 #
