@@ -1,5 +1,5 @@
 # 
-# $Id: __init__.py,v 1.3 2003/08/16 00:54:35 chrism Exp $
+# $Id: __init__.py,v 1.4 2004/01/18 10:21:19 andreasjung Exp $
 #
 __version__='1.0'
 
@@ -9,6 +9,7 @@ def initialize(context):
     context.registerClass(
         ZReST.ZReST,
         meta_type = 'ReStructuredText Document',
+        icon='www/zrest.gif',
         constructors = (
             ZReST.manage_addZReSTForm, ZReST.manage_addZReST
         )
@@ -17,6 +18,9 @@ def initialize(context):
 
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2004/01/18 10:21:19  andreasjung
+# added icon provided by Jeff Kowalyzyk
+#
 # Revision 1.3  2003/08/16 00:54:35  chrism
 # Initialize the class, not the module.
 #
