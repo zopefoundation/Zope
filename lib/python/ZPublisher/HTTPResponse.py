@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.37 2000/11/06 15:17:29 brian Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
+$Id: HTTPResponse.py,v 1.38 2000/12/15 15:35:17 brian Exp $'''
+__version__='$Revision: 1.38 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -556,7 +556,8 @@ class HTTPResponse(BaseResponse):
 
     def _unauthorized(self):
         realm=self.realm
-        if realm: self['WWW-authenticate']='basic realm="%s"' % realm
+        if realm:
+            self.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
 
     def unauthorized(self):
         self._unauthorized()
