@@ -75,10 +75,10 @@ class DavLockManager(OFS.SimpleItem.Item, OFS.FindSupport.FindSupport,
 
             dflag = hasattr(ob, '_p_changed') and (ob._p_changed == None)
             bs = Acquisition.aq_base(ob)
-            if wl_isLocked(bs):
+            if wl_isLocked(ob):
                 li = []
                 addlockinfo = li.append
-                for token, lock in bs.wl_lockItems():
+                for token, lock in ob.wl_lockItems():
                     addlockinfo({'owner':lock.getCreatorPath(),
                                  'token':token})
                 addresult(p, li)

@@ -97,6 +97,8 @@ class LockableItem(EtagSupport):
         # destroy all locks.
         locks = self.wl_lockmapping()
         locks.clear()
+        if hasattr(Acquisition.aq_base(self), '__no_valid_write_locks__'):
+            self.__no_valid_write_locks__()
     
 
 import Globals

@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -101,6 +101,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
 
+    __implements__ = (WriteLockInterface,)
     __null_resource__=1
 
     __ac_permissions__=(
@@ -269,6 +270,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
     MKCOL deletes the LockNull resource from its container and replaces it
     with the target object.  An UNLOCK deletes it. """
 
+    __implements__ = (WriteLockInterface,)
     __locknull_resource__ = 1
     meta_type = 'WebDAV LockNull Resource'
 
@@ -290,8 +292,8 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # A special hook (for better or worse) called when there are no
         # valid locks left.  We have to delete ourselves from our container
         # now.
-        parent = self.aq_parent
-        parent._delObject(self.id)
+        parent = Acquisition.aq_parent(self)
+        if parent: parent._delObject(self.id)
                        
     def __init__(self, name):
         self.id = self.__name__ = name
