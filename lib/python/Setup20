@@ -6,7 +6,6 @@ MethodObject   	  ../Components/ExtensionClass/src/MethodObject.c      -I../Comp
 MultiMapping   	  ../Components/ExtensionClass/src/MultiMapping.c      -I../Components/ExtensionClass/src
 ThreadLock     	  ../Components/ExtensionClass/src/ThreadLock.c        -I../Components/ExtensionClass/src
 Missing           ../Components/ExtensionClass/src/Missing.c           -I../Components/ExtensionClass/src
-Sync              ../Components/ExtensionClass/src/Sync.c              -I../Components/ExtensionClass/src
 Record            ../Components/ExtensionClass/src/Record.c            -I../Components/ExtensionClass/src
 ComputedAttribute ../Components/ExtensionClass/src/ComputedAttribute.c -I../Components/ExtensionClass/src
 
