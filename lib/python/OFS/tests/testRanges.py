@@ -33,7 +33,8 @@ def makeConnection():
 def createBigFile():
     # Create a file that is several 1<<16 blocks of data big, to force the
     # use of chained Pdata objects.
-    size = (1<<16) * 5
+    # Make sure we create a file that isn't of x * 1<<16 length! Coll #671
+    size = (1<<16) * 5 + 12345
     file = cStringIO.StringIO()
 
     def addLetter(x, add=file.write, l=string.letters,

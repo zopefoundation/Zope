@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.142 $'[11:-2]
+__version__='$Revision: 1.143 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -323,7 +323,13 @@ class File(Persistent, Implicit, PropertyManager,
                             # calculations allow us to fast-forward through the
                             # Pdata chain without a lot of dereferencing if we
                             # did the work already.
-                            closest_pos = start - (start % (1<<16))
+                            first_size = len(pdata_map[0].data)
+                            if start < first_size:
+                                closest_pos = 0
+                            else:
+                                closest_pos = (
+                                    ((start - first_size) >> 16 << 16) +
+                                    first_size)
                             pos = min(closest_pos, max(pdata_map.keys()))
                             data = pdata_map[pos]
 
