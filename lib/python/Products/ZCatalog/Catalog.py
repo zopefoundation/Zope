@@ -200,6 +200,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
 
         for index in self.indexes.values():
+            if hasattr(index, '__of__'): index=index.__of__(self)
             index._convertBTrees(threshold)
 
         lexicon=self.lexicon
@@ -333,8 +334,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             rec.remove(rec[_index])
             self.data[key] = tuple(rec)
 
-    def addIndex(self, name, type):
-        """Create a new index, of one of the following types
+    def addIndex(self, name, index_type):
+        """Create a new index, of one of the following index_types
 
         Types: 'FieldIndex', 'TextIndex', 'KeywordIndex'.
         """
@@ -349,17 +350,19 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # pluggable and managable
 
         indexes = self.indexes
-        if type == 'FieldIndex':
+        if index_type == 'FieldIndex':
             indexes[name] = UnIndex.UnIndex(name)
-        elif type == 'TextIndex':
-            indexes[name] = UnTextIndex.UnTextIndex(name, None, None,
-                                                    self.lexicon)
-        elif type == 'KeywordIndex':
+        elif index_type == 'TextIndex':
+            lexicon=self.lexicon
+            if type(lexicon) is type(''): lexicon=getattr(self, lexicon)
+            indexes[name] = UnTextIndex.UnTextIndex(name, None, None, lexicon)
+        elif index_type == 'KeywordIndex':
             indexes[name] = UnKeywordIndex.UnKeywordIndex(name)
         else:
-            raise 'Unknown Index Type', ("%s invalid - must be one of %s"
-                                         % (type, ['FieldIndex', 'TextIndex',
-                                                   'KeywordIndex']))
+            raise 'Unknown Index Type', (
+                "%s invalid - must be one of %s"
+                % (index_type, ['FieldIndex', 'TextIndex', 'KeywordIndex'])
+                )
 
         self.indexes = indexes
 
