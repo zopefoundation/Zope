@@ -1,4 +1,4 @@
-7##############################################################################
+##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 # 
@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.54 2001/11/28 15:51:13 matt Exp $'''
-__version__='$Revision: 1.54 $'[11:-2]
+$Id: Aqueduct.py,v 1.55 2002/02/15 16:30:29 evan Exp $'''
+__version__='$Revision: 1.55 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
