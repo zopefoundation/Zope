@@ -11,11 +11,11 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.15 1997/11/26 20:06:03 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: DA.py,v 1.16 1997/12/05 21:33:13 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
-import string, OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
-import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
+import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
+import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
 from Aqueduct.Aqueduct import quotedHTML, decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
@@ -24,6 +24,11 @@ log_file=None
 import sys, traceback
 from DocumentTemplate import HTML
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence
+from string import atoi, find
+import IOBTree
+from time import time
+from zlib import compress, decompress
+md5new=md5.new
 
 addForm=HTMLFile('AqueductDA/daAdd')
 
@@ -31,7 +36,7 @@ def add(self,klass,id,title,key,arguments,template,REQUEST=None):
     'Add a query'
     q=klass()
     q.id=id
-    q.manage_edit(key,title,arguments,template)
+    q.manage_edit(title,arguments,template,key)
     self._setObject(id,q)
     if REQUEST: return self.manage_main(self,REQUEST)
 
@@ -44,11 +49,32 @@ class DA(
     'Database Adapter'
 
     icon       ='AqueductDA/DBAdapter_icon.gif'
-    hasAqueductClientInterface=1
     _col=None
     sql_delimiter='\0'
+    max_rows_=1000
+    cache_time_=0
+    max_cache_=100
+    rotor=None
+    key=''
+    class_name_=class_file_=''
     
-    manage=HTMLFile('AqueductDA/edit')
+    manage_options=(
+	{'icon':icon,              'label':'Basic',
+	'action':'manage_main',   'target':'manage_main'},
+	{'icon':icon,              'label':'Advanced',
+	 'action':'manage_advancedForm',
+	 'target':'manage_main'},
+	{'icon':'AccessControl/AccessControl_icon.gif',
+	 'label':'Access Control',
+	 'action':'manage_rolesForm',   'target':'manage_main'},
+	{'icon':icon,
+	 'label':'Try It',
+	 'action':'index_html',   'target':'manage_main'},
+	)
+
+    
+    manage_main=HTMLFile('AqueductDA/edit')
+    manage_advancedForm=HTMLFile('AqueductDA/advanced')
 
     test_url___roles__=None
     def test_url_(self):
@@ -57,34 +83,50 @@ class DA(
 
     def quoted_src(self): return quotedHTML(self.src)
 
-    def manage_edit(self,key,title,arguments,template,REQUEST=None):
+    def _setKey(self, key):
+	if key:
+	    self.key=key
+	    self.rotor=Rotor(key)
+	elif self.__dict__.has_key('key'):
+	    del self.key
+	    del self.rotor
+
+    def manage_edit(self,title,arguments,template,key=None, REQUEST=None):
 	'change query properties'
 	self.title=title
-	self.key=key
-	self.rotor=Rotor(key)
+	if key is not None: self._setKey(key)
 	self.arguments_src=arguments
 	self._arg=parse(arguments)
 	self.src=template
 	self.template=DocumentTemplate.HTML(template)
-	if REQUEST:
-	    return MessageDialog(
-		title=self.id+' changed',
-		message=self.id+' has been changed sucessfully.',
-		action=REQUEST['URL2']+'/manage_main',
-		)
+	if REQUEST: return self.manage_editedDialog(REQUEST)
 
+    def manage_advanced(self, key, max_rows, max_cache, cache_time,
+			class_name, class_file,
+			REQUEST):
+	'Change advanced parameters'
+	self._setKey(key)
+	self.max_rows_ = max_rows
+	self.max_cache_, self.cache_time_ = max_cache, cache_time
+	self.class_name_, self.class_file_ = class_name, class_file
+	getBrain(self)
+	if REQUEST: return self.manage_editedDialog(REQUEST)
     
     def manage_testForm(self, REQUEST):
 	"""Provide testing interface"""
 	input_src=default_input_form(self.title_or_id(),
-				     self._arg, 'manage_test')
+				     self._arg, 'manage_test',
+				     '<!--#var manage_tabs-->')
 	return HTML(input_src)(self, REQUEST)
 
     def manage_test(self, REQUEST):
 	'Perform an actual query'
 	
 	result=self(REQUEST)
-	report=HTML(custom_default_report(self.id, result))
+	report=HTML(
+	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
+	    '<!--#var manage_tabs-->\n%s\n</body></html>'
+	    % custom_default_report(self.id, result))
 	return apply(report,(self,REQUEST),{self.id:result})
 
     def index_html(self, PARENT_URL):
@@ -95,15 +137,56 @@ class DA(
 
     def _searchable_result_columns(self): return self._col
 
-    def __call__(self,REQUEST):
+    def _cached_result(self, DB__, query, compressed=0):
+
+	# Try to fetch from cache
+	if hasattr(self,'_v_cache'): cache=self._v_cache
+	else: cache=self._v_cache={}, IOBTree.Bucket()
+	cache, tcache = cache
+	max_cache=self.max_cache_
+	now=time()
+	t=now-self.cache_time_
+	if len(cache) > max_cache / 2:
+	    keys=tcache.keys()
+	    keys.reverse()
+	    while keys and (len(keys) > max_cache or keys[-1] < t):
+		key=keys[-1]
+		q=tcache[key]
+		del tcache[key]
+		del cache[q]
+		del keys[-1]
+		
+	if cache.has_key(query):
+	    k, r = cache[query]
+	    if k > t:
+		result=r
+		if not compressed: result=decompress(r)
+	else:
+	    result=apply(DB__.query, query)
+	    r=compress(result)
+	    cache[query]= now, r
+	    if compressed: return r
+
+	return result
+
+    def __call__(self,REQUEST=None):
+
+	if REQUEST is None: REQUEST=self.REQUEST
+	
 	try: DB__=getattr(self, self.connection_id)()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
 	argdata=self._argdata(REQUEST)
 	query=self.template(self,argdata)
-	result=DB__.query(query)
-	result=Aqueduct.RDB.File(StringIO(result))
+
+	if self.cache_time_:
+	    result=self._cached_result(DB__, (query, self.max_rows_))
+	else: result=DB__.query(query, self.max_rows_)
+
+	if hasattr(self, '_v_brain'): brain=self._v_brain
+	else: brain=getBrain(self)
+	result=Aqueduct.RDB.File(StringIO(result),brain)
 	columns=result._searchable_result_columns()
 	if columns != self._col: self._col=columns
 	return result
@@ -119,13 +202,16 @@ class DA(
 	    argdata=decodestring(argdata)
 	    argdata=self.rotor.decrypt(argdata)
 	    digest,argdata=argdata[:16],argdata[16:]
-	    if md5.new(argdata).digest() != digest:
+	    if md5new(argdata).digest() != digest:
 		raise 'Bad Request', 'Corrupted Data'
 	    argdata=marshal.loads(argdata)
 	    query=apply(self.template,(self,),argdata)
-	    result=DB__.query(query)
-	    result=zlib.compress(result,1)
-	    result=md5.new(result).digest()+result
+	    if self.cache_time_:
+		result=self._cached_result(DB__, query, 1)
+	    else:
+		result=DB__.query(query, self.max_rows_)
+		result=compress(result,1)
+	    result=md5new(result).digest()+result
 	    result=self.rotor.encrypt(result)
 	    result=base64.encodestring(result)
 	    RESPONSE['content-type']='text/X-PyDB'
@@ -136,22 +222,108 @@ class DA(
 	    result=str(RESPONSE.exception())
 	    serial=str(DateTime.now())
 	    if log_file:
-		l=string.find(result,"Traceback (innermost last):")
+		l=find(result,"Traceback (innermost last):")
 		if l >= 0: l=result[l:]
 		else: l=v
 		log_file.write("%s\n%s %s, %s:\n%s\n" % (
 		    '-'*30, serial, self.id, t, l))
 		log_file.flush()
 	    serial="Error number: %s\n" % serial
-	    serial=zlib.compress(serial,1)
-	    serial=md5.new(serial).digest()+serial
+	    serial=compress(serial,1)
+	    serial=md5new(serial).digest()+serial
 	    serial=self.rotor.encrypt(serial)
 	    serial=base64.encodestring(serial)
 	    RESPONSE.setBody(serial)
+
+    def __getitem__(self, key):
+	self._arg[key] # raise KeyError if not an arg
+	return Traverse(self,{},key)
+
+class Traverse:
+    """Helper class for 'traversing' searches during URL traversal
+    """
+    _r=None
+    _da=None
+
+    def __init__(self, da, args, name=None):
+	self._da=da
+	self._args=args
+	self._name=name
+
+    def __bobo_traverse__(self, REQUEST, key):
+	name=self._name
+	da=self._da
+	args=self._args
+	if name:
+	    args[name]=key
+	    return self.__class__(da, args)
+	elif da._arg.has_key(key): return self.__class__(da, args, key)
+
+	results=da(args)
+	if results:
+	    if len(results) > 1:
+		try: return results[atoi(key)].__of__(da)
+		except: raise KeyError, key
+	else: raise KeyError, key
+	r=self._r=results[0].__of__(da)
+
+	if hasattr(r,'__bobo_traverse__'):
+	    try: return r.__bobo_traverse__(REQUEST, key)
+	    except: pass
+
+	try: return getattr(r,key)
+	except AttributeError, v:
+	    if v!=key: raise AttributeError, v
+
+	return r[key]
+
+    def __getattr__(self, name):
+	r=self._r
+	if hasattr(r, name): return getattr(r,name)
+	return getattr(self._da, name)
+
+braindir=SOFTWARE_HOME+'/Extensions'    
+
+def getBrain(self,
+	     modules={},
+	     ):
+    'Check/load a class'
+    
+    module=self.class_file_
+    class_name=self.class_name_
+
+    if not module and not class_name:
+	c=Aqueduct.RDB.NoBrains
+	self._v_brain=c
+	return c
 	
+    if modules.has_key(module):
+	m=modules[module]
+    else:
+	d,n = os.path.split(module)
+	if d: raise ValueError, (
+	    'The file name, %s, should be a simple file name' % module)
+	m={}
+	exec open("%s/%s.py" % (braindir, module)) in m
+	modules[module]=m
+
+    if not m.has_key(class_name): raise ValueError, (
+	'The class, %s, is not defined in file, %s' % (class_name, module))
+
+    c=m[class_name]
+    if not hasattr(c,'__bases__'):raise ValueError, (
+	'%s, is not a class' % class_name)
+
+    self._v_brain=c
+    
+    return c
+
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.16  1997/12/05 21:33:13  jim
+# major overhall to add record addressing, brains, and support for new interface
+#
 # Revision 1.15  1997/11/26 20:06:03  jim
 # New Architecture, note that backward compatibility tools are needed
 #

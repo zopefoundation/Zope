@@ -4,5 +4,5 @@
 # install connection.dtml
 # install daAdd.dtml
 # install edit.dtml
-# install main.dtml
+# install advanced.dtml
 # install www www/%(package)s

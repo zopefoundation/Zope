@@ -10,11 +10,12 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.1 1997/12/02 17:22:02 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Connection.py,v 1.2 1997/12/05 21:33:12 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
 from DateTime import DateTime
+from App.Dialogs import MessageDialog
 
 connection_page=Globals.HTMLFile('AqueductDA/connection')
 
@@ -45,6 +46,26 @@ class Connection(
     _v_connected=''
     connection_string=''
 
+    def __setstate__(self, state):
+	Persistence.Persistent.__setstate__(self, state)
+	if self.connection_string: self.connect(self.connection_string)
+
+    def title_and_id(self):
+	s=Connection.inheritedAttribute('title_and_id')(self)
+	if hasattr(self, '_v_connected') and self._v_connected:
+	    s="%s, which is connected" % s
+	else: 
+	    s="%s, which is <font color=red> not connected</font>" % s
+	return s
+
+    def title_or_id(self):
+	s=Connection.inheritedAttribute('title_or_id')(self)
+	if hasattr(self, '_v_connected') and self._v_connected:
+	    s="%s (connected)" % s
+	else: 
+	    s="%s (<font color=red> not connected</font>)" % s
+	return s
+
     def manage(self, REQUEST):
 	"Change the database connection string"
 	return connection_page(self, REQUEST, action='manage_connection',
@@ -57,14 +78,22 @@ class Connection(
 	if check: self.connect(value)
 	else: self.manage_close_connection(REQUEST)
 	self.connection_string=value
-	return 'This needs to be changed'
+	if REQUEST: return MessageDialog(
+	    title='Connection Modified',
+	    message='The connection information has been changed',
+	    action='manage',
+	    )
 
     def manage_close_connection(self, REQUEST):
 	" "
 	try: self._v_database_connection.close()
 	except: pass
 	self._v_connected=''
-	return 'This needs to be changed'
+	if REQUEST: return MessageDialog(
+	    title='Connection Closed',
+	    message='The connection has been closed',
+	    action='manage',
+	    )
 
     def __call__(self, v=None):
 	try: return self._v_database_connection
@@ -91,6 +120,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.2  1997/12/05 21:33:12  jim
+# major overhall to add record addressing, brains, and support for new interface
+#
 # Revision 1.1  1997/12/02 17:22:02  jim
 # initial
 #

@@ -1,60 +1,30 @@
-<HTML>
-<HEAD>
-<TITLE>
-Edit 
-<!--#if title-->
-<!--#var title-->
-<!--#else title-->
-<!--#var id-->
-<!--#/if title-->
-</TITLE>
-</HEAD>
+<HTML><HEAD><TITLE>Edit <!--#var title_or_id--></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>
-Edit 
-<!--#if title-->
-<!--#var title-->
-<!--#else title-->
-<!--#var id-->
-<!--#/if title-->
-</H2>
-<P>
+<!--#var manage_tabs-->
+<H2>Edit <!--#var title_or_id--></H2>
 
-<form action="<!--#var URL2-->/<!--#var id-->/manage_edit"
- method="<!--#var web__form__method-->">
+<form action="manage_edit" method="POST">
 
 <table>
 
-<tr>	<td><strong>ID:</strong></td>
+<tr>	<th>ID</th>
         <td><!--#var id--></td></tr>
-<tr>	<td><strong>Title:</strong></td>
+<tr>	<th>Title</th>
         <td><input name="title" size="40"
              value="<!--#var title-->"></td></tr>
-<tr>	<td><strong>Access key:</strong></td>
-	<td><input name="key" size="40" value="<!--#var key-->"></td></tr>
-<tr>	<td><strong>Arguments:</strong></td>
-	<td><input name="arguments" size="40" value="<!--#var arguments_src-->"></td>
+<tr>	<th>Arguments</th>
+	<td><input name="arguments" size="40"
+             value="<!--#var arguments_src-->"></td>
 		</tr>
-<tr>	<td colspan=2><strong>Query template:</strong><br>
+<tr>	<td colspan=2><strong>Query template</strong><br>
 	    <textarea name="template:text" rows=10 cols=60>
 <!--#var quoted_src-->
 </textarea></td></tr>
 
-<tr><td></td><td>
-<input type="SUBMIT" name="SUBMIT" value="OK">
-<input type="SUBMIT" name="SUBMIT" value="Cancel">
-<!--#if HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
-<!--#else HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var URL2-->/manage">
-<!--#/if HTTP_REFERER-->
-</td></tr>
-
+<tr><td></td><td><input type="SUBMIT" name="SUBMIT" value="Change"></td></tr>
 </table>
 
 </form>
-</body>
-
-</html>
+</body></html>
 
 
