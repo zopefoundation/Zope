@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.67 1997/11/20 20:39:50 jim Exp $"""
+$Id: Publish.py,v 1.68 1997/11/21 17:08:55 brian Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.67 1997/11/20 20:39:50 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 
 def main():
@@ -1146,6 +1146,7 @@ class Request:
 	    if server_url[-1:]=='/': server_url=server_url[:-1]
 	except:
 	    server_port=environ['SERVER_PORT']
+	    if server_port=='80': server_port=''
 	    server_url=('http://'+
 			strip(environ['SERVER_NAME']) +
 			(server_port and ':'+server_port)
@@ -1367,6 +1368,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.68  1997/11/21 17:08:55  brian
+# Changed Request logic so that server_url will use www.foo.com rather than
+# www.foo.com:80 if the server uses the default port of 80.
+#
 # Revision 1.67  1997/11/20 20:39:50  jim
 # Changed to give unauthorized error if no user database.
 #
