@@ -16,7 +16,7 @@ Prerequisites
 You need:
 
 - A recent checkout of Zope2; don't forget to run the wo_pcgi.py
-  script to compile everything).
+  script to compile everything.
 
 - A recent checkout of the Zope2 product ParsedXML, accessible
   throught <Zope2>/lib/python/Products/ParsedXML; don't forget to run
@@ -33,11 +33,21 @@ You need:
 How To Play
 -----------
 
-(Don't forget to edit setpath.py!)
+(Don't forget to edit setpath.py, see above!)
 
 The script driver.py takes an XML file with TAL markup as argument and
 writes the expanded version to standard output.  The filename argument
 defaults to test/test1.xml.
+
+Regression test
+---------------
+
+There are a number of test cases in the test subdirectory, named
+test/test<number>.xml.  The Python script ./runtest.py runs
+./driver.py for each test case, and should print "<file> OK" for each
+testcase.  You can pass it command line options like -c or -m which
+will be passed on to driver.py; note that in this case some tests will
+fail, and a diff will be printed.
 
 What's Here
 -----------
@@ -50,7 +60,9 @@ driver.py		script to demonstrate TAL expansion
 timer.py		script to time various processing phases
 setpath.py		hack to set sys.path and import ZODB
 __init__.py		empty file that makes this directory a package
-runtest.sh		shell script to run regression tests
+runtest.py		Python script to run regression tests
+ndiff.py		helper for runtest.py to produce diffs
+runtest.sh		shell script to run regression tests (old)
 test/			drectory with test files and output
 
 Author and License
@@ -58,3 +70,33 @@ Author and License
 
 This code is written by Guido van Rossum.  It is owned by Digital
 Creations and can be redistributed under the Zope Public License.
+
+TO DO
+-----
+
+Here are some things that should be done.
+
+- Fix the tweaking of the define-macro attribute on macro expansion so
+  that:
+  (1) it is only tweaked if the proper prefix is used; and
+  (2) the argument is taken from the use-macro attribute.
+
+- Provide a framework for error messages (currently it just prints to
+  stdout).
+
+- Provide a dummy implementation of evaluateStructure()?
+
+- Check for attempt to replace the documentElement.  (Exception: when
+  replacing with a single element?  Should it be the same tag?)
+
+- Speed up findMacro()?
+
+- When using z:replace="structure ...", should make a copy of the
+  nodes; perhaps the data should be a documentFragment node?
+
+It's unclear on what to do about these items:
+
+- A comment (or other non-element node) before the documentElement.
+
+- The DOMVisitor class assumes that only Document and Element nodes
+  have children.
