@@ -223,7 +223,6 @@ class Product(Folder, PermissionManager):
         try:
             self._setObject('Help', ProductHelp('Help', id))
         except:
-            print 'Warning: self._setObject() failed for %s/%s' % (id,title)
             pass
         
     def Destination(self):
