@@ -297,6 +297,7 @@ def main(args):
         if verbosity > 1:
             testrunner.report( "Adding %s to sys.path." % sw_home )
         sys.path.insert( 0, sw_home )
+        os.environ['SOFTWARE_HOME'] = sw_home
 
     if test_all:
         testrunner.runAllTests()

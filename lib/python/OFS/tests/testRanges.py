@@ -85,12 +85,25 @@
 import os, sys, unittest
 
 import string, whrandom, cStringIO, time, re
-import Zope
+import ZODB
+from OFS.Folder import manage_addFolder
+from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
 from webdav.common import rfc1123_date
 
 from mimetools import Message
 from multifile import MultiFile
+
+def makeConnection():
+    import ZODB
+    from ZODB.FileStorage import FileStorage
+    from ZODB.DemoStorage import DemoStorage
+
+    dfi = os.path.join( os.environ['SOFTWARE_HOME']
+                      , '..', '..', 'var', 'Data.fs.in')
+    dfi = os.path.abspath(dfi)
+    s = DemoStorage(base=FileStorage(dfi, read_only=1), quota=(1<<20))
+    return ZODB.DB( s ).open()
 
 def createBigFile():
     # Create a file that is several 1<<16 blocks of data big, to force the
@@ -112,19 +125,20 @@ class TestRequestRange(unittest.TestCase):
     # Test case setup and teardown
     def setUp(self):
         self.responseOut = cStringIO.StringIO()
-        self.connection = Zope.DB.open()
+        self.connection = makeConnection()
         try:
             self.root = self.connection.root()[ 'Application' ]
             self.app = makerequest(self.root, stdout=self.responseOut)
             try: self.app._delObject(TESTFOLDER_NAME)
             except AttributeError: pass
-            self.app.manage_addFolder(TESTFOLDER_NAME)
+            manage_addFolder(self.app, TESTFOLDER_NAME)
+            folder = getattr( self.app, TESTFOLDER_NAME )
 
             data = string.letters
-            self.app[TESTFOLDER_NAME].manage_addFile('file', file=data,
-                content_type='text/plain')
+            manage_addFile( folder, 'file'
+                          , file=data, content_type='text/plain')
 
-            self.file = self.app[TESTFOLDER_NAME].file
+            self.file = folder.file
             self.data = data
 
             # Hack, we need a _p_mtime for the file, so we make sure that it
