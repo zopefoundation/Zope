@@ -84,10 +84,10 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
-import sys,os,regex,DateTimeZone
+import sys, os, math, regex, DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time,gmtime,localtime,asctime,tzname,strftime,mktime
 from types import InstanceType,IntType,FloatType,StringType
@@ -626,7 +626,7 @@ class DateTime:
             self._months[mo],self._months_a[mo],self._months_p[mo]
         self._fday,self._aday,self._pday= \
             self._days[dx],self._days_a[dx],self._days_p[dx]
-        self._nearsec=round(sc)
+        self._nearsec=math.floor(sc)
         self._year,self._month,self._day     =yr,mo,dy
         self._hour,self._minute,self._second =hr,mn,sc
         self.time,self._d,self._t,self._tz   =s,d,t,tz
