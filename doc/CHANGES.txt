@@ -24,6 +24,11 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #685: Improved documentation explaining how, where and 
+       why security assertions should be placed in:
+       lib/python/Products/PythonScripts/README.txt
+       lib/python/Products/PythonScripts/module_access_examples.py
+
      - The ZEO unit tests and wo_pcgi.py didn't run on Windows if the path 
        to the python executable included a space.
 

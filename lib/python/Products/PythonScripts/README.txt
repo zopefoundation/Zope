@@ -56,4 +56,20 @@ Python Scripts
       o Restart your Zope server. After restarting, the modules you enabled
         in your custom product will be available to Python scripts.
 
+    NB --  Placing security assestions within the package/module you are trying 
+           to import will not work unless that package/module is located in
+           your Products directory.
+ 
+           This is because that package/module would have to be imported for its
+           included security assertions to take effect, but to do
+	   that would require importing a module without any security
+           declarations, which defeats the point of the restricted
+           python environment.
+
+           Products work differently as they are imported at Zope startup.
+           By placing a package/module in your Products directory, you are
+           asserting, among other things, that it is safe for Zope to check 
+           that package/module for security assertions. As a result, please 
+           be careful when place packages or modules that are not Zope Products 
+	   in the Products directory.
         
