@@ -6,6 +6,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - The BTree module functions weightedIntersection() and
+        weightedUnion() now treat negative weights as documented.  It's
+        hard to explain what their effects were before this fix, as
+        the sign bits were getting confused with an internal
+        distinction between whether the result should be a set or a
+        mapping.
+
       - New "Transience" (session data storage) implementation.
         More reliable under high load.
 
