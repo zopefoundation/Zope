@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.25 1997/12/18 16:45:41 jeffrey Exp $"""
+$Id: ObjectManager.py,v 1.26 1997/12/18 21:12:49 jeffrey Exp $"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -39,6 +39,9 @@ class ObjectManager(Acquirer,Management,Persistent):
     Blank_icon=ImageFile('TreeDisplay/www/Blank_icon.gif')
     Plus_icon=ImageFile('TreeDisplay/www/Plus_icon.gif')
     Minus_icon=ImageFile('TreeDisplay/www/Minus_icon.gif')
+
+    UpFolderIcon=ImageFile('www/UpFolder_icon.gif', globals())
+    Help_icon   =ImageFile('www/Help_icon.gif', globals())
 
     manage_options=(
     {'icon':icon,              'label':'Objects',
@@ -461,6 +464,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.26  1997/12/18 21:12:49  jeffrey
+# more ImageFile tweaks
+#
 # Revision 1.25  1997/12/18 16:45:41  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #

@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -95,6 +95,7 @@ class UserFolder(Persistent, Item, Implicit, Management):
     title    ='User Folder'
     icon='UserFolderIcon'
     UserFolderIcon=ImageFile('www/UserFolder_icon.gif', globals())
+    UserIcon=ImageFile('www/User_icon.gif', globals())
 
     isPrincipiaFolderish=1
     isAUserFolder=1
@@ -266,6 +267,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.23  1997/12/18 21:12:47  jeffrey
+# more ImageFile tweaks
+#
 # Revision 1.22  1997/12/18 16:45:28  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #
