@@ -97,8 +97,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.61 1998/12/17 18:50:33 jim Exp $'''
-__version__='$Revision: 1.61 $'[11:-2]
+$Id: DA.py,v 1.62 1999/02/09 14:20:07 jim Exp $'''
+__version__='$Revision: 1.62 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -397,7 +397,7 @@ class DA(
 
         if src__: return query
 
-        if self.cache_time_ > 0 and self.self.max_cache_ > 0:
+        if self.cache_time_ > 0 and self.max_cache_ > 0:
             result=self._cached_result(DB__, (query, self.max_rows_))
         else: result=DB__.query(query, self.max_rows_)
 
