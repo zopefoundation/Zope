@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.18 1998/07/12 16:46:40 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: RDB.py,v 1.19 1998/07/12 17:34:10 jim Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -21,6 +21,7 @@ from Missing import MV
 from array import array
 from Record import Record
 from Acquisition import Implicit
+import ExtensionClass
 
 def parse_text(s):
     if find(s,'\\') < 0 and (find(s,'\\t') < 0 and find(s,'\\n') < 0): return s
@@ -212,6 +213,9 @@ File=DatabaseResults
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.19  1998/07/12 17:34:10  jim
+# Redid way SQL aliases are handled.
+#
 # Revision 1.18  1998/07/12 16:46:40  jim
 # Redid way SQL aliases are handled.
 #
