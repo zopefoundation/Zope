@@ -56,18 +56,6 @@ Update Zope distribution creation machinery
   fail if it's not updated with knowledge of the new Zope installation
   regime.
 
-Zope.Startup.nt.NTService.py and INSTANCE_HOME/bin/ntservice.py need
-testing
-
-  These modules allow you to associate an NT service with a Zope
-  INSTANCE_HOME.  Success means being able to invoke the ntservice.py
-  module to create an NT service which can successfully start and stop
-  a Zope instance on a per-instance-home basis.
-
-  Update: As of Jan. 13, this fails -- instance-home-based services
-  report failure on start (even though they start) and cannot be
-  stopped.
-
 What to do about envvars?
 
   Envvars are still used "under the hood" in ZConfig handlers as the
@@ -88,6 +76,11 @@ win32-eventlog needs testing
 
   The "win32-eventlog" log handler (which is creatable via the config
   file) needs to be tested.
+
+  Note: As of Jul 6, 2003, it has been confirmed to not work.  The
+  service name that it is logging under ("Zope") is not registered
+  with the NT event service properly, causing a warning to be
+  written to the log every time a log call is made.
 
 Server construction errors need to be better
 
@@ -259,9 +252,6 @@ Lots of discussion!
 
  - Make it possible to install Zope-related Python libraries to
    The site-packages of the Python used to invoke setup.py.
-
- - Give 'mkzopeinstance', 'mkzeoinstance', and 'zconfig' Python scripts
-   in software home a .py extension.
 
  - Offer to install software home 'bin' scripts into a directory
    separate from the software home 'bin' directory.
