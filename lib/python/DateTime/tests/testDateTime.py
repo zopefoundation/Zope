@@ -109,7 +109,7 @@ class DateTimeTests(unittest.TestCase):
         # Compare representations as it's the
         # only way to compare the dates to the same accuracy
         self.assertEqual(repr(dt), repr(dt1))
-        
+
     def testDayOfWeek(self):
         '''strftime() used to always be passed a day of week of 0.'''
         dt = DateTime('2000/6/16')
