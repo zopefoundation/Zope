@@ -26,14 +26,12 @@ newWordSequence(PyObject *text, PyObject *synstop, PyObject *wordletters)
 {
     WordSequence *self;
     PyObject *t;
+    PyObject *lower_text;
 
     UNLESS(self = PyObject_NEW(WordSequence, &WordSequenceType))
     {
         return NULL;
     }
-
-    self->text = text;
-    Py_INCREF(self->text);
 
     if ((synstop == NULL) || PyDict_Size(synstop) == 0)
     {
@@ -57,18 +55,19 @@ newWordSequence(PyObject *text, PyObject *synstop, PyObject *wordletters)
 
     Py_INCREF(text);
     PyTuple_SET_ITEM((PyTupleObject *)t, 0, text);
-
-    UNLESS_ASSIGN(text, PyObject_CallObject(string_lower, t))
+    
+    UNLESS(lower_text = PyObject_CallObject(string_lower, t))
     {
         Py_DECREF(t);
         return NULL;
     }
 
     Py_DECREF(t);
+    
+    self->text = lower_text;
+    self->ctext = self->here = PyString_AsString(lower_text);
 
-    self->ctext = self->here = PyString_AsString(text);
-
-    self->end = self->here + PyString_Size(text);
+    self->end = self->here + PyString_Size(lower_text);
 
     self->index = -1;
 
@@ -563,8 +562,10 @@ initWordSequence()
     PyObject *m, *string;
 
     UNLESS(default_wordletters=
-	   PyString_FromString("abcdefghijklmnopqrstuvwxyz0123456789"
-			       "ABCDEFGHIJKLMNOPQRSTUVWXYZ")) return;
+	   PyString_FromString("abcdefghijklmnopqrstuvwxyz0123456789"))
+    {
+       return;
+    }
 
     /* Create the module and add the functions */
     m = Py_InitModule4("WordSequence", WordSequence_module_methods,
