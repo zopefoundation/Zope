@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.13 2001/11/08 21:02:43 matt Exp $
+$Id: Transience.py,v 1.14 2001/11/08 21:03:48 matt Exp $
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -225,7 +225,7 @@ class TransientObjectContainer(SimpleItem):
         if self.has_key(key):
             if self[key].isValid():
                 raise KeyError, key         # Not allowed to dup keys
-             del self[key]      
+            del self[key]      
         
         item = TransientObject(key)
         self[key] = item
