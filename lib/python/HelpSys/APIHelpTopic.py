@@ -132,7 +132,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         "The full text of the Help Topic, for indexing purposes"
         text="%s %s" % (self.title, self.doc)
         for api in self.apis:
-            text="%s %s %s" % (text, api.SearchableText())
+            text="%s %s" % (text, api.SearchableText())
         return text
 
       
