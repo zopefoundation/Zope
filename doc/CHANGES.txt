@@ -100,6 +100,8 @@ Zope Changes
 
         - Fixed a potential buffer bug in PCGI reported by Larry Luther.
 
+        - FTP directory listings were not sorted.
+
         - Fixed a bug which caused File objects of type 'text/html' be
           have the wrong Content-Length set.
 
