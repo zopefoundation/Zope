@@ -150,7 +150,7 @@ def query(rt, query_str):
         if VERBOSE:
             msg = docs[docid]
             # print 3 lines of context
-            CONTEXT = 5000
+            CONTEXT = 5
             ctx = msg.text.split("\n", CONTEXT)
             del ctx[-1]
             print "-" * 60
