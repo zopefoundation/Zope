@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.1
+
 ##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
@@ -86,7 +87,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -290,14 +291,18 @@ def parsebigmlogline(line):
     else:
         return None
 
-def analyze(f, top, sortf, start=None, end=None, mode='cumulative'):
+def analyze(f, top, sortf, start=None, end=None, mode='cumulative', resolution='10'):
     beginrequests = {}
     cumulative = {}
     finished = []
     unfinished = {}
-    
+
+    if verbose:
+        print "reading logfile"
+ 
     while 1:
         line = f.readline()
+
         if not line:
             break
         line = string.strip(line)
@@ -320,6 +325,9 @@ def analyze(f, top, sortf, start=None, end=None, mode='cumulative'):
             del unfinished[id]
             finished.append(request)
             request.active = len(unfinished)
+
+    if verbose:
+        print "reading logfile finished"
             
     finished.extend(unfinished.values())
     requests = finished
@@ -339,11 +347,19 @@ def analyze(f, top, sortf, start=None, end=None, mode='cumulative'):
         dict = cumulative
     elif mode == 'detailed':
         dict = requests
+    elif mode == 'timed':
+        dict = requests
     else:
         raise "Invalid mode."
 
-    dict.sort(sortf)
-    write(dict, top)
+    if mode=='timed':
+        timeDict = {}
+        timesort(timeDict,requests)
+        timewrite(timeDict,start,end,resolution)
+
+    else:
+        dict.sort(sortf)
+        write(dict, top)
     
 def write(requests, top=0):
     if len(requests) == 0:
@@ -370,6 +386,55 @@ def getdate(val):
         return t
     except:
         raise ProfileException, "bad date %s" % val
+
+
+def timesort(dict,requests):
+
+    for r in requests:
+
+        if not r.t_end: r.t_end=r.start
+
+        for t in range(r.start,r.t_end+1):
+        
+            if not dict.has_key(t):
+                dict[t] = 0
+
+            dict[t]+=1 
+
+
+def timewrite(dict,start,end,resolution):
+
+    max_requests = 0
+
+    print "Start: %s    End: %s   Resolution: %d secs" % \
+        (tick2str(start),tick2str(end),resolution)
+    print "-" * 78
+    print
+    print "Date/Time                #requests requests/second"
+
+    for t in range(start,end,resolution):
+        s = tick2str(t)
+
+        num = 0
+        for tick in range(t,t+resolution):
+            if dict.has_key(tick):
+                num = num + dict[tick]
+
+        if num>max_requests: max_requests = num                
+
+        s = s + "     %6d         %4.2lf" % (num,num*1.0/resolution)
+        print s 
+
+    print '='*78 
+    print "Peak:                   %6d         %4.2lf" % \
+        (max_requests,max_requests*1.0/resolution)
+
+        
+            
+def tick2str(t):
+    return time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(t))
+
+
     
 def codesort(v1, v2):
     v1 = v1.endstage()
@@ -411,7 +476,7 @@ def detailedusage():
     details = usage(0)
     pname = sys.argv[0]
     details = details + """
-Reports are of two types: cumulative or detailed.  The default is cumulative.
+Reports are of three types: cumulative,detailed or timed.  The default is cumulative.
 Data is taken from the Zope detailed request log (the -M log).
 
 For cumulative reports, each line in the profile indicates information
@@ -419,6 +484,9 @@ about a Zope method (URL) collected via the detailed request log (the -M log).
 
 For detailed reports, each line in the profile indicates information about
 a single request.
+
+For timed reports, each line in the profile indicates informations about
+the number of requests and the number of requests/second for a period of time.
 
 'filename' is the path to the '-M' log that contains detailed request data.
 
@@ -453,6 +521,8 @@ For detailed (non-cumulative) reports, the following sort specs are accepted:
   NOTE:  'active' count may be fooled by Zope restarts, which aren't
   reflected in the -M log.
 
+For timed reports there are no sort specs allowed.
+
 If the 'top' argument is specified, only report on the top 'n' entries in
 the profile (as per the sort). The default is to show all data in the profile.
 
@@ -460,10 +530,14 @@ If the 'verbose' argument is specified, do not trim url to fit into 80 cols.
 
 If the 'today' argument is specified, limit results to hits received today.
 
-If the 'start' argument is specified in the form 'YYYY/MM/DD HH:MM:SS' (UTC),
+The 'resolution' argument is used only for timed reports and specifies the
+number of seconds between consecutive lines in the report 
+(default is 60 seconds).
+
+If the 'start' argument is specified in the form 'DD/MM/YYYY HH:MM:SS' (UTC),
 limit results to hits received after this date/time.
 
-If the 'end' argument is specified in the form 'YYYY/MM/DD HH:MM:SS' (UTC),
+If the 'end' argument is specified in the form 'DD/MM/YYYY HH:MM:SS' (UTC),
 limit results to hits received before this date/time.
 
 Examples:
@@ -485,6 +559,12 @@ Examples:
   %(pname)s debug.log --detailed --start='2001/05/10 06:00:00'
     --end='2001/05/11 23:00:00'
 
+    Show timed report statistics for entries in the log for one day
+    with a resolution of 5 minutes
+
+  %(pname)s debug.log --times --resolution=300 --start='2001/05/10 06:00:00'
+    --end='2001/05/11 23:00:00'
+
     Show detailed report statistics for entries in 'debug.log' which
     begin after 6am UTC on May 10, 2001 and which end before
     11pm UTC on May 11, 2001.
@@ -498,11 +578,13 @@ Examples:
 def usage(basic=1):
     usage = (
         """
-Usage: %s filename [--cumulative|--detailed]
+Usage: %s filename [--cumulative|--detailed|--timed]
+                   
                    [--sort=spec]
                    [--top==n]
                    [--verbose]
-                   [ --today | [--start=date] [--end=date] ]
+                   [--today | [--start=date] [--end=date] ]
+                   [--resolution=seconds]
                    [--help]
         
 Provides a profile of the detailed (-M) Zope request log.
@@ -526,11 +608,12 @@ if __name__ == '__main__':
     verbose = 0
     start = None
     end = None
+    resolution=10
     try:
         opts, extra = getopt.getopt(
             sys.argv[2:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
-                               'cumulative', 'detailed', 'start=',
-                               'end=']
+                               'cumulative', 'detailed', 'timed','start=',
+                               'end=','resolution=']
             )
         for opt, val in opts:
             if opt=='--sort': sortby = val
@@ -538,6 +621,9 @@ if __name__ == '__main__':
             if opt=='--help': print detailedusage(); sys.exit(0)
             if opt=='--verbose':
                 verbose = 1
+
+            if opt=='--resolution':
+                resolution=int(val)
             if opt=='--today':
                 now = time.gmtime(time.time())
                 # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
@@ -556,6 +642,9 @@ if __name__ == '__main__':
                 d_sortby = sortby
             if opt=='--cumulative':
                 mode='cumulative'
+            if opt=='--timed':
+                mode='timed'
+
 
         validcumsorts = ['url', 'hits', 'hangs', 'max', 'min', 'median',
                          'mean', 'total']
@@ -579,10 +668,13 @@ if __name__ == '__main__':
                 sortf = codesort
             else:
                 sortf = Sort(sortby)
+
+        elif mode=='timed':
+            sortf = timesort
         else:
             raise 'Invalid mode'
         
-        analyze(open(sys.argv[1]), top, sortf, start, end, mode)
+        analyze(open(sys.argv[1]), top, sortf, start, end, mode, resolution)
 
     except AssertionError, val:
         a = "%s is not a valid %s sort spec, use one of %s"
