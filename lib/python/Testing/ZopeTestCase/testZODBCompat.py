@@ -1,12 +1,23 @@
+##############################################################################
 #
-# Tests ZODB behavior in ZopeTestCase
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# Demonstrates that cut/copy/paste/clone/rename and import/export 
-# work in ZopeTestCase if a subtransaction is commited before performing
-# the respective operations.
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
+##############################################################################
+"""Tests ZODB behavior in ZopeTestCase
 
-# $Id: testZODBCompat.py,v 1.17 2004/04/09 12:38:37 shh42 Exp $
+Demonstrates that cut/copy/paste/clone/rename and import/export 
+work in ZopeTestCase if a subtransaction is commited before performing
+the respective operations.
+
+$Id: testZODBCompat.py,v 1.17 2004/04/09 12:38:37 shh42 Exp $
+"""
 
 import os, sys
 if __name__ == '__main__':

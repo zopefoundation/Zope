@@ -1,43 +1,52 @@
 ##############################################################################
 #
-# ZopeTestCase 
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# COPY THIS FILE TO YOUR 'tests' DIRECTORY.
-#
-# This version of framework.py will use the SOFTWARE_HOME
-# environment variable to locate Zope and the Testing package.
-#
-# If the tests are run in an INSTANCE_HOME installation of Zope,
-# Products.__path__ and sys.path with be adjusted to include the
-# instance's Products and lib/python directories respectively.
-#
-# If you explicitly set INSTANCE_HOME prior to running the tests,
-# auto-detection is disabled and the specified path will be used 
-# instead.
-#
-# If the 'tests' directory contains a custom_zodb.py file, INSTANCE_HOME
-# will be adjusted to use it.
-#
-# If you set the ZEO_INSTANCE_HOME environment variable a ZEO setup 
-# is assumed, and you can attach to a running ZEO server (via the 
-# instance's custom_zodb.py).
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-#
-# The following code should be at the top of every test module:
-#
-# import os, sys
-# if __name__ == '__main__':
-#     execfile(os.path.join(sys.path[0], 'framework.py'))
-#
-# ...and the following at the bottom:
-#
-# if __name__ == '__main__':
-#     framework()
-#
-##############################################################################
+"""ZopeTestCase framework
 
-__version__ = '0.2.3'
+COPY THIS FILE TO YOUR 'tests' DIRECTORY.
+
+This version of framework.py will use the SOFTWARE_HOME
+environment variable to locate Zope and the Testing package.
+
+If the tests are run in an INSTANCE_HOME installation of Zope,
+Products.__path__ and sys.path with be adjusted to include the
+instance's Products and lib/python directories respectively.
+
+If you explicitly set INSTANCE_HOME prior to running the tests,
+auto-detection is disabled and the specified path will be used 
+instead.
+
+If the 'tests' directory contains a custom_zodb.py file, INSTANCE_HOME
+will be adjusted to use it.
+
+If you set the ZEO_INSTANCE_HOME environment variable a ZEO setup 
+is assumed, and you can attach to a running ZEO server (via the 
+instance's custom_zodb.py).
+
+The following code should be at the top of every test module:
+
+  import os, sys
+  if __name__ == '__main__':
+      execfile(os.path.join(sys.path[0], 'framework.py'))
+
+...and the following at the bottom:
+
+  if __name__ == '__main__':
+      framework()
+
+$Id:$
+"""
+
+__version__ = '0.2.4'
 
 # Save start state
 #

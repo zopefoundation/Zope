@@ -1,14 +1,24 @@
+##############################################################################
 #
-# ztc_common.py
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# This file must be called from framework.py like so
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-#   execfile(os.path.join(os.path.dirname(Testing.__file__),
-#            'ZopeTestCase', 'ztc_common.py'))
-#
+##############################################################################
+"""ztc_common.py
 
-# $Id: ztc_common.py,v 1.14 2004/05/27 15:06:24 shh42 Exp $
+This file must be called from framework.py like so
 
+  execfile(os.path.join(os.path.dirname(Testing.__file__),
+           'ZopeTestCase', 'ztc_common.py'))
+
+$Id: ztc_common.py,v 1.14 2004/05/27 15:06:24 shh42 Exp $
+"""
 
 # Overwrites the default framework() method to expose the
 # TestRunner parameters and add profiler support.

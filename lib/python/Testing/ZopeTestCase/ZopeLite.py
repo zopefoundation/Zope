@@ -1,18 +1,29 @@
+##############################################################################
 #
-# Lightweight Zope startup
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# Fast Zope startup is achieved by not installing (m)any
-# products. If your tests require a product you must
-# install it yourself using installProduct().
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-# Typically used as in
-#
-#   import ZopeLite as Zope2
-#   Zope2.installProduct('SomeProduct')
-#   app = Zope2.app()
-#
+##############################################################################
+"""Lightweight Zope startup
 
-# $Id: ZopeLite.py,v 1.24 2004/08/18 09:28:54 shh42 Exp $
+Fast Zope startup is achieved by not installing (m)any
+products. If your tests require a product you must
+install it yourself using installProduct().
+
+Typically used as in
+
+  import ZopeLite as Zope2
+  Zope2.installProduct('SomeProduct')
+  app = Zope2.app()
+
+$Id: ZopeLite.py,v 1.24 2004/08/18 09:28:54 shh42 Exp $
+"""
 
 import os, sys, time
 

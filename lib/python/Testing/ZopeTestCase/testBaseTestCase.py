@@ -1,15 +1,26 @@
+##############################################################################
 #
-# Tests the base.TestCase class
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# NOTE: This is *not* an example TestCase. Do not
-# use this file as a blueprint for your own tests!
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-# See testPythonScript.py and testShoppingCart.py for
-# example test cases. See testSkeleton.py for a quick
-# way of getting started.
-#
+##############################################################################
+"""Tests the base.TestCase class
 
-# $Id: testBaseTestCase.py,v 1.7 2005/02/09 12:42:40 shh42 Exp $
+NOTE: This is *not* an example TestCase. Do not
+use this file as a blueprint for your own tests!
+
+See testPythonScript.py and testShoppingCart.py for
+example test cases. See testSkeleton.py for a quick
+way of getting started.
+
+$Id: testBaseTestCase.py,v 1.7 2005/02/09 12:42:40 shh42 Exp $
+"""
 
 import os, sys
 if __name__ == '__main__':

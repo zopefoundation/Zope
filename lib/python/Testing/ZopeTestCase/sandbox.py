@@ -1,8 +1,19 @@
+##############################################################################
 #
-# Support for ZODB sandboxes in ZTC
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+"""Support for ZODB sandboxes in ZTC
 
-# $Id: sandbox.py,v 1.2 2004/08/19 15:31:26 shh42 Exp $
+$Id: sandbox.py,v 1.2 2004/08/19 15:31:26 shh42 Exp $
+"""
 
 import ZopeLite as Zope2
 import transaction

@@ -1,12 +1,22 @@
+##############################################################################
 #
-# Utility functions
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# These functions are designed to be imported and run at
-# module level to add functionality to the test environment.
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
+##############################################################################
+"""Utility functions
 
-# $Id: utils.py,v 1.21 2005/02/11 09:00:21 shh42 Exp $
+These functions are designed to be imported and run at
+module level to add functionality to the test environment.
 
+$Id: utils.py,v 1.21 2005/02/11 09:00:21 shh42 Exp $
+"""
 
 def setupCoreSessions(app=None):
     '''Sets up the session_data_manager e.a.'''

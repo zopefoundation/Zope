@@ -1,9 +1,20 @@
+##############################################################################
 #
-# Parts of ZServer support are in this module so they can
-# be imported more selectively.
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+"""Parts of ZServer support are in this module so they can
+be imported more selectively.
 
-# $Id: threadutils.py,v 1.6 2004/08/19 15:31:26 shh42 Exp $
+$Id: threadutils.py,v 1.6 2004/08/19 15:31:26 shh42 Exp $
+"""
 
 from threading import Thread
 from StringIO import StringIO

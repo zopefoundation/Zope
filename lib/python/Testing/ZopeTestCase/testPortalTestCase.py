@@ -1,15 +1,26 @@
+##############################################################################
 #
-# Tests the PortalTestCase
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# NOTE: This is *not* an example TestCase. Do not
-# use this file as a blueprint for your own tests!
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-# See testPythonScript.py and testShoppingCart.py for
-# example test cases. See testSkeleton.py for a quick
-# way of getting started.
-#
+##############################################################################
+"""Tests the PortalTestCase
 
-# $Id: testPortalTestCase.py,v 1.30 2005/01/30 14:22:48 shh42 Exp $
+NOTE: This is *not* an example TestCase. Do not
+use this file as a blueprint for your own tests!
+
+See testPythonScript.py and testShoppingCart.py for
+example test cases. See testSkeleton.py for a quick
+way of getting started.
+
+$Id: testPortalTestCase.py,v 1.30 2005/01/30 14:22:48 shh42 Exp $
+"""
 
 import os, sys
 if __name__ == '__main__':
