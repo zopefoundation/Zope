@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.15 1997/04/18 19:46:19 jim Exp $'''
+$Id: Response.py,v 1.16 1997/04/29 18:29:00 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,10 @@ $Id: Response.py,v 1.15 1997/04/18 19:46:19 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.16  1997/04/29 18:29:00  jim
+# Changed bobo-exception header code to use tb tail, rather than head
+# for reporting errors.
+#
 # Revision 1.15  1997/04/18 19:46:19  jim
 # Brian's changes to try and get file name and line no in exceptions.
 #
@@ -122,7 +126,7 @@ $Id: Response.py,v 1.15 1997/04/18 19:46:19 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -485,6 +489,8 @@ class Response:
 	    # Try to capture exception info for bci calls
 	    et=regsub.gsub('\n','\t\n',str(t))
             ev=regsub.gsub('\n','\t\n',str(v))
+	    # Get the tb tail, which is the interesting part:
+	    while tb.tb_next is not None: tb=tb.tb_next
 	    el=str(tb.tb_lineno)
             ef=str(tb.tb_frame.f_code.co_filename)
 	    if string.find(ev,'<html>') >= 0: ev='bobo exception'
