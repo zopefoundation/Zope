@@ -88,8 +88,8 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.41 $'[11:-2]
-from Globals import Persistent, HTMLFile, MessageDialog, HTML
+__version__='$Revision: 1.42 $'[11:-2]
+from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
 import AccessControl.Role, sys, os, stat, traceback
@@ -98,7 +98,7 @@ from App.Extensions import getObject, getPath, FuncCode
 from Globals import DevelopmentMode
 from App.Management import Navigation
 
-manage_addExternalMethodForm=HTMLFile('dtml/methodAdd', globals())
+manage_addExternalMethodForm=DTMLFile('dtml/methodAdd', globals())
 
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder
@@ -178,7 +178,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         self.id=id
         self.manage_edit(title, module, function)
 
-    manage_main=HTMLFile('dtml/methodEdit', globals())
+    manage_main=DTMLFile('dtml/methodEdit', globals())
     def manage_edit(self, title, module, function, REQUEST=None):
         """Change the external method
 
