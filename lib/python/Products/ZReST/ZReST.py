@@ -87,7 +87,8 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def index_html(self, REQUEST=None):
         ''' Getting the formatted text
         '''
-        REQUEST.RESPONSE.setHeader('content-type', 'text/html; charset=%s' % self.output_encoding)
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader('content-type', 'text/html; charset=%s' % self.output_encoding)
         return self.formatted
 
     security.declareProtected('View', 'source_txt')
