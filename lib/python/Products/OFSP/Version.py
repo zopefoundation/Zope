@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -92,9 +92,12 @@ from Globals import MessageDialog
 from Globals import Persistent
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
-from string import rfind
+from string import rfind, join
 from Globals import HTML
 from App.Dialogs import MessageDialog
+from OFS.ObjectManager import BeforeDeleteException
+
+class VersionException(BeforeDeleteException): pass
 
 manage_addVersionForm=Globals.HTMLFile('versionAdd', globals())
 
@@ -249,11 +252,12 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     def manage_afterAdd(self, item, container):
         if not self.cookie:
+            # Site-relative, quoted
             self.cookie=self.absolute_url(1)
 
     def manage_beforeDelete(self, item, container):        
         if self.nonempty():
-            raise 'Version Error', (
+            raise VersionException(
                 'Attempt to %sdelete a non-empty version.<p>'
                 ((self is not item) and 'indirectly ' or ''))
         
@@ -262,7 +266,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         else:
             v=self.cookie
             if REQUEST.get(Globals.VersionNameName, '') == v:
-                raise 'Version error', (               
+                raise VersionException(               
                     'An attempt was made to delete a version, %s, or an\n'
                     'object containing %s while\n working in the\n'
                     'version %s.  This would lead to a &quot;version\n'
