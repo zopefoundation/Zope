@@ -117,7 +117,7 @@ Zope Changes
         - Several fixes to DateTime were added to provide better
           behavior on machines with unrecognized time zone names.
 
-        - Conflict errors, which occur when simultanious writes occur
+        - Conflict errors, which occur when simultaneous writes occur
           to the same object in multiple database connections, are now
           handled correctly by re-executing (up to three times)
           the requests that lost the race condition.
@@ -129,7 +129,7 @@ Zope Changes
 
            - Error handling in ExternalMethods and in DTML methods or
              documents called from other DTML documents or methods
-             caused errors to be propigated in ways that defeated use of
+             caused errors to be propagated in ways that defeated use of
              the try tag and other forms of error handling.
 
            - Errors raised before or after calling published objects
@@ -169,8 +169,12 @@ Zope Changes
         - Made Z Class icons visible to everyone. This way you can view a
           Z Class icon without having and permissions on the Z Class.
 
+        - The main management screen will no longer show the 'Delete' or
+          'Export' buttons if the user doesn't have adequate permissions
+          to delete or export objects respectively.
+
         - Objects were sometimes incorrectly acquired do a bug in
-          detecting attribte errors during acquisition. This led to
+          detecting attribute errors during acquisition. This led to
           errors getting covered up or obscured.
 
         - There was a memory leak in acquisition.
@@ -240,7 +244,7 @@ Zope Changes
 
         - Handling of conflict errors hasn't been implemented.  When
           two threads try to update the same object, one will get a
-          conflict error. By beta release 2, requests that get conflct
+          conflict error. By beta release 2, requests that get conflict
           errors will be retried until they succeed (or fail without a
           conflict error) or until a maximum number of retries is
           exceeded.
@@ -331,7 +335,7 @@ Zope Changes
         - Object export now provides an XML export option and import
           files may be in Zope export format or XML format.
 
-        - Zope objects that suport the Zope management framework now
+        - Zope objects that support the Zope management framework now
           support the DOM 1.0 read interfaces.  This allows DOM read
           methods and attributes to be usable with Zope objects and
           Python DOM tools, like FourThought's 4XSL to work with Zope
@@ -368,12 +372,12 @@ Zope Changes
 
         - The let and return tags were added to DTML.
 
-        - Several new inpt form types were added:
+        - Several new input form types were added:
 
             :default -- allows you to specify default values
 
             :record -- allows you to combine multiple form variables
-                       into a single inot variable.
+                       into a single input variable.
  
                 For example::
 
@@ -407,7 +411,7 @@ Zope Changes
         
             python z2.py -w8080 -f8021 -m8099
         
-              This is a convenient short-hand for systes with many zserver
+              This is a convenient short-hand for systems with many zserver
               instances running.
     
         - Added an -l option to the startup script, z2.py, to specify
@@ -483,7 +487,7 @@ Zope Changes
           attribute. 
 
           For example, to use a Demo storage based on the standard
-          File storage, yo might define a 'custom_zodb' module with::
+          File storage, you might define a 'custom_zodb' module with::
 
             import Globals, ZODB.FileStorage, ZODB.DemoStorage
 
@@ -521,7 +525,7 @@ Zope Changes
           and not yet integrated with the Zope installer. It does however
           include a large doc string.
     
-        - ZServer is offically using the z2.py start script now. The old
+        - ZServer is officially using the z2.py start script now. The old
           start.py and zinit.py were removed. Note: z2.py will call zdaemon.py
           for you, if you want to use ZServer in daemon mode on Unix.
     
@@ -532,7 +536,7 @@ Zope Changes
     
         - The product add list is now filtered. This should keep
           objects out of the product add list for which the user does
-          not have adequite permissions. This is implemented with a
+          not have adequate permissions. This is implemented with a
           new method, 'filtered_meta_types' which returns all the
           meta_types for which a given user has permissions. Note:
           Right now ZClasses do not associate permissions with
@@ -607,7 +611,7 @@ Zope Changes
         - Copy and paste of ZClass properysheets was enabled and
           broken. It is now disabled.
 
-        - Accidential import of BoboPOS in processes using ZODB (3)
+        - Accidental import of BoboPOS in processes using ZODB (3)
           caused strange errors.
 
         - A bug in batch processing caused batch processing to hang or
@@ -621,13 +625,13 @@ Zope Changes
         - When adding folders with user databases, no check was made
           to make sure the user was permitted to add a user database.
 
-        - Broken objects weren't created for objects whos class could
+        - Broken objects weren't created for objects whose class could
           not be found when using ZODB 3.
 
         - The 'self' argument wasn't properly passed to external
           methods used in ZClasses.
 
-        - The Setup file in the SearchIndex package had an uneeded -I
+        - The Setup file in the SearchIndex package had an unneeded -I
           option that caused compilation errors on some platforms.
 
         - ZGadflyDA transactions were not committed.
@@ -643,10 +647,10 @@ Zope Changes
 
         - The navigation pane wasn't updated when classes were added.
 
-        - Changes in ZClasses were not properly propigated to all
+        - Changes in ZClasses were not properly propagated to all
           database connections using ZODB3.
 
-        - Databse connections were not closed correctly under heavy
+        - Database connections were not closed correctly under heavy
           load when the number of application threads exceeded the
           number of database connections in the connection pool. This
           lead to Zope locking up under load if the application thread
@@ -668,8 +672,8 @@ Zope Changes
         - It was impossible to return an empty list or dictionary to
           an XML-RPC request. 
  
-        - The database conversion script failes when the first record
-          in the input file lacked peoperly-formatted transaction
+        - The database conversion script fails when the first record
+          in the input file lacked properly-formatted transaction
           data.  The conversion script also didn't work on some
           systems due to an incorrect 'flush' call on the *input*
           file. 
@@ -716,7 +720,7 @@ Zope Changes
 
         - The tree tag used persistent object ids in ways that were 
           not compatible with ZODB 3.  This caused strange behavior
-          like weird cntent-types and invalid state messages.
+          like weird content-types and invalid state messages.
 
         - The DTML In tag no longer handled batch processing correctly, 
           and sometimes got into infinite loops.  This was due to a very
@@ -783,7 +787,7 @@ Zope Changes
         - The startup script, z2.py, has a -D option to turn on
           debugging mode.
 
-        - Made enivorment variable settings work with the http
+        - Made environment variable settings work with the http
           server. So now you can do things like ./z2.py -w 8888
           SCRIPT_NAME=Zope and actually have the specified SCRIPT_NAME
           override the normal SCRIPT_NAME. This is Useful for using ZServer
@@ -808,7 +812,7 @@ Zope Changes
           to construction methods to provide a function for computing
           the destination object.  The name, 'this' is essentially
           equivalent to 'Destination' and 'Destination' will be
-          depricated eventially.
+          deprecated eventually.
 
         - The title of the main Zope management interface now includes
           a full URL.
@@ -817,7 +821,7 @@ Zope Changes
           view tabs for viewing index_html.
 
         - On browsers that support Java Script, the "Add" button is
-          ommitted and the add form is visited as soon as a selection
+          omitted and the add form is visited as soon as a selection
           is made from the select list.
 
         - The python-pickle format used to export data from ZODB 2 was
@@ -880,7 +884,7 @@ Zope Changes
 
         - Error values for errors raised by ExternalMethods were lost.
 
-        - Values returned bu absolute_url were not URL quoted.
+        - Values returned by absolute_url were not URL quoted.
 
         - Extra newlines were prepended to documents when they were
           edited.
@@ -1082,7 +1086,7 @@ Zope Changes
         - Added contributed support for encoding options in the SendMail
           tag and MailHost send method.
           
-        - Mangement tabs are now prettier and allow status messages with
+        - Management tabs are now prettier and allow status messages with
           the manage_tabs_message variable.
           
         - Added a method of notifying users of changes without using a
@@ -1132,7 +1136,7 @@ Zope Changes
 
         - Construction, upload, and edit methods did not consistently
           support either string or file data.  This caused really weird
-          behavior when file upload was used with out includeing the 
+          behavior when file upload was used with out including the 
           ':string' suffix in the argument name when doing a file upload.
 
           This bug was previously (and incorrectly) reported as a 
@@ -1163,7 +1167,7 @@ Zope Changes
           UserDB or other userfolder-like object.
 
         - Fixed an FTP support bug that sometimes kept simple items from
-          producting FTP listings.
+          producing FTP listings.
 
         - Added URL1 instead of "." as the form target for the workspace forms --
           using "." causes NS servers to intercept the request and report an
@@ -1190,7 +1194,7 @@ Zope Changes
 
     Zope  1.10.1
 
-      This is a Python 1.5.2 beta 2 compatability release.
+      This is a Python 1.5.2 beta 2 compatibility release.
 
       A Python C API change in Python 1.5.2 beta 2 broke
       Zope.  This release contains a fix.
