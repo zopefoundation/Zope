@@ -18,7 +18,15 @@ Zope Changes
           traceback is available through the product management
           interface.
 
-        - Cache statistics are displayed in minutes, rather than seconds.
+        - Cache statistics are displayed in minutes, rather than
+          seconds.
+
+        - Products can define the attribute '__module_aliases__' in
+          their '__init__' modules that specifies aliases for modules
+          used in the product.  This is useful if module names have
+          changed and the database contains pickles refering to the
+          old modules.  The attribute should be a sequence of
+          tuples. Each tuple has a (dotted) module name and a module.
 
       Bugs Fixed
 
