@@ -53,6 +53,7 @@ class TestDBConfig:
         self.connection_class = Connection
         self.class_factory = None
         self.storage = DemoStorage(self)
+        self.container_class = None
         return ZopeDatabase(self)
 
     def getSectionName(self):

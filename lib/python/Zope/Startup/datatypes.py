@@ -163,10 +163,6 @@ class ZopeDatabase(ZODBDatabase):
     """ A ZODB database datatype that can handle an extended set of
     attributes for use by DBTab """
 
-    def __init__(self, section):
-        self.container_class = section.container_class or 'OFS.Folder.Folder'
-        ZODBDatabase.__init__(self, section)
-
     def createDB(self):
         return ZODBDatabase.open(self)
 
@@ -214,7 +210,12 @@ class ZopeDatabase(ZODBDatabase):
         """
         for (virtual_path, real_root, real_path) in self.computeMountPaths():
             if virtual_path == mount_path:
-                return (real_root, real_path, self.container_class)
+                container_class = self.config.container_class
+                if not container_class and virtual_path != '/':
+                    # default to OFS.Folder.Folder for nonroot mounts
+                    # if one isn't specified in the config
+                    container_class = 'OFS.Folder.Folder'
+                return (real_root, real_path, container_class)
         raise LookupError('Nothing known about mount path %s' % mount_path)
     
 def getDefaultDatabaseFactories(context):
