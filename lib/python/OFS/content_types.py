@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -126,6 +126,7 @@ def text_type(s):
 # This gives us a hook to add content types that
 # aren't currently listed in the mimetypes module.
 _addtypes=(
+    ('.ram', 'application/x-pn-realaudio'),
     ('.cdf', 'application-x-cdf'),
     ('.doc', 'application/msword'),
     ('.dot', 'application/msword'),
