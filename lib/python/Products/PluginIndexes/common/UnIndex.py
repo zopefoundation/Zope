@@ -12,15 +12,12 @@
 ##############################################################################
 """Base for bi-directional indexes
 
-$Id: UnIndex.py,v 1.24 2004/04/23 15:04:24 caseman Exp $"""
+$Id: UnIndex.py,v 1.25 2004/04/23 15:47:33 caseman Exp $"""
 
 import sys
 from cgi import escape
 from logging import getLogger
 from types import StringType, ListType, IntType, TupleType
-
-from Globals import Persistent
-from Acquisition import Implicit
 
 from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
@@ -34,7 +31,7 @@ from Products.PluginIndexes.common import safe_callable
 _marker = []
 LOG = getLogger('Zope.UnIndex')
 
-class UnIndex(Persistent, Implicit, SimpleItem):
+class UnIndex(SimpleItem):
     """Simple forward and reverse index"""
 
     def __init__(
@@ -292,7 +289,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def numObjects(self):
         """ return number of indexed objects """
-        return len(self._unindex)
+        return len(self)
 
 
     def unindex_object(self, documentId):

@@ -12,7 +12,6 @@
 ##############################################################################
 
 import os, sys, unittest
-
 import ZODB
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 
@@ -93,6 +92,7 @@ class TestCase( unittest.TestCase ):
 
         assert len( self._index ) == 0
         assert len( self._index.referencedObjects() ) == 0
+        self.assertEqual(self._index.numObjects(), 0)
 
         assert self._index.getEntryForObject( 1234 ) is None
         assert ( self._index.getEntryForObject( 1234, self._marker )
@@ -116,6 +116,7 @@ class TestCase( unittest.TestCase ):
 
         assert len( self._index ) == len( values )-1 #'abce' is duplicate
         assert len( self._index.referencedObjects() ) == len( values )
+        self.assertEqual(self._index.numObjects(), len( values )-1)
 
         assert self._index.getEntryForObject( 1234 ) is None
         assert ( self._index.getEntryForObject( 1234, self._marker )

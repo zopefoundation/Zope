@@ -114,6 +114,7 @@ class TestKeywordIndex( unittest.TestCase ):
     def testEmpty( self ):
         assert len( self._index ) == 0
         assert len( self._index.referencedObjects() ) == 0
+        self.assertEqual(self._index.numObjects(), 0)
 
         assert self._index.getEntryForObject( 1234 ) is None
         assert ( self._index.getEntryForObject( 1234, self._marker )
@@ -141,6 +142,7 @@ class TestKeywordIndex( unittest.TestCase ):
         assert ( self._index.getEntryForObject( 1234, self._marker )
                   is self._marker )
         self._index.unindex_object( 1234 ) # nothrow
+        self.assertEqual(self._index.numObjects(), len( values )-1)
 
         for k, v in values:
             entry = self._index.getEntryForObject( k )
