@@ -35,11 +35,11 @@ class NBest:
         # This does a very simple thing with sorted lists.  For large
         # N, a min-heap can be unboundedly better in terms of data
         # movement time.
-        self.scores = []
-        self.items = []
+        self._scores = []
+        self._items = []
 
     def __len__(self):
-        return len(self.scores)
+        return len(self._scores)
 
     def capacity(self):
         return self._capacity
@@ -48,7 +48,7 @@ class NBest:
         self.addmany([(item, score)])
 
     def addmany(self, sequence):
-        scores, items, capacity = self.scores, self.items, self._capacity
+        scores, items, capacity = self._scores, self._items, self._capacity
         n = len(scores)
         for item, score in sequence:
             # When we're in steady-state, the usual case is that we're filled
@@ -66,11 +66,11 @@ class NBest:
         assert n == len(scores)
 
     def getbest(self):
-        result = zip(self.items, self.scores)
+        result = zip(self._items, self._scores)
         result.reverse()
         return result
 
     def pop_smallest(self):
-        if self.scores:
-            return self.items.pop(0), self.scores.pop(0)
+        if self._scores:
+            return self._items.pop(0), self._scores.pop(0)
         raise IndexError("pop_smallest() called on empty NBest object")
