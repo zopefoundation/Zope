@@ -5,13 +5,11 @@ import test_create
 
 
 
-class FullNewInsertsTest(test_create.FullBaseFramework):
+class BaseInsertMixin:
     def checkIsEmpty(self):
-        """Full: Newly created database should be empty"""
         assert not self._root.has_key('names')
 
     def checkNewInserts(self):
-        """Full: Commiting on a newly created database"""
         from Persistence import PersistentMapping
 
         self._root['names'] = names = PersistentMapping()
@@ -21,19 +19,12 @@ class FullNewInsertsTest(test_create.FullBaseFramework):
 
 
 
-class MinimalNewInsertsTest(test_create.MinimalBaseFramework):
-    def checkIsEmpty(self):
-        """Minimal: Newly created database is empty"""
-        assert not self._root.has_key('names')
+class FullNewInsertsTest(test_create.FullBaseFramework, BaseInsertMixin):
+    pass
 
-    def checkNewInserts(self):
-        """Minimal: Committing on a newly created database"""
-        from Persistence import PersistentMapping
 
-        self._root['names'] = names = PersistentMapping()
-        names['Warsaw'] = 'Barry'
-        names['Hylton'] = 'Jeremy'
-        get_transaction().commit()
+class MinimalNewInsertsTest(test_create.MinimalBaseFramework, BaseInsertMixin):
+    pass
 
 
 
