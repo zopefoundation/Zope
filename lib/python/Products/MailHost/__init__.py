@@ -8,10 +8,10 @@
 #
 ############################################################################## 
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.5 1997/12/19 21:46:37 jeffrey Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 1998/01/05 19:34:12 jeffrey Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
-import MailHost
+import MailHost, SendMailTag
 from ImageFile import ImageFile
 
 meta_types={'name':'Mail Host',
