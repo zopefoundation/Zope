@@ -84,12 +84,13 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 import sys, os, math, regex, DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
-from time import time,gmtime,localtime,asctime,tzname,strftime,mktime
+from time import time, gmtime, localtime, asctime
+from time import timezone, tzname, strftime, mktime
 from types import InstanceType,IntType,FloatType,StringType
 
 
@@ -252,6 +253,21 @@ class _cache:
            'gst':'GMT+10', 'nzt':'GMT+12', 'nzst':'GMT+12', 'idle':'GMT+12'
            }
 
+
+##     gt, lt=gmtime(time()), localtime(time())
+##     if gt[2]==lt[2] and gt[3]==lt[3]:
+##         zn='GMT'
+##     elif gt[2] >= lt[2] and gt
+##     elif gt[2]==lt[2] and gt[3] > lt[3]:
+##         zn='GMT-%d' % n
+##     elif gt[2]==lt[2]
+
+##     # Attempt to add the local machine tz info to the cache.
+##     n=timezone / 3600.0
+##     # Only handle whole-hour offsets.
+##     if (n - int(n)) == 0:
+##         zn=tzname
+##         gn='GMTint(n)
 
     def __init__(self):
         self._db=DateTimeZone._data
