@@ -252,14 +252,13 @@ if (document.forms[0]) {
   </div>
   </td>
 </tr>
-<dtml-if "_.len(objectItems)>1">
-  <dtml-if "hasOrderSupport and
-            _.SecurityCheckPermission( 'Manage properties', this() )">
+<dtml-if "hasOrderSupport and
+          _.SecurityCheckPermission( 'Manage properties', this() )">
 <tr>
   <td align="left" valign="top" width="16"></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <dtml-if expr="skey == 'position'">
+  <dtml-if expr="skey == 'position' and _.len(objectItems) > 1">
   <input class="form-element" type="submit"
          name="manage_move_objects_up:method" value="Up" />
   /
@@ -289,7 +288,6 @@ if (document.forms[0]) {
   </div>
   </td>
 </tr>
-  </dtml-if>
 </dtml-if>
 </table>
 
