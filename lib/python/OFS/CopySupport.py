@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile
 from marshal import loads, dumps
@@ -239,6 +239,8 @@ class CopyContainer:
 
     # Why did we give this a manage_ prefix if its really
     # supposed to be public since it does its own auth ?
+    #
+    # Because it's still a "management" function.
     manage_clone__roles__=None
     def manage_clone(self, ob, id, REQUEST=None):
         """Clone an object, creating a new object with the given id."""
