@@ -140,6 +140,12 @@ Debugging and Logging
         Run Zope in debug mode if set. Same as -D options (z2.py)
 
 
+    LOG_ZPUBLISHER_TRACEBACK
+
+        If set, Zope will log all ZPublisher traceback through
+        the stupid logger. (Default: unset)
+
+
 Misc.
 
     Z_REALM       "your realm"

@@ -1,4 +1,4 @@
-##############################################################################
+#############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 # 
@@ -12,10 +12,11 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.57 2002/04/05 16:00:17 htrd Exp $'''
-__version__='$Revision: 1.57 $'[11:-2]
+$Id: HTTPResponse.py,v 1.58 2002/04/12 17:22:44 andreasjung Exp $'''
+__version__='$Revision: 1.58 $'[11:-2]
 
 import types, os, sys, re
+import zLOG
 from string import translate, maketrans
 from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
@@ -175,7 +176,8 @@ class HTTPResponse(BaseResponse):
         if type(status) is types.StringType:
             status=status.lower()
         if status_codes.has_key(status): status=status_codes[status]
-        else: status=500
+        else: 
+            status=500
         self.status=status
         if reason is None:
             if status_reasons.has_key(status): reason=status_reasons[status]
@@ -607,6 +609,10 @@ class HTTPResponse(BaseResponse):
                     (str(t), b + self._traceback(t,'(see above)', tb, 0)),
                     is_error=1)
         del tb
+
+        if os.environ.has_key('LOG_ZPUBLISHER_TRACEBACK'):
+            zLOG.LOG('zpublisher',zLOG.WARNING,'Traceback:',body)
+            
         return body
 
     _wrote=None
