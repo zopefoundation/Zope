@@ -68,6 +68,10 @@ Zope Changes
 
         - A ZPublisher bug caused PUT requests to fail.
 
+        - Simple items did not have an objectValues method, which caused
+          odd behavior in certain tree tags since the method would be
+          acquired from the parent of the simple item.
+
     Zope 1.9.0
 
       New Features
