@@ -11,14 +11,13 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.16 2002/01/30 10:25:14 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.17 2002/04/02 14:57:20 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
 
 from Globals import Persistent, DTMLFile
 from Acquisition import Implicit
-from OFS.History import Historical
 from OFS.SimpleItem import SimpleItem
 
 from BTrees.IOBTree import IOBTree
@@ -353,6 +352,3 @@ def manage_addPathIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a path index"""
     return self.manage_addIndex(id, 'PathIndex', extra=None, \
                 REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)
-
-
-
