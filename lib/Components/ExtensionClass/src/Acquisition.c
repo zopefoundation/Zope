@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.49 2001/03/21 21:11:11 brian Exp $
+  $Id: Acquisition.c,v 1.50 2001/03/27 03:36:30 brian Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1144,7 +1144,7 @@ static PyExtensionClass XaqWrappertype = {
   (setattrfunc)0,			/*tp_setattr*/
   (cmpfunc)Wrapper_compare,    		/*tp_compare*/
   (reprfunc)Wrapper_repr,      		/*tp_repr*/
-  0,					/*tp_as_number*/
+  &Wrapper_as_number,			/*tp_as_number*/
   &Wrapper_as_sequence,			/*tp_as_sequence*/
   &Wrapper_as_mapping,			/*tp_as_mapping*/
   (hashfunc)Wrapper_hash,      		/*tp_hash*/
@@ -1427,7 +1427,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.49 $";
+  char *rev="$Revision: 1.50 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1446,7 +1446,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.49 2001/03/21 21:11:11 brian Exp $\n",
+	   "$Id: Acquisition.c,v 1.50 2001/03/27 03:36:30 brian Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
