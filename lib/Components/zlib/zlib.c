@@ -58,7 +58,7 @@ PyZlib_compress(self, args)
                       "Can't allocate memory to compress data");
       return NULL;
     }
-  zst.zalloc=(free_func)Z_NULL;
+  zst.zalloc=(alloc_func)Z_NULL;
   zst.zfree=(free_func)Z_NULL;
   zst.next_out=(Byte *)output;
   zst.next_in =(Byte *)input;
@@ -670,7 +670,7 @@ PyInit_zlib()
         ZlibError = Py_BuildValue("s", "zlib.error");
         PyDict_SetItemString(d, "error", ZlibError);
         PyDict_SetItemString(d, "IDString",
-	PyString_FromString("$Id: zlib.c,v 1.3 1997/08/07 18:21:15 jim Exp $"));
+	PyString_FromString("$Id: zlib.c,v 1.4 2000/04/17 20:16:59 tseaver Exp $"));
 	insint(d, "MAX_WBITS", MAX_WBITS);
 	insint(d, "DEFLATED", DEFLATED);
 	insint(d, "DEF_MEM_LEVEL", DEF_MEM_LEVEL);
