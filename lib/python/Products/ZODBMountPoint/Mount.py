@@ -13,7 +13,7 @@
 ##############################################################################
 """ZODB Mounted database support, simplified for DBTab.
 
-$Id: Mount.py,v 1.1 2003/07/20 02:56:01 chrism Exp $"""
+$Id: Mount.py,v 1.2 2003/08/02 17:13:59 shane Exp $"""
 
 import time, sys
 
@@ -216,5 +216,6 @@ if 1:
     Connection._real_close = Connection.close
 
     for k, v in ConnectionPatches.__dict__.items():
-        setattr(Connection, k, v)
+        if not k.startswith('__'):
+            setattr(Connection, k, v)
 
