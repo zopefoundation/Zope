@@ -12,17 +12,19 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.64 2001/11/28 15:50:59 matt Exp $"""
-__version__ = "$Revision: 1.64 $"[11:-2]
+$Id: MailHost.py,v 1.65 2002/01/15 04:05:12 jens Exp $"""
+__version__ = "$Revision: 1.65 $"[11:-2]
 
-from Globals import Persistent, DTMLFile, HTML, MessageDialog
+from Globals import Persistent, DTMLFile, MessageDialog, InitializeClass
 from smtplib import SMTP
 from AccessControl.Role import RoleManager
 from operator import truth
 import Acquisition, sys, string, types, mimetools
 import OFS.SimpleItem, re, quopri, rfc822
-import Globals
 from cStringIO import StringIO
+from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import view_management_screens, \
+                                      use_mailhost_services
 
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
@@ -58,7 +60,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     manage=manage_main=DTMLFile('dtml/manageMailHost', globals())
     manage_main._setName('manage_main')
     index_html=None
-    icon='misc_/MailHost/MHIcon'
+    security = ClassSecurityInfo()
 
     timeout=1.0
 
@@ -72,12 +74,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         +OFS.SimpleItem.Item.manage_options
         )
 
-    __ac_permissions__=(
-        ('View management screens', ('manage','manage_main')),
-        ('Change configuration', ('manage_makeChanges',)),
-        ('Use mailhost services',('',)),
-        )
-   
+
     def __init__(self):
         'nothing yet'
         pass
@@ -86,6 +83,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_host=smtp_host
         self.smtp_port=smtp_port
 
+    security.declareProtected( 'Change configuration', 'manage_makeChanges' )
     def manage_makeChanges(self,title,smtp_host,smtp_port, REQUEST=None):
         'make the changes'
 
@@ -103,6 +101,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             action =REQUEST['URL2']+'/manage_main',
             target ='manage_main')
     
+    security.declareProtected( use_mailhost_services, 'sendTemplate' )
     def sendTemplate(trueself, self, messageTemplate, 
                      statusTemplate=None, mto=None, mfrom=None,
                      encode=None, REQUEST=None):
@@ -128,6 +127,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         except:
             return "SEND OK"
 
+    security.declareProtected( use_mailhost_services, 'send' )
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):
         headers = extractheaders(messageText)
@@ -158,7 +158,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         smtpserver = SMTP(self.smtp_host, self.smtp_port)
         smtpserver.sendmail(headers['from'],headers['to'], messageText)
 
-
+    security.declareProtected( use_mailhost_services, 'scheduledSend' )
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
                       encode=None):
         """Looks like the same function as send() - scheduledSend() is nowhere 
@@ -185,6 +185,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         smtpserver = SMTP(self.smtp_host, self.smtp_port)
         smtpserver.sendmail(headers['from'], headers['to'], messageText)
 
+    security.declareProtected( use_mailhost_services, 'simple_send' )
     def simple_send(self, mto, mfrom, subject, body):
         body="from: %s\nto: %s\nsubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
@@ -192,7 +193,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         mailserver.sendmail(mfrom, mto, body)
 
         
-Globals.default__class_init__(MailBase)
+InitializeClass( MailBase )
 
 class MailHost(Persistent, MailBase):
     "persistent version"
