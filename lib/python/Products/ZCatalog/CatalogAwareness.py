@@ -86,7 +86,7 @@
 """ZCatalog Findable class"""
 
 import urllib, string
-from Globals import HTMLFile
+from Globals import DTMLFile
 
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and
@@ -100,7 +100,7 @@ class CatalogAware:
     meta_type='CatalogAware'
     default_catalog='Catalog'
 
-    manage_editCatalogerForm=HTMLFile('dtml/editCatalogerForm', globals())
+    manage_editCatalogerForm=DTMLFile('dtml/editCatalogerForm', globals())
 
     def manage_editCataloger(self, default, REQUEST=None):
         """ """

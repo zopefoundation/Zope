@@ -84,7 +84,7 @@
 ##############################################################################
 """ZCatalog product"""
 
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 import Globals
 from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
@@ -104,7 +104,7 @@ import IOBTree
 from AccessControl import getSecurityManager
 
 
-manage_addZCatalogForm=HTMLFile('dtml/addZCatalog',globals())
+manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
 def manage_addZCatalog(self, id, title, vocab_id=None, REQUEST=None):
     """Add a ZCatalog object
@@ -206,12 +206,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         )
 
 
-    manage_catalogAddRowForm = HTMLFile('dtml/catalogAddRowForm', globals())
-    manage_catalogView = HTMLFile('dtml/catalogView',globals())
-    manage_catalogFind = HTMLFile('dtml/catalogFind',globals())
-    manage_catalogSchema = HTMLFile('dtml/catalogSchema', globals())
-    manage_catalogIndexes = HTMLFile('dtml/catalogIndexes', globals())
-    manage_catalogStatus = HTMLFile('dtml/catalogStatus', globals())
+    manage_catalogAddRowForm = DTMLFile('dtml/catalogAddRowForm', globals())
+    manage_catalogView = DTMLFile('dtml/catalogView',globals())
+    manage_catalogFind = DTMLFile('dtml/catalogFind',globals())
+    manage_catalogSchema = DTMLFile('dtml/catalogSchema', globals())
+    manage_catalogIndexes = DTMLFile('dtml/catalogIndexes', globals())
+    manage_catalogStatus = DTMLFile('dtml/catalogStatus', globals())
 
 
     threshold=10000

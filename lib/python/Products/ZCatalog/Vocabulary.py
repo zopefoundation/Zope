@@ -84,7 +84,7 @@
 ##############################################################################
 """ZCatalog product"""
 
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 import Globals, AccessControl.Role
 from Acquisition import Implicit
 from Persistence import Persistent
@@ -93,7 +93,7 @@ from SearchIndex import Lexicon, GlobbingLexicon
 
 from SearchIndex.Lexicon import stop_word_dict
 
-manage_addVocabularyForm=HTMLFile('dtml/addVocabulary',globals())
+manage_addVocabularyForm=DTMLFile('dtml/addVocabulary',globals())
 
 def manage_addVocabulary(self, id, title, globbing=None, REQUEST=None):
     """Add a Vocabulary object
@@ -144,8 +144,8 @@ class Vocabulary(Item, Persistent, Implicit,
 
     
 
-    manage_main = HTMLFile('dtml/manage_vocab', globals())
-    manage_query = HTMLFile('dtml/vocab_query', globals())
+    manage_main = DTMLFile('dtml/manage_vocab', globals())
+    manage_query = DTMLFile('dtml/vocab_query', globals())
 
     def __init__(self, id, title='', globbing=None):
         """ create the lexicon to manage... """
