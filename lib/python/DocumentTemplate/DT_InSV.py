@@ -85,8 +85,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.12 1999/08/18 20:48:27 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: DT_InSV.py,v 1.13 1999/08/24 12:54:37 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from string import lower, rfind
 from math import sqrt
@@ -413,7 +413,7 @@ def opt(start,end,size,orphan,sequence):
         # if start > l: start=l
 
         if end > 0:
-            if end > start: end=start
+            if end < start: end=start
         else:
             end=start+size-1
             try: sequence[end+orphan-1]
