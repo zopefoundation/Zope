@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.36 2000/09/15 15:01:27 brian Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: HTTPResponse.py,v 1.37 2000/11/06 15:17:29 brian Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -342,7 +342,7 @@ class HTTPResponse(BaseResponse):
                     index=match.start(0) + len(match.group(0))
                     ibase=base_re_search(body)
                     if ibase < 0:
-                        self.body=('%s\n<base href="%s">\n%s' %
+                        self.body=('%s\n<base href="%s" />\n%s' %
                                    (body[:index], self.base, body[index:]))
                         self.setHeader('content-length', len(self.body))
 
