@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.7 1997/09/22 18:44:38 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: DA.py,v 1.8 1997/09/25 17:35:30 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -94,7 +94,7 @@ class Folder(OFS.Folder.Folder):
 	self._setObject(id,q)
 	return self.manage_main(self,REQUEST)
 
-    test_url___allow_groups__=None
+    test_url___roles__=None
     def test_url_(self):
 	'Method for testing server connection information'
 	return 'PING'
@@ -181,7 +181,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	    '%s is not connected to a database' % self.id)
 
 	try:
-	    argdata=REQUEST.form.value
+	    argdata=REQUEST['BODY']
 	    argdata=decodestring(argdata)
 	    argdata=self.rotor.decrypt(argdata)
 	    digest,argdata=argdata[:16],argdata[16:]
@@ -218,6 +218,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.8  1997/09/25 17:35:30  jim
+# Made some corrections for network behavior.
+#
 # Revision 1.7  1997/09/22 18:44:38  jim
 # Got rid of ManageHTML
 # Fixed bug in manage_test that caused extra database updates.
