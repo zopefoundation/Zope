@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -90,14 +90,22 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return tuple(r)
 
-    def permission_settings(self):
-        """Return user-role permission settings
+    def permission_settings(self, permission=None):
+        """Return user-role permission settings. If 'permission' 
+           is passed to the method then only the settings for 'permission'
+           is returned.
         """
         result=[]
         valid=self.valid_roles()
         indexes=range(len(valid))
         ip=0
-        for p in self.ac_inherited_permissions(1):
+
+        permissions = self.ac_inherited_permissions(1)
+        # Filter permissions
+        if permission:
+            permissions = [p for p in permissions if p[0] == permission]
+
+        for p in permissions:
             name, value = p[:2]
             p=Permission(name,value,self)
             roles=p.getRoles(default=[])

@@ -24,6 +24,10 @@ Zope Changes
 
     Features added
 
+     - AccessControl/permission_settings() now has a new optional parameter
+       'permission' to retrieve the permission settings for a particular
+       permission.
+
      - The obsolete 'SearchIndex' package has been removed
 
      - Traversal now supports a "post traversal hook" that get's run
