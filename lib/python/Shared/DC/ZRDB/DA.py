@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.105 $'[11:-2]
+__version__='$Revision: 1.106 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -74,6 +74,7 @@ class DA(
     _zclass=None
     allow_simple_one_argument_traversal=None
     template_class=SQL
+    connection_hook=None
 
     manage_options=(
         (
@@ -183,7 +184,7 @@ class DA(
 
     def manage_advanced(self, max_rows, max_cache, cache_time,
                         class_name, class_file, direct=None,
-                        REQUEST=None, zclass=''):
+                        REQUEST=None, zclass='', connection_hook=None):
         """Change advanced properties
 
         The arguments are:
@@ -229,6 +230,8 @@ class DA(
         self.class_name_, self.class_file_ = class_name, class_file
         self._v_brain=getBrain(self.class_file_, self.class_name_, 1)
         self.allow_simple_one_argument_traversal=direct
+
+        self.connection_hook = connection_hook
 
         if zclass:
             for d in self.aq_acquire('_getProductRegistryData')('zclasses'):
@@ -341,7 +344,11 @@ class DA(
     def _searchable_result_columns(self): return self._col
 
     def _cached_result(self, DB__, query):
-
+        pure_query = query
+        # we need to munge the incoming query key in the cache
+        # so that the same request to a different db is returned
+        query += '\nDBConnId: %s' % self.connection_hook
+        
         # Try to fetch from cache
         if hasattr(self,'_v_cache'): cache=self._v_cache
         else: cache=self._v_cache={}, Bucket()
@@ -364,7 +371,8 @@ class DA(
             k, r = cache[query]
             if k > t: return r
 
-        result=apply(DB__.query, query)
+        # call the pure query
+        result=apply(DB__.query, pure_query)
         if self.cache_time_ > 0:
             tcache[int(now)]=query
             cache[query]= now, result
@@ -389,11 +397,18 @@ class DA(
                 if hasattr(self, 'REQUEST'): REQUEST=self.REQUEST
                 else: REQUEST={}
 
-        try: dbc=getattr(self, self.connection_id)
+        # connection hook
+        c = self.connection_id
+        # for backwards compatability
+        hk = self.connection_hook
+        # go get the connection hook and call it
+        if hk: c = getattr(self, hk)()
+           
+        try: dbc=getattr(self, c)
         except AttributeError:
             raise AttributeError, (
                 "The database connection <em>%s</em> cannot be found." % (
-                self.connection_id))
+                c))
 
         try: DB__=dbc()
         except: raise 'Database Error', (

@@ -5,6 +5,19 @@
 <table>
 
 <table cellspacing="0" cellpadding="2" border="0">
+  	<tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Connection Hook
+    </div>
+    </td>
+	  <td align="LEFT" valign="TOP">
+	    <input type="TEXT" name="connection_hook" size="40"
+                   value="<dtml-var connection_hook missing="" html_quote>">
+	  </td>
+	</tr>
+
+
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
