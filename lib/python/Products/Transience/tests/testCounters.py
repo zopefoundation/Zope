@@ -17,18 +17,22 @@ from unittest import TestCase, TestSuite, makeSuite
 from ZODB.POSException import ConflictError
 from ZODB.FileStorage import FileStorage
 from ZODB.DB import DB
+import transaction
 
 from Products.Transience.Transience import Length2, Increaser
 
+# Test pattern is copied from BTrees/tests/testConflict.py
+
 class Base(TestCase):
-    db = None
+    storage = None
 
     def setUp(self):
         pass
 
     def tearDown(self):
-        if self.db is not None:
-            self.db.close()
+        transaction.abort()
+        if self.storage is not None:
+            self.storage.close()
             self.storage.cleanup()
 
     def openDB(self):
@@ -39,15 +43,15 @@ class Base(TestCase):
 class TestLength2(Base):
 
     def testConflict(self):
-        # this test fails on the HEAD (MVCC?)
+        # Set up database connections to provoke conflict.
         self.openDB()
         length = Length2(0)
 
         r1 = self.db.open().root()
         r1['ob'] = length
-        get_transaction().commit()
+        transaction.commit()
 
-        r2 = self.db.open().root()
+        r2 = self.db.open(synch=False).root()
         copy = r2['ob']
         # The following ensures that copy is loaded.
         self.assertEqual(copy(),0)
@@ -55,40 +59,42 @@ class TestLength2(Base):
         # First transaction.
         length.increment(10)
         length.decrement(1)
-        get_transaction().commit()
+        transaction.commit()
 
         # Second transaction.
         length = copy
         length.increment(20)
         length.decrement(2)
-        get_transaction().commit()
+        transaction.commit()
 
         self.assertEqual(length(), 10+20-max(1,2))
 
 class TestIncreaser(Base):
 
     def testConflict(self):
+
+        # Set up database connections to provoke conflict.
         self.openDB()
         increaser = Increaser(0)
 
         r1 = self.db.open().root()
         r1['ob'] = increaser
-        get_transaction().commit()
+        transaction.commit()
 
-        r2 = self.db.open().root()
+        r2 = self.db.open(synch=False).root()
         copy = r2['ob']
         # The following ensures that copy is loaded.
         self.assertEqual(copy(),0)
 
         # First transaction.
         increaser.set(10)
-        get_transaction().commit()
+        transaction.commit()
 
 
         # Second transaction.
         increaser = copy
         increaser.set(20)
-        get_transaction().commit()
+        transaction.commit()
 
         self.assertEqual(increaser(), 20)
 
