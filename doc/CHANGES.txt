@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #402: PythonScript recompile utility should only be 
+        usable by Manager to prevent abuse.
+
       - Collector #433: Fixed broken Splitter backwards compatiblity
         issue caused by code cleanup.
 
