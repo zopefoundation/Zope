@@ -99,7 +99,7 @@ class syslogLogger:
             self.client = syslog_client((addr, int(port)))
             self.on = 1
         elif os.environ.has_key('ZSYSLOG'):
-            self.client = syslog_client()
+            self.client = syslog_client(os.environ['ZSYSLOG'])
             self.on = 1
         else:
             self.on = 0

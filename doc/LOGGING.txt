@@ -21,11 +21,11 @@ Zope Logging
    It is not very smart about it - it just dumps it to a file and the
    format is not very configurable - hence the name.
 
-  ZSYSLOG="anything"
+  ZSYSLOG="/dev/log"
 
    Setting this environment variable will cause Zope to try and write
-   to the '/dev/log' UNIX domain socket.  This will only work on UNIX, 
-   and only if your syslogd domain socket is named /dev/log.
+   to the named UNIX domain socket (usually '/dev/log').  This will only 
+   work on UNIX.
 
   ZSYSLOG_SERVER="machine.name:port"
 
