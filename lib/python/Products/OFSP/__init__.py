@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.29 1999/04/19 22:31:08 jim Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: __init__.py,v 1.30 1999/05/10 18:05:10 brian Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
 import Version, Draft, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, ZClasses.ObjectManager
@@ -105,6 +105,8 @@ def initialize(context):
             ('manage_addDTMLMethod', OFS.DTMLMethod.addDTMLMethod),
             )
         )
+    context.registerBaseClass(OFS.DTMLMethod.DTMLMethod, 'DTML Method')
+
 
     context.registerClass(
         OFS.DTMLDocument.DTMLDocument,
@@ -114,6 +116,8 @@ def initialize(context):
         icon='images/dtmldoc.gif',
         legacy=(('manage_addDTMLDocument', OFS.DTMLDocument.addDTMLDocument),),
         )
+    context.registerBaseClass(OFS.DTMLDocument.DTMLDocument, 'DTML Document')
+
 
     context.registerClass(
         OFS.Image.Image,
@@ -123,6 +127,8 @@ def initialize(context):
         icon='images/Image_icon.gif',
         legacy=(OFS.Image.manage_addImage,),
         )
+    context.registerBaseClass(OFS.Image.Image, 'Image')
+
 
     context.registerClass(
         OFS.Image.File,
@@ -132,7 +138,8 @@ def initialize(context):
         icon='images/File_icon.gif',
         legacy=(OFS.Image.manage_addFile,),
         )
-
+    context.registerBaseClass(OFS.Image.File, 'File')
+    
     context.registerClass(
         OFS.Folder.Folder,
         constructors=(OFS.Folder.manage_addFolderForm,
@@ -140,6 +147,8 @@ def initialize(context):
         icon='images/Folder_icon.gif',
         legacy=(OFS.Folder.manage_addFolder,),
         )
+    context.registerBaseClass(OFS.Folder.Folder, 'Folder')
+    
 
     context.registerClass(
         AccessControl.User.UserFolder,
@@ -147,6 +156,11 @@ def initialize(context):
         icon='images/UserFolder_icon.gif',
         legacy=(AccessControl.User.manage_addUserFolder,),
         )
+
+    context.registerBaseClass(AccessControl.User.UserFolder, 'User Folder')
+    context.registerBaseClass(AccessControl.User.User)
+
+
 
     context.registerClass(
         Version.Version,
