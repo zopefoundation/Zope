@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -135,7 +135,9 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         if name:
             self._need__name__ = 0
             self.__name__ = name
-        self.filename = filename = os.path.join(_prefix, filename + '.zpt')
+        if not os.path.splitext(filename)[1]:
+            filename = filename + '.zpt'
+        self.filename = os.path.join(_prefix, filename)
 
     def pt_getContext(self):
         root = self.getPhysicalRoot()
