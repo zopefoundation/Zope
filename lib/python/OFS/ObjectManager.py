@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.165 2003/11/18 13:17:03 tseaver Exp $"""
+$Id: ObjectManager.py,v 1.166 2003/11/28 16:45:35 jim Exp $"""
 
-__version__='$Revision: 1.165 $'[11:-2]
+__version__='$Revision: 1.166 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -35,6 +35,7 @@ import marshal
 import App.Common
 from App.config import getConfiguration
 from AccessControl import getSecurityManager
+from AccessControl.ZopeSecurityPolicy import getRoles
 from zLOG import LOG, ERROR
 from zExceptions import BadRequest
 import sys,fnmatch,copy
@@ -111,7 +112,7 @@ class ObjectManager(
     """
 
     __ac_permissions__=(
-        ('View management screens', ('manage_main','manage_menu')),
+        ('View management screens', ('manage_main',)),
         ('Access contents information',
          ('objectIds', 'objectValues', 'objectItems',''),
          ('Anonymous', 'Manager'),
@@ -636,12 +637,15 @@ class ObjectManager(
         if not (len(REQUEST.PARENTS) > 1 and
                 self.objectValues() == REQUEST.PARENTS[1].objectValues()):
             try:
-                if getSecurityManager().validateValue(self.manage_FTPlist):
+                if getSecurityManager().validate(
+                    None, self, 'manage_FTPlist', self.manage_FTPlist
+                    ):
                     mode=mode | 0770
             except: pass
             if nobody.allowed(
-                        self.manage_FTPlist,
-                        self.manage_FTPlist.__roles__):
+                self.manage_FTPlist,
+                getRoles(self, 'manage_FTPlist', self.manage_FTPlist, ()),
+                self.manage_FTPlist.__roles__):
                 mode=mode | 0007
         mtime=self.bobobase_modification_time().timeTime()
         # get owner and group
