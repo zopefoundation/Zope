@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.52 2001/07/03 19:38:20 matt Exp $
+  $Id: Acquisition.c,v 1.53 2001/09/14 20:00:13 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1055,28 +1055,39 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 static PyObject *
 Wrapper_inContextOf(Wrapper *self, PyObject *args)
 {
-  PyObject *o, *c;
+  PyObject *subob, *o, *c;
   int inner=1;
 
   UNLESS(PyArg_ParseTuple(args,"O|i",&o,&inner)) return NULL;
 
   if (inner) {
+    /* subob = self */
+    subob = OBJECT(self);
+
     /* o = aq_base(o) */
     while (isWrapper(o) && WRAPPER(o)->obj) o=WRAPPER(o)->obj;
 
     /* while 1: */
     while (1) {
 
-      /*   if aq_base(self) is o: return 1 */
-      c = self->obj;
+      /*   if aq_base(subob) is o: return 1 */
+      c = subob;
       while (isWrapper(c) && WRAPPER(c)->obj) c = WRAPPER(c)->obj;
       if (c == o) return PyInt_FromLong(1);
 
-      /*   self = aq_parent(aq_inner(self)) */
+      /*   self = aq_inner(subob) */
       /*   if self is None: break */
-      while (self->obj && isWrapper(self->obj)) self = WRAPPER(self->obj);
-      if (self->container && isWrapper(self->container))
-        self = WRAPPER(self->container);
+      if (isWrapper(subob)) {
+        self = WRAPPER(subob);
+        while (self->obj && isWrapper(self->obj))
+          self = WRAPPER(self->obj);
+      }
+      else break;
+
+      /*   subob = aq_parent(self) */
+      /*   if subob is None: break */
+      if (self->container)
+        subob = self->container;
       else break;
     }
   }
@@ -1497,7 +1508,7 @@ initAcquisition(void)
 {
   PyObject *m, *d;
   PyObject *api;
-  char *rev="$Revision: 1.52 $";
+  char *rev="$Revision: 1.53 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1516,7 +1527,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.52 2001/07/03 19:38:20 matt Exp $\n",
+	   "$Id: Acquisition.c,v 1.53 2001/09/14 20:00:13 shane Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
