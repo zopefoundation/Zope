@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.8 1997/09/25 18:40:57 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Aqueduct.py,v 1.9 1997/09/25 21:11:13 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Globals import HTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -20,7 +20,6 @@ DateTime.now=DateTime.DateTime
 from cStringIO import StringIO
 
 dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
-default_report_src=open(dtml_dir+'defaultReport.dtml').read()
 
 class BaseQuery:
     def query_year(self): return self.query_date.year()
@@ -363,6 +362,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.9  1997/09/25 21:11:13  jim
+# cleanup and other work
+#
 # Revision 1.8  1997/09/25 18:40:57  jim
 # new interfaces and RDB
 #
