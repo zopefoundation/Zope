@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -185,7 +185,7 @@ class _cache:
            'GMT-0630', 'GMT-0730', 'GMT-0830', 'GMT-0930', 'GMT-1030',
            'GMT-1130', 'GMT-1230',
 
-           'UT','BST','CDT','MEST','SST','FST','WADT','EADT','NZDT',
+           'UT','BST','MEST','SST','FST','WADT','EADT','NZDT',
            'WET','WAT','AT','AST','NT','IDLW','CET','MET',
            'MEWT','SWT','FWT','EET','EEST','BT','ZP4','ZP5','ZP6',
            'WAST','CCT','JST','EAST','GST','NZT','NZST','IDLE']
@@ -286,7 +286,7 @@ class _cache:
            'us/samoa':'US/Samoa',
 
            'ut':'Universal',      
-           'bst':'GMT+1', 'cdt':'GMT+2', 'mest':'GMT+2', 'sst':'GMT+2',
+           'bst':'GMT+1', 'mest':'GMT+2', 'sst':'GMT+2',
            'fst':'GMT+2', 'wadt':'GMT+8', 'eadt':'GMT+11', 'nzdt':'GMT+13',
            'wet':'GMT', 'wat':'GMT-1', 'at':'GMT-2', 'ast':'GMT-4',
            'nt':'GMT-11', 'idlw':'GMT-12', 'cet':'GMT+1', 'cest':'GMT+2',
