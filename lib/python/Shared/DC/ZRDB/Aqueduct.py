@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-__version__='$Revision: 1.51 $'[11:-2]
-$Id: Aqueduct.py,v 1.51 2001/08/10 15:39:26 andreasjung Exp $'''
+$Id: Aqueduct.py,v 1.52 2001/08/13 14:57:55 andreasjung Exp $'''
+__version__='$Revision: 1.52 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -146,10 +146,20 @@ class BaseQuery(Persistent, SimpleItem.Item,
                             if not arg['optional']: missing.append(name)
                         except: missing.append(name)
                     
-        if missing:
-            raise self.MissingArgumentError,  \
-                "The following arguments were omitted " \
-                " from the ZSQL method call: %s" % str(missing)
+        # Note: the code above tries to check if an argument of the
+        # ZSQL method above has the "optional" flag set (in case the
+        # argument is omitted from the ZSQL function call). But there
+        # is neither corresponding code inside the parse() function to 
+        # check for the "optional" parameter nor any documentation. 
+        # So we omit the check for the optional parameter. There will
+        # be probably no code break but there will be hopefully more code
+        # to work as supposed to work.
+
+#        if missing:
+#            raise self.MissingArgumentError,  \
+#                "The following arguments were omitted " \
+#                " from the ZSQL method call: %s" % str(missing)
+#
 
         return r
 
