@@ -99,6 +99,8 @@ import tempfile
 import marshal
 import xyap
 
+mdumps = marshal.dumps
+mloads = marshal.loads
 
 xyap=xyap.xyap
 

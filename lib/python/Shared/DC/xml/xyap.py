@@ -20,8 +20,11 @@ Oh well.
 """
 
 import string
+import xmllib
+
 from pickle import *
 from types import ListType
+
 
 class xyap:
     start_handlers={}
@@ -63,7 +66,6 @@ class NoBlanks:
     def handle_data(self, data):
         if string.strip(data): self.append(data)
 
-import xmllib
 
 def struct(self, tag, data):
     r={}
