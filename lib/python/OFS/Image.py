@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -200,7 +200,17 @@ class File(Persistent,Implicit,PropertyManager,
                 c()
         RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         RESPONSE.setHeader('Content-Type', self.content_type)
-        return self.data
+        RESPONSE.setHeader('Content-Length', self.size)
+
+        data=self.data
+        if type(data) is type(''): return data
+
+        while data is not None:
+            RESPONSE.write(data.data)
+            data=data.next
+
+        return ''
+        
 
     def view_image_or_file(self, URL1):
         """
