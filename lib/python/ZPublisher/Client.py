@@ -56,7 +56,7 @@
 #
 ############################################################################## 
 __doc__="""Bobo call interface"""
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys,regex,socket,mimetools
 from httplib import HTTP, replyprog
@@ -523,24 +523,49 @@ class BoboFunction:
 	return response
 
 
-
-
-
-
-
 def main():
-    # The "main" program for this module
-    f=BoboFunction('http://ninny.digicool.com:8081'
-		   '/projects/PyDB/customer/cgi-bin/Client.cgi/Queries'
-		   '/ModuleParts/query', 'ModuleID', 'output-delimiter')
+    import getopt
+    from string import split
 
-    print f('ABM', '\t')
+    user=None
+
+    try:
+	optlist, args = getopt.getopt(sys.argv[1:],'u:')
+	url=args[0]
+	u =filter(lambda o: o[0]=='-u', optlist)
+	if u:
+	    [user, pw] = split(u[0][1],':')
+
+	kw={}
+	for arg in args[1:]:
+	    [name,v]=split(arg)
+	    kw[name]=v
+
+    except:
+	print """
+	Usage: %s [-u username:password] url [name=value ...]
+
+	where url is the web resource to call.
+
+	The -u option may be used to provide a user name and password.
+
+	Optional arguments may be provides as name=value pairs.
+	"""
+	sys.exit(1)
+
+    # The "main" program for this module
+    f=BoboFunction(url)
+    if user: f.username, f.password = user, pw
+    print apply(f,(),kw)
 
 
 if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.11  1997/07/09 14:51:53  jim
+# Added command-line interface.
+#
 # Revision 1.10  1997/06/06 14:26:32  brian
 # Added multipart/form-data support with a new mpRemoteMethod object
 # which allows file upload via bci.
