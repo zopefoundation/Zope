@@ -70,8 +70,10 @@ class DateTimeTests (unittest.TestCase):
 
     def testConstructor6(self):
         '''Constructor from year and julian date'''
-        dt = DateTime('1980/1/5 12:00:00.050 pm')
-        dt1 = DateTime(1980, 5.500000578705)
+        # This test must normalize the time zone, or it *will* break when
+        # DST changes!
+        dt1 = DateTime(2000, 5.500000578705)
+        dt = DateTime('2000/1/5 12:00:00.050 pm %s' % dt1.localZone())
         _compare(dt, dt1)
 
     def testConstructor7(self):
@@ -149,7 +151,11 @@ class DateTimeTests (unittest.TestCase):
         '''Comparison of a Y10K date and a Y2K date'''
         dt = DateTime('10213/09/21')
         dt1 = DateTime(2000, 1, 1)
-        assert dt - dt1 == 3000000.0, (dt - dt1)
+
+        dsec = ( dt.millis() - dt1.millis() ) / 1000.0
+        ddays = math.floor( ( dsec / 86400.0 ) + 0.5 )
+
+        assert ddays == 3000000L, ddays
 
 
 def test_suite():
