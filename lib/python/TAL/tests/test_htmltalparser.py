@@ -101,7 +101,7 @@ class HTMLTALParserTestCases(TestCaseBase):
         self.assertRaises(HTMLTALParser.NestingError, check)
 
     def check_cdata_mode(self):
-        """This routine should NOT detect an error with an end tag </a> not
+        """This routine should NOT detect an error with an end tag </a></b> not
            matching the start <script> tag.  The contents are within a
            HTML comment, and should be ignored.
         """
@@ -113,7 +113,7 @@ class HTMLTALParserTestCases(TestCaseBase):
         # be recognized as an improperly nested end tag.  See:
         # http://www.w3.org/TR/html401/types.html#type-cdata
         #
-        s = """<script>\n<!--\ndocument.write("</a>");\n// -->\n</script>"""
+        s = """<html><script>\n<!--\ndocument.write("</a></b>");\n// -->\n</script></html>"""
         output = [
             rawtext(s),
             ]
