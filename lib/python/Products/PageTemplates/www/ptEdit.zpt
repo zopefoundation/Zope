@@ -3,7 +3,7 @@
     tal:replace="structure here/manage_tabs">Tabs</h2>
 
 <form action="" method="post"
-      tal:define="body request/form/text | here/read"
+      tal:define="body request/other/text | request/form/text | here/read"
       tal:attributes="action request/URL1">
 <input type="hidden" name=":default_method" value="pt_changePrefs">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
@@ -78,12 +78,11 @@
 </form>
 
 <p class="form-help">
-You may upload the text for <span tal:replace="here/title_and_id" />
- using the form below.
-Choose an existing file from your local computer by clicking
-<em>browse</em> The contents of the file should be HTML or XML.  You
-may click the following link to <a href="document_src">view or
-download</a> the current text.
+You can upload the text for <span tal:replace="here/title_and_id" />
+using the following form.
+Choose an existing HTML or XML file from your local computer by clicking
+<em>browse</em>.  You can also <a href="document_src">click here</a>
+to view or download the current text.
 </p>
 
 <form action="pt_upload" method="post" 
