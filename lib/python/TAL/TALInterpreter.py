@@ -424,6 +424,32 @@ class TALInterpreter:
                              (i, what, macroName, slots and slots.keys()))
         sys.stderr.write("+--------------------------------------\n")
 
+    def do_rawtextBeginScope(self, (s, col, position, closeprev, dict)):
+        self._stream_write(s)
+        self.col = col
+        self.position = position
+        if closeprev:
+            engine = self.engine
+            engine.endScope()
+            engine.beginScope()
+        else:
+            self.engine.beginScope()
+            self.scopeLevel = self.scopeLevel + 1
+
+    def do_rawtextBeginScope_tal(self, (s, col, position, closeprev, dict)):
+        self._stream_write(s)
+        self.col = col
+        self.position = position
+        engine = self.engine
+        if closeprev:
+            engine.endScope()
+            engine.beginScope()
+        else:
+            engine.beginScope()
+            self.scopeLevel = self.scopeLevel + 1
+        engine.setLocal("attrs", dict)
+    bytecode_handlers["rawtextBeginScope"] = do_rawtextBeginScope
+
     def do_beginScope(self, dict):
         self.engine.beginScope()
         self.scopeLevel = self.scopeLevel + 1
@@ -614,6 +640,7 @@ class TALInterpreter:
     bytecode_handlers["onError"] = do_onError
 
     bytecode_handlers_tal = bytecode_handlers.copy()
+    bytecode_handlers_tal["rawtextBeginScope"] = do_rawtextBeginScope_tal
     bytecode_handlers_tal["beginScope"] = do_beginScope_tal
     bytecode_handlers_tal["setLocal"] = do_setLocal_tal
     bytecode_handlers_tal["setGlobal"] = do_setGlobal_tal
