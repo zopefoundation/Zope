@@ -54,11 +54,11 @@ class CosineIndex(BaseIndex):
         # ._wordinfo for cosine is wid -> {docid -> weight};
         # t -> D -> w(d, t)/W(d)
 
-        # ._docweight for Okapi is
+        # ._docweight for cosine is
         # docid -> W(docid)
 
     # Most of the computation for computing a relevance score for the
-    # document occurs in the search() method.  The code currently
+    # document occurs in the _search_wids() method.  The code currently
     # implements the cosine similarity function described in Managing
     # Gigabytes, eq. 4.3, p. 187.  The index_object() method
     # precomputes some values that are independent of the particular
@@ -109,17 +109,13 @@ class CosineIndex(BaseIndex):
         L = []
         DictType = type({})
         for wid in wids:
-            d2w = self._wordinfo.get(wid) # maps docid to w(docid, wid)
-            if d2w is None:
-                # Need a test case to cover this
-                L.append((IIBucket(), scaled_int(1)))
-                continue
+            assert self._wordinfo.has_key(wid)  # caller responsible for OOV
+            d2w = self._wordinfo[wid] # maps docid to w(docid, wid)
             idf = query_term_weight(len(d2w), N)  # this is an unscaled float
             #print "idf = %.3f" % idf
             if isinstance(d2w, DictType):
                 d2w = IIBucket(d2w)
             L.append((d2w, scaled_int(idf)))
-        L.sort(lambda x, y: cmp(len(x[0]), len(y[0])))
         return L
 
     def query_weight(self, terms):
