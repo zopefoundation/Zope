@@ -402,7 +402,7 @@ static struct PyMethodDef Splitter_methods[] = {
     { "pos", (PyCFunction)Splitter_pos, 0,
       "pos(index) -- Return the starting and ending position of a token" },
     { "indexes", (PyCFunction)Splitter_indexes, METH_VARARGS,
-      "indexes(word) -- Return al list of the indexes of word in the sequence",
+      "indexes(word) -- Return a list of the indexes of word in the sequence",
     },
     { NULL, NULL }		/* sentinel */
 };
@@ -478,7 +478,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: ZopeSplitter.c,v 1.2 2001/08/07 19:40:06 andreasjung Exp $\n"
+"$Id: ZopeSplitter.c,v 1.3 2001/10/29 17:42:51 andreasjung Exp $\n"
 ;
 
 
@@ -486,7 +486,7 @@ void
 initZopeSplitter(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("ZopeSplitter", Splitter_module_methods,
