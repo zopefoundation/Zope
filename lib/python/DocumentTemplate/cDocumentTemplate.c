@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.29 1999/08/30 17:54:01 brian Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.30 2000/01/04 15:59:18 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -876,7 +876,7 @@ static PyObject *
 validate(PyObject *self, PyObject *args)
 {
   PyObject *inst, *parent, *name, *value, *md, *__roles__, *i, *p;
-  char *cname;
+  char *cname=0;
   long ir;
 
   /* def validate(self, inst, parent, name, value, md): */
@@ -896,6 +896,15 @@ validate(PyObject *self, PyObject *args)
   /*
         if hasattr(value, '__roles__'): roles=value.__roles__
 	else:
+            
+            if (name[:5]=='func_' and
+	        type(parent) in (
+                types.MethodType, types.FunctionType,
+                type(DTMLMethod.validate) )
+                ):
+                # we don't want any function attributes
+                return 0
+
 	    if hasattr(parent,'__roles__'): roles=parent.__roles__
             elif hasattr(parent, 'aq_acquire'):
                 try: roles=parent.aq_acquire('__roles__')
@@ -912,6 +921,18 @@ validate(PyObject *self, PyObject *args)
   UNLESS(__roles__=PyObject_GetAttr(value,py___roles__))
     {
       PyErr_Clear();
+
+      if (
+	  (*cname=='f' && 
+	   cname[1]=='u' && cname[2]=='n' && cname[3]=='c' && cname[4]=='_')
+	  && 
+	  (PyECMethod_Check(parent) 
+	   || PyFunction_Check(parent)
+	   || PyMethod_Check(parent)
+	   )
+	  )
+	return PyInt_FromLong(0);
+
       UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
 	{
 	  PyErr_Clear();
@@ -1042,7 +1063,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.29 $";
+  char *rev="$Revision: 1.30 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
