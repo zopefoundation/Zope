@@ -139,6 +139,8 @@
       sort options. This calculated parameter allows you to calculate the
       list of sort options on the fly.
 
+      sort_expr -- This allows an expression to control sort order.
+
       reverse -- Reverse the sequence (may be combined with sort).  Note
       that this can cause a huge memory use in lazy activation instances. 
 
@@ -400,8 +402,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.47 2001/04/12 14:53:53 andreas Exp $'
-__version__='$Revision: 1.47 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.48 2001/04/13 19:31:42 brian Exp $'
+__version__='$Revision: 1.48 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
