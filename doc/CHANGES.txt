@@ -57,21 +57,9 @@ Zope Changes
       business/domain logic and then augmented with Zope web methods
       to provide a web interface.
 
-    Zope 2.0 Road-map
-
-      In short
- 
-        We expect to provide a stable Zope 2.0 release in
-        mid August.
-
-      Zope 2.0 releases
-
-        We expect to make two beta releases in early August 1999 followed
-        by a final release in mid August.
-
   Releases
 
-    Zope 2.0 beta 7 / final
+    Zope 2.0
 
       Features Added
 
@@ -96,6 +84,13 @@ Zope Changes
           place. The side effect is that in large list situations
           (with ZCatalog for example), sizable memory usage may
           result. 
+
+        - Missing values (as returned from SQL methods) were output as
+          empty strings by the DTML var tag, even when a numeric
+          format (e.g. "%5.3f") is used.  Using a numeric format with
+          a missing value should generate an error, unless the null
+          attribute is used. Also, the null attribute had no effect
+          when outputing missing values.
 
     Zope 2.0 beta 6
 
