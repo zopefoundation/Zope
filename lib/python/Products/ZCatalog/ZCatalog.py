@@ -592,7 +592,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         arguments. 
         """
 
-        return apply(self._catalog.searchResults, (REQUEST, used), kw)
+        return self._catalog.searchResults(REQUEST, used, **kw)
 
     __call__=searchResults
 
