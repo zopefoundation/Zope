@@ -23,7 +23,7 @@ import unittest
 import ZConfig
 import Zope.Startup
 from Zope.Startup import handlers
-from Zope.Startup import ZopeStarter
+from Zope.Startup import ZopeStarter, UnixZopeStarter
 
 from App.config import getConfiguration, setConfiguration
 
@@ -118,8 +118,8 @@ class ZopeStarterTestCase(unittest.TestCase):
               level blather
              </logfile>
            </eventlog>""")
-        starter = ZopeStarter(conf)
-        starter.setupStartupHandler()
+        starter = UnixZopeStarter(conf)
+        starter.setupInitialLogging()
 
         # startup handler should take on the level of the event log handler
         # with the lowest level
@@ -139,8 +139,8 @@ class ZopeStarterTestCase(unittest.TestCase):
               level info
              </logfile>
            </eventlog>""")
-        starter = ZopeStarter(conf)
-        starter.setupStartupHandler()
+        starter = UnixZopeStarter(conf)
+        starter.setupInitialLogging()
         self.failIfEqual(starter.startup_handler.stream, sys.stderr)
 
     def testSetupZServerThreads(self):
@@ -267,14 +267,12 @@ class ZopeStarterTestCase(unittest.TestCase):
            </logger>
            """)
         try:
-            starter = ZopeStarter(conf)
-            starter.setupStartupHandler()
+            starter = UnixZopeStarter(conf)
+            starter.setupInitialLogging()
             starter.info('hello')
-            starter.removeStartupHandler()
-            starter.setupConfiguredLoggers()
+            starter.setupFinalLogging()
             logger = logging.getLogger()
             self.assertEqual(logger.level, logging.INFO)
-            starter.flushStartupHandlerBuffer()
             l = open(os.path.join(TEMPNAME, 'event.log')).read()
             self.failUnless(l.find('hello') > -1)
             self.failUnless(os.path.exists(os.path.join(TEMPNAME, 'Z2.log')))

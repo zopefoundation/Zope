@@ -33,14 +33,17 @@ def start_zope(cfg):
         return
 
     check_python_version()
-    starter = ZopeStarter(cfg)
+    if sys.platform[:3].lower() == "win":
+        starter = WindowsZopeStarter(cfg)
+    else:
+        starter = UnixZopeStarter(cfg)
     starter.setupLocale()
     # we log events to the root logger, which is backed by a
     # "StartupHandler" log handler.  The "StartupHandler" outputs to
     # stderr but also buffers log messages.  When the "real" loggers
     # are set up, we flush accumulated messages in StartupHandler's
     # buffers to the real logger.
-    starter.setupStartupHandler()
+    starter.setupInitialLogging()
     starter.setupSecurityOptions()
     # Start ZServer servers before we drop privileges so we can bind to
     # "low" ports:
@@ -55,10 +58,8 @@ def start_zope(cfg):
     # emit a "ready" message in order to prevent the kinds of emails
     # to the Zope maillist in which people claim that Zope has "frozen"
     # after it has emitted ZServer messages.
-    starter.info('Ready to handle requests')
-    starter.removeStartupHandler()
-    starter.setupConfiguredLoggers()
-    starter.flushStartupHandlerBuffer()
+    logger.info('Ready to handle requests')
+    starter.setupFinalLogging()
 
     started = True
 
@@ -82,6 +83,8 @@ class ZopeStarter:
         self.cfg = cfg
         self.event_logger = logging.getLogger()
 
+    # XXX does anyone actually use these three?
+
     def info(self, msg):
         logger.info(msg)
 
@@ -91,13 +94,6 @@ class ZopeStarter:
     def error(self, msg):
         logger.error(msg)
 
-    def registerSignals(self):
-        if os.name == 'posix':
-            from Signals import Signals
-            Signals.registerZopeSignals([self.cfg.eventlog,
-                                         self.cfg.access,
-                                         self.cfg.trace])
-
     def setupSecurityOptions(self):
         import AccessControl
         AccessControl.setImplementation(
@@ -105,41 +101,6 @@ class ZopeStarter:
         AccessControl.setDefaultBehaviors(
             not self.cfg.skip_ownership_checking,
             not self.cfg.skip_authentication_checking)
-
-    def setupStartupHandler(self):
-        # set up our initial logging environment (log everything to stderr
-        # if we're not in debug mode).
-        from ZConfig.components.logger.loghandler import StartupHandler
-
-        if self.cfg.eventlog is not None:
-            # get the lowest handler level.  This is the effective level
-            # level at which which we will spew messages to the console
-            # during startup.
-            level = self.cfg.eventlog.getLowestHandlerLevel()
-        else:
-            level = logging.INFO
-
-        self.startup_handler = StartupHandler(sys.stderr)
-        self.startup_handler.setLevel(level)
-        formatter = logging.Formatter(
-            fmt='------\n%(asctime)s %(levelname)s %(name)s %(message)s',
-            datefmt='%Y-%m-%dT%H:%M:%S')
-        self.startup_handler.setFormatter(formatter)
-        if not self.cfg.debug_mode:
-            # prevent startup messages from going to stderr if we're not
-            # in debug mode
-            if os.path.exists('/dev/null'): # unix
-                devnull = '/dev/null'
-            else: # win32
-                devnull = 'nul:'
-            self.startup_handler = StartupHandler(open(devnull, 'w'))
-
-        # set up our event logger temporarily with a startup handler only
-        self.event_logger.handlers = []
-        self.event_logger.addHandler(self.startup_handler)
-        # set the initial logging level (this will be changed by the
-        # zconfig settings later)
-        self.event_logger.level = level
 
     def setupLocale(self):
         # set a locale if one has been specified in the config
@@ -198,10 +159,6 @@ class ZopeStarter:
     def dropPrivileges(self):
         return dropPrivileges(self.cfg)
 
-    def removeStartupHandler(self):
-        if self.startup_handler in self.event_logger.handlers:
-            self.event_logger.removeHandler(self.startup_handler)
-
     def setupConfiguredLoggers(self):
         if self.cfg.zserver_read_only_mode:
             # no log files written in read only mode
@@ -214,10 +171,6 @@ class ZopeStarter:
             self.cfg.access()
         if self.cfg.trace is not None:
             self.cfg.trace()
-
-    def flushStartupHandlerBuffer(self):
-        logger = logging.getLogger('event')
-        self.startup_handler.flushBufferTo(logger)
 
     def startZope(self):
         # Import Zope
@@ -275,6 +228,65 @@ class ZopeStarter:
                 os.unlink(self.cfg.lock_filename)
             except OSError:
                 pass
+
+
+class WindowsZopeStarter(ZopeStarter):
+
+    def registerSignals(self):
+        pass
+
+    def setupInitialLogging(self):
+        self.setupConfiguredLoggers()
+
+    def setupFinalLogging(self):
+        pass
+
+
+class UnixZopeStarter(ZopeStarter):
+
+    def registerSignals(self):
+        from Signals import Signals
+        Signals.registerZopeSignals([self.cfg.eventlog,
+                                     self.cfg.access,
+                                     self.cfg.trace])
+
+    def setupInitialLogging(self):
+        # set up our initial logging environment (log everything to stderr
+        # if we're not in debug mode).
+        from ZConfig.components.logger.loghandler import StartupHandler
+
+        if self.cfg.eventlog is not None:
+            # get the lowest handler level.  This is the effective level
+            # level at which which we will spew messages to the console
+            # during startup.
+            level = self.cfg.eventlog.getLowestHandlerLevel()
+        else:
+            level = logging.INFO
+
+        self.startup_handler = StartupHandler(sys.stderr)
+        self.startup_handler.setLevel(level)
+        formatter = logging.Formatter(
+            fmt='------\n%(asctime)s %(levelname)s %(name)s %(message)s',
+            datefmt='%Y-%m-%dT%H:%M:%S')
+        if not self.cfg.debug_mode:
+            # prevent startup messages from going to stderr if we're not
+            # in debug mode
+            self.startup_handler = StartupHandler(open('/dev/null', 'w'))
+        self.startup_handler.setFormatter(formatter)
+
+        # set up our event logger temporarily with a startup handler only
+        self.event_logger.handlers = []
+        self.event_logger.addHandler(self.startup_handler)
+        # set the initial logging level (this will be changed by the
+        # zconfig settings later)
+        self.event_logger.level = level
+
+    def setupFinalLogging(self):
+        if self.startup_handler in self.event_logger.handlers:
+            self.event_logger.removeHandler(self.startup_handler)
+        self.setupConfiguredLoggers()
+        logger = logging.getLogger('event')
+        self.startup_handler.flushBufferTo(logger)
 
 
 def check_python_version():
