@@ -368,6 +368,9 @@ def main(argv):
         opts, args = getopt.getopt(argv,'r:ebl:s:f:p:')
         filename,=args
     except: error(usage,1,1)
+
+    try: file=open(filename,'rb')
+    except: error('Coud not open %s' % filename,1,1)
     
     rpt=none
     fromEnd=0
@@ -390,7 +393,7 @@ def main(argv):
         elif o=='e': fromEnd=1
         elif o=='f':
             import FS
-            rpt=FS.FS(v).rpt
+            rpt=FS.FS(v, file).rpt
             
         elif o=='b': both=1
         elif o=='p':
@@ -402,8 +405,6 @@ def main(argv):
             print sys.path
         else: error('Unrecognized option: -%s' % o, 1)
 
-    try: file=open(filename,'rb')
-    except: error('Coud not open %s' % filename,1,1)
 
     _read_and_report(file, rpt, fromEnd, both, n, show)
 
