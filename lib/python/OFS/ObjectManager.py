@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.162 2003/02/11 17:17:06 fdrake Exp $"""
+$Id: ObjectManager.py,v 1.163 2003/02/11 21:06:28 fdrake Exp $"""
 
-__version__='$Revision: 1.162 $'[11:-2]
+__version__='$Revision: 1.163 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -523,10 +523,7 @@ class ObjectManager(
             raise BadRequestException, 'Invalid file name %s' % escape(file)
 
         cfg = getConfiguration()
-        instance_home = cfg.instancehome
-        zope_home = cfg.zopehome
-
-        for impath in (instance_home, zope_home):
+        for impath in (cfg.instancehome, cfg.zopehome):
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
@@ -537,9 +534,10 @@ class ObjectManager(
                                    set_owner=set_owner)
 
         if REQUEST is not None:
-            return self.manage_main(self, REQUEST,
+            return self.manage_main(
+                self, REQUEST,
                 manage_tabs_message='<em>%s</em> successfully imported' % id,
-                title = 'Object imported',
+                title='Object imported',
                 update_menu=1)
 
     def _importObjectFromFile(self, filepath, verify=1, set_owner=1):
