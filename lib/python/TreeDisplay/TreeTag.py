@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.30 1999/03/10 00:15:49 klm Exp $'
-__version__='$Revision: 1.30 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.31 1999/06/18 22:15:27 jim Exp $'
+__version__='$Revision: 1.31 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -187,7 +187,7 @@ def tpRender(self, md, section, args,
     if hasattr(self, idattr):
         id=getattr(self, idattr)
         if not simple_type(type(id)): id=id()            
-    elif hasattr(self, '_p_oid'): id=self._p_oid
+    elif hasattr(self, '_p_oid'): id=oid(self)
     else: id=pyid(self)
 
     try:
@@ -472,7 +472,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 if hasattr(item, idattr):
                     id=getattr(item, idattr)
                     if not simple_type(type(id)): id=id()
-                elif hasattr(item, '_p_oid'): id=item._p_oid
+                elif hasattr(item, '_p_oid'): id=oid(item)
                 else: id=pyid(item)
                 if len(sub)==1: sub.append([])
                 substate=sub[1]
@@ -633,7 +633,7 @@ def tpValuesIds(self, branches, args,
                     if hasattr(self, idattr):
                         id=getattr(self, idattr)
                         if not simple_type(type(id)): id=id()            
-                    elif hasattr(item, '_p_oid'): id=item._p_oid
+                    elif hasattr(item, '_p_oid'): id=oid(item)
                     else: id=pyid(item)
 
                     e=tpValuesIds(item, branches, args)
@@ -643,6 +643,10 @@ def tpValuesIds(self, branches, args,
             except: pass
     except: pass
     return r
+
+
+def oid(self):
+    return b2a_base64(str(self._p_oid))[:-1]
     
 
 #icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
