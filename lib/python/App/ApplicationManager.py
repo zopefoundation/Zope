@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -190,10 +190,6 @@ class ApplicationManager(Folder,CacheManager):
     def manage_app(self, URL2):
         """Return to the main management screen"""
         raise 'Redirect', URL2+'/manage'
-
-    def parentObject(self):
-        try:    return (self.aq_parent,)
-        except: return ()
 
     def process_time(self):
         s=int(time.time())-self.process_start   
