@@ -10,7 +10,7 @@
 The Control Panel provides access to system management functions,
 such as database and product management.  
 
-<FORM ACTION="manage_shutdown" METHOD="POST">
+<FORM ACTION="manage_shutdown" METHOD="POST" onSubmit="">
 
 <ul>
 <li><em>Zope</em> version: <dtml-var version_txt>
