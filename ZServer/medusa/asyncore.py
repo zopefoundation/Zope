@@ -53,7 +53,7 @@ import sys
 
 import os
 from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
-     ENOTCONN, ESHUTDOWN, EINTR, EISCONN
+     ENOTCONN, ESHUTDOWN, EINTR, EISCONN, EAGAIN
 
 try:
     socket_map
@@ -521,7 +521,15 @@ if os.name == 'posix':
             self.fd = fd
 
         def recv (self, *args):
-            return apply (os.read, (self.fd,)+args)
+            # NOTE: this is a difference from the Python 2.2 library
+            # version of asyncore.py. This prevents a hanging condition
+            # on Linux 2.2 based systems.
+            while 1:
+                try:
+                    return apply (os.read, (self.fd,)+args)
+                except exceptions.OSError, why:
+                    if why[0] != EAGAIN:
+                        raise
 
         def send (self, *args):
             return apply (os.write, (self.fd,)+args)
