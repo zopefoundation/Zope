@@ -13,7 +13,7 @@
 ##############################################################################
 """Test Bindings
 
-$Id: testBindings.py,v 1.5 2004/01/27 19:37:29 tseaver Exp $
+$Id: testBindings.py,v 1.6 2004/03/09 16:48:02 evan Exp $
 """
 
 import unittest
@@ -71,6 +71,8 @@ class RivilegedUser:
         return 1
 
 class FauxRoot(ObjectManager):
+    def getPhysicalPath(self):
+        return ('',)
     def __repr__(self):
         return '<FauxRoot>'
 
