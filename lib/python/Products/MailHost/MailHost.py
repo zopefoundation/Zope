@@ -12,8 +12,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.67 2002/01/15 04:31:24 jens Exp $"""
-__version__ = "$Revision: 1.67 $"[11:-2]
+$Id: MailHost.py,v 1.68 2002/01/15 04:45:13 jens Exp $"""
+__version__ = "$Revision: 1.68 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -70,10 +70,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.smtp_host = str( smtp_host )
         self.smtp_port = str( smtp_port )
 
+
     # staying for now... (backwards compatibility)
     def _init(self, smtp_host, smtp_port):
         self.smtp_host=smtp_host
         self.smtp_port=smtp_port
+
 
     security.declareProtected( 'Change configuration', 'manage_makeChanges' )
     def manage_makeChanges(self,title,smtp_host,smtp_port, REQUEST=None):
@@ -94,6 +96,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                                    , manage_tabs_message=msg
                                    )
     
+
     security.declareProtected( use_mailhost_services, 'sendTemplate' )
     def sendTemplate(trueself, self, messageTemplate, 
                      statusTemplate=None, mto=None, mfrom=None,
@@ -109,8 +112,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                       % requiredHeader
-        mailserver = SMTP(trueself.smtp_host, trueself.smtp_port)
-        mailserver.sendmail(headers['from'], headers['to'], messageText)
+
+        self._send( headers, messageText )
 
         if not statusTemplate: return "SEND OK"
 
@@ -119,6 +122,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             return stemplate(self, trueself.REQUEST)
         except:
             return "SEND OK"
+
 
     security.declareProtected( use_mailhost_services, 'send' )
     def send(self, messageText, mto=None, mfrom=None, subject=None,
@@ -148,8 +152,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        smtpserver = SMTP(self.smtp_host, self.smtp_port)
-        smtpserver.sendmail(headers['from'],headers['to'], messageText)
+
+        self._send( headers, messageText )
+
 
     security.declareProtected( use_mailhost_services, 'scheduledSend' )
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
@@ -175,15 +180,27 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        smtpserver = SMTP(self.smtp_host, self.smtp_port)
-        smtpserver.sendmail(headers['from'], headers['to'], messageText)
+
+        self._send( headers, messageText )
+
 
     security.declareProtected( use_mailhost_services, 'simple_send' )
     def simple_send(self, mto, mfrom, subject, body):
         body="from: %s\nto: %s\nsubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
-        mailserver = SMTP(self.smtp_host, self.smtp_port)
-        mailserver.sendmail(mfrom, mto, body)
+        headers = {}
+        headers['from'] = mfrom
+        headers['to'] = mto
+
+        self._send( headers, body )
+
+
+    security.declarePrivate( '_send' )
+    def _send( self, headers, body ):
+        """ Send the message """
+        smtpserver = SMTP( self.smtp_host, self.smtp_port )
+        smtpserver.sendmail( headers['from'], headers['to'], body )
+        smtpserver.quit()
 
         
 InitializeClass( MailBase )
