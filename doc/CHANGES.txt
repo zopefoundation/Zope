@@ -6,90 +6,106 @@ Zope Changes
 
     Features Added
 
-        - Python compiler in RestrictedPython brought in sync with
-          main distribution.  Made to be compatible with Python 2.2.
+      - New user management API for user folder objects was implemented.
 
-        - Added links in the "debugging information" control panel
-          for viewing the contents of the ZODB cache.
+        As of Zope 2.5, manage_addUser, manage_editUser and manage_delUsers
+        form the official API for user management. The old grotesque way of
+        using manage_users is now deprecated. 
 
-        - Added user password encryption capability, fulfilling the
-          needs described in the proposal at:
-          http://dev.zope.org/Wikis/DevSite/Proposals/EncryptedUserfolderPasswords
-          There is now a "properties" tab in user folders where you
-          can select whether passwords are stored encrypted.
+        The default implementation of these API methods simply call the
+        _doXXX versions of the methods that user folder authors have already
+        implemented, which means that these APIs will work for current user
+        folder implementations without any action on the part of the author.
 
-        - Locale support in STXNG has been broken (since 2.4.0)
+        User folder authors that implement the new manage_XXX API can get
+        rid of the old _doXXX versions of the methods, which are no longer
+        required (we only use them if the new api is not directly implemented).
+
+        API documentation for the User Folder API was also added to
+        the help system.
+
+      - Python compiler in RestrictedPython brought in sync with
+        main distribution.  Made to be compatible with Python 2.2.
+
+      - Added links in the "debugging information" control panel
+        for viewing the contents of the ZODB cache.
+
+      - Added user password encryption capability, fulfilling the
+        needs described in the proposal at:
+        http://dev.zope.org/Wikis/DevSite/Proposals/EncryptedUserfolderPasswords
+        There is now a "properties" tab in user folders where you
+        can select whether passwords are stored encrypted.
+
+      - Locale support in STXNG has been broken (since 2.4.0)
 
 
     Bugs fixed
 
-        - Collector #2532: ZCatalog.availableSplitters is now protected
-          by security mechanism.
+      - Collector #2532: ZCatalog.availableSplitters is now protected
+        by security mechanism.
 
-        - Collector #2412: a read-only FileStorage has not been closed
-          properly.
+      - Collector #2412: a read-only FileStorage has not been closed
+        properly.
 
-        - Collector #2390: Objects of type 'Help Image' were not properly
-          re-registered inside registerHelp().
+      - Collector #2390: Objects of type 'Help Image' were not properly
+        re-registered inside registerHelp().
 
-        - Fixed broken FTP download for larger files.
+      - Fixed broken FTP download for larger files.
 
-        - Collector # 2396: StructuredText did not allow URLs containing "%"
+      - Collector # 2396: StructuredText did not allow URLs containing "%"
 
-        - Collector # 2397: StructuredText could not handle underlined text
-          properly. Also <dtml-var stxdoc ftm=structured-text> will no longer
-          produce <html>..<body>  and </body>..</html>
+      - Collector # 2397: StructuredText could not handle underlined text
+        properly. Also <dtml-var stxdoc ftm=structured-text> will no longer
+        produce <html>..<body>  and </body>..</html>
 
-        - Collector #2438:  Using a slice operation like [30:] on a 
-          ZCatalog search result caused a MemoryError because 
-          the __getslice__ implementation used  range() instead
-          of xrange().
+      - Collector #2438:  Using a slice operation like [30:] on a 
+        ZCatalog search result caused a MemoryError because 
+        the __getslice__ implementation used  range() instead
+        of xrange().
 
-        - Collector #2423: Searching a FieldIndexes for documents
-          with a blank string has been broken.
+      - Collector #2423: Searching a FieldIndexes for documents
+        with a blank string has been broken.
 
-        - WebDAV Lockmanager was not working due to a Python 2.1 
-          incompatibility.
+      - WebDAV Lockmanager was not working due to a Python 2.1 
+        incompatibility.
 
-        - Collector #2482: A COPY operation through WebDAV on a locked
-          resource left the destination resource in a locked state
-          so any WebDAV client  was unable to unlock the destination 
-          object. Locks are now cleared from the destination object.
+      - Collector #2482: A COPY operation through WebDAV on a locked
+        resource left the destination resource in a locked state
+        so any WebDAV client  was unable to unlock the destination 
+        object. Locks are now cleared from the destination object.
 
-        - Error message AttributeError/_v_blocks when a DTMLfile is
-          not present or could not be read replaced by a more
-          informative message.
+      - Error message AttributeError/_v_blocks when a DTMLfile is
+        not present or could not be read replaced by a more
+        informative message.
 
-        - Collector #2497: SERVER_PROTOCOL variable is now compliant
-          with the CGI specification and looks like "HTTP/1.1" instead
-          of "1.1"
+      - Collector #2497: SERVER_PROTOCOL variable is now compliant
+        with the CGI specification and looks like "HTTP/1.1" instead
+        of "1.1"
 
-        - Creation of a TextIndex ignored the vocabulary setting.
+      - Creation of a TextIndex ignored the vocabulary setting.
 
-        - Fixed broken aquisition of vocabularies from a Catalog
-          by a TextIndex.
+      - Fixed broken aquisition of vocabularies from a Catalog
+        by a TextIndex.
 
-        - Collector #2504: level parameter has not been passed to HTMLClass
-          constructor
+      - Collector #2504: level parameter has not been passed to HTMLClass
+        constructor
 
-        - default for 'orphan' attribute of <dtml-in> is now 0 instead 3.
+      - default for 'orphan' attribute of <dtml-in> is now 0 instead 3.
 
-        - Fixed conflict resolution problem in BTrees (BTreeTemplace/
-          _p_resolveConflict)
+      - Fixed conflict resolution problem in BTrees (BTreeTemplace/
+        _p_resolveConflict)
 
-        - Collector #2524: Medusa sent "HTTP/None..." as response header when
-          then HTTP version could not be determined from the HTTP request.
-          Now sending "HTTP/1.0..."
+      - Collector #2524: Medusa sent "HTTP/None..." as response header when
+        then HTTP version could not be determined from the HTTP request.
+        Now sending "HTTP/1.0..."
 
-        - queries for the PathIndex can now specified as tuple (path,level).
-          the level parameter inside a query overrides the optional 
-          'level' parameter for a complete search request.
- 
-<<<<<<< CHANGES.txt
-        - Collector #2561: XXBucket.values() returned keys instead of values   
-=======
-        - Fixed the API docs for user objects.
->>>>>>> 1.359
+      - queries for the PathIndex can now specified as tuple (path,level).
+        the level parameter inside a query overrides the optional 
+        'level' parameter for a complete search request.
+
+      - Collector #2561: XXBucket.values() returned keys instead of values 
+
+      - Fixed the API docs for user objects.
    
 
     Zope 2.4 beta 2
