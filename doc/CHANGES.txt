@@ -50,6 +50,13 @@ Principia Changes
 
       - Added support for multiple cut and paste
 
+      - When adding image and file object's, the id may
+        be omitted, in which case the upload file name is 
+        used.
+
+      - When adding documents, a new "Add and Edit" submit button may be used
+        to immediately edit the document after it is added.
+
     Bugs Fixed
 
       - The folder objectItems method returned all items even when
