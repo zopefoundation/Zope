@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.5 1997/10/27 17:38:41 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.6 1997/10/28 21:50:01 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -82,28 +82,24 @@ class func_code:
 def _tm(m, tag):
     return m + tag and (' in %s' % tag)
 
-def validate(md, name, v):
-    if name[:1]=='_' or name[:6]=='manage': raise AttributeError, name
-    if hasattr(v,'func_code'):
-	roles=-1
-	if hasattr(v,'__roles__'): roles=v.__roles__
-	elif hasattr(v,'im_self'):
-	    inst=v.im_self
-	    if hasattr(inst,'__roles__'):
-		roles=inst.__roles__
-	    else:
-		while hasattr(inst, 'aq_parent'):
-		    inst=inst.aq_parent
-		    if hasattr(inst,'__roles__'):
-			roles=inst.__roles__
-			break
-	if roles is not None and roles != -1:
-	    raise AttributeError, name
-    return v
+def careful_getattr(inst, name, md):
+    if name[:1]!='_':
+	validate=md.validate
 
-def careful_getattr(md, inst, name):
-    return validate(md, name, getattr(inst,name))
-    
+	if validate is None: return getattr(inst, name)
+
+	if hasattr(inst,'acquire'): return inst.acquire(name, validate, md)
+
+	v=getattr(inst, name)
+	if validate(inst,inst,name,v,md): return v
+
+    raise AttributeError, name
+
+def careful_getitem(mapping, key, md):
+    v=mapping[key]
+    validate=md.validate
+    if validate is None or validate(mapping,mapping,key,v,md): return v
+    raise KeyError, key
 
 def name_param(params,tag='',expr=0):
     used=params.has_key
@@ -124,7 +120,8 @@ def name_param(params,tag='',expr=0):
 	expr=VSEval.Eval(name,
 			 __mul__=VSEval.careful_mul,
 			 __getattr__=careful_getattr,
-			 validate=validate)
+			 __getitem__=careful_getitem,
+			 )
 	return name, expr
 	
     raise ParseError, ('No name given', tag)
@@ -200,6 +197,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.6  1997/10/28 21:50:01  jim
+# Updated validation rules to use DT validation method.
+#
 # Revision 1.5  1997/10/27 17:38:41  jim
 # Added some new experimental validation machinery.
 # This is, still a work in progress.
