@@ -266,11 +266,9 @@ class TALCompiler(METALCompiler):
     # Overriding METAL method to compile TAL statements
     def compileElement(self, node):
         defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
-        repeat = node.getAttributeNS(ZOPE_TAL_NS, "repeat")
-        if defines or repeat:
+        if defines:
             self.emit("beginScope")
-            if defines:
-                self.emitDefines(defines)
+            self.emitDefines(defines)
             self.conditionalElement(node)
             self.emit("endScope")
         else:
@@ -332,9 +330,14 @@ class TALCompiler(METALCompiler):
         return 1
 
     def doRepeat(self, node, arg):
+        whitespace = self.unEmitNewlineWhitespace()
+        self.emit("beginScope")
         self.pushProgram()
+        if whitespace:
+            self.emitText(whitespace)
         self.emitElement(node)
         self.emitRepeat(arg)
+        self.emit("endScope")
         return 1
 
     def getAttributeReplacements(self, node):
