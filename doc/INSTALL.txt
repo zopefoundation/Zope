@@ -22,6 +22,10 @@ Building Zope:
   Notes:
   
   * You should be using Python 1.5.1 to run the build scripts.
+  * To build python extensions you need to have Python configuration
+    information available. If your Python comes from an RPM you may need
+    the python-devel RPM installed too. If you built Python from source
+    all the configuration information should already be there.
   * If you just want to use Zope components it's not necessary to build Zope
     but it's a good idea since it will compile Python C extensions for you.
 	
