@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.4 $ '[11:-2]
+__version__='$Revision: 1.5 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -196,7 +196,7 @@ Copyright (C) 1999 Digital Creations, Inc.
                 elif (opt[0] == '-e') or (opt[0] == '--encoding'):
                     encoding = opt[1]
                 elif (opt[0] == '-d') or (opt[0] == '--domains'):
-                    domains = opt[1]
+                    domains = ":" + opt[1]
 
             # Verify that we got what we need
             if not username or not password:
@@ -235,6 +235,7 @@ CLEARTEXT - no protection.
                     break
 
             domains = raw_input("Domain restrictions: ")
+            if domains: domains = ":" + domains
 
             access_file.write(username + ":" +
                       generate_passwd(password, encoding) +
