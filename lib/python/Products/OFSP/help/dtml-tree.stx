@@ -105,7 +105,7 @@ tree: Inserts a tree widget
       </dtml-tree>
 
     Display a tree rooted in another object, using a custom branches
-    method:: 
+    method::
 
       <dtml-tree expr="folder.object" branches="objectValues">
         Node id : <dtml-var getId>
