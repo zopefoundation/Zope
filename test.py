@@ -377,15 +377,19 @@ class PathInit:
         sys.path.insert(0, os.path.join(self.home, self.libdir))
         self.cwd = os.path.realpath(os.getcwd())
         # Hack again for external products.
-        global functional
-        kind = functional and "functional" or "unit"
         if libdir:
             self.libdir = os.path.realpath(os.path.join(self.cwd, libdir))
         else:
             self.libdir = os.path.realpath(os.path.join(self.cwd, self.libdir))
         if self.libdir not in sys.path:
             sys.path.insert(0, self.libdir)
-        print "Running %s tests from %s" % (kind, self.libdir)
+        # Determine where to look for tests
+        if test_dir:
+            self.testdir = os.path.abspath(os.path.join(self.cwd, test_dir))
+        else:
+            self.testdir = self.libdir
+        kind = functional and "functional" or "unit"
+        print "Running %s tests from %s" % (kind, self.testdir)
 
 def match(rx, s):
     if not rx:
@@ -470,11 +474,7 @@ class TestFileFinder:
 def find_tests(rx):
     global finder
     finder = TestFileFinder(pathinit.libdir)
-    if test_dir:
-        walkdir = os.path.abspath(os.path.join(pathinit.cwd, test_dir))
-    else:
-        walkdir = pathinit.libdir
-    walk_with_symlinks(walkdir, finder.visit, rx)
+    walk_with_symlinks(pathinit.testdir, finder.visit, rx)
     return finder.files
 
 def package_import(modname):
