@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -91,7 +91,7 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 		s=getattr(c, 'standard_error_message')
 		v=HTML.__call__(s, c, REQUEST, error_type=error_type,
 				error_value=error_value,
-				error_tb=error_tb,
+				error_tb=error_tb, error_traceback=error_tb,
 				error_message=error_message)
 	    except:
 		v='Sorry, an error occured'
