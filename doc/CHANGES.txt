@@ -15,6 +15,11 @@ Zope Changes
         - Permissions for manage_clone method were wrong, meaning that
           essentially only managers could use it.
 
+        - File paths that showed up in tracebacks reflected the paths the 
+          files had when they were compiled (at distribution build-time).
+          The compiled-in paths have been changed to be relative to the
+          Zope installation directory.
+
     Zope 1.9.0
 
       New Features
