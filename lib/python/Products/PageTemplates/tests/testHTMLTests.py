@@ -125,19 +125,21 @@ class HTMLTests(unittest.TestCase):
       self.folder.laf.write(open('input/TeeShopLAF.html').read())
 
       t = self.folder.t
-      t.write(open('input/TeeShop1.html').read())
-      expect = open('output/TeeShop1.html').read()
-      util.check_html(expect, t(getProducts=self.getProducts))      
+      t.write(open('input/TeeShop2.html').read())
+      expect = open('output/TeeShop2.html').read()
+      out = t(getProducts=self.getProducts)
+      util.check_html(expect, out)
       
+
    def check3(self):
       self.folder.laf.write(open('input/TeeShopLAF.html').read())
 
       t = self.folder.t
-      t.write(open('input/TeeShop2.html').read())
-      expect = open('output/TeeShop2.html').read()
-      util.check_html(expect, t(getProducts=self.getProducts))      
+      t.write(open('input/TeeShop1.html').read())
+      expect = open('output/TeeShop1.html').read()
+      out = t(getProducts=self.getProducts)
+      util.check_html(expect, out)
       
-
 def test_suite():
    return unittest.makeSuite(HTMLTests, 'check')
 
