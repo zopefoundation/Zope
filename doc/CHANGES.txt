@@ -75,6 +75,9 @@ Zope Changes
 
     Bugs:
 
+      - Fix for Collector #319: filtered_manage_options didn't
+        correctly filter tabs based on permission.
+
       - Made repr of an HTTPRequest.record eval'able as a dict (Collector
         #89).
 
