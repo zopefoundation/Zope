@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.39 2000/05/16 17:13:57 jim Exp $
+  $Id: ExtensionClass.c,v 1.40 2000/11/04 16:18:56 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.39 2000/05/16 17:13:57 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.40 2000/11/04 16:18:56 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -226,7 +226,8 @@ staticforward PyTypeObject PMethodType;
 
 #define PMETHOD(O) ((PMethod*)(O))
 
-
+static PyObject *
+bindPMethod(PMethod *m, PyObject *inst);
 
 static PyObject *
 #ifdef HAVE_STDARG_PROTOTYPES
@@ -600,7 +601,17 @@ CMethod_getattro(CMethod *self, PyObject *oname)
     {
       UNLESS(oname=Py_BuildValue("sO", self->name, oname)) return NULL;
       UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
-      r=PyObject_GetAttr(self->self, oname);
+      r=PyObject_GetAttr(OBJECT(self->self), py__class__);
+      if (r)
+	{
+	  ASSIGN(r, PyObject_GetAttr(r, oname));
+
+	  if (r)
+	    if (UnboundCMethod_Check(r))
+	      ASSIGN(r, (PyObject*)bindCMethod((CMethod*)r, self->self));
+	    else if (UnboundPMethod_Check(r))
+	      ASSIGN(r, bindPMethod((PMethod*)r, self->self));
+	}
       Py_DECREF(oname);
       return r;
     }
@@ -647,7 +658,7 @@ static PyTypeObject CMethodType = {
   (ternaryfunc)CMethod_call,	/*tp_call*/
   (reprfunc)0,			/*tp_str*/
   (getattrofunc)CMethod_getattro, 	/* tp_getattro */
-  (setattrofunc)CMethod_setattro, 	/* tp_setattro */
+  (setattrofunc)0 /*CMethod_setattro*/, 	/* tp_setattro */
   
   /* Space for future expansion */
   0L,0L,
@@ -902,7 +913,17 @@ PMethod_getattro(PMethod *self, PyObject *oname)
 	  Py_DECREF(myname);
 	  UNLESS(oname) return NULL;
 	  UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
-	  r=PyObject_GetAttr(self->self, oname);
+	  r=PyObject_GetAttr(OBJECT(self->self), py__class__);
+	  if (r)
+	    {
+	      ASSIGN(r, PyObject_GetAttr(r, oname));
+      
+	      if (r)
+		if (UnboundCMethod_Check(r))
+		  ASSIGN(r, (PyObject*)bindCMethod((CMethod*)r, self->self));
+		else if (UnboundPMethod_Check(r))
+		  ASSIGN(r, bindPMethod((PMethod*)r, self->self));
+	    }
 	  Py_DECREF(oname);
 	  return r;
 	}
@@ -970,7 +991,7 @@ static PyTypeObject PMethodType = {
   (ternaryfunc)PMethod_call,		/*tp_call*/
   (reprfunc)0,				/*tp_str*/
   (getattrofunc)PMethod_getattro,	/*tp_getattro*/
-  (setattrofunc)PMethod_setattro, 	/* tp_setattro */
+  (setattrofunc)0 /*PMethod_setattro*/, 	/* tp_setattro */
   
   /* Space for future expansion */
   0L,0L,
@@ -3500,7 +3521,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.39 $";
+  char *rev="$Revision: 1.40 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
