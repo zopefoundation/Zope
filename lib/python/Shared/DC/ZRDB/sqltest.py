@@ -127,7 +127,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.10 1999/08/26 17:59:36 jim Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.11 1999/09/22 17:57:57 petrilli Exp $'
 
 ############################################################################
 #     Copyright 
@@ -137,7 +137,7 @@ __rcs_id__='$Id: sqltest.py,v 1.10 1999/08/26 17:59:36 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -152,18 +152,26 @@ class SQLTest:
 
     def __init__(self, args):
         args = parse_params(args, name='', type=None, column=None,
-                            multiple=1, optional=1)
+                            multiple=1, optional=1, op=None)
         self.__name__ = name_param(args,'sqlvar')
         has_key=args.has_key
         if not has_key('type'):
-            raise ParseError, ('the type attribute is required', 'dtvar')
+            raise ParseError, ('the type attribute is required', 'sqltest')
         self.type=t=args['type']
         if not valid_type(t):
-            raise ParseError, ('invalid type, %s' % t, 'dtvar')
+            raise ParseError, ('invalid type, %s' % t, 'sqltest')
         if has_key('optional'): self.optional=args['optional']
         if has_key('multiple'): self.multiple=args['multiple']
         if has_key('column'): self.column=args['column']
         else: self.column=self.__name__
+
+        # Deal with optional operator specification
+        op = '='                        # Default
+        if has_key('op'):
+            op = args['op']
+            # Try to get it from the chart, otherwise use the one provided
+            op = comparison_operators.get(op, op)
+        self.op = op
 
     def render(self, md):
         name=self.__name__
@@ -215,8 +223,12 @@ class SQLTest:
         if len(vs) > 1:
             vs=join(map(str,vs),', ')
             return "%s in (%s)" % (self.column,vs)
-        return "%s=%s" % (self.column,vs[0])
+        return "%s %s %s" % (self.column, self.op, vs[0])
 
     __call__=render
 
 valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
+
+comparison_operators = { 'eq': '=', 'ne': '<>',
+                         'lt': '<', 'le': '<=', 'lte': '<=',
+                         'gt': '>', 'ge': '>=', 'gte': '>=' }
