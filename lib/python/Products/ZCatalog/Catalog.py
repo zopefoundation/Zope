@@ -11,26 +11,26 @@
 #
 ##############################################################################
 
-from Persistence import Persistent
-import Acquisition
-import ExtensionClass
-from MultiMapping import MultiMapping
-import Record
-from Missing import MV
+import types
 import logging
-
-from Lazy import LazyMap, LazyFilter, LazyCat, LazyValues
-from CatalogBrains import AbstractCatalogBrain, NoBrainer
-from BTrees.IIBTree import intersection, weightedIntersection, IISet
-from BTrees.OIBTree import OIBTree
-from BTrees.IOBTree import IOBTree
-import BTrees.Length
-
-import time, sys, types
 from bisect import bisect
 from random import randint
 
+import Acquisition
+import ExtensionClass
+from Missing import MV
+from Persistence import Persistent
+
+import BTrees.Length
+from BTrees.IIBTree import intersection, weightedIntersection, IISet
+from BTrees.OIBTree import OIBTree
+from BTrees.IOBTree import IOBTree
+from Lazy import LazyMap, LazyCat, LazyValues
+from CatalogBrains import AbstractCatalogBrain, NoBrainer
+
+
 LOG = logging.getLogger('Zope.ZCatalog')
+
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
@@ -278,7 +278,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         indexes = self.indexes
 
-        if isinstance(index_type, types.StringType):
+        if isinstance(index_type, 'str'):
             raise TypeError,"""Catalog addIndex now requires the index type to
             be resolved prior to adding; create the proper index in the caller."""
 
@@ -755,7 +755,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         reverse = 0
         if sort_index is not None:
             order = self._get_sort_attr("order", args)
-            if (isinstance(order, types.StringType) and
+            if (isinstance(order, 'str') and
                 order.lower() in ('reverse', 'descending')):
                 reverse = 1
         # Perform searches with indexes and sort_index

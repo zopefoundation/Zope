@@ -14,20 +14,15 @@
 """$Id$
 """
 
-from  Globals import DTMLFile, InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.Permissions import delete_objects, manage_zcatalog_indexes
-import Globals
-from OFS.Folder import Folder
-from OFS.FindSupport import FindSupport
-from OFS.History import Historical
-from OFS.SimpleItem import SimpleItem
-from OFS.ObjectManager import ObjectManager, IFAwareObjectManager
-
-import os, sys, time 
 
 from Acquisition import Implicit
 from Persistence import Persistent
+from Globals import DTMLFile, InitializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.Permissions import manage_zcatalog_indexes
+from OFS.Folder import Folder
+from OFS.SimpleItem import SimpleItem
+from OFS.ObjectManager import IFAwareObjectManager
 
 from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 

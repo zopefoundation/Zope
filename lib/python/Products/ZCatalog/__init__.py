@@ -13,7 +13,7 @@
 
 """ZCatalog product"""
 
-import ZCatalog, Catalog, CatalogAwareness, CatalogPathAwareness, ZClasses
+import ZCatalog, CatalogAwareness, CatalogPathAwareness
 from Products.PluginIndexes.TextIndex import Vocabulary
 from ZClasses import createZClassForBase
 

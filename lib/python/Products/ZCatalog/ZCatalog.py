@@ -15,6 +15,8 @@
 $Id$
 """
 
+import urllib, time, sys, string,logging
+
 from Globals import DTMLFile, MessageDialog
 import Globals
 
@@ -35,8 +37,6 @@ from ZODB.POSException import ConflictError
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
-import urllib, time, sys
-import string,logging
 from IZCatalog import IZCatalog
 from ProgressHandler import ZLogHandler
 

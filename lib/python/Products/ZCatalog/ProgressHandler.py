@@ -26,14 +26,14 @@ class IProgressHandler(Interface):
     """
 
     def init(ident, max):
-        """ Called add the start of the long running process.
+        """ Called at the start of the long running process.
 
             'ident' -- a string identifying the operation
-            'max' -- maximum number of objects to be processed
+            'max' -- maximum number of objects to be processed (int)
         """ 
 
     def finish():
-        """ Called up terminiation """
+        """ Called up termination """
 
     def report(current, *args, **kw):
         """ Called for every iteration.
@@ -59,7 +59,7 @@ class StdoutHandler:
         self._max = max
         self._start = time.time()
         self.fp = sys.stdout
-        self.output('Process started')
+        self.output('Process started (%d objects to go)' % self._max)
 
     def finish(self):
         self.output('Process terminated. Duration: %0.2f seconds' % \
