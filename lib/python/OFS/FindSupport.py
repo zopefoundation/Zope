@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -170,7 +170,7 @@ class FindSupport(ExtensionClass.Base):
             else: bs=ob
 
             if (
-                (not obj_ids or absattr(bs.id) in obj_ids)
+                (not obj_ids or absattr(bs.getId()) in obj_ids)
                 and
                 (not obj_metatypes or (hasattr(bs, 'meta_type') and
                  bs.meta_type in obj_metatypes))
@@ -262,7 +262,7 @@ class FindSupport(ExtensionClass.Base):
             else: bs=ob
 
             if (
-                (not obj_ids or absattr(bs.id) in obj_ids)
+                (not obj_ids or absattr(bs.getId()) in obj_ids)
                 and
                 (not obj_metatypes or (hasattr(bs, 'meta_type') and
                  bs.meta_type in obj_metatypes))

@@ -84,8 +84,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.4 2000/08/15 17:52:53 evan Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Traversable.py,v 1.5 2000/09/05 20:52:47 brian Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 import Acquisition
@@ -128,7 +128,7 @@ class Traversable:
         later, for example in a copy/paste operation.  getPhysicalRoot()
         and getPhysicalPath() are designed to operate together.
         '''
-        path = (self.id,)
+        path = (self.getId(),)
         
         p = getattr(self,'aq_inner', None)
         if p is not None: 

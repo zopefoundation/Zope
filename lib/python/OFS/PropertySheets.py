@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -110,7 +110,7 @@ class View(App.Management.Tabs, Base):
         '''
         RESPONSE.redirect(URL1+'/manage')
 
-    def tpURL(self): return self.id
+    def tpURL(self): return self.getId()
         
     def manage_options(self):
         """Return a manage option data structure for me instance
@@ -188,7 +188,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # space identifier.
         self.id=id
         self._md=md or {}
-        
+
+    def getId(self):
+        return self.id
+
     def xml_namespace(self):
         # Return a namespace string usable as an xml namespace
         # for this property set.
@@ -630,7 +633,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
     def __bobo_traverse__(self, REQUEST, name=None):
         for propset in self.__propsets__():
-            if propset.id==name:
+            if propset.getId()==name:
                 return propset.__of__(self)
         return getattr(self, name)
 
@@ -653,7 +656,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         
     def get(self, name, default=None):
         for propset in self.__propsets__():
-            if propset.id==name or propset.xml_namespace()==name:
+            if propset.getId()==name or propset.xml_namespace()==name:
                 return propset.__of__(self)
         return default
 
@@ -672,7 +675,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     def delPropertySheet(self, name):
         result=[]
         for propset in self.aq_parent.__propsets__:
-            if propset.id != name and  propset.xml_namespace() != name:
+            if propset.getId() != name and  propset.xml_namespace() != name:
                 result.append(propset)
         self.parent.__propsets__=tuple(result)
         

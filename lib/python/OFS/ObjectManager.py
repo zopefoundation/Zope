@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.108 2000/08/17 20:17:24 shane Exp $"""
+$Id: ObjectManager.py,v 1.109 2000/09/05 20:52:47 brian Exp $"""
 
-__version__='$Revision: 1.108 $'[11:-2]
+__version__='$Revision: 1.109 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -483,8 +483,7 @@ class ObjectManager(
                             RESPONSE=None):
         """Exports an object to a file and returns that file."""        
         if not id:
-            id=self.id
-            if callable(id): id=id()
+            id=self.getId()
             ob=self
         else: ob=self._getOb(id)
 
@@ -530,8 +529,7 @@ class ObjectManager(
         ob=connection.importFile(
             file, customImporters=customImporters)
         if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
-        id=ob.id
-        if hasattr(id, 'im_func'): id=id()
+        id=ob.getId()
         self._setObject(id, ob, set_owner=set_owner)
 
         # try to make ownership implicit if possible in the context
@@ -619,38 +617,41 @@ class ObjectManager(
 
 Globals.default__class_init__(ObjectManager)
 
-class PUTer(Acquisition.Explicit):
-    """Class to support the HTTP PUT protocol."""
 
-    def __init__(self, parent, id):
-        self.id=id
-        self.__parent__=parent
-        self.__roles__ =parent.PUT__roles__
+## This isnt used anymore - NullResource now handles PUTs.
+
+## class PUTer(Acquisition.Explicit):
+##     """Class to support the HTTP PUT protocol."""
+
+##     def __init__(self, parent, id):
+##         self.id=id
+##         self.__parent__=parent
+##         self.__roles__ =parent.PUT__roles__
         
-    def PUT(self, REQUEST, RESPONSE):
-        """Adds a document, image or file to the folder when a PUT
-        request is received."""
-        name=self.id
-        type=REQUEST.get_header('content-type', None)
-        body=REQUEST.get('BODY', '')
-        if type is None:
-            type, enc=mimetypes.guess_type(name)
-        if type is None:
-            if content_types.find_binary(body) >= 0:
-                type='application/octet-stream'
-            else: type=content_types.text_type(body)
-        type=lower(type)
-        if type in ('text/html', 'text/xml', 'text/plain'):
-            self.__parent__.manage_addDTMLDocument(name, '', body)
-        elif type[:6]=='image/':
-            ob=Image(name, '', body, content_type=type)
-            self.__parent__._setObject(name, ob)
-        else:
-            ob=File(name, '', body, content_type=type)
-            self.__parent__._setObject(name, ob)
-        RESPONSE.setStatus(201)
-        RESPONSE.setBody('')
-        return RESPONSE
+##     def PUT(self, REQUEST, RESPONSE):
+##         """Adds a document, image or file to the folder when a PUT
+##         request is received."""
+##         name=self.id
+##         type=REQUEST.get_header('content-type', None)
+##         body=REQUEST.get('BODY', '')
+##         if type is None:
+##             type, enc=mimetypes.guess_type(name)
+##         if type is None:
+##             if content_types.find_binary(body) >= 0:
+##                 type='application/octet-stream'
+##             else: type=content_types.text_type(body)
+##         type=lower(type)
+##         if type in ('text/html', 'text/xml', 'text/plain'):
+##             self.__parent__.manage_addDTMLDocument(name, '', body)
+##         elif type[:6]=='image/':
+##             ob=Image(name, '', body, content_type=type)
+##             self.__parent__._setObject(name, ob)
+##         else:
+##             ob=File(name, '', body, content_type=type)
+##             self.__parent__._setObject(name, ob)
+##         RESPONSE.setStatus(201)
+##         RESPONSE.setBody('')
+##         return RESPONSE
 
-    def __str__(self):
-        return self.id
+##     def __str__(self):
+##         return self.id

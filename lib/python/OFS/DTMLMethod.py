@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -156,7 +156,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
         Response, and key word arguments."""
-        kw['document_id']   =self.id
+        kw['document_id']   =self.getId()
         kw['document_title']=self.title
 
         security=getSecurityManager()
@@ -180,7 +180,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
             if self.__dict__.has_key('content_type'):
                 c=self.content_type
             else:
-                c, e=guess_content_type(self.__name__, r)
+                c, e=guess_content_type(self.getId(), r)
             RESPONSE.setHeader('Content-Type', c)
         return decapitate(r, RESPONSE)
 

@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.78 2000/06/12 19:49:48 shane Exp $'''
-__version__='$Revision: 1.78 $'[11:-2]
+$Id: SimpleItem.py,v 1.79 2000/09/05 20:52:47 brian Exp $'''
+__version__='$Revision: 1.79 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -123,12 +123,25 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     def manage_beforeDelete(self, item, container): pass
     def manage_afterClone(self, item): pass
 
-    # The name of this object and the name used to traverse to thie
-    # object in a URL:
+    # Direct use of the 'id' attribute is deprecated - use getId()
     id=''
 
+    getId__roles__=None
+    def getId(self):
+        """Return the id of the object as a string. This method
+           should be used in preference to accessing an id attribute
+           of an object directly. The getId method is public."""
+        name=getattr(self, 'id', None)
+        if callable(name):
+            return name()
+        if name is not None:
+            return name
+        if hasattr(self, '__name__'):
+            return self.__name__
+        raise AttributeError, 'This object has no id'
+
     # Alias id to __name__, which will make tracebacks a good bit nicer:
-    __name__=ComputedAttribute(lambda self: self.id)
+    __name__=ComputedAttribute(lambda self: self.getId())
 
     # Name, relative to SOFTWARE_URL of icon used to display item
     # in folder listings.
@@ -164,10 +177,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         if callable(title):
             title=title()
         if title: return title
-        id=self.id
-        if callable(id):
-            id=id()
-        return id
+        return self.getId()
 
     def title_and_id(self):
         """
@@ -178,9 +188,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         title=self.title
         if callable(title):
             title=title()
-        id=self.id
-        if callable(id):
-            id=id()
+        id = self.getId()
         return title and ("%s (%s)" % (title,id)) or id
     
     def this(self):
@@ -189,9 +197,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
 
     def tpURL(self):
         # My URL as used by tree tag
-        url=self.id
-        if hasattr(url,'im_func'): url=url()
-        return url
+        return self.getId()
 
     def tpValues(self):
         # My sub-objects as used by the tree tag
@@ -326,8 +332,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             ob=ob.aq_parent
             
         stat=marshal.loads(self.manage_FTPstat(REQUEST))
-        if callable(self.id): id=self.id()
-        else: id=self.id
+        id = self.getId()
         return marshal.dumps((id,stat))
 
     def __len__(self):

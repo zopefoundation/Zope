@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -207,7 +207,7 @@ class CopyContainer(ExtensionClass.Base):
             # Copy operation
             for ob in oblist:
                 if not ob.cb_isCopyable():
-                    raise CopyError, eNotSupported % absattr(ob.id)
+                    raise CopyError, eNotSupported % ob.getId()
                 try:    ob._notifyOfCopyTo(self, op=0)
                 except: raise CopyError, MessageDialog(
                     title='Copy Error',
@@ -215,7 +215,7 @@ class CopyContainer(ExtensionClass.Base):
                     action ='manage_main')
                 ob=ob._getCopy(self)
                 ob.manage_afterClone(ob)
-                id=self._get_id(absattr(ob.id))
+                id=self._get_id(ob.getId())
                 ob._setId(id)
                 self._setObject(id, ob)
 
@@ -226,7 +226,7 @@ class CopyContainer(ExtensionClass.Base):
         if op==1:
             # Move operation
             for ob in oblist:
-                id=absattr(ob.id)
+                id=ob.getId()
                 if not ob.cb_isMoveable():
                     raise CopyError, eNotSupported % id
                 try:    ob._notifyOfCopyTo(self, op=1)
@@ -312,7 +312,7 @@ class CopyContainer(ExtensionClass.Base):
     def manage_clone(self, ob, id, REQUEST=None):
         # Clone an object, creating a new object with the given id.
         if not ob.cb_isCopyable():
-            raise CopyError, eNotSupported % absattr(ob.id)            
+            raise CopyError, eNotSupported % ob.getId()
         try: self._checkId(id)
         except: raise CopyError, MessageDialog(
                       title='Invalid Id',

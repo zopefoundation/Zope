@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -158,7 +158,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
         Response, and key word arguments."""
-        kw['document_id']   =self.id
+        kw['document_id']   =self.getId()
         kw['document_title']=self.title
         if hasattr(self, 'aq_explicit'):
             bself=self.aq_explicit
