@@ -378,12 +378,6 @@ class PathInit:
         if self.libdir not in sys.path:
             sys.path.insert(0, self.libdir)
         print "Running %s tests from %s" % (kind, self.libdir)
-        # Make sure functional tests find ftesting.zcml
-        if functional:
-            config_file = 'ftesting.zcml'
-            print "Parsing %s" % config_file
-            from zope.testing.functional import FunctionalTestSetup
-            FunctionalTestSetup(config_file)
 
 def match(rx, s):
     if not rx:
