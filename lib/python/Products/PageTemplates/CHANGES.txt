@@ -4,15 +4,9 @@ Page Template changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.3.2
+    Version 1.3.3
 
       Features Added
 
-        - Adopted Zope-style CHANGES.txt and HISTORY.txt
-        - Improved execution performance
-        - nocall: paths are back in.
-
       Bugs Fixed
 
-        - TALES expressions let any string exception through, not just
-          Redirect and Unauthorized.
