@@ -353,6 +353,10 @@ class TALInterpreter:
         value = self.engine.evaluateValue(expr)
         self.engine.setGlobal(name, value)
 
+    def do_tagDict(self, dict):
+        if self.tal:
+            self.engine.setLocal("tag", dict)
+
     def do_insertText(self, expr, block):
         if not self.tal:
             self.interpret(block)
