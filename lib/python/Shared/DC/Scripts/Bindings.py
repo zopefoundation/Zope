@@ -179,7 +179,7 @@ class Bindings:
         path = request['TraversalRequestNameStack']
         names = self.getBindingAssignments()
         if (not names.isNameAssigned('name_subpath') or
-            (path and hasattr(self.aq_explicit, path[-1])) ):
+            (path and hasattr(self.aq_base, path[-1])) ):
             return
         subpath = path[:]
         path[:] = []
