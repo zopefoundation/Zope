@@ -22,9 +22,10 @@ from bsddb3 import db
 # BaseStorage provides primitives for lock acquisition and release,
 # abortVersion(), commitVersion() and a host of other methods, some of which
 # are overridden here, some of which are not.
+from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.3 $
+# $Revision: 1.4 $
 __version__ = '0.1'
 
 
@@ -146,21 +147,6 @@ class BerkeleyBase(BaseStorage):
         """Return the size of the database."""
         # TBD: this is expensive to calculate and many not be necessary.
         return 0
-
-    def tpc_vote(self, transaction):
-        # BAW: This wrapper framework should probably be in BaseStorage's
-        # tpc_vote()
-        if transaction is not self._transaction:
-            raise POSException.StorageTransactionError(self, transaction)
-
-        self._lock_acquire()
-        try:
-            self._vote(transaction)
-        finally:
-            self._lock_release()
-
-    def _vote(self, transaction):
-        pass
 
     def _finish(self, tid, user, desc, ext):
         """Called from BaseStorage.tpc_finish(), this commits the underlying
