@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.2 1997/09/25 21:03:50 brian Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Undo.py,v 1.3 1997/10/23 17:43:27 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -47,6 +47,7 @@ class UndoSupport:
         except: trans_info=[]
 
 	for info in trans_info:
+	    while len(info) < 4: info.append('')
   	    [path, user] = (split(info[2],' ')+h)[:2]
 	    add(
 		{'pos': info[0],
@@ -78,6 +79,9 @@ class UndoSupport:
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.3  1997/10/23 17:43:27  jim
+# Added fix to cover certain unusual situations.
+#
 # Revision 1.2  1997/09/25 21:03:50  brian
 # Fixed bug
 #
