@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.23 1998/04/10 15:58:50 brian Exp $'
-__version__='$Revision: 1.23 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.24 1998/07/23 14:03:08 jim Exp $'
+__version__='$Revision: 1.24 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -35,7 +35,12 @@ class Tree:
 			  expand=None, leaves=None,
 			  header=None, footer=None,
 			  branches=None, branches_expr=None,
-			  sort=None, skip_unauthorized=1)
+			  sort=None, skip_unauthorized=1,
+                          id=None, single=1, url=None,
+                          # opened_decoration=None,
+                          # closed_decoration=None,
+                          # childless_decoration=None,
+                          assume_children=1)
 	has_key=args.has_key
 
 	if has_key('name'): name=args['name']
@@ -49,6 +54,11 @@ class Tree:
 	    args['branches_expr']=VSEval.Eval(
 		args['branches_expr'], expr_globals).eval
 	elif not has_key('branches'): args['branches']='tpValues'
+
+        if not has_key('id'): args['id']='tpId'
+        if not has_key('url'): args['url']='tpURL'
+        if not has_key('childless_decoration'):
+            args['childless_decoration']=''
 	
 	self.__name__ = name
 	self.section=section.blocks
@@ -74,7 +84,8 @@ String.commands['tree']=Tree
 
 pyid=id # Copy builtin
 
-def tpRender(self, md, section, args):
+def tpRender(self, md, section, args,
+             simple_type={type(''):0, type(1):0, type(1.0):0}.has_key):
     """Render data organized as a tree.
 
     We keep track of open nodes using a cookie.  The cookie stored the
@@ -97,7 +108,10 @@ def tpRender(self, md, section, args):
 
     data=[]
 
-    if hasattr(self, 'tpId'): id=self.tpId()
+    idattr=args['id']
+    if hasattr(self, idattr):
+        id=getattr(self, idattr)
+        if not simple_type(type(id)): id=id()            
     elif hasattr(self, '_p_oid'): id=self._p_oid
     else: id=pyid(self)
 
@@ -118,7 +132,7 @@ def tpRender(self, md, section, args):
 	if md.has_key('collapse_all'):
 	    state=[id,[]],
 	elif md.has_key('expand_all'):
-	    state=[id, tpValuesIds(self, args['branches'])],
+	    state=[id, tpValuesIds(self, args['branches'], args)],
 	else:
 	    if md.has_key('tree-s'):
 		state=md['tree-s']
@@ -156,7 +170,7 @@ def tpRender(self, md, section, args):
 		       section,md,treeData, level, args)
     finally: md._pop(2)
 
-    if state is substate:
+    if state is substate and not (args.has_key('single') and args['single']):
 	state=state or ([id],)
 	state=encode_seq(state)
 	md['RESPONSE'].setCookie('tree-s',state)
@@ -164,73 +178,92 @@ def tpRender(self, md, section, args):
     return join(data,'')
 
 def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
-                  colspan, section, md, treeData, level=0, args=None):
+                  colspan, section, md, treeData, level=0, args=None,
+                  simple_type={type(''):0, type(1):0, type(1.0):0}.has_key,
+                  ):
     "Render a tree as a table"
 
     have_arg=args.has_key
+    exp=0
 
     if level >= 0:
-	tpUrl=self.tpURL()
-	url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
-	root_url = root_url or tpUrl
+        urlattr=args['url']
+        if urlattr and hasattr(self, urlattr):
+            tpUrl=getattr(self, urlattr)
+            if not simple_type(type(tpUrl)): tpUrl=tpUrl()            
+            url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
+            root_url = root_url or tpUrl
 
     treeData['tree-item-url']=url
     treeData['tree-level']=level
     treeData['tree-item-expanded']=0
+    idattr=args['id']
 
-    exp=0
-    sub=None
     output=data.append
-    script=md['SCRIPT_NAME']
 
-    validate=md.validate
-    if have_arg('branches') and hasattr(self, args['branches']):
-	if validate is None or not hasattr(self, 'aq_acquire'):
-	    items=getattr(self, args['branches'])()
-	else:
-	    items=self.aq_acquire(args['branches'],validate,md)()
-    elif have_arg('branches_expr'):
-	items=args['branches_expr'](md)
-    else:
-	items=None
+    items=None
+    if (have_arg('assume_children') and args['assume_children']
+        and substate is not state):
+        # We should not compute children unless we have to.
+        # See if we've been asked to expand our children.
+        for i in range(len(substate)):
+            sub=substate[i]
+            if sub[0]==id:
+                exp=i+1
+                break
+        if not exp: items=1
 
-    if items is not None and validate is not None:
-	unauth=[]
-	index=0
-	for i in items:
-	    try: v=validate(items,items,index,i,md)
-	    except: v=0
-	    if not v: unauth.append(index)
-	    index=index+1
+    if items is None:
+        validate=md.validate
+        if have_arg('branches') and hasattr(self, args['branches']):
+            if validate is None or not hasattr(self, 'aq_acquire'):
+                items=getattr(self, args['branches'])
+            else:
+                items=self.aq_acquire(args['branches'],validate,md)
+            items=items()
+        elif have_arg('branches_expr'):
+            items=args['branches_expr'](md)
 
-	if unauth:
-	    if have_arg('skip_unauthorized') and args['skip_unauthorized']:
-		items=list(items)
-		unauth.reverse()
-		for i in unauth: del items[i]
-	    else:
-		raise ValidationError, unauth
+        if not items and have_arg('leaves'): items=1
 
-    if not items and have_arg('leaves'): items=1
+    if items and items != 1:
 
-    if (args.has_key('sort')) and (items is not None) and (items != 1):
-	# Faster/less mem in-place sort
-	if type(items)==type(()):
-	    items=list(items)
-	sort=args['sort']
-	size=range(len(items))
-	for i in size:
-	    v=items[i]
-	    k=getattr(v,sort)
-	    try:    k=k()
-	    except: pass
-	    items[i]=(k,v)
-	items.sort()
-	for i in size:
-	    items[i]=items[i][1]
+        if validate is not None:
+            unauth=[]
+            index=0
+            for i in items:
+                try: v=validate(items,items,index,i,md)
+                except: v=0
+                if not v: unauth.append(index)
+                index=index+1
+
+            if unauth:
+                if have_arg('skip_unauthorized') and args['skip_unauthorized']:
+                    items=list(items)
+                    unauth.reverse()
+                    for i in unauth: del items[i]
+                else:
+                    raise ValidationError, unauth
+
+        if have_arg('sort'):
+            # Faster/less mem in-place sort
+            if type(items)==type(()):
+                items=list(items)
+            sort=args['sort']
+            size=range(len(items))
+            for i in size:
+                v=items[i]
+                k=getattr(v,sort)
+                try:    k=k()
+                except: pass
+                items[i]=(k,v)
+            items.sort()
+            for i in size:
+                items[i]=items[i][1]
 
     diff.append(id)
 
+    sub=None
     if substate is state:
 	output('<TABLE CELLSPACING="0">\n')
 	sub=substate[0]
@@ -263,6 +296,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	    s=translate(s, tplus)
 	    ####################################
 
+            script=md['SCRIPT_NAME']
 	    if exp:
 		treeData['tree-item-expanded']=1
 		output('<A NAME="%s">'
@@ -284,7 +318,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     
 	# add item text
 	dataspan=colspan-level
-	output('<TD%s%s VALIGN="TOP">' %
+	output('<TD%s%s VALIGN="TOP" ALLIGN="LEFT">' %
 	       ((dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''),
 	       (have_arg('nowrap') and args['nowrap'] and ' NOWRAP' or ''))
 	       )
@@ -318,24 +352,25 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	    
 	if items==1:
 	    # leaves
-	    doc=args['leaves']
-	    if md.has_key(doc): doc=md.getitem(doc,0)
-	    else: doc=None
-	    if doc is not None:
-		treeData['-tree-substate-']=sub
-		treeData['tree-level']=level
-		md._push(treeData)
-		try: output(doc(
-		    None,md,
-		    standard_html_header=(
-			'<TR>%s<TD WIDTH="16"></TD>'
-			'<TD%s VALIGN="TOP">'
-			% (h,
-			   (dataspan > 1 and
-			    (' COLSPAN="%s"' % dataspan) or ''))),
-		    standard_html_footer='</TD></TR>',
-		    ))
-	        finally: md._pop(1)
+            if have_arg['leaves']:
+                doc=args['leaves']
+                if md.has_key(doc): doc=md.getitem(doc,0)
+                else: doc=None
+                if doc is not None:
+                    treeData['-tree-substate-']=sub
+                    treeData['tree-level']=level
+                    md._push(treeData)
+                    try: output(doc(
+                        None,md,
+                        standard_html_header=(
+                            '<TR>%s<TD WIDTH="16"></TD>'
+                            '<TD%s VALIGN="TOP">'
+                            % (h,
+                               (dataspan > 1 and
+                                (' COLSPAN="%s"' % dataspan) or ''))),
+                        standard_html_footer='</TD></TR>',
+                        ))
+                    finally: md._pop(1)
 	elif have_arg('expand'):
 	    doc=args['expand']
 	    if md.has_key(doc): doc=md.getitem(doc,0)
@@ -359,7 +394,9 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	    __traceback_info__=sub, args, state, substate
 	    ids={}
 	    for item in items:
-		if hasattr(item, 'tpId'): id=item.tpId()
+                if hasattr(item, idattr):
+                    id=getattr(item, idattr)
+                    if not simple_type(type(id)): id=id()
 		elif hasattr(item, '_p_oid'): id=item._p_oid
 		else: id=pyid(item)
 		if len(sub)==1: sub.append([])
@@ -503,11 +540,14 @@ def tpStateLevel(state, level=0):
         else: level=max(level,1)
     return level
 
-def tpValuesIds(self, branches):
+def tpValuesIds(self, branches, args,
+                simple_type={type(''):0, type(1):0, type(1.0):0}.has_key,
+                ):
     # This should build the ids of subitems which are
     # expandable (non-empty). Leaves should never be
     # in the state - it will screw the colspan counting.
     r=[]
+    idattr=args['id']
     try:
 	try: items=getattr(self, branches)()
 	except AttributeError: items=()
@@ -515,7 +555,9 @@ def tpValuesIds(self, branches):
 	    try:
 		if getattr(item, branches)():
 
-		    if hasattr(item, 'tpId'): id=item.tpId()
+                    if hasattr(self, idattr):
+                        id=getattr(self, idattr)
+                        if not simple_type(type(id)): id=id()            
 		    elif hasattr(item, '_p_oid'): id=item._p_oid
 		    else: id=pyid(item)
 
