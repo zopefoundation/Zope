@@ -186,6 +186,8 @@ class ZEOServer:
         method is called without additional arguments.
         """
         if os.name != "posix":
+            if os.name == "nt":
+                self.setup_win32_signals()
             return
         if hasattr(signal, 'SIGXFSZ'):
             signal.signal(signal.SIGXFSZ, signal.SIG_IGN) # Special case
@@ -196,6 +198,48 @@ class ZEOServer:
                 def wrapper(sig_dummy, frame_dummy, method=method):
                     method()
                 signal.signal(sig, wrapper)
+
+    def setup_win32_signals(self):
+        try:
+            from win32api import SetConsoleCtrlHandler
+            import win32con # our handler uses this
+        except ImportError:
+            warn("no pywin32 extensions - can't install ctrl+c handler")
+        else:
+            SetConsoleCtrlHandler(self._win32_ctrl_handler)
+        # And borrow the Zope Signals module to get a log reopen handler.
+        from Signals.WinSignalHandler import SignalHandler
+        from Signals.Signals import logfileReopenHandler
+        SIGUSR2 = 12
+        SignalHandler.registerHandler(SIGUSR2, logfileReopenHandler)
+
+    def _win32_ctrl_handler(self, ctrlType):
+        """Called by Windows on a new thread whenever a
+           console control event is raised."""
+        from win32con import CTRL_C_EVENT, CTRL_BREAK_EVENT, \
+                             CTRL_CLOSE_EVENT, CTRL_LOGOFF_EVENT, \
+                             CTRL_SHUTDOWN_EVENT
+        import asyncore
+        result = 0
+        # Note we probably don't want to raise SystemExit from
+        # this thread - pywin32-203 at least calls PyErr_Print,
+        # which will still terminate us (but print a message
+        # about the callback failing)
+        if ctrlType == CTRL_C_EVENT:
+            # user pressed Ctrl+C or someone did 
+            # GenerateConsoleCtrlEvent
+            info("terminated by CTRL_C_EVENT")
+            asyncore.close_all()
+            # Default will raise KeyboardInterrupt - we don't need that
+        elif ctrlType == CTRL_BREAK_EVENT:
+            info("terminated by CTRL_BREAK_EVENT")
+            asyncore.close_all()
+            # Default handler terminates process - result remains 0
+        elif ctrlType == CTRL_CLOSE_EVENT:
+            info("terminated by CTRL_CLOSE_EVENT")
+            asyncore.close_all()
+            result = 1
+        return result
 
     def create_server(self):
         from ZEO.StorageServer import StorageServer

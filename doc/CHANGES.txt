@@ -28,6 +28,13 @@ Zope Changes
 
     Features added
 
+      - Applied patch for
+        http://www.zope.org/Collectors/Zope/1527. The patch
+        installs a windows "control handler". Ctrl+C/Break etc are
+        delivered asynchronously (notwithstanding the GIL) to a new
+        thread. This new thread triggers a shutdown, then tricks
+        asyncore into breaking out of its 'select' call.
+
       - The ZEO server now records its PID to a file like the ZEO
         client. Defaults to $INSTANCE_HOME/var/ZEO.pid, and its
         configurable in $INSTANCE_HOME/etc/zeo.conf.
