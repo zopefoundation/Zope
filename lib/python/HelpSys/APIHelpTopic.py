@@ -153,7 +153,7 @@ class APIDoc(Persistent):
             for base in klass.__extends__:
                 names=string.split(base, '.')
                 url="%s/Help/%s.py#%s" % (names[0], names[1], names[2])
-                self.extends.append(names[2], url)
+                self.extends.append((names[2], url))
         
         # Get info on methods and attributes, ignore special items
         self.attributes=[]
