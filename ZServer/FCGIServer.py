@@ -415,7 +415,7 @@ class FCGIChannel(asynchat.async_chat):
             # But first, fixup the auth header if using newest mod_fastcgi.
             if self.env.has_key('Authorization'):
                 self.env['HTTP_AUTHORIZATION'] = self.env['Authorization']
-		del self.env['Authorization']
+                del self.env['Authorization']
 
             self.stdin.seek(0)
             self.send_response()
