@@ -368,7 +368,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         """
         if uid not in self.uids.keys():
-            return
+            raise ValueError, "Uncatalog of absent id %s" % `uid`
         
         rid = self.uids[uid]
 
