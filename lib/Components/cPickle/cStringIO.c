@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.1 1996/07/15 17:06:33 jfulton Exp $
+  $Id: cStringIO.c,v 1.2 1996/07/18 13:08:34 jfulton Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.2  1996/07/18 13:08:34  jfulton
+  *** empty log message ***
+
   Revision 1.1  1996/07/15 17:06:33  jfulton
   Initial version.
 
@@ -438,7 +441,7 @@ initcStringIO()
 	d = PyModule_GetDict(m);
 	ErrorObject = PyString_FromString("cStringIO.error");
 	PyDict_SetItemString(d, "error", ErrorObject);
-
+							     
 	/* XXXX Add constants here */
 	
 	/* Check for errors */
