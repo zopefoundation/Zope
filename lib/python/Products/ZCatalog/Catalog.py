@@ -211,12 +211,10 @@ class Catalog(Item):
         """
 
         r_id = self._obj2id(obj)
-        print 'unindexObject: r_id is %s' % r_id
         if r_id is not None:
-            print 'unindexObject: removing'
             self._ztable.deleteRecord(r_id, obj)
         else:
-            print 'unindexObject: didnt remove'
+            pass
 
         if REQUEST is not None:
             return MessageDialog(title='Catalog records deleted',
@@ -240,7 +238,6 @@ class Catalog(Item):
     
 
     def _obj2id(self, obj):
-        print 'obj2id: obj.url is %s' % obj.url()
         results=self._ztable.searchResults(url=obj.url())
         if results:
             return results[0].data_record_id_
