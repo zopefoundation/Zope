@@ -205,7 +205,7 @@ class ClassSecurityInfo(SecurityInfo):
         # Collect protected attribute names in ac_permissions.
         ac_permissions = {}
         for name, access in self.names.items():
-            if access in (ACCESS_PRIVATE, ACCESS_PUBLIC):
+            if access in (ACCESS_PRIVATE, ACCESS_PUBLIC, ACCESS_NONE):
                 attr=getattr(classobj, name, None)
                 try: attr.__roles__ = access
                 except:
