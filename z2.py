@@ -431,6 +431,7 @@ try:
         elif o=='-S': sys.ZMANAGED=1
         elif o=='-X':
             MONITOR_PORT=HTTP_PORT=FTP_PORT=FCGI_PORT=ICP_PORT=0
+            WEBDAV_SOURCE_PORT=0
             PCGI_FILE=''
         elif o=='-m':
             MONITOR_PORT=server_info(MONITOR_PORT, v)
