@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import regex, re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -245,6 +245,30 @@ class HTTPRequest(BaseRequest):
         else:
             path.insert(0, self['SERVER_URL'])
         return join(path, '/')
+
+    def physicalPathFromURL(self, URL):
+        """ Convert a URL into a physical path in the current context.
+            If the URL makes no sense in light of the current virtual
+            hosting context, a ValueError is raised."""
+        other = self.other
+        bad_server_url = 0
+        path = filter(None, split(URL, '/'))
+
+        if find(URL, '://') >= 0:
+            path = path[2:]
+
+        # Check the path against BASEPATH1
+        vhbase = self._script
+        vhbl = len(vhbase)
+        bad_basepath = 0
+        if path[:vhbl] == vhbase:
+            path = path[vhbl:]
+        else:
+            raise ValueError, (
+                'Url does not match virtual hosting context'
+                )
+        vrpp = other.get('VirtualRootPhysicalPath', ('',))
+        return list(vrpp) + map(unquote, path)
 
     def _resetURLS(self):
         other = self.other
