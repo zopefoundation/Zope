@@ -85,16 +85,12 @@
 __doc__='''short description
 
 
-$Id: Permission.py,v 1.6 1999/07/21 13:13:28 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Permission.py,v 1.7 2000/07/26 18:18:34 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
-from Globals import HTMLFile, MessageDialog
-from string import join, strip, split, find
-from Acquisition import Implicit
-import Globals, string
+import string, Products, Globals
 
 ListType=type([])
-
 
 name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                   map(chr,range(256)))
@@ -191,3 +187,25 @@ class Permission:
                 
     def __len__(self): return 1
     def __str__(self): return self.name
+
+
+_registeredPermissions={}
+_registerdPermission=_registeredPermissions.has_key
+
+def registerPermissions(permissions, defaultDefault=('Manager',)):
+    """Register an __ac_permissions__ sequence.
+    """
+    for setting in permissions:
+        if _registerdPermission(setting[0]): continue
+        if len(setting)==2:
+            perm, methods = setting
+            default = defaultDefault
+        else:
+            perm, methods, default = setting
+        _registeredPermissions[perm]=1
+        Products.__ac_permissions__=(
+            Products.__ac_permissions__+((perm,(),default),))
+        mangled=pname(perm) # get mangled permission name
+        if not hasattr(Globals.ApplicationDefaultPermissions, mangled):
+            setattr(Globals.ApplicationDefaultPermissions,
+                    mangled, default)
