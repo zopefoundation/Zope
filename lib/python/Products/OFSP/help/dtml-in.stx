@@ -24,6 +24,9 @@ in: Loops over sequences
     instances. This allows values of the mapping objects to be
     accessed as DTML variables.
 
+    no_push_item -- Inhibit pushing sequence-item onto the namespace
+    stack.
+
     reverse -- Reverses the sequence.
 
     sort=string -- Sorts the sequence by the given attribute name.
