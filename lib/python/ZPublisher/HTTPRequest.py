@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -684,6 +684,7 @@ class HTTPRequest(BaseRequest):
             name='HTTP_%s' % name
         return environ.get(name, default)
 
+
     def __getitem__(self,key,
                     default=_marker, # Any special internal marker will do
                     URLmatch=regex.compile('URL[0-9]+$').match,
@@ -757,7 +758,10 @@ class HTTPRequest(BaseRequest):
 
         raise KeyError, key
 
-    __getattr__=get=__getitem__
+    __getattr__=__getitem__
+
+    def get(self, key, default=None):
+        return self.__getitem__(key, default)
 
     def has_key(self, key):
         try: self[key]
