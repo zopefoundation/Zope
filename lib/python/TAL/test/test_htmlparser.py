@@ -243,6 +243,7 @@ text
 
     def check_cdata_content(self):
         s = """<script> <!-- not a comment --> &not-an-entity-ref; </script>"""
+        s = list(s)
         self._run_check(s, [
             ("starttag", "script", []),
             ("data", " <!-- not a comment --> &not-an-entity-ref; "),
