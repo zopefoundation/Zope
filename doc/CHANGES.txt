@@ -8,19 +8,13 @@ Zope Changes
 
     ZOPE 2.0 REQUIRES PYTHON 1.5.2!
 
-    Zope 2.0 will the next stable Zope release.  We will 
-    no longer make Zope 1.11 changes.  Zope 1.11 included some very
-    significant changes that were too big to lead to a stable release
-    before Zope 2.0 becomes stable, so these changes have, essentially
-    been moved to Zope 2.0.  
-
-    So, Zope 2 includes:
+    Zope 2 includes:
 
       - ZODB 3, the next generation of the Zope Object Database,
 
       - Z Classes, a new mechanism for building Zope applications
 
-      - WebDAV support,
+      - WebDAV level 1 support,
 
       - ZServer, the integration of Zope and Medusa,
 
@@ -34,108 +28,7 @@ Zope Changes
 
     ZODB 3
 
-      ZODB is the next generation of our object database architecture.
-      It provides a number of advantages over our previous databases:
-
-      - Support for concurrency,
-
-      - Well-defined storage management interface that will allow many
-        different storage management strategies to be used, from file
-        storage, to RDBMS storage, to memory storage,
-
-      - More robust file storage format,
-
-      - Much better version support and integrations of 
-        versions with the transaction system.  For example,
-        it is possible to commit from one version to another, 
-        to undo version commit and abort, and to use "temporary
-        versions" to reduce memory use when manipulating large
-        quantities of data.
-
-      - Support for multiple databases in the same object system. 
-
-      - Support for multi-process storage managers, although the
-        standard distribution will not include any multiple process
-        storage managers.
-
-      Note: Using ZODB 3 from Python
-
-        In ZODB 2, you could access the top-level application object
-        with::
-
-          import Main
-          app=Main.app
-
-        You could then navigate from the top-level object by getting
-        attributes, calling methods, etc..
-
-        In ZODB 3, you get the top-level object like this::
-
-          import Zope
-          app=Zope.app()
-
-          ... do stuff with objects
-
-          # and when you're done:
-          app._p_jar.close()
-
-        You have to import the Zope application module, which uses
-        ZODB 2 rather than ZODB 2.  In ZODB 3, you have to get a
-        connection to a database before you access an object.  The
-        'app()' function combines opening a connection and getting the
-        top level object.  When your done using the top-level object
-        (or any objects accessible from it) you can close the database
-        connection by calling the 'close' method on the '_p_jar'
-        attribute, which is the database connection.  You don't need
-        to close the connection if you are going to exit Python
-        without doing any more work.
-
-        Don't forget to::
-
-          get_transaction().commit()
-
-        If you want any changes to made to be saved.
-
-      Note: Converting ZODB 2 (aka BoboPOS) data files to ZODB 3.
-
-        The bbb.py script in utilities can be used to convert data
-        files from ZODB 2 to ZODB 3 format::
-
-          utilities/bbb.py -f output_file input_file
-
-        Here's a example::
-
-           utilities/bbb.py -f var/Data.fs var/Data.bbb
-
-        You can also convert export files from ZODB 2 by inclding the
-        -x option::
-
-           utilities/bbb.py -x -f output.zexp input.bbe
-
-      ZODB 3 and Zope Database Adapters
-
-        Most database adapters are *currently* likely to be problematic unless
-        the underlying extensions and libraries:
-        
-          - allow multiple simultaneous database connections,
-        
-          - are thread safe,
-        
-          - give up the Python global interpreter lock when
-            making database calls.
-        
-        This is only a problem when running Zope 2 with multiple
-        threads.
-
-      ZODB 3 Futures
-
-        These are features that are lkely to wait for releases after 2.0. 
-
-        - Multiple database support
-
-        - OPTIMIZATION: FileStorage will get a more efficient data
-          structure for maintaining index information and key methods
-          in the ZODB framework will move to C.
+      See ZODB.txt for notes on ZODB 3.
 
     ZClasses
 
@@ -154,12 +47,12 @@ Zope Changes
       In short
  
         We expect to provide a stable Zope 2.0 release in
-        early August.
+        mid August.
 
       Zope 2.0 releases
 
-        We expect to make two beta releases in July 1999 followed
-        by a final release in early August.
+        We expect to make two beta releases in early August 1999 followed
+        by a final release in mid August.
 
   Releases
 
@@ -170,6 +63,28 @@ Zope Changes
         - Added a '-r' switch to z2.py for ZServer read-only mode.
 
       Bugs fixed
+
+        - Conflict errors, which occur when simultanious writes occur
+          to the same object in multiple database connections, are now
+          handled correctly by re-executing (up to three times)
+	  the requests that lost the race condition.
+
+        - Error formatting with standard_error_message has been moved
+          to the object publisher via a new published module hook,
+          'zpublisher_exception_hook'.  In addition to enabling
+          conflict error handling, this fixed two other bugs:
+
+	   - Error handling in ExternalMethods and in DTML methods or
+	     documents called from other DTML documents or methods
+	     caused errors to be propigated in ways that defeated use of
+	     the try tag and other forms of error handling.
+
+           - Errors raised before or after calling published objects
+             were not formatted.
+
+        - Errors in processing form variables, such as missing or
+          miss-typed values resulted in server errors, rather than in
+          formatted error reports.
 
         - Database browsing didn't work for ZGadflyDA database adapters.
 
