@@ -9,4 +9,6 @@ CONFIG_FILE="$INSTANCE_HOME/etc/zope.conf"
 PYTHONPATH="$ZOPE_HOME/lib/python"
 export PYTHONPATH
 
-exec "$PYTHON" "$ZOPE_HOME/bin/runzope.py" -C "$CONFIG_FILE" "$@"
+ZOPE_RUN="$ZOPE_HOME/lib/python/Zope/Startup/run.py"
+
+exec "$PYTHON" "$ZOPE_RUN" -C "$CONFIG_FILE" "$@"

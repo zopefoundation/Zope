@@ -9,6 +9,6 @@ CONFIG_FILE="$INSTANCE_HOME/etc/zope.conf"
 PYTHONPATH="$ZOPE_HOME/lib/python"
 export PYTHONPATH
 
-ZDCTL="$ZOPE_HOME/bin/zopectl.py"
+ZDCTL="$ZOPE_HOME/lib/python/Zope/Startup/zopectl.py"
 
 exec "$PYTHON" "$ZDCTL" -C "$CONFIG_FILE" "$@"

@@ -632,7 +632,7 @@ setup(
     author=AUTHOR,
 
     packages=['ZEO', 'ZEO.tests', 'ZEO.zrpc'],
-    data_files=[['ZEO', ['ZEO/*.txt', 'ZEO/component.xml']]],
+    data_files=[['ZEO', ['ZEO/*.txt', 'ZEO/*.xml']]],
     )
 
 # ZConfig
@@ -1057,8 +1057,7 @@ distutils.core.setup(
     author=AUTHOR,
 
     data_files=installed_data_files,
-    scripts=["bin/runzope.py", "bin/zopectl.py",
-             "bin/mkzeoinstance", "bin/mkzopeinstance"],
+    scripts=["bin/mkzeoinstance", "bin/mkzopeinstance"],
     distclass=ZopeDistribution,
     )
 

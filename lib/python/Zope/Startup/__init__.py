@@ -273,3 +273,5 @@ def do_locale(locale_id):
                 'See your operating system documentation for more\n'
                 'information on locale support.' % locale_id
                 )
+
+
