@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -322,3 +322,5 @@ def absattr(attr):
 def reqattr(request, attr):
     try:    return request[attr]
     except: return None
+
+Globals.default__class_init__(UserFolderHandler)
