@@ -157,6 +157,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1491: talgettext.py did not create a proper header
+       for the generated .pot file if multiple pagetemplate files
+       were processed.
+
      - Collector #1477: TaintedString.strip() now implements the
        same signature as str.strip()
 

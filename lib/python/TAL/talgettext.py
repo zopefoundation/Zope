@@ -43,7 +43,7 @@ from TAL.DummyEngine import DummyEngine
 from ITALES import ITALESEngine
 from TAL.TALDefs import TALESError
 
-__version__ = '$Revision: 1.2 $'
+__version__ = '$Revision: 1.1.2.1 $'
 
 pot_header = '''\
 # SOME DESCRIPTIVE TITLE.
@@ -123,9 +123,14 @@ class POEngine(DummyEngine):
             self.catalog[domain] = {}
         domain = self.catalog[domain]
 
-        if msgid not in domain:
-            domain[msgid] = []
-        domain[msgid].append((self.file, position))
+        # ---------------------------------------------
+        # only non-empty msgids are added to dictionary
+        # (changed by heinrichbernd - 2004/09/07)
+        # ---------------------------------------------
+        if msgid:
+            if msgid not in domain:
+                domain[msgid] = []
+            domain[msgid].append((self.file, position))
         return 'x'
 
 
@@ -283,7 +288,6 @@ def main():
         outfile = sys.stdout
     else:
         outfile = file(outfile, update_mode and "a" or "w")
-
     catalog = {}
     for domain in engine.catalog.keys():
         catalog.update(engine.catalog[domain])
