@@ -158,7 +158,7 @@ class Lexicon(Persistent, Implicit):
 
     def get(self, key, default=None):
         """Return the matched word against the key."""
-        return [self._lexicon.getWordId(key, default)]
+        return [self._lexicon.get(key, default)]
 
 
     def __getitem__(self, key):
