@@ -84,14 +84,13 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.153 2001/06/19 15:33:10 andreas Exp $'''
-__version__='$Revision: 1.153 $'[11:-2]
+$Id: Application.py,v 1.154 2001/06/19 23:21:18 andreas Exp $'''
+__version__='$Revision: 1.154 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
 from string import strip, lower, find, rfind, join
-
-import DateTime
+from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
 from webdav.NullResource import NullResource
@@ -248,8 +247,7 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def PrincipiaTime(self, *args):
         """Utility function to return current date/time"""
-        if len(args)==0: return DateTime.newDateTime() 
-        else: return apply(DateTime.newDateTime, args)
+        return apply(DateTime, args)
     ZopeTime=PrincipiaTime
 
     ZopeAttributionButton__roles__=None
