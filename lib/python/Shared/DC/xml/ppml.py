@@ -136,10 +136,10 @@ def convert(S, find=string.find):
     new = string.join(map(lambda s: d[s], S), '')
     if len(new) > (1.4*len(S)):
         encoding = 'base64'
-        new = base64.encodestring(S)
+        new = base64.encodestring(S)[:-1]
     elif find(new,'>') >= 0 or find(new,'<') >= 0 or find(new,'&') >= 0:
         if find(new, ']]>') <0 :
-            new='<![CDATA[\012'+new+'\012]]>'
+            new='<![CDATA[\n\n'+new+'\n\n]]>'
             encoding='cdata'
         else:
             new=string.join(map(lambda s: d2[s], new), '')
