@@ -16,6 +16,9 @@ Zope Changes
       - Collector #210: HTML() function of StructuredText produced wrong
         <h0> tags. 
 
+      - Collector #166: ObjectManger.all_meta_types() implemented only
+        an incomplete filter based on interfaces.
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

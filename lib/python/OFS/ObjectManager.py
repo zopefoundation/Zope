@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.146 2002/02/07 17:20:59 andreasjung Exp $"""
+$Id: ObjectManager.py,v 1.147 2002/02/13 15:27:48 andreasjung Exp $"""
 
-__version__='$Revision: 1.146 $'[11:-2]
+__version__='$Revision: 1.147 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -150,11 +150,28 @@ class ObjectManager(
         default__class_init__(self)
 
     def all_meta_types(self, interfaces=None):
-        pmt=()
-        if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
+        _pmt=()
+        if hasattr(self, '_product_meta_types'): _pmt=self._product_meta_types
         elif hasattr(self, 'aq_acquire'):
-            try: pmt=self.aq_acquire('_product_meta_types')
+            try: _pmt=self.aq_acquire('_product_meta_types')
             except:  pass
+
+        if interfaces is None:  pmt = list(_pmt)
+        else:
+            pmt = []
+
+            for entry in pmt:
+                try:
+                    eil = entry.get('interfaces',None)
+
+                    if eil is not None:
+                        for ei in eil:
+                            for i in interfaces: 
+                                if ei is i or ei.extends(i):
+                                    pmt.append(entry) 
+                                    raise BreakoutException # only append 1ce
+                except BreakoutException:   
+                    pass
             
         gmt = []
 
@@ -175,7 +192,7 @@ class ObjectManager(
                 except BreakoutException:   
                     pass
 
-        return list(self.meta_types)+gmt+list(pmt)
+        return list(self.meta_types)+gmt+pmt
 
     def _subobject_permissions(self):
         return (Products.__ac_permissions__+
