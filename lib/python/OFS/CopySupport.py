@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -339,16 +339,27 @@ class CopyContainer(ExtensionClass.Base):
 
     validClipData=cb_dataValid
 
-    def _verifyObjectPaste(self, ob, REQUEST=None):
-        # Note that REQUEST is no longer needed - it is kept in the
-        # argument list for backward compatibility only.
-        if not hasattr(ob, 'meta_type'):
+    def _verifyObjectPaste(self, object, validate_src=1):
+        # Verify whether the current user is allowed to paste the
+        # passed object into self. This is determined by checking
+        # to see if the user could create a new object of the same
+        # meta_type of the object passed in and checking that the
+        # user actually is allowed to access the passed in object
+        # in its existing context.
+        #
+        # Passing a false value for the validate_src argument will skip
+        # checking the passed in object in its existing context. This is
+        # mainly useful for situations where the passed in object has no 
+        # existing context, such as checking an object during an import
+        # (the object will not yet have been connected to the acquisition
+        # heirarchy).
+        if not hasattr(object, 'meta_type'):
             raise CopyError, MessageDialog(
                   title='Not Supported',
                   message='The object <EM>%s</EM> does not support this ' \
-                          'operation' % absattr(ob.id),
+                          'operation' % absattr(object.id),
                   action='manage_main')
-        mt=ob.meta_type
+        mt=object.meta_type
         if not hasattr(self, 'all_meta_types'):
             raise CopyError, MessageDialog(
                   title='Not Supported',
@@ -362,21 +373,20 @@ class CopyContainer(ExtensionClass.Base):
                 method_name=d['action']
                 break
 
-#        if REQUEST is None:
-#            REQUEST=getattr(self, 'REQUEST', None)
-
         if method_name is not None:
             meth=self.unrestrictedTraverse(method_name)
             if getSecurityManager().validateValue(meth):
                 # Ensure the user is allowed to access the object on the
                 # clipboard.
-                if getSecurityManager().validateValue(ob):
+                if not validate_src:
+                    return
+                if getSecurityManager().validateValue(object):
                     return
 
         raise CopyError, MessageDialog(
               title='Not Supported',
               message='The object <EM>%s</EM> does not support this ' \
-                      'operation' % absattr(ob.id),
+                      'operation' % absattr(object.id),
               action='manage_main')
 
 Globals.default__class_init__(CopyContainer)
