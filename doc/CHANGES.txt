@@ -24,6 +24,8 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #686: intSets no longer loose their values.
+
      - Collector #685: Improved documentation explaining how, where and 
        why security assertions should be placed in:
        lib/python/Products/PythonScripts/README.txt
