@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.157 2001/08/09 20:41:00 chrism Exp $'''
-__version__='$Revision: 1.157 $'[11:-2]
+$Id: Application.py,v 1.158 2001/10/12 13:39:11 evan Exp $'''
+__version__='$Revision: 1.158 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -531,8 +531,13 @@ def import_products():
     products = get_products()
 
     for priority, product_name, index, product_dir in products:
-        if done.has_key(product_name): continue
-        done[product_name]=1
+        if done.has_key(product_name):
+            LOG('OFS.Application', WARNING, 'Duplicate Product name',
+                'After loading Product %s from %s,\n'
+                'I skipped the one in %s.\n' % (
+                `product_name`, `done[product_name]`, `product_dir`) )
+            continue
+        done[product_name]=product_dir
         import_product(product_dir, product_name)
 
 def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
