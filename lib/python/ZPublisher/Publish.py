@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.40 1997/04/09 21:06:20 jim Exp $"""
+$Id: Publish.py,v 1.41 1997/04/11 22:46:26 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.40 1997/04/09 21:06:20 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 def main():
@@ -587,7 +587,7 @@ from CGIResponse import Response
 from Realm import Realm, allow_group_composition
 from urllib import quote
 from cgi import FieldStorage, MiniFieldStorage
-from string import lower
+from string import lower, strip
 
 try:
     from ExtensionClass import Base
@@ -986,16 +986,16 @@ def new_find_object(self, info, path):
         URL="%s/%s" % (URL,quote(entry_name))
         default_realm_name="%s.%s" % (entry_name,default_realm_name)
         if entry_name:
-	    try: traverse=object.bobo_traverse
+	    try: traverse=object.__bobo_traverse__
 	    except: traverse=None
 	    if traverse is not None:
 		request['URL']=URL
                 subobject=traverse(request,entry_name)
 		(inherited_groups, groups,
-		 realm, realm_name, doc) = item_meta_data(
-		    subobject,
-		    inherited_groups, groups,
-		    realm, realm_name, default_realm_name)
+		 realm, realm_name, doc) = attr_meta_data(
+		     object, subobject, entry_name,
+		     inherited_groups, groups,
+		     realm, realm_name, default_realm_name)
 	    else:
             	try:
             	    subobject=getattr(object,entry_name)
@@ -1472,7 +1472,7 @@ class Request:
 
 	try:
 	    r=self.cookies[key]
-	    other[key]=v
+	    other[key]=r
 	    return r
 	except: pass
 
@@ -1553,7 +1553,7 @@ def parse_cookie(text,
 	l=len(qparmre.group(1))
     else:
 	if not text or not strip(text): return result
-	raise InvalidParameter, text
+	raise "InvalidParameter", text
     
     result[name]=value
 
@@ -1619,6 +1619,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.41  1997/04/11 22:46:26  jim
+# Several changes related to traversal.
+#
 # Revision 1.40  1997/04/09 21:06:20  jim
 # Changed the way allow groups are composed to avoid unnecessary
 # composition.
