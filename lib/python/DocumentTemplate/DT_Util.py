@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.71 2000/12/22 20:14:46 evan Exp $''' 
-__version__='$Revision: 1.71 $'[11:-2]
+'''$Id: DT_Util.py,v 1.72 2001/01/22 16:36:16 brian Exp $''' 
+__version__='$Revision: 1.72 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -100,8 +100,6 @@ def html_quote(v, name='(Unknown name)', md={},
                        (('&'),    '&amp;'),
                        (('<'),    '&lt;' ),
                        (('>'),    '&gt;' ),
-                       (('\213'), '&lt;' ),
-                       (('\233'), '&gt;' ),
                        (('"'),    '&quot;'))): #"
         text=str(v)
         for re,name in character_entities:
