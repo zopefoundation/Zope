@@ -376,6 +376,7 @@ class PathInit:
         dir, file = os.path.split(self.home)
         if file == 'bin': self.home = dir
         sys.path.insert(0, os.path.join(self.home, self.libdir))
+        sys.path.insert(0, os.path.join(self.home, self.libdir, 'third_party', 'docutils'))
         self.cwd = os.path.realpath(os.getcwd())
         # Hack again for external products.
         if libdir:
