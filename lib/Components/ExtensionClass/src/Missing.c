@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.18 2003/05/09 19:59:31 jeremy Exp $"
+"\n$Id: Missing.c,v 1.19 2003/05/09 20:57:10 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -78,14 +78,19 @@ Missing_nonzero(PyObject *v)
   return 0;
 }
 
-/* XXX Why does this type offer to corece at all? */
+/* coerce should return two values of the same type.
+
+   We violate that contract in a controlled way, by always coercing
+   the other object to Py_None.  We are guaranteed that our tp_compare
+   will be called because Py_None does not define a tp_compare.
+*/
+
 static int
 Missing_coerce(PyObject **pv, PyObject **pw)
 {
-    if (!(*pw)->ob_type->tp_as_number)
-	return 1;
     Py_INCREF(*pv);
-    Py_INCREF(*pw);
+    Py_INCREF(Py_None);
+    *pw = Py_None;
     return 0;
 }
 
@@ -221,10 +226,16 @@ Missing_call(PyObject *self, PyObject *args, PyObject *kw)
   return self;
 }
 
+/* All Missing objects are equal to each other, but we have
+   specially arranged for Py_None to be passed as m2 via
+   Missing_coerce().  So be prepared for Py_None where
+   a Missing is expected.
+*/
+
 static int
 Missing_cmp(Missing *m1, Missing *m2)
 {
-  return m1->ob_type != m2->ob_type ;
+    return Py_None == (PyObject *)m2;
 }
 
 static PyExtensionClass MissingType = {
@@ -296,3 +307,4 @@ initMissing(void)
   PyDict_SetItemString(d, "V", theValue); 
   PyDict_SetItemString(d, "MV", theValue); 
 }
+ 
