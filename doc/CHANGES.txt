@@ -8,6 +8,10 @@ Zope Changes
 
     Features added
 
+     - The maximum number of sockets that ZServer will open in order to
+       service incoming connections can now be specified via the
+       max-listen-sockets conf file parameter.
+
      - Shane Hathaway's DBTab product has been integrated.  The
        Control_Panel -> Databases tab now allows you to control all
        mounted databases.  You can add a mount point by editing the
