@@ -85,7 +85,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.16 1999/06/10 20:31:23 jim Exp $"
+"\n$Id: intSet.c,v 1.17 1999/08/05 13:28:13 jim Exp $"
 ;
 
 #include <limits.h>
@@ -405,6 +405,8 @@ intSet_set_operation(intSet *self, PyObject *other,
       r->len += lo;
     }
 
+  PER_ALLOW_DEACTIVATION(self);
+  PER_ALLOW_DEACTIVATION(o);
   return OBJECT(r);
 
 err:
@@ -612,7 +614,7 @@ void
 initintSet()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.16 $";
+  char *rev="$Revision: 1.17 $";
 
   UNLESS(ExtensionClassImported) return;
 
