@@ -498,7 +498,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             # exceeded within the boundaries of the current transaction.
             if self._v_total > self.threshold:
                 get_transaction().commit(1)
-                self._p_jar.cacheFullSweep(3)
+                self._p_jar.cacheGC()
                 self._v_total = 0
 
     def uncatalog_object(self, uid):
