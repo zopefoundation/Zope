@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.19 1997/06/02 18:15:17 jim Exp $
+  $Id: cStringIO.c,v 1.20 1997/06/13 20:50:50 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -92,8 +92,6 @@ static char cStringIO_module_documentation[] =
 
 #define UNLESS(E) if(!(E))
 
-/* ----------------------------------------------------- */
-
 /* Declarations for objects of type StringO */
 
 typedef struct {
@@ -101,10 +99,6 @@ typedef struct {
   char *buf;
   int pos, string_size, buf_size, closed, softspace;
 } Oobject;
-
-staticforward PyTypeObject Otype;
-
-/* ---------------------------------------------------------------- */
 
 /* Declarations for objects of type StringI */
 
@@ -114,10 +108,6 @@ typedef struct {
   int pos, string_size, closed;
   PyObject *pbuf;
 } Iobject;
-
-staticforward PyTypeObject Itype;
-
-/* ---------------------------------------------------------------- */
 
 static char O_reset__doc__[] = 
 "reset() -- Reset the file position to the beginning"
@@ -397,32 +387,6 @@ static struct PyMethodDef O_methods[] = {
   {NULL,		NULL}		/* sentinel */
 };
 
-/* ---------- */
-
-
-static PyObject *
-newOobject(int  size) {
-  Oobject *self;
-	
-  self = PyObject_NEW(Oobject, &Otype);
-  if (self == NULL)
-    return NULL;
-  self->pos=0;
-  self->closed = 0;
-  self->string_size = 0;
-  self->softspace = 0;
-
-  UNLESS(self->buf=malloc(size*sizeof(char)))
-    {
-      PyErr_SetString(PyExc_MemoryError,"out of memory");
-      self->buf_size = 0;
-      return NULL;
-    }
-
-  self->buf_size=size;
-  return (PyObject*)self;
-}
-
 
 static void
 O_dealloc(Oobject *self) {
@@ -481,6 +445,29 @@ static PyTypeObject Otype = {
   Otype__doc__ 		/* Documentation string */
 };
 
+static PyObject *
+newOobject(int  size) {
+  Oobject *self;
+	
+  self = PyObject_NEW(Oobject, &Otype);
+  if (self == NULL)
+    return NULL;
+  self->pos=0;
+  self->closed = 0;
+  self->string_size = 0;
+  self->softspace = 0;
+
+  UNLESS(self->buf=malloc(size*sizeof(char)))
+    {
+      PyErr_SetString(PyExc_MemoryError,"out of memory");
+      self->buf_size = 0;
+      return NULL;
+    }
+
+  self->buf_size=size;
+  return (PyObject*)self;
+}
+
 /* End of code for StringO objects */
 /* -------------------------------------------------------- */
 
@@ -507,29 +494,6 @@ static struct PyMethodDef I_methods[] = {
   {"flush",     (PyCFunction)O_flush,        0,      O_flush__doc__},
   {NULL,		NULL}		/* sentinel */
 };
-
-/* ---------- */
-
-
-static PyObject *
-newIobject(PyObject *s) {
-  Iobject *self;
-  char *buf;
-  int size;
-	
-  UNLESS(buf=PyString_AsString(s)) return NULL;
-  UNLESS(-1 != (size=PyString_Size(s))) return NULL;
-  UNLESS(self = PyObject_NEW(Iobject, &Itype)) return NULL;
-  Py_INCREF(s);
-  self->buf=buf;
-  self->string_size=size;
-  self->pbuf=s;
-  self->pos=0;
-  self->closed = 0;
-  
-  return (PyObject*)self;
-}
-
 
 static void
 I_dealloc(Iobject *self) {
@@ -570,6 +534,25 @@ static PyTypeObject Itype = {
   0L,0L,0L,0L,
   Itype__doc__ 		/* Documentation string */
 };
+
+static PyObject *
+newIobject(PyObject *s) {
+  Iobject *self;
+  char *buf;
+  int size;
+	
+  UNLESS(buf=PyString_AsString(s)) return NULL;
+  UNLESS(-1 != (size=PyString_Size(s))) return NULL;
+  UNLESS(self = PyObject_NEW(Iobject, &Itype)) return NULL;
+  Py_INCREF(s);
+  self->buf=buf;
+  self->string_size=size;
+  self->pbuf=s;
+  self->pos=0;
+  self->closed = 0;
+  
+  return (PyObject*)self;
+}
 
 /* End of code for StringI objects */
 /* -------------------------------------------------------- */
@@ -630,6 +613,9 @@ initcStringIO() {
   /* Export Types */
   PyDict_SetItemString(d,"InputType",  (PyObject*)&Itype);
   PyDict_SetItemString(d,"OutputType", (PyObject*)&Otype);
+
+  /* Maybe make certain warnings go away */
+  if(0) PycString_IMPORT;
   
   /* Check for errors */
   if (PyErr_Occurred()) Py_FatalError("can't initialize module cStringIO");
@@ -639,6 +625,11 @@ initcStringIO() {
 /******************************************************************************
 
   $Log: cStringIO.c,v $
+  Revision 1.20  1997/06/13 20:50:50  jim
+  - Various changes to make gcc -Wall -pedantic happy, including
+    getting rid of staticforward declarations and adding pretend use
+    of two statics defined in .h file.
+
   Revision 1.19  1997/06/02 18:15:17  jim
   Merged in guido's changes.
 
