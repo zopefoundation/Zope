@@ -159,11 +159,12 @@ class OkapiIndexTest(IndexTest):
 
 class TestIndexConflict(TestCase):
     
-    storage = None
+    db = None
 
     def tearDown(self):
-        if self.storage is not None:
-            self.storage.close()
+        if self.db is not None:
+            self.db.close()
+            self.storage.cleanup()
 
     def openDB(self):
         from ZODB.FileStorage import FileStorage
