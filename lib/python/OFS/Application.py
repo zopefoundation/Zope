@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.141 2001/02/15 19:05:15 brian Exp $'''
-__version__='$Revision: 1.141 $'[11:-2]
+$Id: Application.py,v 1.142 2001/03/01 15:22:22 brian Exp $'''
+__version__='$Revision: 1.142 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -501,7 +501,6 @@ def initialize(app):
                     'an updated disk-based product failed.',
                     error=sys.exc_info())
                 get_transaction().abort()
-
 
 
 def import_products(_st=type('')):
