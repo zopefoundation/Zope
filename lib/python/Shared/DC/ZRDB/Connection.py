@@ -85,8 +85,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.20 1999/11/03 18:56:34 sroberts Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Connection.py,v 1.21 1999/12/29 15:05:34 petrilli Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -181,7 +181,7 @@ class Connection(
         if result._searchable_result_columns():
             r=custom_default_report(self.id, result)
         else:
-            r='This was not a query.'
+            r='This statement returned no results.'
 
         report=DocumentTemplate.HTML(
             '<html><body bgcolor="#ffffff" link="#000099" vlink="#555555">\n'
