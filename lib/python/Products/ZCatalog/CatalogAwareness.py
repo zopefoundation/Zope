@@ -83,19 +83,120 @@
 # 
 ##############################################################################
 
-"""ZCatalog product"""
+"""ZCatalog Findable class"""
 
-import ZCatalog, Catalog, CatalogAwareness
+import urllib, string
+from Globals import HTMLFile
+
+class CatalogAware:
+    meta_type='CatalogAware'
+    default_catalog='Catalog'
+
+    manage_editCatalogerForm=HTMLFile('editCatalogerForm', globals())
+
+    def manage_editCataloger(self, default):
+        """ """
+        self.default_catalog=default
+        message = "Your changes have been saved"
+        return self.manage_main(self, REQUEST, manage_tabs_message=message)
+    
+
+    def manage_afterAdd(self, item, container):
+        self.index_object()
+        for object in self.objectValues():
+            try: s=object._p_changed
+            except: s=0
+            object.manage_afterAdd(item, container)
+            if s is None: object._p_deactivate()
+
+    def manage_afterClone(self, item):
+        self.index_object()
+        for object in self.objectValues():
+            try: s=object._p_changed
+            except: s=0
+            object.manage_afterClone(item)
+            if s is None: object._p_deactivate()
+
+    def manage_beforeDelete(self, item, container):
+        self.unindex_object()
+        for object in self.objectValues():
+            try: s=object._p_changed
+            except: s=0
+            object.manage_beforeDelete(item, container)
+            if s is None: object._p_deactivate()
+
+    def creator(self):
+        """Return a sequence of user names who have the local
+            Owner role on an object. The name creator is used
+            for this method to conform to Dublin Core."""
+        parent=self.aq_parent
+        roles=parent.aq_acquire('__ac_local_roles__')
+        dict=roles or {} #parent.__ac_local_roles__ or {}
+        items=[]
+        for key, val in dict.items():
+            if 'Owner' in val:
+                items.append(key)
+        return string.join(items, ', ')
+
+    def onDeleteObject(self):
+        """Object delete handler."""
+        self.unindex_object()
+
+    def url(self, ftype=urllib.splittype, fhost=urllib.splithost):
+        """Return a SCRIPT_NAME-based url for an object."""
+        if hasattr(self, 'DestinationURL') and \
+           callable(self.DestinationURL):
+            url='%s/%s' % (self.DestinationURL(), self.id)
+        else: url=self.absolute_url()
+        type, uri=ftype(url)
+        host, uri=fhost(uri)
+        script_name=self.REQUEST['SCRIPT_NAME']
+        __traceback_info__=(`uri`, `script_name`)
+        if script_name:
+            uri=filter(None, string.split(uri, script_name))[0]
+        uri=uri or '/'
+        if uri[0]=='/': uri=uri[1:]
+        return uri
+
+    def summary(self, num=200):
+        """Return a summary of the text content of the object."""
+        if not hasattr(self, 'text_content'):
+            return ''
+        attr=getattr(self, 'text_content')
+        if callable(attr):
+            text=attr()
+        else: text=attr
+        n=min(num, len(text))
+        return text[:n]
+
+    def index_object(self):
+        """A common method to allow Findables to index themselves."""
+        if hasattr(self, self.default_catalog):
+            getattr(self, self.default_catalog).catalog_object(self, self.url())
+
+    def unindex_object(self):
+        """A common method to allow Findables to unindex themselves."""
+        if hasattr(self, self.default_catalog):
+            getattr(self, self.default_catalog).uncatalog_object(self.url())
+
+    def aq_base(ob):
+        if hasattr(ob,  'aq_base'):
+            return ob.aq_base
+        return ob
+
+    def reindex_all(self, obj=None):
+        """ """
+        if obj is None: obj=self
+        if hasattr(aq_base(obj), 'index_object'):
+            obj.index_object()
+        if hasattr(aq_base(obj), 'objectValues'):
+            sub=obj.objectValues()
+            for item in obj.objectValues():
+                reindex_all(self, item)
+        return 'done!'
 
 
 
-def initialize(context):
-    context.registerClass(
-        ZCatalog.ZCatalog, 
-        permission='Add ZCatalogs',
-        constructors=(ZCatalog.manage_addZCatalogForm,
-                      ZCatalog.manage_addZCatalog),
-        icon='www/ZCatalog.gif',
-        )
-    context.registerBaseClass(ZCatalog.ZCatalog)
-    context.registerBaseClass(CatalogAwareness.CatalogAware)
+
+
+
