@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys
 from cgi import escape
@@ -21,8 +21,6 @@ from types import StringType, ListType, IntType, TupleType
 
 from Globals import Persistent
 from Acquisition import Implicit
-import BTree
-import IOBTree
 from zLOG import LOG, ERROR
 
 from BTrees.OOBTree import OOBTree, OOSet
@@ -95,11 +93,27 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         except:
             self.indexed_attrs = [ self.id ] 
         
-        
-        self.__len__=BTrees.Length.Length() # see __len__ method docstring
+        # It was a mistake to use a __len__ attribute here, but it's not
+        # worth changing at this point, as there is old data with this
+        # attribute name. :( See __len__ method docstring
+        self.__len__ = BTrees.Length.Length() 
+
         self.clear()
 
-    def getId(self): return self.id
+    def __len__(self):
+        """Return the number of objects indexed.
+        """
+
+        # The instance __len__ attr isn't effective because
+        # Python cached this method in a slot,
+        __len__ = self.__dict__.get('__len__')
+        if __len__ is not None:
+            return __len__() 
+        
+        return len(self._unindex)
+
+    def getId(self):
+        return self.id
 
     def clear(self):
         # inplace opportunistic conversion from old-style to new style BTrees
@@ -139,15 +153,6 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def __nonzero__(self):
         return not not self._unindex
-
-    def __len__(self):
-        """Return the number of objects indexed.
-
-        This method is only called for indexes which have "old" BTrees,
-        and the *only* reason that UnIndexes maintain a __len__ is for
-        the searching code in the catalog during sorting.
-        """
-        return len(self._unindex)
 
     def histogram(self):
         """Return a mapping which provides a histogram of the number of

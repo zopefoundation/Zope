@@ -76,13 +76,27 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # object unique identifier to the rid, and self.paths is a
         # mapping of the rid to the unique identifier.
 
-        self.__len__=BTrees.Length.Length()
+        # Note that it was unfortunate to use __len__ as the attribute
+        # name here. New-style classes cache slot methods in C slot
+        # pointers. The result is that instances can't override slots.
+        # This is not easy to change on account of old objects with
+        # __len__ attr.
+
+        self.__len__ = BTrees.Length.Length()
         self.clear()
 
         if brains is not None:
             self._v_brains = brains
 
         self.updateBrains()
+
+    def __len__(self):
+        try:
+            return self.__dict__['__len__']()
+        except KeyError:
+            # Fallback for *really* old catalogs that don't have
+            # Length objects. 
+            return len(self.data)
 
     def clear(self):
         """ clear catalog """
@@ -121,11 +135,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         for index in self.indexes.values():
             if hasattr(index, '__of__'): index=index.__of__(self)
             index._convertBTrees(threshold)
-
-    def __len__(self):
-        # NOTE, this is never called for new catalogs, since
-        # each instance overrides this.
-        return len(self.data)
 
     def updateBrains(self):
         self.useBrains(self._v_brains)

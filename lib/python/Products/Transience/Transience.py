@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.33 2003/11/18 13:17:08 tseaver Exp $
+$Id: Transience.py,v 1.34 2003/11/28 16:46:11 jim Exp $
 """
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -427,8 +427,16 @@ class TransientObjectContainer(SimpleItem):
             # our "__len__" is the length of _index.
             # we need to maintain the length of the index structure separately
             # because getting the length of a BTree is very expensive.
-            try: self.__len__.set(0)
-            except AttributeError: self.__len__ = self.getLen = Length()
+            # Note that it is a mistake to use the __len__ attr this way,
+            # because length methods are cached in C slots and out instance
+            # attr won't be used for len(foo) in new-style classes.
+            # See the __len__ method below. I (Jim) am not changing this now
+            # on account of ols instances. With some effort, we could fix this,
+            # bit I'm not up for it now.
+            try:
+                self.__len__.set(0)
+            except AttributeError:
+                self.__len__ = Length()
 
             # set up last_timeslice and deindex_next integer pointers
             # we set them to the current timeslice as it's the only sane
@@ -437,6 +445,12 @@ class TransientObjectContainer(SimpleItem):
             self._deindex_next=Increaser(self._getCurrentTimeslice())
         finally:
             self.lock.release()
+
+    def __len__(self):
+        return self.__dict__['__len__']()
+
+    def getLen(self):
+        return self.__len__
 
     def _getCurrentBucket(self):
         """

@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -75,8 +75,21 @@ class UnIndex(Persistent, Implicit):
         self.ignore_ex=ignore_ex        # currently unimplimented
         self.call_methods=call_methods
 
-        self.__len__=BTrees.Length.Length() # see __len__ method docstring
+        # Note that it was unfortunate to use __len__ as the attribute
+        # name here. New-style classes cache slot methods in C slot
+        # pointers. The result is that instances can't override slots.
+        # This is not easy to change on account of old objects with
+        # __len__ attr.
+
+        self.__len__=BTrees.Length.Length()
         self.clear()
+
+    def __len__(self):
+        try:
+            return self.__dict__['__len__']()
+        except KeyError:
+            # Fallback for really old indexes
+            return len(self._unindex)
 
     def clear(self):
         # inplace opportunistic conversion from old-style to new style BTrees
@@ -116,15 +129,6 @@ class UnIndex(Persistent, Implicit):
 
     def __nonzero__(self):
         return not not self._unindex
-
-    def __len__(self):
-        """Return the number of objects indexed.
-
-        This method is only called for indexes which have "old" BTrees,
-        and the *only* reason that UnIndexes maintain a __len__ is for
-        the searching code in the catalog during sorting.
-        """
-        return len(self._unindex)
 
     def histogram(self):
         """Return a mapping which provides a histogram of the number of
