@@ -3,20 +3,20 @@
 <TITLE><!--#var title--></TITLE>
 </HEAD> 
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<h2><!--#var title--></h2>
-<P>
-<!--#if parentObject-->
-  <!--#in parentObject-->
-  <A HREF="<!--#var URL2-->/manage" target="_top">
-  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0></A>
-  Return to <!--#if title-->
-            <!--#var title-->
-            <!--#else title-->
-            <!--#var id-->
-            <!--#/if title-->
-  <!--#/in parentObject-->
-<!--#/if parentObject-->
-<P>
+<table border=0 width="100%" cellpadding=0 cellspacing=0>
+<tr>
+  <td align=left  width="90%">
+    <H2><!--#var title--></H2>
+    <!--#if Principia-Session-->
+      <em>You are currently working in session
+      <!--#var Principia-Session--></em><br><br>
+    <!--#/if-->
+  </td>
+  <td align=right width="10%">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/Help_icon.gif" BORDER=0>
+  </td>
+</tr>
+</table>
 The Control Panel allows you to view application status information.
 It also allows you to perform maintenance tasks such as process control,
 database packing, and &quot;undoing&quot; previous changes to your site.
