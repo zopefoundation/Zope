@@ -1,7 +1,7 @@
 
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.1 1997/08/27 18:55:43 jim Exp $''' 
+$Id: DT_UI.py,v 1.2 1997/09/02 19:04:52 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -55,7 +55,7 @@ $Id: DT_UI.py,v 1.1 1997/08/27 18:55:43 jim Exp $'''
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -160,6 +160,9 @@ HTML.editConfirmation=HTML(
 
 ############################################################################
 # $Log: DT_UI.py,v $
+# Revision 1.2  1997/09/02 19:04:52  jim
+# Got rid of ^Ms
+#
 # Revision 1.1  1997/08/27 18:55:43  jim
 # initial
 #

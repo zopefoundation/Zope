@@ -1,11 +1,12 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.1 1997/08/27 18:55:41 jim Exp $"""
+$Id: DT_HTML.py,v 1.2 1997/09/02 19:04:09 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_Doc, DT_String, regex
 from regsub import gsub
+from string import strip
 
 class HTML(DT_String.String):
     __doc__=DT_Doc.HTML__doc__
@@ -20,7 +21,7 @@ class HTML(DT_String.String):
 	    '-->'                                   # end
 	    , regex.casefold) 
 
-    def parseTag(self, tagre, command=None):
+    def parseTag(self, tagre, command=None, sargs=''):
 	"""Parse a tag using an already matched re
 
 	Return: tag, args, command, coname
@@ -33,11 +34,22 @@ class HTML(DT_String.String):
 	         or None otherwise
 	"""
 	tag, end, name, args, =tagre.group(0, 'end', 'name', 'args')
+	args=strip(args)
 	if end:
 	    if not command or name != command.name:
 		raise ParseError, 'unexpected end tag'
 	    return tag, args, None, None
+
 	if command and name in command.blockContinuations:
+
+	    if name=='else' and args:
+		# Waaaaaah! Have to special case else because of
+		# old else start tag usage. Waaaaaaah!
+		l=len(args)
+		if not (args==sargs or
+			args==sargs[:l] and sargs[l:l+1] in ' \t\n'):
+		    return tag, args, self.commands[name], None
+	    
 	    return tag, args, None, name
 
 	try: return tag, args, self.commands[name], None
@@ -165,6 +177,9 @@ class HTMLFile(FileMixin, HTML):
 ##########################################################################
 #
 # $Log: DT_HTML.py,v $
+# Revision 1.2  1997/09/02 19:04:09  jim
+# Got rid of ^Ms
+#
 # Revision 1.1  1997/08/27 18:55:41  jim
 # initial
 #
