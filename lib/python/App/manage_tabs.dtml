@@ -1,9 +1,12 @@
 <!--#if manage_options-->
 <TABLE WIDTH="100%" BORDER="1" CELLSPACING="0" CELLPADDING="0">
 <TR>
+
 <!--#in manage_options mapping-->
+
 <!--#if sequence-item-->
-  <!--#if expr="_vars['PATH_INFO'][-(_.len(action)):]==action"-->
+  <!--#if expr="URL[-(_.len(action)):]==action or
+                URL[-17:]=='/manage_workspace' and _['sequence-start']"-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#FFFFFF">
   <FONT SIZE="-1">
   <IMG ALIGN="LEFT" HSPACE="0"  SRC="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
@@ -45,6 +48,14 @@
 </TR>
 </TABLE>
 <!--#/if manage_options-->
+
+<!--#if manage_tabs_message-->
+<hr>
+<!--#var manage_tabs_message--><br>
+<!--#var ZopeTime-->
+<hr>
+<!--#/if-->
+
 <BR>
 <TABLE WIDTH="100%" BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <TR>
@@ -65,3 +76,6 @@
   </TD>
 </TR>
 </TABLE>
+<!--#if Principia-Session-->
+<P><EM>You are currently working in session <!--#var Principia-Session--></EM>
+<!--#/if Principia-Session-->
