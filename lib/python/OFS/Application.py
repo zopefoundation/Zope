@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.27 1997/12/18 16:45:38 jeffrey Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: Application.py,v 1.28 1997/12/18 17:10:40 jim Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -174,6 +174,7 @@ def install_products():
 
     for product_name in os.listdir(product_dir):
 	if not isdir(path_join(product_dir, product_name)): continue
+	if product_name=='CVS': continue
 	product=__import__(product_name)
 	for meta_type in product.meta_types:
 	    if product_name=='OFS': meta_types.insert(0,meta_type)
@@ -235,6 +236,9 @@ def install_products():
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.28  1997/12/18 17:10:40  jim
+# Added check for CVS directory.
+#
 # Revision 1.27  1997/12/18 16:45:38  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #
