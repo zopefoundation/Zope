@@ -11,8 +11,8 @@
 __doc__='''Simple RDB data-file reader
 
 
-$Id: RDB.py,v 1.2 1997/07/28 21:30:13 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: RDB.py,v 1.3 1997/08/07 13:58:07 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -24,7 +24,7 @@ Parsers={'n': atof,
 
 try:
     import DateTime
-    Parsers['d']=DateTime
+    Parsers['d']=DateTime.DateTime
 except: pass
 
 
@@ -317,6 +317,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.3  1997/08/07 13:58:07  jim
+# Fixed bug in date-time handling.
+#
 # Revision 1.2  1997/07/28 21:30:13  jim
 # Fixed bug in handling errors.
 #
