@@ -200,7 +200,7 @@ Running ZServer as nobody
 
   Normally ZServer will run with the userid of the user who starts
   it. However, if ZServer is started by root, it will attempt to
-  become nobody or any userid you specify with the -w argument to the
+  become nobody or any userid you specify with the -u argument to the
   z2.py start script.
  
   ZServer is similar to ZopeHTTPServer in these respects.
