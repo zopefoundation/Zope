@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -169,6 +169,7 @@ class HTTPRequest(BaseRequest):
     """
     _hacked_path=None
     args=()
+    _file=None
 
     retry_max_count=3
     def supports_retry(self): return self.retry_count < self.retry_max_count
@@ -188,6 +189,11 @@ class HTTPRequest(BaseRequest):
         # clean flag is set, we know we can use the passed in
         # environ dict directly.
         if not clean: environ=sane_environment(environ)
+
+        if environ.has_key('HTTP_AUTHORIZATION'):
+            self._auth=environ['HTTP_AUTHORIZATION']
+            response._auth=1
+            del environ['HTTP_AUTHORIZATION']
         
         self.stdin=stdin
         self.environ=environ
@@ -277,11 +283,6 @@ class HTTPRequest(BaseRequest):
         
         if method != 'GET': fp=self.stdin
         else:               fp=None
-
-        if environ.has_key('HTTP_AUTHORIZATION'):
-            self._auth=environ['HTTP_AUTHORIZATION']
-            response._auth=1
-            del environ['HTTP_AUTHORIZATION']
 
         form=self.form
         other=self.other
@@ -627,21 +628,24 @@ class HTTPRequest(BaseRequest):
         object=None
         try: object=req.traverse(path)
         except: rsp.exception(0)
-        if object is not None:
-            # waaa - traversal may return a "default object"
-            # like an index_html document, though you really
-            # wanted to get a Folder back :(
-            if hasattr(object, 'id'):
-                if callable(object.id):
-                    name=object.id()
-                else: name=object.id
-            elif hasattr(object, '__name__'):
-                name=object.__name__
-            else: name=''
-            if name != os.path.split(path)[-1]:
-                return req.PARENTS[0]
-            return object
-        raise rsp.errmsg, sys.exc_value
+        if object is None: raise rsp.errmsg, sys.exc_value
+
+        # waaa - traversal may return a "default object"
+        # like an index_html document, though you really
+        # wanted to get a Folder back :(
+        if hasattr(object, 'id'):
+            if callable(object.id):
+                name=object.id()
+            else: name=object.id
+        elif hasattr(object, '__name__'):
+            name=object.__name__
+        else: name=''
+        if name != os.path.split(path)[-1]:
+            object=req.PARENTS[0]
+
+        req.close()
+        return object
+        
 
     def clone(self):
         # Return a clone of the current request object 
@@ -651,7 +655,6 @@ class HTTPRequest(BaseRequest):
         if self._auth: environ['HTTP_AUTHORIZATION']=self._auth
         clone=HTTPRequest(None, environ, HTTPResponse(), clean=1)
         clone['PARENTS']=[self['PARENTS'][-1]]
-        clone._auth=self._auth
         return clone
 
     def get_header(self, name, default=None):
