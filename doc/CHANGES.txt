@@ -118,6 +118,14 @@ Zope changes
         - A form problem that prevented joining or leaving versions 
           has been fixed.
 
+        - A more reasonable default content type is now used for HEAD 
+          requests on DTML objects if the object does not have a 
+          content_type attribute or a file-extension-like id that can 
+          be used to determine content type.
+
+        - HTTP HEAD handling was inconsistent for collections, depending
+          on whether the "default document" (index_html) was acquired or
+          not.
 
 
 
