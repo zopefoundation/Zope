@@ -10,11 +10,15 @@ class Full(Base):
     def _setupDbs(self):
         # Supports Base framework
         self._index=self._setupDB('current')
-        for name in 'pickle', 'record', 'transactions', 'vids', 'versions':
+        for name in (
+            'pickle', 'record', 'transactions', 'vids', 'versions',
+            'referenceCount', 'pickleReferenceCount', 
+            ):
             self._setupDB(name)
 
         self._setupDB('currentVersions', flags=db.DB_DUP)
         self._setupDB('transaction_oids', flags=db.DB_DUP)
+        self._setupDB('references', flags=db.DB_DUP)
 
         c=self._vids.cursor()
         v=c.get(db.DB_LAST)
@@ -26,7 +30,10 @@ class Full(Base):
         # Supports Base framework
         return ('current', 'pickle', 'record',
                 'transactions', 'transaction_oids',
-                'vids', 'versions', 'currentVersions')
+                'vids', 'versions', 'currentVersions',
+                'referenceCount', 'pickleReferenceCount',
+                'references', 
+                )
 
     def abortVersion(self, src, transaction):
         
@@ -45,8 +52,7 @@ class Full(Base):
             get=c.get
             current=self._current
             records=self._record
-            tmp=self._tmp
-            dump=marshal.dump
+            storeNV=self._tmp.storeNV
             zero="\0\0\0\0\0\0\0\0"
             while i:
                 v, oid = i
@@ -56,21 +62,23 @@ class Full(Base):
                 record=records[oid+tid]
                 rvid, nv, data = unpack("8s8s8s", record[:24])
                 if rvid != vid: raise "vid inconsistent with currentVersions"
-                if nv == zero: continue
+                if nv == zero:
+                    # This object was created in the version, so there's
+                    # nothing to do. We can skip it.
+                    continue
 
                 # Get non-version data
                 record=records[oid+nv]
                 rvid, nv, data = unpack("8s8s8s", record[:24])
                 if rvid: raise "expected non-version data"
 
-                dump(('s',(oid,zero,zero,data,'',tid)), tmp)
+                storeNV(oid, data, tid)
 
                 save_oid(oid)
                 
                 i=get(db.DB_NEXT_DUP)
 
-            dump(('v',vid),tmp)
-            self._vtmp[vid]='a'
+            self._tmp.versionDiscard(vid)
 
             return oids
         finally:
@@ -94,14 +102,13 @@ class Full(Base):
             get=c.get
             current=self._current
             records=self._record
-            tmp=self._tmp
-            dump=marshal.dump
+            store=self._tmp.store
             zero="\0\0\0\0\0\0\0\0"
 
             try: dvid=self._vids[dest]
             except KeyError:
                 dvid=self._newvid()
-                dump(('v',(vid, version)), tmp)
+                self._tmp.newVersion(version, vid)
 
             while i:
                 v, oid = i
@@ -113,15 +120,13 @@ class Full(Base):
                 if rvid != vid: raise "vid inconsistent with currentVersions"
 
                 if not dest: nv=zero
-                dump(('s',(oid,dvid,nv,data,'',tid)), tmp)
+                store(oid,dvid,nv,data,'',tid)
 
                 save_oid(oid)
                 
                 i=get(db.DB_NEXT_DUP)
 
-            dump(('d',vid),tmp)
-            self._vtmp[vid]='c'
-            if dest: self._vtmp[dvid]='d'
+            self._tmp.versionDiscard(vid)
 
             return oids
         finally:
@@ -170,7 +175,7 @@ class Full(Base):
                 try: vid=self._vids[version]
                 except:
                     vid=self._newvid()
-                    dump(('v',(vid, version)), self._tmp)
+                    self._tmp.newVersion(version, vid)
 
             else:
                 vid=nv='\0\0\0\0\0\0\0\0'
@@ -187,7 +192,7 @@ class Full(Base):
             else:
                 nv='\0\0\0\0\0\0\0\0'
 
-            dump(('s',(oid, vid, nv, '', data, old)), self._tmp)
+            self._tmp.store(oid, vid, nv, '', data, old)
             
         finally: self._lock_release()
 
@@ -256,6 +261,17 @@ class Full(Base):
             status = self._transactions[tid][:1]
             if status == 'p': 
                 raise POSException.UndoError, 'Undoable transaction'
+            
+            txn=self._env.txn_begin()
+
+            current=self._current
+            record=self._record
+            pickle=self._pickle
+            currentVersions=self._currentVersions
+            unpack=struct.unpack
+
+            try:
+                for oid in dups(self._transaction_oids     raise POSException.UndoError, 'Undoable transaction'
             
             txn=self._env.txn_begin()
 
@@ -412,3 +428,65 @@ def del_dup(database, key, value, txn):
         c.close()
         
     
+class Log:
+
+    def __init__(self, file):
+        self._file=file
+        file.seek(0)
+        h=file.read(5)
+        size=0
+        if len(h) == 5:
+            state=h[0]
+            if state=='c':
+                size=unpack(">i", h[1:])
+        else:
+            state='s'
+            file.seek(0)
+            file.write('s\0\0\0\0')
+
+        self._state=state
+        self._size=size
+
+
+    def clear(self):
+        if self._state=='p':
+            raise "Can't clear state with uncommitted promised log"
+        self._file.seek(0)
+        self._file.write('s')
+        self._size=0
+
+    def promise(self):
+        self._state='p'
+        size=self._file.tell()-5
+        self._file.seek(0)
+        self._file.write('p'+pack(">i", size))
+        self._size=size
+
+    def commit(self):
+        file=self._file
+        l=file.tell()-1
+        if l:
+            self._file.seek(0)
+            self._file.write('c')
+            self._state='c'
+        
+
+    def store(self, oid, vid, nv, dataptr, pickle, previous,
+              dump=marshal.dump):
+        dump(('s',(oid,vid,nv,data,pickle,previous)), self._file)
+
+    def storeNV(self, oid, data, tid,
+                dump=marshal.dump, zero='\0\0\0\0\0\0\0\0'):
+        dump(('s',(oid,zero,zero,data,'',tid)), self._file)
+
+
+    def versionDiscard(self, vid,
+                       dump=marshal.dump):
+        dump(('d',(vid)), self._file)
+
+    def newVersion(self, version, vid,
+                   dump=marshal.dump):
+        dump(('v',(version, vid)), self._file)
+
+
+        
