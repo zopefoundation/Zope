@@ -146,3 +146,4 @@ if __name__=='__main__':
 
     for f in args:
         print HTML(open(f).read())
+
