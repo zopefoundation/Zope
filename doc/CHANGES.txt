@@ -6,6 +6,12 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #583: Searching for '/' with PathIndexes failed.
+
+      - Fixed bug in manage_editProperties which used an incorrect default
+        for several types of property when they were not found in the
+        REQUEST.
+
       - Collector #574: Fixed write on HEAD requests caused by overzealous
         ETag support.
 
