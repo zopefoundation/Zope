@@ -2,7 +2,7 @@
 #define CSTRINGIO_INCLUDED
 /*
 
-  $Id: cStringIO.h,v 1.3 1997/06/13 19:44:02 jim Exp $
+  $Id: cStringIO.h,v 1.4 1997/12/07 14:27:00 jim Exp $
 
   cStringIO C API
 
@@ -69,18 +69,6 @@
 
   This would typically be done in your init function.
 
-  $Log: cStringIO.h,v $
-  Revision 1.3  1997/06/13 19:44:02  jim
-  - changed to avoid warning of multiple declarations in 1.5 and
-    our 1.4.
-
-  Revision 1.2  1997/01/27 14:13:05  jim
-  Changed the way the C API was exported.
-
-  Revision 1.1  1997/01/02 15:18:36  chris
-  initial version
-
-
 */
 
 /* Basic fuctions to manipulate cStringIO objects from C */
@@ -88,22 +76,22 @@
 static struct PycStringIO_CAPI {
   
   /* Read a string.  If the last argument is -1, the remainder will be read. */
-  int(*cread)(PyObject *, char **, int);
+  int(*cread) Py_FPROTO((PyObject *, char **, int));
 
   /* Read a line */
-  int(*creadline)(PyObject *, char **);
+  int(*creadline) Py_FPROTO((PyObject *, char **));
 
   /* Write a string */
-  int(*cwrite)(PyObject *, char *, int);
+  int(*cwrite) Py_FPROTO((PyObject *, char *, int));
 
   /* Get the cStringIO object as a Python string */
-  PyObject *(*cgetvalue)(PyObject *);
+  PyObject *(*cgetvalue) Py_FPROTO((PyObject *));
 
   /* Create a new output object */
-  PyObject *(*NewOutput)(int);
+  PyObject *(*NewOutput) Py_FPROTO((int));
 
   /* Create an input object from a Python string */
-  PyObject *(*NewInput)(PyObject *);
+  PyObject *(*NewInput) Py_FPROTO((PyObject *));
 
   /* The Python types for cStringIO input and output objects.
      Note that you can do input on an output object.
@@ -119,7 +107,9 @@ static struct PycStringIO_CAPI {
   ((O)->ob_type==PycStringIO->OutputType)
 
 static void *
-xxxPyCObject_Import(char *module_name, char *name)
+xxxPyCObject_Import(module_name, name)
+  char *module_name;
+  char *name;
 {
   PyObject *m, *c;
   void *r=NULL;
