@@ -32,12 +32,6 @@ Distutils setup for Zope
         --home=/usr/local/lib/zope \
         --install-platlib=/usr/local/lib/zope \
         --install-purelib=/usr/local/lib/zope
-
-    Note that with this method, all packages and scripts (including
-    ZServer and z2.py) go in the same directory as Zope modules, which
-    are distributed in lib/python.  You will need to set both ZOPE_HOME
-    and SOFTWARE_HOME to point to your destination directory in order
-    for Zope to work in this configuration.
 """
 
 import glob
