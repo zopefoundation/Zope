@@ -161,6 +161,9 @@ Zope Changes
 
       - Collector #303: Properties of type 'long' got truncated 
 
+      - Collector #325: adding a new TextIndex to an existing Catalog
+        cleared the standard Vocabulary.
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

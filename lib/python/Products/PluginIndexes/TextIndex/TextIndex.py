@@ -14,8 +14,7 @@
 """Text Index
 
 """
-
-__version__ = '$Revision: 1.26 $'[11:-2]
+__version__ = '$Revision: 1.27 $'[11:-2]
 
 
 import  re
@@ -160,7 +159,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         """Reinitialize the text index."""
         self._index   = IOBTree()
         self._unindex = IOBTree()
-        if self.getLexicon():
+        if self.getLexicon() and self.vocabulary_id=='__userdefined__':
             self.getLexicon().clear()
         self._lexicon = None
 
