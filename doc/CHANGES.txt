@@ -20,7 +20,7 @@ Principia Changes
 
          - Must be able to add an object of the type being pasted.
 
-      - The security view nor provides a link to manage property
+      - The security view now provides a link to manage property
         acquisition separately.  This makes it much easier to
         quickly enable or disable acquisition for all permissions.
 
