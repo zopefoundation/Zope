@@ -44,7 +44,7 @@ font-size: 10pt;
 Class
 </th>
 <th class="header" align="left" valign="top">
-<!--#var rcdate fmt="fCommon"-->
+<!--#var rcdate fmt="fCommon" null=""-->
 </th>
 <th class="header" align="left" valign="top">
 <!--#var ZopeTime fmt="fCommon"-->
