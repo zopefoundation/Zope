@@ -85,7 +85,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.100 $'[11:-2]
+__version__='$Revision: 1.101 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -343,7 +343,7 @@ class DA(
         self.dav__init(REQUEST, RESPONSE)
         self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         body = REQUEST.get('BODY', '')
-        m = re.match('\s*<params>(.*)</params>\s*\n', body, re.I)
+        m = re.match('\s*<params>(.*)</params>\s*\n', body, re.I | re.S)
         if m:
             self.arguments_src = m.group(1)
             self._arg=parse(self.arguments_src)
