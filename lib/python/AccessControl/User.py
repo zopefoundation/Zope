@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -14,7 +14,7 @@ from string import join,strip,split,lower
 
 
 class SafeDtml(HTML):
-    """Lobotomized document template w/no editing"""
+    """Lobotomized document template"""
     def __init__(self,name='',*args,**kw):
         f=open('%s/lib/python/AccessControl/%s.dtml' % (SOFTWARE_HOME, name))
         s=f.read()
@@ -76,7 +76,7 @@ su=SuperUser()
 class UserFolder(Implicit, Persistent):
     """ """
     meta_type='User Folder'
-    id       ='UserFolder'
+    id       ='acl_users'
     title    ='User Folder'
     icon     ='AccessControl/UserFolder_icon.gif'
 
@@ -85,6 +85,7 @@ class UserFolder(Implicit, Persistent):
     manage     =SafeDtml('Generic_manage')
     manage_menu=SafeDtml('Generic_manage_menu')
     manage_main=SafeDtml('UserFolder_manage_main')
+    manage_help=SafeDtml('UserFolder_manage_help')
     _editForm  =SafeDtml('UserFolder_manage_editForm')
     index_html =manage_main
 
@@ -198,11 +199,36 @@ class UserFolder(Implicit, Persistent):
 
 
 
-
-def manage_addUserFolder(self,self2,REQUEST):
+class UserFolderHandler:
     """ """
-    i=UserFolder()
-    i._init()
-    self._setObject('UserFolder', i)
-    self.__allow_groups__=self.UserFolder
-    return self.manage_main(self,REQUEST)
+    meta_types=({'name':'UserFolder', 'action':'manage_addUserFolder'},)
+
+    def manage_addUserFolder(self,dtself,REQUEST):
+        """ """
+        i=UserFolder()
+        i._init()
+        self._setObject('UserFolder', i)
+        self.__allow_groups__=self.UserFolder
+        return self.manage_main(self,REQUEST)
+
+    def UserFolderIds(self):
+	t=[]
+	for i in self.objectMap():
+	    if i['meta_type']=='UserFolder':
+		t.append(i['id'])
+	return t
+
+    def UserFolderValues(self):
+	t=[]
+	for i in self.objectMap():
+	    if i['meta_type']=='UserFolder':
+		t.append(getattr(self,i['id']))
+	return t
+
+    def UserFolderItems(self):
+	t=[]
+	for i in self.objectMap():
+	    if i['meta_type']=='UserFolder':
+		n=i['id']
+		t.append((n,getattr(self,n)))
+	return t
