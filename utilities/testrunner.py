@@ -90,8 +90,11 @@ class TestRunner:
         return 0
 
     def runSuite(self, suite):
-        runner=unittest.TextTestRunner(stream=sys.stderr, verbosity=self.verbosity)
-        self.results.append(runner.run(suite))
+        if suite:
+            runner=unittest.TextTestRunner(stream=sys.stderr, verbosity=self.verbosity)
+            self.results.append(runner.run(suite))
+        else:
+            self.report('No suitable tests found') 
 
     def report(self, message):
         sys.stderr.write( '%s\n' % message )
