@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.8 $
+# $Revision: 1.9 $
 __version__ = '0.1'
 
 import struct
@@ -268,7 +268,8 @@ class Full(BerkeleyBase):
                             refcount = utils.p64(utils.U64(refcount) + 1)
                             self._refcounts.put(roid, refcount, txn=txn)
                     # Update the metadata table
-                    self._metadata.put(key, vid+nvrevid+tid+prevrevid, txn=txn)
+                    self._metadata.put(key, vid+nvrevid+lrevid+prevrevid,
+                                       txn=txn)
                     # If we're in a real version, update this table too.  This
                     # ends up putting multiple copies of the vid/oid records
                     # in the table, but it's easier to weed those out later
@@ -344,14 +345,18 @@ class Full(BerkeleyBase):
             # information for undo.
             while rec:
                 oid = rec[1]                      # ignore the key
+                rec = c.next()
+                if oids.has_key(oid):
+                    # We've already dealt with this oid...
+                    continue
                 revid = self._serials[oid]
                 meta = self._metadata[oid+revid]
                 curvid, nvrevid = struct.unpack('8s8s', meta[:16])
                 # Make sure that the vid in the metadata record is the same as
-                # the vid we sucked out of the vids table, otherwise we've got
-                # an internal database inconsistency.
+                # the vid we sucked out of the vids table.
                 if curvid <> vid:
-                    raise InternalInconsistencyError
+                    raise POSException.VersionError(
+                        'aborting a non-current version')
                 if nvrevid == zero:
                     # This object was created in the version, so we don't need
                     # to do anything about it.
@@ -369,8 +374,6 @@ class Full(BerkeleyBase):
                 self._commitlog.write_nonversion_object(oid, lrevid, revid)
                 # Remember to return the oid...
                 oids[oid] = 1
-                # ...and get the next record for this vid
-                rec = c.next()
             # We've now processed all the objects on the discarded version, so
             # write this to the commit log and return the list of oids to
             # invalidate.
@@ -598,6 +601,8 @@ class Full(BerkeleyBase):
         return self._serial
 
     def transactionalUndo(self, tid, transaction):
+        # FIXME: what if we undo an abortVersion or commitVersion, don't we
+        # need to re-populate the currentVersions table?
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
