@@ -49,10 +49,10 @@
 <tr>
  <th align="left"><font color="#ff0000">Object stores</font></th>
 <dtml-in divs mapping>
- <td align="right"><dtml-let url="REQUEST['URL'] +
+ <th align="right"><dtml-let url="REQUEST['URL'] +
      ('?chart_start=%s&chart_end=%s'
      % (start, end))"><a href="&dtml-url;"><font
-     color="#ff0000">&dtml-store_count;</font></a></dtml-let></td>
+     color="#ff0000">&dtml-store_count;</font></a></dtml-let></th>
 </dtml-in>
  <th align="left">&nbsp; Total:
    <font color="#ff0000">&dtml-total_store_count;</font>
@@ -63,17 +63,35 @@
 <tr>
  <th align="left" valign="top"><font color="#000080">Object loads</font></th>
 <dtml-in divs mapping>
- <td align="right"><dtml-let url="REQUEST['URL'] +
+ <th align="right"><dtml-let url="REQUEST['URL'] +
      ('?chart_start=%s&chart_end=%s'
      % (start, end))"><a href="&dtml-url;"><font
-     color="#000080">&dtml-load_count;</font></a></dtml-let><br />
-     <font size="-2">&dtml-time_offset;</font></td>
+     color="#000080">&dtml-load_count;</font></a></dtml-let></th>
 </dtml-in>
  <th align="left" valign="top">&nbsp; Total:
    <font color="#000080">&dtml-total_load_count;</font>
  </th>
 </tr>
 
+
+<tr>
+ <th align="left">Connections</th>
+<dtml-in divs mapping>
+ <th align="right">&dtml-connections;</th>
+</dtml-in>
+ <th align="left">&nbsp; Total:
+   &dtml-total_connections;
+ </th>
+</tr>
+
+
+<tr>
+ <th></th>
+<dtml-in divs mapping>
+ <th align="right"><font size="-2">&dtml-time_offset;</font></th>
+</dtml-in>
+ <th></th>
+</tr>
 
 
 </table>

@@ -13,8 +13,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.26 2002/08/14 21:31:40 mj Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: CacheManager.py,v 1.27 2002/10/09 15:11:25 shane Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import Globals, time, sys
 from DateTime import DateTime
@@ -295,11 +295,13 @@ class CacheManager:
 
         total_load_count = 0
         total_store_count = 0
+        total_connections = 0
         limit = 0
         divs = []
         for div in analysis:
             total_store_count = total_store_count + div['stores']
             total_load_count = total_load_count + div['loads']
+            total_connections = total_connections + div['connections']
             sum = div['stores'] + div['loads']
             if sum > limit:
                 limit = sum
@@ -340,6 +342,7 @@ class CacheManager:
                 'trans_len': max(segment_height - store_len - load_len, 0),
                 'store_count': div['stores'],
                 'load_count': div['loads'],
+                'connections': div['connections'],
                 'start': div['start'],
                 'end': div['end'],
                 'time_offset': time_offset,
@@ -357,6 +360,7 @@ class CacheManager:
                'divs': divs,
                'total_store_count': total_store_count,
                'total_load_count': total_load_count,
+               'total_connections': total_connections,
                }
         return res
 
