@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -158,7 +158,22 @@ class PropertySheet(Traversable, Persistent, Implicit):
     _properties=()
     _extensible=1
     icon='p_/Properties_icon'
-    
+
+    __ac_permissions__=(
+        ('Manage properties', ('manage_addProperty',
+                               'manage_editProperties',
+                               'manage_delProperties',
+                               'manage_changeProperties',
+                               'manage_propertiesForm',
+                               )),
+        ('Access contents information',
+         ('xml_namespace', 'hasProperty', 'getProperty', 'getPropertyType',
+          'propertyIds', 'propertyValues','propertyItems', 'propertyInfo',
+          'propertyMap', ''),
+         ('Anonymous', 'Manager'),
+         ),
+        )
+
     def property_extensible_schema__(self): return self._extensible
 
     def __init__(self, id, md=None):
@@ -471,6 +486,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
+Globals.default__class_init__(PropertySheet)
+
+
 class Virtual:
 
     def __init__(self):
@@ -479,6 +497,7 @@ class Virtual:
     def v_self(self):
         return self.aq_parent.aq_parent
 
+
 class DefaultProperties(Virtual, PropertySheet, View):
     """The default property set mimics the behavior of old-style Zope
        properties -- it stores its property values in the instance of
@@ -486,6 +505,8 @@ class DefaultProperties(Virtual, PropertySheet, View):
 
     id='default'
     _md={'xmlns': 'http://www.zope.org/propsets/default'}
+
+Globals.default__class_init__(DefaultProperties)
 
 
 class DAVProperties(Virtual, PropertySheet, View):
@@ -566,6 +587,8 @@ class DAVProperties(Virtual, PropertySheet, View):
                '  <d:lockscope><d:exclusive/></d:lockscope>\n' \
                '  <d:locktype><d:write/></d:locktype>\n' \
                '  </n:lockentry>\n  '
+
+Globals.default__class_init__(DAVProperties)
 
 
 class PropertySheets(Traversable, Implicit, App.Management.Tabs):
