@@ -90,7 +90,7 @@ import ZPublisher, ResultObject
 
 class SecurityBase(unittest.TestCase) :
     """ Base class for all security tests 
-    $Id: SecurityBase.py,v 1.3 2001/10/09 14:40:53 andreasjung Exp $
+    $Id: SecurityBase.py,v 1.4 2001/10/18 14:30:51 andreasjung Exp $
     """
 
     status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
@@ -164,11 +164,16 @@ class SecurityBase(unittest.TestCase) :
         roles = eval(s)
 
         if roles==None or len(roles)==0: 
-            roles=(None,)
-    
-        for r in roles:
-            if not r in expected_roles:
-                raise AssertionError, self._roles_debug(hier,roles,expected_roles)
+            roles=()
+        
+        roles = list(roles)
+        roles.sort()
+
+        expected_roles = list(expected_roles)
+        expected_roles.sort()
+
+        if roles != expected_roles: 
+            raise AssertionError, self._roles_debug(hier,roles,expected_roles)
     
     def _checkRequest(self,*args,**kw):
         """ perform a ZPublisher request """

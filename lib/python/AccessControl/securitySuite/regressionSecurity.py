@@ -85,10 +85,9 @@
 # 
 ##############################################################################
 
-# $Id: regressionSecurity.py,v 1.1 2001/10/11 13:33:48 andreasjung Exp $
+# $Id: regressionSecurity.py,v 1.2 2001/10/18 14:30:51 andreasjung Exp $
 
-import os, sys
-execfile(os.path.join(sys.path[0],'framework.py'))
+import os, sys, unittest
 
 import Zope
 from OFS.Folder import Folder
@@ -259,29 +258,6 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
         get_transaction().commit()
 
 
-    def testAttributeAccess(self):
-        """ check access to attributes """
-
-        obj = self.root.test.f2.f3.obj3
-
-        try:    
-            x = obj.public_attr
-            obj.public_attr = 'blabla'
-        except: raise AssertionError,'this should work !'    
-
-        try:    
-            x = obj._protected_attr
-            raise AssertionError,'this should not work !'    
-        except AssertionError: 
-                raise
-            
-        try:    
-            obj._protected_attr = "blalbla"
-            raise AssertionError,'this should not work !'    
-        except AssertionError: 
-                raise
-
-
     def testNobody(self):
         """ check permissions for nobody user """
 
@@ -296,10 +272,10 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
     def testPermissionAccess(self):
         """ check permission based access """
 
-        self._checkRoles('test.f2.f3.obj3.public_func',     (None,))    
+        self._checkRoles('test.f2.f3.obj3.public_func',     ())    
         self._checkRoles('test.f2.f3.obj3.protected_func',  ('Manager','Owner'))    
         self._checkRoles('test.f2.f3.obj3.manage_func',     ('Manager',))    
-        self._checkRoles('test.f2.f3.obj3.private_func',    ('Manager',))    
+        self._checkRoles('test.f2.f3.obj3.private_func',    ())    
 
 
     def testZPublisherAccess(self):
@@ -338,5 +314,13 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
             else:
                 res = self._checkRequest(path,expected=expected)
 
+
+def test_suite():
+    return unittest.makeSuite(AVeryBasicSecurityTest)
+
         
-framework()
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()
