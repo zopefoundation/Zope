@@ -39,7 +39,7 @@ TopicIndex
   API
 
     The TopicIndex implements the API for pluggable Indexes.
-    Additionall it provides the following functions to manage FilteredSets
+    Additionally it provides the following functions to manage FilteredSets
 
       -- addFilteredSet(Id, filterType, expression): 
 
