@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.31 1997/04/18 18:32:46 chris Exp $'''
+$Id: InvertedIndex.py,v 1.32 1997/04/22 15:18:01 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.31 1997/04/18 18:32:46 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.32  1997/04/22 15:18:01  jim
+# Cris' changes.
+#
 # Revision 1.31  1997/04/18 18:32:46  chris
 # *** empty log message ***
 #
@@ -190,10 +193,10 @@ $Id: InvertedIndex.py,v 1.31 1997/04/18 18:32:46 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
-import regex, regsub, string, copy
+import regex, string, copy
 from string import lower
 from WordSequence import WordSequence
 from types import *
@@ -218,7 +221,12 @@ class ResultList:
     '''
   
     def __init__(self, d = None):
-        self._dict = d or {}
+	if (d is None):
+            self._dict = {}
+        elif (type(d) is TupleType):
+	    self._dict = { d[0] : d[1:] }
+        else:
+            self._dict = d
   
   
     def addentry(self, document_key, *info):
@@ -506,8 +514,6 @@ class Index:
         self._index_object = index_dictionary
   
   
-    split_words = None
-  
     def index(self, src, srckey):
         '''\
         index(src, srckey)
@@ -519,29 +525,13 @@ class Index:
         key, srckey.  For simple objects, the srckey may be the object itself,
         or it may be a key into some other data structure, such as a table.
         '''
-        synstop = self.synstop
-
-	if (self.split_words is not None):
-            src = self.split_words(str(src))
-	else:
-            src = WordSequence(src, synstop)  
+        src = WordSequence(src, self.synstop)  
 
         d = {}
         i = -1
         for s in src:
-            print s
             i = i + 1
 
-	    while (type(s) is StringType):
-                try:
-                    s = synstop[s]
-                except KeyError:
-                    break
-
-            if (s is None):
-                continue
-  
-	    print s
             try:
                 d[s].append(i)
             except KeyError:
@@ -555,19 +545,24 @@ class Index:
 
         addentry = self.addentry
         for word, positions in d.items():
-            freq = int(10000 * (len(positions) / nwords))
+            freq = int(100 * (len(positions) / nwords))
             addentry(word,srckey,(freq, positions))
   
+
     def addentry(self,word,key,data):
         index = self._index_object
         try:
             rl = index[word]
         except:
-            rl = {}
+            rl = ( key, ) + data
             index[word] = rl
+            return
+
+        if (type(rl) is TupleType):
+            rl = { rl[0] : rl[1:] }
   
-        print key
         rl[key] = data
+
   
     def __getitem__(self, key):
         '''\
@@ -581,6 +576,7 @@ class Index:
         '''
     
         index = self._index_object 
+        synstop = self.synstop
         List = self.list_class
     
         if (type(key) == RegexType):
@@ -607,16 +603,19 @@ class Index:
     
         key = lower(key)
     
-        while (type(key) == StringType):
+        while (1):
             try:
-                key = index[key]
+                key = synstop[key]
             except KeyError:
-                return List()
+	        break
     
         if (key is None):
             return List()
     
-        return List(key)
+	try:
+            return index[key]
+	except KeyError:
+            return List()
   
   
     def keys(self):
@@ -643,37 +642,35 @@ class Index:
     	    	   del self[key][doc_key]
     	        except KeyError:
     	 	    continue
-    	else:
-    	    s = regsub.gsub('-[ \t]*\n[ \t]*', '', str(s)) # de-hyphenate
-    	    s = filter(None, self.split_words(s))
-      
-    	    for key in s:
-    	        try:
-    		    del self[key][doc_key]
-    	        except KeyError:
-    		    continue
+#    	else:
+#           s = WordSequence(s)
+#    	    for key in s:
+#    	        try:
+#    		    del self[key][doc_key]
+#    	        except KeyError:
+#    		    continue
   
   
     def get_stopwords(self):
-        index = self._index_object
+        synstop = self.synstop
     
         stopwords = []
-        for word in index.keys():
-            if (index[word] is None):
-                stopwords.append(word)
+	for key, val in synstop.items():
+	    if (value is None):
+                stopwords.append(key)
     
         return stopwords
   
           
     def get_synonyms(self):
-      index = self._index_object
-  
-      synonyms = {}    
-      for word in index.keys():
-          if (type(index[word]) == StringType):
-              synonyms[word] = index[word]
-  
-      return synonyms
+        synstop = self.synstop
+    
+        syns = []
+	for key, val in synstop.items():
+	    if (type(value) is StringType):
+                syns.append(key)
+    
+        return syns
   
   
     def get_document_keys(self):
@@ -688,6 +685,17 @@ class Index:
                 d[doc_key] = 1
     
         return d.keys()
+
+
+    def highlight(self, text, positions, before, after):
+        ws = WordSequence(text, self.synstop)
+        positions.sort()
+        positions.reverse()
+	for position in positions:
+	    start, end = ws.pos(position)
+            text = text[:start] + before + text[start:end] + after + text[end:]
+    
+	return text
 
 
 
