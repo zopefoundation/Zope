@@ -102,6 +102,13 @@ class DummyEngine:
         self.locals = self.globals = dict
         self.stack = [dict]
 
+    def compile(self, expr):
+        return "$%s$" % expr
+
+    def uncompile(self, expression):
+        assert expression[:1] == "$" == expression[-1:], expression
+        return expression[1:-1]
+
     def beginScope(self):
         self.stack.append(self.locals)
 
@@ -119,6 +126,7 @@ class DummyEngine:
         self.globals[name] = value
 
     def evaluate(self, expression):
+        expression = self.uncompile(expression)
         m = re.match(r"(?s)(%s):(.*)\Z" % NAME_RE, expression)
         if m:
             type, expr = m.group(1, 2)
@@ -170,6 +178,7 @@ class DummyEngine:
         return self.evaluate(expr)
 
     def evaluateMacro(self, macroName):
+        macroName = self.uncompile(macroName)
         file, localName = self.findMacroFile(macroName)
         if not file:
             # Local macro
