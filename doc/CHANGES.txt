@@ -105,6 +105,9 @@ Zope Changes
         Interfaces. This included changing some interface APIs that
         may affect existing products.
 
+      - Added a database activity monitoring graph to the control panel,
+        making it easier to tune the ZODB cache size.
+
     Bugs:
     
       - External methods didn't properly setup func_defaults and func_code
