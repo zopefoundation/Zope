@@ -1,12 +1,4 @@
 import string
-try:
-    del string
-    import locale
-    locale.setlocale(locale.LC_ALL,"")
-except:
-    pass    
-
-import string
 
 def punc_func(exclude):
     punc = r''
