@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -37,7 +37,7 @@ class PageTemplate(Base):
     "Page Templates using TAL, TALES, and METAL"
      
     content_type = 'text/html'
-    expand = 1
+    expand = 0
     _v_errors = ()
     _v_warnings = ()
     id = '(unknown)'
