@@ -12,3 +12,6 @@ TAL changes
 
         - tal:atributes was creating stray attributes in METAL
           expansion, and there was no unit test for this behavior.
+
+        - tal:attributes parsing was not catching badly malformed
+          values, and used "print" instead of raising exceptions.
