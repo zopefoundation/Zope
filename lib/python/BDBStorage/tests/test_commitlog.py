@@ -108,7 +108,7 @@ class Gen:
         try:
             return self[self.__counter]
         finally:
-            self.__counter += 1
+            self.__counter = self.__counter + 1
 
     def __getitem__(self, i):
         if 0 <= i < 10:
