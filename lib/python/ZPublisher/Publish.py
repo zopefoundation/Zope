@@ -462,7 +462,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.13 1996/07/25 16:42:48 jfulton Exp $"""
+$Id: Publish.py,v 1.14 1996/08/05 11:33:54 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -515,6 +515,9 @@ $Id: Publish.py,v 1.13 1996/07/25 16:42:48 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.14  1996/08/05 11:33:54  jfulton
+# Added first cut at group composition.
+#
 # Revision 1.13  1996/07/25 16:42:48  jfulton
 # - Added FileUpload objects.
 # - Added logic to check for non-file fields in forms with file upload.
@@ -573,7 +576,7 @@ $Id: Publish.py,v 1.13 1996/07/25 16:42:48 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 def main():
@@ -585,7 +588,7 @@ if __name__ == "__main__": main()
 
 import sys, os, string, types, newcgi, regex
 from CGIResponse import Response
-from Realm import Realm
+from Realm import Realm, allow_group_composition
 
 from newcgi import FieldStorage
 
@@ -598,10 +601,11 @@ class ModulePublisher:
 		"<body>\n%s\n</body>\n"
 		"</html>\n" % (title,body))
 
-    def notFoundError(self):
+    def notFoundError(self,entry='who knows!'):
 	raise 'NotFound',self.html(
 	    "Resource not found",
-	    "Sorry, the requested document does not exist.")
+	    "Sorry, the requested document does not exist.<p>"
+	    "\n<!--\n%s\n-->" % entry)
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
@@ -627,12 +631,7 @@ class ModulePublisher:
 
 
     def validate(self,groups,realm=None):
-	
-	# Check whether groups is a collection, and, if not, try to
-	# call it:
-	try: len(groups)
-	except: groups=groups()
-
+	sys.stdout=self.stdout
 	if not realm:
 	    try: realm=self.realm
 	    except:
@@ -712,17 +711,24 @@ class ModulePublisher:
 			break
 		except: pass
 	    if not path: path = ['help']
-    
+
+	parents=[]
 	while path:
 	    entry_name,path=path[0], path[1:]
 	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
 	    if entry_name:
 		try:
 		    subobject=getattr(object,entry_name)
-		    try: groups=subobject.__allow_groups__
+		    try:
+			g=subobject.__allow_groups__
+			groups=allow_group_composition(
+			    subobject.__allow_groups__,
+			    groups)
 		    except:
-			try: groups=getattr(object,
-					    entry_name+'__allow_groups__')
+			try:
+			    groups=allow_group_composition(
+				getattr(object, entry_name+'__allow_groups__'),
+				groups)
 			except: pass
 		    try: doc=subobject.__doc__
 		    except:
@@ -739,9 +745,15 @@ class ModulePublisher:
 		except AttributeError:
 		    try:
 			subobject=object[entry_name]
-			try: groups=subobject.__allow_groups__
+			try:
+			    groups=allow_group_composition(
+				subobject.__allow_groups__,
+				groups)
 			except:
-			    try: groups=object[entry_name+'__allow_groups__']
+			    try:
+				groups=allow_group_composition(
+				    object[entry_name+'__allow_groups__'],
+				    groups)
 			    except: pass
 			try: doc=subobject.__doc__
 			except:
@@ -766,7 +778,7 @@ class ModulePublisher:
 				 '<pre>\n%s\n</pre>' % doc)
 				)
 			else:
-			    self.notFoundError()
+			    self.notFoundError(entry_name)
 		if published:
 		    # Bypass simple checks the first time
 		    published=None
@@ -779,11 +791,12 @@ class ModulePublisher:
 			raise 'Forbidden',object
 
 		# Promote subobject to object
+		parents.append(object)
 		object=subobject
 
-
 	# Do authorization checks
-	if groups:
+	if groups is not None:
+	    if not groups: self.forbiddenError()
 	    try:
 		if realm.name is None:
 		    realm.name=realm_name
@@ -793,7 +806,15 @@ class ModulePublisher:
 		    realm=Realm(realm_name,realm)
 		except: pass
 	    self.validate(groups,realm)
+   
+	# Attempt to start a transaction:
+	try:
+	    transaction=get_transaction()
+	    transaction.begin()
+	except: transaction=None
 
+	# Now get object meta-data to decide if and how it should be
+	# called:  
 	object_as_function=object	
 	if type(object_as_function) is types.ClassType:
 	    if hasattr(object_as_function,'__init__'):
@@ -808,15 +829,29 @@ class ModulePublisher:
 		object_as_function.im_func.
 		func_code.co_varnames[
 		    1:object_as_function.im_func.func_code.co_argcount])
-	elif type(object_as_function) is types.FunctionType:
-	    defaults=object_as_function.func_defaults
-	    argument_names=object_as_function.func_code.co_varnames[
-		:object_as_function.func_code.co_argcount]
 	else:
-	    return response.setBody(object)
+	    # Rather than sniff for FunctionType, assume its a
+	    # function and fall back to returning the object itself:	    
+	    try:
+		defaults=object_as_function.func_defaults
+		argument_names=object_as_function.func_code.co_varnames[
+		    :object_as_function.func_code.co_argcount]
+	    except:
+		return response.setBody(object)
+
+	#elif type(object_as_function) is types.FunctionType:
+	#    defaults=object_as_function.func_defaults
+	#    argument_names=object_as_function.func_code.co_varnames[
+	#	:object_as_function.func_code.co_argcount]
+	#else:
+	#    return response.setBody(object)
     
 	query=self.request
 	query['RESPONSE']=response
+	if parents:
+	    parents.reverse()
+	    query['self']=parents[0]
+	query['PARENTS']=parents
 
 	args=[]
 	nrequired=len(argument_names) - (len(defaults or []))
@@ -829,19 +864,13 @@ class ModulePublisher:
 		if name_index < nrequired:
 		    self.badRequestError(argument_name)
 
-   
-	# Attempt to start a transaction:
-	try:
-	    transaction=get_transaction()
-	    transaction.begin()
-	except: transaction=None
 
 	if args: result=apply(object,tuple(args))
 	else:    result=object()
 
-	if transaction: transaction.commit()
-
 	if result and result is not response: response.setBody(result)
+
+	if transaction: transaction.commit()
 
 	return response
 
@@ -931,6 +960,10 @@ def field2date(v):
     except: v=str(v)
     return DateTime(v)
 
+def field2list(v):
+    if type(v) is not types.ListType: v=[v]
+    return v
+
 class Request:
     """\
     Model HTTP request data.
@@ -1003,6 +1036,7 @@ class Request:
 	'long':		field2long,
 	'string':	field2string,
 	'date':		field2date,
+	'list':		field2list,
 	}
 
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
@@ -1114,9 +1148,17 @@ class CGIModulePublisher(ModulePublisher):
 	if p >= 0: b=b[:p+1]
 	else: b=''
 	while b and b[0]=='/': b=b[1:]
-	try:    server_url=          string.strip(self.environ['SERVER_URL' ])
-	except: server_url='http://'+string.strip(self.environ['SERVER_NAME'])
+	try:
+	    server_url=string.strip(self.environ['SERVER_URL'])
+	except:
+	    server_port=self.env('SERVER_PORT')
+	    server_url=('http://'+
+			string.strip(self.environ['SERVER_NAME']) +
+			(server_port and ':'+server_port)
+			)
+			
 	self.base="%s/%s" % (server_url,b)
+	
 	
 
 def publish_module(module_name,
