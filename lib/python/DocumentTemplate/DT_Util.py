@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.6 1997/10/28 21:50:01 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.7 1997/10/28 22:10:46 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -88,7 +88,7 @@ def careful_getattr(inst, name, md):
 
 	if validate is None: return getattr(inst, name)
 
-	if hasattr(inst,'acquire'): return inst.acquire(name, validate, md)
+	if hasattr(inst,'aq_acquire'): return inst.acquire(name, validate, md)
 
 	v=getattr(inst, name)
 	if validate(inst,inst,name,v,md): return v
@@ -197,6 +197,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.7  1997/10/28 22:10:46  jim
+# changed 'acquire' to 'aq_acquire'.
+#
 # Revision 1.6  1997/10/28 21:50:01  jim
 # Updated validation rules to use DT validation method.
 #
