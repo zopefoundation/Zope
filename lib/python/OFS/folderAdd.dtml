@@ -3,47 +3,32 @@
 <TITLE>New Folder</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2">New Folder</FONT>
+<H2>New Folder</H2>
 
 <FORM ACTION="<!--#var PARENT_URL-->/manage_addFolder" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="50">
+  </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
-</TR>
-<TR>
-  <TD></TD>
-  <TD>
-  <TABLE>
-  <TR>
-  <TD VALIGN="TOP">
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E">
-    Allow users with selected roles
-    <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A" CHECKED>
-    Allow based on default roles
-    <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"> 
-    Allow all users
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Title</STRONG>
   </TD>
-  <TD VALIGN="TOP">
-    <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
-    <!--#in selectedRoles-->
-    <!--#var sequence-item-->
-    <!--#/in selectedRoles-->
-    </SELECT>
-  </TD>
-  </TR>
-  </TABLE>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="50">
   </TD>
 </TR>
+<!--#var smallRolesWidget-->
 <TR>
 <TD></TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE="Add Folder"></TD>
+<TD>
+<BR><INPUT TYPE="SUBMIT" VALUE=" Add ">
+</TD>
 </TR>
 </TABLE>
 </FORM>

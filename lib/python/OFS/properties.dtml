@@ -3,49 +3,57 @@
 <TITLE>Properties</TITLE>
 </HEAD>
 <BODY>
-<FONT SIZE="+2">Properties</FONT>
+<H2>Properties</H2>
 <P>
-
 <!--#if propertyMap-->
 <FORM ACTION="<!--#var URL1-->/manage_editProperties">
-The following properties are defined.  To change a property value, 
-edit the value and click the "Change Properties" button.
+The following properties are defined.  To change a property's value, 
+edit the value and click "Change".
 <P>
 <TABLE CELLPADDING="4">
 <!--#if propertyInputs-->
 <!--#in propertyInputs mapping-->
-  <TR>
-    <TD ALIGN="LEFT" VALIGN="TOP"><B><!--#var id fmt=spacify--></B></TD>
-    <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input--></TD>
-  </TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG><!--#var id fmt=spacify--></STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var input-->
+  </TD>
+</TR>
 <!--#/in propertyInputs-->
 <!--#/if propertyInputs-->
 <TR>
-<TD ALIGN="LEFT" VALIGN="TOP"></TD>
-<TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="SUBMIT" VALUE="Change Properties">
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" VALUE="Change">
   </TD>
 </TR>
 </TABLE>
 </FORM>
 <!--#else propertyMap-->
-<I>No properties have been defined.</I>
+<EM>No properties have been defined.</EM>
 <!--#/if propertyMap-->
-<P>
 
+<P>
 <FORM ACTION="<!--#var URL1-->/manage_addProperty" METHOD="POST">
-You may add a property by filling in the id, type, and initial
-value fields below and then clicking on the "Add Property" button.
+To add a property, enter the id, type, and initial value of the new 
+property below and click &quot;Add&quot;.
 <BR>
 <TABLE>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">Id:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="id" SIZE="16">
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">Type:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Type</STRONG>
+  </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="type">
   <!--#in propertyTypes mapping-->
@@ -55,7 +63,9 @@ value fields below and then clicking on the "Add Property" button.
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">Value:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Value</STRONG>
+  </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="value" SIZE="50">
   </TD>
@@ -63,18 +73,17 @@ value fields below and then clicking on the "Add Property" button.
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP"></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="SUBMIT" VALUE="Add Property">
+  <INPUT TYPE="SUBMIT" VALUE=" Add ">
   </TD>
 </TR>
 </TABLE>
 </FORM>
-<P>
 
 <!--#if propertyMap-->
+<P>
 <FORM ACTION="<!--#var URL1-->/manage_delProperties" METHOD="POST">
-You may delete properties by selecting one or more property ids 
-from the list below and clicking the &quot;Delete Properties&quot;
-button.
+To delete properties, select one or more property ids 
+from the list below and click &quot;Delete&quot;.
 <BR>
 <TABLE>
 <TR>
@@ -85,7 +94,7 @@ button.
   <!--#/in propertyMap-->
   </SELECT>
   <BR>
-  <INPUT TYPE="SUBMIT" VALUE="Delete Properties">
+  <INPUT TYPE="SUBMIT" VALUE="Delete">
   </TD>
 </TR>
 </TABLE>

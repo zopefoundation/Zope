@@ -3,61 +3,43 @@
 <TITLE>Edit Image</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2">Edit Image</FONT>
+<H2>Edit Image</H2>
 <P>
- You can update image in the system using the form below. 
- Select an image from your local computer by clicking the <I>Browse</I> 
- button. The image file you select will be uploaded to the application.
+You can update image in the system using the form below. 
+Select an image from your local computer by clicking the <EM>Browse</EM> 
+button. The image file you select will be uploaded to the application.
 
 <FORM ACTION="<!--#var PARENT_URL-->/manage_edit" METHOD="POST"
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var id-->
+  </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Image</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Image</STRONG>
+  </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file" SIZE="30" VALUE="">
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->"></TD>
-</TR>
-<!--#if AUTHENTICATED_USER-->
-<TR>
-  <TD></TD>
-  <TD>
-  <TABLE>
-  <TR>
-  <TD VALIGN="TOP">
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"<!--#var aclEChecked-->>
-    Allow users with selected roles
-    <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A"<!--#var aclAChecked-->>
-    Allow based on default roles
-    <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"<!--#var aclPChecked-->> 
-    Allow all users
+  <STRONG>Title</STRONG>
   </TD>
-  <TD VALIGN="TOP">
-    <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
-    <!--#in selectedRoles-->
-    <!--#var sequence-item-->
-    <!--#/in selectedRoles-->
-    </SELECT>
-  </TD>
-  </TR>
-  </TABLE>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->">
   </TD>
 </TR>
-<!--#/if AUTHENTICATED_USER-->
+<!--#var smallRolesWidget-->
 <TR>
 <TD></TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE="Change Image"></TD>
+<TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
 </TR>
 </TABLE>
 </FORM>

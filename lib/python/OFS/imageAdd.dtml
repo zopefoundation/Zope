@@ -3,7 +3,7 @@
 <TITLE>New Image</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2">New Image</FONT>
+<H2>New Image</H2>
 <P>
  You can create a new image in the system using the form below. 
  Select an image from your local computer by clicking the <I>Browse</I> 
@@ -13,51 +13,35 @@
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="50">
+  </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Image</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Image</STRONG>
+  </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file" SIZE="30" VALUE="">
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
-</TR>
-<!--#if AUTHENTICATED_USER-->
-<TR>
-  <TD></TD>
-  <TD>
-  <TABLE>
-  <TR>
-  <TD VALIGN="TOP">
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E">
-    Allow users with selected roles
-    <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A" CHECKED>
-    Allow based on default roles
-    <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"> 
-    Allow all users
+  <STRONG>Title</STRONG>
   </TD>
-  <TD VALIGN="TOP">
-    <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
-    <!--#in selectedRoles-->
-    <!--#var sequence-item-->
-    <!--#/in selectedRoles-->
-    </SELECT>
-  </TD>
-  </TR>
-  </TABLE>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="50">
   </TD>
 </TR>
-<!--#/if AUTHENTICATED_USER-->
+<!--#var smallRolesWidget-->
 <TR>
 <TD></TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE="Add Image"></TD>
+<TD>
+<BR><INPUT TYPE="SUBMIT" VALUE=" Add ">
+</TD>
 </TR>
 </TABLE>
 </FORM>
