@@ -1,45 +1,14 @@
-2001-05-21  Evan Simpson <evan@digicool.com>
+Page Template changes
 
-        * Version 1.3.0
-        * Guido fixed use of nested macros.
-        * New builtin variables 'default', 'user', and 'attrs'.
-        * Removed path modifiers.
-        * Added '|' operator for paths.
-        * Tweaked parameters passed when calling DTML.
-        * Expression types now have corresponding builtin functions in
-          Python expressions.
+  This file contains change information for the current release. 
+  Change information for previous versions can be found in the
+  file HISTORY.txt.
 
-2001-05-07  Evan Simpson <evan@digicool.com>
+    Version 1.3.2
 
-        * Version 1.2.1
-        * Bugfixes for 'repeat' variable access
+      Features Added
 
-2001-04-27  Evan Simpson <evan@digicool.com>
+        - Adopted Zope-style CHANGES.txt and HISTORY.txt
+        - Improved execution performance
 
-        * Version 1.2.0
-        * Depends on the new ZTUtils package, which adds batching and
-          tree widget capabilities.
-        * Path expressions now have optional path modifiers.  These
-          appear in parenthesis before the path, and include 'if',
-          'exists', and 'nocall'.
-        * Changed nocall: and exists: expressions types into path modifiers.
-        * tal:attributes no longer inserts empty attributes into
-          source.
-        * The 'if' path modifier can cancel any TAL action.
-
-2001-04-10  Evan Simpson <evan@digicool.com>
-
-        * Version 1.1.0
-        * Bug fixes
-        * Tell TAL not to parse replacement structural text
-        * Change tests to match TAL's omitted attributes
-
-2001-03-30  Evan Simpson <evan@digicool.com>
-
-        * Version 1.0.0
-        * Minor bugs fixed
-
-2001-03-27  Evan Simpson <evan@digicool.com>
-
-	* Version 1.0.0b1
-	* All functionality described in the Project Wiki is implemented
+      Bugs Fixed
