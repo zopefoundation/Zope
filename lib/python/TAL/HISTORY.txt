@@ -4,6 +4,16 @@ TAL history
   Change information for the current release can be found
   in the file CHANGES.txt.
 
+    Version 1.3.3
+
+      Bugs Fixed
+
+        - tal:atributes was creating stray attributes in METAL
+          expansion, and there was no unit test for this behavior.
+
+        - tal:attributes parsing was not catching badly malformed
+          values, and used "print" instead of raising exceptions.
+
     Version 1.3.2
 
       Features Added

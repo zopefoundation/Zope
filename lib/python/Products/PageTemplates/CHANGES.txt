@@ -4,15 +4,9 @@ Page Template changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.3.3
+    Version 1.4.0
 
       Features Added
 
-        - Allow any false value in tal:repeat to act as an empty sequence.
-        - manage_addPageTemplate accepts optional title and text
-          arguments, and returns the new object if REQUEST is None.
-
       Bugs Fixed
 
-        - The various *Python modules failed to import CompilerError.
-        - Security machinery changes in Zope 2.4 broke ZRPythonExpr

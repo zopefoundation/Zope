@@ -4,14 +4,9 @@ TAL changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.3.3
+    Version 1.4.0
 
       Features Added
 
       Bugs Fixed
 
-        - tal:atributes was creating stray attributes in METAL
-          expansion, and there was no unit test for this behavior.
-
-        - tal:attributes parsing was not catching badly malformed
-          values, and used "print" instead of raising exceptions.
