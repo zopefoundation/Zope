@@ -17,7 +17,7 @@ Zope object encapsulating a Page Template.
 
 __version__='$Revision: 1.48 $'[11:-2]
 
-import os, AccessControl, Acquisition, sys
+import os, AccessControl, Acquisition, sys, types
 from types import StringType
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
 from zLOG import LOG, ERROR, INFO
@@ -134,6 +134,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.pt_setTitle(title)
         self.pt_edit(text, content_type)
         REQUEST.set('text', self.read()) # May not equal 'text'!
+        REQUEST.set('title', self.title)
         message = "Saved changes."
         if getattr(self, '_v_warnings', None):
             message = ("<strong>Warning:</strong> <i>%s</i>"
@@ -141,9 +142,18 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return self.pt_editForm(manage_tabs_message=message)
 
     def pt_setTitle(self, title):
-        self._setPropValue('title', str(title))
+        charset = getattr(self, 'management_page_charset', None)
+        if type(title) == types.StringType and charset:
+            try:
+                title.decode('us-ascii')
+                title = str(title)
+            except UnicodeError:
+                title = unicode(title, charset)
+        elif type(title) != types.UnicodeType:
+            title = str(title)
+        self._setPropValue('title', title)
 
-    def pt_upload(self, REQUEST, file=''):
+    def pt_upload(self, REQUEST, file='', charset=None):
         """Replace the document with the text in file."""
         if SUPPORTS_WEBDAV_LOCKS and self.wl_isLocked():
             raise ResourceLockedError, "File is locked via WebDAV"
@@ -151,7 +161,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if type(file) is not StringType:
             if not file: raise ValueError, 'File not specified'
             file = file.read()
-
+        if charset:
+            try:
+                unicode(file, 'us-ascii')
+                file = str(file)
+            except UnicodeDecodeError:
+                file = unicode(file, charset)
         self.write(file)
         message = 'Saved changes.'
         return self.pt_editForm(manage_tabs_message=message)

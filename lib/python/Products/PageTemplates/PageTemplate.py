@@ -17,7 +17,7 @@ HTML- and XML-based template objects using TAL, TALES, and METAL.
 
 __version__='$Revision: 1.31 $'[11:-2]
 
-import sys
+import sys, types
 
 from TAL.TALParser import TALParser
 from TAL.HTMLTALParser import HTMLTALParser
@@ -57,6 +57,12 @@ class PageTemplate(Base):
             self.content_type = str(content_type)
         if hasattr(text, 'read'):
             text = text.read()
+        charset = getattr(self, 'management_page_charset', None)
+        if charset and type(text) == types.StringType:
+            try:
+                unicode(text,'us-ascii')
+            except UnicodeDecodeError:
+                text = unicode(text, charset)
         self.write(text)
 
     def pt_getContext(self):
@@ -130,7 +136,7 @@ class PageTemplate(Base):
         return None  # Unknown.
 
     def write(self, text):
-        assert type(text) is type('')
+        assert type(text) in types.StringTypes
         if text[:len(self._error_start)] == self._error_start:
             errend = text.find('-->')
             if errend >= 0:
