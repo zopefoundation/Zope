@@ -96,7 +96,8 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from TALDefs import quote, TAL_VERSION
+from TALDefs import quote, TAL_VERSION, METALError
+from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
 
 BOOLEAN_HTML_ATTRS = [
@@ -377,6 +378,14 @@ class TALInterpreter:
             self.interpret(block)
             return
         macro = self.engine.evaluateMacro(macroExpr)
+        if not isCurrentVersion(macro):
+            raise METALError("macro %s has incompatible version %s" %
+                             (`macroName`, `getProgramVersion(macro)`),
+                             self.position)
+        mode = getProgramMode(macro)
+        if mode != (self.html and "html" or "xml"):
+            raise METALError("macro %s has incompatible mode %s" %
+                             (`macroName`, `mode`), self.position)
         save = self.slots, self.currentMacro
         self.slots = compiledSlots
         self.currentMacro = macroName
