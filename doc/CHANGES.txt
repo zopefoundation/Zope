@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Btree module could potentially fail to incref Py_None on return
+
       - Setting proxy roles on DTMLMethods and Documents has been broken
 
       - Collector #99: items(), keys() and values() methods
