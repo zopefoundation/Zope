@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.58 1998/03/24 18:08:51 jeffrey Exp $'''
-__version__='$Revision: 1.58 $'[11:-2]
+$Id: Application.py,v 1.59 1998/04/08 16:52:56 jim Exp $'''
+__version__='$Revision: 1.59 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -48,6 +48,10 @@ page.  Thank you for your patience.</P>
  sending mail automatically to the administrator.
 <!--#/comment-->
 <!--#endif-->
+<!--
+ Error type:  <!--#var error_type-->
+ Error value: <!--#var error_value-->
+ -->
 <!--#var standard_html_footer-->'''
 
 class Application(Folder.Folder):
@@ -398,6 +402,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.59  1998/04/08 16:52:56  jim
+# Added error type and value as comment in standard error message.
+#
 # Revision 1.58  1998/03/24 18:08:51  jeffrey
 # Added standard_error_message to reserved names
 #
