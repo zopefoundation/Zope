@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -777,7 +777,7 @@ class DateTime:
 	dy=int(b-d-306001L*e/10000L)
 	mo=(e < 14L) and int(e-1L) or int(e-13L)
 	yr=(mo > 2) and (c-4716L) or (c-4715L)
-	return yr,mo,dy
+	return int(yr),int(mo),int(dy)
 
     def _validDate(self,y,m,d):
         if m<1 or m>12 or y<0 or d<1 or d>31: return 0
