@@ -57,7 +57,18 @@ Zope Changes
       - Collector #304: several catalog optimisations
         
     Bugs:
-    
+
+      - App/FindHomes.py now computes the "real" path for SOFTWARE_HOME and
+        INSTANCE_HOME, resolving any symlinks in any element within paths
+        passed in via the INSTANCE_HOME or SOFTWARE_HOME envvars.  Paths that
+        are computed by "dead reckoning" from os.getcwd and module paths are
+        also "realpathed".  So for instance, if you use '/home/chrism/Instance'
+        as your INSTANCE_HOME, and '/home/chrism' is a symlink to
+        '/other/home/chrism', your INSTANCE_HOME will be computed as
+        '/other/home/chrism/Instance'.  This is necessary to avoid
+        weirdnesses while using "dead reckoning" from INSTANCE_HOME and
+        SOFTWARE_HOME in other parts of the code.  POSIX systems only.
+
       - Fixed PropertyManager/PropertySheets so that you can safely add a
         property named 'ids' without breaking your properties page.
 

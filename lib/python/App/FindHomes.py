@@ -13,10 +13,10 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import os, sys, Products
-from Common import package_home
+from Common import package_home, realpath
 path_join = os.path.join
 path_split = os.path.split
 
@@ -31,10 +31,12 @@ except:
     if path_split(home)[1]=='..':
         home=path_split(path_split(home)[0])[0]
 
+home=realpath(home)
 sys.modules['__builtin__'].SOFTWARE_HOME=SOFTWARE_HOME=home
 
 try:
     chome=os.environ['INSTANCE_HOME']
+    chome = realpath(chome)
 except:
     chome=home
     d,e=path_split(chome)
