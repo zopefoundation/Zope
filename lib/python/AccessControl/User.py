@@ -182,7 +182,8 @@ class BasicUser(Implicit):
         # role and user is not nobody
         if 'Authenticated' in object_roles and (
             self.getUserName() != 'Anonymous User'):
-            return 1
+            if self._check_context(object):
+                return 1
 
         # Check for ancient role data up front, convert if found.
         # This should almost never happen, and should probably be
