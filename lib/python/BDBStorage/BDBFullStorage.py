@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.64 $
+$Revision: 1.65 $
 """
 
 import time
@@ -209,6 +209,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         #     This table is a Queue, not a BTree.  It is used during the mark
         #     phase of pack() and contains a list of oids for work to be done.
         #
+        self._packing = False
+        self._info = self._setupDB('info')
         self._serials = self._setupDB('serials', db.DB_DUP)
         self._pickles = self._setupDB('pickles')
         self._refcounts = self._setupDB('refcounts')
@@ -228,7 +230,6 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # Tables to support packing.
         self._objrevs = self._setupDB('objrevs', db.DB_DUP)
         self._packmark = self._setupDB('packmark')
-        self._info = self._setupDB('info')
         self._oidqueue = self._setupDB('oidqueue', 0, db.DB_QUEUE, 8)
         self._delqueue = self._setupDB('delqueue', 0, db.DB_QUEUE, 8)
         # Do recovery and consistency checks
@@ -434,10 +435,18 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             refcount = self._refcounts.get(oid, ZERO, txn=txn)
             self._refcounts.put(oid, incr(refcount, delta), txn=txn)
         # Now clean up the temporary log tables
-        self._oids.truncate(txn)
         self._pvids.truncate(txn)
         self._prevrevids.truncate(txn)
         self._pending.truncate(txn)
+        # If we're in the middle of a pack, we need to add to the packmark
+        # table any objects that were modified in this transaction.
+        # Otherwise, there's a race condition where mark might have happened,
+        # then the object is added, then sweep runs, deleting the object
+        # created in the interrim.
+        if self._packing:
+            for oid in self._oids.keys():
+                self._packmark.put(oid, PRESENT, txn=txn)
+        self._oids.truncate(txn)
 
     def _dobegin(self, txn, tid, u, d, e):
         # When a transaction begins, we set the pending flag to ABORT,
@@ -1343,6 +1352,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
+        self._packing = True
         try:
             # We don't wrap this in _withtxn() because we're going to do the
             # operation across several Berkeley transactions, which allows
@@ -1350,6 +1360,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # done.
             self._dopack(t)
         finally:
+            self._packing = False
             self._packlock.release()
         self.log('classic pack finished')
 
@@ -1414,6 +1425,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
+        self._packing = True
         try:
             # We don't wrap this in _withtxn() because we're going to do the
             # operation across several Berkeley transactions, which allows
@@ -1421,6 +1433,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # done.
             self._dopack(t, gc)
         finally:
+            self._packing = False
             self._packlock.release()
         self.log('autopack finished')
 
