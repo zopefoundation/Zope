@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -280,7 +280,7 @@ Globals.default__class_init__(UserFolder)
 
 class UserFolderHandler:
     """ """
-    meta_types_=({'name':'User Folder', 'action':'manage_addUserFolder'},)
+    meta_types_=()
 
     def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
         """ """
