@@ -1,9 +1,10 @@
 __doc__="""Copy interface"""
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
-import sys, Globals, Moniker, rPickle, tempfile
-from cPickle import loads, dumps
+import sys, Globals, Moniker, tempfile
+from marshal import loads, dumps
 from urllib import quote, unquote
+from zlib import compress, decompress
 from App.Dialogs import MessageDialog
 
 
@@ -24,7 +25,7 @@ class CopyContainer:
             m=Moniker.Moniker(ob)
             oblist.append((m.jar, m.ids))
         cp=(1, oblist)
-        cp=quote(dumps(cp))
+        cp=_cb_encode(cp)
         if REQUEST is not None:
             resp=REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
@@ -43,7 +44,7 @@ class CopyContainer:
             m=Moniker.Moniker(ob)
             oblist.append((m.jar, m.ids))
         cp=(0, oblist)
-        cp=quote(dumps(cp))
+        cp=_cb_encode(cp)
         if REQUEST is not None:
             resp=REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
@@ -64,7 +65,7 @@ class CopyContainer:
 	if cp is None:
             raise CopyError, eNoData
         
-	try:    cp=rPickle.loads(unquote(cp))
+	try:    cp=_cb_decode(cp)
         except: raise CopyError, eInvalid
 
         oblist=[]
@@ -176,12 +177,12 @@ class CopyContainer:
 
     def cb_dataValid(self):
 	# Return true if clipboard data seems valid.
-	try:    data=rPickle.loads(unquote(self.REQUEST['__cp']))
+	try:    cp=_cb_decode(self.REQUEST['__cp'])
 	except: return 0
         return 1
 
     def cb_dataItems(self):
-	try:    cp=rPickle.loads(unquote(self.REQUEST['__cp']))
+	try:    cp=_cb_decode(self.REQUEST['__cp'])
         except: return []
         oblist=[]
         m=Moniker.Moniker()
@@ -305,6 +306,15 @@ def _get_id(ob, id):
 
 
 
+def _cb_encode(d):
+    return quote(compress(dumps(d), 9))
+
+def _cb_decode(s):
+    return loads(decompress(unquote(s)))
+
+
+
+
 fMessageDialog=Globals.HTML("""
 <HTML>
 <HEAD>
@@ -372,6 +382,9 @@ eNotSupported=fMessageDialog(
 ############################################################################## 
 #
 # $Log: CopySupport.py,v $
+# Revision 1.19  1998/08/14 20:54:44  brian
+# Readded Find support that got overwritten somehow
+#
 # Revision 1.18  1998/08/14 16:46:35  brian
 # Added multiple copy, paste, rename
 #

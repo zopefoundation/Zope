@@ -1,10 +1,11 @@
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 import sys, os, string, time, Globals
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
+from Globals import HTMLFile
 from cDocumentTemplate import *
 from DateTime import DateTime
 from string import find
@@ -13,6 +14,13 @@ from string import find
 
 class FindSupport:
     """Find support for Principia Folders"""
+
+    manage_findFrame=HTMLFile('findFrame', globals())
+    manage_findForm=HTMLFile('findForm', globals())
+    manage_findAdv=HTMLFile('findAdv', globals())
+    manage_findResult=HTMLFile('findResult', globals())
+    manage_findOpt=HTMLFile('findOpt', globals())
+    
     def PrincipiaFind(self, obj, obj_ids=None, obj_metatypes=None,
                       obj_searchterm=None, obj_expr=None,
                       obj_mtime=None, obj_mspec=None,
@@ -172,6 +180,9 @@ def p_name(name):
 ############################################################################## 
 #
 # $Log: FindSupport.py,v $
+# Revision 1.3  1998/08/14 20:54:44  brian
+# Readded Find support that got overwritten somehow
+#
 # Revision 1.2  1998/08/13 13:48:16  brian
 # Added find in all subfolders option
 #

@@ -1,14 +1,15 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.51 1998/08/14 16:46:35 brian Exp $"""
+$Id: Folder.py,v 1.52 1998/08/14 20:54:44 brian Exp $"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
 from CopySupport import CopyContainer
+from FindSupport import FindSupport
 from Image import Image, File
 from Document import DocumentHandler
 from AccessControl.Role import RoleManager
@@ -36,7 +37,7 @@ def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
     if REQUEST is not None: return self.manage_main(self,REQUEST,update_menu=1)
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
-	     SimpleItem.Item,CopyContainer):
+	     SimpleItem.Item,CopyContainer,FindSupport):
     """
     The basic container object in Principia.  Folders can hold almost all
     other Principia objects.
