@@ -99,7 +99,7 @@ class AcceleratedHTTPCache (Cache):
         # Set HTTP Expires and Cache-Control headers
         seconds=self.interval
         expires=rfc1123_date(time.time() + seconds)
-        # RESPONSE.setHeader('Last-Modified',rfc1123_date(time.time()))
+        RESPONSE.setHeader('Last-Modified',rfc1123_date(time.time()))
         RESPONSE.setHeader('Cache-Control', 'max-age=%d' % seconds)
         RESPONSE.setHeader('Expires', expires)
 

@@ -118,6 +118,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1345: AcceleratedHTTPCacheManager now sends the
+       Last-Modified header.
+
      - Collector #1126: ZPublisher.Converters.field2lines now using 
        splitlines() instead of split('\n').
 
