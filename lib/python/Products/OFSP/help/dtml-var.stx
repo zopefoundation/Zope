@@ -22,6 +22,15 @@ var: Inserts a variable
     Entity syntax is a short cut which HTML quotes the variable. It is
     useful when inserting variables into HTML tags.
 
+    'var' tag entity syntax with attributes::
+
+      &dtml.attribute1[.attribute2]...-variableName;
+
+    To a limited degree you may specify attributes with the entity
+    syntax. You may include one or more attributes delimited by
+    periods. You cannot provide arguments for attributes using the
+    entity syntax.
+
   Attributes
 
     html_quote -- Convert characters that have special meaning in
@@ -30,10 +39,12 @@ var: Inserts a variable
     missing=string -- Specify a default value in case Zope cannot find
     the variable.
 
-    fmt=string -- Format a variable. Zope provides a view built-in
+    fmt=string -- Format a variable. Zope provides a few built-in
     formats including C-style format strings. For more information on
     C-style format strings see the "Python Library
     Reference":http://www.python.org/doc/current/lib/typesseq-strings.html
+    If the format string is not a built-in format, then it is assumed
+    to be a method of the object, and it called.
 
       whole-dollars -- Formats the variable as dollars.
 
@@ -62,6 +73,9 @@ var: Inserts a variable
     digits to the left of a decimal point in values containing
     numbers for example '12000' becomes '12,000'.
 
+    url -- Inserts the URL of the object, by calling its
+    'absolute_url' method.
+
     url_quote -- Converts characters that have special meaning in
     URLs to HTML character entities.
 
@@ -88,7 +102,7 @@ var: Inserts a variable
 
       <dtml-var standard_html_header>
 
-    Truncation. Suppose colors is the string 'red yellow green',
+    Truncation. Suppose *colors* is the string 'red yellow green',
     then::
 
       <dtml-var colors size=10 etc=", etc.">
@@ -105,9 +119,18 @@ var: Inserts a variable
      
       23432.23
       
+    Inserting a variable, *link*, inside an HTML 'A' tag with the entity
+    syntax::
 
+      <a href="&dtml-link;">Link</a>
 
+    Inserting a variable using entity syntax with attributes::
 
+      <a href="&dtml.url-doc;"><dtml-var doc fmt="title_or_id"></a>
+
+    This creates an HTML link to an object using its URL and
+    title. This example calls the object's 'absolute_url' method for
+    the URL and its 'title_or_id' method for the title.
 
 
 
