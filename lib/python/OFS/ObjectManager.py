@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.20 1997/11/18 14:10:50 jim Exp $"""
+$Id: ObjectManager.py,v 1.21 1997/11/26 23:47:00 paul Exp $"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -295,7 +295,8 @@ class ObjectManager(Acquirer,Management,Persistent):
 		try:    self._delObject(ids[-1])
 		except: raise 'BadRequest', ('%s does not exist' % ids[-1])
 	        del ids[-1]
-            return self.manage_main(self, REQUEST)
+	    if REQUEST is not None:
+		return self.manage_main(self, REQUEST)
 
     def _setProperty(self,id,value,type='string'):
         self._checkId(id)
@@ -328,12 +329,13 @@ class ObjectManager(Acquirer,Management,Persistent):
 	except: return v
 	return filter(lambda x,r=n: x['id'] not in r, v)
 
-    def manage_addProperty(self,id,value,type,REQUEST):
+    def manage_addProperty(self,id,value,type,REQUEST=None):
 	"""Add a new property (www)"""
 	try:    value=type_converters[type](value)
 	except: pass
 	self._setProperty(id,value,type)
-	return self.manage_propertiesForm(self,REQUEST)
+	if REQUEST is not None:
+	    return self.manage_propertiesForm(self,REQUEST)
 
     def manage_editProperties(self,REQUEST):
 	"""Edit object properties"""
@@ -451,6 +453,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.21  1997/11/26 23:47:00  paul
+# if REQUEST is None added
+#
 # Revision 1.20  1997/11/18 14:10:50  jim
 # Fixed a bug in handling 'tokens' properties and got rid of regex
 # properties.

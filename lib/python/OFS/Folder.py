@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.20 1997/11/21 15:49:48 jim Exp $"""
+$Id: Folder.py,v 1.21 1997/11/26 23:46:59 paul Exp $"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -40,7 +40,8 @@ class FolderHandler:
 	i.title=title
 	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
-	return self.manage_main(self,REQUEST)
+	if REQUEST is not None:
+	    return self.manage_main(self,REQUEST)
 
     def folderIds(self):
 	t=[]
