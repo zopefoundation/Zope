@@ -33,14 +33,14 @@ from cStringIO import StringIO
 
 def time_apply(f, args, kwargs, count):
     for i in range(4):
-        apply(f, args, kwargs)
+        f(*args, **kwargs)
     r = [None] * count
     t0 = time.clock()
     for i in r:
         pass
     t1 = time.clock()
     for i in r:
-        apply(f, args, kwargs)
+        f(*args, **kwargs)
     t = time.clock() - t1 - (t1 - t0)
     return t / count
 

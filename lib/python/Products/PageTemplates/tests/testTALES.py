@@ -88,7 +88,7 @@ class TALESTests(unittest.TestCase):
         e = TALES.Engine()
         e.registerType('simple', TALES.SimpleExpr)
         e.registerType('unicode', DummyUnicodeExpr)
-        return apply(e.getContext, (), kws)
+        return e.getContext(**kws)
 
     def testContext0(self):
         '''Test use of Context'''

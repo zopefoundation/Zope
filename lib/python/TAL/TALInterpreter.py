@@ -90,7 +90,7 @@ class AltTALGenerator(TALGenerator):
 
     def emit(self, *args):
         if self.enabled:
-            apply(TALGenerator.emit, (self,) + args)
+            TALGenerator.emit(self, *args)
 
     def emitStartElement(self, name, attrlist, taldict, metaldict, i18ndict,
                          position=(None, None), isend=0):

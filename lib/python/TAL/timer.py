@@ -47,7 +47,7 @@ def timefunc(count, func, *args):
     sys.stderr.flush()
     t0 = time.clock()
     for i in range(count):
-        result = apply(func, args)
+        result = func(*args)
     t1 = time.clock()
     sys.stderr.write("%6.3f secs for %d calls, i.e. %4.0f msecs per call\n"
                      % ((t1-t0), count, 1000*(t1-t0)/count))
