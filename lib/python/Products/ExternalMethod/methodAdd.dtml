@@ -3,6 +3,7 @@
 <TITLE>New External Method</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+
 <h2>New External Method</h2>
 
 <FORM ACTION="manage_addExternalMethod" METHOD="POST">
@@ -15,7 +16,6 @@
   <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
 </TR>
-<!--#var smallRolesWidget-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP"><B>External name</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">

@@ -3,6 +3,8 @@
 <TITLE>Edit <!--#var title_or_id--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#var manage_tabs-->
+
 <h2>Edit <!--#var title_or_id--></h2>
 
 <FORM ACTION="manage_edit" METHOD="POST">
@@ -17,7 +19,6 @@
     <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->">
   </TD>
 </TR>
-<!--#var smallRolesWidget-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP"><B>External name</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">

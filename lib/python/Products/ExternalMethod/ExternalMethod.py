@@ -7,25 +7,25 @@ domain-specific customization of web environments.
 
 from Acquisition import Implicit
 from Globals import Persistent, HTMLFile, MessageDialog
-import OFS.SimpleItem
+import OFS.SimpleItem, os
 from string import split, join
 import AccessControl.Role
 	    
 braindir=SOFTWARE_HOME+'/Extensions'    
 modules={}
 
-addForm=HTMLFile('ExternalMethod/methodAdd')
+addForm=HTMLFile('methodAdd', globals())
 
-def add(self, id, title, external_name, acl_type='A',acl_roles=[], REQUEST=None):
+def add(self, id, title, external_name, REQUEST=None):
     """Add an external method to a folder"""
     names=split(external_name,'.')
     module, function = join(names[:-1],'.'), names[-1]
     i=ExternalMethod(id,title,module,function)
-    i._setRoles(acl_type,acl_roles)
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
 
-class ExternalMethod(OFS.SimpleItem.Item, Persistent, AccessControl.Role.RoleManager):
+class ExternalMethod(OFS.SimpleItem.Item, Persistent,
+		     AccessControl.Role.RoleManager):
     """An external method is a web-callable function that encapsulates
     an external function."""
 
@@ -33,6 +33,17 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, AccessControl.Role.RoleMan
     icon='misc_/ExternalMethod/function_icon'
     func_defaults=()
     func_code=None
+    
+    manage_options=(
+	{'icon':icon,              'label':'Properties',
+	'action':'manage_main',   'target':'manage_main'},
+	{'icon':icon,
+	 'label':'Try It',
+	 'action':'',   'target':'manage_main'},
+	{'icon':'AccessControl/AccessControl_icon.gif',
+	 'label':'Access Control',
+	 'action':'manage_rolesForm',   'target':'manage_main'},
+	)
 
     def __init__(self, id='', title='', module='', function=''):
 	if id:
@@ -43,9 +54,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, AccessControl.Role.RoleMan
 	    self.getFunction()
         self._p_atime=1
 
-    manage=HTMLFile('ExternalMethod/methodEdit')
-    def manage_edit(self, title, external_name, acl_type='A', acl_roles=[],
-		    REQUEST=None):
+    manage_main=HTMLFile('methodEdit', globals())
+    def manage_edit(self, title, REQUEST=None):
 	"Change the external method"
 	self.title=title
 	names=split(external_name,'.')
@@ -53,7 +63,6 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, AccessControl.Role.RoleMan
 	self._module=module
 	self._function=function
 	self.getFunction()
-	self._setRoles(acl_type,acl_roles)
 	if REQUEST: return MessageDialog(
 	    title  ='Changed %s' % self.id,
 	    message='%s has been updated' % self.id,
