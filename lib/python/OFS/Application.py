@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.6 1997/08/27 13:30:19 brian Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Application.py,v 1.7 1997/08/29 18:39:30 brian Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Folder, regex
 import Globals
@@ -21,9 +21,9 @@ from AccessControl.User import UserFolder
 
 class Application(Folder.Folder):
 
-    title='DC Web Environment'
+    title='Site Studio'
     id   =title
-    __roles__=None
+#    __roles__=None
     web__form__method='GET'
     manage_options=Folder.Folder.manage_options+(
 	{'icon':'App/arrow.jpg', 'label':'Application Management',
@@ -136,6 +136,12 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.7  1997/08/29 18:39:30  brian
+# Added role management and fixed a few bugs:
+#   o images/manage went nowhere
+#   o text on document add form talked about adding images...
+#   o added role mgmgt to add forms for Folder,Document,Image
+#
 # Revision 1.6  1997/08/27 13:30:19  brian
 # Changes for UserFolder support:
 #   o Added support for role registration to Application.py

@@ -27,6 +27,34 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
 </TR>
+<!--#if AUTHENTICATED_USER-->
+<TR>
+  <TD></TD>
+  <TD>
+  <TABLE>
+  <TR>
+  <TD VALIGN="TOP">
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E">
+    Allow users with selected roles
+    <BR>
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A" CHECKED>
+    Allow based on default roles
+    <BR>
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"> 
+    Allow all users
+  </TD>
+  <TD VALIGN="TOP">
+    <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
+    <!--#in selectedRoles-->
+    <!--#var sequence-item-->
+    <!--#/in selectedRoles-->
+    </SELECT>
+  </TD>
+  </TR>
+  </TABLE>
+  </TD>
+</TR>
+<!--#/if AUTHENTICATED_USER-->
 <TR>
 <TD></TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE="Add Image"></TD>

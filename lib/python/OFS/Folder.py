@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.7 1997/08/27 13:30:20 brian Exp $"""
+$Id: Folder.py,v 1.8 1997/08/29 18:39:31 brian Exp $"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -11,7 +11,7 @@ from ObjectManager import ObjectManager
 from Image import ImageHandler
 from Document import DocumentHandler
 from AccessControl.User import UserFolderHandler
-
+from AccessControl.Role import RoleManager
 
 class FolderHandler:
     """Folder object handler"""
@@ -24,11 +24,12 @@ class FolderHandler:
 	return Folder
 	return self.__class__
 
-    def manage_addFolder(self,id,title,REQUEST):
+    def manage_addFolder(self,id,title,REQUEST,acl_type='A',acl_roles=[]):
 	"""Add a new Folder object"""
 	i=self.folderClass()()
 	i.id=id
 	i.title=title
+	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
@@ -53,8 +54,8 @@ class FolderHandler:
 	return t
 
 
-class Folder(ObjectManager,DocumentHandler,ImageHandler,
-	     FolderHandler,UserFolderHandler):
+class Folder(ObjectManager,RoleManager,DocumentHandler,
+	     ImageHandler,FolderHandler,UserFolderHandler):
     """Folder object"""
     meta_type='Folder'
     id       ='folder'
@@ -74,6 +75,8 @@ class Folder(ObjectManager,DocumentHandler,ImageHandler,
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
+    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
+     'action':'manage_rolesForm',   'target':'manage_main'},
     {'icon':'OFS/Help_icon.gif', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
     )

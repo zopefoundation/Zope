@@ -1,20 +1,21 @@
 """Image object"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
-
+from Persistence import Persistent
 from Globals import HTMLFile
+from AccessControl.Role import RoleManager
 
-
-class Image:
+class Image(Persistent,RoleManager):
     """Image object"""
     meta_type  ='Image'
     title=''
     icon       ='OFS/Image_icon.gif'
 
     manage_editForm=HTMLFile('OFS/imageEdit')
+    manage         =manage_editForm
 
-    def manage_edit(self,file,title,content_type=''):
+    def manage_edit(self,file,title,content_type='',acl_type='A',acl_roles=[]):
 	try:    headers=file.headers
 	except: headers=None
 
@@ -28,7 +29,7 @@ class Image:
 	    self.content_type=headers['content-type']
 	    self.data=data
 	self.title=title
-	
+	self._setRoles(acl_type,acl_roles)
 
     def _init(self,id,file,content_type=''):
 	try:    headers=file.headers
@@ -50,17 +51,20 @@ class Image:
 	RESPONSE['content-type']=self.content_type
         return self.data
 
+
+
 class ImageHandler:
     """Image object handler mixin"""
     meta_types=({'name':'Image', 'action':'manage_addImageForm'},)
 
     manage_addImageForm=HTMLFile('OFS/imageAdd')
 
-    def manage_addImage(self,id,file,title,REQUEST):
+    def manage_addImage(self,id,file,title,REQUEST,acl_type='A',acl_roles=[]):
 	"""Add a new Image object"""
 	i=Image()
 	i._init(id,file)
 	i.title=title
+	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 

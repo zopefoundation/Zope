@@ -1,14 +1,19 @@
 """Document object"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import HTMLFile
 from string import join, split, strip, rfind
-import AccessControl.ACL
+from AccessControl.Role import RoleManager
 import regex
 
-class Document(HTML, AccessControl.ACL.RoleManager):
+
+
+
+
+
+class Document(HTML, RoleManager):
     """A Document object"""
     meta_type  ='Document'
     title=''
@@ -16,16 +21,47 @@ class Document(HTML, AccessControl.ACL.RoleManager):
 
     __state_names__=HTML.__state_names__+('title','__roles__')
 
-    def document_template_form_header(self):
-	try: roles=join(self.__roles__)
-	except: roles=''
-	return ("""<table>
-	           <tr><th>Title:</th><td>
-                   <input type=text name=title SIZE="50" value="%s"></td></tr>
-		   <tr><th>Roles:</th><td>
-                   <input type=text name=roles SIZE="50" value="%s"></td></tr>
-                   </table>""" % (self.title, roles))
+    _formhead="""
+<TABLE>
+<TR>
+<TH>Title:</TH>
+<TD><INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="%s"></TD>
+</TR>
+<TR>
+<TD></TD>
+<TD>
+  <TABLE>
+  <TR>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"%s>
+  Allow users with selected roles
+  <BR>
+  <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A"%s>
+  Allow based on default roles
+  <BR>
+  <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"%s> 
+  Allow all users
+  </TD>
+  <TD VALIGN="TOP">
+  <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
+  %s
+  </SELECT>
+  </TD>
+  </TR>
+  </TABLE>
+</TD>
+</TR>
+</TABLE><P>"""
 
+    def document_template_form_header(self):
+	try:
+            return self._formhead % (self.title, self.aclEChecked(), 
+				 self.aclAChecked(),self.aclPChecked(),
+				 join(self.selectedRoles(),'\n')
+				)
+        except:
+	    import sys
+	    return '%s %s' % (sys.exc_type, sys.exc_value)
 
     def initvars(self, mapping, vars):
 	"""Hook to override signature so we can detect whether we are
@@ -39,13 +75,12 @@ class Document(HTML, AccessControl.ACL.RoleManager):
 	if RESPONSE is None: return r
 	return decapitate(r, RESPONSE)
 
-    def manage_edit(self,data,title,roles,REQUEST=None):
+    def manage_edit(self,data,title,acl_type='A',acl_roles=[],REQUEST=None):
 	"""Edit method"""
 	self.title=title
-	self.parse_roles_string(roles)
+	self._setRoles(acl_type,acl_roles)
 	REQUEST['CANCEL_ACTION']="%s/manage_main" % REQUEST['URL2']
 	return HTML.manage_edit(self,data,REQUEST)
-
 
 
 default_html="""<!--#var standard_html_header-->
@@ -59,25 +94,28 @@ class DocumentHandler:
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
-    def manage_addDocument(self,id,title,roles,REQUEST,file=''):
+    def manage_addDocument(self,REQUEST,id,title,file='',
+			   acl_type='A',acl_roles=[]):
 	"""Add a new Document object"""
 	if not file: file=default_html
         i=Document(file, __name__=id)
 	i.title=title
-	i.parse_roles_string(roles)
+	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 	if REQUEST: return self.manage_main(self,REQUEST)
 
     def documentIds(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Document': t.append(i['id'])
+	    if i['meta_type']=='Document':
+		t.append(i['id'])
 	return t
 
     def documentValues(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Document': t.append(getattr(self,i['id']))
+	    if i['meta_type']=='Document':
+		t.append(getattr(self,i['id']))
 	return t
 
     def documentItems(self):

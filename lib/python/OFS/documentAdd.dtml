@@ -5,9 +5,9 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <FONT SIZE="+2">New HTML Document</FONT>
 <P>
- You can create a new image in the system using the form below. 
- Select an image from your local computer by clicking the <I>Browse</I> 
- button. The image file you select will be uploaded to the application.
+ You can create a new html document using the form below. 
+ You may choose to upload an existing html file from your
+ local computer by clicking the <I>Browse</I> button.
 
 <FORM ACTION="<!--#var PARENT_URL-->/manage_addDocument" METHOD="POST"
       ENCTYPE="multipart/form-data" TARGET="manage_main">
@@ -23,17 +23,39 @@
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Roles of authorized users</STRONG></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="roles" SIZE="50">
-  </TD>
-</TR>
-<TR>
   <TD ALIGN="LEFT" VALIGN="TOP"><STRONG>File</STRONG></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file:string" SIZE="30" VALUE="">
   </TD>
 </TR>
+<!--#if AUTHENTICATED_USER-->
+<TR>
+  <TD></TD>
+  <TD>
+  <TABLE>
+  <TR>
+  <TD VALIGN="TOP">
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E">
+    Allow users with selected roles
+    <BR>
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A" CHECKED>
+    Allow based on default roles
+    <BR>
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"> 
+    Allow all users
+  </TD>
+  <TD VALIGN="TOP">
+    <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
+    <!--#in selectedRoles-->
+    <!--#var sequence-item-->
+    <!--#/in selectedRoles-->
+    </SELECT>
+  </TD>
+  </TR>
+  </TABLE>
+  </TD>
+</TR>
+<!--#/if AUTHENTICATED_USER-->
 <TR>
 <TD></TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE="Add Document"></TD>
