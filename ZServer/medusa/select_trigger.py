@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.7 1999/10/29 15:04:27 brian Exp $"
+VERSION_STRING = "$Id: select_trigger.py,v 1.8 1999/10/29 15:11:58 brian Exp $"
 
 import asyncore
 import asynchat
@@ -104,17 +104,17 @@ else:
 
             # tricky: get a pair of connected sockets
             host='127.9.9.9'
-            port=19950
+            port=19999
             while 1:
                 try:
                     self.address=(host, port)
                     a.bind(self.address)
                     break
                 except:
-                    if port >= 19999:
+                    if port <= 19950:
                         raise 'Bind Error', 'Cannot bind trigger!'
-                    port=port + 1
-            a.bind (self.address)
+                    port=port - 1
+
             a.listen (1)
             w.setblocking (0)
             try:
