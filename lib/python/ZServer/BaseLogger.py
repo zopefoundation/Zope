@@ -12,8 +12,8 @@
 #
 ##############################################################################
 """
-An abstract logger meant to provide features to the access logger,
-the event logger, and the debug logger.
+An abstract logger meant to provide features to the access logger and
+the debug logger.
 """
 
 import logging
