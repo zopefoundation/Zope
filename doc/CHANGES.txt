@@ -24,7 +24,7 @@ Zope Changes
 
    - check if ExtendedPathIndex might be a reasonable replacement for PathIndex
 
-  After Zope 2.8a1
+  Zope 2.8a2 (2005/04/02)
 
     Features added
 
