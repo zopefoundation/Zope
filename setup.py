@@ -211,7 +211,7 @@ setup(
     name='App',
     author=AUTHOR,
 
-    packages=['App'],
+    packages=['App', 'App.tests'],
     data_files=[['App/dtml', ['App/dtml/*']],
                 ['App/www', ['App/www/*']]],
     )
@@ -551,9 +551,12 @@ setup(
     name='ZODB',
     author=AUTHOR,
 
-    packages=['Persistence', 'persistent', 'transaction', 'ZODB', 'ZODB.tests',
-              'ZODB.FileStorage'],
-    data_files=[['ZODB', ['ZODB/component.xml']]],
+    packages=['Persistence', 'Persistence.tests',
+              'persistent', 'persistent.tests',
+              'transaction', 'transaction.tests',
+              'ZODB', 'ZODB.FileStorage', 'ZODB.tests'],
+    data_files=[['persistent/tests', ['persistent/tests/*.txt']],
+                ['ZODB', ['ZODB/*.xml']]],
     ext_modules=[
         Extension(name='persistent.cPersistence',
                   include_dirs=['persistent'],
@@ -614,7 +617,7 @@ setup(
     author=AUTHOR,
 
     packages=['Zope', 'Zope.App', 'Zope.Startup', 'Zope.Startup.misc',
-              'Zope.Startup.nt'],
+              'Zope.Startup.nt', 'Zope.Startup.tests'],
     data_files=[ ['Zope/Startup', ['Zope/Startup/*.xml']] ],
     )
 
