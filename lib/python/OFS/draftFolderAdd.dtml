@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>Add Draft Folder</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>Add Draft Folder</H2>
+
+<FORM ACTION="manage_addDraftFolder" METHOD="POST">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <EM><STRONG>Title</STRONG></EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <EM><STRONG>Base Folder</STRONG></EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME=baseid>
+  <!--#in folderValues-->
+    <OPTION VALUE="<!--#var id-->">
+    <!--#if title-->
+      <!--#var title size=25--> (<!--#var id-->)
+    <!--#else-->
+      <!--#var id-->
+    <!--#endif-->
+  <!--#/in folderValues-->
+  </SELECT>
+  </TD>
+</TR>
+<TR>
+<TD></TD>
+<TD>
+<BR><INPUT TYPE="SUBMIT" VALUE=" Add ">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+
