@@ -22,7 +22,7 @@ import thread
 
 from PubCore import handle
 
-from medusa import counter, producers
+from medusa import counter, producers, asyncore
 from medusa.default_handler import split_path, unquote, get_header
 from medusa.producers import NotReady
 
@@ -70,11 +70,10 @@ class zope_handler:
         else:
             return 0
 
-
     def handle_request(self,request):
         self.hits.increment()
-        if request.command in ["post","put"]:
-            size=get_header(CONTENT_LENGTH, request.header)
+        size=get_header(CONTENT_LENGTH, request.header)
+        if size:
             size=string.atoi(size)
             if size > 1048576:
                 # write large upload data to a file
@@ -230,6 +229,8 @@ class header_scanning_producer:
         data=self.pipe.read()
         if data is None:
             raise NotReady()
+        if data=='' and self.exit:
+            asyncore.close_all()
         return data
            
     def ready(self):
@@ -253,8 +254,3 @@ class header_scanning_producer:
                 self.buffer=self.request.build_reply_header()+html
                 del self.request
                 self.done=1
-
-class exit_producer:
-    def more(self):
-        # perhaps there could be a more graceful shutdown.
-        asyncore.close_all()
