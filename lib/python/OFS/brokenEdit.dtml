@@ -1,0 +1,21 @@
+<HTML>
+<HEAD>
+<TITLE>Edit</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+
+This object is <font color=red>broken</font> because the 
+<strong><!--#var product_name--></strong> product that created it 
+is no longer installed or is installed incorrectly.  Please contact 
+your product vendor for assistance.
+<p>
+Note that the data associated with this product has not been lost, 
+and will be accessible again if the product is reinstalled.
+
+<!-- 
+  <!--#var info--> 
+  -->
+
+</BODY>
+</HTML>
+
