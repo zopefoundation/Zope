@@ -19,6 +19,7 @@
 
 import urllib
 from Globals import DTMLFile
+from Acquisition import aq_base
 
 class CatalogAware:
     """ This is a Mix-In class to make objects automaticly catalog and
