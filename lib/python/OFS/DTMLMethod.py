@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -96,7 +96,7 @@ from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
 from DateTime.DateTime import DateTime
 from urllib import quote
-import regex, Globals, sys, Acquisition
+import ts_regex, Globals, sys, Acquisition
 
 
 class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
@@ -335,34 +335,42 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
 
 
 def decapitate(html, RESPONSE=None,
-               header_re=regex.compile(
+               header_re=ts_regex.compile(
                    '\(\('
                           '[^\n\0\- <>:]+:[^\n]*\n'
                       '\|'
                           '[ \t]+[^\0\- ][^\n]*\n'
                    '\)+\)[ \t]*\n\([\0-\377]+\)'
                    ),
-               space_re=regex.compile('\([ \t]+\)'),
-               name_re=regex.compile('\([^\0\- <>:]+\):\([^\n]*\)'),
+               space_re=ts_regex.compile('\([ \t]+\)'),
+               name_re=ts_regex.compile('\([^\0\- <>:]+\):\([^\n]*\)'),
                ):
-    if header_re.match(html) < 0:
+
+    ts_results = header_re.match_group(html, (1,3))
+    if not ts_results:
         return html
-    headers, html = header_re.group(1,3)
+    headers, html = ts_results[1]
     headers=split(headers,'\n')
 
     i=1
     while i < len(headers):
         if not headers[i]:
             del headers[i]
-        elif space_re.match(headers[i]) >= 0:
+	    continue
+
+	ts_results = space_re.match_group(headers[i], (1,))
+	if ts_results:
             headers[i-1]="%s %s" % (headers[i-1],
-                                    headers[i][len(space_re.group(1)):])
+                                    headers[i][len(ts_results[1]):])
             del headers[i]
-        else:
-            i=i+1
+	    continue
+
+	i=i+1
+
     for i in range(len(headers)):
-        if name_re.match(headers[i]) >= 0:
-            k, v = name_re.group(1,2)
+	ts_results = name_re.match_group(headers[i], (1,2))
+        if ts_results:
+            k, v = ts_results[1]
             v=strip(v)
         else:
             raise ValueError, 'Invalid Header (%d): %s ' % (i,headers[i])
