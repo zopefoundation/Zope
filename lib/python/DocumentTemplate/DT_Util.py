@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.13 1997/10/29 22:06:06 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.14 1997/11/11 18:13:48 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -77,26 +77,30 @@ def int_param(params,md,name,default=0):
 def _tm(m, tag):
     return m + tag and (' in %s' % tag)
 
-def careful_getattr(inst, name, md):
+def careful_getattr(md, inst, name):
     if name[:1]!='_':
 	validate=md.validate
 
 	if validate is None: return getattr(inst, name)
 
-	if hasattr(inst,'aq_acquire'): return inst.acquire(name, validate, md)
+	if hasattr(inst,'aq_acquire'):
+	    return inst.aq_acquire(name, validate, md)
 
 	v=getattr(inst, name)
 	if validate(inst,inst,name,v,md): return v
 
     raise AttributeError, name
 
-def careful_getitem(mapping, key, md):
+def careful_getitem(md, mapping, key):
     v=mapping[key]
+
+    if type(v) is type(''): return v # Short-circuit common case
+
     validate=md.validate
     if validate is None or validate(mapping,mapping,key,v,md): return v
     raise KeyError, key
 
-def careful_getslice(seq, indexes, md):
+def careful_getslice(md, seq, *indexes):
     v=len(indexes)
     if v==2:
 	v=seq[indexes[0]:indexes[1]]
@@ -129,6 +133,15 @@ def test(cond, t, f):
 
 d['test']=test
 
+expr_globals={
+    '__builtins__':{},
+    '_': expr_globals,
+    '__guarded_mul__':      VSEval.careful_mul,
+    '__guarded_getattr__':  careful_getattr,
+    '__guarded_getitem__':  careful_getitem,
+    '__guarded_getslice__': careful_getslice,
+    }
+
 def name_param(params,tag='',expr=0):
     used=params.has_key
     if used(''):
@@ -145,13 +158,7 @@ def name_param(params,tag='',expr=0):
 	return params['name']
     elif expr and used('expr'):
 	name=params['expr']
-	expr=VSEval.Eval(name,
-			 globals={'__builtins__':{}, '_': expr_globals},
-			 __mul__=VSEval.careful_mul,
-			 __getattr__=careful_getattr,
-			 __getitem__=careful_getitem,
-			 __getslice__=careful_getslice,
-			 )
+	expr=VSEval.Eval(name, expr_globals)
 	return name, expr
 	
     raise ParseError, ('No name given', tag)
@@ -278,6 +285,9 @@ TemplateDict.pop.__roles__=TemplateDict.push.__roles__=()
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.14  1997/11/11 18:13:48  jim
+# updated expr machinery to use parse-tree manipulation
+#
 # Revision 1.13  1997/10/29 22:06:06  jim
 # Moved func_code from DT_Util to DT_String.
 #
