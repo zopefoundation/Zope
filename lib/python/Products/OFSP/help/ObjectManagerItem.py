@@ -187,7 +187,7 @@ class ObjectManagerItem:
         Get the path of an object from the root, ignoring virtual
         hosts.
 
-        Permission -- Python only
+        Permission -- Always available
 
         """
 
@@ -213,8 +213,5 @@ class ObjectManagerItem:
         If an object is not found then the 'default' argument will be
         returned.
 
-        Permission -- Python only
+        Permission -- Always available
         """
-
-
-    
