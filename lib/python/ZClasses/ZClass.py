@@ -103,15 +103,21 @@ manage_addZClassForm=Globals.HTMLFile(
     CreateFactory=1)
 
 def manage_addZClass(self, id, title='', baseclasses=[],
-                     meta_type='', CreateFactory=1, REQUEST=None):
+                     meta_type='', CreateFactory=0, REQUEST=None):
     """Add a Z Class
     """
     bases=[]
     for b in baseclasses:
         if Products.meta_classes.has_key(b):
             bases.append(Products.meta_classes[b])
-        else:
+        elif hasattr(self, b):
             bases.append(getattr(self, b))
+        else:
+            # If self is the "methods" propertysheet
+            # of a ZClass, get the class from the
+            # propertysheet.
+            bases.append(self._getOb(b))
+
 
     Z=ZClass(id,title,bases)
     if meta_type: Z._zclass_.meta_type=meta_type
