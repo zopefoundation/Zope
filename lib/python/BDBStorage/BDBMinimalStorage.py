@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.27 $'[-2:][0]
+__version__ = '$Revision: 1.28 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -34,6 +34,8 @@ try:
 except NameError:
     True = 1
     False = 0
+
+BDBMINIMAL_SCHEMA_VERSION = 'BM01'
 
 
 
@@ -123,6 +125,13 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
                     self._withtxn(self._docommit, tid)
             finally:
                 self._lock_release()
+
+    def _version_check(self, txn):
+        version = self._info.get('version')
+        if version is None:
+            self._info.put('version', BDBMINIMAL_SCHEMA_VERSION, txn=txn)
+        elif version <> BDBMINIMAL_SCHEMA_VERSION:
+            raise StorageSystemError, 'incompatible storage version'
 
     def _make_autopacker(self, event):
         return _Autopack(self, event, self._config.frequency)
@@ -269,6 +278,12 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         self._serials.put(oid, newserial, txn=txn)
         self._pickles.put(oid+newserial, data, txn=txn)
         self._oids.put(oid, PRESENT, txn=txn)
+        # If we're in the middle of a pack, we need to add these objects to
+        # the packmark, so a specific race condition won't collect them.
+        # E.g. we do a mark, then we do a store, then we sweep.  The objects
+        # stored between the mark and sweep would get collected away.
+        if self._packing:
+            self._packmark.put(oid, PRESENT, txn=txn)
         # Return the new serial number for the object
         if conflictresolved:
             return ResolvedSerial
