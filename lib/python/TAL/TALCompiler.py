@@ -119,10 +119,18 @@ KNOWN_TAL_ATTRIBUTES = [
     "attributes",
     ]
 
+class DummyCompiler:
+
+    def compile(self, expr):
+        return expr
+
 class METALCompiler(DOMVisitor):
 
-    def __init__(self, document):
+    def __init__(self, document, expressionCompiler=None):
         DOMVisitor.__init__(self, document)
+        if not expressionCompiler:
+            expressionCompiler = DummyCompiler()
+        self.expressionCompiler = expressionCompiler
 
     def __call__(self):
         self.macros = {}
@@ -133,6 +141,9 @@ class METALCompiler(DOMVisitor):
         DOMVisitor.__call__(self)
         assert not self.stack
         return self.program, self.macros
+
+    def compileExpression(self, expr):
+        return self.expressionCompiler.compile(expr)
 
     def pushProgram(self):
         self.stack.append(self.program)
@@ -234,7 +245,8 @@ class METALCompiler(DOMVisitor):
                     self.pushProgram()
                     self.visitElement(slotNode)
                     compiledSlots[slotName] = self.popProgram()
-            self.emit("useMacro", macroName, compiledSlots)
+            cexpr = self.compileExpression(macroName)
+            self.emit("useMacro", cexpr, compiledSlots)
             return
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
         if macroName:
@@ -297,7 +309,7 @@ class TALCompiler(METALCompiler):
     # Extending METAL method to add attribute replacements
     def getAttributeList(self, node):
         attrList = METALCompiler.getAttributeList(self, node)
-        attrDict = getAttributeReplacements(node)
+        attrDict = self.getAttributeReplacements(node)
         if not attrDict:
             return attrList
         list = []
@@ -337,10 +349,11 @@ class TALCompiler(METALCompiler):
             else:
                 scope, name, expr = m.group(1, 2, 3)
                 scope = scope or "local"
+                cexpr = self.compileExpression(expr)
                 if scope == "local":
-                    self.emit("setLocal", name, expr)
+                    self.emit("setLocal", name, cexpr)
                 else:
-                    self.emit("setGlobal", name, expr)
+                    self.emit("setGlobal", name, cexpr)
 
     def conditionalElement(self, node):
         condition = node.getAttributeNS(ZOPE_TAL_NS, "condition")
@@ -387,18 +400,19 @@ class TALCompiler(METALCompiler):
         key, expr = parseSubstitution(arg)
         if not key:
             return 0
-        attrDict = getAttributeReplacements(node)
+        attrDict = self.getAttributeReplacements(node)
         self.doSubstitution(key, expr, attrDict)
         return 1
 
     def doSubstitution(self, key, expr, attrDict):
+        cexpr = self.compileExpression(expr)
         if key == "text":
             if attrDict:
                 print "Warning: z:attributes unused for text replacement"
-            self.emit("insertText", expr)
+            self.emit("insertText", cexpr)
         else:
             assert key == "structure"
-            self.emit("insertStructure", expr, attrDict)
+            self.emit("insertStructure", cexpr, attrDict)
 
     def doRepeat(self, node, arg):
         m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
@@ -406,18 +420,21 @@ class TALCompiler(METALCompiler):
             print "Bad syntax in z:repeat:", `arg`
             return 0
         name, expr = m.group(1, 2)
+        cexpr = self.compileExpression(expr)
         self.pushProgram()
         self.emitElement(node)
         block = self.popProgram()
-        self.emit("loop", name, expr, block)
+        self.emit("loop", name, cexpr, block)
         return 1
 
-def getAttributeReplacements(node):
-    attributes = node.getAttributeNS(ZOPE_TAL_NS, "attributes")
-    if not attributes:
-        return {}
-    else:
-        return parseAttributeReplacements(attributes)
+    def getAttributeReplacements(self, node):
+        attrDict = {}
+        value = node.getAttributeNS(ZOPE_TAL_NS, "attributes")
+        if value:
+            rawDict = parseAttributeReplacements(value)
+            for key, expr in rawDict.items():
+                attrDict[key] = self.compileExpression(expr)
+        return attrDict
 
 def test():
     from driver import FILE, parsefile
