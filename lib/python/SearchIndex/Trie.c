@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.11 1997/07/17 14:50:57 jim Exp $"
+"\n$Id: Trie.c,v 1.12 1997/07/18 14:43:24 jim Exp $"
 ;
 
 
@@ -452,9 +452,14 @@ Trie_cget(TrieObject *self, char *word, PyObject *oword)
       PER_USE_OR_RETURN(self, NULL);
 
     }
-  if(! self->value) return PER_RETURN(self, NotFoundError(oword));
+  if(! self->value)
+    {
+      Py_DECREF(self);
+      return PER_RETURN(self, NotFoundError(oword));
+    }
   bin=self->value;
   Py_INCREF(bin);
+  Py_DECREF(self);
   return PER_RETURN(self, bin);
 
 not_found:
@@ -653,6 +658,7 @@ Trie_dealloc(TrieObject *self)
 {
   Py_XDECREF(self->bins);
   Py_XDECREF(self->value);
+  PER_DEL(self);
   PyMem_DEL(self);
   /*printf("d");*/
 }
@@ -741,7 +747,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -781,6 +787,10 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.12  1997/07/18 14:43:24  jim
+  Added cPersistent, PER_DEL invocation to destructor.
+  Fixed memory leaks in cset.
+
   Revision 1.11  1997/07/17 14:50:57  jim
   Got  rid of some unreferenced vars.
 
