@@ -3,6 +3,12 @@
 
 <h3>Exception traceback</h3>
 
+<p>
+<form action="manage_main" method="GET">
+<input type="submit" name="submit" value=" Return to log " />
+</form>
+</p>
+
 <div tal:define="entry python:container.getLogEntryById(request.get('id'))">
 
 <em tal:condition="not:entry">
@@ -46,6 +52,13 @@ Traceback (text)
    traceback as text</a></p>
 
 <div tal:condition="entry/req_html">
+    
+<p>
+<form action="manage_main" method="GET">
+<input type="submit" name="submit" value=" Return to log " />
+</form>
+</p>
+    
 <h3>REQUEST</h3>
 <div tal:replace="structure entry/req_html"></div>
 </div>
