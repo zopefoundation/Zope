@@ -61,8 +61,8 @@ values and click "Save Changes".
    "getProperty(id)"--></textarea>
   <!--#elif "type=='lines'"-->
   <textarea name="<!--#var id-->:lines" rows="6" cols="35"><!--#in
-  "getProperty(id)"--><!--#var sequence-item-->
-<!--#endin--></textarea>
+  "getProperty(id)"--><!--#var sequence-item--><!--#if
+   sequence-end--><!--#else--><!--#var "'\n'"--><!--#/if--><!--#endin--></textarea>
   <!--#elif "type=='selection'"-->
     <!--#if "_.has_key(select_variable)"-->
     <select name="<!--#var id-->">
