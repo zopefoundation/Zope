@@ -62,13 +62,16 @@ Zope Changes
 
   Releases
 
-    Zope xxx
+    Zope 2.1.0 beta 2
 
       Features Added
 
         - Added Oleg Broytmann's patches to utilities/load_site.py 
           that provide automatic parsing of title and property 
           information and inclusion of std headers and footers.
+
+        - Added Martijn Pieters' patches to DT_Try.py to implement 
+          try/except/else and try/finally constructs.
 
       Bugs Fixed
 
@@ -85,7 +88,9 @@ Zope Changes
 
         - Some long-standing indentation problems with the tree tag 
           have been fixed.
-          
+
+        - The Zope database lock file was not properly closed.
+ 
 
     Zope 2.1.0 beta 1
 
