@@ -346,8 +346,9 @@ class Bindings:
         bindcode = getattr(self, '_v_bindcode', _marker)
         if bindcode is _marker:
             bindcode = self._prepareBindCode()
-        bound_data = None
-        if bindcode is not None:
+        if bindcode is None:
+            bound_data = {}
+        else:
             bound_data = []
             exec bindcode
             bound_data = bound_data[0]
