@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.5 2001/01/11 20:53:14 chrism Exp $"""
+$Id: Cache.py,v 1.6 2001/02/08 15:24:16 shane Exp $"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import time, sys
 from string import join
@@ -388,6 +388,7 @@ class Cacheable:
         else:
             manager_id = str(manager_id)
         self.__manager_id = manager_id
+        self._v_ZCacheable_cache = None
         if REQUEST is not None:
             return self.ZCacheable_manage(
                 self, REQUEST, management_view='Cache',
