@@ -158,6 +158,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     def __init__(self,id,title=None):
         self.id=id
         self.title=title
+        self.threshold = 1000
+        self.total = 0
         self._catalog = Catalog()
 
 	self._catalog.addColumn('id')
@@ -250,7 +252,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         """ Find object according to search criteria and Catalog them
         """
 
-        results = self.ZopeFind(REQUEST.PARENTS[-1],
+        results = self.ZopeFind(REQUEST.PARENTS[1],
                                 obj_metatypes=obj_metatypes,
                                 obj_ids=obj_ids,
                                 obj_searchterm=obj_searchterm,
@@ -307,8 +309,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def catalog_object(self, obj, uid):
 	""" wrapper around catalog """
-	
-	self._catalog.catalogObject(obj, uid)
+	print 'about to catalog %s' % uid
+	self.total = self.total + self._catalog.catalogObject(obj, uid)
+        if self.total > self.threshold:
+            print 'about to commit'
+            get_transaction().commit(1)
+            self.total = 0
 
 
     def uncatalog_object(self, uid):

@@ -301,11 +301,16 @@ class Catalog(Persistent, Acquisition.Implicit):
         # meta_data is stored as a tuple for efficiency
         data[i] = self.recordify(object)
 
+        total = 0
         for x in self.indexes.values():
             if hasattr(x, 'index_object'):
-                x.index_object(i, object)
+                blah = x.index_object(i, object)
+                __traceback_info__=(`total`, `blah`)
+                total = total + blah
 
         self.data = data
+
+        return total
                                           
 
     def uncatalogObject(self, uid):
