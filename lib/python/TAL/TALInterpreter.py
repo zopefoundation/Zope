@@ -97,6 +97,8 @@ BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
     # minimized form (e.g. <img ismap> rather than <img ismap="">)
     # From http://www.w3.org/TR/xhtml1/#guidelines (C.10)
+    # XXX The problem with this is that this is not valid XML and
+    # can't be parsed back!
     "compact", "nowrap", "ismap", "declare", "noshade", "checked",
     "disabled", "readonly", "multiple", "selected", "noresize",
     "defer"
@@ -260,6 +262,9 @@ class TALInterpreter:
         self.stream_write("<!--")
         self.stream_write(text)
         self.stream_write("-->")
+
+    def do_rawtext(self, text):
+        self.stream_write(text)
 
     def do_condition(self, condition, block):
         if not self.tal or self.engine.evaluateBoolean(condition):
