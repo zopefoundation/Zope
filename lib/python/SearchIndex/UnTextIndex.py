@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.42 $'[11:-2]
+__version__ = '$Revision: 1.43 $'[11:-2]
 
 
 import string, regex, regsub, ts_regex
@@ -505,9 +505,18 @@ class UnTextIndex(Persistent, Implicit):
         return (IIBucket(), (self.id,))
 
 
-    def positions(self, docid, words, obj):
+    def positions(self, docid, words,
+                  # This was never tested: obj
+                  ):
         """Return the positions in the document for the given document
         id of the word, word."""
+
+        return [1]
+
+        #################################################################
+        # The code below here is broken and requires an API change to fix
+        # it. Waaaaa.
+
 
         if self._schema is None:
             f = getattr
