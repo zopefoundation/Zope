@@ -109,4 +109,18 @@ class WebDAVSrcHandler( zhttp_handler ):
             if os.sep != '/':
                 path_info = string.replace( path_info, os.sep, '/' )
             env['PATH_INFO'] = path_info
+
+
+        # Workaround for lousy WebDAV implementation of M$ Office 2K.
+        # Requests for "index_html" are *sometimes* send as "index_html."
+        # We check the user-agent and remove a trailing dot for PATH_INFO
+        # and PATH_TRANSLATED
+
+        if string.find(env["HTTP_USER_AGENT"],"Microsoft Data Access Internet Publishing Provider")>-1:
+            if env["PATH_INFO"][-1]=='.':
+                env["PATH_INFO"] = env["PATH_INFO"][:-1]             
+
+            if env["PATH_TRANSLATED"][-1]=='.':
+                env["PATH_TRANSLATED"] = env["PATH_TRANSLATED"][:-1]             
+
         return env
