@@ -13,7 +13,7 @@
 <FORM ACTION="manage_delObjects" METHOD="POST">
 <!--#if objectValues-->
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
-<!--#in objectValues sort=title_and_id-->
+<!--#in objectValues sort=id-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var id-->">
