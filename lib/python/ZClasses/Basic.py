@@ -94,7 +94,8 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
     """
 
     manage=Globals.HTMLFile('itemProp', globals())
-    def manage_edit(self, meta_type='', icon='', file='', REQUEST=None):
+    def manage_edit(self, meta_type='', icon='', file='',
+                    class_id=None, REQUEST=None):
         """Set basic item properties.
         """
         if meta_type: self.setClassAttr('meta_type', meta_type)
@@ -114,6 +115,9 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
             
         self.setClassAttr('icon', icon)
 
+        if class_id is not None and class_id != self.class_id():
+            self.changeClassId(class_id)
+
         if REQUEST is not None:
             return self.manage(
                 self, REQUEST,
@@ -123,6 +127,11 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
     def classMetaType(self): return self.getClassAttr('meta_type','')
     
     def classIcon(self): return self.getClassAttr('icon','')
+
+    def show_class_id(self): return Globals.DatabaseVersion=='3'
+
+    def class_id(self):
+        return (self.getClassAttr('__module__','') or '')[1:]
 
 
 class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,

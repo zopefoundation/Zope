@@ -24,6 +24,15 @@ will need to be adjusted if the class is moved.</p>
      value="<!--#var classMetaType-->">
   </TD>
 </TR>
+<!--#if show_class_id-->
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">class id</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="class_id" SIZE="40"
+     value="<!--#var class_id-->">
+  </TD>
+</TR>
+<!--#/if-->
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>icon</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
