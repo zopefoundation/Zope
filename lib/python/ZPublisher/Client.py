@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -352,7 +352,11 @@ dashtrans=maketrans('_','-')
 
 def marshal_float(n,f): return '%s:float=%s' % (n,f)
 def marshal_int(n,f):   return '%s:int=%s' % (n,f)
-def marshal_long(n,f):  return ('%s:long=%s' % (n,f))[:-1]
+def marshal_long(n,f):
+    value = '%s:long=%s' % (n, f)
+    if value[-1] == 'L':
+        value = value[:-1]
+    return value
 
 sample_regex=regex.compile('')
 def marshal_regex(n,r):
