@@ -263,6 +263,9 @@ class CommitLog:
             return None
         # BAW: let TypeError percolate up.
 
+    def next(self):
+        raise NotImplementedError
+
     def close(self, unlink=0):
         """Close the file.
 
@@ -289,7 +292,7 @@ class PacklessLog(CommitLog):
     def write_object(self, oid, pickle):
         self._append('o', (oid, pickle))
 
-    def next_object(self):
+    def next(self):
         # Get the next object pickle data.  Return the oid and the pickle
         # string.  Raise a LogCorruptedError if there's an incomplete marshal
         # record.
@@ -360,7 +363,7 @@ class FullLog(CommitLog):
     def write_discard_version(self, vid):
         self._append('d', (vid,))
 
-    def next_object(self):
+    def next(self):
         # Get the next object record.  Return the key for unpacking and the
         # object record data.
         rec = self._next()
