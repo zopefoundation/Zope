@@ -54,8 +54,8 @@
 
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.107 1998/11/23 15:29:15 jim Exp $"""
-__version__='$Revision: 1.107 $'[11:-2]
+$Id: Publish.py,v 1.108 1998/11/23 22:55:59 jim Exp $"""
+__version__='$Revision: 1.108 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -380,7 +380,8 @@ class ModulePublisher:
                             elif entry_name=='..' and parents:
                                 subobject=parents[-1]
                             elif debug_mode:
-                                self.debugError("Cannot locate object at: %s" %URL) 
+                                self.debugError(
+                                    "Cannot locate object at: %s" %URL) 
                             else: self.notFoundError(URL)
 
                 if subobject is object and entry_name=='.':
@@ -424,7 +425,8 @@ class ModulePublisher:
                             if i > 0: response.setBase(URL[:i])
     
         if entry_name != method and method != 'index_html':
-            if debug_mode: self.debugError("Method %s not found at: %s" % (method,URL))
+            if debug_mode:
+                self.debugError("Method %s not found at: %s" % (method,URL))
             else: self.notFoundError(method)
 
         request.steps=steps
