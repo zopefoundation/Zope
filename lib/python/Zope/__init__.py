@@ -17,9 +17,7 @@ Globals.DatabaseVersion='3'
 OFS.Application.import_products()
 
 # Open the database
-DB=ZODB.FileStorage.FileStorage(
-    Globals.BobobaseName,
-    log=lambda x: sys.stderr.write(x))
+DB=ZODB.FileStorage.FileStorage(Globals.BobobaseName)
 DB=ZODB.DB(DB)
 Globals.DB=DB # Ick, this is temporary until we come up with some registry
 Globals.opened.append(DB)
