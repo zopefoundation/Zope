@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.5 2001/11/02 20:04:01 evan Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Zope.py,v 1.6 2001/11/13 19:24:27 evan Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -122,7 +122,6 @@ class LazyFilter(Lazy):
         self._skip = skip 
 
     def __getitem__(self,index):
-
         data=self._data
         try: s=self._seq
         except AttributeError: return data[index]
@@ -142,8 +141,9 @@ class LazyFilter(Lazy):
             e = e + 1
             try:
                 try: v = guarded_getitem(s, e)
-                except 'Unauthorized', vv:
+                except Unauthorized, vv:
                     if skip is None:
+                        self._eindex = e
                         msg = '(item %s): %s' % (index, vv)
                         raise Unauthorized, msg, sys.exc_info()[2]
                     skip_this = 1
