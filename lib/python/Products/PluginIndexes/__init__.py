@@ -39,11 +39,7 @@ def initialize(context):
         exec(s)
 
 
-
 for idx in _indexes:
 
     exec("manage_add%sForm = %s.%s.manage_add%sForm" % (idx,idx,idx,idx))
     exec("manage_add%s     = %s.%s.manage_add%s" % (idx,idx,idx,idx))
-
-
-
