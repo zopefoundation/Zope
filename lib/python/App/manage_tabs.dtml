@@ -7,6 +7,9 @@
                 URL[-17:]=='/manage_workspace' and _['sequence-start']">
 <dtml-call "REQUEST.set('a_', _['sequence-index'])">
 </dtml-if>
+<dtml-if "_.has_key('management_view') and management_view==label">
+<dtml-call "REQUEST.set('a_', _['sequence-index'])">
+</dtml-if>
 </dtml-in>
 <table cellpadding="0" cellspacing="0" width="100%" border="0">
 
