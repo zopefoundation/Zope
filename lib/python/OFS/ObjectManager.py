@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.90 2000/05/12 01:23:49 tseaver Exp $"""
+$Id: ObjectManager.py,v 1.91 2000/05/16 19:34:43 brian Exp $"""
 
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -204,8 +204,8 @@ class ObjectManager(
         # If allow_dup is false, an error will be raised if an object
         # with the given id already exists. If allow_dup is true,
         # only check that the id string contains no illegal chars.
-        if not id:
-            raise 'Bad Request', 'No id was specified'
+        if not id or (type(id) != type('')):
+            raise 'Bad Request', 'Empty or invalid specified'
         if bad_id(id) != -1:
             raise 'Bad Request', (
             'The id %s contains characters illegal in URLs.' % id)

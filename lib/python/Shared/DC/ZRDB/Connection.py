@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.23 2000/05/11 18:54:16 jim Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: Connection.py,v 1.24 2000/05/16 19:34:45 brian Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -127,7 +127,7 @@ class Connection(
     connection_string=''
 
     def __init__(self, id, title, connection_string, check=None):
-        self.id=id
+        self.id=str(id)
         self.edit(title, connection_string, check)
 
     def __setstate__(self, state):
@@ -163,6 +163,8 @@ class Connection(
     def manage_edit(self, title, connection_string, check=None, REQUEST=None):
         """Change connection
         """
+        title=str(title)
+        connection_string=str(connection_string)
         self.edit(title, connection_string, check)
         if REQUEST is not None:
             return MessageDialog(

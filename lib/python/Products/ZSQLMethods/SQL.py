@@ -85,8 +85,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.12 1999/11/03 14:43:20 brian Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: SQL.py,v 1.13 2000/05/16 19:34:44 brian Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import HTMLFile
@@ -134,6 +134,8 @@ def manage_addZSQLMethod(self, id, title,
     The 'template' argument is a string containing the source for the
     SQL Template.
     """
+
+    # Note - type checking is handled by _setObject and constructor.
     self._setObject(id, SQL(id, title, connection_id, arguments, template))
     if REQUEST is not None:
         u=REQUEST['URL1']

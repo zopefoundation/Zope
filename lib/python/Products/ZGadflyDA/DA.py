@@ -85,8 +85,8 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.10 2000/05/04 13:32:06 shane Exp $''' % database_type
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: DA.py,v 1.11 2000/05/16 19:34:44 brian Exp $''' % database_type
+__version__='$Revision: 1.11 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -102,6 +102,9 @@ addConnectionForm=Globals.HTMLFile('connectionAdd',globals())
 def manage_addZGadflyConnection(
     self, id, title, connection, check=None, REQUEST=None):
     """Add a DB connection to a folder"""
+
+    # Note - type checking is taken care of by _setObject 
+    # and the Connection object constructor.
     self._setObject(id, Connection(
         id, title, connection, check))
     if REQUEST is not None: return self.manage_main(self,REQUEST)

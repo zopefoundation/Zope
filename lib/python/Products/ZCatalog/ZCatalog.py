@@ -109,6 +109,11 @@ manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 def manage_addZCatalog(self, id, title, vocab='', vocab_id='', REQUEST=None):
     """Add a ZCatalog object
     """
+    id=str(id)
+    title=str(title)
+    vocab=str(vocab)
+    vocab_id=str(vocab_id)
+    
     c=ZCatalog(id, title, vocab, vocab_id, self)
     self._setObject(id, c)
     if REQUEST is not None:
@@ -231,6 +236,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
+        if type(threshold) is not type(1):
+            threshold=string.atoi(threshold)
         self.threshold = threshold
 
         RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')

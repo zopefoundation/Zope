@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -131,7 +131,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         self._validateProxy(REQUEST)
         if self._size_changes.has_key(SUBMIT):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
-        self.title=title
+        self.title=str(title)
         if type(data) is not type(''): data=data.read()
         self.munge(data)
         if REQUEST:
@@ -198,6 +198,8 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """
     if type(file) is not type(''): file=file.read()
     if not file: file=default_dd_html
+    id=str(id)
+    title=str(title)
     ob=DTMLDocument(file, __name__=id)
     ob.title=title
     id=self._setObject(id, ob)

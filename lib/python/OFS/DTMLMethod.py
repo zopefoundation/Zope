@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -221,7 +221,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         if self._size_changes.has_key(SUBMIT):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
 
-        self.title=title
+        self.title=str(title)
         if type(data) is not type(''): data=data.read()
         self.munge(data)
         if REQUEST:
@@ -340,6 +340,8 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """
     if type(file) is not type(''): file=file.read()
     if not file: file=default_dm_html
+    id=str(id)
+    title=str(title)
     ob=DTMLMethod(file, __name__=id)
     ob.title=title
     id=self._setObject(id, ob)

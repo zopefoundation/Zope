@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.83 2000/05/12 15:06:23 brian Exp $'''
-__version__='$Revision: 1.83 $'[11:-2]
+$Id: DA.py,v 1.84 2000/05/16 19:34:45 brian Exp $'''
+__version__='$Revision: 1.84 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -174,7 +174,7 @@ class DA(
    
 
     def __init__(self, id, title, connection_id, arguments, template):
-        self.id=id
+        self.id=str(id)
         self.manage_edit(title, connection_id, arguments, template)
     
     manage_advancedForm=HTMLFile('advanced', globals())
@@ -231,10 +231,12 @@ class DA(
             return self._er(title,connection_id,arguments,template,
                             SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST)
 
-        self.title=title
-        self.connection_id=connection_id
+        self.title=str(title)
+        self.connection_id=str(connection_id)
+        arguments=str(arguments)
         self.arguments_src=arguments
         self._arg=parse(arguments)
+        template=str(template)
         self.src=template
         self.template=t=self.template_class(template)
         t.cook()
@@ -279,6 +281,16 @@ class DA(
         used.
   
         """
+        # paranoid type checking
+        if type(max_rows) is not type(1):
+            max_rows=atoi(max_rows)
+        if type(max_cache) is not type(1):
+            max_cache=atoi(max_cache)
+        if type(cache_time) is not type(1):
+            cache_time=atoi(cache_time)            
+        class_name=str(class_name)
+        class_file=str(class_file)
+        
         self.max_rows_ = max_rows
         self.max_cache_, self.cache_time_ = max_cache, cache_time
         self._v_cache={}, Bucket()

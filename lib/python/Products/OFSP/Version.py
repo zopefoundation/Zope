@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -100,7 +100,8 @@ manage_addVersionForm=Globals.HTMLFile('versionAdd', globals())
 
 def manage_addVersion(self, id, title, REQUEST=None):
     """ """
-
+    id=str(id)
+    title=str(title)
     self=self.this()
     self._setObject(id, Version(id,title,REQUEST))
     if REQUEST is not None:

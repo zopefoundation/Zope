@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.102 $'[11:-2]
+__version__='$Revision: 1.103 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -108,6 +108,11 @@ def manage_addFile(self,id,file='',title='',precondition='', content_type='',
 
     Creates a new File object 'id' with the contents of 'file'"""
 
+    id=str(id)
+    title=str(title)
+    content_type=str(content_type)
+    precondition=str(precondition)
+    
     id, title = cookId(id, title, file)
 
     self=self.this()
@@ -243,9 +248,9 @@ class File(Persistent,Implicit,PropertyManager,
         """
         Changes the title and content type attributes of the File or Image.
         """
-        self.title=title
-        self.content_type=content_type
-        if precondition: self.precondition=precondition
+        self.title=str(title)
+        self.content_type=str(content_type)
+        if precondition: self.precondition=str(precondition)
         elif self.precondition: del self.precondition
         if REQUEST:
             message="Your changes have been saved"
@@ -393,6 +398,12 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
     Creates a new Image object 'id' with the contents of 'file'.
     """
+
+    id=str(id)
+    title=str(title)
+    content_type=str(content_type)
+    precondition=str(precondition)
+
     id, title = cookId(id, title, file)
 
     self=self.this()

@@ -98,6 +98,10 @@ manage_addVocabularyForm=HTMLFile('addVocabulary',globals())
 def manage_addVocabulary(self, id, title, globbing=None, REQUEST=None):
     """Add a Vocabulary object
     """
+    id=str(id)
+    title=str(title)
+    if globbing: globbing=1
+    
     c=Vocabulary(id, title, globbing)
     self._setObject(id, c)
     if REQUEST is not None:

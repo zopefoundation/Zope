@@ -167,6 +167,7 @@ def addTutorial(self, id, REQUEST=None, RESPONSE=None):
     """
     Install tutorial examples.
     """
+    id=str(id)
     ob=OFS.Folder.Folder()
     ob.id=id
     ob.title='Zope Tutorial Examples'

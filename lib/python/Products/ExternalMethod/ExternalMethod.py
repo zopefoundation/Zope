@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
@@ -122,6 +122,11 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
         failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
         used.
     """
+    id=str(id)
+    title=str(title)
+    module=str(module)
+    function=str(function)
+    
     i=ExternalMethod(id,title,module,function)
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
@@ -184,6 +189,10 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         the effects of changes, but can lead to problems of functions
         rely on shared global data.
         """
+        title=str(title)
+        module=str(module)
+        function=str(function)
+    
         self.title=title
         if module[-3:]=='.py': module=module[:-3]
         elif module[-4:]=='.py': module=module[:-4]
