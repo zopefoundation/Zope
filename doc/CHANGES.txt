@@ -243,6 +243,9 @@ Zope Changes
         - The local 'Owner' role could be overwritten when an object
           was copied, moved or renamed.
 
+        - Documented and fixed the creation of 'selection' and 'multiple
+          selection' properties.
+
         - SECURITY: Fixed bug that allowed users with local roles gain 
           priviledges on acquired objects.  getRolesInContext did not 
           used the correct context, as defined by the inner-most object 
