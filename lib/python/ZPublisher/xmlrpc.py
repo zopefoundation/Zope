@@ -126,8 +126,10 @@ class Response:
         # Don't mask 404 respnses, as some XML-RPC libraries rely on the HTTP
         # mechanisms for detecting when authentication is required. Fixes Zope
         # Collector issue 525.
-        if t == 'Unauthorized' or (isinstance(t, types.ClassType)
-                                   and issubclass(t, Unauthorized)):
+        if t == 'Unauthorized' or (
+            isinstance(t, types.ClassType) and issubclass(t, Unauthorized)
+            ):
+
             return self._real.exception(fatal=fatal, info=info)
 
         # Create an appropriate Fault object. Containing error information
@@ -135,16 +137,16 @@ class Response:
         f=None
         try:
             # Strip HTML tags from the error value
-            v = str(v)
+            vstr = str(v)
             remove = [r"<[^<>]*>", r"&[A-Za-z]+;"]
             for pat in remove:
-                v = re.sub(pat, " ", v)
+                vstr = re.sub(pat, " ", vstr)
             from Globals import DevelopmentMode
             if DevelopmentMode:
                 from traceback import format_exception
-                value = '\n' + ''.join(format_exception(t, v, tb))
+                value = '\n' + ''.join(format_exception(t, vstr, tb))
             else:
-                value = '%s - %s' % (t, v)
+                value = '%s - %s' % (t, vstr)
                 
             if isinstance(v, Fault):
                 f=v
