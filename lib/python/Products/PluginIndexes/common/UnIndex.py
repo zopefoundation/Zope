@@ -105,6 +105,7 @@ class UnIndex(SimpleItem):
         return self.id
 
     def clear(self):
+        self._length = BTrees.Length.Length()
         self._index = OOBTree()
         self._unindex = IOBTree()
 
