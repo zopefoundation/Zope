@@ -85,13 +85,14 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix, urlbase
 from OFS.PropertySheets import DAVProperties
 from xmltools import XmlParser
 from cStringIO import StringIO
+from urllib import quote
 
 
 class DAVProps(DAVProperties):
@@ -155,7 +156,7 @@ class PropFind:
                          '<d:multistatus xmlns:d="DAV:">\n')
         iscol=hasattr(obj, '__dav_collection__')
         if iscol and url[-1] != '/': url=url+'/'
-        result.write('<d:response>\n<d:href>%s</d:href>\n' % url)
+        result.write('<d:response>\n<d:href>%s</d:href>\n' % quote(url))
         if hasattr(aq_base(obj), 'propertysheets'):
             propsets=obj.propertysheets.values()
             obsheets=obj.propertysheets
@@ -273,7 +274,7 @@ class PropPatch:
         result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
                      '<d:multistatus xmlns:d="DAV:">\n' \
                      '<d:response>\n' \
-                     '<d:href>%s</d:href>\n' % url)
+                     '<d:href>%s</d:href>\n' % quote(url))
         propsets=obj.propertysheets
         for value in self.values:
             status='200 OK'
