@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -20,22 +20,46 @@ ListType=type([])
 
 
 
-class User(Implicit, Persistent):
+NotImplemented='NotImplemented'
 
-    # For backward compatibility
-    domains=[]
+
+
+class BasicUser(Implicit):
+    """Base class for all User objects"""
+    
+    # ----------------------------
+    # Public User object interface
+    # ----------------------------
 
     def __init__(self,name,password,roles,domains):
-	self.name   =name
-	self.roles  =roles
-	self.__     =password
-        self.domains=domains
+        raise NotImplemented
 
+    def getUserName(self):
+        """Return the username of a user"""
+        raise NotImplemented
+
+    def _getPassword(self):
+        """Return the password of the user."""
+        raise NotImplemented
+
+    def getRoles(self):
+        """Return the list of roles assigned to a user."""
+        raise NotImplemented
+
+    def getDomains(self):
+        """Return the list of domain restrictions for a user"""
+        raise NotImplemented
+
+    # ------------------------------
+    # Internal User object interface
+    # ------------------------------
+    
     def authenticate(self, password, request):
-        if self.domains:
-            return (password==self.__) and \
-                   domainSpecMatch(self.domains, request)
-	return password==self.__
+        domains=self.getDomains()
+        passwrd=self._getPassword()
+        if domains:
+            return (password==passwrd) and domainSpecMatch(domains, request)
+	return password==passwrd
 
     def _shared_roles(self, parent):
         r=[]
@@ -57,9 +81,22 @@ class User(Implicit, Persistent):
             else: return r
 
     def allowed(self,parent,roles=None):
-	usr_roles=self.roles
-
-        if roles is None or 'Anonymous' in roles: return 1
+	usr_roles=self.getRoles()
+        try:
+            if roles is None or 'Anonymous' in roles:
+                return 1
+        except:
+            l=[]
+            ob=roles
+            while 1:
+                if hasattr(ob, 'id'):
+                    id=ob.id
+                else: id='?'
+                l.append('%s: %s' % (id, `ob`))
+                if not hasattr(ob, 'aq_parent'):
+                    break
+                ob=ob.aq_parent
+            raise 'spam', `l`
 
 	for role in roles:
 	    if role in usr_roles:
@@ -88,19 +125,53 @@ class User(Implicit, Persistent):
 	return None
 
     hasRole=allowed
-
+    domains=[]
+    
     def has_role(self, roles):
 	if type(roles)==type('s'):
 	    roles=[roles]
-	user_roles=self.roles
+	user_roles=self.getRoles()
 	for role in roles:
 	    if role in user_roles:
 		return 1
 	return 0
 
     def __len__(self): return 1
-    def __str__(self): return self.name
+    def __str__(self): return self.getUserName()
     __repr__=__str__
+
+
+
+
+class User(BasicUser, Persistent):
+    """Standard Principia User object"""
+
+    def __init__(self,name,password,roles,domains):
+	self.name   =name
+	self.__     =password
+	self.roles  =roles
+        self.domains=domains
+
+    def getUserName(self):
+        """Return the username of a user"""
+        return self.name
+
+    def _getPassword(self):
+        """Return the password of the user."""
+        return self.__
+
+    def getRoles(self):
+        """Return the list of roles assigned to a user."""
+        return self.roles
+
+    def getDomains(self):
+        """Return the list of domain restrictions for a user"""
+        return self.domains
+
+
+
+
+    
 
 _remote_user_mode=0
 try:
@@ -122,9 +193,13 @@ nobody=User('Anonymous User','',('Anonymous',), [])
 
 
 
-class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
-		 Item, App.Undo.UndoSupport):
-    """ """
+
+
+
+
+class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
+                      Item, App.Undo.UndoSupport):
+    """Base class for UserFolder-like objects"""
 
     meta_type='User Folder'
     id       ='acl_users'
@@ -134,7 +209,6 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     isPrincipiaFolderish=1
     isAUserFolder=1
 
-
     manage_options=(
     {'label':'Contents', 'action':'manage_main'},
     {'label':'Security', 'action':'manage_access'},
@@ -143,7 +217,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     __ac_permissions__=(
     ('View management screens',
-     ['manage_menu','manage_main','manage_copyright', 'manage_tabs',
+     ['manage','manage_menu','manage_main','manage_copyright', 'manage_tabs',
       'manage_UndoForm']),
     ('Undo changes',       ['manage_undo_transactions']),
     ('Change permissions', ['manage_access']),
@@ -151,22 +225,45 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     )
 
 
-    def __init__(self):
-	self.data=PersistentMapping()
 
-    def __len__(self):
-	return len(self.data.keys())
+    # ----------------------------------
+    # Public UserFolder object interface
+    # ----------------------------------
+    
+    def getUserNames(self):
+        """Return a list of usernames"""
+        raise NotImplemented
 
-    def _isTop(self):
-        try: self=self.aq_parent
-        except: return 1
-        return self.isTopLevelPrincipiaApplicationObject
-	
-    def user_names(self):
-	keys=self.data.keys()
-	keys.sort()
-	return keys
+    def getUsers(self):
+        """Return a list of user objects"""
+        raise NotImplemented
 
+    def getUser(self, name):
+        """Return the named user object or None"""
+        raise NotImplemented
+
+    def _doAddUser(self, name, password, roles, domains):
+        """Create a new user"""
+        raise NotImplemented
+
+    def _doChangeUser(self, name, password, roles, domains):
+        """Modify an existing user"""
+        raise NotImplemented
+
+    def _doDelUsers(self, names):
+        """Delete one or more users"""
+        raise NotImplemented
+
+
+    # -----------------------------------
+    # Private UserFolder object interface
+    # -----------------------------------
+
+
+    _remote_user_mode=_remote_user_mode
+    _super=super
+    _nobody=nobody
+            
     def validate(self,request,auth='',roles=None):
 	parent=request['PARENTS'][0]
 
@@ -174,12 +271,14 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # domain spec and no passwd or nobody can
         # match
 	if not auth:
-            for ob in self.data.values():
-                if ob.domains:
+            for ob in self.getUsers():
+                domains=ob.getDomains()
+                if domains:
                     if ob.authenticate('', request):
                         if ob.allowed(parent, roles):
                             ob=ob.__of__(self)
                             return ob
+            nobody=self._nobody
             if self._isTop() and nobody.allowed(parent, roles):
                 ob=nobody.__of__(self)
                 return ob
@@ -191,13 +290,15 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	name,password=tuple(split(decodestring(split(auth)[-1]), ':'))
 
 	# Check for superuser
-	if self._isTop() and (name==super.name) and \
+        super=self._super
+	if self._isTop() and (name==super.getUserName()) and \
 	super.authenticate(password, request):
 	    return super
 
 	# Try to get user
-	try:    user=self.data[name]
-	except: return None
+        user=self.getUser(name)
+        if user is None:
+            return None
 
 	# Try to authenticate user
 	if not user.authenticate(password, request):
@@ -211,13 +312,67 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	    return user
 	return None
 
+
+    if _remote_user_mode:
+        
+	def validate(self,request,auth='',roles=None):
+	    parent=request['PARENTS'][0]
+	    e=request.environ
+	    if e.has_key('REMOTE_USER'):
+                name=e['REMOTE_USER']
+	    else:
+                for ob in self.getUsers():
+                    domains=ob.getDomains()
+                    if domains:
+                        if ob.authenticate('', request):
+                            if ob.allowed(parent, roles):
+                                ob=ob.__of__(self)
+                                return ob
+                nobody=self._nobody
+                if self._isTop() and nobody.allowed(parent, roles):
+                    ob=nobody.__of__(self)
+                    return ob
+                return None
+
+	    # Check for superuser
+            super=self._super
+	    if self._isTop() and (name==super.getUserName()):
+		return super
+
+	    # Try to get user
+            user=self.getUser(name)
+            if user is None:
+                return None
+
+            # We need the user to be able to acquire!
+            user=user.__of__(self)
+
+	    # Try to authorize user
+	    if user.allowed(parent, roles):
+		return user
+            return None
+
+
+    def _isTop(self):
+        try: return self.aq_parent.aq_base.isTopLevelPrincipiaApplicationObject
+        except: return 0
+
+    def __len__(self):
+        return 1
+
     _mainUser=HTMLFile('mainUser', globals())
     _add_User=HTMLFile('addUser', globals(),
-		       remote_user_mode__=_remote_user_mode)
+                       remote_user_mode__=_remote_user_mode)
     _editUser=HTMLFile('editUser', globals(),
-		       remote_user_mode__=_remote_user_mode)
-
+                       remote_user_mode__=_remote_user_mode)
     manage=manage_main=_mainUser
+
+    def domainSpecValidate(self, spec):
+        for ob in spec:
+            sz=len(ob)
+            if not ((addr_match(ob) == sz) or (host_match(ob) == sz)):
+                return 0
+        return 1
 
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
@@ -231,7 +386,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    title  ='Illegal value', 
                    message='Password and confirmation must be specified',
                    action ='manage_main')
-	if self.data.has_key(name) or (name==super.name):
+	if self.getUser(name) or (name==self._super.getUserName()):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='A user with the specified name already exists',
@@ -245,14 +400,12 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	if not roles: roles=[]
         if not domains: domains=[]
 
-        if domains and not domainSpecValidate(domains):
+        if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Illegal domain specification',
                    action ='manage_main')
-            
-        self.data[name]=User(name,password,roles,domains)
-        
+        self._doAddUser(name, password, roles, domains)        
 	if REQUEST: return self._mainUser(self, REQUEST)
 
 
@@ -268,7 +421,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    title  ='Illegal value', 
                    message='Password and confirmation must be specified',
                    action ='manage_main')
-	if not self.data.has_key(name):
+	if not self.getUser(name):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Unknown user',
@@ -287,12 +440,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 		   title  ='Illegal value', 
                    message='Illegal domain specification',
                    action ='manage_main')
-        
-	user=self.data[name]
-	user.__=password
-	user.roles=roles
-        user.domains=domains
-        
+        self._doChangeUser(name, password, roles, domains)
 	if REQUEST: return self._mainUser(self, REQUEST)
 
     def _delUsers(self,names,REQUEST=None):
@@ -301,14 +449,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 		   title  ='Illegal value', 
                    message='No users specified',
                    action ='manage_main')
-
-	if 0 in map(self.data.has_key, names):
-            return MessageDialog(
-		   title  ='Illegal value',
-                   message='One or more items specified do not exist',
-                   action ='manage_main')
-	for name in names:
-            del self.data[name]
+        self._doDelUsers(names)
         if REQUEST: return self._mainUser(self, REQUEST)
 
     def manage_users(self,submit=None,REQUEST=None,RESPONSE=None):
@@ -317,7 +458,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	    return self._add_User(self, REQUEST)
 
 	if submit=='Edit':
-	    try:    user=self.data[reqattr(REQUEST, 'name')]
+	    try:    user=self.getUser(reqattr(REQUEST, 'name'))
 	    except: return MessageDialog(
 		    title  ='Illegal value',
                     message='The specified user does not exist',
@@ -347,60 +488,83 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 	return self._mainUser(self, REQUEST)
 
+    def user_names(self):
+        return self.getUserNames()
 
     # Copy/Paste support
-
-    def _getCopy(self, container):
-        obj=container
-        if hasattr(obj, 'aq_base'): obj=obj.aq_base
-	if hasattr(obj,'acl_users'):
-	    raise ('Copy Error',
-		   '<EM>This object already contains a UserFolder</EM>')
-	return loads(dumps(self))
 
     def _postCopy(self, container):
 	container.__allow_groups__=container.acl_users
 
     def _setId(self, clip_id):
 	if clip_id != self.id:
-	     raise ('Copy Error',
-		    '<EM>Cannot change the id of a UserFolder</EM>')
+            raise Globals.MessageDialog(
+                title='Invalid Id',
+                message='Cannot change the id of a UserFolder',
+                action ='./manage_main',)
 
-if _remote_user_mode:
 
-    class UserFolder(UserFolder):
 
-	def validate(self,request,auth='',roles=None):
-	    parent=request['PARENTS'][0]
 
-	    e=request.environ
-	    if e.has_key('REMOTE_USER'): name=e['REMOTE_USER']
-	    else:
-                for ob in self.data.values():
-                    if ob.domains:
-                        if ob.authenticate('', request):
-                            if ob.allowed(parent, roles):
-                                ob=ob.__of__(self)
-                                return ob
-                if self._isTop() and nobody.allowed(parent, roles):
-                    ob=nobody.__of__(self)
-                    return ob
-                return None
 
-	    # Check for superuser
-	    if self._isTop() and (name==super.name):
-		return super
 
-	    # Try to get user
-	    try:    user=self.data[name]
-	    except: return None
 
-            # We need the user to be able to acquire!
-            user=user.__of__(self)
 
-	    # Try to authorize user
-	    if user.allowed(parent, roles):
-		return user
+
+class UserFolder(BasicUserFolder):
+    """Standard Principia UserFolder object"""
+
+    meta_type='User Folder'
+    id       ='acl_users'
+    title    ='User Folder'
+    icon     ='p_/UserFolder'
+
+    def __init__(self):
+	self.data=PersistentMapping()
+
+    def getUserNames(self):
+        """Return a list of usernames"""
+        names=self.data.keys()
+        names.sort()
+        return names
+
+    def getUsers(self):
+        """Return a list of user objects"""
+        data=self.data
+        names=data.keys()
+        names.sort()
+        users=[]
+        f=users.append
+        for n in names:
+            f(data[n])
+        return users
+
+    def getUser(self, name):
+        """Return the named user object or None"""
+        if self.data.has_key(name):
+            return self.data[name]
+        return None
+
+    def _doAddUser(self, name, password, roles, domains):
+        """Create a new user"""
+        self.data[name]=User(name,password,roles,domains)
+
+    def _doChangeUser(self, name, password, roles, domains):
+	user=self.data[name]
+	user.__=password
+	user.roles=roles
+        user.domains=domains
+
+    def _doDelUsers(self, names):
+        for name in names:
+            del self.data[name]
+
+
+
+
+
+
+
 
 
 def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
@@ -417,17 +581,11 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
 
 
 
+
+
+
 addr_match=regex.compile('[0-9\.\*]*').match
 host_match=regex.compile('[A-Za-z0-9\.\*]*').match
-
-
-def domainSpecValidate(spec):
-    for ob in spec:
-        sz=len(ob)
-        if not ((addr_match(ob) == sz) or (host_match(ob) == sz)):
-            return 0
-    return 1
-
 
 def domainSpecMatch(spec, request):
 
