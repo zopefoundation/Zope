@@ -21,13 +21,18 @@ import utils
 exit_code = 0
 
 # the ZServer version number
-ZSERVER_VERSION='1.1'
+ZSERVER_VERSION = '1.1'
 
 # the maximum number of incoming connections to ZServer
-CONNECTION_LIMIT=1000 # may be reset by max_listen_sockets handler in Zope
+CONNECTION_LIMIT = 1000 # may be reset by max_listen_sockets handler in Zope
+
+# request bigger than this size get saved into a
+# temporary file instead of being read completely into memory
+LARGE_FILE_THRESHOLD = 1 << 19 # may be reset by large_file_threshold
+                               # handler in Zope
 
 # the Zope version string
-ZOPE_VERSION=utils.getZopeVersion()
+ZOPE_VERSION = utils.getZopeVersion()
 
 # backwards compatibility aliases
 from utils import requestCloseOnExec

@@ -32,7 +32,7 @@ from medusa import logger
 from medusa.counter import counter
 from medusa.http_server import compute_timezone_for_log
 
-from ZServer import CONNECTION_LIMIT, requestCloseOnExec
+from ZServer import requestCloseOnExec
 
 from PubCore import handle
 from PubCore.ZEvent import Wakeup
@@ -642,6 +642,7 @@ class FCGIServer(asyncore.dispatcher):
 
 
     def readable(self):
+        from ZServer import CONNECTION_LIMIT
         return len(asyncore.socket_map) < CONNECTION_LIMIT
 
 

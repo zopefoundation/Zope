@@ -5,9 +5,20 @@
 # This is the Zope configuration file.  The Zope configuration file
 # shows what the default configuration directives are, and show
 # examples for each directive.  To declare a directive, make sure that
-# you add it to a line that does not begin with '#'.  Note that comments 
+# you add it to a line that does not begin with '#'.  Note that comments
 # are only allowed at the beginning of a line: you may not add comments
 # after directive text on the same line.
+#
+# Note for Developers
+# ===================
+#
+# This file is *not* auto-generated. If you create a new directive you
+# very likely want to include an example of how to use the new
+# directive in this file.
+#
+# You shouldn't modify 'zope.conf.in' to change
+# configuration. Instead, you should make a copy into 'zope.conf' and
+# modify that to avoid checking in changes to this file by mistake.
 
 # ZConfig "defines" used for later textual substitution
 
@@ -151,7 +162,7 @@ instancehome $INSTANCE
 #     this directive set to "on" or you will receive an error.  If using ZEO,
 #     at least one ZEO client must be run with this directive set to "on"
 #     once, the others can have it turned off.
-#     NOTE: If your main storage is mounted read-only, 
+#     NOTE: If your main storage is mounted read-only,
 #     you must set this directive to "off".
 #
 # Default: on
@@ -780,6 +791,18 @@ instancehome $INSTANCE
 #
 #    max-listen-sockets 500
 
+
+# Directive: large-file-threshold
+#
+# Description:
+#     Requests bigger than this size get saved into a temporary file
+#     instead of being read completely into memory.
+#
+# Default: 512K
+#
+# Example:
+#
+#    large-file-threshold 1Mb
 
 
 # Directives: servers

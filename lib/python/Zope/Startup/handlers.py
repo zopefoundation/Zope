@@ -91,6 +91,10 @@ def rest_language_code(value):
     value and _setenv('REST_LANGUAGE_CODE' , value)
     return value
 
+def large_file_threshold(value):
+    import ZServer
+    ZServer.LARGE_FILE_THRESHOLD = value
+
 # server handlers
 
 def root_handler(config):

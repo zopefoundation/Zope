@@ -24,6 +24,19 @@ Zope Changes
 
   after Zope 2.8a1
 
+    Features added
+
+      - Added a ZConfig directive 'large-file-threshold' to control
+        the request content-size threshold at which a temporary file
+        gets created. Use the same value for deciding between reading
+        the whole request in memory or just a chunk inside
+        webdav.NullResource.PUT().
+
+      - Stitch newly-created object into it's container *before*
+        calling it's PUT() method. This fixes an issue with
+        OFS.File/OFS.Image that would result into reading the whole
+        file in memory and wrapping it into a *single* Pdata object.
+
     Bugs fixed
 
       - docutils: updated to V 0.3.5. The Zope core now contains a full copy of
@@ -69,9 +82,9 @@ Zope Changes
         a more verbose error message is issued, the same way it's done
         on attribute/item traversal.
 
-
-      - Collector #1523: replace the text field for importing .zexp/.xml 
+      - Collector #1523: replace the text field for importing .zexp/.xml
         files with a selection list
+
 
   Zope 2.8a1
 
