@@ -115,7 +115,6 @@ class TM:
 
     def _abort(self):
         self.db.rollback()
-        self.db.checkpoint()
 
     def tpc_finish(self, *ignored):
         try: self._finish()
