@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.17 1997/11/10 16:30:47 jim Exp $"""
+$Id: Folder.py,v 1.18 1997/11/11 18:52:20 jim Exp $"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -110,6 +110,11 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 
     def __getitem__(self, key):
 	# Hm, getattr didn't work, maybe this is a put:
+	if key[:19]=='manage_draftFolder-':
+	    id=key[19:]
+	    if hasattr(self, id): return getattr(self, id).manage_supervisor()
+	    raise KeyError, key
+
 	r=PUTer(self,key)
 	return r
 
