@@ -41,6 +41,8 @@ Zope Changes
 
         - Collector #2254: added hook for webdav/ftp MKCOL
 
+        - Collector #2247: put values of properties into CDATA section  to 
+          prevent non XML compliant documents to be sent to a webdav client.
 
     Zope 2.4 alpha 1
 
