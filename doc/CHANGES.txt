@@ -15,7 +15,27 @@ Zope Changes
       - ZTUtils.Tree.TreeMaker has a new method setStateFunction, which
         allows you to set a callback function that can influence the state
         (open, closed, leaf) of each node in the tree.
-  
+
+      - Pidfile handling improved.  When Zope is started under
+        zdaemon, it no longer writes its own pidfile.  Instead, it
+        passes in the path to Z2.pid to zdaemon as its pidfile name.
+        The 'zProcessManager.pid' file is no longer ever written.
+        This caused a change to the -Z option of z2.py which should be
+        mostly backwards-compatible (unless people were relying on
+        zProcessManager.pid to be written).  Now the -Z option is a
+        boolean.  -Z1 means use a daemon.  -Z0 means dont.  The
+        default is -Z1.
+
+    Bugs Fixed
+
+      - Dumb bug in zdaemon fixed in which it would try to kill
+        process numbers 1, 2, 3, 10, 12, and 15 when it caught a
+        signal related to any of these signal numbers.   Instead, it
+        actually tries now to kill its child process with the same
+        signal.
+
+      - Write pidfiles out with trailing newlines.
+
   Zope 2.6.0 beta 1
 
     Bugs Fixed
