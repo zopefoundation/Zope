@@ -107,8 +107,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.34 1999/02/05 21:11:21 brian Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: SimpleItem.py,v 1.35 1999/02/18 19:37:16 amos Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from ExtensionClass import Base
@@ -273,7 +273,9 @@ class Item(Base, CopySource, App.Management.Tabs):
         """Directory listing for FTP. In the case of non-Foldoid objects,
         the listing should contain one object, the object itself."""
         stat=marshal.loads(self.manage_FTPstat(REQUEST))
-        return marshal.dumps((self.id,stat))
+        if callable(self.id): id=self.id()
+        else: id=self.id
+        return marshal.dumps((id,stat))
 
     def absolute_url(self):
         """Return an absolute url to the object. Note that the url
