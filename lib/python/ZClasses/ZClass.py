@@ -12,7 +12,7 @@
 ##############################################################################
 """Zope Classes
 """
-import Globals, string, OFS.SimpleItem, OFS.PropertySheets, Products
+import Globals,  OFS.SimpleItem, OFS.PropertySheets, Products
 import Method, Basic, Property, AccessControl.Role, re
 
 from ZPublisher.mapply import mapply
@@ -73,9 +73,9 @@ def createZClassForBase( base_class, pack, nice_name=None, meta_type=None ):
     key         = "%s/%s" % (base_module, base_name)
 
     if base_module[:9] == 'Products.':
-        base_module = string.split( base_module,'.' )[1]
+        base_module = base_module.split('.' )[1]
     else:
-        base_module = string.split( base_module,'.' )[0]
+        base_module = base_module.split('.' )[0]
         
     info="%s: %s" % ( base_module, base_name )
 
@@ -331,7 +331,7 @@ class ZClass( Base
         id.update(self.absolute_url())
         id.update(str(time.time()))
         id=id.digest()
-        id=string.strip(base64.encodestring(id))
+        id=base64.encodestring(id).strip()
 
         return '*'+id
 

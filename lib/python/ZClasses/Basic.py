@@ -14,7 +14,6 @@
 """
 
 import Globals, OFS.PropertySheets, OFS.Image, ExtensionClass
-from string import split, join, strip
 import Acquisition, Products
 
 class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,

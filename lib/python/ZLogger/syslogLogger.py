@@ -13,7 +13,7 @@
 from syslog import syslog_client, LOG_ALERT, LOG_ERR, LOG_WARNING, LOG_NOTICE
 from syslog import LOG_INFO, LOG_DEBUG
 
-import os, string, traceback
+import os, traceback
 
 pid_str='[%s]: ' % os.getpid()
 
@@ -23,7 +23,7 @@ class syslogLogger:
 
     def __init__(self):
         if os.environ.has_key('ZSYSLOG_SERVER'):
-            (addr, port) = string.split(os.environ['ZSYSLOG_SERVER'], ':')
+            (addr, port) = os.environ['ZSYSLOG_SERVER'].split(':')
             self.client = syslog_client((addr, int(port)))
             self.on = 1
         elif os.environ.has_key('ZSYSLOG'):

@@ -15,7 +15,6 @@
 
 import Acquisition, ExtensionClass, Globals, OFS.PropertySheets, OFS.Folder
 from AccessControl.Permission import pname
-from string import strip
 import App.Dialogs, ZClasses, App.Factory, App.Product, App.ProductRegistry
 import ZClassOwner
 from AccessControl.PermissionMapping import aqwrap, PermissionMapper
@@ -121,26 +120,26 @@ class ZClassMethodsSheet(
         return id+' '
 
     def _setOb(self, id, object):
-        self.setClassAttr(strip(id), MWp(object))
+        self.setClassAttr(id.strip(), MWp(object))
 
     def _delOb(self, id):
-        self.delClassAttr(strip(id))
+        self.delClassAttr(id.strip())
 
     def _delObject(self, id, dp=1):
         # Ick!  This is necessary to deal with spaces. Waaa!
         object=self._getOb(id)
         object.manage_beforeDelete(object, self)
-        id=strip(id)
+        id=id.strip()
         self._objects=tuple(filter(lambda i,n=id:
-                                   strip(i['id']) != n,
+                                   i['id'].strip() != n,
                                    self._objects))
         self._delOb(id)
 
     def _getOb(self, id, default=_marker):
         if default is _marker:
-            r=self.getClassAttr(strip(id))
+            r=self.getClassAttr(id.strip())
         else:
-            try: r=self.getClassAttr(strip(id))
+            try: r=self.getClassAttr(id.strip())
             except: return default
 
         if hasattr(r, methodattr):
@@ -157,7 +156,7 @@ class ZClassMethodsSheet(
                 m._permissionMapper=wrapper
 
                 mw=MWp(m)
-                self.setClassAttr(strip(id), mw)
+                self.setClassAttr(id.strip(), mw)
 
             r=m
 

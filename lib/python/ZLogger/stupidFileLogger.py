@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-import time, sys, string, os, thread
+import time, sys,  os, thread
 
 from zLOG import severity_string, log_time, format_exception
 
@@ -49,7 +49,7 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
 
     global _stupid_severity
     if _stupid_severity is None:
-        try: _stupid_severity=string.atoi(os.environ['STUPID_LOG_SEVERITY'])
+        try: _stupid_severity=int(os.environ['STUPID_LOG_SEVERITY'])
         except: _stupid_severity=0
         
     if severity < _stupid_severity: return

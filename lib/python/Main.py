@@ -27,7 +27,7 @@ The Job of this module is to:
 # versions of Persistent etc get registered.
 from BoboPOS import SimpleDB, TJar, SingleThreadedTransaction
 
-import sys, os, string, Globals, OFS.Application
+import sys, os,  Globals, OFS.Application
 Globals.BobobaseName = os.path.join(Globals.data_dir, 'Data.bbb')
 Globals.DatabaseVersion='2'
 
@@ -63,7 +63,7 @@ bobo_application=app
 OFS.Application.initialize(app)
 
 if os.environ.has_key('ZOPE_DATABASE_QUOTA'):
-    quota=string.atoi(os.environ['ZOPE_DATABASE_QUOTA'])
+    quota=int(os.environ['ZOPE_DATABASE_QUOTA'])
     Bobobase._jar.db.set_quota(
         lambda x, quota=quota, otherdb=VersionBase.TDB:
         x + otherdb.pos > quota)

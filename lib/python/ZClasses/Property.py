@@ -15,7 +15,6 @@
 
 import OFS.PropertySheets, Globals, OFS.SimpleItem, OFS.PropertyManager
 import Acquisition
-from string import join, upper
 from AccessControl.Permission import pname
 
 class ClassCaretaker:
@@ -89,7 +88,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         a=r.append
         for p in self.propertyMap():
             pid=p['id']
-            pid=upper(pid[:1])+pid[1:]
+            pid=pid[:1].upper()+pid[1:]
             a('  <tr><th align=left valign=top>%s</th>' % pid)
             a('      <td align=left valign=top>%s</td>' %
               self._view_widget_for_type(p['type'], p['id'])
@@ -97,7 +96,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
             a('  </tr>')
         a('</table>')
         a('<dtml-var standard_html_footer>')
-        r=join(r,'\n')
+        r='\n'.join(r)
         self.aq_parent.aq_parent.methods.manage_addDTMLMethod(id, title, r)
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL3']+'/methods/manage')
@@ -185,7 +184,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         a('  </td></tr>')
         a('</table></form>')
         a('</body></html>')
-        r=join(r,'\n')
+        r='\n'.join(r)
         self.aq_parent.aq_parent.methods.manage_addDTMLMethod(id, title, r)
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL3']+'/methods/manage')
