@@ -45,6 +45,9 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
+    
+      - Updated doc/UNITTEST.txt and lib/python/Testing/README.txt to
+        reflect progress made since UNITTEST.txt was originally written.
 
       - Removed Version objects from the add menu. Versions are agreed to be a
         feature that should not be used as it is not well implemented and

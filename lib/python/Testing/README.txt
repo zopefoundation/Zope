@@ -1,5 +1,10 @@
 The Testing package is a set of shared routines for the Zope unit
-testing framework.   To add a test suite to a Zope package:
+testing framework. From Zope 2.8 these are more easily accessed
+by using the ZopeTestCase package. See ZopeTestCase/doc for more
+information.
+
+
+To use Testing without ZopeTestCase:
 
 1. Make a 'tests' subdirectory.
 
