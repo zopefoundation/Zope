@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.13 1998/04/02 22:35:45 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.14 1998/04/14 11:44:05 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -722,8 +722,8 @@ validate(PyObject *self, PyObject *args)
 	  UNLESS(__roles__=PyObject_GetAttr(parent,py_acquire)) goto err0;
 	  ASSIGN(__roles__,PyObject_CallFunction(__roles__,"O",py___roles__));
 	  UNLESS(__roles__) goto err0;
-	  value=parent;
 	}
+      value=parent;
     }
 
   /* if roles is None: return 1 */
@@ -830,7 +830,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.13 $";
+  char *rev="$Revision: 1.14 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -880,6 +880,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.14  1998/04/14 11:44:05  jim
+  Fixed bug in validate.
+
   Revision 1.13  1998/04/02 22:35:45  jim
   Fixed stupid bug that causes validation of non-acquired instance
   attributes to fail.
