@@ -66,6 +66,8 @@ Zope Changes
 
         - Undo of version saves and discards isn't completely working.
 
+	- Temporary versions aren't implemented yet.
+
         - Only the FileStorage is available at this time.  Additional
           storage managers will be provided in coming weeks.
 
