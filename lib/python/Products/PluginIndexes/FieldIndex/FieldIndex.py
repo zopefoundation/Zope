@@ -13,13 +13,12 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
 import BTree
 import IOBTree
-import string
 from zLOG import LOG, ERROR
 from types import StringType, ListType, IntType, TupleType
 

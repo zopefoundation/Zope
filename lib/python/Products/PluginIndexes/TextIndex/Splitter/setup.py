@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 
 from distutils.core import setup,Extension 
-import os,exceptions,string,commands,sys
+import os,exceptions,commands,sys
 
 CFLAGS = []
 LFLAGS = []
