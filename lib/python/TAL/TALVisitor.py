@@ -131,7 +131,7 @@ class TALVisitor(CopyingDOMVisitor):
                 if slotNode:
                     self.visitElement(slotNode)
                     return
-        if node.getAttributeNodeNS(ZOPE_TAL_NS, "omit"):
+        if node.hasAttributeNS(ZOPE_TAL_NS, "omit"):
             # XXX Question: should 'omit' be done before or after
             # 'define'?  (I.e., is it a shortcut for
             # z:condition:"false" or is it stronger?)
@@ -152,7 +152,7 @@ class TALVisitor(CopyingDOMVisitor):
         attrDict = {}
         attributes = node.getAttributeNS(ZOPE_TAL_NS, "attributes")
         if attributes:
-            attrDict = self.parseAttributeReplacements(attributes)
+            attrDict = parseAttributeReplacements(attributes)
         insert = node.getAttributeNS(ZOPE_TAL_NS, "insert")
         replace = node.getAttributeNS(ZOPE_TAL_NS, "replace")
         if not (insert or replace):
@@ -160,6 +160,7 @@ class TALVisitor(CopyingDOMVisitor):
         else:
             if insert and replace:
                 print "Warning: z:insert overrides z:replace on the same node"
+            # XXX check for replace on documentElement
             done = self.doModify(node, insert, insert or replace, attrDict)
         if not done:
             self.copyElement(node)
@@ -188,7 +189,7 @@ class TALVisitor(CopyingDOMVisitor):
         self.currentMacro, self.slotIndex, self.originalNode = save
 
     def doDefine(self, arg):
-        for part in self.splitParts(arg):
+        for part in splitParts(arg):
             m = re.match(
                 r"\s*(?:(global|local)\s+)?(%s)\s+as\s+(.*)" % NAME_RE, part)
             if not m:
@@ -214,15 +215,15 @@ class TALVisitor(CopyingDOMVisitor):
         saveNode = self.curNode
         if key[:3] == "for":
             if inserting:
-                rv = self.doInsertLoop(node, key, name, expr, attrDict)
+                rv = self.doInsertLoop(node, name, expr, attrDict)
             else:
-                rv = self.doReplaceLoop(node, key, name, expr, attrDict)
+                rv = self.doReplaceLoop(node, name, expr, attrDict)
         else:
             rv = self.doNonLoop(node, inserting, key, expr, attrDict)
         self.curNode = saveNode
         return rv
 
-    def doInsertLoop(self, node, key, name, expr, attrDict):
+    def doInsertLoop(self, node, name, expr, attrDict):
         sequence = self.engine.evaluateSequence(expr)
         self.copyElement(node)
         self.copyAttributes(node, attrDict)
@@ -232,7 +233,7 @@ class TALVisitor(CopyingDOMVisitor):
         self.backUp()
         return 1
 
-    def doReplaceLoop(self, node, key, name, expr, attrDict):
+    def doReplaceLoop(self, node, name, expr, attrDict):
         if not self.newDocument:
             print "Can't have a z:replace for loop on the documentElement"
             return 0
@@ -250,7 +251,7 @@ class TALVisitor(CopyingDOMVisitor):
             self.copyElement(node)
             self.copyAttributes(node, attrDict)
         if key == "text":
-            if attrDict:
+            if attrDict and not inserting:
                 print "Warning: z:attributes unused for text replacement"
             data = self.engine.evaluateText(expr)
             newChild = self.newDocument.createTextNode(str(data))
@@ -290,27 +291,27 @@ class TALVisitor(CopyingDOMVisitor):
             else:
                 self.curNode.setAttribute(attrName, attrValue)
 
-    def parseAttributeReplacements(self, arg):
-        dict = {}
-        for part in self.splitParts(arg):
-            m = re.match(r"\s*([^\s=]+)\s*=\s*(.*)", part)
-            if not m:
-                print "Bad syntax in z:attributes:", `part`
-                continue
-            name, expr = m.group(1, 2)
-            if dict.has_key(name):
-                print "Duplicate attribute name in z:attributes:", `part`
-                continue
-            dict[name] = expr
-        return dict
+def parseAttributeReplacements(arg):
+    dict = {}
+    for part in splitParts(arg):
+        m = re.match(r"\s*([^\s=]+)\s*=\s*(.*)", part)
+        if not m:
+            print "Bad syntax in z:attributes:", `part`
+            continue
+        name, expr = m.group(1, 2)
+        if dict.has_key(name):
+            print "Duplicate attribute name in z:attributes:", `part`
+            continue
+        dict[name] = expr
+    return dict
 
-    def splitParts(self, arg):
-        # Break in pieces at undoubled semicolons and
-        # change double semicolons to singles:
-        arg = string.replace(arg, ";;", "\0")
-        parts = string.split(arg, ';')
-        parts = map(lambda s: string.replace(s, "\0", ";;"), parts)
-        return parts
+def splitParts(arg):
+    # Break in pieces at undoubled semicolons and
+    # change double semicolons to singles:
+    arg = string.replace(arg, ";;", "\0")
+    parts = string.split(arg, ';')
+    parts = map(lambda s: string.replace(s, "\0", ";;"), parts)
+    return parts
 
 
 def macroIndexer(document):
