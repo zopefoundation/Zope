@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.25 1997/03/28 16:53:50 chris Exp $'''
+$Id: InvertedIndex.py,v 1.26 1997/03/28 16:54:57 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.25 1997/03/28 16:53:50 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.26  1997/03/28 16:54:57  chris
+# *** empty log message ***
+#
 # Revision 1.25  1997/03/28 16:53:50  chris
 # indexed data now stored as dictionaries rather than ResultLists.
 # indexing documents with few than two keywords fails silently rather
@@ -172,7 +175,7 @@ $Id: InvertedIndex.py,v 1.25 1997/03/28 16:53:50 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -457,7 +460,7 @@ class Index:
     print i['blah']
   '''
 
-  def __init__(self, index_dictionary = None)
+  def __init__(self, index_dictionary = None):
       'Create an inverted index'
       if (index_dictionary is None):
           index_dictionary = copy.copy(default_stop_words)
