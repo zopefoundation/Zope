@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.90 2000/07/26 15:48:19 brian Exp $'''
-__version__='$Revision: 1.90 $'[11:-2]
+$Id: DA.py,v 1.91 2000/09/13 13:48:47 brian Exp $'''
+__version__='$Revision: 1.91 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -327,8 +327,11 @@ class DA(
 
     def manage_test(self, REQUEST):
         """Test an SQL method."""
-
-        src="Could not render the query template!"
+        # Try to render the query template first so that the rendered
+        # source will be available for the error message in case some
+        # error occurs...
+        try:    src=self(REQUEST, src__=1)
+        except: src="Could not render the query template!"
         result=()
         t=v=tb=None
         try:
