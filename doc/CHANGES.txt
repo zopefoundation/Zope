@@ -20,6 +20,9 @@ Zope changes
           documents for now) that provides access to previous versions 
           through the web.
 
+        - The property management screens now include the types for
+          existing properties.
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
