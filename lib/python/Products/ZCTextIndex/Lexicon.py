@@ -24,45 +24,45 @@ class Lexicon:
     __implements__ = ILexicon
 
     def __init__(self, *pipeline):
-        self.__wids = OIBTree()  # word -> wid
-        self.__words = IOBTree() # wid -> word
+        self._wids = OIBTree()  # word -> wid
+        self._words = IOBTree() # wid -> word
         # XXX we're reserving wid 0, but that might be yagni
-        self.__nextwid = 1
-        self.__pipeline = pipeline
+        self._nextwid = 1
+        self._pipeline = pipeline
 
     def length(self):
         """Return the number of unique terms in the lexicon."""
-        return self.__nextwid - 1
+        return self._nextwid - 1
 
     def words(self):
-        return self.__wids.keys()
+        return self._wids.keys()
 
     def wids(self):
-        return self.__words.keys()
+        return self._words.keys()
 
     def items(self):
-        return self.__wids.items()
+        return self._wids.items()
 
     def sourceToWordIds(self, text):
         last = _text2list(text)
-        for element in self.__pipeline:
+        for element in self._pipeline:
             last = element.process(last)
         return map(self._getWordIdCreate, last)
 
     def termToWordIds(self, text):
         last = _text2list(text)
-        for element in self.__pipeline:
+        for element in self._pipeline:
             last = element.process(last)
         wids = []
         for word in last:
-            wid = self.__wids.get(word)
+            wid = self._wids.get(word)
             if wid is not None:
                 wids.append(wid)
         return wids
         
     def get_word(self, wid):
         """Return the word for the given word id"""
-        return self.__words[wid]
+        return self._words[wid]
 
     def globToWordIds(self, pattern):
         if not re.match("^\w+\*$", pattern):
@@ -71,27 +71,27 @@ class Lexicon:
         assert pattern.endswith("*")
         prefix = pattern[:-1]
         assert prefix and not prefix.endswith("*")
-        keys = self.__wids.keys(prefix) # Keys starting at prefix
+        keys = self._wids.keys(prefix) # Keys starting at prefix
         wids = []
         words = []
         for key in keys:
             if not key.startswith(prefix):
                 break
-            wids.append(self.__wids[key])
+            wids.append(self._wids[key])
             words.append(key)
         return wids
 
     def _getWordIdCreate(self, word):
-        wid = self.__wids.get(word)
+        wid = self._wids.get(word)
         if wid is None:
-            wid = self.__new_wid()
-            self.__wids[word] = wid
-            self.__words[wid] = word
+            wid = self._new_wid()
+            self._wids[word] = wid
+            self._words[wid] = word
         return wid
 
-    def __new_wid(self):
-        wid = self.__nextwid
-        self.__nextwid += 1
+    def _new_wid(self):
+        wid = self._nextwid
+        self._nextwid += 1
         return wid
 
 def _text2list(text):
