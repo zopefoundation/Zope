@@ -151,7 +151,7 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
         delattr(self, id)
         pc=self.aq_inner.aq_parent.aq_parent._zclass_propertysheets_class
         delattr(pc,id)
-        pc.__propset_attrs__=tuple(map(lambda o: o[0], self._objects))
+        pc.__propset_attrs__=tuple(map(lambda o: o['id'], self._objects))
         rclass(pc)
 
     meta_types=(
