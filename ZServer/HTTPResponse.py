@@ -89,7 +89,7 @@ The HTTPResponse class takes care of server headers, response munging
 and logging duties.
 
 """
-import time, regex, string, sys, tempfile
+import time, re, string, sys, tempfile
 from cStringIO import StringIO
 import thread
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -123,7 +123,7 @@ class ZServerHTTPResponse(HTTPResponse):
     _chunking=0
 
     def __str__(self,
-                html_search=regex.compile('<html>',regex.casefold).search,
+                html_search=re.compile('<html>',re.I).search,
                 ):
         if self._wrote:
             if self._chunking:
