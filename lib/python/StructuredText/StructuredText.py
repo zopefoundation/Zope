@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.26 2000/03/14 17:22:04 brian Exp $'''
+$Id: StructuredText.py,v 1.27 2000/04/21 13:38:10 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,6 +256,9 @@ $Id: StructuredText.py,v 1.26 2000/03/14 17:22:04 brian Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.27  2000/04/21 13:38:10  jim
+# Added closing list tags. Woo hoo!
+#
 # Revision 1.26  2000/03/14 17:22:04  brian
 # Allow ~ in hrefs.
 #
@@ -652,16 +655,16 @@ class HTML(StructuredText):
 
     def ul(self, before, p, after):
         if p: p="<p>%s</p>" % strip(ctag(p))
-        return ('%s<ul><li>%s\n%s\n</ul>\n'
+        return ('%s<ul><li>%s\n%s\n</li></ul>\n'
                 % (before,p,after))
 
     def ol(self, before, p, after):
         if p: p="<p>%s</p>" % strip(ctag(p))
-        return ('%s<ol><li>%s\n%s\n</ol>\n'
+        return ('%s<ol><li>%s\n%s\n</li></ol>\n'
                 % (before,p,after))
 
     def dl(self, before, t, d, after):
-        return ('%s<dl><dt>%s<dd><p>%s</p>\n%s\n</dl>\n'
+        return ('%s<dl><dt>%s</dt><dd><p>%s</p>\n%s\n</dd></dl>\n'
                 % (before,ctag(t),ctag(d),after))
 
     def head(self, before, t, level, d):
@@ -670,7 +673,7 @@ class HTML(StructuredText):
                     % (before,level,strip(ctag(t)),level,d))
             
         t="<p><strong>%s</strong><p>" % strip(ctag(t))
-        return ('%s<dl><dt>%s\n<dd>%s\n</dl>\n'
+        return ('%s<dl><dt>%s\n</dt><dd>%s\n</dd></dl>\n'
                 % (before,t,d))
 
     def normal(self,before,p,after):
