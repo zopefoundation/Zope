@@ -63,7 +63,7 @@ Starting ZServer
   starts.
   
   A log file will be written to the 'var' directory, named
-  'ZServer.log' by default.
+  'Z2.log' by default.
 
 Using ZServer
 
