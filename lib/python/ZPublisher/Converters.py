@@ -82,9 +82,9 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
-import regex
+import re
 from string import atoi, atol, atof, join, split, strip
 from types import ListType, TupleType
 
@@ -93,17 +93,21 @@ def field2string(v):
     else: v=str(v)
     return v
 
-def field2text(v, nl=regex.compile('\r\n\|\n\r').search):
+def field2text(v, nl=re.compile('\r\n\|\n\r').search):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    l=nl(v)
-    if l < 0: return v
+    mo = nl(v)
+    if mo is None: return v
+    l = mo.start(0)
     r=[]
     s=0
     while l >= s:
         r.append(v[s:l])
         s=l+2
-        l=nl(v,s)
+        mo=nl(v,s)
+        if mo is None: l=-1
+        else:          l=mo.start(0)
+
     r.append(v[s:])
         
     return join(r,'\n')
