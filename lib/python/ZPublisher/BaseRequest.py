@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -392,8 +392,7 @@ class BaseRequest:
         finally:
             parents.reverse()
 
-        request['PUBLISHED'] = parents[0]
-        parents.pop(0) # Get rid of final method object
+        request['PUBLISHED'] = parents.pop(0)
 
         # Do authorization checks
         user=groups=None
