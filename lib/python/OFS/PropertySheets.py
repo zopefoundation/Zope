@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -283,15 +283,19 @@ class PropertySheet(Persistent, Implicit):
             # return property names and values.
             for item in self.propertyMap():
                 name, type=item['id'], item.get('type','string')
-                meta=item.get('meta', {})
                 value=self.getProperty(name)
                 if type=='tokens':
                     value=join(value, ' ')
                 elif type=='lines':
                     value=join(value, '\n')
-                if meta.get('dav_xml', 0):
-                    prop=value
-                else: prop='  <n:%s>%s</n:%s>' % (name, value, name)
+
+                # allow for xml properties
+                meta=item.get('meta', {})
+                attrs=meta.get('__xml_attrs__', '')
+                if attrs:
+                    attrs=map(lambda n, v: ' %s="%s"', attrs.items())
+                    attrs=join(attrs, '')
+                prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
                 result.append(prop)
             if not result: return ''
             result=join(result, '\n')
@@ -304,21 +308,25 @@ class PropertySheet(Persistent, Implicit):
                 if ns==xml_id:
                     if not propdict.has_key(name):
                         prop='  <n:%s/>' % name
-                        emsg=errormsg % 'Property not found: %s' % name
+                        emsg=errormsg % (
+                            'The property %s does not exist.' % name)
                         result.append(propstat % (prop, '404 Not Found', emsg))
                     else:
                         item=propdict[name]
                         name, type=item['id'], item.get('type','string')
-                        meta=item.get('meta', {})
                         value=self.getProperty(name)
                         if type=='tokens':
                             value=join(value, ' ')
                         elif type=='lines':
                             value=join(value, '\n')
-                        if meta.get('dav_xml', 0):
-                            prop=value
-                        else:
-                            prop='  <n:%s>%s</n:%s>' % (name, value, name)
+
+                        # allow for xml properties
+                        meta=item.get('meta', {})
+                        attrs=meta.get('__xml_attrs__', '')
+                        if attrs:
+                            attrs=map(lambda n, v: ' %s="%s"', attrs.items())
+                            attrs=join(attrs, '')
+                        prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
                         result.append(propstat % (prop, '200 OK', ''))
             if not result: return ''
             return join(result, '')
