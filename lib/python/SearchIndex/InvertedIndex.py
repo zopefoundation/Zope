@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.26 1997/03/28 16:54:57 chris Exp $'''
+$Id: InvertedIndex.py,v 1.27 1997/03/28 17:11:38 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.26 1997/03/28 16:54:57 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.27  1997/03/28 17:11:38  chris
+# *** empty log message ***
+#
 # Revision 1.26  1997/03/28 16:54:57  chris
 # *** empty log message ***
 #
@@ -175,7 +178,7 @@ $Id: InvertedIndex.py,v 1.26 1997/03/28 16:54:57 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -542,8 +545,8 @@ class Index:
       try:
           rl = index[word]
       except:
-	  rl = self.list_class()
-	  index[word] = {}
+          rl = {}
+	  index[word] = rl
 
       rl[key] = data
 
