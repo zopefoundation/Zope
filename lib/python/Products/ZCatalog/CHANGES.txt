@@ -1,23 +1,17 @@
 Catalog Changes
 
-  TODO
-  
-    Convert most columns (except url) to Computed Attributes. 
-	
-	Add authorization checks to searching in order to limit returned records
-	returned to ones for which the current user has authorization.
+  This file gives information about changes made to this product 
+  over time, things that need to be done before the next release 
+  and future plans.
 
-  Catalog 0.4.1
-  
-    New Features
-	
-	  Now the 'getCatalogObject' method provides access from DTML to Cataloged
-	  objects.
-	
-	Bugs Fixed
-	
-      Reindented with spaces instead of tabs
-	  
-  Catalog 0.4.0
-  
-    Initial Catalog checked into CVS
+  Releases
+
+    Catalog 1.0.0a1
+
+      Features Added
+
+        - Initial release
+
+      Bugs Fixed
+
+        - Initial release
