@@ -163,7 +163,13 @@ parse(fp, [environ, [keep_blank_values, [strict_parsing]]]): parse a
 form into a Python dictionary.
 
 parse_qs(qs, [keep_blank_values, [strict_parsing]]): parse a query
-string (data of type application/x-www-form-urlencoded).
+string (data of type application/x-www-form-urlencoded). Data are
+returned as a dictionary. The dictionary keys are the unique query
+variable names and the values are lists of vales for each name.
+
+parse_qsl(qs, [keep_blank_values, [strict_parsing]]): parse a query
+string (data of type application/x-www-form-urlencoded). Data are
+returned as a list of name, value pairs.
 
 parse_multipart(fp, pdict): parse input of type multipart/form-data (for 
 file uploads).
@@ -555,18 +561,10 @@ def parse_qs(qs, keep_blank_values=0, strict_parsing=0):
             If false (the default), errors are silently ignored.
             If true, errors raise a ValueError exception.
     """
-    name_value_pairs = string.splitfields(qs, '&')
     dict = {}
-    for name_value in name_value_pairs:
-        nv = string.splitfields(name_value, '=')
-        if len(nv) != 2:
-            if strict_parsing:
-                raise ValueError, "bad query field: %s" % `name_value`
-            continue
-        name = urllib.unquote(string.replace(nv[0], '+', ' '))
-        value = urllib.unquote(string.replace(nv[1], '+', ' '))
+    for name, value in parse_qsl(qs, keep_blank_values, strict_parsing):
         if len(value) or keep_blank_values:
-            if dict.has_key (name):
+            if dict.has_key(name):
                 dict[name].append(value)
             else:
                 dict[name] = [value]
@@ -901,16 +899,8 @@ class FieldStorage:
             self.read_urlencoded()
         elif ctype[:10] == 'multipart/':
             self.read_multi(environ, keep_blank_values, strict_parsing)
-        elif self.outerboundary or method != 'POST':
-            # we're in an inner part, but the content-type wasn't something we 
-            # understood.  default to read_single() because the resulting
-            # FieldStorage won't be a mapping (and doesn't need to be).
-            self.read_single()
         else:
-            # we're in an outer part, but the content-type wasn't something we 
-            # understood.  we still want the resulting FieldStorage to be a
-            # mapping, so parse it as if it were urlencoded
-            self.read_urlencoded()
+            self.read_single()
 
     def __repr__(self):
         """Return a printable representation."""
@@ -969,9 +959,9 @@ class FieldStorage:
         """Internal: read data in query string format."""
         qs = self.fp.read(self.length)
         self.list = list = []
-        append=list.append
-        for key, value in parse_qsl(qs, self.keep_blank_values, self.strict_parsing):
-            append(MiniFieldStorage(key, value))
+        for key, value in parse_qsl(qs, self.keep_blank_values,
+                                        self.strict_parsing):
+            list.append(MiniFieldStorage(key, value))
         self.skip_lines()
 
     FieldStorageClass = None
