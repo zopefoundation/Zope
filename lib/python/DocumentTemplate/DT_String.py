@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.29 1999/06/30 13:59:38 jim Exp $"
+"$Id: DT_String.py,v 1.30 1999/07/12 17:24:53 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -509,6 +509,14 @@ class String:
 
     def __str__(self):
         return self.read()
+
+    def __getstate__(self, _special=('_v_', '_p_')):
+        # Waaa, we need _v_ behavior but we may not subclass Persistent
+        d={}
+        for k, v in self.__dict__.items():
+            if k[:3] in _special: continue
+            d[k]=v
+        return d
 
 class FileMixin:
     # Mix-in class to abstract certain file-related attributes
