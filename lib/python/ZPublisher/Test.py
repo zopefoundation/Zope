@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.23 1998/09/21 23:53:13 jim Exp $
+$Id: Test.py,v 1.24 1998/09/21 23:58:25 jim Exp $
 '''
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -185,7 +185,7 @@ def time(function,*args,**kwargs):
     t=clock()
     for i in repeat_range:
         apply(function,args,kwargs)
-    t=(clock()-t)/1000.0
+    t=(clock()-t)*1000.0
 
     return float(t)/len(repeat_range)
 
