@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.23 1999/05/24 19:14:27 jim Exp $"""
+$Id: Management.py,v 1.24 1999/05/24 21:00:27 jim Exp $"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -116,7 +116,7 @@ class Tabs(ExtensionClass.Base):
     def filtered_manage_options(
         self, REQUEST=None,
         help_option_=({'label': 'Help', 'action': 'manage_help',
-                       },),
+                       'target':"z_help_wnd"},),
         ):
         if REQUEST is None:
             if hasattr(self, 'REQUEST'):
@@ -152,7 +152,9 @@ class Tabs(ExtensionClass.Base):
             except:
                 o=None
 
-            if o is None: result.append(d) # Waaaa
+            if o is None:
+                continue
+                result.append(d) # Waaaa
 
             # Get the roles and check for public methods
             try: roles=o.__roles__
