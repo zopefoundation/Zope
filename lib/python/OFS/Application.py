@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.174 2001/11/26 20:31:14 matt Exp $'''
-__version__='$Revision: 1.174 $'[11:-2]
+$Id: Application.py,v 1.175 2001/11/26 21:00:10 chrism Exp $'''
+__version__='$Revision: 1.175 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -103,7 +103,6 @@ from misc_ import Misc_
 import ZDOM
 from zLOG import LOG, ERROR, WARNING, INFO
 from HelpSys.HelpSys import HelpSys
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -770,6 +769,7 @@ def install_product(app, product_dir, product_name, meta_types,
 
 def install_standards(app):
     # Install the replaceable standard objects
+    from Products.PageTemplates.PageTemplateFile import PageTemplateFile
     std_dir = os.path.join(Globals.package_home(globals()), 'standard')
     wrote = 0
     for fn in os.listdir(std_dir):
