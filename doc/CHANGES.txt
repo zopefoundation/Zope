@@ -58,7 +58,7 @@ Zope Changes
 
         - Collector #2335: older products like GadflyDA that did not
           use registerClass() were registered but their visibility
-          flag has not been set  to Global. So these  products did not
+          flag has not been set to Global.  So these products did not
           appear in the ZMF.
 
 
