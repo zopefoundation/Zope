@@ -186,6 +186,17 @@ class ZClassMethodsSheet(
     def _delOb(self, id):
         self.delClassAttr(strip(id))
 
+    def _delObject(self,id):
+        # Ick!  This is necessary to deal with spaces. Waaa!
+        id=strip(id)
+        if id=='acl_users':
+            if hasattr(self, '__allow_groups__') and \
+               self.__dict__.has_key('__allow_groups__'):
+                delattr(self, '__allow_groups__')
+
+        self._objects=tuple(filter(lambda i,n=id: strip(i['id']) != n, self._objects))
+        self._delOb(id)
+
     def _getOb(self, id, default=_marker):
         if default is _marker: r=self.getClassAttr(strip(id))
         else:
