@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.21 1998/01/20 16:13:10 jim Exp $'
-__version__='$Revision: 1.21 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.22 1998/04/08 17:45:32 jim Exp $'
+__version__='$Revision: 1.22 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -31,20 +31,27 @@ class Tree:
 
     def __init__(self, blocks):
 	tname, args, section = blocks[0]
-	args=parse_params(args, name=None, expr=None,
+	args=parse_params(args, name=None, expr=None, nowrap=1, 
 			  expand=None, leaves=None,
 			  header=None, footer=None,
-			  nowrap=1, branches=None, sort=None)
+			  branches=None, branches_expr=None,
+			  sort=None, skip_unauthorized=1)
 	has_key=args.has_key
 
 	if has_key('name'): name=args['name']
 	elif has_key(''): name=args['name']=args['']
 	else: name='a tree tag'
 
-	if not has_key('branches'): args['branches']='tpValues'
+	if has_key('branches_expr'):
+	    if has_key('branches'):
+		raise ParseError, _tm(
+		    'branches and  and branches_expr given', 'tree')
+	    args['branches_expr']=VSEval.Eval(
+		args['branches_expr'], expr_globals).eval
+	elif not has_key('branches'): args['branches']='tpValues'
 	
 	self.__name__ = name
-	self.section=section
+	self.section=section.blocks
 	self.args=args
 	if args.has_key('expr'):
 	    if args.has_key('name'):
@@ -142,11 +149,12 @@ def tpRender(self, md, section, args):
 	      'tree-colspan': colspan,
 	      'tree-state': state }
     
+    md._push(InstanceDict(self, md))
     md._push(treeData)
 
     try: tpRenderTABLE(self,id,root,url,state,substate,diff,data,colspan,
 		       section,md,treeData, level, args)
-    finally: md._pop(1)
+    finally: md._pop(2)
 
     if state is substate:
 	state=state or ([id],)
@@ -175,8 +183,34 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     output=data.append
     script=md['SCRIPT_NAME']
 
-    try:    items=getattr(self, args['branches'])()
-    except: items=None
+    validate=md.validate
+    if have_arg('branches') and hasattr(self, args['branches']):
+	if validate is None or not hasattr(self, 'aq_acquire'):
+	    items=getattr(self, args['branches'])()
+	else:
+	    items=self.aq_acquire(args['branches'],validate,md)()
+    elif have_arg('branches_expr'):
+	items=args['branches_expr'](md)
+    else:
+	items=None
+
+    if items is not None and validate is not None:
+	unauth=[]
+	index=0
+	for i in items:
+	    try: v=validate(items,items,index,i,md)
+	    except: v=0
+	    if not v: unauth.append(index)
+	    index=index+1
+
+	if unauth:
+	    if have_arg('skip_unauthorized') and args['skip_unauthorized']:
+		items=list(items)
+		unauth.reverse()
+		for i in unauth: del items[i]
+	    else:
+		raise ValidationError, unauth
+
     if not items and have_arg('leaves'): items=1
 
     if (args.has_key('sort')) and (items is not None) and (items != 1):
@@ -252,7 +286,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	       ((dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''),
 	       (have_arg('nowrap') and args['nowrap'] and ' NOWRAP' or ''))
 	       )
-	output(section(self, md))
+	output(render_blocks(section, md))
 	output('</TD>\n</TR>\n')
 
 
@@ -266,12 +300,11 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
 	if have_arg('header'):
 	    doc=args['header']
-	    if hasattr(self, doc): doc=getattr(self, doc)
-	    elif md.has_key(doc): doc=md.getitem(args['header'],0)
+	    if md.has_key(doc): doc=md.getitem(doc,0)
 	    else: doc=None
 	    if doc is not None:
 		output(doc(
-		    self, md,
+		    None, md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
 			'<TD%s VALIGN="TOP">'
@@ -284,15 +317,14 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	if items==1:
 	    # leaves
 	    doc=args['leaves']
-	    if hasattr(self, doc): doc=getattr(self, doc)
-	    elif md.has_key(doc): doc=md.getitem(args['header'],0)
+	    if md.has_key(doc): doc=md.getitem(doc,0)
 	    else: doc=None
 	    if doc is not None:
 		treeData['-tree-substate-']=sub
 		treeData['tree-level']=level
 		md._push(treeData)
-		output(doc(
-		    self,md,
+		try: output(doc(
+		    None,md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
 			'<TD%s VALIGN="TOP">'
@@ -301,13 +333,26 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 			    (' COLSPAN="%s"' % dataspan) or ''))),
 		    standard_html_footer='</TD></TR>',
 		    ))
-		md._pop(1)
+	        finally: md._pop(1)
 	elif have_arg('expand'):
-	    treeData['-tree-substate-']=sub
-	    treeData['tree-level']=level
-	    md._push(treeData)
-	    output(md.getitem(args['expand'],0)(self,md))
-	    md._pop(1)
+	    doc=args['expand']
+	    if md.has_key(doc): doc=md.getitem(doc,0)
+	    else: doc=None
+	    if doc is not None:
+		treeData['-tree-substate-']=sub
+		treeData['tree-level']=level
+		md._push(treeData)
+		try: output(doc(
+		    None,md,
+		    standard_html_header=(
+			'<TR>%s<TD WIDTH="16"></TD>'
+			'<TD%s VALIGN="TOP">'
+			% (h,
+			   (dataspan > 1 and
+			    (' COLSPAN="%s"' % dataspan) or ''))),
+		    standard_html_footer='</TD></TR>',
+		    ))
+	        finally: md._pop(1)
 	else:
 	    __traceback_info__=sub, args, state, substate
 	    ids={}
@@ -318,9 +363,11 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 		if len(sub)==1: sub.append([])
 		substate=sub[1]
 		ids[id]=1
-		data=tpRenderTABLE(
+		md._push(InstanceDict(item,md))
+		try: data=tpRenderTABLE(
 		    item,id,root_url,url,state,substate,diff,data,
 		    colspan, section, md, treeData, level, args)
+	        finally: md._pop()
 		if not sub[1]: del sub[1]
 
 	    ids=ids.has_key
@@ -329,12 +376,11 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
 	if have_arg('footer'):
 	    doc=args['footer']
-	    if hasattr(self, doc): doc=getattr(self, doc)
-	    elif md.has_key(doc): doc=md.getitem(args['header'],0)
+	    if md.has_key(doc): doc=md.getitem(doc,0)
 	    else: doc=None
 	    if doc is not None:
 		output(doc(
-		    self, md,
+		    None, md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
 			'<TD%s VALIGN="TOP">'
