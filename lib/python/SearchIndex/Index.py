@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -122,15 +122,15 @@ class Index(Persistent):
         """
 	######################################################################
 	# For b/w compatability, have to allow __init__ calls with zero args
-	if not data==schema==id==None:
-	    self._data=data
-	    self._schema=schema
-	    self.id=id
-	    self._index=BTree()
-	    
-	    self._reindex()
-	else:
-	    pass
+        if not data==schema==id==None:
+            self._data=data
+            self._schema=schema
+            self.id=id
+            self._index=BTree()
+            
+            self._reindex()
+        else:
+            pass
 
     # for b/w compatability
     _init = __init__
