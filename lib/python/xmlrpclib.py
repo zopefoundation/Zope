@@ -191,9 +191,8 @@ def boolean(value, truefalse=(False, True)):
 class DateTime:
 
     def __init__(self, value=0):
-        t = type(value)
-        if not isinstance(t, StringType):
-            if not isinstance(t, TupleType):
+        if not isinstance(value, StringType):
+            if not isinstance(value, TupleType):
                 if value == 0:
                     value = time.time()
                 value = time.localtime(value)
