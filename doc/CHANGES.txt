@@ -55,7 +55,14 @@ Zope Changes
 
       - pre-2.5 installation could not properly migrated to 2.5 because
         of changes in the Splitter API
-        
+
+      - ZODB conflict errors were logged at a severity that caused
+        them to be logged to the stupid log file "out of the box".
+        Because conflict errors happen under normal operations, and
+        their appearance in the log frequently alarms folks, conflict
+        error logging severity has been changed to BLATHER, which
+        means that conflict errors will only be logged if
+        STUPID_LOG_SEVERITY is set to -100 or lower.
 
   Zope 2.5 Alpha 2
 
