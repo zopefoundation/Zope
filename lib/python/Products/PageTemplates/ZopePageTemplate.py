@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -96,6 +96,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
       'pt_editForm', 'manage_main', 'read',
       'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
       'document_src', 'source.html', 'source.xml')
+
+    security.declareProtected('FTP access',
+      'manage_FTPstat','manage_FTPget','manage_FTPlist')
 
     pt_editForm = PageTemplateFile('www/ptEdit', globals(),
                                    __name__='pt_editForm')
