@@ -11,6 +11,7 @@ RestrictedPython
 SearchIndex
 Shared
 StructuredText
+TAL
 Testing
 ThreadedAsync
 TreeDisplay
@@ -25,5 +26,3 @@ zLOG
 zdaemon
 # WAAAA!  Putting this at end makes it run!
 AccessControl
-# WAAAA!  These tests are broken!
-#TAL

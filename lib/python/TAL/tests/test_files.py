@@ -19,7 +19,7 @@ class FileTestCase(unittest.TestCase):
 
     def runTest(self):
         basename = os.path.basename(self.__file)
-        sys.stdout.write(basename + " ")
+        #sys.stdout.write(basename + " ")
         sys.stdout.flush()
         if basename[:10] == 'test_metal':
             sys.argv = ["", "-Q", "-m", self.__file]
