@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.15 1997/12/05 21:26:54 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Aqueduct.py,v 1.16 1997/12/12 23:38:04 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -192,7 +192,8 @@ custom_default_report_src=DocumentTemplate.File(
     dtml_dir+'customDefaultReport.dtml')
 
 def custom_default_report(id, result, action=''):
-    columns=result._searchable_result_columns() 
+    columns=result._searchable_result_columns()
+    __traceback_info__=columns
     heading=('<tr>\n%s</tr>' %
 		 string.joinfields(
 		     map(lambda c:
@@ -359,6 +360,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.16  1997/12/12 23:38:04  jim
+# Added debugging info.
+#
 # Revision 1.15  1997/12/05 21:26:54  jim
 # Minor change to help out testing DAs.
 #
