@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -302,8 +302,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         """Edit object properties via the web."""
         for prop in self._properties:
             name=prop['id']
-            value=REQUEST.get(name, '')
-            self._setPropValue(name, value)
+            if REQUEST.has_key(name):
+                value=REQUEST.get(name)
+                self._setPropValue(name, value)
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',

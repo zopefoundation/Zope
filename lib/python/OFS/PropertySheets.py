@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -428,8 +428,9 @@ class PropertySheet(Persistent, Implicit):
         """Edit object properties via the web."""
         for prop in self.propertyMap():
             name=prop['id']
-            value=REQUEST.get(name, '')
-            self._updateProperty(name, value)
+            if REQUEST.has_key(name):
+                value=REQUEST.get(name)
+                self._updateProperty(name, value)
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
