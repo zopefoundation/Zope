@@ -109,6 +109,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1299: Fixed bug in sequence.sort()
+
      - Collector #1159: Added test for __MACH__ to initgroups.c so the
        initgroups method becomes available on Mac OS X.
 

@@ -98,7 +98,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                         else: akey = getattr(v, sk)
                     except (AttributeError, KeyError):
                         akey = None
-                    if not basic_type(akey):
+                    if not basic_type(type(akey)):
                         try: akey = akey()
                         except: pass
                     k.append(akey)
