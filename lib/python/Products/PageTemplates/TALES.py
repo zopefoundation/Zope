@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -140,21 +140,17 @@ class SafeMapping(MultiMapping):
     able to read any value.
     '''
     __allow_access_to_unprotected_subobjects__ = 1
-    def __init__(self, *dicts):
-        self._mm = apply(MultiMapping, dicts)
-    def __getitem__(self, index):
-        return self._mm[index]
-    def __len__(self):
-        return len(self._mm)
-    def _push(self, arg):
-        self._mm.push(arg)
-    def _pop(self):
-        return self._mm.pop()
-    def has_key(self, key):
-        return self._mm.has_key(key)
+    push = pop = None
+    def _push(self, ob):
+        MultiMapping.push(self, ob)
+    def _pop(self, *args):
+        if args:
+            return apply(MultiMapping.pop, (self,) + args)
+        else:
+            return MultiMapping.pop(self)
     def has_get(self, key):
-        v = self._mm.get(key, self)
-        if v is self:
+        v = self.get(key, _marker)
+        if v is _marker:
             return 0, None
         else:
             return 1, v
