@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.190 2003/05/17 14:48:49 chrism Exp $'''
-__version__='$Revision: 1.190 $'[11:-2]
+$Id: Application.py,v 1.191 2003/06/24 13:30:29 chrism Exp $'''
+__version__='$Revision: 1.191 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -368,26 +368,6 @@ def initialize(app):
         get_transaction().note('Added session_data_manager')
         get_transaction().commit()
         del sdm
-
-    # Ensure that there's an Examples folder with examples.
-    # However, make sure that if the examples have been added already
-    # and then deleted that we don't add them again.
-
-    if not hasattr(app, 'Examples') and not \
-       hasattr(app, '_Zope25_examples_have_been_added'):
-
-        import App.config
-        cfg = App.config.getConfiguration()
-        examples_path = os.path.join(cfg.zopehome, 'import',
-                                     'Examples.zexp')
-        if os.path.isfile(examples_path):
-            app._importObjectFromFile(examples_path, verify=0)
-            app._Zope25_examples_have_been_added=1
-            get_transaction().note('Added Examples folder')
-            get_transaction().commit()
-        else:
-            LOG('Zope Default Object Creation', INFO,
-                '%s examples import file could not be found.' % examples_path)
 
     # b/c: Ensure that Owner role exists.
     if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):

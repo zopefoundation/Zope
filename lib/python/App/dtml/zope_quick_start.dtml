@@ -53,7 +53,8 @@ begin working with the tutorial.
 
 <li>
 <p>
-Check out the <b>new</b> <a href="Examples">example Zope
+<a href="manage_importObject?file=Examples.zexp&amp;set_owner:int=1">Import</a>
+and then check out the <b>new</b> <a href="Examples">example Zope
 applications</a>. These examples show you simple working Zope
 applications that you can copy and modify.
 </p>
