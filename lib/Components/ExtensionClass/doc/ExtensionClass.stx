@@ -522,7 +522,7 @@ Extension Classes, Python Extension Types Become Classes
 
         class C(ExtensionClass.Base):
 
-	  def get_secret(self):
+	  def f(self):
 	    "Get a secret"
 	    ....
 
