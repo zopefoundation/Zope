@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -102,7 +102,7 @@ class CopyContainer(ExtensionClass.Base):
     __ac_permissions__=(
         ('View management screens',
          ('manage_cutObjects', 'manage_copyObjects', 'manage_pasteObjects',
-          'manage_renameForm', 'manage_renameObjects', 'manage_renameObjects',)),
+          'manage_renameForm', 'manage_renameObject', 'manage_renameObjects',)),
         )
 
 
