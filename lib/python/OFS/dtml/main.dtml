@@ -156,7 +156,7 @@ function toggleSelect() {
 
   <td>
   <div class="list-item">
-  <dtml-var bobobase_modification_time fmt="%y-%m-%d %I:%M %p">
+  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %I:%M %p">
   </div>
   </td>
   </dtml-with>
