@@ -84,14 +84,14 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.6 1999/03/10 00:14:56 klm Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Factory.py,v 1.7 1999/03/22 16:56:52 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 
 class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
     "Model factory meta-data"
-    meta_type='Principia Factory'
+    meta_type='Zope Factory'
     icon='p_/Factory_icon'
 
     manage_options=(
