@@ -5,7 +5,7 @@ AC_PROG_CPP
 
 # Set VERSION here so we only need to edit it in one place
 AC_SUBST(VERSION)
-VERSION=2.0a4
+VERSION=2.0a5
 
 # Set name for machine-dependent library files
 AC_SUBST(MACHDEP)
