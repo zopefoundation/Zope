@@ -2,7 +2,8 @@
 <dtml-var manage_tabs>
 
 <P class="form-help">
-Use this form to locate objects to be cataloged.
+Use this form to locate objects to be cataloged.  Those objects which
+are found will be automatically added to the catalog.
 </p>
 
 <FORM ACTION="manage_catalogFoundItems" METHOD="GET">
@@ -115,7 +116,8 @@ Use this form to locate objects to be cataloged.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <INPUT class="form-element" TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">  
+  <INPUT class="form-element" TYPE="SUBMIT" NAME="btn_submit"
+VALUE="Find and Catalog">  
   </div>
   </TD>
 </TR>
