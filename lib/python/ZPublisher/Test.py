@@ -72,7 +72,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.9 1997/04/11 13:35:06 jim Exp $
+$Id: Test.py,v 1.10 1997/04/11 22:45:22 jim Exp $
 '''
 #     Copyright 
 #
@@ -126,7 +126,7 @@ $Id: Test.py,v 1.9 1997/04/11 13:35:06 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 #! /usr/local/bin/python
@@ -140,7 +140,7 @@ def main():
 
     try:
 	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:')
-	if len(args) > 2 or len(args) < 1: raise TypeError, None
+	if len(args) > 2 or len(args) < 2: raise TypeError, None
 	if len(args) == 2: path_info=args[1]
     except:
 	sys.stderr.write(__doc__)
@@ -334,6 +334,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.10  1997/04/11 22:45:22  jim
+# Changed to require two arguments.
+#
 # Revision 1.9  1997/04/11 13:35:06  jim
 # Added -e option to specify environment variables.
 #
