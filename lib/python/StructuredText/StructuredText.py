@@ -46,7 +46,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
 
-$Id: StructuredText.py,v 1.7 1997/12/12 15:39:54 jim Exp $'''
+$Id: StructuredText.py,v 1.8 1998/02/27 18:45:22 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,9 @@ $Id: StructuredText.py,v 1.7 1997/12/12 15:39:54 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.8  1998/02/27 18:45:22  jim
+# Various updates, including new indentation utilities.
+#
 # Revision 1.7  1997/12/12 15:39:54  jim
 # Added level as argument for html_with_references.
 #
@@ -133,6 +136,7 @@ $Id: StructuredText.py,v 1.7 1997/12/12 15:39:54 jim Exp $'''
 
 import regex, regsub
 from regsub import gsub
+from string import split, join, strip
 
 indent_tab  =regex.compile('\(\n\|^\)\( *\)\t')
 indent_space=regex.compile('\n\( *\)')
@@ -154,6 +158,35 @@ def untabify(aString):
 			     rest[start+indent+1+lnl:])
 	else:
 	    return result+rest
+
+def indent(aString, indent=2):
+    """Indent a string the given number of spaces"""
+    r=split(untabify(aString),'\n')
+    if not r: return ''
+    if not r[-1]: del r[-1]
+    tab=' '*level
+    return "%s%s\n" % (tab,join(r,'\n'+tab))
+
+def reindent(aString, indent=2, already_untabified=0):
+    "reindent a block of text, so that the minimum indent is as given"
+
+    if not already_untabified: aString=untabify(aString)
+
+    l=indent_level(aString)[0]
+    if indent==l: return aString
+
+    r=[]
+
+    append=r.append
+
+    if indent > l:
+	tab=' ' * (indent-l)
+        for s in split(aString,'\n'): append(tab+s)
+    else:
+	l=l-indent
+        for s in split(aString,'\n'): append(s[l:])
+
+    return join(r,'\n')
 
 def indent_level(aString):
     '''\
@@ -286,12 +319,12 @@ class HTML(StructuredText):
 	return s
 
     def ul(self, before, p, after):
-	if p: p="<p>%s</p>" % ctag(p)
+	if p: p="<p>%s</p>" % strip(ctag(p))
 	return ('%s<ul><li>%s\n%s\n</ul>\n'
 		% (before,p,after))
 
     def ol(self, before, p, after):
-	if p: p="<p>%s</p>" % ctag(p)
+	if p: p="<p>%s</p>" % strip(ctag(p))
 	return ('%s<ol><li>%s\n%s\n</ol>\n'
 		% (before,p,after))
 
@@ -302,14 +335,25 @@ class HTML(StructuredText):
     def head(self, before, t, level, d):
 	if level > 0 and level < 6:
 	    return ('%s<h%d>%s</h%d>\n%s\n'
-		    % (before,level,ctag(t),level,d))
+		    % (before,level,strip(ctag(t)),level,d))
 	    
-	t="<p><strong>%s</strong><p>" % t
+	t="<p><strong>%s</strong><p>" % strip(ctag(t))
 	return ('%s<dl><dt>%s\n<dd>%s\n</dl>\n'
-	        % (before,ctag(t),d))
+	        % (before,t,d))
 
     def normal(self,before,p,after):
 	return '%s<p>%s</p>\n%s\n' % (before,ctag(p),after)
+
+    def pre(self,structure,tagged=0):
+	if not structure: return ''
+	if tagged:
+	    r=''
+	else:
+	    r='<PRE>\n'
+	for s in structure:
+	    r="%s%s\n\n%s" % (r,html_quote(s[0]),self.pre(s[1],1))
+	if not tagged: r=r+'</PRE>\n'
+	return r
 
     def _str(self,structure,level):
 	r=''
@@ -340,17 +384,6 @@ class HTML(StructuredText):
 			    self._str(s[1],level and level+1))
 	    else:
 		r=self.normal(r,s[0],self._str(s[1],level))
-	return r
-
-    def pre(self,structure,tagged=0):
-	if not structure: return ''
-	if tagged:
-	    r=''
-	else:
-	    r='<PRE>\n'
-	for s in structure:
-	    r="%s%s\n\n%s" % (r,html_quote(s[0]),self.pre(s[1],1))
-	if not tagged: r=r+'</PRE>\n'
 	return r
 	
 
