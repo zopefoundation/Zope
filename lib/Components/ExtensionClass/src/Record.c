@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.6 1999/03/10 00:14:41 klm Exp $"
+"\n$Id: Record.c,v 1.7 1999/04/16 15:21:40 jim Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -490,6 +490,11 @@ Record_subscript(Record *self, PyObject *key)
       Py_INCREF(io);
       return io;
     }
+
+  PyErr_Clear();
+  if (io=PyObject_GetAttr(OBJECT(self), key)) return io;
+
+  PyErr_SetObject(PyExc_KeyError, key);					   
   return NULL;
 }
 
@@ -586,7 +591,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
+  char *rev="$Revision: 1.7 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -625,6 +630,12 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.7  1999/04/16 15:21:40  jim
+  Added logic to fall back to getattr when getitem fails.
+  This is needed to make computed attributes work in ZTables,
+  but it might be better to expand the schema notion to accomidate
+  computed attributes.
+
   Revision 1.6  1999/03/10 00:14:41  klm
   Committing with version 1.0 of the license.
 
