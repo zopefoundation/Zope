@@ -10,10 +10,13 @@ Zope Changes
 
       Features Added
 
+        - Added automatic height/width detection for JPEG images.
 
       Bugs Fixed
 
         - Added small fixes to ZopeHTTPServer in anticipation of DAV.
+
+
 
     Zope  1.10.3
 
@@ -42,7 +45,7 @@ Zope Changes
 
         - Construction, upload, and edit methods did not consistently
           support either string or file data.  This caused really weird
-          behavior when file upload was used with out includeing the 
+          behavior when file upload was used with out including the 
           ":string" suffix in the argument name when doing a file upload.
 
           This bug was previously (and incorrectly) reported as a 
