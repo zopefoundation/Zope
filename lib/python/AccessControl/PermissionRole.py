@@ -13,8 +13,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.19 2003/10/24 01:21:48 chrism Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: PermissionRole.py,v 1.20 2003/11/28 16:43:53 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 _use_python_impl = 0
 import os
@@ -30,7 +30,7 @@ else:
         _use_python_impl = 1
 
 
-if _use_python_impl:
+if 1 or _use_python_impl:
 
     import sys
 
@@ -38,18 +38,59 @@ if _use_python_impl:
 
     import string
 
-    name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
+    name_trans=filter((lambda c, an=string.letters+string.digits+'_':
+                       c not in an
+                       ),
                       map(chr,range(256)))
     name_trans=string.maketrans(''.join(name_trans), '_'*len(name_trans))
 
-    def rolesForPermissionOn(perm, object, default=('Manager',)):
+    def rolesForPermissionOn(perm, obj, default=('Manager',), n=None):
         """Return the roles that have the given permission on the given object
         """
-        im=imPermissionRole()
-        im._p='_'+string.translate(perm, name_trans)+"_Permission"
-        im._d=default
-        return im.__of__(object)
 
+        n = n or '_'+string.translate(perm, name_trans)+"_Permission"
+        r = None
+        
+        while 1:
+            if hasattr(obj, n):
+                roles = getattr(obj, n)
+                if roles is None:
+                    return 'Anonymous',
+
+                t = type(roles)
+                if t is tuple:
+                    # If we get a tuple, then we don't acquire
+                    if r is None:
+                        return roles
+                    return r+list(roles)
+
+                if t is str:
+                    # We found roles set to a name.  Start over
+                    # with the new permission name.  If the permission
+                    # name is '', then treat as private!
+                    if roles:
+                        if roles != n:
+                            n = roles
+                        # If we find a name that is the same as the
+                        # current name, we just ignore it.
+                        roles = None
+                    else:
+                        return _what_not_even_god_should_do
+
+                elif roles:
+                    if r is None:
+                        r = list(roles)
+                    else: r = r + list(roles)
+
+            obj = getattr(obj, 'aq_inner', None)
+            if obj is None:
+                break
+            obj = obj.aq_parent
+
+        if r is None:
+            return default
+
+        return r
 
     class PermissionRole(Base):
         """Implement permission-based roles.
@@ -77,6 +118,8 @@ if _use_python_impl:
             else:
                 return r
 
+        def rolesForPermissionOn(self, value):
+            return rolesForPermissionOn(None, value, self._d, self._p)
 
     # This is used when a permission maps explicitly to no permission.
     _what_not_even_god_should_do=[]
@@ -85,51 +128,13 @@ if _use_python_impl:
         """Implement permission-based roles
         """
 
-        def __of__(self, parent,tt=type(()),st=type(''),ut=type(u''),
-                   getattr=getattr):
-            obj=parent
-            n=self._p
-            r=None
-            while 1:
-                if hasattr(obj,n):
-                    roles=getattr(obj, n)
+        def __of__(self, value):
+            return rolesForPermissionOn(None, value, self._d, self._p)
+        rolesForPermissionOn = __of__
 
-                    if roles is None: return 'Anonymous',
-
-                    t=type(roles)
-
-                    if t is tt:
-                        # If we get a tuple, then we don't acquire
-                        if r is None: return roles
-                        return r+list(roles)
-
-                    if t in (st, ut):
-                        # We found roles set to a name.  Start over
-                        # with the new permission name.  If the permission
-                        # name is '', then treat as private!
-                        if roles:
-                            if roles != n:
-                                n=roles
-                            # If we find a name that is the same as the
-                            # current name, we just ignore it.
-                            roles=None
-                        else:
-                            return _what_not_even_god_should_do
-
-                    elif roles:
-                        if r is None: r=list(roles)
-                        else: r=r+list(roles)
-
-                obj=getattr(obj, 'aq_inner', None)
-                if obj is None: break
-                obj=obj.aq_parent
-
-            if r is None: r=self._d
-
-            return r
-
-        # The following methods are needed in the unlikely case that an unwrapped
-        # object is accessed:
+        # The following methods are needed in the unlikely case that
+        # an unwrapped object is accessed:
+        
         def __getitem__(self, i):
             try:
                 v=self._v
