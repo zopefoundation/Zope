@@ -240,7 +240,7 @@ class DummyDomain:
         # substrings.  Then upcase everything but the placeholders, then glue
         # things back together.
         def repl(m, mapping=mapping):
-            return mapping[m.group(m.lastindex).lower()]
+            return ustr(mapping[m.group(m.lastindex).lower()])
         cre = re.compile(r'\$(?:([_A-Z]\w*)|\{([_A-Z]\w*)\})')
         return cre.sub(repl, msgid.upper())
 

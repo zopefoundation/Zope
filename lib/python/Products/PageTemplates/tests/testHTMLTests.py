@@ -28,8 +28,14 @@ class Folder(util.Base):
     pass
 
 class TestTranslationService:
-    def translate(self, domain, msgid, *args, **kw):
-        return "[%s](%s)" % (domain, msgid)
+    def translate(self, domain, msgid, mapping=None, *args, **kw):
+        maps = []
+        if mapping is not None:
+            # Get a deterministic, sorted representation of dicts.
+            for k, v in mapping.items():
+                maps.append('%s:%s' % (`k`, `v`))
+            maps.sort()
+        return "[%s](%s/{%s})" % (domain, msgid, ','.join(maps))
 
 
 class UnitTestSecurityPolicy:

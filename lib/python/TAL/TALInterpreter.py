@@ -52,7 +52,11 @@ _interp_regex = re.compile(r'(?<!\$)(\$(?:%(n)s|{%(n)s}))' %({'n': NAME_RE}))
 _get_var_regex = re.compile(r'%(n)s' %({'n': NAME_RE}))
 
 def interpolate(text, mapping):
-    """Interpolate ${keyword} substitutions."""
+    """Interpolate ${keyword} substitutions.
+
+    This is called when no translation is provided by the translation
+    service.
+    """
     if not mapping:
         return text
     # Find all the spots we want to substitute.
@@ -60,7 +64,17 @@ def interpolate(text, mapping):
     # Now substitute with the variables in mapping.
     for string in to_replace:
         var = _get_var_regex.findall(string)[0]
-        text = text.replace(string, mapping.get(var))
+        if mapping.has_key(var):
+            # Call ustr because we may have an integer for instance.
+            subst = ustr(mapping[var])
+            try:
+                text = text.replace(string, subst)
+            except UnicodeError:
+                # subst contains high-bit chars...
+                # As we have no way of knowing the correct encoding,
+                # substitue something instead of raising an exception.
+                subst = `subst`[1:-1]
+                text = text.replace(string, subst)
     return text
 
 

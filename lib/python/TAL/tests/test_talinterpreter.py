@@ -11,6 +11,7 @@ from StringIO import StringIO
 from TAL.TALDefs import METALError
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALInterpreter import TALInterpreter
+from TAL.TALInterpreter import interpolate
 from TAL.DummyEngine import DummyEngine
 
 
@@ -74,6 +75,15 @@ class OutputPresentationTestCase(TestCaseBase):
         EXPECTED = u"""déjà-vu""" "\n"
         self.compare(INPUT, EXPECTED)
 
+    def check_i18n_replace_number(self):
+        INPUT = """
+        <p i18n:translate="foo ${bar}">
+        <span tal:replace="python:123" i18n:name="bar">para</span>
+        </p>"""
+        EXPECTED = u"""
+        <p>FOO 123</p>""" "\n"
+        self.compare(INPUT, EXPECTED)
+
     def check_entities(self):
         INPUT = ('<img tal:define="foo nothing" '
                  'alt="&a; &#1; &#x0a; &a &#45 &; &#0a; <>" />')
@@ -88,10 +98,55 @@ class OutputPresentationTestCase(TestCaseBase):
         interp()
         self.assertEqual(sio.getvalue(), EXPECTED)
 
+class InterpolateTestCase(TestCaseBase):
+    def check_syntax_ok(self):
+        text = "foo ${bar_0MAN} $baz_zz bee"
+        mapping = {'bar_0MAN': 'fish', 'baz_zz': 'moo'}
+        expected = "foo fish moo bee"
+        self.assertEqual(interpolate(text, mapping), expected)
+
+    def check_syntax_bad(self):
+        text = "foo $_bar_man} $ ${baz bee"
+        mapping = {'_bar_man': 'fish', 'baz': 'moo'}
+        expected = text
+        self.assertEqual(interpolate(text, mapping), expected)
+
+    def check_missing(self):
+        text = "foo ${bar} ${baz}"
+        mapping = {'bar': 'fish'}
+        expected = "foo fish ${baz}"
+        self.assertEqual(interpolate(text, mapping), expected)
+
+    def check_redundant(self):
+        text = "foo ${bar}"
+        mapping = {'bar': 'fish', 'baz': 'moo'}
+        expected = "foo fish"
+        self.assertEqual(interpolate(text, mapping), expected)
+
+    def check_numeric(self):
+        text = "foo ${bar}"
+        mapping = {'bar': 123}
+        expected = "foo 123"
+        self.assertEqual(interpolate(text, mapping), expected)
+
+    def check_unicode(self):
+        text = u"foo ${bar}"
+        mapping = {u'bar': u'baz'}
+        expected = u"foo baz"
+        self.assertEqual(interpolate(text, mapping), expected)
+
+    def check_unicode_mixed_unknown_encoding(self):
+        # This test assumes that sys.getdefaultencoding is ascii...
+        text = u"foo ${bar}"
+        mapping = {u'bar': 'd\xe9j\xe0'}
+        expected = u"foo d\\xe9j\\xe0"
+        self.assertEqual(interpolate(text, mapping), expected)
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MacroErrorsTestCase, "check_"))
     suite.addTest(unittest.makeSuite(OutputPresentationTestCase, "check_"))
+    suite.addTest(unittest.makeSuite(InterpolateTestCase, "check_"))
     return suite
 
 
