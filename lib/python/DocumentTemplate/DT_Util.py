@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.82 2001/07/05 12:19:40 andreas Exp $''' 
-__version__='$Revision: 1.82 $'[11:-2]
+'''$Id: DT_Util.py,v 1.83 2001/09/04 13:46:43 evan Exp $''' 
+__version__='$Revision: 1.83 $'[11:-2]
 
 import re, os
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -145,6 +145,7 @@ if LIMITED_BUILTINS:
 _marker = []  # Create a new marker object.
 
 def careful_getattr(md, inst, name, default=_marker):
+
     get = md.guarded_getattr
     if get is None:
         get = getattr
@@ -156,6 +157,7 @@ def careful_getattr(md, inst, name, default=_marker):
         return default
 
 def careful_hasattr(md, inst, name):
+
     get = md.guarded_getattr
     if get is None:
         get = getattr
@@ -172,7 +174,8 @@ d['hasattr']=careful_hasattr
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whose attributes are
     provided as keyword arguments."""
-    if getattr(self, '__class__', None) != TemplateDict:
+    if not (getattr(self, '__class__', None) == TemplateDict or
+            isinstance(self, TemplateDict)):
         raise TypeError,'''A call was made to DT_Util.namespace() with an
         incorrect "self" argument.  It could be caused by a product which
         is not yet compatible with this version of Zope.  The traceback

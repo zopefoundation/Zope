@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.46 2001/06/21 17:45:12 shane Exp $"
+"$Id: DT_String.py,v 1.47 2001/09/04 13:46:43 evan Exp $"
 
 from string import split, strip
 import thread,re,exceptions,os
@@ -486,7 +486,9 @@ class String:
 
         pushed=None
         try:
-            if mapping.__class__ is TemplateDict: pushed=0
+            # Support Python 1.5.2, but work better in 2.1
+            if (mapping.__class__ is TemplateDict or
+                isinstance(mapping, TemplateDict)): pushed=0
         except: pass
 
         globals=self.globals
