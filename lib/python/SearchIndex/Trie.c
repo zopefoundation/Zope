@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.8 1997/05/08 21:09:49 jim Exp $"
+"\n$Id: Trie.c,v 1.9 1997/05/19 17:49:35 jim Exp $"
 ;
 
 
@@ -93,17 +93,36 @@ staticforward PyExtensionClass TrieType;
 /* ---------------------------------------------------------------- */
 
 static PyObject *
+PER_RETURN(TrieObject *self, PyObject *r)
+{
+  PER_ALLOW_DEACTIVATION(self);
+  return r;
+}
+
+static int
+PER_INT_RETURN(TrieObject *self, int r)
+{
+  PER_ALLOW_DEACTIVATION(self);
+  return r;
+}
+
+static PyObject *
 Trie___setstate__(TrieObject *self, PyObject *args)
 {
   PyObject *state;
 
   UNLESS(PyArg_ParseTuple(args, "O", &state)) return NULL;
+
+#ifdef PERSISTENT
+  PER_PREVENT_DEACTIVATION(self); 
+#endif
+
   if(state != Py_None)
     {
       self->value=NULL;
       UNLESS(PyArg_ParseTuple(state, "iO|O", &(self->min), &(self->bins),
 			      &(self->value)))
-	return NULL;
+	return PER_RETURN(self, NULL);
       if(self->min < 0)
 	{
 	  self->value=self->bins;
@@ -113,28 +132,34 @@ Trie___setstate__(TrieObject *self, PyObject *args)
       Py_XINCREF(self->bins);
     }
   Py_INCREF(Py_None);
-  return Py_None;
+  return PER_RETURN(self, Py_None);
 }
 
 static PyObject *
 Trie___getstate__(TrieObject *self, PyObject *args)
 {
+  PyObject *r;
+
   UNLESS(PyArg_ParseTuple(args, "")) return NULL;
 
 #ifdef PERSISTENT
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) PER_RETURN(self, NULL);
 #endif
 
   if(self->value)
     if(self->bins)
-      return Py_BuildValue("(iOO)", self->min, self->bins, self->value);
+      return PER_RETURN(self,
+			Py_BuildValue("(iOO)",
+				      self->min, self->bins, self->value));
     else
-      return Py_BuildValue("(iO)", -1, self->value);
+      return PER_RETURN(self, Py_BuildValue("(iO)", -1, self->value));
   else
     if(self->bins)
-      return Py_BuildValue("(iO)", self->min, self->bins);
+      return PER_RETURN(self, Py_BuildValue("(iO)", self->min, self->bins));
+
   Py_INCREF(Py_None);
-  return Py_None;
+  return PER_RETURN(self, Py_None);
 }
 
 #ifdef PERSISTENT
@@ -170,25 +195,29 @@ getiork(TrieObject *self, PyObject * r, keybuf *buf, int l, int dokeys)
   PyObject *item=0;
   
 #ifdef PERSISTENT
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return PER_RETURN(self, NULL);
 #endif
 
   if(self->value)
     {
       if(dokeys)
 	{
-	  UNLESS(item=PyString_FromStringAndSize(buf->data,l)) return NULL;
+	  UNLESS(item=PyString_FromStringAndSize(buf->data,l))
+	    return PER_RETURN(self, NULL);
 	}
       else
-	UNLESS(item=Py_BuildValue("(s#O)",buf->data,l,self->value)) return NULL;
+	UNLESS(item=Py_BuildValue("(s#O)",buf->data,l,self->value))
+  	  return PER_RETURN(self, NULL);
       i=PyList_Append(r,item);
       Py_DECREF(item);
-      if(i < 0) return NULL;
+      if(i < 0) return PER_RETURN(self, NULL);
     }
   if(l==buf->size)
     {
       buf->size *= 2;
-      UNLESS(buf->data=realloc(buf->data, buf->size)) return PyErr_NoMemory();
+      UNLESS(buf->data=realloc(buf->data, buf->size))
+	return PER_RETURN(self, PyErr_NoMemory());
     }
   if(self->bins)
     {
@@ -201,24 +230,25 @@ getiork(TrieObject *self, PyObject * r, keybuf *buf, int l, int dokeys)
 	  if(bin->ob_type==self->ob_type)
 	    {
 	      buf->data[l]=self->min+ibin;
-	      UNLESS(getiork((TrieObject*)bin,r,buf,l1,dokeys)) return NULL;
+	      UNLESS(getiork((TrieObject*)bin,r,buf,l1,dokeys))
+		return PER_RETURN(self, NULL);
 	    }
 	  else if(PyTuple_Check(bin))
 	    {
 	      buf->data[l]=self->min+ibin;
 	      UNLESS(item=PyString_FromStringAndSize(buf->data,l1))
-		return NULL;
+		return PER_RETURN(self, NULL);
 	      ASSIGN(item,PySequence_Concat(item,PyTuple_GET_ITEM(bin,0)));
 	      if(! dokeys && item)
 		ASSIGN(item, Py_BuildValue("OO",item,PyTuple_GET_ITEM(bin,1)));
-	      UNLESS(item) return NULL;
+	      UNLESS(item) return PER_RETURN(self, NULL);
 	      i=PyList_Append(r,item);
 	      Py_DECREF(item);
-	      if(i < 0) return NULL;
+	      if(i < 0) return PER_RETURN(self, NULL);
 	    }
 	}
     }
-  return r;
+  return PER_RETURN(self, r);
 }
 
 static PyObject *
@@ -251,11 +281,12 @@ static PyObject *
 Trie_cvalues(TrieObject *self, PyObject *r)
 {
 #ifdef PERSISTENT
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return PER_RETURN(self, NULL);
 #endif
 
   if(self->value)
-    if(PyList_Append(r,self->value) < 0) return NULL;
+    if(PyList_Append(r,self->value) < 0) return PER_RETURN(self, NULL);
   if(self->bins)
     {
       PyObject *bin;
@@ -266,13 +297,15 @@ Trie_cvalues(TrieObject *self, PyObject *r)
 	  bin=PyList_GET_ITEM(LIST(self->bins), i);
 	  if(bin->ob_type==self->ob_type)
 	    {
-	      UNLESS(Trie_cvalues((TrieObject*)bin,r)) return NULL;
+	      UNLESS(Trie_cvalues((TrieObject*)bin,r))
+		return PER_RETURN(self, NULL);
 	    }
 	  else if(PyTuple_Check(bin))
-	    if(PyList_Append(r,PyTuple_GET_ITEM(bin,1)) < 0) return NULL;
+	    if(PyList_Append(r,PyTuple_GET_ITEM(bin,1)) < 0)
+	      return PER_RETURN(self, NULL);
 	}
     }
-  return r;
+  return PER_RETURN(self, r);
 }
 
 static PyObject *
@@ -303,7 +336,9 @@ Trie_cclear(TrieObject *self)
 #ifdef PERSISTENT
   int changed=0;
 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0)
+    return PER_INT_RETURN(self, -1);
 #endif
 
   if(self->value)
@@ -327,12 +362,14 @@ Trie_cclear(TrieObject *self)
 	  bin=PyList_GET_ITEM(LIST(self->bins), i);
 	  if(bin->ob_type==self->ob_type)
 	    {
-	      if(Trie_cclear((TrieObject*)bin) < 0) return -1;
+	      if(Trie_cclear((TrieObject*)bin) < 0)
+		return PER_INT_RETURN(self, -1);
 	    }
 	  else
 	    {
 	      Py_INCREF(Py_None);
-	      if(PyList_SetItem(self->bins, i, Py_None) < 0) return -1;
+	      if(PyList_SetItem(self->bins, i, Py_None) < 0)
+		return PER_INT_RETURN(self, -1);
 
 #ifdef PERSISTENT
 	      changed=1;
@@ -343,10 +380,11 @@ Trie_cclear(TrieObject *self)
     }
 
 #ifdef PERSISTENT
-  if(changed && cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+  if(changed && cPersistenceCAPI->changed(PyOb(self)) < 0)
+    return PER_INT_RETURN(self, -1);
 #endif
 
-  return 0;
+  return PER_INT_RETURN(self, 0);
 }
 
 static PyObject *
@@ -381,14 +419,14 @@ static struct PyMethodDef Trie_methods[] = {
 };
 
 static PyObject *
-NotFoundError()
+NotFoundError(PyObject *key)
 {
-  PyErr_SetObject(PyExc_KeyError, Py_None);
+  PyErr_SetObject(PyExc_KeyError, key);
   return NULL;
 }
 
 static PyObject *
-Trie_cget(TrieObject *self, char *word)
+Trie_cget(TrieObject *self, char *word, PyObject *oword)
 {
   int c;
   char *k;
@@ -397,42 +435,46 @@ Trie_cget(TrieObject *self, char *word)
   PyObject *key;
 
 #ifdef PERSISTENT
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return PER_RETURN(self, NULL);
 #endif
 
   typ=self->ob_type;
   while(c=*word++)
     {
-      if(! (bins=self->bins) || c < self->min) return NotFoundError();
+      if(! (bins=self->bins) || c < self->min)
+	return PER_RETURN(self, NotFoundError(oword));
       c-=self->min;
-      if(c >= PyList_SIZE(bins)) return NotFoundError();
+      if(c >= PyList_SIZE(bins)) return PER_RETURN(self, NotFoundError(oword));
       self=(TrieObject *)PyList_GET_ITEM(LIST(bins), c);
       if(self->ob_type != typ)
 	if(PyTuple_Check(PyOb(self)) &&
 	   PyString_Check((key=PyTuple_GET_ITEM(PyOb(self),0))) &&
 	   strcmp(word,PyString_AS_STRING(STRING(key)))==0)
-	  return PySequence_GetItem(PyOb(self),1);
+	  return PER_RETURN(self, PySequence_GetItem(PyOb(self),1));
 	else
-	  return NotFoundError();
+	  return PER_RETURN(self, NotFoundError(oword));
 	  
 #ifdef PERSISTENT
-      if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+      if(cPersistenceCAPI->setstate(PyOb(self)) < 0)
+	return PER_RETURN(self, NULL);
 #endif
     }
-  if(! self->value) return NotFoundError();
+  if(! self->value) return PER_RETURN(self, NotFoundError(oword));
   Py_INCREF(self->value);
-  return self->value;
+  return PER_RETURN(self, self->value);
 }
 
 static int
-Trie_cset(TrieObject *self, char *word, PyObject *v)
+Trie_cset(TrieObject *self, char *word, PyObject *v, PyObject *oword)
 {
-  PyObject *bin;
+  PyObject *bin=0;
   int c, r, max;
 #ifdef PERSISTENT
   int ch=0;
 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return -1;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) goto err;
 #endif
 
   c=*word++;
@@ -440,13 +482,14 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
     {
       if(!v && !self->value)
 	{
-	  NotFoundError();
-	  return -1;
+	  NotFoundError(oword);
+	  goto err;
 	}
       Py_XINCREF(v);
       ASSIGN(self->value, v);
 #ifdef PERSISTENT
-      if(cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+      if(cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+      PER_ALLOW_DEACTIVATION(self);
 #endif
       return 0;
     }
@@ -454,12 +497,12 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
      (!self->bins || c < self->min || c-self->min >= PyList_SIZE(self->bins))
      )
     {
-      NotFoundError();
-      return -1;
+      NotFoundError(oword);
+      goto err;
     }
   if(! self->bins)
     {
-      UNLESS(self->bins=PyList_New(1)) return -1;
+      UNLESS(self->bins=PyList_New(1)) goto err;
       self->min=c;
 #ifdef PERSISTENT
       ch=1;
@@ -468,7 +511,7 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
   else if(c < self->min)
     while(c < self->min)
       {
-	if(PyList_Insert(self->bins,0,Py_None) < 0) return -1;
+	if(PyList_Insert(self->bins,0,Py_None) < 0) goto err;
 	self->min--;
 #ifdef PERSISTENT
 	ch=1;
@@ -480,7 +523,7 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
       if(c > max)
 	while(c > max)
 	  {
-	    if(PyList_Append(self->bins,Py_None) < 0) return -1;
+	    if(PyList_Append(self->bins,Py_None) < 0) goto err;
 	    max++;
 #ifdef PERSISTENT
 	    ch=1;
@@ -504,8 +547,8 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
 	  }
 	else
 	  {
-	    NotFoundError();
-	    return -1;
+	    NotFoundError(oword);
+	    goto err;
 	  }
       else
 	{
@@ -517,31 +560,40 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
 	      PyObject *o;
 	      
 	      o=PyTuple_GET_ITEM(bin,1);
-	      UNLESS(bin=PyObject_GetAttr(PyOb(self),py___class__)) return -1;
-	      UNLESS_ASSIGN(bin,PyObject_CallObject(bin,NULL)) return -1;
+	      UNLESS(bin=PyObject_GetAttr(PyOb(self),py___class__)) goto err;
+	      UNLESS_ASSIGN(bin,PyObject_CallObject(bin,NULL)) goto err;
 	      if(Trie_cset((TrieObject*)bin,
-			   PyString_AS_STRING(STRING(key)),o) < 0 ||
-		 Trie_cset((TrieObject*)bin,word,v) < 0
+			   PyString_AS_STRING(STRING(key)),o, oword) < 0 ||
+		 Trie_cset((TrieObject*)bin,word,v,oword) < 0
 		 ) goto err;
 	    }
 	  else
 	    UNLESS(bin=Py_BuildValue("sO",word,v)) goto err;
 	}
   
+      r=PyList_SetItem(self->bins, c, bin);
+
 #ifdef PERSISTENT
       if(cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+      PER_ALLOW_DEACTIVATION(self);
 #endif
 
-      return PyList_SetItem(self->bins, c, bin);
+      return r;
     }
 
+  r=Trie_cset((TrieObject*)bin,word,v,oword);
+
 #ifdef PERSISTENT
-  if(ch && cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+  if(ch && cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+  PER_ALLOW_DEACTIVATION(self);
 #endif
 
-  return Trie_cset((TrieObject*)bin,word,v);
+  return r;
 err:
-  Py_DECREF(bin);
+  Py_XDECREF(bin);
+#ifdef PERSISTENT
+  PER_ALLOW_DEACTIVATION(self);
+#endif
   return -1;
 }
 
@@ -552,7 +604,9 @@ Trie_length(TrieObject *self)
   PyObject *bin;
 
 #ifdef PERSISTENT
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+  PER_PREVENT_DEACTIVATION(self); 
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0)
+    return PER_INT_RETURN(self, -1);
 #endif
 
   if(self->bins)
@@ -562,24 +616,26 @@ Trie_length(TrieObject *self)
 	if(bin->ob_type==self->ob_type)
 	  {
 	    li=Trie_length((TrieObject*)bin);
-	    if(li < 0) return li;
+	    if(li < 0) return PER_INT_RETURN(self, li);
 	    if(li)
 	      l+=li;
 	    else
 	      {      
 #ifdef PERSISTENT
-		if(cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+		if(cPersistenceCAPI->changed(PyOb(self)) < 0)
+		  return PER_INT_RETURN(self, -1);
 #endif
 		/* Database management concerns make us leery of this
 		Py_INCREF(Py_None);
-		if(PyList_SetItem(self->bins, i, Py_None) < 1) return -1;
+		if(PyList_SetItem(self->bins, i, Py_None) < 1)
+		  return PER_INT_RETURN(self, -1);
 		*/
 	      }
 	  }
 	else if(PyTuple_Check(bin)) l++;
       }
   if(self->value) l++;
-  return l;
+  return PER_INT_RETURN(self, l);
 }
 
 static PyObject *
@@ -589,7 +645,7 @@ Trie_subscript(TrieObject *self, PyObject *key)
   if(PyString_Check(key))
     {
       UNLESS(word=PyString_AsString(key)) return NULL;
-      return Trie_cget(self,word);
+      return Trie_cget(self,word,key);
     }
   PyErr_SetString(PyExc_TypeError, "Only string keys are allowed for tries.");
   return NULL;
@@ -602,10 +658,10 @@ Trie_ass_sub(TrieObject *self, PyObject *key, PyObject *v)
   if(PyString_Check(key))
     {
       UNLESS(word=PyString_AsString(key)) return -1;
-      return Trie_cset((TrieObject*)self,word,v);
+      return Trie_cset((TrieObject*)self,word,v,key);
     }
   PyErr_SetString(PyExc_TypeError, "Only string keys are allowed for tries.");
-  return NULL;
+  return -1;
 }
 
 static PyMappingMethods Trie_as_mapping = {
@@ -707,7 +763,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -747,6 +803,10 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.9  1997/05/19 17:49:35  jim
+  Added logic to disable deactivation during methods.  This sort of
+  logic will be needed for any C-based persistent object.
+
   Revision 1.8  1997/05/08 21:09:49  jim
   Added clear method.
 
