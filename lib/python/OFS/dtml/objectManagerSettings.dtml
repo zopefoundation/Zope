@@ -1,0 +1,63 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+<p class="form-help">
+  Use this form to change the behavior of this container
+  and its subordinates.
+</p>
+
+<dtml-unless name="hasCustomBrowserDefault">
+<form action="setBrowserDefaultId" method="post">
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr class="section-bar">
+  <td>
+    <div class="form-label">
+      Browser Default Id
+    </div>
+  </td>
+</tr>
+
+<tr><td>
+  <div class="form-help">
+    Enter the id of object used as the default presentation
+    <dtml-unless isTopLevelPrincipiaApplicationObject>
+      or select the checkbox to acquire this setting
+      from the parent container.
+    </dtml-unless>
+    Note that creating a custom callable browser_default 
+    object in this folder will supercede this setting.
+  </div>
+</td></tr>
+
+<tr><td>
+    <span class="form-label">Browser Default Id</span>
+    <input class="form-element" type="text" name="id"
+           size="20" value="&dtml.null-getBrowserDefaultId;" 
+    <dtml-unless isTopLevelPrincipiaApplicationObject>
+           onchange="if(this.value!='') this.form.acquire.checked=false"
+    </dtml-unless> 
+    />
+    <dtml-unless isTopLevelPrincipiaApplicationObject>
+    &nbsp;&nbsp;
+    <input class="form-element" type="checkbox"
+           name="acquire" id="acquire" value="1"
+           onclick="if(this.checked) this.form.id.value=''" 
+           <dtml-if name="isBrowserDefaultAcquired">
+             checked
+           </dtml-if>
+    />
+    <label class="form-text" for="acquire">
+        Acquire this setting
+    </label>
+    </dtml-unless>
+</td></tr>
+
+<tr><td>&nbsp;</td></tr>
+
+<tr><td>
+    <input class="form-element" type="submit" value="Save Changes" />
+</td></tr>
+</table>
+</form>
+</dtml-unless>
+
+<dtml-var manage_page_footer>

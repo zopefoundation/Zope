@@ -131,8 +131,8 @@ class ObjectManager:
     def __getitem__(id):
         """
         Returns a child object given a child id. If there is no child
-        with the given id, returns None. This method makes it easy to
-        refer to children that have id with file extensions. For
+        with the given id, a KeyError is raised. This method makes it easy 
+        to refer to children that have id with file extensions. For
         example::
 
           page=folder['index.html']
@@ -147,4 +147,24 @@ class ObjectManager:
         necessary.
 
         Permission -- 'Access contents information'
+        """
+        
+    def setBrowserDefaultId(id='', acquire=0):
+        """
+        Sets the id of the object or method used as the default method when
+        the object manager is published. If acquire is set then the default
+        method id will be acquired from the parent container.
+        
+        Permission -- 'Manage folderish settings'
+        """
+        
+    def getBrowserDefaultId(acquire=0):
+        """
+        Returns the id of the object or method used as the default when the
+        object manager is published. By default, this setting is acquired. If
+        the acquire argument is true, then the return value will be acquired 
+        from the parent if it is not set locally. Otherwise, None is returned 
+        if the default id is not set on this object manager.
+
+        Permission -- 'View'
         """

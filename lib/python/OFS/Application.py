@@ -12,11 +12,11 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.180 2002/02/07 17:20:59 andreasjung Exp $'''
-__version__='$Revision: 1.180 $'[11:-2]
+$Id: Application.py,v 1.181 2002/03/27 21:51:03 caseman Exp $'''
+__version__='$Revision: 1.181 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
-import time, traceback, os,  Products
+import time, traceback, os,  Products, ObjectManager
 from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
@@ -58,6 +58,9 @@ class Application(Globals.ApplicationDefaultPermissions,
     # to replace the top-level UserFolder object.
     
     __allow_groups__=UserFolder()
+
+    # Set the universal default method to index_html
+    _object_manager_browser_default_id = 'index_html'
 
     def title_and_id(self): return self.title
     def title_or_id(self): return self.title
@@ -700,6 +703,11 @@ def install_product(app, product_dir, product_name, meta_types,
                     raise
 
 def install_standards(app):
+    # Check to see if we've already done this before
+    # Don't do it twice (Casey)
+    if getattr(app, '_standard_objects_have_been_added', 0):
+        return
+        
     # Install the replaceable standard objects
     from Products.PageTemplates.PageTemplateFile import PageTemplateFile
     std_dir = os.path.join(Globals.package_home(globals()), 'standard')
@@ -722,9 +730,11 @@ def install_standards(app):
         else:
             continue
         wrote = 1
-        ob.__replaceable__ = Globals.REPLACEABLE
-        setattr(Application, fn, ob)
+        # Below is icky and sneaky since it makes these impossible to delete
+        #ob.__replaceable__ = Globals.REPLACEABLE
+        #setattr(Application, fn, ob)
     if wrote:
+        app._standard_objects_have_been_added = 1
         get_transaction().note('Installed standard objects')
         get_transaction().commit()
 

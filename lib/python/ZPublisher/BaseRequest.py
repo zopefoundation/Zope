@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 from urllib import quote
 
@@ -196,17 +196,19 @@ class BaseRequest:
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method=req_method=request_get('REQUEST_METHOD', 'GET').upper()
         
-        no_acquire_flag=0
-
-        # Set the default method
         if method=='GET' or method=='POST':
-            method='index_html'
+            # Probably a browser
+            no_acquire_flag=0
+            # index_html is still the default method, only any object can
+            # override it by implementing its own browser_default method
+            method = 'index_html'
+        elif self.maybe_webdav_client:
+            # Probably a WebDAV client.
+            no_acquire_flag=1
         else:
-            if self.maybe_webdav_client:
-                # Probably a WebDAV client.
-                no_acquire_flag=1
-        URL=request['URL']
-        
+            no_acquire_flag=0
+
+        URL=request['URL']        
         parents=request['PARENTS']
         object=parents[-1]
         del parents[:]
@@ -250,6 +252,24 @@ class BaseRequest:
                 # Check for method:
                 if path:
                     entry_name = path.pop()
+                elif hasattr(getattr(object, 'aq_base', object), 
+                             'browser_default'):
+                    # If we have reached the end of the path. We look to see
+                    # if the object implements browser_default. If so, we
+                    # call it to let the object tell us how to publish it
+                    # browser_default returns the object to be published
+                    # (usually self) and a sequence of names to traverse to
+                    # find the method to be published. (Casey)
+                    request._hacked_path=1
+                    object, default_path = object.browser_default(request)
+                    if len(default_path) > 1:
+                        path = list(default_path)
+                        method = path.pop()
+                        request['TraversalRequestNameStack'] = path
+                        continue
+                    else:
+                        method = default_path[0]
+                        entry_name = method
                 elif (method and hasattr(object,method)
                       and entry_name != method
                       and getattr(object, method) is not None):

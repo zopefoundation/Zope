@@ -12,19 +12,21 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.147 2002/02/13 15:27:48 andreasjung Exp $"""
+$Id: ObjectManager.py,v 1.148 2002/03/27 21:51:03 caseman Exp $"""
 
-__version__='$Revision: 1.147 $'[11:-2]
+__version__='$Revision: 1.148 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
 from OFS.Traversable import Traversable
+from OFS import SimpleItem
 from Globals import DTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from Globals import REPLACEABLE, NOT_REPLACEABLE, UNIQUE
 from webdav.NullResource import NullResource
 from webdav.Collection import Collection
 from Acquisition import aq_base
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from urllib import quote
 from cStringIO import StringIO
 import marshal
@@ -82,6 +84,23 @@ def checkValidId(self, id, allow_dup=0):
             'The id "%s" contains characters illegal in URLs.' % id
             )
 
+class BrowserDefault(Acquisition.Implicit, Persistent):
+    """Callable default browser object for object managers. This is made as a 
+       class so that folderish objs not overriding browser_default can simply 
+       not define it. We also define this class as replaceable so that TTW 
+       scripts can override it
+    """
+    security = ClassSecurityInfo()
+
+    __replaceable__ = REPLACEABLE # Allow this to be overridden in instances
+
+    def __call__(self, request):
+        """Return the proper default method name to be published
+           This name is acquired from the parent object"""
+        return self.aq_parent, \
+            (self.aq_acquire('_object_manager_browser_default_id'),)
+
+default__class_init__(BrowserDefault)
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
 class BreakoutException ( Exception ): pass  # raised to break out of loops
@@ -113,6 +132,11 @@ class ObjectManager(
          ('manage_importObject','manage_importExportForm',
           'manage_exportObject')
          ),
+        ('View', ('getBrowserDefaultId',)),
+        ('Manage folderish settings',
+         ('manage_settings', 'setBrowserDefaultId', 
+           'isBrowserDefaultAcquired','hasCustomBrowserDefault')
+        ),
     )
 
 
@@ -124,12 +148,12 @@ class ObjectManager(
 
     manage_main=DTMLFile('dtml/main', globals())
     manage_index_main=DTMLFile('dtml/index_main', globals())
+    manage_settings=DTMLFile('dtml/objectManagerSettings', globals())
 
     manage_options=(
         {'label':'Contents', 'action':'manage_main',
          'help':('OFSP','ObjectManager_Contents.stx')},
-#        {'label':'Import/Export', 'action':'manage_importExportForm',
-#         'help':('OFSP','ObjectManager_Import-Export.stx')},         
+        {'label':'Settings', 'action':'manage_settings'},
         )
 
     isAnObjectManager=1
@@ -198,7 +222,6 @@ class ObjectManager(
         return (Products.__ac_permissions__+
                 self.aq_acquire('_getProductRegistryData')('ac_permissions')
                 )
-
 
     def filtered_meta_types(self, user=None):
         # Return a list of the types for which the user has
@@ -642,6 +665,72 @@ class ObjectManager(
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
+    #######################################################################
+    # Death to index_html implementation (casey)
+
+    def setBrowserDefaultId(self, id='', acquire=0, REQUEST=None):
+        """Set the id of the browser_default method. If acquire is true
+           then the local browser_default is cleared and the setting is
+           acquired
+        """
+        if self.hasCustomBrowserDefault():
+            # If a custom browser default is installed, don't override it
+            raise BadRequestException, \
+                'Cannot override custom browser default'
+
+        if acquire:
+            try:
+                del self._object_manager_browser_default_id
+            except (AttributeError, KeyError):
+                pass # If its already gone, so be it
+            id = self.aq_acquire('_object_manager_browser_default_id')
+        else:
+            self._checkId(id, allow_dup=1)
+            self._object_manager_browser_default_id = id
+            
+        if id == 'index_html':
+            # This is a small optimization since the publisher stills falls
+            # back on this default value if there is no browser_default
+            # method at all for bw compatibility
+            try:
+                del self.browser_default
+            except (AttributeError, KeyError):
+                pass
+        else:
+            # Create a browser_default callable
+            self.browser_default = BrowserDefault()
+
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(REQUEST.URL1 + 
+                '/manage_settings?manage_tabs_message=Settings+Changed')
+
+    def getBrowserDefaultId(self, acquire=0):
+        """Get the id of the browser_default method. If acquire is true
+           then the acquired value is returned if there is no local setting,
+           otherwise None is returned. None is also returned if
+           browser_default has been overidden in this (or a higher) instance
+           using a custom callable.
+        """
+        if self.hasCustomBrowserDefault():
+            return None
+        if acquire:
+            return self.aq_acquire('_object_manager_browser_default_id')
+        else:
+            return getattr(self, '_object_manager_browser_default_id', None)
+
+    def isBrowserDefaultAcquired(self):
+        """Return true if the current browser default is being acquired"""
+        return not hasattr(self, '_object_manager_browser_default_id')
+
+    def hasCustomBrowserDefault(self):
+        """Return true if a custom browser_default object has been
+           installed
+        """
+        try:
+            return getattr(self.browser_default, '__class__', None) \
+                   is not BrowserDefault
+        except AttributeError:
+            return 0
 
 def findChilds(obj,dirname=''):
     """ recursive walk through the object hierarchy to

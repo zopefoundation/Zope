@@ -15,9 +15,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.97 2001/11/28 15:50:57 matt Exp $"""
+$Id: Folder.py,v 1.98 2002/03/27 21:51:03 caseman Exp $"""
 
-__version__='$Revision: 1.97 $'[11:-2]
+__version__='$Revision: 1.98 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -45,6 +45,9 @@ def manage_addFolder(self, id, title='',
     ob.title=title
     self._setObject(id, ob)
     ob=self._getOb(id)
+    
+    # Acquire browser_default from parent
+    ob.setBrowserDefaultId(acquire=1)
 
     checkPermission=getSecurityManager().checkPermission    
 
@@ -61,7 +64,7 @@ def manage_addFolder(self, id, title='',
                   'You are not authorized to add Page Templates.'
                   )
         ob.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-            id='index_html', title='')
+            id=ob.getBrowserDefaultId(acquire=1), title='') 
 
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
@@ -87,9 +90,9 @@ class Folder(
     _properties=({'id':'title', 'type': 'string'},)
 
     manage_options=(
-        (ObjectManager.ObjectManager.manage_options[0],)+
+        ObjectManager.ObjectManager.manage_options+
         (
-        {'label':'View', 'action':'index_html',
+        {'label':'View', 'action':'',
          'help':('OFSP','Folder_View.stx')},
         )+
         PropertyManager.PropertyManager.manage_options+
