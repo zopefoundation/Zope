@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.16 1997/02/05 15:32:05 chris Exp $
+     $Id: cPickle.c,v 1.17 1997/02/10 22:15:50 jim Exp $
 
      Copyright 
 
@@ -152,7 +152,7 @@ typedef struct {
      int buf_size;
 } Picklerobject;
 
-staticforward PyTypeObject Picklertype;
+static PyTypeObject Picklertype;
 
 
 typedef struct {
@@ -178,7 +178,7 @@ typedef struct {
     char *diddled_ptr;
 } Unpicklerobject;
  
-staticforward PyTypeObject Unpicklertype;
+static PyTypeObject Unpicklertype;
 
 
 static int 
@@ -339,7 +339,6 @@ readline_file(Unpicklerobject *self, char **s) {
 static int 
 read_cStringIO(Unpicklerobject *self, char **s, int  n) {
     char *ptr;
-    int size;
 
     if (self->diddled_ptr) {
         *self->diddled_ptr = self->diddled_char;
@@ -359,7 +358,7 @@ read_cStringIO(Unpicklerobject *self, char **s, int  n) {
 
 static int 
 readline_cStringIO(Unpicklerobject *self, char **s) {
-    int n, size;
+    int n;
     char *ptr;
 
     if (self->diddled_ptr) {
@@ -386,7 +385,7 @@ static int
 read_other(Unpicklerobject *self, char **s, int  n) {
     PyObject *bytes, *str;
     char *ret_str;
-    int size, res = -1;
+    int res = -1;
 
     UNLESS(bytes = PyInt_FromLong(n)) {
         if (!PyErr_Occurred())
@@ -541,13 +540,11 @@ whichmodule(PyObject *global, PyObject *global_name) {
     PyObject *module = 0, *modules_dict = 0,
         *global_name_attr = 0, *name = 0;
 
-    if (module = PyDict_GetItem(class_map, global))
-    {
+    if (module = PyDict_GetItem(class_map, global)) {
         Py_INCREF(module);
         return module;
     }
-    else
-    {
+    else {
         PyErr_Clear();
     }
 
@@ -579,6 +576,7 @@ whichmodule(PyObject *global, PyObject *global_name) {
 
     PyDict_SetItem(class_map, global, name);
 
+    Py_INCREF(name);
     return name;
 }
 
@@ -1039,6 +1037,7 @@ save_inst(Picklerobject *self, PyObject *args) {
     res = 0;
 
 finally:
+    Py_XDECREF(module);
     Py_XDECREF(class);
     Py_XDECREF(state);
     Py_XDECREF(getinitargs_func);
@@ -1097,6 +1096,7 @@ save_global(Picklerobject *self, PyObject *args, PyObject *name) {
     res = 0;
 
 finally:
+    Py_XDECREF(module);
     Py_XDECREF(global_name);
 
     return res;
@@ -1600,7 +1600,8 @@ Pickler_setattr(Picklerobject *self, char *name, PyObject *value) {
 
 static char Picklertype__doc__[] = "";
 
-static PyTypeObject Picklertype = {
+static PyTypeObject Picklertype_value() {
+  PyTypeObject Picklertype = {
     PyObject_HEAD_INIT(&PyType_Type)
     0,                            /*ob_size*/
     "Pickler",                    /*tp_name*/
@@ -1623,7 +1624,9 @@ static PyTypeObject Picklertype = {
     /* Space for future expansion */
     0L,0L,0L,0L,
     Picklertype__doc__ /* Documentation string */
-};
+  };
+  return Picklertype;
+}
 
 
 PyObject *
@@ -1707,16 +1710,10 @@ find_class(PyObject *py_module_name, PyObject *py_class_name) {
     if (PyDict_SetItem(class_map, t, class) < 0)
         goto finally;
 
-    Py_DECREF(class);
-    Py_DECREF(t);
-    Py_DECREF(import);
-
     res = class;
-    return class;
 
 finally:
     Py_XDECREF(import);
-    Py_XDECREF(class);
     Py_XDECREF(t);
  
     return res;
@@ -2288,6 +2285,7 @@ load_inst(Unpicklerobject *self, PyObject *args) {
     res = 0;
 
 finally:
+    Py_XDECREF(class);
     Py_XDECREF(arg_slice);
     Py_XDECREF(arg_tup);
     Py_XDECREF(obj);
@@ -2325,6 +2323,7 @@ load_global(Unpicklerobject *self, PyObject *args) {
     res = 0;
 
 finally:
+    Py_XDECREF(class);
     Py_XDECREF(module_name);
     Py_XDECREF(class_name);
 
@@ -3378,7 +3377,8 @@ finally:
 
 static char Unpicklertype__doc__[] = "";
 
-static PyTypeObject Unpicklertype = {
+static PyTypeObject Unpicklertype_value() {
+  PyTypeObject Unpicklertype = {
     PyObject_HEAD_INIT(&PyType_Type)
     0,                            /*ob_size*/
     "Unpickler",                  /*tp_name*/
@@ -3401,8 +3401,9 @@ static PyTypeObject Unpicklertype = {
     /* Space for future expansion */
     0L,0L,0L,0L,
     Unpicklertype__doc__ /* Documentation string */
-};
-
+  };
+  return Unpicklertype;
+}
 
 static struct PyMethodDef cPickle_methods[] = {
   {"dump",         (PyCFunction)dump,             1, ""},
@@ -3507,6 +3508,9 @@ initcPickle() {
     m = Py_InitModule4("cPickle", cPickle_methods,
                      cPickle_module_documentation,
                      (PyObject*)NULL,PYTHON_API_VERSION);
+
+    Picklertype=Picklertype_value();
+    Unpicklertype=Unpicklertype_value();
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
