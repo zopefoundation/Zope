@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.10 1997/10/10 18:34:56 jeffrey Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Index.py,v 1.11 1997/10/10 19:25:03 jeffrey Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -122,6 +122,10 @@ class Index:
 	If the request does not contain the needed parameters, then None is
 	returned.
 
+	If the request contains a parameter with the name of the column
+	+ '_usage', it is sniffed for information on how to handle applying
+	the index.
+
 	Otherwise two objects are returned.  The first object is a
 	ResultSet containing the record numbers of the matching
 	records.  The second object is a tuple containing the names of
@@ -157,7 +161,8 @@ class Index:
 
 	    anyTrue=1
 	    try:
-		setlist=index.items(lo,hi)
+		if hi: setlist=index.items(lo,hi)
+		else:  setlist=index.items(lo)
 		for k,set in setlist:
 		    if r is None: r=set
 		    else: r=r.union(set)
@@ -181,6 +186,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.11  1997/10/10 19:25:03  jeffrey
+# fixed min:max buglet
+#
 # Revision 1.10  1997/10/10 18:34:56  jeffrey
 # Added range searching/indexing
 #
