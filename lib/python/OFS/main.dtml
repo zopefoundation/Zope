@@ -46,6 +46,7 @@
 <TD></TD>
 
 <TD COLSPAN="2">
+<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Cut"> 
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Copy">
 <!--#if validClipData-->
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">

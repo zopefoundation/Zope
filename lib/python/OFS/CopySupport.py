@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -23,10 +23,21 @@ class CopyContainer:
 	# Return true if clipboard data is valid.
 	try:    moniker=rPickle.loads(unquote(self.REQUEST['clip_data']))
 	except: return 0
+
+	# Check for old versions of cookie so users dont need to
+	# restart browser after upgrading - just expire the old
+	# cookie.
+	if not hasattr(moniker, 'op'):
+	    self.REQUEST['RESPONSE'].setCookie('clip_data', 'deleted',
+				     path='%s' % self.REQUEST['SCRIPT_NAME'],
+				     expires='Wed, 31-Dec-97 23:59:59 GMT')
+	    self.REQUEST['validClipData']=0
+	    return 0
+
 	v=self.REQUEST['validClipData']=moniker.assert()
 	return v
 
-    def pasteFromClipboard(self,clip_id='',clip_data='',REQUEST=None):
+    def pasteFromClipboard(self, clip_id='', clip_data='', REQUEST=None):
 	""" """
 	if not clip_data: return eNoData
 
@@ -39,22 +50,44 @@ class CopyContainer:
 	try:    self._checkId(clip_id)
 	except: return self.pasteDialog(self,REQUEST,bad=1,moniker=(moniker,))
 
+	return self.manage_paste(moniker, clip_id, REQUEST)
+
+
+    def manage_paste(self, moniker, clip_id, REQUEST=None):
+        """ """
 	try:    obj=moniker.bind()
 	except: return eNotFound
 
-	obj=obj._getCopy(self)
+	if moniker.op == 0:
+	    # Copy operation
 
-	return self.manage_paste(clip_id, obj, REQUEST)
+	    obj=obj._getCopy(self)
+	    obj._setId(clip_id)
+	    self._setObject(clip_id, obj)
+	    obj._postCopy(self)
+	    if REQUEST is not None:
+		return self.manage_main(self, REQUEST, update_menu=1)
+	    return ''
 
-    def manage_paste(self,clip_id,obj,REQUEST=None):
-        """ """
-	obj=obj._getCopy(self)
-        obj._setId(clip_id)
-	self._setObject(clip_id, obj)
-	obj._postCopy(self)
-	if REQUEST is not None:
-	    return self.manage_main(self, REQUEST, update_menu=1)
-	return ''
+	if moniker.op==1:
+	    # Move operation
+
+	    prev_id=Moniker.absattr(obj.id)
+	    obj.aq_parent._delObject(prev_id)
+	    while hasattr(obj, 'aq_self'):
+		obj=obj.aq_self
+	    obj=obj.__of__(self)
+	    self._setObject(clip_id, obj)
+
+	    if REQUEST is not None:
+		# Remove cookie after a move
+		REQUEST['RESPONSE'].setCookie('clip_data', 'deleted',
+				    path='%s' % REQUEST['SCRIPT_NAME'],
+				    expires='Wed, 31-Dec-97 23:59:59 GMT')
+		return self.manage_main(self, REQUEST, update_menu=1,
+					validClipData=0)
+	    return ''
+
 
 Globals.default__class_init__(CopyContainer)
 
@@ -86,10 +119,21 @@ class CopySource:
     def copyToClipboard(self, REQUEST):
         """ """
 	# Set a cookie containing pickled moniker
-	try:    moniker=self._getMoniker()
+	try:    m=self._getMoniker()
 	except: return eNotSupported
+	m.op=0
 	REQUEST['RESPONSE'].setCookie('clip_data',
-			    quote(dumps(moniker,1)),
+			    quote(dumps(m, 1)),
+			    path='%s' % REQUEST['SCRIPT_NAME'])
+
+    def cutToClipboard(self, REQUEST):
+        """ """
+	# Set a cookie containing pickled moniker
+	try:    m=self._getMoniker()
+	except: return eNotSupported
+	m.op=1
+	REQUEST['RESPONSE'].setCookie('clip_data',
+			    quote(dumps(m, 1)),
 			    path='%s' % REQUEST['SCRIPT_NAME'])
 
 

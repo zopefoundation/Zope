@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.40 1998/04/15 14:58:11 jim Exp $"""
+$Id: ObjectManager.py,v 1.41 1998/04/24 16:11:09 brian Exp $"""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -299,6 +299,17 @@ class ObjectManager(
 	'Paste' uses the parameters 'clip_id' and 'clip_data' to paste.
 	'Delete' removes the objects specified in 'ids'.
 	"""
+	if submit=='Cut':
+	    c=len(ids)
+	    if (c <= 0) or (c > 1):
+		return MessageDialog(
+		       title='Invalid Selection',
+		       message='Please select one and only one item to move',
+		       action ='./manage_main',)
+	    obj=getattr(self, ids[0])
+	    err=obj.cutToClipboard(REQUEST)
+	    return err or self.manage_main(self, REQUEST, validClipData=1)
+
 	if submit=='Copy':
 	    c=len(ids)
 	    if (c <= 0) or (c > 1):
@@ -312,6 +323,7 @@ class ObjectManager(
 
 	if submit=='Paste':
 	    return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
+
 
 	if submit=='Delete':
 	    if not ids:
@@ -537,6 +549,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.41  1998/04/24 16:11:09  brian
+# Added Cut(Move) support for principia objects.
+#
 # Revision 1.40  1998/04/15 14:58:11  jim
 # Don't show confirmation after add or delete.
 #
