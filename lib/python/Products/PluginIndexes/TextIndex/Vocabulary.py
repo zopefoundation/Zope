@@ -193,7 +193,5 @@ class Vocabulary(Item, Persistent, Implicit,
         self.lexicon.set(word)
 
     def words(self):
-        """xxx"""
-        print len(self.lexicon._lexicon.items())
         return self.lexicon._lexicon.items()
 
