@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.37 1999/09/09 17:23:45 petrilli Exp $'
-__version__='$Revision: 1.37 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.38 1999/09/29 13:40:44 brian Exp $'
+__version__='$Revision: 1.38 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -632,8 +632,8 @@ def tpValuesIds(self, branches, args,
             try:
                 if getattr(item, branches)():
 
-                    if hasattr(self, idattr):
-                        id=getattr(self, idattr)
+                    if hasattr(item, idattr):
+                        id=getattr(item, idattr)
                         if not simple_type(type(id)): id=id()            
                     elif hasattr(item, '_p_oid'): id=oid(item)
                     else: id=pyid(item)
