@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.51 1998/08/03 13:45:10 jim Exp $'''
-__version__='$Revision: 1.51 $'[11:-2]
+$Id: DA.py,v 1.52 1998/11/23 16:12:08 jim Exp $'''
+__version__='$Revision: 1.52 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -20,7 +20,7 @@ from Aqueduct.Aqueduct import decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
-import sys, Globals, OFS.SimpleItem, AccessControl.Role, Persistence
+import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split
 import IOBTree, DocumentTemplate, sqlvar, sqltest, sqlgroup
 from time import time
@@ -42,7 +42,7 @@ class SQL(DocumentTemplate.HTML):
 
 class DA(
     Aqueduct.Aqueduct.BaseQuery,Acquisition.Implicit,
-    Persistence.Persistent,
+    Globals.Persistent,
     AccessControl.Role.RoleManager,
     OFS.SimpleItem.Item,
     ):
@@ -438,6 +438,9 @@ class Traverse(ExtensionClass.Base):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.52  1998/11/23 16:12:08  jim
+# rid of Persistence module reference
+#
 # Revision 1.51  1998/08/03 13:45:10  jim
 # Extensions management aspecs of brains have been moved to App/Extensions.
 #

@@ -10,17 +10,17 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.14 1998/05/11 15:00:24 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Connection.py,v 1.15 1998/11/23 16:12:08 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
-import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition, sys
+import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
 from Globals import HTMLFile
 from string import find, join, split
 
 class Connection(
-    Persistence.Persistent,
+    Globals.Persistent,
     AccessControl.Role.RoleManager,
     OFS.SimpleItem.Item,
     Acquisition.Implicit,
@@ -52,7 +52,7 @@ class Connection(
 	self.edit(title, connection_string, check)
 
     def __setstate__(self, state):
-	Persistence.Persistent.__setstate__(self, state)
+	Globals.Persistent.__setstate__(self, state)
 	if self.connection_string:
 	    try: self.connect(self.connection_string)
 	    except: pass
@@ -142,6 +142,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.15  1998/11/23 16:12:08  jim
+# rid of Persistence module reference
+#
 # Revision 1.14  1998/05/11 15:00:24  jim
 # Updated permissions.
 #
