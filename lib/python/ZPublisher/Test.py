@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.25 1998/10/23 17:59:07 jim Exp $
+$Id: Test.py,v 1.26 1998/11/23 22:56:24 jim Exp $
 '''
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -211,7 +211,7 @@ def publish_module_pm(module_name,
                       environ=os.environ, debug=0):
 
     from CGIResponse import Response
-    from cgi_module_publisher import ModulePublisher
+    from Publish import ModulePublisher
 
     after_list=[None]
     request=None
@@ -274,9 +274,9 @@ def publish(script=None,path_info='/',
     cdir=os.path.join(dir,'Components')
     sys.path[0:0]=[dir,cdir,os.path.join(cdir,sys.platform)]
 
-    # We delay import to here, in case cgi_module_publisher is part of the
+    # We delay import to here, in case Publish is part of the
     # application distribution.
-    from cgi_module_publisher import publish_module
+    from Publish import publish_module
 
     if profile:
         import __main__
@@ -292,8 +292,8 @@ def publish(script=None,path_info='/',
         if profile: run(c,profile)
         else: run(c)
     elif debug:
-        import cgi_module_publisher
-        from cgi_module_publisher import ModulePublisher
+        import Publish
+        from Publish import ModulePublisher
         import pdb
 
         class Pdb(pdb.Pdb):
@@ -325,8 +325,8 @@ def publish(script=None,path_info='/',
 
         fbreak(db,ModulePublisher.publish)
         fbreak(db,ModulePublisher.call_object)
-        #fbreak(db,cgi_module_publisher.new_find_object)
-        #fbreak(db,cgi_module_publisher.old_find_object)
+        #fbreak(db,Publish.new_find_object)
+        #fbreak(db,Publish.old_find_object)
 
         dbdata={'breakpoints':(), 'env':env}
         b=''
@@ -350,7 +350,7 @@ def publish(script=None,path_info='/',
         '* Then type c<cr> to jump to published object call.'
         )
         db.run('publish_module(file,environ=env,debug=1)',
-               cgi_module_publisher.__dict__,
+               Publish.__dict__,
                {'file':file, 'env':env})
     elif timeit:
         stdout=sys.stdout
