@@ -105,7 +105,7 @@ TODO
 
 """
 
-import os, sys, time
+import os, sys, time, signal
 
 SOFTWARE_HOME = '/projects/users/zs_zope'
 START_FILE = os.path.join(SOFTWARE_HOME, 'ZServer', 'start.py')
@@ -125,7 +125,11 @@ class ForkError:
     pass
 
 FORK_ATTEMPTS = 2
-BEAT_DELAY = 1
+
+# This is the number of seconds between the parent pulsing the child.
+# Set to 0 to deactivate pulsing.
+
+BEAT_DELAY = 0
 VERBOSE = 1
 
 # If you want the parent to 'pulse' Zope every 'BEAT_DELAY' seconds,
@@ -137,8 +141,8 @@ VERBOSE = 1
 # username and password may be None if the method does not require
 # authentication. 
 
-activities = (('http://localhost:9222/Heart/heart', 'michel', '123'),
-              )
+# activities = (('http://localhost:9222/Heart/heart', 'michel', '123'),
+#               )
 
 
 def pstamp(message):
@@ -146,15 +150,16 @@ def pstamp(message):
 
 def heartbeat():
     print 'tha-thump'
-    for a in activities:
-        try:
-            result = ZPublisher.Client.call(a[0], a[1], a[2])
-        except:
-            pstamp('activity %s failed!' % a[0])
-            return
+    if activities:
+        for a in activities:
+            try:
+                result = ZPublisher.Client.call(a[0], a[1], a[2])
+            except:
+                pstamp('activity %s failed!' % a[0])
+                return
 
-        if result and VERBOSE:
-            pstamp('activity %s returned: %s' % (a[0], result))
+            if result and VERBOSE:
+                pstamp('activity %s returned: %s' % (a[0], result))
 
 
 def forkit(attempts = FORK_ATTEMPTS):
@@ -187,11 +192,14 @@ def main():
                 pf.write(("%s" % os.getpid()))
                 pf.close()
                 while 1:
-                    p,s = os.waitpid(pid, os.WNOHANG)
-                    if not p:
-                        time.sleep(BEAT_DELAY)
-                        heartbeat()
-                        continue
+                    if not BEAT_DELAY:
+                        p,s = os.waitpid(pid, 0)
+                    else:
+                        p,s = os.waitpid(pid, os.WNOHANG)
+                        if not p:
+                            time.sleep(BEAT_DELAY)
+                            heartbeat()
+                            continue
                     if s:
                         pstamp(('Aiieee! %s exited with error code: %s' 
                                 % (p, s)))
@@ -218,3 +226,10 @@ def main():
 if __name__ == '__main__':
 
     main()
+
+
+
+
+
+
+
