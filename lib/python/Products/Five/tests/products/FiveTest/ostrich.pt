@@ -1,0 +1,3 @@
+<ul>
+<li tal:repeat="item python:['Alpha', 'Beta', 'Gamma']" tal:content="item"/>
+</ul>

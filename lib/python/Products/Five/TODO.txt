@@ -1,0 +1,18 @@
+====
+TODO
+====
+
+- more extensive testing whether event system works with things like Zope 2 
+  folders etc 
+
+- ensuring that the event-sending behavior is as close to Zope 3's as 
+  possible. A lot of edge cases with different behavior likely remain, 
+  and things like IObjectModifiedEvents are not sent yet for folders.
+
+- allow the multiple use of five:sendEvents
+  
+- allow Zope2 boilerplate context.registerClass be configured through zcml
+
+- Figure out where add-view redirects should go.
+
+- Instructions on using add views.

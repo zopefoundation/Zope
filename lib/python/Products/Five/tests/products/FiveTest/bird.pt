@@ -1,0 +1,1 @@
+<html metal:define-macro="birdmacro"><head><title>bird macro</title></head><body>Color: <metal:block define-slot="color" /><metal:block define-slot="birdinfo" /></body></html>
