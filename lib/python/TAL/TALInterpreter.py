@@ -383,8 +383,7 @@ class TALInterpreter:
         if ok:
             if value is None:
                 value = name
-            else:
-                value = "%s=%s" % (name, quote(value))
+            value = "%s=%s" % (name, quote(value))
         return ok, name, value
 
     bytecode_handlers["<attrAction>"] = attrAction
