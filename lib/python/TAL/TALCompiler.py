@@ -92,7 +92,7 @@ from xml.dom import Node
 
 from DOMVisitor import DOMVisitor
 
-from TALDefs import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
+from TALDefs import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE, XMLNS_NS
 from TALDefs import macroIndexer, slotIndexer
 from TALDefs import splitParts, parseAttributeReplacements
 from TALDefs import parseSubstitution
@@ -171,28 +171,32 @@ class METALCompiler(DOMVisitor):
             return 0
 
     def getFullAttrList(self, node):
-        # First, call newNS() for explicit xmlns attributes
-        for attr in node.attributes.values():
-            if attr.name == "xmlns":
-                self.newNS(None, attr.value)
-            elif attr.prefix == "xmlns":
-                self.newNS(attr.localName, attr.value)
         list = []
-        # Add namespace declarations for the node itself
+        # First, call newNS() for explicit xmlns and xmlns:prefix attributes
+        for attr in node.attributes.values():
+            if attr.namespaceURI == XMLNS_NS:
+                # This is a namespace declaration
+                # XXX Should be able to use prefix and localName, but can't
+                name = attr.name
+                i = string.find(name, ':')
+                if i < 0:
+                    declPrefix = None
+                else:
+                    declPrefix = name[i+1:]
+                self.newNS(declPrefix, attr.value)
+        # Add namespace declarations for the node itself, if needed
         if node.namespaceURI:
             if self.newNS(node.prefix, node.namespaceURI):
                 if node.prefix:
                     list.append(("xmlns:" + node.prefix, node.namespaceURI))
                 else:
                     list.append(("xmlns", node.namespaceURI))
-        # Add namespace declarations for each attribute
+        # Add namespace declarations for each attribute, if needed
         for attr in node.attributes.values():
             if attr.namespaceURI:
-                if not attr.prefix:
+                if attr.namespaceURI == XMLNS_NS:
                     continue
                 if self.newNS(attr.prefix, attr.namespaceURI):
-                    if attr.prefix == "xmlns":
-                        continue
                     if attr.prefix:
                         list.append(
                             ("xmlns:" + attr.prefix, attr.namespaceURI))
