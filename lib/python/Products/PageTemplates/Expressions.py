@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -295,7 +295,7 @@ def restrictedTraverse(object, path, securityManager,
         # If the path starts with an empty string, go to the root first.
         object = object.getPhysicalRoot()
         if not securityManager.validateValue(object):
-            raise Unauthorized, name
+            raise Unauthorized
         path.pop(0)
 
     REQUEST = {'path': path}
