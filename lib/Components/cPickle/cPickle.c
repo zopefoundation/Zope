@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.37 1997/05/06 20:21:01 jim Exp $
+     $Id: cPickle.c,v 1.38 1997/05/07 17:06:43 jim Exp $
 
      Copyright 
 
@@ -1675,10 +1675,20 @@ dump_special(Picklerobject *self, PyObject *args) {
     return Py_None;
 }
 
+static PyObject *
+Pickle_clear_memo(Picklerobject *self, PyObject *args) {
+  if(self->memo) PyDict_Clear(self->memo);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 static struct PyMethodDef Pickler_methods[] = {
-  {"dump",          (PyCFunction)Pickler_dump,  1, ""},
-  {"dump_special",  (PyCFunction)dump_special,  1, ""},
+  {"dump",          (PyCFunction)Pickler_dump,  1,
+   "dump(object) -- Write an object in pickle format"},
+  {"dump_special",  (PyCFunction)dump_special,  1,
+   ""},
+  {"clear_memo",  (PyCFunction)Pickle_clear_memo,  1,
+   "clear_memo() -- Clear the picklers memp"},
   {NULL,                NULL}           /* sentinel */
 };
 
@@ -3833,7 +3843,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.37 $";
+    char *rev="$Revision: 1.38 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3868,6 +3878,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.38  1997/05/07 17:06:43  jim
+ Added clear_memo method to pickler.
+
  Revision 1.37  1997/05/06 20:21:01  jim
  Changed to only add strings to memo that have length greater than one.
 
