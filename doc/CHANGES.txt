@@ -288,15 +288,15 @@ Zope Changes
     
         - Added a -P option to the startup script, z2.py, to specify a
           base port for the various servers. For example::
-    
-        python z2.py -P8000 
-    
-          is equivalent to:
-    
-        python z2.py -w8080 -f8021 -m8099
-    
-          This is a convenient short-hand for systes with many zserver
-          instances running.
+	
+	    python z2.py -P8000 
+	
+	      is equivalent to:
+	
+	    python z2.py -w8080 -f8021 -m8099
+	
+	      This is a convenient short-hand for systes with many zserver
+	      instances running.
     
         - Added an -l option to the startup script, z2.py, to specify
           the location of the ZServer hit log. If the location is a
@@ -335,50 +335,50 @@ Zope Changes
                ZClasses, which have global ids.)
  
         - Pack is now supported for ZODB3 File Storages.
-
-    - The header output by manage_tabs now shows whether the
-      current object has been modified or locked by a version and
-      shows the version if the version isn't the current working
-      version. 
-
-        - The locked-in-version decoration in the object management
-          contents view shows the locking version if the version isn't
-          the current working version.
-
-        - Several demonstration ZODB Storage implementations have been
-          added. See lib/python/ZODB/DemoStorage.py and
-          lib/python/ZODB/dbmStorage.py.
-
-    - Subtransactions have been added (instead of temporary
-      versions). If a true argument is given in a transaction commit
-      or abort call (e.g. 'get_transaction().commit(1)'), then
-      the commit or abort applies to a subtransaction of the
-      current transaction.  This is useful in a number of ways,
-      including:
-
-            o Subtransaction commits on requests that work with lots
-              of data can reduce memory usage because data can be
-              removed from memory after changes are saved in a
-              subtransaction, 
-
-            o You can rollback changes due to a local error without
-              rolling back *all* of the changes made in a long
-              transaction. 
+    
+	- The header output by manage_tabs now shows whether the
+	  current object has been modified or locked by a version and
+	  shows the version if the version isn't the current working
+	  version. 
+    
+	    - The locked-in-version decoration in the object management
+	      contents view shows the locking version if the version isn't
+	      the current working version.
+    
+	    - Several demonstration ZODB Storage implementations have been
+	      added. See lib/python/ZODB/DemoStorage.py and
+	      lib/python/ZODB/dbmStorage.py.
+    
+	- Subtransactions have been added (instead of temporary
+	  versions). If a true argument is given in a transaction commit
+	  or abort call (e.g. 'get_transaction().commit(1)'), then
+	  the commit or abort applies to a subtransaction of the
+	  current transaction.  This is useful in a number of ways,
+	  including:
+    
+		o Subtransaction commits on requests that work with lots
+		  of data can reduce memory usage because data can be
+		  removed from memory after changes are saved in a
+		  subtransaction, 
+    
+		o You can rollback changes due to a local error without
+		  rolling back *all* of the changes made in a long
+		  transaction. 
 
         - There is an advanced interface for specifying alternate
           storages for Zope.  Zope will try to import the module
           'custom_zodb' from INSTANCE_HOME and use it's Storage
           attribute. 
 
-      For example, to use a Demo storage based on the standard
+          For example, to use a Demo storage based on the standard
           File storage, yo might define a 'custom_zodb' module with::
 
             import Globals, ZODB.FileStorage, ZODB.DemoStorage
 
             name='%s/Data.fs' % Globals.data_dir
 
-        base=ZODB.FileStorage.FileStorage(name, read_only=1)
-        Storage=ZODB.DemoStorage.DemoStorage("Demo (%s)" % name, base)
+	    base=ZODB.FileStorage.FileStorage(name, read_only=1)
+	    Storage=ZODB.DemoStorage.DemoStorage("Demo (%s)" % name, base)
 
         - Find can now search text of SQL methods.
 
@@ -388,9 +388,9 @@ Zope Changes
           in a central registry and are used when unpicking instances.
 
         - Database connections now have a sync method for
-      synchronizing the connection with saved data.  This is
-      useful for interactive connections to see database changes
-      made by other threads.
+	  synchronizing the connection with saved data.  This is
+	  useful for interactive connections to see database changes
+	  made by other threads.
 
         - Errors encountered when trying to unpickle object state are
           now logged, if logging is enabled.
@@ -405,34 +405,35 @@ Zope Changes
           FTP access compatible with cookie-based authentication.
 
         - ZServer now includes a NT Service, 'ZServer.py' This service
-      requires the Python win32 extensions. It is not yet complete
-      and not yet integrated with the Zope installer. It does however
-      include a large doc string.
-
-    - ZServer is offically using the z2.py start script now. The old
-      start.py and zinit.py were removed. Note: z2.py will call zdaemon.py
-      for you, if you want to use ZServer in daemon mode on Unix.
-
-    - Added a 'has_permission' method to user objects. This facilitates
-      finding out if a user has access to a given object. For example::
-      
-        <!--#if "AUTHENTICATED_USER.has_permissions('View',someObject)"-->
-
-    - The product add list is now filtered. This should keep objects out of
-      the product add list for which the user does not have adequite
-      permissions. This is implemented with a new method,
-      'filtered_meta_types' which returns all the meta_types for which a
-      given user has permissions. Note: Right now ZClasses do not associate
-      permissions with Products. Thus all Control Panel Products appear in
-      the product add list, no matter what roles the user has.
-        
+	  requires the Python win32 extensions. It is not yet complete
+	  and not yet integrated with the Zope installer. It does however
+	  include a large doc string.
+    
+	- ZServer is offically using the z2.py start script now. The old
+	  start.py and zinit.py were removed. Note: z2.py will call zdaemon.py
+	  for you, if you want to use ZServer in daemon mode on Unix.
+    
+	- Added a 'has_permission' method to user objects. This facilitates
+	  finding out if a user has access to a given object. For example::
+	  
+	    <!--#if "AUTHENTICATED_USER.has_permissions('View',someObject)"-->
+    
+	- The product add list is now filtered. This should keep
+	  objects out of the product add list for which the user does
+	  not have adequite permissions. This is implemented with a
+	  new method, 'filtered_meta_types' which returns all the
+	  meta_types for which a given user has permissions. Note:
+	  Right now ZClasses do not associate permissions with
+	  Products. Thus all Control Panel Products appear in the
+	  product add list, no matter what roles the user has.
+	    
         - HTTP REQUEST objects now use HTML in their string representation.
 
-        - The REQUEST keys of the form BASEx and URLx, where x is an integer
-          now allow x to be greater than 9.
-
-    - index_html is not longer used automatically for XML-RPC
-      requests.
+        - The REQUEST keys of the form BASEx and URLx, where x is
+          an integer now allow x to be greater than 9.
+    
+	- index_html is not longer used automatically for XML-RPC
+	  requests.
 
         - ZPublisher debugger, 'ZPublisher.test' now accepts a 'extra'
           keyword argument with a dictionary giving extra variables to
@@ -461,12 +462,12 @@ Zope Changes
           stops accepting new connections when the number of active
           connections exceeds a threshold.
 
-    - Accessing cached results of items() (or values() or keys())
-      calls on BTrees caused core dumps if affected elements were
-      deleted.  For example::
-
-             for k in abtree.keys(): 
-                del abtree[k]
+	- Accessing cached results of items() (or values() or keys())
+	  calls on BTrees caused core dumps if affected elements were
+	  deleted.  For example::
+    
+		 for k in abtree.keys(): 
+		    del abtree[k]
 
           Note that this code is still incorrect due to the fact that
           the objects returned from abtree.items()  (or values() or
@@ -547,7 +548,7 @@ Zope Changes
           successfully closed.
 
         - A bug in handling the case when a file was created on open
-      without the create flag caused weird errors on windows.
+          without the create flag caused weird errors on windows.
 
         - The REQUEST BASE1 key was not computed correctly when
           SCRIPT_NAME was an empty string.
