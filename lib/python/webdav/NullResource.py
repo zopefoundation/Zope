@@ -27,6 +27,7 @@ from zExceptions import Unauthorized, NotFound, Forbidden, BadRequest
 from zExceptions import MethodNotAllowed
 from common import isDavCollection
 from common import Locked, Conflict, PreconditionFailed, UnsupportedMediaType
+from OFS.CopySupport import CopyError
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
@@ -143,10 +144,8 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         # check the clipboard.
         try:
             parent._verifyObjectPaste(ob.__of__(parent), 0)
-        except Unauthorized:
-            raise
-        except:
-            raise Forbidden, sys.exc_info()[1]
+        except CopyError:
+            raise Unauthorized, sys.exc_info()[1]
 
         # Delegate actual PUT handling to the new object,
         # SDS: But just *after* it has been stored.
