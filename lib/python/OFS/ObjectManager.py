@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.7 1997/08/18 15:14:54 brian Exp $"""
+$Id: ObjectManager.py,v 1.8 1997/09/02 18:39:50 jim Exp $"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -58,6 +58,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 	return self.meta_types+self.dynamic_meta_types
 
     def _checkId(self,id):
+
+	if not id: raise 'Bad Request', 'No <em>id</em> was specified'
+
 	if quote(id) != id: raise 'Bad Request', (
 	    """The id <em>%s<em>  is invalid - it
 	       contains characters illegal in URLs.""" % id)
@@ -252,6 +255,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.8  1997/09/02 18:39:50  jim
+# Added check for missing or blank ids.
+#
 # Revision 1.7  1997/08/18 15:14:54  brian
 # Made changes to manage_options to support std icons
 #
