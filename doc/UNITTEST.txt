@@ -175,9 +175,10 @@ Zope Unit Testing
 
   Zope uses the PyUnit unit testing framework, the documentation for
   which is available at http://pyunit.sourceforge.net.  The
-  lib/python/unittest.py module is the framework.  You should
-  establish your own conventions for naming and placement of test
-  modules.
+  lib/python/unittest.py module is the framework.  You may establish
+  your own conventions for naming and placement of test modules, but
+  using the same rules as for Zope Core is recommended, and the
+  standard used by most.
 
   Writing unit tests against applications based on Zope can be
   difficult.  Zope is a collection of related modules, some with
@@ -190,28 +191,20 @@ Zope Unit Testing
   must establish a test fixture which represents your entire Zope
   site.
 
-  Luckily, some tools are at your disposal to make writing unit tests
-  against Zope components and applications easier by making the
-  creation of these fixtures easier.
+  This is made easier by the ZopeTestCase package, included with
+  Zope from Zope 2.8. It is located in the directory
+  lib/python/Testing/ZopeTestCase and the documentation in the
+  doc subdirectory.
 
-  Surprisingly, one of the most effective tools for facilitating unit
-  testing is ZEO (http://www.zope.org/Products/ZEO).  ZEO is an
-  open-source clustering solution for Zope which makes it possible to
-  front-end a single "storage server" which manages a Zope object
-  database with multiple Zope clients that run a "client storage".
-  The reason ZEO is interesting for unit testing is mostly an
-  unintended side-effect of how it works as compared to Zope without
-  ZEO.  Zope without ZEO commonly uses a "FileStorage" to hold its
-  object database.  When Zope is started with a FileStorage, the
-  FileStorage code processes an "index" file.  This takes time.  Zope
-  using a ClientStorage as with ZEO does not process an index file,
-  making startup faster.  Fast startup of Zope is critical to
-  effective unit testing.  It is recommended that you implement ZEO if
-  you're heavy in to unit testing, as it really speeds things up.
-  It's not strictly required, however.
+  In principle, subclassing from Testing.ZopeTestCase.ZopeTestCase
+  instead of subclassing from unittest.TestCase will mean that you
+  have a zope test fixture set up for you.
 
-  Making Zope itself into a test fixture is straightforward.  Your
-  test code must:
+  There are several examples of how to use ZopeTestCase in the
+  ZopeTestCase directory.
+
+  If you don't want to do that, you can still set up the fixture
+  yourself.
 
    - add the 'lib/python' directory of your Zope installation to the
      PYTHONPATH (via sys.path.insert())
@@ -235,11 +228,92 @@ Zope Unit Testing
    - As a part of your tearDown, make sure to call
      "app._p_jar.close()".  This closes the database connection
      cleanly.
-
+  
   For more information on operating on Zope programatically by
   "importing" it, see Michel Pelletier's "The Debugger Is Your
   Friend" at
   http://www.zope.org/Members/michel/HowTos/TheDebuggerIsYourFriend
+
+ Running the unit tests
+
+  The basic command to run unit tests is::
+
+   bin/python bin/test.py --config-file etc/zope.conf
+
+  or on windows::
+
+   C:\Path\To\Python.exe bin\test.py --config-file etc\zope.conf
+
+  This will run all unit tests in lib/python and below (that is,
+  it will run the zope core unit tests.
+      
+  To run the unit tests located in the Products directory you need to
+  add two parameters --libdir Products so that test.py will look
+  for modules in the Products directory, and --dir Products to look
+  for tests in the Products directory and below. You can of course
+  specify --dir even closer, so a typical command to run the tests
+  for the "Myproduct" product would be
+
+   bin/python bin/test.py -v --config-file etc/zope.conf --libdir Products \
+   --dir Products/Myproduct
+  
+  This is rather long, and on unix you can shorten this to::
+
+   bin/zopectl test --dir Products/Myproduct
+
+  These commands are equivalent. bin/zopectl will just run test.py
+  with some useful defaults for you::
+  
+   -v increases verbosity. You can add -vv for even more output.
+       
+   --config-file etc/zope.conf reads in the Zope configuration file,so that
+   important paths are set up.
+       
+   --libdir Products tells test.py to include Products as a module path and
+   to include the tests there.
+
+ To see the rest of the command options you can run it with --help::
+
+  bin/zopectl test --help 
+
+ The test output should look something like this::
+
+  Running unit tests at level 1
+  Running unit tests from /home/zope/Products/CMFCore/tests
+  Parsing /home/zope/etc/zope.conf
+  .....................
+  ----------------------------------------------------------------------
+  Ran 21 tests in 0.130s
+
+  OK
+
+ Speeding up the tests
+
+  Not all unit tests will need a zope test fixture. If you have many
+  tests that do not need it, it can be a good idea to separate them
+  into different test files, so that you can run the tests that do not
+  need a fixture separately, since setting up the fixture takes time.
+  This will not save you time when running all your tests, but it can
+  save time while developing, since you can skip loading Zope when
+  running some tests (also see Functional testing, below).
+
+  Also, one of the most effective tools for facilitating unit
+  testing is ZEO (http://www.zope.org/Products/ZEO).  ZEO is an
+  open-source clustering solution for Zope which makes it possible to
+  front-end a single "storage server" which manages a Zope object
+  database with multiple Zope clients that run a "client storage".
+  The reason ZEO is interesting for unit testing is mostly an
+  unintended side-effect of how it works as compared to Zope without
+  ZEO.  Zope without ZEO commonly uses a "FileStorage" to hold its
+  object database.  When Zope is started with a FileStorage, the
+  FileStorage code processes an "index" file.  This takes time.  Zope
+  using a ClientStorage as with ZEO does not process an index file,
+  making startup faster.  Fast startup of Zope is critical to
+  effective unit testing.  It is recommended that you implement ZEO if
+  you're heavy in to unit testing, as it really speeds things up.
+  It's not strictly required, however.
+
+ Emulating requests
 
   Sometimes, just importing Zope isn't enough.  For example, it's
   often not possible to obtain the results of a DTML or Python method
@@ -249,40 +323,41 @@ Zope Unit Testing
   request (which a DTML method is somewhat logically designed to
   serve).
 
-  If you find yourself getting bogged down while writing unit tests by
-  Zope's refusal to run certain methods due to missing state (like
-  REQUEST), it's useful to know about the "debug" method of the Zope
-  package.  This method allows you to simulate a web request, which
-  generally provides all the state necessary to run methods which
-  depend on web requests, and returns the results of the web request
-  as it would be seen in by a web browser.  To use the Zope debug
-  method, do the following:
+  There are two ways of doing this. The old and complicated way is
+  using Zope.debug() (documented below), but the new way is known
+  as "functional tests". Support for this is included in ZopeTestCase,
+  see lib/python/Testing/ZopeTestCase/doc/FunctionalTesting.stx for
+  more information. It does almost the same thing as the "debug"
+  method, but it returns a RESPONSE object, so you can easily check
+  that the output is correct, and not only that the request finished
+  without raising any exceptions.
 
-   - add the lib/python path to your PYTHONPATH (via sys.path.insert())
-
-   - 'import ZODB'
-
-   - 'import Zope'
+  Zope.debug()
   
-   - 'Zope.debug('/a/url/representing/a/method?with=a?couple=arguments',
-                 u='username:password', s='silent', e={'some':'environment',
-                 'variable':'settings'})
+   Zope.debug() allows you to simulate a web request, which
+   generally provides all the state necessary to run methods which
+   depend on web requests, and returns the results of the web request
+   as it would be seen in by a web browser.  To use the Zope debug
+   method, do the following:
 
-  The "silent" option causes Zope not to print anything.  You can set
-  your python's stdout to a file or a file-like object to capture the
-  output if you do not set the silent flag.
+    - add the lib/python path to your PYTHONPATH (via sys.path.insert())
 
-  In Zope versions before 2.2.2, all calls to Zope.debug commit the
-  transaction represented by the call to Zope.debug by default.  This
-  can pose problems for unit testing, as the state of the environment
-  should not be effected by prior tests.  A solution should be
-  available by the release of Zope 2.3.
+    - 'import ZODB'
+
+    - 'import Zope'
+  
+    - 'Zope.debug('/a/url/representing/a/method?with=a?couple=arguments',
+                  u='username:password', s='silent', e={'some':'environment',
+                  'variable':'settings'})
+
+   The "silent" option causes Zope not to print anything.  You can set
+   your python's stdout to a file or a file-like object to capture the
+   output if you do not set the silent flag.
 
  Administrivia
 
-  Unit test scripts found in the Zope source code currently make use
-  of the PyUnit unit testing framework, available from
-  http://pyunit.sourceforge.net, written by Stephen Purcell (thanks
+  Unit test scripts found in the Zope source code make use of Pythons
+  PyUnit unit testing framework, written by Stephen Purcell (thanks
   Stephen!).  PyUnit is based on the JUnit testing framework for Java
   (written by Kent Beck and Erich Gamma), which in turn was based on a
   testing framework designed for Smalltalk (also written by Kent
@@ -293,12 +368,11 @@ Zope Unit Testing
   of high quality code with a minimum of developmental ceremony.  For
   more information on unit tests as they relate to Extreme
   Programming, see http://c2.com/cgi/wiki?UnitTestsDefined.  Although
-  Digital Creations has not embraced the entire spectrum of Extreme
+  Zope Corporation has not embraced the entire spectrum of Extreme
   Programming methodologies in its software development process, we've
   found unit tests a way to speed development and produce
   higher-quality code.
 
-  There is a testing support package in lib/python/Testing that might
-  be useful to you for writing unit tests. See the README.txt in that 
-  directory for details.
+  ZopeTestCase was written by Stefan H. Holek, and is included with
+  Zope from Zope 2.8. (Thanks Stefan!)
 
