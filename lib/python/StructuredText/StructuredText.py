@@ -93,7 +93,7 @@ from ST import Basic
 import re, string,sys
 from STletters import letters
 
-Document = ClassicDocumentClass.DocumentClass()
+Document = DocumentClass.DocumentClass()
 HTMLNG = HTMLClass.HTMLClass()
 
 def HTML(aStructuredString, level=0):
