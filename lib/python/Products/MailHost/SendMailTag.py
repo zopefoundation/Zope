@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.6 1999/03/22 20:39:53 brian Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.7 1999/11/03 16:09:14 brian Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 from MailHost import MailBase
 from DocumentTemplate.DT_Util import *
@@ -94,13 +94,13 @@ import string
 class SendMailTag:
     '''the send mail tag, used like thus:
 
-    <!--#sendmail someMailHostID-->
+    <dtml-sendmail someMailHostID>
     to: person@their.machine.com
     from: me@mymachine.net
     subject: just called to say...
 
     boy howdy!
-    <!--#/sendmail-->
+    </dtml-sendmail>
 
     Text between the sendmail and /sendmail tags is processed
     by the MailHost machinery and delivered.  There must be at least

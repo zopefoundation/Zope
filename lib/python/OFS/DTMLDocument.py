@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -181,12 +181,12 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 Globals.default__class_init__(DTMLDocument)
 
 
-default_dd_html="""<!--#var standard_html_header-->
-<h2><!--#var title_or_id--></h2>
+default_dd_html="""<dtml-var standard_html_header>
+<h2><dtml-var title_or_id></h2>
 <p>
-This is the <!--#var id--> Document.
+This is the <dtml-var id> Document.
 </p>
-<!--#var standard_html_footer-->"""
+<dtml-var standard_html_footer>"""
 
 addForm=HTMLFile('documentAdd', globals())
 

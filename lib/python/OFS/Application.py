@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.115 1999/10/21 14:08:08 jim Exp $'''
-__version__='$Revision: 1.115 $'[11:-2]
+$Id: Application.py,v 1.116 1999/11/03 16:05:20 brian Exp $'''
+__version__='$Revision: 1.116 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -109,17 +109,17 @@ from zLOG import LOG, ERROR
 
 
 _standard_error_msg='''\
-<!--#var standard_html_header-->
+<dtml-var standard_html_header>
 
-<!--#if error_message-->
- <!--#var error_message-->
-<!--#else-->
+<dtml-if error_message>
+ <dtml-var error_message>
+<dtml-else>
 
 <TABLE BORDER="0" WIDTH="100%">
 <TR VALIGN="TOP">
 
 <TD WIDTH="10%" ALIGN="CENTER">
-<IMG SRC="<!--#var BASE1-->/p_/ZButton" ALT="Zope">
+<IMG SRC="<dtml-var BASE1>/p_/ZButton" ALT="Zope">
 </TD>
 
 <TD WIDTH="90%">
@@ -128,8 +128,8 @@ _standard_error_msg='''\
   </P>
   
   <P>
-  <STRONG>Error Type: <!--#var error_type--></STRONG><BR>
-  <STRONG>Error Value: <!--#var error_value--></STRONG><BR> 
+  <STRONG>Error Type: <dtml-var error_type></STRONG><BR>
+  <STRONG>Error Value: <dtml-var error_value></STRONG><BR> 
   </P>
  
   <HR NOSHADE>
@@ -137,10 +137,10 @@ _standard_error_msg='''\
   <P>Troubleshooting Suggestions</P>
 
   <UL>
-  <!--#if "error_type in ('KeyError','NameError')"-->
+  <dtml-if "error_type in ('KeyError','NameError')">
   <LI>This resource may be trying to reference a
-  nonexistent object or variable <STRONG><!--#var error_value--></STRONG>.</LI>
-  <!--#/if-->
+  nonexistent object or variable <STRONG><dtml-var error_value></STRONG>.</LI>
+  </dtml-if>
   <LI>The URL may be incorrect.</LI>
   <LI>The parameters passed to this resource may be incorrect.</LI>
   <LI>A resource that this resource relies on may be encountering an error.</LI>
@@ -156,13 +156,13 @@ _standard_error_msg='''\
 </TD></TR>
 </TABLE>
 
-<!--#comment-->
+<dtml-comment>
  Here, events like logging and other actions may also be performed, such as
  sending mail automatically to the administrator.
-<!--#/comment-->
+</dtml-comment>
 
-<!--#/if-->
-<!--#var standard_html_footer-->'''
+</dtml-if>
+<dtml-var standard_html_footer>'''
 
 
 class Application(Globals.ApplicationDefaultPermissions,
@@ -211,7 +211,7 @@ class Application(Globals.ApplicationDefaultPermissions,
             self,
             'standard_html_header',
             'Standard Html Header',
-            '<HTML><HEAD><TITLE><!--#var title_or_id-->' \
+            '<HTML><HEAD><TITLE><dtml-var title_or_id>' \
             '</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">')
         Document.manage_addDocument(
             self,

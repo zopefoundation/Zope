@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -372,11 +372,13 @@ def decapitate(html, RESPONSE=None,
     return html
 
 
-default_dm_html="""<!--#var standard_html_header-->
-<H2><!--#var title_or_id--> <!--#var document_title--></H2>
-<P>This is the <!--#var document_id--> Document in 
-the <!--#var title_and_id--> Folder.</P>
-<!--#var standard_html_footer-->"""
+default_dm_html="""<dtml-var standard_html_header>
+<h2><dtml-var title_or_id> <dtml-var document_title></h2>
+<p>
+This is the <dtml-var document_id> Document 
+in the <dtml-var title_and_id> Folder.
+</p>
+<dtml-var standard_html_footer>"""
 
 addForm=HTMLFile('methodAdd', globals())
 

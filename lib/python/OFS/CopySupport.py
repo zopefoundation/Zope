@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -461,13 +461,11 @@ def _cb_decode(s):
 fMessageDialog=Globals.HTML("""
 <HTML>
 <HEAD>
-<TITLE><!--#var title--></TITLE>
+<TITLE><dtml-var title></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<FORM ACTION="<!--#var action-->" METHOD="GET" 
-      <!--#if target-->
-      TARGET="<!--#var target-->"
-      <!--#/if target-->>
+<FORM ACTION="<dtml-var action>" METHOD="GET" <dtml-if
+ target>TARGET="<dtml-var target>"</dtml-if>>
 <TABLE BORDER="0" WIDTH="100%%" CELLPADDING="10">
 <TR>
   <TD VALIGN="TOP">
@@ -477,7 +475,7 @@ fMessageDialog=Globals.HTML("""
   <TD VALIGN="TOP">
   <BR><BR>
   <CENTER>
-  <!--#var message-->
+  <dtml-var message>
   </CENTER>
   </TD>
 </TR>
