@@ -36,11 +36,6 @@ Update Zope distribution creation machinery
   fail if it's not updated with knowledge of the new Zope installation
   regime.
 
-Beautify output of "make install".
-
-  The output of make install includes some spurious warnings from
-  distutils.
-
 Zope.Startup.nt.NTService.py and INSTANCE_HOME/bin/ntservice.py need
 testing
 
@@ -135,6 +130,13 @@ ZConfig defaults
   http://my.zope.com/CPM/CPM/issues/3.  Not necessary for merge, but
   useful to think about for future.
 
+ZConfig should keep enough state to be able to reconstitute the
+textual representation of the configuration.
+
+  It would be nice if ZConfig kept enough state to be able to
+  reconstitute the configuration in textual representation
+  (to aid GUI builders and to make it possible to have
+   a meaningful 'zopectl showconfig' or somesuch).  
 
 RPM install should recompile .pycs
 
@@ -209,6 +211,10 @@ Lots of discussion!
 
    (Use the installed bin/mkzeoinstance script; use --help for more
    information.)
+
+   Richard Jones has done work to allow you to create a ZEO instance
+   in a way similar to creating a Zope instance (yay!) after
+   creating a software home.
 
  - Give ZConfig replacement access to the environment or shell
    somehow.  For instance, some folks use the same 'start' script in
