@@ -91,11 +91,11 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.8 $'[11:-2]
+__version__ = '$Revision: 1.9 $'[11:-2]
 
 
 import string, re
-import operator
+import operator,warnings
 from Globals import Persistent,DTMLFile
 from zLOG import LOG, ERROR
 from OFS.SimpleItem import SimpleItem
@@ -510,7 +510,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         query_operator = record.get('operator',self.useOperator)
         if not query_operator in self.operators.keys():
-            raise exceptions.RuntimeError,"Invalid operator '%s' for a TextIndex" % query_operator
+            raise exceptions.RuntimeError,"Invalid operator '%s' for a TextIndex"\
+                     % query_operator
 
         # We keep this for pre-2.4 compatibility
         # This stinking code should go away somewhere. A global
@@ -520,6 +521,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         if request.has_key('textindex_operator'):
             query_operator = request['textindex_operator']
+            warnings.warn("The usage of the 'textindex_operator' is no longer recommended.\n"\
+                          "Please use a mapping object and the 'operator' to specify the operator")
 
         r = None
 
