@@ -85,11 +85,11 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.29 1999/08/25 22:29:19 jim Exp $"""
+$Id: Management.py,v 1.30 1999/09/27 14:07:05 jim Exp $"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
-import sys, Globals, ExtensionClass
+import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import HTMLFile
 from string import split, join, find
@@ -209,7 +209,10 @@ class Tabs(ExtensionClass.Base):
         return getattr(self, m)(self, REQUEST)
     
     
-    def tabs_path_info(self, script, path):
+    def tabs_path_info(self, script, path,
+                       # Static vars
+                       quote=urllib.quote,
+                       ):
         url=script
         out=[]
         while path[:1]=='/': path=path[1:]
@@ -223,7 +226,7 @@ class Tabs(ExtensionClass.Base):
         last=path[-1]
         del path[-1]
         for p in path:
-            script="%s/%s" % (script, p)
+            script="%s/%s" % (script, quote(p))
             out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
         return join(out,'&nbsp;/&nbsp;')
