@@ -125,6 +125,8 @@ class p_:
     Methods_icon=ImageFile('ZClasses/methods.gif')
     Propertysheets_icon=ImageFile('ZClasses/propertysheets.gif')
 
+    ProductHelp_icon=ImageFile('HelpSys/images/productHelp.gif')
+    HelpTopic_icon=ImageFile('HelpSys/images/helpTopic.gif')
 
 class Misc_:
     "Miscellaneous product information"

@@ -165,7 +165,8 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
 
     meta_type='Product Help'
-
+    icon='p_/ProductHelp_icon'
+    
     meta_types=({'name':'Help Topic',
                  'action':'addTopicForm',
                  'permission':'Add Documents, Images, and Files'},

@@ -180,6 +180,7 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
     """
     
     meta_type='Help Topic'
+    icon='p_/HelpTopic_icon'
 
     manage_options=(
         {'label':'Properties', 'action':'manage_propertiesForm'},
@@ -198,6 +199,7 @@ class DTMLDocumentTopic(HelpTopicBase, DTMLDocument):
     A user addable Help Topic based on DTML Document.
     """
     meta_type='Help Topic'
+    icon='p_/HelpTopic_icon'
 
     def munge(self,*args, **kw):
         apply(DTMLDocument.munge, (self,) + args, kw)
