@@ -143,11 +143,8 @@ def main():
         file = FILE
     doc = parsefile(file)
     if macros or compile:
-        if macros:
-            it = precompiletree(doc)
-        else:
-            it = compiletree(doc)
-        interpretit(it)
+        it = compiletree(doc)
+        interpretit(it, tal=(not macros))
     else:
         doc = talizetree(doc)
         printtree(doc)
@@ -199,12 +196,12 @@ def compiletree(root):
     from TALCompiler import TALCompiler
     return TALCompiler(root)()
 
-def interpretit(it, engine=None, stream=None):
+def interpretit(it, engine=None, stream=None, tal=1):
     from TALInterpreter import TALInterpreter
     program, macros = it
     if engine is None:
         engine = DummyEngine(macros)
-    TALInterpreter(program, macros, engine, stream, wrap=0)()
+    TALInterpreter(program, macros, engine, stream, wrap=0, tal=tal)()
 
 if __name__ == "__main__":
     main()

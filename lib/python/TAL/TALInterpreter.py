@@ -96,18 +96,26 @@ from TALCompiler import TALCompiler
 class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
-                 debug=0, wrap=60):
+                 debug=0, wrap=60, metal=1, tal=1, html=0):
         self.program = program
         self.macros = macros
         self.engine = engine
         self.stream = stream or sys.stdout
         self.debug = debug
         self.wrap = wrap
+        self.metal = metal
+        self.tal = tal
+        self.html = html
         self.slots = {}
         self.currentMacro = None
 
     def __call__(self):
-        self.stream_write('<?xml version="1.0" ?>\n')
+        if self.html:
+            self.endsep = " />"
+        else:
+            self.endsep = "/>"
+        if not self.html:
+            self.stream_write('<?xml version="1.0" ?>\n')
         self.interpret(self.program)
         self.stream_write("\n")
 
@@ -138,7 +146,7 @@ class TALInterpreter:
         self.level = self.level - 1
 
     def do_startEndTag(self, name, attrList):
-        self.do_startTag(name, attrList, "/>")
+        self.do_startTag(name, attrList, self.endsep)
 
     def do_startTag(self, name, attrList, end=">"):
         if not attrList:
@@ -150,10 +158,10 @@ class TALInterpreter:
             name, value = item[:2]
             if len(item) > 2:
                 action = item[2]
-                if action == "replace" and len(item) > 3:
+                if action == "replace" and len(item) > 3 and self.tal:
                     value = self.engine.evaluateText(item[3])
                 elif (action == "macroHack" and self.currentMacro and
-                      name[-13:] == ":define-macro"):
+                      name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro
             s = "%s=%s" % (name, quote(value))
@@ -176,21 +184,31 @@ class TALInterpreter:
         self.engine.endScope()
 
     def do_setLocal(self, name, expr):
+        if not self.tal:
+            return
         value = self.engine.evaluateValue(expr)
         self.engine.setLocal(name, value)
 
     def do_setGlobal(self, name, expr):
+        if not self.tal:
+            return
         value = self.engine.evaluateValue(expr)
         self.engine.setGlobal(name, value)
 
-    def do_insertText(self, expr):
+    def do_insertText(self, expr, block):
+        if not self.tal:
+            self.interpret(block)
+            return
         text = self.engine.evaluateText(expr)
         if text is None:
             return
         text = cgi.escape(text)
         self.stream_write(text)
 
-    def do_insertStructure(self, expr):
+    def do_insertStructure(self, expr, block):
+        if not self.tal:
+            self.interpret(block)
+            return
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
             return
@@ -203,11 +221,15 @@ class TALInterpreter:
         self.macros = saveMacros
 
     def do_loop(self, name, expr, block):
+        if not self.tal:
+            self.interpret(block)
+            return
         iterator = self.engine.setRepeat(name, expr)
         while iterator.next():
             self.interpret(block)
 
     def do_text(self, text):
+        text = cgi.escape(text)
         self.stream_write(text)
 
     def do_comment(self, text):
@@ -216,13 +238,16 @@ class TALInterpreter:
         self.stream_write("-->")
 
     def do_condition(self, condition, block):
-        if self.engine.evaluateBoolean(condition):
+        if not self.tal or self.engine.evaluateBoolean(condition):
             self.interpret(block)
 
     def do_defineMacro(self, macroName, macro):
         self.interpret(macro)
 
-    def do_useMacro(self, macroName, compiledSlots):
+    def do_useMacro(self, macroName, compiledSlots, block):
+        if not self.metal:
+            self.interpret(block)
+            return
         macro = self.engine.evaluateMacro(macroName)
         save = self.slots, self.currentMacro
         self.slots = compiledSlots
@@ -230,15 +255,15 @@ class TALInterpreter:
         self.interpret(macro)
         self.slots, self.currentMacro = save
 
-    def do_fillSlot(self, slotName, program):
-        self.interpret(program)
+    def do_fillSlot(self, slotName, block):
+        self.interpret(block)
 
-    def do_defineSlot(self, slotName, program):
-        compiledSlot = self.slots.get(slotName)
+    def do_defineSlot(self, slotName, block):
+        compiledSlot = self.metal and self.slots.get(slotName)
         if compiledSlot:
             self.interpret(compiledSlot)
         else:
-            self.interpret(program)
+            self.interpret(block)
 
 def quote(s):
     if '"' in s and "'" not in s:

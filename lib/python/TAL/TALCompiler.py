@@ -247,7 +247,10 @@ class METALCompiler(DOMVisitor):
                     self.visitElement(slotNode)
                     compiledSlots[slotName] = self.popProgram()
             cexpr = self.compileExpression(macroName)
-            self.emit("useMacro", cexpr, compiledSlots)
+            self.pushProgram()
+            self.compileElement(node)
+            block = self.popProgram()
+            self.emit("useMacro", cexpr, compiledSlots, block)
             return
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
         if macroName:
@@ -394,7 +397,10 @@ class TALCompiler(METALCompiler):
         if not key:
             return 0
         self.emitStartTag(node)
-        self.doSubstitution(key, expr, {})
+        self.pushProgram()
+        self.visitAllChildren(node)
+        block = self.popProgram()
+        self.doSubstitution(key, expr, {}, block)
         self.emitEndTag(node)
         return 1
 
@@ -403,18 +409,21 @@ class TALCompiler(METALCompiler):
         if not key:
             return 0
         attrDict = self.getAttributeReplacements(node)
-        self.doSubstitution(key, expr, attrDict)
+        self.pushProgram()
+        self.emitElement(node)
+        block = self.popProgram()
+        self.doSubstitution(key, expr, attrDict, block)
         return 1
 
-    def doSubstitution(self, key, expr, attrDict):
+    def doSubstitution(self, key, expr, attrDict, block):
         cexpr = self.compileExpression(expr)
         if key == "text":
             if attrDict:
                 print "Warning: z:attributes unused for text replacement"
-            self.emit("insertText", cexpr)
+            self.emit("insertText", cexpr, block)
         else:
             assert key == "structure"
-            self.emit("insertStructure", cexpr, attrDict)
+            self.emit("insertStructure", cexpr, attrDict, block)
 
     def doRepeat(self, node, arg):
         m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
