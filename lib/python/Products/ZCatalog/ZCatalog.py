@@ -103,6 +103,7 @@ from Vocabulary import Vocabulary
 import IOBTree
 from Shared.DC.ZRDB.TM import TM
 from AccessControl import getSecurityManager
+from zLOG import LOG, ERROR
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
@@ -460,8 +461,13 @@ class ZCatalog(Folder, Persistent, Implicit):
                     REQUEST=self.REQUEST
                 obj = self.aq_parent.resolve_url(self.getpath(rid), REQUEST)
             return obj
-        except:
-            pass
+        except 'Unauthorized':
+            user = getSecurityManager().getUser().getUserName()
+            LOG('ZCatalog', ERROR, ('User %s attempted to retrieve object '
+                                    'with record id %s using getobject.'
+                                    % (user, rid)))
+            raise ('Access to object with record id %s in Catalog denied: '
+                   'unauthorized as %s.' % (rid, user))
 
     def getMetadataForRID(self, rid):
         """return the correct metadata for the cataloged record id"""
