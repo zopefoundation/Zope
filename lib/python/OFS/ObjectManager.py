@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.160 2003/02/02 12:19:07 andreasjung Exp $"""
+$Id: ObjectManager.py,v 1.161 2003/02/04 06:48:26 anthony Exp $"""
 
-__version__='$Revision: 1.160 $'[11:-2]
+__version__='$Revision: 1.161 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -508,7 +508,7 @@ class ObjectManager(
         if REQUEST is not None:
             return self.manage_main(self, REQUEST,
                 manage_tabs_message=
-                '<em>%s</em> sucessfully exported to <em>%s</em>' % (id,f),
+                '<em>%s</em> successfully exported to <em>%s</em>' % (id,f),
                 title = 'Object exported')
 
 
@@ -535,7 +535,7 @@ class ObjectManager(
 
         if REQUEST is not None:
             return self.manage_main(self, REQUEST,
-                manage_tabs_message='<em>%s</em> sucessfully imported' % id,
+                manage_tabs_message='<em>%s</em> successfully imported' % id,
                 title = 'Object imported',
                 update_menu=1)
 
