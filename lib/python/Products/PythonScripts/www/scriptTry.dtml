@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>Try <dtml-var title_or_id></title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+<dtml-var manage_tabs>
+
+<h2>Try <dtml-var title_or_id></h2>
+
+<form action="&dtml-URL1;/ZScriptHTML_tryAction" method="POST">
+<table cellspacing="2">
+<tr><th>Variable</th><th>Value</th></tr>
+<dtml-in ZScriptHTML_tryParams>
+<tr>
+  <td align="left" valign="top">
+    <input name="argvars.name:records" type="text" value="&dtml-sequence-item;">
+  </td>
+  <td align="left" valign="top">
+    <input name="argvars.value:records" type="text">
+  </td>
+</tr>
+<dtml-else>
+  <dtml-raise type="Redirect">&dtml-URL1;</dtml-raise>
+</dtml-in>
+</table>
+<input name="submit" type="submit" value="Go"><br>
+</form>
+</body>
+</html>

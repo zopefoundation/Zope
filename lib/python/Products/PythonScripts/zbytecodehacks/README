@@ -1,0 +1,38 @@
+Welcome to the bytecodehacks!
+
+There's docmentation in doc/; To build it you need an unpacked python
+source distribution somewhere, and for html output you also need
+latex2html. 
+
+Build docs like this:
+
+$(path to Python source)/Doc/tools/mkhowto --$(format) (--a4) bch.tex
+
+You can get built html docs at 
+
+ftp://starship.python.net/pub/crew/mwh/bytecodehacks-doc-$(VERSION).tar.gz.
+
+The bytecodehacks rewrite the bytecode of functions to do unlikely
+things in Python.
+
+The package (and that's how it's distributed) splits into two parts -
+the byte code editing routines and the "bytecodehacks" that are
+usuable without a degree in python arcanery, although one might help
+understand some of the consequences.
+
+Some highlights:
+
+bytecodehacks.closure - bind global references to constants
+bytecodehacks.xapply - a sort-of lazy apply
+bytecodehacks.setq - this one should interest people!
+bytecodehacks.inline - Python gets inline functions
+bytecodehacks.macro - Python gets semantic (hygenic) macros!
+
+Please note that these modules are not really bullet-proof, more a
+proof-of-concept than anything else.
+
+The are also public domain; do what you like with them. If you find
+bugs, or more imaginative uses for these techniques, I'd surely like
+to know!
+
+Thanks for taking an interest.

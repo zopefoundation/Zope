@@ -1,0 +1,4 @@
+#!/usr/local/bin/python
+
+from bytecodehacks.code_gen import write_ops
+write_ops.Main()

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>Edit <dtml-var title_or_id></title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+<dtml-var manage_tabs>
+
+<form action="&dtml-URL1;" method="POST">
+<input type="hidden" name=":default_method" value="ZPythonScriptHTML_changePrefs">
+<table cellspacing="2">
+<tr>
+  <th align="left" valign="top"><em>Title</em></th>
+  <td align="left" valign="top">
+    <input type="text" name="title" size="50" value="&dtml-title;">
+  </td>
+</tr>
+
+<tr>	<th align="left"><em>Parameter&nbsp;list</em></th>
+	<td align="left"><input name="params" size="30" value="&dtml-params;">
+</td></tr>
+
+<dtml-with getBindingAssignments>
+<dtml-if getAssignedNamesInOrder>
+<tr>	<th align="left"><em>Bound&nbsp;names</em></th>
+	<td align="left">
+<dtml-in getAssignedNamesInOrder>
+<dtml-var sequence-item html_quote><dtml-unless sequence-end>, </dtml-unless>
+</dtml-in>
+</td></tr>
+</dtml-if>
+</dtml-with>
+<tr>
+  <th align="left" valign="top"><em>Last&nbsp;modified</em></th>
+  <td align="left" valign="top"><dtml-var bobobase_modification_time></td>
+</tr>
+</table>
+
+<!-- style="width: 2em" -->
+
+<b>Text area </b>
+    <input name="height" type="submit" value="Taller">
+    <input name="height" type="submit" value="Shorter">
+    <input name="width" type="submit" value="Wider">
+    <input name="width" type="submit" value="Narrower">
+<br>
+<textarea name="body:text" wrap="off" style="width: 100%"
+        cols=<dtml-var dtpref_cols html_quote missing="50">
+        rows=<dtml-var dtpref_rows html_quote missing="20">
+>&dtml-body;</textarea><br>
+<input name="ZPythonScriptHTML_editAction:method" type="submit"
+ value="Save Changes">
+</form>
+</body>
+</html>

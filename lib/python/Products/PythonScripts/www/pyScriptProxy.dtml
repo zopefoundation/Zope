@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>Edit</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<dtml-var manage_tabs>
+<P>
+Proxy roles allow you to control the access that a 
+Script has. Proxy roles replace the roles of the user who is executing
+the Script.  This can be used to both expand and limit
+access to resources.
+</P>
+
+<P>Use the form below to select which roles this Script will have.
+</P>
+
+  <FORM ACTION="manage_proxy" METHOD="POST">
+    <TABLE CELLSPACING="2">
+      <TR>
+	<TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+	<TD ALIGN="LEFT" VALIGN="TOP"><dtml-var id></TD>
+      </TR>
+      <TR>
+	<TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
+	<TD ALIGN="LEFT" VALIGN="TOP"><dtml-var title></TD>
+      </TR>
+      <TR>
+	<TH ALIGN="LEFT" VALIGN="TOP">Proxy Roles</TH>
+        <TD VALIGN="TOP">
+           <SELECT NAME="roles:list" SIZE="7" MULTIPLE>
+             <dtml-in valid_roles>
+                <dtml-if expr="_vars['sequence-item'] != 'Shared'">
+                   <OPTION
+                   <dtml-if expr="manage_haveProxy(_vars['sequence-item'])">
+                      SELECTED</dtml-if>
+                   ><dtml-var sequence-item></OPTION>
+                </dtml-if>
+             </dtml-in valid_roles>
+           </SELECT>
+        </TD>
+      </TR>
+      <TR>
+	<TD></TD>
+	<TD>
+	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
+	</TD>
+      </TR>
+    </TABLE>
+  </FORM>
+</BODY>
+</HTML>
+

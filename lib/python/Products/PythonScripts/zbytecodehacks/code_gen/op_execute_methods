@@ -1,0 +1,138 @@
+# -*- python -*-
+STOP_CODE:
+    pass
+POP_TOP:
+    stack.pop()
+ROT_TWO:
+    stack[-2:]=[stack[-1],stack[-2]]
+ROT_THREE:
+    stack[-3:]=[
+        stack[-1],
+        stack[-3],
+        stack[-2]]
+DUP_TOP:
+    stack.append(stack[-1])
+UNARY_POSITIVE:
+UNARY_NEGATIVE:
+UNARY_NOT:
+UNARY_CONVERT:
+UNARY_INVERT:
+    stack[-1:]=[self]
+BINARY_POWER:
+BINARY_MULTIPLY:
+BINARY_DIVIDE:
+BINARY_MODULO:
+BINARY_ADD:
+BINARY_SUBTRACT:
+BINARY_SUBSCR:
+BINARY_LSHIFT:
+BINARY_RSHIFT:
+BINARY_AND:
+BINARY_XOR:
+BINARY_OR:
+    stack[-2:]=[self]
+SLICE_0:
+    stack[-1:]=[self]
+SLICE_1:
+SLICE_2:
+    stack[-2:]=[self]
+SLICE_3:
+    stack[-3:]=[self]
+STORE_SLICE_0:
+    del stack[-2:]
+STORE_SLICE_1:
+STORE_SLICE_2:
+    del stack[-3:]
+STORE_SLICE_3:
+    del stack[-4:]
+DELETE_SLICE_0:
+    del stack[-1:]
+DELETE_SLICE_1:
+DELETE_SLICE_2:
+    del stack[-2:]
+DELETE_SLICE_3:
+    del stack[-3:]
+STORE_SUBSCR:
+    del stack[-3:]
+DELETE_SUBSCR:
+    del stack[-2:]    
+PRINT_EXPR:
+PRINT_ITEM:
+    stack.pop()    
+PRINT_NEWLINE:
+    pass
+BREAK_LOOP:
+    raise "No jumps here!"
+LOAD_LOCALS:
+    stack.append(self)
+RETURN_VALUE:
+    stack[:] = []
+EXEC_STMT:
+    pass
+POP_BLOCK:
+    pass
+END_FINALLY:
+    pass
+BUILD_CLASS:
+    stack[-3:] = [self]
+STORE_NAME:
+DELETE_NAME:
+    stack.pop()
+UNPACK_TUPLE:
+UNPACK_LIST:
+    stack.append([self] * self.arg)    
+STORE_ATTR:
+DELETE_ATTR:
+STORE_GLOBAL:
+DELETE_GLOBAL:
+    stack.pop()
+LOAD_CONST:
+LOAD_NAME:
+    stack.append(self)
+BUILD_TUPLE:
+BUILD_LIST:
+    if self.arg>0:
+        stack[-self.arg:]=[self]
+    else:
+        stack.append(self)
+BUILD_MAP:
+    stack.append(self)
+LOAD_ATTR:
+    stack[-1] = self
+COMPARE_OP:
+    stack[-2:]=[self] # ????
+IMPORT_NAME:
+    stack.append(self)
+IMPORT_FROM:
+    pass
+JUMP_FORWARD:
+JUMP_IF_TRUE:
+JUMP_IF_FALSE:
+JUMP_ABSOLUTE:
+    raise "jumps not handled here!"
+FOR_LOOP:
+    raise "loop alert"
+LOAD_GLOBAL:
+    stack.append(self)
+SETUP_LOOP:
+    raise "loop alert!"
+SETUP_EXCEPT:
+SETUP_FINALLY:
+    pass # ??
+LOAD_FAST:
+    stack.append(self)
+STORE_FAST:
+DELETE_FAST:
+    stack.pop()
+SET_LINENO:
+    pass
+RAISE_VARARGS:
+    raise "Exception!"
+CALL_FUNCTION:
+    num_keyword_args=self.arg>>8
+    num_regular_args=self.arg&0xFF
+    stack[-2*num_keyword_args-num_regular_args-1:]=[self]
+MAKE_FUNCTION:
+    stack[-self.arg-1:]=[self]
+BUILD_SLICE:
+    stack[-self.arg:]=[self]

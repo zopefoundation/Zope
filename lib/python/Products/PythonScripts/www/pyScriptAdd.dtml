@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>Add Python Script</title>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+
+<h2>Add Python Script</h2>
+
+<P>
+Python Scripts allow you to add functionality to Zope by writing
+scripts in the Python programming language
+that are exposed as callable Zope objects.
+</P>
+
+<form action="&dtml-URL1;" method="POST">
+<input type="hidden" name="manage_addPythonScript:default_method" value="">
+<p>
+<strong>ID:</strong> <input type="text" name="id" size="20">
+</p>
+<p>
+<input type="submit" value="Add and Edit" name="addedit">
+<input type="submit" value="Cancel" name="manage_workspace:method">
+</p>
+</form>
+</body>
+</html>

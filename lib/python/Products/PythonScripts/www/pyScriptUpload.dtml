@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>Upload</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<dtml-var manage_tabs>
+
+<P>
+You may upload the source for &dtml-title_and_id; using the form below.  
+Choose an existing file from your local computer by pushing the
+<I>Browse</I> button.  The contents of the file should be a
+valid script with an optional &quot;##data&quot; block at the start.
+You may click the following link to <a href="document_src">view or
+download</a> the current source.
+
+
+<FORM ACTION="ZPythonScriptHTML_upload" METHOD="POST"
+ ENCTYPE="multipart/form-data">
+<TABLE CELLSPACING="2">
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">File</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
+  </TD>
+</TR>
+<TR>
+  <TD></TD>
+  <TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+
