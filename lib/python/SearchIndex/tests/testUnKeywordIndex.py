@@ -143,14 +143,11 @@ class TestCase( unittest.TestCase ):
     def _checkApply( self, req, expectedValues ):
         result, used = self._index._apply_index( req )
         assert used == ( 'foo', )
-        try:
-            length = len(result)
-        except:
-            result = result.keys()
-            length = len(result)
-        assert length == len( expectedValues ), \
+        assert len(result) == len( expectedValues ), \
           '%s | %s' % ( map( None, result ),
                         map(lambda x: x[0], expectedValues ))
+
+        if hasattr(result, 'keys'): result=result.keys()
         for k, v in expectedValues:
             assert k in result
     
@@ -208,7 +205,19 @@ class TestCase( unittest.TestCase ):
 def test_suite():
     return unittest.makeSuite( TestCase )
 
+def main():
+    unittest.TextTestRunner().run( test_suite() )
+
+def debug():
+    test_suite().debug()
+
+def pdebug():
+    import pdb
+    pdb.run('debug()')
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run( test_suite() )
+    if len(sys.argv) > 1:
+        globals()[sys.argv[1]]()
+    else:
+        main()
     
