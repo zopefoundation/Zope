@@ -110,8 +110,8 @@ def main(args):
     where options are:
 
        -p   -- Supply the path to the PCGI resource file.
-               This defaults to %s. Note that this path
-               must include the file name.
+               This defaults to %s.
+               Note that this path must include the file name.
     
        -g   -- Supply the name of the unix group to which
                the user that runs your web server belongs.
@@ -137,6 +137,9 @@ def main(args):
         if k=='-p': pcgi=v
         elif k=='-g': group=v
         elif k=='-u': user=v
+        elif k=='-h':
+            print usage
+            sys.exit()
 
     import compilezpy
     print '-'*78
