@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.93 1998/09/03 16:59:11 jim Exp $"""
+$Id: Publish.py,v 1.94 1998/09/03 17:06:00 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.93 $'[11:-2]
+__version__='$Revision: 1.94 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -1458,7 +1458,7 @@ def publish_module(module_name,
             else: must_die = SystemExit, v, sys.exc_traceback
             response.exception(must_die)
         except ImportError, v:
-            if type(v) is tyoe(()) and len(v)==3: must_die=v
+            if type(v) is type(()) and len(v)==3: must_die=v
             elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
             else: must_die = SystemExit, v, sys.exc_traceback
             response.exception(1, v)
