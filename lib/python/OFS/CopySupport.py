@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -200,7 +200,7 @@ class CopyContainer(ExtensionClass.Base):
             m = Moniker.loadMoniker(mdata)
             try: ob = m.bind(app)
             except: raise CopyError, eNotFound
-            self._verifyObjectPaste(ob, REQUEST)
+            self._verifyObjectPaste(ob)
             oblist.append(ob)
 
         if op==0:
@@ -275,7 +275,7 @@ class CopyContainer(ExtensionClass.Base):
         ob=self._getOb(id)
         if not ob.cb_isMoveable():
             raise CopyError, eNotSupported % id            
-        self._verifyObjectPaste(ob, REQUEST)
+        self._verifyObjectPaste(ob)
         try:    ob._notifyOfCopyTo(self, op=1)
         except: raise CopyError, MessageDialog(
                       title='Rename Error',
@@ -306,7 +306,7 @@ class CopyContainer(ExtensionClass.Base):
                       title='Invalid Id',
                       message=sys.exc_info()[1],
                       action ='manage_main')
-        self._verifyObjectPaste(ob, REQUEST)
+        self._verifyObjectPaste(ob)
         try:    ob._notifyOfCopyTo(self, op=0)
         except: raise CopyError, MessageDialog(
                       title='Clone Error',
@@ -340,6 +340,8 @@ class CopyContainer(ExtensionClass.Base):
     validClipData=cb_dataValid
 
     def _verifyObjectPaste(self, ob, REQUEST=None):
+        # Note that REQUEST is no longer needed - it is kept in the
+        # argument list for backward compatibility only.
         if not hasattr(ob, 'meta_type'):
             raise CopyError, MessageDialog(
                   title='Not Supported',
@@ -360,8 +362,8 @@ class CopyContainer(ExtensionClass.Base):
                 method_name=d['action']
                 break
 
-        if REQUEST is None:
-            REQUEST=getattr(self, 'REQUEST', None)
+#        if REQUEST is None:
+#            REQUEST=getattr(self, 'REQUEST', None)
 
         if method_name is not None:
             meth=self.unrestrictedTraverse(method_name)
