@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.35 1999/09/09 14:59:51 petrilli Exp $'
-__version__='$Revision: 1.35 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.36 1999/09/09 17:22:14 petrilli Exp $'
+__version__='$Revision: 1.36 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -378,14 +378,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             script=md['SCRIPT_NAME']
             if exp:
                 treeData['tree-item-expanded']=1
-                output('<A NAME="%s">'
-                       '<A HREF="%s?tree-c=%s#%s">'
-                       '<IMG SRC="%s/p_/mi" BORDER=0></A></A>' %
+                output('<A NAME="%s" HREF="%s?tree-c=%s#%s">'
+                       '<IMG SRC="%s/p_/mi" BORDER=0></A>' %
                        (id, root_url, s, id, script))
             else:
-                output('<A NAME="%s">'
-                       '<A HREF="%s?tree-e=%s#%s">'
-                       '<IMG SRC="%s/p_/pl" BORDER=0></A></A>' %
+                output('<A NAME="%s" HREF="%s?tree-e=%s#%s">'
+                       '<IMG SRC="%s/p_/pl" BORDER=0></A>' %
                        (id, root_url, s, id, script))
             output('</TD>\n')
 
