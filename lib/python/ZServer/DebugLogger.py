@@ -120,7 +120,7 @@ class DebugLogger:
     def log(self, code, request_id, data=''):
         self._acquire()
         try:
-            t=time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(time.time()))
+            t=time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(time.time()))
             self.file.write(
                 '%s %s %s %s\n' % (code, request_id, t, data)
                 )
