@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -169,34 +169,46 @@ class HTTPRequest(BaseRequest):
     """
     _hacked_path=None
     args=()
-    
-    def __init__(self, stdin, environ, response, clean=0,
-                 # "static" variables that we want to be local for speed
-                 SEQUENCE=1,
-                 DEFAULT=2,
-                 RECORD=4,
-                 RECORDS=8,
-                 REC=12, # RECORD|RECORDS
-                 EMPTY=16,
-                 CONVERTED=32,
-                 hasattr=hasattr,
-                 getattr=getattr,
-                 setattr=setattr,
-                 search_type=regex.compile(
-                     ':[a-zA-Z][a-zA-Z0-9_]+$'
-                     ).search,
-                 rfind=string.rfind,
-                 ):
+
+    def __init__(self, stdin, environ, response, clean=0):
+        
         # Avoid the overhead of scrubbing the environment in the
         # case of request cloning for traversal purposes. If the
         # clean flag is set, we know we can use the passed in
         # environ dict directly.
-
         if not clean: environ=sane_environment(environ)
+        
+        self.stdin=stdin
+        self.environ=environ
+        self.response=response
+        other=self.other={}
+    
+    def processInputs(
+        self,
+        # "static" variables that we want to be local for speed
+        SEQUENCE=1,
+        DEFAULT=2,
+        RECORD=4,
+        RECORDS=8,
+        REC=12, # RECORD|RECORDS
+        EMPTY=16,
+        CONVERTED=32,
+        hasattr=hasattr,
+        getattr=getattr,
+        setattr=setattr,
+        search_type=regex.compile(':[a-zA-Z][a-zA-Z0-9_]+$').search,
+        rfind=string.rfind,
+        ):
+        """Process request inputs
 
+        We need to delay input parsing so that it is done under publisher control for
+        error handling prposes.
+        """
+        response=self.response
+        environ=self.environ
         method=environ.get('REQUEST_METHOD','GET')
         
-        if method != 'GET': fp=stdin
+        if method != 'GET': fp=self.stdin
         else:               fp=None
 
         if environ.has_key('HTTP_AUTHORIZATION'):
@@ -205,7 +217,7 @@ class HTTPRequest(BaseRequest):
             del environ['HTTP_AUTHORIZATION']
 
         form={}
-        other=self.other={}
+        other=self.other
         meth=None
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
@@ -217,7 +229,7 @@ class HTTPRequest(BaseRequest):
                 global xmlrpc
                 if xmlrpc is None: import xmlrpc
                 meth, self.args = xmlrpc.parse_input(fs.value)
-                response=xmlrpc.response(response)
+                response=self.response=xmlrpc.response(response)
                 other['REQUEST_METHOD']='' # We don't want index_html!
             else:
                 self._file=fs.file
@@ -529,10 +541,8 @@ class HTTPRequest(BaseRequest):
 
         self.form=form
         self.cookies=cookies
-        other['RESPONSE']=self.response=response
+        other['RESPONSE']=response
 
-        self.environ=environ
-        self.stdin=stdin
         have_env=environ.has_key
 
         b=script=strip(environ['SCRIPT_NAME'])

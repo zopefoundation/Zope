@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -122,10 +122,16 @@ class BaseRequest:
     _auth=None
 
     def __init__(self, other=None, **kw):
+        """The constructor is not allowed to raise errors
+        """
         if other is None: other=kw
         else:
             for k, v in kw.items(): other[k]=v
         self.other=other
+
+    def processInputs(self):
+        """Do any input processing that could raise errors
+        """
 
     def __len__(self):
         return 1

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.133 1999/08/03 15:40:38 jim Exp $"""
-__version__='$Revision: 1.133 $'[11:-2]
+$Id: Publish.py,v 1.134 1999/08/04 12:01:20 jim Exp $"""
+__version__='$Revision: 1.134 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -241,15 +241,13 @@ def publish_module(module_name,
     after_list=[None]
     try:
         try:
-            try:
-                if response is None:
-                    response=Response(stdout=stdout, stderr=stderr)
-                else:
-                    stdout=response.stdout
-                if request is None:
-                    request=Request(stdin, environ, response)
-            finally:
-                pass
+            if response is None:
+                response=Response(stdout=stdout, stderr=stderr)
+            else:
+                stdout=response.stdout
+            if request is None:
+                request=Request(stdin, environ, response)
+            request.processInputs()
             response=request.response # could have changed!
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:
