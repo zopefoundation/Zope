@@ -339,9 +339,18 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     def ziconImage(self, REQUEST, RESPONSE):
         "Display a class icon"
         return self._zclass_.ziconImage.index_html(REQUEST, RESPONSE)
+
+    def tpValues(self): return self.propertysheets,
             
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"
+
+    isPrincipiaFolderish=1
+    def tpValues(self): return self.methods, self.common
+    def tpURL(self): return 'propertysheets'
+    def manage_workspace(self, URL1):
+        "Emulate standard interface for use with navigation"
+        raise 'Redirect', URL1+'/manage'
 
     views       = Basic.ZClassViewsSheet('views')
     basic       = Basic.ZClassBasicSheet('basic')
@@ -349,7 +358,7 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
 
     def __init__(self):
         self.methods=Method.ZClassMethodsSheet('methods')
-        self.common=Property.ZInstanceSheetsSheet()
+        self.common=Property.ZInstanceSheetsSheet('common')
 
 
 class ZStandardSheets:
