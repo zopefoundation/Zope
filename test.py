@@ -94,7 +94,8 @@ named .testinfo, it will not be searched for tests.  Really.)
     Search for tests starting in the specified start directory
     (useful for testing components being developed outside the main
     "src" or "build" trees).
-    Note: This directory will be prepended to sys.path.
+
+    Note: This directory will be prepended to sys.path!
 
 --keepbytecode
     Do not delete all stale bytecode before running tests
