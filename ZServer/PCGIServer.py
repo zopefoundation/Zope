@@ -346,12 +346,16 @@ class PCGIServer(asyncore.dispatcher):
         "read configuration information from a PCGI info file"
         lines=open(info_file).readlines()
         directives={}
-        for line in lines:
-            line=string.strip(line)
-            if not len(line) or line[0]=='#':
-                continue
-            k,v=string.split(line,'=',1)
-            directives[string.strip(k)]=string.strip(v)
+        try:
+            for line in lines:
+                line=string.strip(line)
+                if not len(line) or line[0]=='#':
+                    continue
+                k,v=string.split(line,'=',1)
+                directives[string.strip(k)]=string.strip(v)
+        except:
+            raise 'ParseError', 'Error parsing PCGI info file'
+        
         self.pid_file=directives.get('PCGI_PID_FILE',None)
         self.socket_file=directives.get('PCGI_SOCKET_FILE',None)
         if directives.has_key('PCGI_PORT'):
