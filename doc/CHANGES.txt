@@ -54,6 +54,9 @@ Zope Changes
 
       - Added updated and enhanced testsuite for STXNG.
 
+      - added getEntryForObject() for PathIndexes. Reworked PathIndex's
+        internal inverse index.
+
     Bugs fixed
 
       - Collector #2532: ZCatalog.availableSplitters is now protected

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.8 2001/10/03 13:11:02 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.9 2001/10/12 20:02:15 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -99,6 +99,8 @@ from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IISet,difference,intersection,union
 from types import StringType, ListType, TupleType
 import re,warnings
+
+_marker = []
 
 
 class PathIndex(PluggableIndex.PluggableIndex, Persistent,
@@ -205,18 +207,23 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         for i in range(len(comps)):
             self.insertEntry( comps[i],documentId,i)
 
+        self._unindex[documentId] = path
+
         return 1
 
-
-    def unindex_object(self,id):
+    def unindex_object(self,documentId):
         """ hook for (Z)Catalog """
 
-        if not self._unindex.has_key(id):
-            return 
+        if not self._unindex.has_key(documentId):
+            return
 
-        for comp,level in self._unindex[id]:
+        path = self._unindex[documentId]
+        comps = path.split('/')
 
-            self._index[comp][level].remove(id)
+        for level in range(len(comps[1:])-1):
+            comp = comps[level+1]
+    
+            self._index[comp][level].remove(documentId)
 
             if len(self._index[comp][level])==0:
                 del self._index[comp][level]
@@ -224,7 +231,10 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
             if len(self._index[comp])==0:
                 del self._index[comp]
 
-        del self._unindex[id]
+        del self._unindex[documentId]
+
+
+
 
 
     def printIndex(self):
@@ -395,6 +405,15 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         """ needed to be consistent with the interface """
 
         return self._index.keys()
+
+    def getEntryForObject(self,documentId,default=_marker):
+        """ Takes a document ID and returns all the information we have
+        on that specific object. """
+
+        try:        
+            return self._unindex[documentId]
+        except:
+            return None
         
 
     index_html = DTMLFile('dtml/index', globals())
