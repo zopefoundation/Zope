@@ -85,7 +85,7 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import string, time, urllib
 
@@ -115,7 +115,8 @@ def is_acquired(ob):
         return 0
     if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
         return 0
-    if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject'):
+    if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
+            ob.isTopLevelPrincipiaApplicationObject:
         return 0
     return 1
 
