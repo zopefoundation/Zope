@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.44 2002/03/27 10:14:02 htrd Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.45 2002/04/25 12:45:11 htrd Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -930,9 +930,9 @@ static struct PyMethodDef Module_Level__methods[] = {
   {"render_blocks", (PyCFunction)render_blocks,	METH_VARARGS,
    ""},
   {"join_unicode", (PyCFunction)join_unicode,	METH_VARARGS,
-   "join a list of plain strings into a single plain string,"
-   "a list of unicode strings into a single unicode strings,"
-   "or a list containing a mix into a single unicode string with"
+   "join a list of plain strings into a single plain string,\n"
+   "a list of unicode strings into a single unicode strings,\n"
+   "or a list containing a mix into a single unicode string with\n"
    "the plain strings converted from latin-1"},
   {"safe_callable", (PyCFunction)safe_callable,	METH_VARARGS,
    "callable() with a workaround for a problem with ExtensionClasses\n"
