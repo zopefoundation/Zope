@@ -268,7 +268,7 @@ class TALInterpreter:
                 name = prefix + "use-macro"
                 value = macs[-1][0] # Macro name
             elif suffix == "define-slot":
-                name = prefix + "fill-slot"
+                name = prefix + "slot"
             elif suffix == "fill-slot":
                 pass
             else:

@@ -31,6 +31,7 @@ KNOWN_METAL_ATTRIBUTES = [
     "use-macro",
     "define-slot",
     "fill-slot",
+    "slot",
     ]
 
 KNOWN_TAL_ATTRIBUTES = [
