@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:17 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:50:00 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -105,6 +105,8 @@ class DocTitle(Transform):
     default_priority = 320
 
     def apply(self):
+        if not getattr(self.document.settings, 'doctitle_xform', 1):
+            return
         if self.promote_document_title():
             self.promote_document_subtitle()
 
@@ -229,7 +231,25 @@ class DocInfo(Transform):
 
     default_priority = 340
 
+    biblio_nodes = {
+          'author': nodes.author,
+          'authors': nodes.authors,
+          'organization': nodes.organization,
+          'address': nodes.address,
+          'contact': nodes.contact,
+          'version': nodes.version,
+          'revision': nodes.revision,
+          'status': nodes.status,
+          'date': nodes.date,
+          'copyright': nodes.copyright,
+          'dedication': nodes.topic,
+          'abstract': nodes.topic}
+    """Canonical field name (lowcased) to node class name mapping for
+    bibliographic fields (field_list)."""
+
     def apply(self):
+        if not getattr(self.document.settings, 'docinfo_xform', 1):
+            return
         document = self.document
         index = document.first_child_not_matching_class(
               nodes.PreBibliographic)
@@ -252,38 +272,37 @@ class DocInfo(Transform):
         for field in field_list:
             try:
                 name = field[0][0].astext()
-                normedname = utils.normalize_name(name)
+                normedname = nodes.fully_normalize_name(name)
                 if not (len(field) == 2 and bibliofields.has_key(normedname)
                         and self.check_empty_biblio_field(field, name)):
                     raise TransformError
-                biblioclass = bibliofields[normedname]
+                canonical = bibliofields[normedname]
+                biblioclass = self.biblio_nodes[canonical]
                 if issubclass(biblioclass, nodes.TextElement):
                     if not self.check_compound_biblio_field(field, name):
                         raise TransformError
                     utils.clean_rcs_keywords(
                           field[1][0], self.rcs_keyword_substitutions)
                     docinfo.append(biblioclass('', '', *field[1][0]))
-                else:                   # multiple body elements possible
-                    if issubclass(biblioclass, nodes.authors):
-                        self.extract_authors(field, name, docinfo)
-                    elif issubclass(biblioclass, nodes.topic):
-                        if topics[normedname]:
-                            field[-1] += self.document.reporter.warning(
-                                  'There can only be one "%s" field.' % name,
-                                  base_node=field)
-                            raise TransformError
-                        title = nodes.title(name, labels[normedname])
-                        topics[normedname] = biblioclass(
-                            '', title, CLASS=normedname, *field[1].children)
-                    else:
-                        docinfo.append(biblioclass('', *field[1].children))
+                elif issubclass(biblioclass, nodes.authors):
+                    self.extract_authors(field, name, docinfo)
+                elif issubclass(biblioclass, nodes.topic):
+                    if topics[canonical]:
+                        field[-1] += self.document.reporter.warning(
+                            'There can only be one "%s" field.' % name,
+                            base_node=field)
+                        raise TransformError
+                    title = nodes.title(name, labels[canonical])
+                    topics[canonical] = biblioclass(
+                        '', title, CLASS=canonical, *field[1].children)
+                else:
+                    docinfo.append(biblioclass('', *field[1].children))
             except TransformError:
                 if len(field[-1]) == 1 \
                        and isinstance(field[-1][0], nodes.paragraph):
                     utils.clean_rcs_keywords(
                         field[-1][0], self.rcs_keyword_substitutions)
                 docinfo.append(field)
-                continue
         nodelist = []
         if len(docinfo) != 0:
             nodelist.append(docinfo)

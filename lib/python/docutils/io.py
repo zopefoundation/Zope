@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:00 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:30 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -13,6 +13,7 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import locale
+from types import UnicodeType
 from docutils import TransformSpec
 
 
@@ -26,20 +27,9 @@ class Input(TransformSpec):
 
     default_source_path = None
 
-    def __init__(self, settings=None, source=None, source_path=None,
-                 encoding=None):
+    def __init__(self, source=None, source_path=None, encoding=None):
         self.encoding = encoding
-        """The character encoding for the input source."""
-
-        if settings:
-            if not encoding:
-                self.encoding = settings.input_encoding
-            import warnings, traceback
-            warnings.warn(
-                'Setting input encoding via a "settings" struct is '
-                'deprecated; send encoding directly instead.\n%s'
-                % ''.join(traceback.format_list(traceback.extract_stack()
-                                                [-3:-1])))
+        """Text encoding for the input source."""
 
         self.source = source
         """The source of input data."""
@@ -67,7 +57,8 @@ class Input(TransformSpec):
 
             locale.setlocale(locale.LC_ALL, '')
         """
-        if self.encoding and self.encoding.lower() == 'unicode':
+        if (self.encoding and self.encoding.lower() == 'unicode'
+            or isinstance(data, UnicodeType)):
             return unicode(data)
         encodings = [self.encoding, 'utf-8']
         try:
@@ -87,8 +78,7 @@ class Input(TransformSpec):
             if not enc:
                 continue
             try:
-                decoded = unicode(data, enc)
-                return decoded
+                return unicode(data, enc)
             except (UnicodeError, LookupError):
                 pass
         raise UnicodeError(
@@ -106,20 +96,13 @@ class Output(TransformSpec):
 
     default_destination_path = None
 
-    def __init__(self, settings=None, destination=None, destination_path=None,
-                 encoding=None):
+    def __init__(self, destination=None, destination_path=None,
+                 encoding=None, error_handler='strict'):
         self.encoding = encoding
-        """The character encoding for the output destination."""
+        """Text encoding for the output destination."""
 
-        if settings:
-            if not encoding:
-                self.encoding = settings.output_encoding
-            import warnings, traceback
-            warnings.warn(
-                'Setting output encoding via a "settings" struct is '
-                'deprecated; send encoding directly instead.\n%s'
-                % ''.join(traceback.format_list(traceback.extract_stack()
-                                                [-3:-1])))
+        self.error_handler = error_handler or 'strict'
+        """Text encoding error handler."""
 
         self.destination = destination
         """The destination for output data."""
@@ -141,7 +124,7 @@ class Output(TransformSpec):
         if self.encoding and self.encoding.lower() == 'unicode':
             return data
         else:
-            return data.encode(self.encoding or '')
+            return data.encode(self.encoding, self.error_handler)
 
 
 class FileInput(Input):
@@ -150,8 +133,8 @@ class FileInput(Input):
     Input for single, simple file-like objects.
     """
 
-    def __init__(self, settings=None, source=None, source_path=None,
-                 encoding=None, autoclose=1):
+    def __init__(self, source=None, source_path=None,
+                 encoding=None, autoclose=1, handle_io_errors=1):
         """
         :Parameters:
             - `source`: either a file-like object (which is read directly), or
@@ -160,11 +143,22 @@ class FileInput(Input):
             - `autoclose`: close automatically after read (boolean); always
               false if `sys.stdin` is the source.
         """
-        Input.__init__(self, settings, source, source_path, encoding)
+        Input.__init__(self, source, source_path, encoding)
         self.autoclose = autoclose
+        self.handle_io_errors = handle_io_errors
         if source is None:
             if source_path:
-                self.source = open(source_path)
+                try:
+                    self.source = open(source_path)
+                except IOError, error:
+                    if not handle_io_errors:
+                        raise
+                    print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
+                                                    error)
+                    print >>sys.stderr, (
+                        'Unable to open source file for reading (%s).  Exiting.'
+                        % source_path)
+                    sys.exit(1)
             else:
                 self.source = sys.stdin
                 self.autoclose = None
@@ -191,8 +185,9 @@ class FileOutput(Output):
     Output for single, simple file-like objects.
     """
 
-    def __init__(self, settings=None, destination=None, destination_path=None,
-                 encoding=None, autoclose=1):
+    def __init__(self, destination=None, destination_path=None,
+                 encoding=None, error_handler='strict', autoclose=1,
+                 handle_io_errors=1):
         """
         :Parameters:
             - `destination`: either a file-like object (which is written
@@ -203,10 +198,11 @@ class FileOutput(Output):
             - `autoclose`: close automatically after write (boolean); always
               false if `sys.stdout` is the destination.
         """
-        Output.__init__(self, settings, destination, destination_path,
-                        encoding)
+        Output.__init__(self, destination, destination_path,
+                        encoding, error_handler)
         self.opened = 1
         self.autoclose = autoclose
+        self.handle_io_errors = handle_io_errors
         if destination is None:
             if destination_path:
                 self.opened = None
@@ -220,7 +216,16 @@ class FileOutput(Output):
                 pass
 
     def open(self):
-        self.destination = open(self.destination_path, 'w')
+        try:
+            self.destination = open(self.destination_path, 'w')
+        except IOError, error:
+            if not self.handle_io_errors:
+                raise
+            print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
+                                            error)
+            print >>sys.stderr, ('Unable to open destination file for writing '
+                                 '(%s).  Exiting.' % source_path)
+            sys.exit(1)
         self.opened = 1
 
     def write(self, data):

@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:00 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:30 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -266,7 +266,8 @@ class StateMachine:
                     transitions = None
                 state = self.get_state(next_state)
         except:
-            self.error()
+            if self.debug:
+                self.error()
             raise
         self.observers = []
         return results
@@ -1294,11 +1295,11 @@ class StringList(ViewList):
 
     """A `ViewList` with string-specific methods."""
 
-    def strip_indent(self, length, start=0, end=sys.maxint):
+    def trim_left(self, length, start=0, end=sys.maxint):
         """
-        Strip `length` characters off the beginning of each item, in-place,
+        Trim `length` characters off the beginning of each item, in-place,
         from index `start` to `end`.  No whitespace-checking is done on the
-        stripped text.  Does not affect slice parent.
+        trimmed text.  Does not affect slice parent.
         """
         self.data[start:end] = [line[length:]
                                 for line in self.data[start:end]]
@@ -1381,8 +1382,19 @@ class StringList(ViewList):
         if first_indent is not None and block:
             block.data[0] = block.data[0][first_indent:]
         if indent and strip_indent:
-            block.strip_indent(indent, start=(first_indent is not None))
+            block.trim_left(indent, start=(first_indent is not None))
         return block, indent or 0, blank_finish
+
+    def get_2D_block(self, top, left, bottom, right, strip_indent=1):
+        block = self[top:bottom]
+        indent = right
+        for i in range(len(block.data)):
+            block.data[i] = line = block.data[i][left:right].rstrip()
+            if line:
+                indent = min(indent, len(line) - len(line.lstrip()))
+        if strip_indent and 0 < indent < right:
+            block.data = [line[indent:] for line in block.data]
+        return block
 
 
 class StateMachineError(Exception): pass

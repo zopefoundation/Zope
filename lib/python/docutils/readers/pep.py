@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:15 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:54 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -11,10 +11,6 @@ Python Enhancement Proposal (PEP) Reader.
 __docformat__ = 'reStructuredText'
 
 
-import sys
-import os
-import re
-from docutils import nodes
 from docutils.readers import standalone
 from docutils.transforms import peps, references
 from docutils.parsers import rst
@@ -23,7 +19,7 @@ from docutils.parsers import rst
 class Inliner(rst.states.Inliner):
 
     """
-    Extend `rst.Inliner` to for local PEP references.
+    Extend `rst.Inliner` for local PEP references.
     """
 
     pep_url = rst.states.Inliner.pep_url_local

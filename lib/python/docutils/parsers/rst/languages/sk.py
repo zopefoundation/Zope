@@ -1,8 +1,13 @@
 # Author: Miroslav Vasko
 # Contact: zemiak@zoznam.sk
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:13 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:49 $
 # Copyright: This module has been placed in the public domain.
+
+# New language mappings are welcome.  Before doing a new translation, please
+# read <http://docutils.sf.net/spec/howto/i18n.html>.  Two files must be
+# translated for each language: one in docutils/languages, the other in
+# docutils/parsers/rst/languages.
 
 """
 Slovak-language mappings for language-dependent features of
@@ -22,9 +27,15 @@ directives = {
       u'pozn\xe1mka': 'note',
       u'tip': 'tip',
       u'varovanie': 'warning',
+      u'admonition (translation required)': 'admonition',
+      u'sidebar (translation required)': 'sidebar',
       u't\xe9ma': 'topic',
       u'blok-riadkov': 'line-block',
       u'parsed-literal': 'parsed-literal',
+      u'rubric (translation required)': 'rubric',
+      u'epigraph (translation required)': 'epigraph',
+      u'highlights (translation required)': 'highlights',
+      u'pull-quote (translation required)': 'pull-quote',
       #u'questions': 'questions',
       #u'qa': 'questions',
       #u'faq': 'questions',
@@ -35,6 +46,8 @@ directives = {
       u'vlo\x9ei\x9d': 'include',
       u'raw': 'raw',
       u'nahradi\x9d': 'replace',
+      u'unicode': 'unicode',
+      u'class (translation required)': 'class',
       u'obsah': 'contents',
       u'\xe8as\x9d': 'sectnum',
       u'\xe8as\x9d-\xe8\xedslovanie': 'sectnum',
@@ -44,3 +57,25 @@ directives = {
       }
 """Slovak name to registered (in directives/__init__.py) directive name
 mapping."""
+
+roles = {
+      u'abbreviation (translation required)': 'abbreviation',
+      u'acronym (translation required)': 'acronym',
+      u'index (translation required)': 'index',
+      u'subscript (translation required)': 'subscript',
+      u'superscript (translation required)': 'superscript',
+      u'title-reference (translation required)': 'title-reference',
+      u'pep-reference (translation required)': 'pep-reference',
+      u'rfc-reference (translation required)': 'rfc-reference',
+      u'emphasis (translation required)': 'emphasis',
+      u'strong (translation required)': 'strong',
+      u'literal (translation required)': 'literal',
+      u'named-reference (translation required)': 'named-reference',
+      u'anonymous-reference (translation required)': 'anonymous-reference',
+      u'footnote-reference (translation required)': 'footnote-reference',
+      u'citation-reference (translation required)': 'citation-reference',
+      u'substitution-reference (translation required)': 'substitution-reference',
+      u'target (translation required)': 'target',
+      u'uri-reference (translation required)': 'uri-reference',}
+"""Mapping of Slovak role names to canonical role names for interpreted text.
+"""

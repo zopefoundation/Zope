@@ -1,7 +1,7 @@
 # Author: Andreas Jung
 # Contact: andreas@andreas-jung.com
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:20 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:50:05 $
 # Copyright: This module has been placed in the public domain.
 
 """

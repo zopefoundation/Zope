@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:07 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:40 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -107,11 +107,12 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import re
+import roman
 from types import TupleType
-from docutils import nodes, statemachine, utils, roman, urischemes
+from docutils import nodes, statemachine, utils, urischemes
 from docutils import ApplicationError, DataError
 from docutils.statemachine import StateMachineWS, StateWS
-from docutils.utils import normalize_name
+from docutils.nodes import fully_normalize_name as normalize_name
 from docutils.parsers.rst import directives, languages, tableparser
 from docutils.parsers.rst.languages import en as _fallback_language_module
 
@@ -159,6 +160,7 @@ class RSTStateMachine(StateMachineWS):
                            language=self.language,
                            title_styles=[],
                            section_level=0,
+                           section_bubble_up_kludge=0,
                            inliner=inliner)
         self.document = document
         self.attach_observer(document.note_source)
@@ -271,8 +273,10 @@ class RSTState(StateWS):
                           node=node, match_titles=match_titles)
         state_machine.unlink()
         new_offset = state_machine.abs_line_offset()
-        # Adjustment for block if modified in nested parse:
-        self.state_machine.next_line(len(block) - block_length)
+        # No `block.parent` implies disconnected -- lines aren't in sync:
+        if block.parent:
+            # Adjustment for block if modified in nested parse:
+            self.state_machine.next_line(len(block) - block_length)
         return new_offset
 
     def nested_list_parse(self, block, input_offset, node, initial_state,
@@ -340,6 +344,8 @@ class RSTState(StateWS):
                 return None
         if level <= mylevel:            # sibling or supersection
             memo.section_level = level   # bubble up to parent section
+            if len(style) == 2:
+                memo.section_bubble_up_kludge = 1
             # back up 2 lines for underline title, 3 for overline title
             self.state_machine.previous_line(len(style) + 1)
             raise EOFError              # let parent section re-evaluate
@@ -471,13 +477,15 @@ class Inliner:
 
     _interpreted_roles = {
         # Values of ``None`` mean "not implemented yet":
-        'title-reference': 'title_reference_role',
-        'abbreviation': None,
-        'acronym': None,
+        'title-reference': 'generic_interpreted_role',
+        'abbreviation': 'generic_interpreted_role',
+        'acronym': 'generic_interpreted_role',
         'index': None,
-        'emphasis': None,
-        'strong': None,
-        'literal': None,
+        'subscript': 'generic_interpreted_role',
+        'superscript': 'generic_interpreted_role',
+        'emphasis': 'generic_interpreted_role',
+        'strong': 'generic_interpreted_role',
+        'literal': 'generic_interpreted_role',
         'named-reference': None,
         'anonymous-reference': None,
         'uri-reference': None,
@@ -487,13 +495,25 @@ class Inliner:
         'citation-reference': None,
         'substitution-reference': None,
         'target': None,
-        }
+        'restructuredtext-unimplemented-role': None}
     """Mapping of canonical interpreted text role name to method name.
     Initializes a name to bound-method mapping in `__init__`."""
 
     default_interpreted_role = 'title-reference'
     """The role to use when no explicit role is given.
     Override in subclasses."""
+
+    generic_roles = {'abbreviation': nodes.abbreviation,
+                     'acronym': nodes.acronym,
+                     'emphasis': nodes.emphasis,
+                     'literal': nodes.literal,
+                     'strong': nodes.strong,
+                     'subscript': nodes.subscript,
+                     'superscript': nodes.superscript,
+                     'title-reference': nodes.title_reference,}
+    """Mapping of canonical interpreted text role name to node class.
+    Used by the `generic_interpreted_role` method for simple, straightforward
+    roles (simple wrapping; no extra processing)."""
 
     def __init__(self, roles=None):
         """
@@ -872,9 +892,11 @@ class Inliner:
             return uri
 
     def interpreted(self, before, after, rawsource, text, role, lineno):
-        role_function, messages = self.get_role_function(role, lineno)
+        role_function, canonical, messages = self.get_role_function(role,
+                                                                    lineno)
         if role_function:
-            nodelist, messages2 = role_function(role, rawsource, text, lineno)
+            nodelist, messages2 = role_function(canonical, rawsource, text,
+                                                lineno)
             messages.extend(messages2)
             return before, nodelist, after, messages
         else:
@@ -885,34 +907,34 @@ class Inliner:
         msg_text = []
         if role:
             name = role.lower()
-            canonical = None
-            try:
-                canonical = self.language.roles[name]
-            except AttributeError, error:
-                msg_text.append('Problem retrieving role entry from language '
-                                'module %r: %s.' % (self.language, error))
-            except KeyError:
-                msg_text.append('No role entry for "%s" in module "%s".'
-                                % (role, self.language.__name__))
-            if not canonical:
-                try:
-                    canonical = _fallback_language_module.roles[name]
-                    msg_text.append('Using English fallback for role "%s".'
-                                    % role)
-                except KeyError:
-                    msg_text.append('Trying "%s" as canonical role name.'
-                                    % role)
-                    # Should be an English name, but just in case:
-                    canonical = name
-            if msg_text:
-                message = self.reporter.info('\n'.join(msg_text), line=lineno)
-                messages.append(message)
-            try:
-                return self.interpreted_roles[canonical], messages
-            except KeyError:
-                raise UnknownInterpretedRoleError(messages)
         else:
-            return self.interpreted_roles[self.default_interpreted_role], []
+            name = self.default_interpreted_role
+        canonical = None
+        try:
+            canonical = self.language.roles[name]
+        except AttributeError, error:
+            msg_text.append('Problem retrieving role entry from language '
+                            'module %r: %s.' % (self.language, error))
+        except KeyError:
+            msg_text.append('No role entry for "%s" in module "%s".'
+                            % (name, self.language.__name__))
+        if not canonical:
+            try:
+                canonical = _fallback_language_module.roles[name]
+                msg_text.append('Using English fallback for role "%s".'
+                                % name)
+            except KeyError:
+                msg_text.append('Trying "%s" as canonical role name.'
+                                % name)
+                # Should be an English name, but just in case:
+                canonical = name
+        if msg_text:
+            message = self.reporter.info('\n'.join(msg_text), line=lineno)
+            messages.append(message)
+        try:
+            return self.interpreted_roles[canonical], canonical, messages
+        except KeyError:
+            raise UnknownInterpretedRoleError(messages)
 
     def literal(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inline_obj(
@@ -936,26 +958,22 @@ class Inliner:
               match, lineno, self.patterns.substitution_ref,
               nodes.substitution_reference)
         if len(inlines) == 1:
-            subrefnode = inlines[0]
-            if isinstance(subrefnode, nodes.substitution_reference):
-                subreftext = subrefnode.astext()
-                refname = normalize_name(subreftext)
-                subrefnode['refname'] = refname
-                self.document.note_substitution_ref(
-                      subrefnode)
+            subref_node = inlines[0]
+            if isinstance(subref_node, nodes.substitution_reference):
+                subref_text = subref_node.astext()
+                self.document.note_substitution_ref(subref_node, subref_text)
                 if endstring[-1:] == '_':
-                    referencenode = nodes.reference(
-                          '|%s%s' % (subreftext, endstring), '')
+                    reference_node = nodes.reference(
+                        '|%s%s' % (subref_text, endstring), '')
                     if endstring[-2:] == '__':
-                        referencenode['anonymous'] = 1
+                        reference_node['anonymous'] = 1
                         self.document.note_anonymous_ref(
-                              referencenode)
+                              reference_node)
                     else:
-                        referencenode['refname'] = refname
-                        self.document.note_refname(
-                              referencenode)
-                    referencenode += subrefnode
-                    inlines = [referencenode]
+                        reference_node['refname'] = normalize_name(subref_text)
+                        self.document.note_refname(reference_node)
+                    reference_node += subref_node
+                    inlines = [reference_node]
         return before, inlines, remaining, sysmessages
 
     def footnote_reference(self, match, lineno):
@@ -965,6 +983,9 @@ class Inliner:
         """
         label = match.group('footnotelabel')
         refname = normalize_name(label)
+        string = match.string
+        before = string[:match.start('whole')]
+        remaining = string[match.end('whole'):]
         if match.group('citationlabel'):
             refnode = nodes.citation_reference('[%s]_' % label,
                                                refname=refname)
@@ -986,10 +1007,9 @@ class Inliner:
             if refname:
                 refnode['refname'] = refname
                 self.document.note_footnote_ref(refnode)
-        string = match.string
-        matchstart = match.start('whole')
-        matchend = match.end('whole')
-        return (string[:matchstart], [refnode], string[matchend:], [])
+            if self.document.settings.trim_footnote_reference_space:
+                before = before.rstrip()
+        return (before, [refnode], remaining, [])
 
     def reference(self, match, lineno, anonymous=None):
         referencename = match.group('refname')
@@ -1084,8 +1104,15 @@ class Inliner:
                 '_': reference,
                 '__': anonymous_reference}
 
-    def title_reference_role(self, role, rawtext, text, lineno):
-        return [nodes.title_reference(rawtext, text)], []
+    def generic_interpreted_role(self, role, rawtext, text, lineno):
+        try:
+            role_class = self.generic_roles[role]
+        except KeyError:
+            msg = self.reporter.error('Unknown interpreted text role: "%s".'
+                                      % role, line=lineno)
+            prb = self.problematic(text, text, msg)
+            return [prb], [msg]
+        return [role_class(rawtext, text)], []
 
     def pep_reference_role(self, role, rawtext, text, lineno):
         try:
@@ -1208,16 +1235,72 @@ class Body(RSTState):
         """Block quote."""
         indented, indent, line_offset, blank_finish = \
               self.state_machine.get_indented()
-        blockquote = self.block_quote(indented, line_offset)
+        blockquote, messages = self.block_quote(indented, line_offset)
         self.parent += blockquote
+        self.parent += messages
         if not blank_finish:
             self.parent += self.unindent_warning('Block quote')
         return context, next_state, []
 
     def block_quote(self, indented, line_offset):
+        blockquote_lines, attribution_lines, attribution_offset = \
+              self.check_attribution(indented, line_offset)
         blockquote = nodes.block_quote()
-        self.nested_parse(indented, line_offset, blockquote)
-        return blockquote
+        self.nested_parse(blockquote_lines, line_offset, blockquote)
+        messages = []
+        if attribution_lines:
+            attribution, messages = self.parse_attribution(attribution_lines,
+                                                           attribution_offset)
+            blockquote += attribution
+        return blockquote, messages
+
+    attribution_pattern = re.compile(r'--(?![-\n]) *(?=[^ \n])')
+
+    def check_attribution(self, indented, line_offset):
+        """
+        Check for an attribution in the last contiguous block of `indented`.
+
+        * First line after last blank line must begin with "--" (etc.).
+        * Every line after that must have consistent indentation.
+
+        Return a 3-tuple: (block quote lines, attribution lines,
+        attribution offset).
+        """
+        blank = None
+        nonblank_seen = None
+        indent = 0
+        for i in range(len(indented) - 1, 0, -1): # don't check first line
+            this_line_blank = not indented[i].strip()
+            if nonblank_seen and this_line_blank:
+                match = self.attribution_pattern.match(indented[i + 1])
+                if match:
+                    blank = i
+                break
+            elif not this_line_blank:
+                nonblank_seen = 1
+        if blank and len(indented) - blank > 2: # multi-line attribution
+            indent = (len(indented[blank + 2])
+                      - len(indented[blank + 2].lstrip()))
+            for j in range(blank + 3, len(indented)):
+                if indent != (len(indented[j])
+                              - len(indented[j].lstrip())): # bad shape
+                    blank = None
+                    break
+        if blank:
+            a_lines = indented[blank + 1:]
+            a_lines.trim_left(match.end(), end=1)
+            a_lines.trim_left(indent, start=1)
+            return (indented[:blank], a_lines, line_offset + blank + 1)
+        else:
+            return (indented, None, None)
+
+    def parse_attribution(self, indented, line_offset):
+        text = '\n'.join(indented).rstrip()
+        lineno = self.state_machine.abs_line_number() + line_offset
+        textnodes, messages = self.inline_text(text, lineno)
+        node = nodes.attribution(text, '', *textnodes)
+        node.line = lineno
+        return node, messages
 
     def bullet(self, match, context, next_state):
         """Bullet list item."""
@@ -1436,8 +1519,9 @@ class Body(RSTState):
             self.parent += msg
             indented, indent, line_offset, blank_finish = \
                   self.state_machine.get_first_known_indented(match.end())
-            blockquote = self.block_quote(indented, line_offset)
+            blockquote, messages = self.block_quote(indented, line_offset)
             self.parent += blockquote
+            self.parent += messages
             if not blank_finish:
                 self.parent += self.unindent_warning('Option list')
             return [], next_state, []
@@ -1689,6 +1773,7 @@ class Body(RSTState):
                               (?P=quote)      # close quote if open quote used
                             )
                             %(non_whitespace_escape_before)s
+                            [ ]?            # optional space
                             :               # end of reference name
                             ([ ]+|$)        # followed by whitespace
                             """ % vars(Inliner), re.VERBOSE),
@@ -1864,34 +1949,31 @@ class Body(RSTState):
         while block and not block[-1].strip():
             block.pop()
         subname = subdefmatch.group('name')
-        name = normalize_name(subname)
-        substitutionnode = nodes.substitution_definition(
-              blocktext, name=name, alt=subname)
-        substitutionnode.line = lineno
+        substitution_node = nodes.substitution_definition(blocktext)
+        substitution_node.line = lineno
+        self.document.note_substitution_def(
+            substitution_node,subname, self.parent)
         if block:
             block[0] = block[0].strip()
             new_abs_offset, blank_finish = self.nested_list_parse(
-                  block, input_offset=offset, node=substitutionnode,
+                  block, input_offset=offset, node=substitution_node,
                   initial_state='SubstitutionDef', blank_finish=blank_finish)
             i = 0
-            for node in substitutionnode[:]:
+            for node in substitution_node[:]:
                 if not (isinstance(node, nodes.Inline) or
                         isinstance(node, nodes.Text)):
-                    self.parent += substitutionnode[i]
-                    del substitutionnode[i]
+                    self.parent += substitution_node[i]
+                    del substitution_node[i]
                 else:
                     i += 1
-            if len(substitutionnode) == 0:
+            if len(substitution_node) == 0:
                 msg = self.reporter.warning(
                       'Substitution definition "%s" empty or invalid.'
                       % subname,
                       nodes.literal_block(blocktext, blocktext), line=lineno)
                 return [msg], blank_finish
             else:
-                del substitutionnode['alt']
-                self.document.note_substitution_def(
-                      substitutionnode, self.parent)
-                return [substitutionnode], blank_finish
+                return [substitution_node], blank_finish
         else:
             msg = self.reporter.warning(
                   'Substitution definition "%s" missing contents.' % subname,
@@ -2112,6 +2194,7 @@ class Body(RSTState):
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
                       (%s)              # directive name
+                      [ ]?              # optional space
                       ::                # directive delimiter
                       ([ ]+|$)          # whitespace or end of line
                       """ % Inliner.simplename, re.VERBOSE | re.UNICODE))]
@@ -2147,7 +2230,8 @@ class Body(RSTState):
               self.state_machine.input_lines[offset:],
               input_offset=self.state_machine.abs_line_offset() + 1,
               node=self.parent, initial_state='Explicit',
-              blank_finish=blank_finish)
+              blank_finish=blank_finish,
+              match_titles=self.state_machine.match_titles)
         self.goto_line(newline_offset)
         if not blank_finish:
             self.parent += self.unindent_warning('Explicit markup')
@@ -2452,11 +2536,8 @@ class SubstitutionDef(Body):
     initial_transitions = ['embedded_directive', 'text']
 
     def embedded_directive(self, match, context, next_state):
-        if self.parent.has_key('alt'):
-            option_presets = {'alt': self.parent['alt']}
-        else:
-            option_presets = {}
-        nodelist, blank_finish = self.directive(match, **option_presets)
+        nodelist, blank_finish = self.directive(match,
+                                                alt=self.parent['name'])
         self.parent += nodelist
         if not self.state_machine.at_eof():
             self.blank_finish = blank_finish
@@ -2591,8 +2672,9 @@ class Text(RSTState):
               self.state_machine.get_indented()
         definitionlistitem = nodes.definition_list_item(
             '\n'.join(termline + list(indented)))
-        termlist, messages = self.term(
-              termline, self.state_machine.abs_line_number() - 1)
+        lineno = self.state_machine.abs_line_number() - 1
+        definitionlistitem.line = lineno
+        termlist, messages = self.term(termline, lineno)
         definitionlistitem += termlist
         definition = nodes.definition('', *messages)
         definitionlistitem += definition
@@ -2678,7 +2760,9 @@ class Line(SpecializedText):
     def eof(self, context):
         """Transition marker at end of section or document."""
         marker = context[0].strip()
-        if len(marker) < 4:
+        if self.memo.section_bubble_up_kludge:
+            self.memo.section_bubble_up_kludge = 0
+        elif len(marker) < 4:
             self.state_correction(context)
         if self.eofcheck:               # ignore EOFError with sections
             lineno = self.state_machine.abs_line_number() - 1
@@ -2741,7 +2825,7 @@ class Line(SpecializedText):
                 self.short_overline(context, blocktext, lineno, 2)
             else:
                 msg = self.reporter.severe(
-                    'Missing underline for overline.',
+                    'Missing matching underline for section title overline.',
                     nodes.literal_block(source, source), line=lineno)
                 self.parent += msg
                 return [], 'Body', []
@@ -2819,8 +2903,13 @@ def escape2null(text):
         start = found + 2               # skip character after escape
 
 def unescape(text, restore_backslashes=0):
-    """Return a string with nulls removed or restored to backslashes."""
+    """
+    Return a string with nulls removed or restored to backslashes.
+    Backslash-escaped spaces are also removed.
+    """
     if restore_backslashes:
         return text.replace('\x00', '\\')
     else:
-        return ''.join(text.split('\x00'))
+        for sep in ['\x00 ', '\x00\n', '\x00']:
+            text = ''.join(text.split(sep))
+        return text

@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:09 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:44 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -60,7 +60,8 @@ directive function):
 
 - ``options``: A dictionary, mapping known option names to conversion
   functions such as `int` or `float`.  ``None`` or an empty dict implies no
-  options to parse.
+  options to parse.  Several directive option conversion functions are defined
+  in this module.
 
 - ``content``: A boolean; true if content is allowed.  Client code must handle
   the case where content is required but not supplied (an empty content list
@@ -92,9 +93,15 @@ _directive_registry = {
       'tip': ('admonitions', 'tip'),
       'hint': ('admonitions', 'hint'),
       'warning': ('admonitions', 'warning'),
+      'admonition': ('admonitions', 'admonition'),
+      'sidebar': ('body', 'sidebar'),
       'topic': ('body', 'topic'),
       'line-block': ('body', 'line_block'),
       'parsed-literal': ('body', 'parsed_literal'),
+      'rubric': ('body', 'rubric'),
+      'epigraph': ('body', 'epigraph'),
+      'highlights': ('body', 'highlights'),
+      'pull-quote': ('body', 'pull_quote'),
       #'questions': ('body', 'question_list'),
       'image': ('images', 'image'),
       'figure': ('images', 'figure'),
@@ -108,6 +115,8 @@ _directive_registry = {
       'raw': ('misc', 'raw'),
       'include': ('misc', 'include'),
       'replace': ('misc', 'replace'),
+      'unicode': ('misc', 'unicode_directive'),
+      'class': ('misc', 'class_directive'),
       'restructuredtext-test-directive': ('misc', 'directive_test_function'),}
 """Mapping of directive name to (module name, function name).  The directive
 name is canonical & must be lowercase.  Language-dependent names are defined
@@ -171,9 +180,14 @@ def directive(directive_name, language_module, document):
         return None, messages
     return function, messages
 
+def register_directive(name, directive):
+    """Register a nonstandard application-defined directive function."""
+    _directives[name] = directive
+
 def flag(argument):
     """
     Check for a valid flag option (no argument) and return ``None``.
+    (Directive option conversion function.)
 
     Raise ``ValueError`` if an argument is found.
     """
@@ -182,9 +196,10 @@ def flag(argument):
     else:
         return None
 
-def unchanged(argument):
+def unchanged_required(argument):
     """
-    Return the argument, unchanged.
+    Return the argument text, unchanged.
+    (Directive option conversion function.)
 
     Raise ``ValueError`` if no argument is found.
     """
@@ -193,9 +208,22 @@ def unchanged(argument):
     else:
         return argument  # unchanged!
 
+def unchanged(argument):
+    """
+    Return the argument text, unchanged.
+    (Directive option conversion function.)
+
+    No argument implies empty string ("").
+    """
+    if argument is None:
+        return u''
+    else:
+        return argument  # unchanged!
+
 def path(argument):
     """
     Return the path argument unwrapped (with newlines removed).
+    (Directive option conversion function.)
 
     Raise ``ValueError`` if no argument is found or if the path contains
     internal whitespace.
@@ -212,17 +240,44 @@ def path(argument):
 def nonnegative_int(argument):
     """
     Check for a nonnegative integer argument; raise ``ValueError`` if not.
+    (Directive option conversion function.)
     """
     value = int(argument)
     if value < 0:
         raise ValueError('negative value; must be positive or zero')
     return value
 
+
+def class_option(argument):
+    """
+    Convert the argument into an ID-compatible string and return it.
+    (Directive option conversion function.)
+
+    Raise ``ValueError`` if no argument is found.
+    """
+    if argument is None:
+        raise ValueError('argument required but none supplied')
+    return nodes.make_id(argument)
+
 def format_values(values):
     return '%s, or "%s"' % (', '.join(['"%s"' % s for s in values[:-1]]),
                             values[-1])
 
 def choice(argument, values):
+    """
+    Directive option utility function, supplied to enable options whose
+    argument must be a member of a finite set of possible values (must be
+    lower case).  A custom conversion function must be written to use it.  For
+    example::
+
+        from docutils.parsers.rst import directives
+
+        def yesno(argument):
+            return directives.choice(argument, ('yes', 'no'))
+
+    Raise ``ValueError`` if no argument is found or if the argument's value is
+    not valid (not an entry in the supplied list).
+    """
     try:
         value = argument.lower().strip()
     except AttributeError:

@@ -1,7 +1,7 @@
 # Authors: David Goodger, Dethe Elza
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:09 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:44 $
 # Copyright: This module has been placed in the public domain.
 
 """Miscellaneous directives."""
@@ -10,9 +10,11 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import os.path
+import re
 from urllib2 import urlopen, URLError
 from docutils import io, nodes, statemachine, utils
 from docutils.parsers.rst import directives, states
+from docutils.transforms import misc
 
 
 def include(name, arguments, options, content, lineno,
@@ -31,10 +33,12 @@ def include(name, arguments, options, content, lineno,
     path = utils.relative_path(None, path)
     try:
         include_file = io.FileInput(
-            source_path=path, encoding=state.document.settings.input_encoding)
+            source_path=path, encoding=state.document.settings.input_encoding,
+            handle_io_errors=None)
     except IOError, error:
         severe = state_machine.reporter.severe(
-              'Problems with "%s" directive path:\n%s.' % (name, error),
+              'Problems with "%s" directive path:\n%s: %s.'
+              % (name, error.__class__.__name__, error),
               nodes.literal_block(block_text, block_text), line=lineno)
         return [severe]
     include_text = include_file.read()
@@ -151,6 +155,65 @@ def replace(name, arguments, options, content, lineno,
 
 replace.content = 1
 
+def unicode_directive(name, arguments, options, content, lineno,
+                         content_offset, block_text, state, state_machine):
+    r"""
+    Convert Unicode character codes (numbers) to characters.  Codes may be
+    decimal numbers, hexadecimal numbers (prefixed by ``0x``, ``x``, ``\x``,
+    ``U+``, ``u``, or ``\u``; e.g. ``U+262E``), or XML-style numeric character
+    entities (e.g. ``&#x262E;``).  Text following ".." is a comment and is
+    ignored.  Spaces are ignored, and any other text remains as-is.
+    """
+    if not isinstance(state, states.SubstitutionDef):
+        error = state_machine.reporter.error(
+            'Invalid context: the "%s" directive can only be used within a '
+            'substitution definition.' % (name),
+            nodes.literal_block(block_text, block_text), line=lineno)
+        return [error]
+    codes = arguments[0].split('.. ')[0].split()
+    element = nodes.Element()
+    for code in codes:
+        try:
+            if code.isdigit():
+                element += nodes.Text(unichr(int(code)))
+            else:
+                match = unicode_pattern.match(code)
+                if match:
+                    value = match.group(1) or match.group(2)
+                    element += nodes.Text(unichr(int(value, 16)))
+                else:
+                    element += nodes.Text(code)
+        except ValueError, err:
+            error = state_machine.reporter.error(
+                'Invalid character code: %s\n%s' % (code, err),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return [error]
+    return element.children
+
+unicode_directive.arguments = (1, 0, 1)
+unicode_pattern = re.compile(
+    r'(?:0x|x|\x00x|U\+?|\x00u)([0-9a-f]+)$|&#x([0-9a-f]+);$', re.IGNORECASE)
+
+def class_directive(name, arguments, options, content, lineno,
+                       content_offset, block_text, state, state_machine):
+    """"""
+    class_value = nodes.make_id(arguments[0])
+    if class_value:
+        pending = nodes.pending(misc.ClassAttribute,
+                                {'class': class_value, 'directive': name},
+                                block_text)
+        state_machine.document.note_pending(pending)
+        return [pending]
+    else:
+        error = state_machine.reporter.error(
+            'Invalid class attribute value for "%s" directive: %s'
+            % (name, arguments[0]),
+            nodes.literal_block(block_text, block_text), line=lineno)
+        return [error]
+
+class_directive.arguments = (1, 0, 0)
+class_directive.content = 1
+
 def directive_test_function(name, arguments, options, content, lineno,
                             content_offset, block_text, state, state_machine):
     if content:
@@ -166,5 +229,5 @@ def directive_test_function(name, arguments, options, content, lineno,
     return [info]
 
 directive_test_function.arguments = (0, 1, 1)
-directive_test_function.options = {'option': directives.unchanged}
+directive_test_function.options = {'option': directives.unchanged_required}
 directive_test_function.content = 1

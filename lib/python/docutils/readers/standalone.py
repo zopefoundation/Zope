@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:15 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:54 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -24,6 +24,19 @@ class Reader(readers.Reader):
 
     document = None
     """A single document tree."""
+
+    settings_spec = (
+        'Standalone Reader',
+        None,
+        (('Disable the promotion of a lone top-level section title to '
+          'document title (and subsequent section title to document '
+          'subtitle promotion; enabled by default).',
+          ['--no-doc-title'],
+          {'dest': 'doctitle_xform', 'action': 'store_false', 'default': 1}),
+         ('Disable the bibliographic field list transform (enabled by '
+          'default).',
+          ['--no-doc-info'],
+          {'dest': 'docinfo_xform', 'action': 'store_false', 'default': 1}),))
 
     default_transforms = (references.Substitutions,
                           frontmatter.DocTitle,

@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:07 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:41 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -131,7 +131,8 @@ class GridTableParser(TableParser):
     head_body_separator_pat = re.compile(r'\+=[=+]+=\+ *$')
 
     def setup(self, block):
-        self.block = list(block)        # make a copy; it may be modified
+        self.block = block[:]           # make a copy; it may be modified
+        self.block.disconnect()         # don't propagate changes to parent
         self.bottom = len(block) - 1
         self.right = len(block[0]) - 1
         self.head_body_sep = None
@@ -165,7 +166,9 @@ class GridTableParser(TableParser):
             update_dict_of_lists(self.rowseps, rowseps)
             update_dict_of_lists(self.colseps, colseps)
             self.mark_done(top, left, bottom, right)
-            cellblock = self.get_cell_block(top, left, bottom, right)
+            cellblock = self.block.get_2D_block(top + 1, left + 1,
+                                                bottom, right)
+            cellblock.disconnect()      # lines in cell can't sync with parent
             self.cells.append((top, left, bottom, right, cellblock))
             corners.extend([(top, right), (bottom, left)])
             corners.sort()
@@ -187,19 +190,6 @@ class GridTableParser(TableParser):
             if self.done[col] != last:
                 return None
         return 1
-
-    def get_cell_block(self, top, left, bottom, right):
-        """Given the corners, extract the text of a cell."""
-        cellblock = []
-        margin = right
-        for lineno in range(top + 1, bottom):
-            line = self.block[lineno][left + 1 : right].rstrip()
-            cellblock.append(line)
-            if line:
-                margin = min(margin, len(line) - len(line.lstrip()))
-        if 0 < margin < right:
-            cellblock = [line[margin:] for line in cellblock]
-        return cellblock
 
     def scan_cell(self, top, left):
         """Starting at the top-left corner, start tracing out a cell."""
@@ -278,7 +268,7 @@ class GridTableParser(TableParser):
 
     def structure_from_cells(self):
         """
-        From the data colledted by `scan_cell()`, convert to the final data
+        From the data collected by `scan_cell()`, convert to the final data
         structure.
         """
         rowseps = self.rowseps.keys()   # list of row boundaries
@@ -371,7 +361,8 @@ class SimpleTableParser(TableParser):
     span_pat = re.compile('-[ -]*$')
 
     def setup(self, block):
-        self.block = list(block)        # make a copy; it will be modified
+        self.block = block[:]           # make a copy; it will be modified
+        self.block.disconnect()         # don't propagate changes to parent
         # Convert top & bottom borders to column span underlines:
         self.block[0] = self.block[0].replace('=', '-')
         self.block[-1] = self.block[-1].replace('=', '-')
@@ -394,25 +385,26 @@ class SimpleTableParser(TableParser):
         self.columns = self.parse_columns(self.block[0], 0)
         self.border_end = self.columns[-1][1]
         firststart, firstend = self.columns[0]
-        block = self.block[1:]
-        offset = 0
-        # Container for accumulating text lines until a row is complete:
-        rowlines = []
-        while block:
-            line = block.pop(0)
-            offset += 1
+        offset = 1                      # skip top border
+        start = 1
+        text_found = None
+        while offset < len(self.block):
+            line = self.block[offset]
             if self.span_pat.match(line):
                 # Column span underline or border; row is complete.
-                self.parse_row(rowlines, (line.rstrip(), offset))
-                rowlines = []
+                self.parse_row(self.block[start:offset], start,
+                               (line.rstrip(), offset))
+                start = offset + 1
+                text_found = None
             elif line[firststart:firstend].strip():
                 # First column not blank, therefore it's a new row.
-                if rowlines:
-                    self.parse_row(rowlines)
-                rowlines = [(line.rstrip(), offset)]
-            else:
-                # Accumulate lines of incomplete row.
-                rowlines.append((line.rstrip(), offset))
+                if text_found and offset != start:
+                    self.parse_row(self.block[start:offset], start)
+                start = offset
+                text_found = 1
+            elif not text_found:
+                start = offset + 1
+            offset += 1
 
     def parse_columns(self, line, offset):
         """
@@ -448,12 +440,12 @@ class SimpleTableParser(TableParser):
                     morecols += 1
             except (AssertionError, IndexError):
                 raise TableMarkupError('Column span alignment problem at '
-                                       'line offset %s.' % offset)
-            cells.append((0, morecols, offset, []))
+                                       'line offset %s.' % (offset + 1))
+            cells.append([0, morecols, offset, []])
             i += 1
         return cells
 
-    def parse_row(self, lines, spanline=None):
+    def parse_row(self, lines, start, spanline=None):
         """
         Given the text `lines` of a row, parse it and append to `self.table`.
 
@@ -462,20 +454,30 @@ class SimpleTableParser(TableParser):
         text from each line, and check for text in column margins.  Finally,
         adjust for insigificant whitespace.
         """
-        while lines and not lines[-1][0]:
-            lines.pop()                 # Remove blank trailing lines.
-        if lines:
-            offset = lines[0][1]
-        elif spanline:
-            offset = spanline[1]
-        else:
+        if not (lines or spanline):
             # No new row, just blank lines.
             return
         if spanline:
             columns = self.parse_columns(*spanline)
+            span_offset = spanline[1]
         else:
             columns = self.columns[:]
-        row = self.init_row(columns, offset)
+            span_offset = start
+        self.check_columns(lines, start, columns)
+        row = self.init_row(columns, start)
+        for i in range(len(columns)):
+            start, end = columns[i]
+            cellblock = lines.get_2D_block(0, start, len(lines), end)
+            cellblock.disconnect()      # lines in cell can't sync with parent
+            row[i][3] = cellblock
+        self.table.append(row)
+
+    def check_columns(self, lines, first_line, columns):
+        """
+        Check for text in column margins and text overflow in the last column.
+        Raise TableMarkupError if anything but whitespace is in column margins.
+        Adjust the end value for the last column if there is text overflow.
+        """
         # "Infinite" value for a dummy last column's beginning, used to
         # check for text overflow:
         columns.append((sys.maxint, None))
@@ -483,30 +485,20 @@ class SimpleTableParser(TableParser):
         for i in range(len(columns) - 1):
             start, end = columns[i]
             nextstart = columns[i+1][0]
-            block = []
-            margin = sys.maxint
-            for line, offset in lines:
+            offset = 0
+            for line in lines:
                 if i == lastcol and line[end:].strip():
                     text = line[start:].rstrip()
-                    columns[lastcol] = (start, start + len(text))
-                    self.adjust_last_column(start + len(text))
+                    new_end = start + len(text)
+                    columns[i] = (start, new_end)
+                    main_start, main_end = self.columns[-1]
+                    if new_end > main_end:
+                        self.columns[-1] = (main_start, new_end)
                 elif line[end:nextstart].strip():
                     raise TableMarkupError('Text in column margin at line '
-                                           'offset %s.' % offset)
-                else:
-                    text = line[start:end].rstrip()
-                block.append(text)
-                if text:
-                    margin = min(margin, len(text) - len(text.lstrip()))
-            if 0 < margin < sys.maxint:
-                block = [line[margin:] for line in block]
-            row[i][3].extend(block)
-        self.table.append(row)
-
-    def adjust_last_column(self, new_end):
-        start, end = self.columns[-1]
-        if new_end > end:
-            self.columns[-1] = (start, new_end)
+                                           'offset %s.' % (first_line + offset))
+                offset += 1
+        columns.pop()
 
     def structure_from_cells(self):
         colspecs = [end - start for start, end in self.columns]

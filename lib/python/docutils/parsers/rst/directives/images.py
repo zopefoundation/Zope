@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:09 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:44 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -15,6 +15,10 @@ import sys
 from docutils import nodes, utils
 from docutils.parsers.rst import directives
 
+try:
+    import Image                        # PIL
+except ImportError:
+    Image = None
 
 align_values = ('top', 'middle', 'bottom', 'left', 'center', 'right')
 
@@ -38,15 +42,33 @@ image.options = {'alt': directives.unchanged,
                  'height': directives.nonnegative_int,
                  'width': directives.nonnegative_int,
                  'scale': directives.nonnegative_int,
-                 'align': align}
+                 'align': align,
+                 'class': directives.class_option}
 
 def figure(name, arguments, options, content, lineno,
            content_offset, block_text, state, state_machine):
+    figwidth = options.setdefault('figwidth')
+    figclass = options.setdefault('figclass')
+    del options['figwidth']
+    del options['figclass']
     (image_node,) = image(name, arguments, options, content, lineno,
                          content_offset, block_text, state, state_machine)
     if isinstance(image_node, nodes.system_message):
         return [image_node]
     figure_node = nodes.figure('', image_node)
+    if figwidth == 'image':
+        if Image:
+            # PIL doesn't like Unicode paths:
+            try:
+                i = Image.open(str(image_node['uri']))
+            except (IOError, UnicodeError):
+                pass
+            else:
+                figure_node['width'] = i.size[0]
+    elif figwidth is not None:
+        figure_node['width'] = figwidth
+    if figclass:
+        figure_node.set_class(figclass)
     if content:
         node = nodes.Element()          # anonymous container for parsing
         state.nested_parse(content, content_offset, node)
@@ -65,6 +87,14 @@ def figure(name, arguments, options, content, lineno,
             figure_node += nodes.legend('', *node[1:])
     return [figure_node]
 
+def figwidth_value(argument):
+    if argument.lower() == 'image':
+        return 'image'
+    else:
+        return directives.nonnegative_int(argument)
+
 figure.arguments = (1, 0, 1)
-figure.options = image.options
+figure.options = {'figwidth': figwidth_value,
+                  'figclass': directives.class_option}
+figure.options.update(image.options)
 figure.content = 1

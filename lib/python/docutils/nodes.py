@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:00 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:30 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -53,7 +53,14 @@ class Node:
     """The line number (1-based) of the beginning of this Node in `source`."""
 
     def __nonzero__(self):
-        """Node instances are always true."""
+        """
+        Node instances are always true, even if they're empty.  A node is more
+        than a simple container.  Its boolean "truth" does not depend on
+        having one or more subnodes in the doctree.
+
+        Use `len()` to check node length.  Use `None` to represent a boolean
+        false value.
+        """
         return 1
 
     def asdom(self, dom=xml.dom.minidom):
@@ -175,6 +182,9 @@ class Text(Node, UserString):
             data = repr(self.data[:64] + ' ...')
         return '<%s: %s>' % (self.tagname, data)
 
+    def __len__(self):
+        return len(self.data)
+
     def shortrepr(self):
         data = repr(self.data)
         if len(data) > 20:
@@ -261,9 +271,9 @@ class Element(Node):
     def _dom_node(self, domroot):
         element = domroot.createElement(self.tagname)
         for attribute, value in self.attributes.items():
-            if type(value) is ListType:
-                value = ' '.join(value)
-            element.setAttribute(attribute, str(value))
+            if isinstance(value, ListType):
+                value = ' '.join(['%s' % v for v in value])
+            element.setAttribute(attribute, '%s' % value)
         for child in self.children:
             element.appendChild(child._dom_node(domroot))
         return element
@@ -289,10 +299,13 @@ class Element(Node):
             return '<%s...>' % self.tagname
 
     def __str__(self):
+        return unicode(self).encode('raw_unicode_escape')
+
+    def __unicode__(self):
         if self.children:
-            return '%s%s%s' % (self.starttag(),
-                                ''.join([str(c) for c in self.children]),
-                                self.endtag())
+            return u'%s%s%s' % (self.starttag(),
+                                 ''.join([str(c) for c in self.children]),
+                                 self.endtag())
         else:
             return self.emptytag()
 
@@ -302,19 +315,19 @@ class Element(Node):
             if value is None:           # boolean attribute
                 parts.append(name)
             elif isinstance(value, ListType):
-                values = [str(v) for v in value]
+                values = ['%s' % v for v in value]
                 parts.append('%s="%s"' % (name, ' '.join(values)))
             else:
-                parts.append('%s="%s"' % (name, str(value)))
+                parts.append('%s="%s"' % (name, value))
         return '<%s>' % ' '.join(parts)
 
     def endtag(self):
         return '</%s>' % self.tagname
 
     def emptytag(self):
-        return '<%s/>' % ' '.join([self.tagname] +
-                                  ['%s="%s"' % (n, v)
-                                   for n, v in self.attlist()])
+        return u'<%s/>' % ' '.join([self.tagname] +
+                                    ['%s="%s"' % (n, v)
+                                     for n, v in self.attlist()])
 
     def __len__(self):
         return len(self.children)
@@ -619,6 +632,10 @@ class document(Root, Structural, Element):
         self.substitution_defs = {}
         """Mapping of substitution names to substitution_definition nodes."""
 
+        self.substitution_names = {}
+        """Mapping of case-normalized substitution names to case-sensitive
+        names."""
+
         self.refnames = {}
         """Mapping of names to lists of referencing nodes."""
 
@@ -864,8 +881,8 @@ class document(Root, Structural, Element):
         self.citation_refs.setdefault(ref['refname'], []).append(ref)
         self.note_refname(ref)
 
-    def note_substitution_def(self, subdef, msgnode=None):
-        name = subdef['name']
+    def note_substitution_def(self, subdef, def_name, msgnode=None):
+        name = subdef['name'] = whitespace_normalize_name(def_name)
         if self.substitution_defs.has_key(name):
             msg = self.reporter.error(
                   'Duplicate substitution definition name: "%s".' % name,
@@ -874,12 +891,14 @@ class document(Root, Structural, Element):
                 msgnode += msg
             oldnode = self.substitution_defs[name]
             dupname(oldnode)
-        # keep only the last definition
+        # keep only the last definition:
         self.substitution_defs[name] = subdef
+        # case-insensitive mapping:
+        self.substitution_names[fully_normalize_name(name)] = name
 
-    def note_substitution_ref(self, subref):
-        self.substitution_refs.setdefault(
-              subref['refname'], []).append(subref)
+    def note_substitution_ref(self, subref, refname):
+        name = subref['refname'] = whitespace_normalize_name(refname)
+        self.substitution_refs.setdefault(name, []).append(subref)
 
     def note_pending(self, pending, priority=None):
         self.transformer.add_pending(pending, priority)
@@ -908,6 +927,7 @@ class document(Root, Structural, Element):
 
 class title(Titular, PreBibliographic, TextElement): pass
 class subtitle(Titular, PreBibliographic, TextElement): pass
+class rubric(Titular, TextElement): pass
 
 
 # ========================
@@ -947,13 +967,30 @@ class topic(Structural, Element):
 
     """
     Topics are terminal, "leaf" mini-sections, like block quotes with titles,
-    or textual figures. A topic is just like a section, except that it has no
+    or textual figures.  A topic is just like a section, except that it has no
     subsections, and it doesn't have to conform to section placement rules.
 
     Topics are allowed wherever body elements (list, table, etc.) are allowed,
-    but only at the top level of a section or document. Topics cannot nest
-    inside topics or body elements; you can't have a topic inside a table,
-    list, block quote, etc.
+    but only at the top level of a section or document.  Topics cannot nest
+    inside topics, sidebars, or body elements; you can't have a topic inside a
+    table, list, block quote, etc.
+    """
+
+
+class sidebar(Structural, Element):
+
+    """
+    Sidebars are like miniature, parallel documents that occur inside other
+    documents, providing related or reference material.  A sidebar is
+    typically offset by a border and "floats" to the side of the page; the
+    document's main text may flow around it.  Sidebars can also be likened to
+    super-footnotes; their content is outside of the flow of the document's
+    main text.
+
+    Sidebars are allowed wherever body elements (list, table, etc.) are
+    allowed, but only at the top level of a section or document.  Sidebars
+    cannot nest inside sidebars, topics, or body elements; you can't have a
+    sidebar inside a table, list, block quote, etc.
     """
 
 
@@ -1009,6 +1046,7 @@ class literal_block(General, FixedTextElement): pass
 class doctest_block(General, FixedTextElement): pass
 class line_block(General, FixedTextElement): pass
 class block_quote(General, Element): pass
+class attribution(Part, TextElement): pass
 class attention(Admonition, Element): pass
 class caution(Admonition, Element): pass
 class danger(Admonition, Element): pass
@@ -1018,6 +1056,7 @@ class note(Admonition, Element): pass
 class tip(Admonition, Element): pass
 class hint(Admonition, Element): pass
 class warning(Admonition, Element): pass
+class admonition(Admonition, Element): pass
 class comment(Special, Invisible, PreBibliographic, FixedTextElement): pass
 class substitution_definition(Special, Invisible, TextElement): pass
 class target(Special, Invisible, Inline, TextElement, Targetable): pass
@@ -1050,8 +1089,8 @@ class system_message(Special, PreBibliographic, Element, BackLinkable):
 
     def astext(self):
         line = self.get('line', '')
-        return '%s:%s: (%s/%s) %s' % (self['source'], line, self['type'],
-                                      self['level'], Element.astext(self))
+        return u'%s:%s: (%s/%s) %s' % (self['source'], line, self['type'],
+                                       self['level'], Element.astext(self))
 
 
 class pending(Special, Invisible, PreBibliographic, Element):
@@ -1106,7 +1145,7 @@ class pending(Special, Invisible, PreBibliographic, Element):
                 internals.append('%7s%s:' % ('', key))
                 internals.extend(['%9s%s' % ('', line)
                                   for line in value.pformat().splitlines()])
-            elif value and type(value) == ListType \
+            elif value and isinstance(value, ListType) \
                   and isinstance(value[0], Node):
                 internals.append('%7s%s:' % ('', key))
                 for v in value:
@@ -1146,6 +1185,8 @@ class substitution_reference(Inline, TextElement): pass
 class title_reference(Inline, TextElement): pass
 class abbreviation(Inline, TextElement): pass
 class acronym(Inline, TextElement): pass
+class superscript(Inline, TextElement): pass
+class subscript(Inline, TextElement): pass
 
 
 class image(General, Inline, TextElement):
@@ -1154,6 +1195,7 @@ class image(General, Inline, TextElement):
         return self.get('alt', '')
 
 
+class inline(Inline, TextElement): pass
 class problematic(Inline, TextElement): pass
 class generated(Inline, TextElement): pass
 
@@ -1164,7 +1206,8 @@ class generated(Inline, TextElement): pass
 
 node_class_names = """
     Text
-    abbreviation acronym address attention author authors
+    abbreviation acronym address admonition attention attribution author
+        authors
     block_quote bullet_list
     caption caution citation citation_reference classifier colspec comment
         contact copyright
@@ -1175,15 +1218,15 @@ node_class_names = """
         footnote footnote_reference
     generated
     header hint
-    image important
+    image important inline
     label legend line_block list_item literal literal_block
     note
     option option_argument option_group option_list option_list_item
         option_string organization
     paragraph pending problematic
-    raw reference revision row
-    section status strong substitution_definition substitution_reference
-        subtitle system_message
+    raw reference revision row rubric
+    section sidebar status strong subscript substitution_definition
+        substitution_reference subtitle superscript system_message
     table target tbody term tgroup thead tip title title_reference topic
         transition
     version
@@ -1248,11 +1291,14 @@ class SparseNodeVisitor(NodeVisitor):
     subclasses), subclass `NodeVisitor` instead.
     """
 
-    # Save typing with dynamic definitions.
-    for name in node_class_names:
-        exec """def visit_%s(self, node): pass\n""" % name
-        exec """def depart_%s(self, node): pass\n""" % name
-    del name
+def _nop(self, node):
+    pass
+
+# Save typing with dynamic assignments:
+for _name in node_class_names:
+    setattr(SparseNodeVisitor, "visit_" + _name, _nop)
+    setattr(SparseNodeVisitor, "depart_" + _name, _nop)
+del _name, _nop
 
 
 class GenericNodeVisitor(NodeVisitor):
@@ -1281,13 +1327,17 @@ class GenericNodeVisitor(NodeVisitor):
         """Override for generic, uniform traversals."""
         raise NotImplementedError
 
-    # Save typing with dynamic definitions.
-    for name in node_class_names:
-        exec """def visit_%s(self, node):
-                    self.default_visit(node)\n""" % name
-        exec """def depart_%s(self, node):
-                    self.default_departure(node)\n""" % name
-    del name
+def _call_default_visit(self, node):
+    self.default_visit(node)
+
+def _call_default_departure(self, node):
+    self.default_departure(node)
+
+# Save typing with dynamic assignments:
+for _name in node_class_names:
+    setattr(GenericNodeVisitor, "visit_" + _name, _call_default_visit)
+    setattr(GenericNodeVisitor, "depart_" + _name, _call_default_departure)
+del _name, _call_default_visit, _call_default_departure
 
 
 class TreeCopyVisitor(GenericNodeVisitor):
@@ -1385,9 +1435,9 @@ def make_id(string):
     Convert `string` into an identifier and return it.
 
     Docutils identifiers will conform to the regular expression
-    ``[a-z][-a-z0-9]*``. For CSS compatibility, identifiers (the "class" and
-    "id" attributes) should have no underscores, colons, or periods. Hyphens
-    may be used.
+    ``[a-z](-?[a-z0-9]+)*``.  For CSS compatibility, identifiers (the "class"
+    and "id" attributes) should have no underscores, colons, or periods.
+    Hyphens may be used.
 
     - The `HTML 4.01 spec`_ defines identifiers based on SGML tokens:
 
@@ -1410,7 +1460,7 @@ def make_id(string):
     these characters. They should be replaced with hyphens ("-"). Combined
     with HTML's requirements (the first character must be a letter; no
     "unicode", "latin1", or "escape" characters), this results in the
-    ``[a-z][-a-z0-9]*`` pattern.
+    ``[a-z](-?[a-z0-9]+)*`` pattern.
 
     .. _HTML 4.01 spec: http://www.w3.org/TR/html401
     .. _CSS1 spec: http://www.w3.org/TR/REC-CSS1
@@ -1425,3 +1475,11 @@ _non_id_at_ends = re.compile('^[-0-9]+|-+$')
 def dupname(node):
     node['dupname'] = node['name']
     del node['name']
+
+def fully_normalize_name(name):
+    """Return a case- and whitespace-normalized name."""
+    return ' '.join(name.lower().split())
+
+def whitespace_normalize_name(name):
+    """Return a whitespace-normalized name."""
+    return ' '.join(name.split())

@@ -1,18 +1,19 @@
 # Author: Nicola Larosa
 # Contact: docutils@tekNico.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:03 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:34 $
 # Copyright: This module has been placed in the public domain.
+
+# New language mappings are welcome.  Before doing a new translation, please
+# read <http://docutils.sf.net/spec/howto/i18n.html>.  Two files must be
+# translated for each language: one in docutils/languages, the other in
+# docutils/parsers/rst/languages.
 
 """
 Italian-language mappings for language-dependent features of Docutils.
 """
 
 __docformat__ = 'reStructuredText'
-
-
-from docutils import nodes
-
 
 labels = {
       'author': 'Autore',
@@ -40,20 +41,19 @@ labels = {
 """Mapping of node class name to label text."""
 
 bibliographic_fields = {
-      'autore': nodes.author,
-      'autori': nodes.authors,
-      'organizzazione': nodes.organization,
-      'indirizzo': nodes.address,
-      'contatti': nodes.contact,
-      'versione': nodes.version,
-      'revisione': nodes.revision,
-      'status': nodes.status,
-      'data': nodes.date,
-      'copyright': nodes.copyright,
-      'dedica': nodes.topic,
-      'riassunto': nodes.topic}
-"""Field name (lowcased) to node class name mapping for bibliographic fields
-(field_list)."""
+      'autore': 'author',
+      'autori': 'authors',
+      'organizzazione': 'organization',
+      'indirizzo': 'address',
+      'contatti': 'contact',
+      'versione': 'version',
+      'revisione': 'revision',
+      'status': 'status',
+      'data': 'date',
+      'copyright': 'copyright',
+      'dedica': 'dedication',
+      'riassunto': 'abstract'}
+"""Italian (lowcased) to canonical name mapping for bibliographic fields."""
 
 author_separators = [';', ',']
 """List of separator strings for the 'Authors' bibliographic field. Tried in

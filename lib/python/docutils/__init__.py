@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:00 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:30 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -22,12 +22,6 @@ Modules:
 - io.py: Provides a uniform API for low-level input and output.
 
 - nodes.py: Docutils document tree (doctree) node class library.
-
-- optik.py: Option parsing and command-line help; from Greg Ward's
-  http://optik.sf.net/ project, included for convenience.
-
-- roman.py: Conversion to and from Roman numerals. Courtesy of Mark
-  Pilgrim (http://diveintopython.org/).
 
 - statemachine.py: A finite state machine specialized for
   regular-expression-based text filters.
@@ -55,12 +49,12 @@ Subpackages:
 
 __docformat__ = 'reStructuredText'
 
-__version__ = '0.2.8'
+__version__ = '0.3.0'
 """``major.minor.micro`` version number.  The micro number is bumped any time
 there's a change in the API incompatible with one of the front ends.  The
 minor number is bumped whenever there is a project release.  The major number
-will be bumped when the project is complete, and perhaps if there is a major
-change in the design."""
+will be bumped when the project is feature-complete, and perhaps if there is a
+major change in the design."""
 
 
 class ApplicationError(StandardError): pass
@@ -85,7 +79,11 @@ class SettingsSpec:
     and/or description may be `None`; no group title implies no group, just a
     list of single options.  Runtime settings names are derived implicitly
     from long option names ("--a-setting" becomes ``settings.a_setting``) or
-    explicitly from the "destination" keyword argument."""
+    explicitly from the "dest" keyword argument."""
+
+    settings_defaults = None
+    """A dictionary of defaults for internal or inaccessible (by command-line
+    or config file) settings.  Override in subclasses."""
 
     settings_default_overrides = None
     """A dictionary of auxiliary defaults, to override defaults for settings

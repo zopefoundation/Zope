@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer, Dmitry Jemerov
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:17 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:50:00 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -73,8 +73,11 @@ class Contents(Transform):
 
     def apply(self):
         topic = nodes.topic(CLASS='contents')
-        title = self.startnode.details['title']
-        if self.startnode.details.has_key('local'):
+        details = self.startnode.details
+        if details.has_key('class'):
+            topic.set_class(details['class'])
+        title = details['title']
+        if details.has_key('local'):
             startnode = self.startnode.parent
             # @@@ generate an error if the startnode (directive) not at
             # section/document top-level? Drag it up until it is?
@@ -89,13 +92,13 @@ class Contents(Transform):
             topic += title
         else:
             name = self.language.labels['contents']
-        name = utils.normalize_name(name)
+        name = nodes.fully_normalize_name(name)
         if not self.document.has_name(name):
             topic['name'] = name
         self.document.note_implicit_target(topic)
         self.toc_id = topic['id']
-        if self.startnode.details.has_key('backlinks'):
-            self.backlinks = self.startnode.details['backlinks']
+        if details.has_key('backlinks'):
+            self.backlinks = details['backlinks']
         else:
             self.backlinks = self.document.settings.toc_backlinks
         contents = self.build_contents(startnode)

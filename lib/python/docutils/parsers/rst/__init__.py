@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:07 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:40 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -95,7 +95,10 @@ class Parser(docutils.parsers.Parser):
           {'action': 'store_true'}),
          ('Set number of spaces for tab expansion (default 8).',
           ['--tab-width'],
-          {'metavar': '<width>', 'type': 'int', 'default': 8}),))
+          {'metavar': '<width>', 'type': 'int', 'default': 8}),
+         ('Remove spaces before footnote references.',
+          ['--trim-footnote-reference-space'],
+          {'action': 'store_true'}),))
 
     def __init__(self, rfc2822=None, inliner=None):
         if rfc2822:

@@ -1,17 +1,19 @@
 # Authors:   David Goodger; Gunnar Schwant
 # Contact:   goodger@users.sourceforge.net
-# Revision:  $Revision: 1.2 $
-# Date:      $Date: 2003/02/01 09:26:03 $
+# Revision:  $Revision: 1.3 $
+# Date:      $Date: 2003/07/10 15:49:34 $
 # Copyright: This module has been placed in the public domain.
+
+# New language mappings are welcome.  Before doing a new translation, please
+# read <http://docutils.sf.net/spec/howto/i18n.html>.  Two files must be
+# translated for each language: one in docutils/languages, the other in
+# docutils/parsers/rst/languages.
 
 """
 German language mappings for language-dependent features of Docutils.
 """
 
 __docformat__ = 'reStructuredText'
-
-from docutils import nodes
-
 
 labels = {
     'author': 'Autor',
@@ -39,20 +41,19 @@ labels = {
 """Mapping of node class name to label text."""
 
 bibliographic_fields = {
-    'autor': nodes.author,
-    'autoren': nodes.authors,
-    'organisation': nodes.organization,
-    'adresse': nodes.address,
-    'kontakt': nodes.contact,
-    'version': nodes.version,
-    'revision': nodes.revision,
-    'status': nodes.status,
-    'datum': nodes.date,
-    'copyright': nodes.copyright,
-    'widmung': nodes.topic,
-    'zusammenfassung': nodes.topic}
-"""Field name (lowcased) to node class name mapping for bibliographic fields
-(field_list)."""
+    'autor': 'author',
+    'autoren': 'authors',
+    'organisation': 'organization',
+    'adresse': 'address',
+    'kontakt': 'contact',
+    'version': 'version',
+    'revision': 'revision',
+    'status': 'status',
+    'datum': 'date',
+    'copyright': 'copyright',
+    'widmung': 'dedication',
+    'zusammenfassung': 'abstract'}
+"""German (lowcased) to canonical name mapping for bibliographic fields."""
 
 author_separators = [';', ',']
 """List of separator strings for the 'Authors' bibliographic field. Tried in

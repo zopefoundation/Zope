@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:00 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:30 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -20,8 +20,9 @@ from docutils import frontend, nodes
 
 class SystemMessage(ApplicationError):
 
-    def __init__(self, system_message):
+    def __init__(self, system_message, level):
         Exception.__init__(self, system_message.astext())
+        self.level = level
 
 
 class Reporter:
@@ -75,7 +76,7 @@ class Reporter:
     """List of names for system message levels, indexed by level."""
 
     def __init__(self, source, report_level, halt_level, stream=None,
-                 debug=0):
+                 debug=0, encoding='ascii', error_handler='replace'):
         """
         Initialize the `ConditionSet` forthe `Reporter`'s default category.
 
@@ -90,6 +91,8 @@ class Reporter:
             - `stream`: Where warning output is sent.  Can be file-like (has a
               ``.write`` method), a string (file name, opened for writing), or
               `None` (implies `sys.stderr`; default).
+            - `encoding`: The encoding for stderr output.
+            - `error_handler`: The error handler for stderr output encoding.
         """
         self.source = source
         """The path to or description of the source data."""
@@ -99,6 +102,12 @@ class Reporter:
         elif type(stream) in (StringType, UnicodeType):
             raise NotImplementedError('This should open a file for writing.')
 
+        self.encoding = encoding
+        """The character encoding for the stderr output."""
+
+        self.error_handler = error_handler
+        """The character encoding error handler."""
+
         self.categories = {'': ConditionSet(debug, report_level, halt_level,
                                             stream)}
         """Mapping of category names to conditions. Default category is ''."""
@@ -106,6 +115,9 @@ class Reporter:
         self.observers = []
         """List of bound methods or functions to call with each system_message
         created."""
+
+        self.max_level = -1
+        """The highest level system message generated so far."""
 
     def set_conditions(self, category, report_level, halt_level,
                        stream=None, debug=0):
@@ -164,14 +176,16 @@ class Reporter:
                                    *children, **attributes)
         debug, report_level, halt_level, stream = self[category].astuple()
         if level >= report_level or debug and level == 0:
+            msgtext = msg.astext().encode(self.encoding, self.error_handler)
             if category:
-                print >>stream, msg.astext(), '[%s]' % category
+                print >>stream, msgtext, '[%s]' % category
             else:
-                print >>stream, msg.astext()
+                print >>stream, msgtext
         if level >= halt_level:
-            raise SystemMessage(msg)
+            raise SystemMessage(msg, level)
         if level > 0 or debug:
             self.notify_observers(msg)
+        self.max_level = max(level, self.max_level)
         return msg
 
     def debug(self, *args, **kwargs):
@@ -368,10 +382,6 @@ def extract_name_value(line):
         attlist.append((attname.lower(), data))
     return attlist
 
-def normalize_name(name):
-    """Return a case- and whitespace-normalized name."""
-    return ' '.join(name.lower().split())
-
 def new_document(source, settings=None):
     """
     Return a new empty document object.
@@ -385,7 +395,9 @@ def new_document(source, settings=None):
     if settings is None:
         settings = frontend.OptionParser().get_default_values()
     reporter = Reporter(source, settings.report_level, settings.halt_level,
-                        settings.warning_stream, settings.debug)
+                        stream=settings.warning_stream, debug=settings.debug,
+                        encoding=settings.error_encoding,
+                        error_handler=settings.error_encoding_error_handler)
     document = nodes.document(settings, reporter, source=source)
     document.note_source(source, -1)
     return document
@@ -401,7 +413,7 @@ def clean_rcs_keywords(paragraph, keyword_substitutions):
 
 def relative_path(source, target):
     """
-    Build and return a path to `target`, relative to `source`.
+    Build and return a path to `target`, relative to `source` (both files).
 
     If there is no common prefix, return the absolute path to `target`.
     """
@@ -426,7 +438,7 @@ def relative_path(source, target):
 def get_source_line(node):
     """
     Return the "source" and "line" attributes from the `node` given or from
-    it's closest ancestor.
+    its closest ancestor.
     """
     while node:
         if node.source or node.line:

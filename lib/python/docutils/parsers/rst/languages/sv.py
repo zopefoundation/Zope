@@ -1,8 +1,13 @@
 # Author:    Adam Chodorowski
 # Contact:   chodorowski@users.sourceforge.net
-# Revision:  $Revision: 1.2 $
-# Date:      $Date: 2003/02/01 09:26:13 $
+# Revision:  $Revision: 1.3 $
+# Date:      $Date: 2003/07/10 15:49:49 $
 # Copyright: This module has been placed in the public domain.
+
+# New language mappings are welcome.  Before doing a new translation, please
+# read <http://docutils.sf.net/spec/howto/i18n.html>.  Two files must be
+# translated for each language: one in docutils/languages, the other in
+# docutils/parsers/rst/languages.
 
 """
 Swedish language mappings for language-dependent features of reStructuredText.
@@ -21,9 +26,15 @@ directives = {
       u'notera': 'note',
       u'tips': 'tip',
       u'varning': 'warning',
+      u'admonition (translation required)': 'admonition',
+      u'sidebar (translation required)': 'sidebar',
       u'\u00e4mne': 'topic',
-      'line-block (translation required)': 'line-block',
-      'parsed-literal (translation required)': 'parsed-literal',
+      u'line-block (translation required)': 'line-block',
+      u'parsed-literal (translation required)': 'parsed-literal',
+      u'mellanrubrik': 'rubric',
+      u'epigraph (translation required)': 'epigraph',
+      u'highlights (translation required)': 'highlights',
+      u'pull-quote (translation required)': 'pull-quote',
       # u'fr\u00e5gor': 'questions',
       # NOTE: A bit long, but recommended by http://www.nada.kth.se/dataterm/:
       # u'fr\u00e5gor-och-svar': 'questions',
@@ -32,15 +43,38 @@ directives = {
       # u'bildkarta': 'imagemap',   # FIXME: Translation might be too literal.
       u'bild': 'image',
       u'figur': 'figure',
-      'include (translation required)': 'include',
+      u'inkludera': 'include',   
       u'r\u00e5': 'raw',            # FIXME: Translation might be too literal.
-      'replace (translation required)': 'replace',
+      u'ers\u00e4tt': 'replace', 
+      u'unicode': 'unicode',
+      u'class (translation required)': 'class',
       u'inneh\u00e5ll': 'contents',
-      'sectnum (translation required)': 'sectnum',
-      'section-numbering (translation required)': 'sectnum',
-      'target-notes (translation required)': 'target-notes',
+      u'sektionsnumrering': 'sectnum',
+      u'target-notes (translation required)': 'target-notes',
       # u'fotnoter': 'footnotes',
       # u'citeringar': 'citations',
       }
 """Swedish name to registered (in directives/__init__.py) directive name
 mapping."""
+
+roles = {
+      u'abbreviation (translation required)': 'abbreviation',
+      u'acronym (translation required)': 'acronym',
+      u'index (translation required)': 'index',
+      u'subscript (translation required)': 'subscript',
+      u'superscript (translation required)': 'superscript',
+      u'title-reference (translation required)': 'title-reference',
+      u'pep-reference (translation required)': 'pep-reference',
+      u'rfc-reference (translation required)': 'rfc-reference',
+      u'emphasis (translation required)': 'emphasis',
+      u'strong (translation required)': 'strong',
+      u'literal (translation required)': 'literal',
+      u'named-reference (translation required)': 'named-reference',
+      u'anonymous-reference (translation required)': 'anonymous-reference',
+      u'footnote-reference (translation required)': 'footnote-reference',
+      u'citation-reference (translation required)': 'citation-reference',
+      u'substitution-reference (translation required)': 'substitution-reference',
+      u'target (translation required)': 'target',
+      u'uri-reference (translation required)': 'uri-reference',}
+"""Mapping of Swedish role names to canonical role names for interpreted text.
+"""

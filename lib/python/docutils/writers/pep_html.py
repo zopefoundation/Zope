@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:20 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:50:05 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -13,7 +13,7 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import docutils
-from docutils import nodes, optik, utils
+from docutils import nodes, frontend, utils
 from docutils.writers import html4css1
 
 
@@ -44,7 +44,7 @@ class Writer(html4css1.Writer):
           {'default': '.', 'metavar': '<URL>'}),
          # Workaround for SourceForge's broken Python
          # (``import random`` causes a segfault).
-         (optik.SUPPRESS_HELP,
+         (frontend.SUPPRESS_HELP,
           ['--no-random'], {'action': 'store_true'}),))
 
     settings_default_overrides = {'footnote_references': 'brackets'}

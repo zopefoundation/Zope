@@ -1,7 +1,7 @@
 # Authors: David Goodger, Ueli Schlaepfer
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:17 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:50:00 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -102,7 +102,7 @@ class Messages(Transform):
         for msg in unfiltered:
             if msg['level'] >= threshold and not msg.parent:
                 messages.append(msg)
-        if len(messages) > 0:
+        if messages:
             section = nodes.section(CLASS='system-messages')
             # @@@ get this from the language module?
             section += nodes.title('', 'Docutils System Messages')

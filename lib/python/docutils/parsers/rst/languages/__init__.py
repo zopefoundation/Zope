@@ -1,8 +1,11 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:13 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:49 $
 # Copyright: This module has been placed in the public domain.
+
+# Internationalization details are documented in
+# <http://docutils.sf.net/spec/howto/i18n.html>.
 
 """
 This package contains modules for language-dependent features of

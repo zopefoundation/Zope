@@ -1,7 +1,7 @@
 # Author: David Goodger, Dmitry Jemerov
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:09 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:44 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -42,7 +42,8 @@ def contents(name, arguments, options, content, lineno,
 contents.arguments = (0, 1, 1)
 contents.options = {'depth': directives.nonnegative_int,
                     'local': directives.flag,
-                    'backlinks': backlinks}
+                    'backlinks': backlinks,
+                    'class': directives.class_option}
 
 def sectnum(name, arguments, options, content, lineno,
             content_offset, block_text, state, state_machine):

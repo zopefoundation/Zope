@@ -1,7 +1,7 @@
 # Authors: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2 $
-# Date: $Date: 2003/02/01 09:26:00 $
+# Revision: $Revision: 1.3 $
+# Date: $Date: 2003/07/10 15:49:30 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -15,9 +15,9 @@ custom component objects first, and pass *them* to
 __docformat__ = 'reStructuredText'
 
 import sys
-from docutils import Component
-from docutils import frontend, io, readers, parsers, writers
-from docutils.frontend import OptionParser, ConfigParser
+from docutils import Component, __version__
+from docutils import frontend, io, utils, readers, parsers, writers
+from docutils.frontend import OptionParser
 
 
 class Publisher:
@@ -87,14 +87,8 @@ class Publisher:
         #@@@ Add self.source & self.destination to components in future?
         option_parser = OptionParser(
             components=(settings_spec, self.parser, self.reader, self.writer),
+            defaults=defaults, read_config_files=1,
             usage=usage, description=description)
-        config = ConfigParser()
-        config.read_standard_files()
-        config_settings = config.get_section('options')
-        frontend.make_paths_absolute(config_settings,
-                                     option_parser.relative_path_settings)
-        defaults.update(config_settings)
-        option_parser.set_defaults(**defaults)
         return option_parser
 
     def get_settings(self, usage=None, description=None,
@@ -148,7 +142,8 @@ class Publisher:
             self.settings._destination = destination_path
         self.destination = self.destination_class(
             destination=destination, destination_path=destination_path,
-            encoding=self.settings.output_encoding)
+            encoding=self.settings.output_encoding,
+            error_handler=self.settings.output_encoding_error_handler)
 
     def apply_transforms(self, document):
         document.transformer.populate_from_components(
@@ -157,7 +152,8 @@ class Publisher:
         document.transformer.apply_transforms()
 
     def publish(self, argv=None, usage=None, description=None,
-                settings_spec=None, settings_overrides=None):
+                settings_spec=None, settings_overrides=None,
+                enable_exit=None):
         """
         Process command line options and arguments (if `self.settings` not
         already set), run `self.reader` and then `self.writer`.  Return
@@ -169,25 +165,52 @@ class Publisher:
         elif settings_overrides:
             self.settings._update(settings_overrides, 'loose')
         self.set_io()
-        document = self.reader.read(self.source, self.parser, self.settings)
-        self.apply_transforms(document)
-        output = self.writer.write(document, self.destination)
+        exit = None
+        document = None
+        try:
+            document = self.reader.read(self.source, self.parser,
+                                        self.settings)
+            self.apply_transforms(document)
+            output = self.writer.write(document, self.destination)
+        except utils.SystemMessage, error:
+            if self.settings.traceback:
+                raise
+            print >>sys.stderr, ('Exiting due to level-%s (%s) system message.'
+                                 % (error.level,
+                                    utils.Reporter.levels[error.level]))
+            exit = 1
+        except Exception, error:
+            if self.settings.traceback:
+                raise
+            print >>sys.stderr, error
+            print >>sys.stderr, ("""\
+Exiting due to error.  Use "--traceback" to diagnose.
+Please report errors to <docutils-users@lists.sf.net>.
+Include "--traceback" output, Docutils version (%s),
+Python version (%s), your OS type & version, and the
+command line used.""" % (__version__, sys.version.split()[0]))
+            exit = 1
         if self.settings.dump_settings:
             from pprint import pformat
             print >>sys.stderr, '\n::: Runtime settings:'
             print >>sys.stderr, pformat(self.settings.__dict__)
-        if self.settings.dump_internals:
+        if self.settings.dump_internals and document:
             from pprint import pformat
             print >>sys.stderr, '\n::: Document internals:'
             print >>sys.stderr, pformat(document.__dict__)
-        if self.settings.dump_transforms:
+        if self.settings.dump_transforms and document:
             from pprint import pformat
             print >>sys.stderr, '\n::: Transforms applied:'
             print >>sys.stderr, pformat(document.transformer.applied)
-        if self.settings.dump_pseudo_xml:
+        if self.settings.dump_pseudo_xml and document:
             print >>sys.stderr, '\n::: Pseudo-XML:'
             print >>sys.stderr, document.pformat().encode(
                 'raw_unicode_escape')
+        if enable_exit and document and (document.reporter.max_level
+                                         >= self.settings.exit_level):
+            sys.exit(document.reporter.max_level + 10)
+        elif exit:
+            sys.exit(1)
         return output
 
 
@@ -199,7 +222,7 @@ def publish_cmdline(reader=None, reader_name='standalone',
                     parser=None, parser_name='restructuredtext',
                     writer=None, writer_name='pseudoxml',
                     settings=None, settings_spec=None,
-                    settings_overrides=None, argv=None,
+                    settings_overrides=None, enable_exit=1, argv=None,
                     usage=default_usage, description=default_description):
     """
     Set up & run a `Publisher`.  For command-line front ends.
@@ -220,6 +243,7 @@ def publish_cmdline(reader=None, reader_name='standalone',
       subclass.  Used only if no `settings` specified.
     - `settings_overrides`: A dictionary containing program-specific overrides
       of component settings.
+    - `enable_exit`: Boolean; enable exit status at end of processing?
     - `argv`: Command-line argument list to use instead of ``sys.argv[1:]``.
     - `usage`: Usage string, output if there's a problem parsing the command
       line.
@@ -228,14 +252,16 @@ def publish_cmdline(reader=None, reader_name='standalone',
     """
     pub = Publisher(reader, parser, writer, settings=settings)
     pub.set_components(reader_name, parser_name, writer_name)
-    pub.publish(argv, usage, description, settings_spec, settings_overrides)
+    pub.publish(argv, usage, description, settings_spec, settings_overrides,
+                enable_exit=enable_exit)
 
 def publish_file(source=None, source_path=None,
                  destination=None, destination_path=None,
                  reader=None, reader_name='standalone',
                  parser=None, parser_name='restructuredtext',
                  writer=None, writer_name='pseudoxml',
-                 settings=None, settings_spec=None, settings_overrides=None):
+                 settings=None, settings_spec=None, settings_overrides=None,
+                 enable_exit=None):
     """
     Set up & run a `Publisher`.  For programmatic use with file-like I/O.
 
@@ -263,6 +289,7 @@ def publish_file(source=None, source_path=None,
       subclass.  Used only if no `settings` specified.
     - `settings_overrides`: A dictionary containing program-specific overrides
       of component settings.
+    - `enable_exit`: Boolean; enable exit status at end of processing?
     """
     pub = Publisher(reader, parser, writer, settings=settings)
     pub.set_components(reader_name, parser_name, writer_name)
@@ -272,21 +299,27 @@ def publish_file(source=None, source_path=None,
         settings._update(settings_overrides, 'loose')
     pub.set_source(source, source_path)
     pub.set_destination(destination, destination_path)
-    pub.publish()
+    pub.publish(enable_exit=enable_exit)
 
 def publish_string(source, source_path=None, destination_path=None, 
                    reader=None, reader_name='standalone',
                    parser=None, parser_name='restructuredtext',
                    writer=None, writer_name='pseudoxml',
                    settings=None, settings_spec=None,
-                   settings_overrides=None):
+                   settings_overrides=None, enable_exit=None):
     """
     Set up & run a `Publisher`, and return the string output.
     For programmatic use with string I/O.
 
     For encoded string output, be sure to set the "output_encoding" setting to
     the desired encoding.  Set it to "unicode" for unencoded Unicode string
-    output.
+    output.  Here's how::
+
+        publish_string(..., settings_overrides={'output_encoding': 'unicode'})
+
+    Similarly for Unicode string input (`source`)::
+
+        publish_string(..., settings_overrides={'input_encoding': 'unicode'})
 
     Parameters:
 
@@ -312,6 +345,7 @@ def publish_string(source, source_path=None, destination_path=None,
       subclass.  Used only if no `settings` specified.
     - `settings_overrides`: A dictionary containing program-specific overrides
       of component settings.
+    - `enable_exit`: Boolean; enable exit status at end of processing?
     """
     pub = Publisher(reader, parser, writer, settings=settings,
                     source_class=io.StringInput,
@@ -323,4 +357,4 @@ def publish_string(source, source_path=None, destination_path=None,
         settings._update(settings_overrides, 'loose')
     pub.set_source(source, source_path)
     pub.set_destination(destination_path=destination_path)
-    return pub.publish()
+    return pub.publish(enable_exit=enable_exit)

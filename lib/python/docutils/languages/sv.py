@@ -1,18 +1,19 @@
 # Author:    Adam Chodorowski
 # Contact:   chodorowski@users.sourceforge.net
-# Revision:  $Revision: 1.2 $
-# Date:      $Date: 2003/02/01 09:26:03 $
+# Revision:  $Revision: 1.3 $
+# Date:      $Date: 2003/07/10 15:49:34 $
 # Copyright: This module has been placed in the public domain.
+
+# New language mappings are welcome.  Before doing a new translation, please
+# read <http://docutils.sf.net/spec/howto/i18n.html>.  Two files must be
+# translated for each language: one in docutils/languages, the other in
+# docutils/parsers/rst/languages.
 
 """
 Swedish language mappings for language-dependent features of Docutils.
 """
 
 __docformat__ = 'reStructuredText'
-
-
-from docutils import nodes
-
 
 labels = {
     'author':       u'F\u00f6rfattare',
@@ -41,19 +42,19 @@ labels = {
 
 bibliographic_fields = {
     # 'Author' and 'Authors' identical in Swedish; assume the plural:
-    u'f\u00f6rfattare': nodes.authors,
-    u'organisation':    nodes.organization,
-    u'adress':          nodes.address,
-    u'kontakt':         nodes.contact,
-    u'version':         nodes.version,
-    u'revision':        nodes.revision,
-    u'status':          nodes.status,
-    u'datum':           nodes.date,
-    u'copyright':       nodes.copyright,
-    u'dedikation':      nodes.topic, 
-    u'sammanfattning':  nodes.topic }
-"""Field name (lowcased) to node class name mapping for bibliographic fields
-(field_list)."""
+    u'f\u00f6rfattare': 'authors',
+    u' n/a':            'author',
+    u'organisation':    'organization',
+    u'adress':          'address',
+    u'kontakt':         'contact',
+    u'version':         'version',
+    u'revision':        'revision',
+    u'status':          'status',
+    u'datum':           'date',
+    u'copyright':       'copyright',
+    u'dedikation':      'dedication', 
+    u'sammanfattning':  'abstract' }
+"""Swedish (lowcased) to canonical name mapping for bibliographic fields."""
 
 author_separators = [';', ',']
 """List of separator strings for the 'Authors' bibliographic field. Tried in
