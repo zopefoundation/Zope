@@ -131,7 +131,8 @@ class ZopeStarter:
         import ZPublisher.Publish
         Globals.DevelopmentMode = self.cfg.debug_mode
         ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
-        ZPublisher.Publish.set_default_realm(self.cfg.http_realm)
+        ZPublisher.Publish.set_default_authentication_realm(
+            self.cfg.http_realm)
 
     def setupSecurityOptions(self):
         import AccessControl
