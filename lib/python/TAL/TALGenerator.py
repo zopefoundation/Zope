@@ -245,7 +245,7 @@ class TALGenerator:
     def emitRepeat(self, arg, position=(None, None)):
         m = re.match("(?s)\s*(%s)\s+(.*)\Z" % NAME_RE, arg)
         if not m:
-            raise TALError("invalid repeat syntax: " + `repeat`, position)
+            raise TALError("invalid repeat syntax: " + `arg`, position)
         name, expr = m.group(1, 2)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
@@ -281,7 +281,7 @@ class TALGenerator:
     def emitFillSlot(self, slotName, position=(None, None)):
         program = self.popProgram()
         if self.slots.has_key(slotName):
-            raise METALError("duplicate slot definition: %s" % slotName,
+            raise METALError("duplicate fill-slot name: %s" % slotName,
                              position)
         self.slots[slotName] = program
         self.emit("fillSlot", slotName, program)
