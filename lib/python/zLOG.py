@@ -249,11 +249,11 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
 
     if error:
         try:
-            _stupid_dest(format_exception(
+            _stupid_dest.write(format_exception(
                 error[0], error[1], error[2],
                 trailer='\n', limit=100))
         except:
-            _stupid_dest("%s: %s\n" % error[:2])
+            _stupid_dest.write("%s: %s\n" % error[:2])
             
 
 
