@@ -537,6 +537,13 @@ if os.name == 'posix':
 # will write to this pidfile instead of Zope.
 PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
 
+# Import logging support
+import zLOG
+
+if not READ_ONLY:
+    # possibly write an event log file
+    zLOG.initialize()
+
 if USE_DAEMON and not READ_ONLY:
     import App.FindHomes
     sys.ZMANAGED=1
@@ -553,18 +560,6 @@ def _warn_nobody():
                                "dedicated user account for Zope") )
 
 try:
-    # Import logging support
-    import zLOG
-    import ZLogger
-
-    if READ_ONLY:
-        if hasattr(zLOG, '_set_stupid_dest'):
-            zLOG._set_stupid_dest(sys.stderr)
-        else:
-            zLOG._stupid_dest = sys.stderr
-    else:
-        zLOG.log_write = ZLogger.ZLogger.log_write
-
     if DETAILED_LOG_FILE:
         from ZServer import DebugLogger
         logfile=os.path.join(CLIENT_HOME, DETAILED_LOG_FILE)
