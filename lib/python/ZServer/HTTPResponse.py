@@ -257,8 +257,6 @@ class ZServerHTTPResponse(HTTPResponse):
             t.write(data)
             self._tempstart=e
             stdout.write(file_part_producer(t,b,e), l)
-
-    # XXX add server headers, etc to write()
     
     def _finish(self):
         stdout=self.stdout
@@ -273,6 +271,7 @@ class ZServerHTTPResponse(HTTPResponse):
         
         self.stdout=None # need to break cycle?
         self._request=None
+
 
 class ChannelPipe:
     """Experimental pipe from ZPublisher to a ZServer Channel.
