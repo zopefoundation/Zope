@@ -15,6 +15,7 @@ class ExpressionTests(unittest.TestCase):
         e.compile('string:A$B')
         e.compile('string:a ${x/y} b ${y/z} c')
         e.compile('python: 2 + 2')
+        e.compile('python: 2 \n+\n 2\n')
         
 def test_suite():
     return unittest.makeSuite(ExpressionTests)

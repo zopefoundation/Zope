@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -95,7 +95,7 @@ from MultiMapping import MultiMapping
 StringType = type('')
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
-_parse_expr = re.compile(r"(%s):(.*)" % NAME_RE).match
+_parse_expr = re.compile(r"(%s):" % NAME_RE).match
 _valid_name = re.compile('%s$' % NAME_RE).match
 
 class TALESError(Exception):
@@ -195,7 +195,8 @@ class Engine:
     def compile(self, expression):
         m = _parse_expr(expression)
         if m:
-            type, expr = m.group(1, 2)
+            type = m.group(1)
+            expr = expression[m.end():]
         else:
             type = "standard"
             expr = expression

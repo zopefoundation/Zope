@@ -10,3 +10,4 @@ Page Template changes
 
       Bugs Fixed
 
+        - Expressions with embedded newlines were broken
