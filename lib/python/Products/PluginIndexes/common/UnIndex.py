@@ -206,6 +206,9 @@ class UnIndex(SimpleItem):
         # First we need to see if there's anything interesting to look at
         datum = self._get_object_datum(obj, attr)                        
 
+
+#        print self.getId(), obj.absolute_url(1), datum
+
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
         oldDatum = self._unindex.get(documentId, _marker)
@@ -241,8 +244,13 @@ class UnIndex(SimpleItem):
 
     def numObjects(self):
         """ return number of indexed objects """
-        return len(self)
+        print 'numobjects', self.getId(), len(self._unindex)
+        return len(self._unindex)
 
+    def indexSize(self):
+        """ return of distinct values indexed"""
+        print 'indexSize', self.getId(), len(self)
+        return len(self)
 
     def unindex_object(self, documentId):
         """ Unindex the object with integer id 'documentId' and don't

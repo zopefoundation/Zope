@@ -2,7 +2,7 @@
 <dtml-var manage_tabs>
 
 <p class="form-help">
-Nothing to manage at this time.
+Objects indexed: <dtml-var numObjects>
 </p>
 
 

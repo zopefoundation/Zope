@@ -6,6 +6,10 @@ You can update this DateRangeIndex by editing the following field and clicking
 <emUpdate</em>.
 </p>
 
+<p>
+Objects indexed: <dtml-var numObjects>
+</p>
+
 <form action="&dtml-URL1;/manage_edit" method="POST">
 <table cellpadding="2" cellspacing="0" border="0">
 <tr>
