@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.27 1998/03/23 20:25:59 jim Exp $
+  $Id: ExtensionClass.c,v 1.28 1998/03/24 16:18:54 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.27 1998/03/23 20:25:59 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.28 1998/03/24 16:18:54 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -877,7 +877,7 @@ PMethod_getattro(PMethod *self, PyObject *oname)
 
   if(self->meth)
     {
-      if(r=PyObject_GetAttr(self->meth, oname)) return r;
+      if((r=PyObject_GetAttr(self->meth, oname))) return r;
       PyErr_Clear();
 
       if(self->self) /* Psuedo attrs */
@@ -909,7 +909,7 @@ PMethod_setattro(PMethod *self, PyObject *oname, PyObject *v)
 
   if(self->meth)
     {
-      if(spam=PyObject_GetAttr(self->meth, oname))
+      if((spam=PyObject_GetAttr(self->meth, oname)))
 	{
 	  Py_DECREF(spam);
 	  PyErr_SetString(PyExc_TypeError,
@@ -2562,7 +2562,7 @@ subclass_length(PyObject *self)
 	 answer that we are true.
        */
       PyErr_Clear();
-      if(m=subclass_getspecial(self,py__getitem__))
+      if((m=subclass_getspecial(self,py__getitem__)))
 	{
 	  /* Hm, we have getitem, must be error */
 	  Py_DECREF(m);
@@ -3349,7 +3349,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.27 $";
+  char *rev="$Revision: 1.28 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3390,6 +3390,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.28  1998/03/24 16:18:54  jim
+  Added parens to make gcc SHUT UP!
+
   Revision 1.27  1998/03/23 20:25:59  jim
   Changed the way that methods in pure mix-in classes are constructed.
   Now methods are wrapped in such a way that tricky wrapper objects

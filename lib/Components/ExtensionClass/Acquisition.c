@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.18 1998/03/24 16:21:17 jim Exp $
+  $Id: Acquisition.c,v 1.19 1998/03/24 16:23:19 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -296,7 +296,6 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 {
   PyObject *r;
   char *name;
-  int ir;
 
   name=PyString_AsString(oname);
   if(*name++=='a' && *name++=='q' && *name++=='_'
@@ -304,7 +303,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 
   if(sob && self->obj)
     {
-      if(r=PyObject_GetAttr(self->obj,oname))
+      if((r=PyObject_GetAttr(self->obj,oname)))
 	{
 	  if(r->ob_type==self->ob_type)
 	    {
@@ -593,7 +592,7 @@ Wrapper_length(Wrapper *self)
 	 answer that we are true, otherwise raise an error.
 	 */
       PyErr_Clear();
-      if(r=PyObject_GetAttr(OBJECT(self), py__getitem__))
+      if((r=PyObject_GetAttr(OBJECT(self), py__getitem__)))
 	{
 	  /* Hm, we have getitem, must be error */
 	  Py_DECREF(r);
@@ -859,7 +858,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.18 $";
+  char *rev="$Revision: 1.19 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -878,7 +877,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.18 1998/03/24 16:21:17 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.19 1998/03/24 16:23:19 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -901,6 +900,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.19  1998/03/24 16:23:19  jim
+  Added parens to make gcc SHUT UP!
+
   Revision 1.18  1998/03/24 16:21:17  jim
   Fixed bad return in wrapper special.
 
