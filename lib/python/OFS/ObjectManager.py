@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.66 1999/04/16 13:54:23 brian Exp $"""
+$Id: ObjectManager.py,v 1.67 1999/04/19 22:30:29 jim Exp $"""
 
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -128,7 +128,7 @@ class ObjectManager(
     )
 
 
-    meta_type  ='ObjectManager'
+    meta_type  ='Object Manager'
 
     meta_types=() # Sub-object types that are specific to this object
     
