@@ -79,15 +79,17 @@ redistributed under the Zope Public License.
 TO DO
 -----
 
+(See also http://www.zope.org/Members/jim/ZPTIssueTracker .)
+
+- Need to remove leading whitespace and newline when omitting an
+  element (either through tal:replace with a value of nothing or
+  tal:condition with a false condition).
+
+- Empty TAL/METAL attributes are ignored: tal:replace="" is ignored
+  rather than causing an error.
+
 - HTMLTALParser.py and TALParser.py are silly names.  Should be
   HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,
   without "TAL"?)
 
 - Should we preserve case of tags and attribute names in HTML?
-
-- The implementation of insertStructure is very heavy-handed, and
-  maybe should be simplified (possibly all it should do is not to
-  escape <, > and &).  It's also possible that the combination of
-  tal:replace and tal:attributes should not be required to do
-  attribute replacement on the inserted text -- this would require a
-  change to the TAL spec though.
