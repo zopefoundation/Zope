@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.29 1997/12/31 16:43:29 brian Exp $"""
+$Id: Folder.py,v 1.30 1997/12/31 17:13:23 brian Exp $"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -29,13 +29,12 @@ class FolderHandler:
 	return Folder
 	return self.__class__
 
-    def manage_addFolder(self,id,title='',acl_type='A',acl_roles=[],
-			 createPublic=0, createUserF=0,REQUEST=None):
+    def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
+			 REQUEST=None):
 	"""Add a new Folder object"""
 	i=self.folderClass()()
 	i.id=id
 	i.title=title
-	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 
 	if createUserF: i.manage_addUserFolder()
@@ -184,7 +183,6 @@ class PUTer:
 	else: i=Image.File()
 	i._init(name, BODY, type)
 	i.title=''
-	i._setRoles('A',[])
 	self._parent._setObject(name,i)
 	return 'OK'
 

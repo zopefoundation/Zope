@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.9 1997/12/31 16:53:42 brian Exp $'''
+$Id: Session.py,v 1.10 1997/12/31 17:13:25 brian Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -20,20 +20,12 @@ from ImageFile import ImageFile
 
 _addForm=Globals.HTMLFile('sessionAdd', globals())
 def addForm(realself, self, REQUEST, **ignored):
-    return _addForm(self, REQUEST,
-		    selectedRoles=map(
-			lambda i:
-			('<OPTION VALUE="%s"%s>%s' %
-			 (i, i=='manage' and ' SELECTED' or '', i))
-			, self.validRoles()),
-		    aclEChecked=' CHECKED', aclAChecked='', aclPChecked=''
-		    )
+    return _addForm(self, REQUEST)
 
-def add(self, id, title, acl_type='A',acl_roles=[], REQUEST=None):
+def add(self, id, title, REQUEST=None):
     'Add a session'
     i=Session()
     i._init(id, title, REQUEST)
-    i._setRoles(acl_type,acl_roles)
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
 
@@ -68,7 +60,7 @@ class Session(Persistence.Persistent,
     ('View management screens', ['manage','manage_tabs','index_html']),
     ('Change permissions', ['manage_access']),
     ('Edit session', ['manage_edit']),
-    ('Join/leave session' ['enter','leave','leave_another']),
+    ('Join/leave session', ['enter','leave','leave_another']),
     ('Save/discard session', ['save','discard']),
     )
    
@@ -91,11 +83,9 @@ class Session(Persistence.Persistent,
 	if Globals.SessionBase[self.cookie].nonempty(): return '%s *' % r
 	return r
 
-    def manage_edit(self, title, acl_type='A',acl_roles=[], REQUEST=None):
+    def manage_edit(self, title, REQUEST=None):
 	'Modify a session'
-	self._setRoles(acl_type,acl_roles)
-	self.title=title
-	
+	self.title=title	
 	if REQUEST is not None: return self.manage_editedDialog(REQUEST)
 
     def enter(self, REQUEST, RESPONSE):
@@ -136,7 +126,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 
@@ -144,6 +134,9 @@ __version__='$Revision: 1.9 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.10  1997/12/31 17:13:25  brian
+# Security changes
+#
 # Revision 1.9  1997/12/31 16:53:42  brian
 # Added security info
 #

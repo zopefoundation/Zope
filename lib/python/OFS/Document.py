@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -73,8 +73,8 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
     manage_uploadForm=HTMLFile('documentUpload', globals())
     manage=manage_main=manage_editDocument=manage_editForm
 
-    def manage_edit(self,data,title,acl_type='A',acl_roles=[],SUBMIT='Change',
-		    dtpref_cols='50',dtpref_rows='20',REQUEST=None):
+    def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
+		    dtpref_rows='20',REQUEST=None):
 	"""Edit method"""
         if SUBMIT=='Smaller':
             rows=atoi(dtpref_rows)-5
@@ -98,7 +98,6 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 					dtpref_cols=cols,dtpref_rows=rows)
 
 	self.title=title
-	self._setRoles(acl_type,acl_roles)
 	self.munge(data)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
@@ -110,7 +109,6 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
     def validRoles(self):
 	return self.aq_parent.validRoles()
 
-    PUT__roles__='manage',
     def PUT(self, BODY, REQUEST):
 	'handle PUT requests'
 	self.munge(BODY)
@@ -130,13 +128,11 @@ class DocumentHandler:
 
     manage_addDocumentForm=HTMLFile('documentAdd', globals())
 
-    def manage_addDocument(self,id,title='',file='',
-			   acl_type='A',acl_roles=[],REQUEST=None):
+    def manage_addDocument(self,id,title='',file='',REQUEST=None):
 	"""Add a new Document object"""
 	if not file: file=default_html
         i=Document(file, __name__=id)
 	i.title=title
-	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 	if REQUEST: return self.manage_main(self,REQUEST)
 

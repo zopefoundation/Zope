@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -47,13 +47,10 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 		  ('View Access', ['View',]),
 		 )
 
-    def manage_edit(self,title,content_type,
-		    acl_type='A',acl_roles=[], REQUEST=None):
+    def manage_edit(self,title,content_type,REQUEST=None):
 	""" """
 	self.title=title
 	self.content_type=content_type
-	self.title=title
-	self._setRoles(acl_type,acl_roles)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
     def manage_upload(self,file='', REQUEST=None):
@@ -120,23 +117,19 @@ class ImageHandler:
     manage_addFileForm=HTMLFile('imageAdd', globals(),  Kind='File', kind='file')
     manage_addImageForm=HTMLFile('imageAdd', globals(), Kind='Image', kind='image')
 
-    def manage_addImage(self,id,file,title='',acl_type='A',acl_roles=[],
-			REQUEST=None):
+    def manage_addImage(self,id,file,title='',REQUEST=None):
 	"""Add a new Image object"""
 	i=Image()
 	i._init(id,file)
 	i.title=title
-	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
-    def manage_addFile(self,id,file,title='',acl_type='A',acl_roles=[],
-			REQUEST=None):
+    def manage_addFile(self,id,file,title='',REQUEST=None):
 	"""Add a new Image object"""
 	i=File()
 	i._init(id,file)
 	i.title=title
-	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
