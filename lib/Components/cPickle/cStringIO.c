@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.20 1997/06/13 20:50:50 jim Exp $
+  $Id: cStringIO.c,v 1.21 1997/06/19 18:51:42 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -84,6 +84,8 @@ static char cStringIO_module_documentation[] =
 "  \n"
 "If someone else wants to provide a more complete implementation,\n"
 "go for it. :-)  \n"
+"\n"
+"$Id: cStringIO.c,v 1.21 1997/06/19 18:51:42 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -625,6 +627,9 @@ initcStringIO() {
 /******************************************************************************
 
   $Log: cStringIO.c,v $
+  Revision 1.21  1997/06/19 18:51:42  jim
+  Added ident string.
+
   Revision 1.20  1997/06/13 20:50:50  jim
   - Various changes to make gcc -Wall -pedantic happy, including
     getting rid of staticforward declarations and adding pretend use
