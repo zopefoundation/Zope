@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.69 1999/08/03 20:18:37 jim Exp $'''
-__version__='$Revision: 1.69 $'[11:-2]
+$Id: DA.py,v 1.70 1999/08/26 18:01:45 jim Exp $'''
+__version__='$Revision: 1.70 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -485,7 +485,7 @@ class Traverse(ExtensionClass.Base):
 
         try: return getattr(r,key)
         except AttributeError, v:
-            if v!=key: raise AttributeError, v
+            if str(v) != key: raise AttributeError, v
 
         return r[key]
 
