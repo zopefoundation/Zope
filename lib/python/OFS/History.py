@@ -84,11 +84,11 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals, ndiff, ExtensionClass
 from DateTime import DateTime
-from Acquisition import Implicit
+from Acquisition import Implicit, aq_base
 from string import join, split, atoi, strip
 from struct import pack, unpack
 from cgi import escape
@@ -213,10 +213,12 @@ class Historical(ExtensionClass.Base):
             self.manage_beforeHistoryCopy()
             state=self._p_jar.oldstate(self, serial)
             # Scrub the object before restoring the old state
-            self._p_changed=0
-            self._p_deactivate()
-            self.__setstate__(state)
-            self._p_changed=1
+            base = aq_base(self)
+            base._p_changed=0
+            base._p_deactivate()
+            base.__setstate__(state)
+            base._p_changed=1
+            
             self.manage_afterHistoryCopy()
 
         if RESPONSE is not None and URL1 is not None:
