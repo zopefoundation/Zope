@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.69 $
+$Revision: 1.70 $
 """
 
 import time
@@ -338,7 +338,10 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 revid = oid+tid
                 vid = self._metadata[revid][:8]
                 self._metadata.delete(revid, txn=txn)
-                self._pickles.delete(revid, txn=txn)
+                try:
+                    self._pickles.delete(revid, txn=txn)
+                except db.DBNotFoundError:
+                    pass
                 # Clean up the object revisions table
                 try:
                     cr.set(oid+tid)
