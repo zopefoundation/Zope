@@ -14,8 +14,8 @@
    the object to a string.            </p>
 
 <ul>
-<li><p>Blah                              </p></li>
-<li><p>Blaf                              <table border="1" cellpadding="2">
+<li>Blah                              </li>
+<li>Blaf                              <table border="1" cellpadding="2">
 <tr>
 <th colspan="1" align="center" valign="top"><p>  Name   </p>
 </th>
@@ -36,7 +36,7 @@
 </td>
 </tr>
 </table>
-</p></li>
+</li>
 
 </ul>
 </td>

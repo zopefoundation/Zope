@@ -103,8 +103,8 @@
       over acquisition.  This is done by:</p>
 
 <ul>
-<li><p>subclassing from <code>Acquisition.Explicit</code>, and</p></li>
-<li><p>setting all attributes that should be acquired to the special
+<li>subclassing from <code>Acquisition.Explicit</code>, and</li>
+<li>setting all attributes that should be acquired to the special
         value: <code>Acquisition.Acquired</code>.  Setting an attribute to this
         value also allows inherited attributes to be overridden with
         acquired ones.<p>        For example, in:
@@ -123,7 +123,7 @@
         <code>Acquisition.Acquired</code> value can be used in
         <code>Acquisition.Implicit</code> objects to implicitly acquire selected
         objects that smell like private objects.</p>
-</p></li>
+</li>
 
 </ul>
 <h3>    Filtered Acquisition</h3>
@@ -136,11 +136,11 @@
 <p>      The filter function is called with five arguments:</p>
 
 <ul>
-<li><p>The object that the <code>aq_acquire</code> method was called on,</p></li>
-<li><p>The object where an object was found,</p></li>
-<li><p>The name of the object, as passed to <code>aq_acquire</code>,</p></li>
-<li><p>The object found, and</p></li>
-<li><p>The extra data passed to <code>aq_acquire</code>.</p></li>
+<li>The object that the <code>aq_acquire</code> method was called on,</li>
+<li>The object where an object was found,</li>
+<li>The name of the object, as passed to <code>aq_acquire</code>,</li>
+<li>The object found, and</li>
+<li>The extra data passed to <code>aq_acquire</code>.</li>
 
 </ul>
 <p>      If the filter returns a true object that the object found is

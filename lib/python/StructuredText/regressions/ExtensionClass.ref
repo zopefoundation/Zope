@@ -14,9 +14,9 @@
     treated like other python classes:</p>
 
 <ul>
-<li><p>They can be sub-classed in python,</p></li>
-<li><p>They provide access to method documentation strings, and</p></li>
-<li><p>They can be used to directly create new instances.</p></li>
+<li>They can be sub-classed in python,</li>
+<li>They provide access to method documentation strings, and</li>
+<li>They can be used to directly create new instances.</li>
 
 </ul>
 <p>    An example class shows how extension classes are implemented and how
@@ -25,15 +25,15 @@
     instance semantics, including:</p>
 
 <ul>
-<li><p>A protocol for accessing subobjects "in the context of" their
+<li>A protocol for accessing subobjects "in the context of" their
       containers.  This is used to implement custom method types
-      and <a href="Acquisition.html">environmental acquisition</a>.</p></li>
-<li><p>A protocol for overriding method call semantics.  This is used
+      and <a href="Acquisition.html">environmental acquisition</a>.</li>
+<li>A protocol for overriding method call semantics.  This is used
       to implement "synchonized" classes and could be used to
-      implement argument type checking.</p></li>
-<li><p>A protocol for class initialization that supports execution of a
+      implement argument type checking.</li>
+<li>A protocol for class initialization that supports execution of a
       special <code>__class_init__</code> method after a class has been
-      initialized. </p></li>
+      initialized. </li>
 
 </ul>
 <p>    Extension classes illustrate how the Python class mechanism can be
@@ -46,8 +46,8 @@
 <p>    Currently, Python provides two ways of defining new kinds of objects:</p>
 
 <ul>
-<li><p>Python classes</p></li>
-<li><p>Extension types</p></li>
+<li>Python classes</li>
+<li>Extension types</li>
 
 </ul>
 <p>    Each approach has it's strengths.  Extension types provide much greater
@@ -104,15 +104,15 @@
     provided a number of important features, including:</p>
 
 <ul>
-<li><p>Definition of extension types that provide class-like meta-data
-      and that can be called to create instances.</p></li>
-<li><p>Ability to subclass in python from C types.</p></li>
-<li><p>Ability to define classes in python who's data are stored as
+<li>Definition of extension types that provide class-like meta-data
+      and that can be called to create instances.</li>
+<li>Ability to subclass in python from C types.</li>
+<li>Ability to define classes in python who's data are stored as
       C structures rather than in dictionaries to better interface to
-      C and C++ libraries, and for better performance.</p></li>
-<li><p>Less dynamic data structures.  In particular, the data structure
-      for a class is declared during class definition.</p></li>
-<li><p>Support for enumeration types.</p></li>
+      C and C++ libraries, and for better performance.</li>
+<li>Less dynamic data structures.  In particular, the data structure
+      for a class is declared during class definition.</li>
+<li>Support for enumeration types.</li>
 
 </ul>
 <p>    This work was not released, initially.</p>
@@ -130,20 +130,20 @@
     has a few drawbacks:</p>
 
 <ul>
-<li><p>Only single inheritance is supported.</p></li>
-<li><p>The mechanisms for defining MESS extension types is very different
+<li>Only single inheritance is supported.</li>
+<li>The mechanisms for defining MESS extension types is very different
       from and more complicated than the standard Python type creation
-      mechanism.</p></li>
-<li><p>Defining MESS types requires the use of an extensive C
+      mechanism.</li>
+<li>Defining MESS types requires the use of an extensive C
       applications programming interface.  This presents problems for
       configuring dynamically-loaded extension modules unless the MESS
-      library is linked into the Python interpreter.</p></li>
-<li><p>Because the system tries to do a number of different things, it is
-      fairly large, about 15,000 lines.</p></li>
-<li><p>There is very little documentation, especially for the C
-      programming interface.</p></li>
-<li><p>The system is a work in progress, with a number of outstanding
-      bugs.</p></li>
+      library is linked into the Python interpreter.</li>
+<li>Because the system tries to do a number of different things, it is
+      fairly large, about 15,000 lines.</li>
+<li>There is very little documentation, especially for the C
+      programming interface.</li>
+<li>The system is a work in progress, with a number of outstanding
+      bugs.</li>
 
 </ul>
 <p>    As MESS matures, we expect most of these problems to be addressed.</p>
@@ -156,16 +156,16 @@
     classes. The module was designed to meet the following goal:</p>
 
 <ul>
-<li><p>Provide class-like behavior for extension types, including
-      interfaces for meta information and for constructing instances.</p></li>
-<li><p>Support sub-classing in Python from extension classes, with support
-      for multiple inheritance.</p></li>
-<li><p>Provide a small hardened implementation that can be used for
-      current products.</p></li>
-<li><p>Provide a mechanism that requires minimal modification to existing
-      extension types.</p></li>
-<li><p>Provide a basis for research on alternative semantics for classes
-      and inheritance.</p></li>
+<li>Provide class-like behavior for extension types, including
+      interfaces for meta information and for constructing instances.</li>
+<li>Support sub-classing in Python from extension classes, with support
+      for multiple inheritance.</li>
+<li>Provide a small hardened implementation that can be used for
+      current products.</li>
+<li>Provide a mechanism that requires minimal modification to existing
+      extension types.</li>
+<li>Provide a basis for research on alternative semantics for classes
+      and inheritance.</li>
 
 </ul>
 <p>    <strong>Note:</strong> I use <em>non-standard</em> terminology here.  By standard
@@ -182,14 +182,14 @@
       following two rules:</p>
 
 <ul>
-<li><p>The first super class listed in the class statement defining an
+<li>The first super class listed in the class statement defining an
         extension subclass must be either a base extension class or an
         extension subclass.  This restriction will be removed in
-        Python-1.5.</p></li>
-<li><p>At most one base extension direct or indirect super class may
+        Python-1.5.</li>
+<li>At most one base extension direct or indirect super class may
         define C data members.  If an extension subclass inherits from
         multiple base extension classes, then all but one must be mix-in
-        classes that provide extension methods but no data.</p></li>
+        classes that provide extension methods but no data.</li>
 
 </ul>
 <h3>    Meta Information</h3>
@@ -227,10 +227,10 @@
     extension type is implemented, except:</p>
 
 <ul>
-<li><p>The include file, <code>ExtensionClass.h</code>, must be included.</p></li>
-<li><p>The type structure is declared to be of type <code>PyExtensionClass</code>, rather 
-      than of type <code>PyTypeObject</code>.</p></li>
-<li><p>The type structure has an additional member that must be defined
+<li>The include file, <code>ExtensionClass.h</code>, must be included.</li>
+<li>The type structure is declared to be of type <code>PyExtensionClass</code>, rather 
+      than of type <code>PyTypeObject</code>.</li>
+<li>The type structure has an additional member that must be defined
       after the documentation string.  This extra member is a method chain
       (<code>PyMethodChain</code>) containing a linked list of method definition
       (<code>PyMethodDef</code>) lists.  Method chains can be used to implement
@@ -238,16 +238,16 @@
       but simply define method lists, which are null-terminated arrays
       of method definitions.  A macro, <code>METHOD_CHAIN</code> is defined in
       <code>ExtensionClass.h</code> that converts a method list to a method chain.
-      (See the example below.)</p></li>
-<li><p>Module functions that create new instances must be replaced by 
+      (See the example below.)</li>
+<li>Module functions that create new instances must be replaced by 
       <code>__init__</code> methods that initialize, but does not create storage for 
-      instances.</p></li>
-<li><p>The extension class must be initialized and exported to the module
+      instances.</li>
+<li>The extension class must be initialized and exported to the module
       with:
 <pre>
           PyExtensionClass_Export(d,"name",type);
 </pre>
-</p></li>
+</li>
 
 </ul>
 <p>      where <code>name</code> is the module name and <code>type</code> is the extension class
@@ -352,9 +352,9 @@
 <h4>      We have found many applications for this, including:</h4>
 
 <ul>
-<li><p>User-defined method objects, </p></li>
-<li><p><a href="Acquisition.html">Acquisition</a>, and</p></li>
-<li><p>Computed attributes</p></li>
+<li>User-defined method objects, </li>
+<li><a href="Acquisition.html">Acquisition</a>, and</li>
+<li>Computed attributes</li>
 
 </ul>
 <h4>      User-defined method objects</h4>
@@ -508,7 +508,7 @@
     and that deserve mention.</p>
 
 <ul>
-<li><p>In Python 1.4, the class extension mechanism described in <a href="#ref4">[4]</a> required
+<li>In Python 1.4, the class extension mechanism described in <a href="#ref4">[4]</a> required
       that the first superclass in a list of super-classes must be of the
       extended class type.  This may not be convenient if mix-in
       behavior is desired.  If a list of base classes starts with a
@@ -525,8 +525,8 @@
       the restriction that the first non-class object in a list of
       base classes must be the first in the list may reappear in later
       versions of Python.</p>
-</p></li>
-<li><p>Currently, only one base extension class can define any data in
+</li>
+<li>Currently, only one base extension class can define any data in
       C.  The data layout of subclasses-instances is the same as for the
       base class that defines data in C, except that the data structure
       is extended to hold an instance dictionary.  The data structure
@@ -540,10 +540,10 @@
       to make sure that methods were bound to the correct base data
       structure.  Alternatively, the signature of C methods could be
       expanded to allow pointers to expected class data to be passed
-      in addition to object pointers.</p></li>
-<li><p>There is currently no support for sub-classing in C, beyond that
-      provided by method chains.</p></li>
-<li><p>Rules for mixed-type arithmetic are different for python class
+      in addition to object pointers.</li>
+<li>There is currently no support for sub-classing in C, beyond that
+      provided by method chains.</li>
+<li>Rules for mixed-type arithmetic are different for python class
       instances than they are for extension type instances.  Python
       classes can define right and left versions of numeric binary
       operators, or they can define a coercion operator for converting
@@ -554,20 +554,20 @@
       classes are based on extension types, they are currently limited
       to the coercion-based approach.  It should be possible to
       extend the extension class implementation to allow both types of
-      mixed-type arithmetic control.</p></li>
-<li><p>I considered making extension classes immutable, meaning that
+      mixed-type arithmetic control.</li>
+<li>I considered making extension classes immutable, meaning that
       class attributes could not be set after class creation.  I also
       considered making extension subclasses cache inherited
       attributes.  Both of these are related and attractive for some
       applications, however, I decided that it would be better to retain
       standard class instance semantics and provide these features as
-      options at a later time.</p></li>
-<li><p>The extension class module defines new method types to bind C and
+      options at a later time.</li>
+<li>The extension class module defines new method types to bind C and
       python methods to extension class instances.  It would be useful
       for these method objects to provide access to function call
       information, such as the number and names of arguments and the
       number of defaults, by parsing extension function documentation
-      strings.</p></li>
+      strings.</li>
 
 </ul>
 <h2>  Applications</h2>
@@ -583,11 +583,11 @@
 <p>    The extension-class mechanism described here provides a way to add
     class services to extension types.  It allows:
 <ul>
-<li><p>Sub-classing extension classes in Python,</p></li>
-<li><p>Construction of extension class instances by calling extension
-        classes,</p></li>
-<li><p>Extension classes to provide meta-data, such as unbound methods
-        and their documentation string.</p></li>
+<li>Sub-classing extension classes in Python,</li>
+<li>Construction of extension class instances by calling extension
+        classes,</li>
+<li>Extension classes to provide meta-data, such as unbound methods
+        and their documentation string.</li>
 
 </ul>
 </p>
