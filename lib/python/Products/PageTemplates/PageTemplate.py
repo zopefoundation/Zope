@@ -87,9 +87,9 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
-import os, sys, traceback
+import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALGenerator import TALGenerator
@@ -127,6 +127,7 @@ class PageTemplate:
              'options': {},
              'nothing': None,
              'request': None,
+             'modules': ModuleImporter,
              }
         parent = getattr(self, 'aq_parent', None)
         if parent is not None:
@@ -145,7 +146,8 @@ class PageTemplate:
         output = StringIO()
         c = self.pt_getContext()
         c.update(extra_context)
-        #__traceback_info__ = c
+        if __debug__:
+            __traceback_info__ = pprint.pformat(c)
 
         TALInterpreter(self._v_program, self._v_macros,
                        getEngine().getContext(c),
@@ -218,3 +220,13 @@ class PageTemplate:
 
     def html(self):
         return self.content_type == 'text/html'
+
+class _ModuleImporter:
+    def __getitem__(self, module):
+        mod = __import__(module)
+        path = split(module, '.')
+        for name in path[1:]:
+            mod = getattr(mod, name)
+        return mod
+
+ModuleImporter = _ModuleImporter()

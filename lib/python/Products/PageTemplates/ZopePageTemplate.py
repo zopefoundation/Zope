@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -221,6 +221,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
              'options': {},
              'root': root,
              'request': getattr(root, 'REQUEST', None),
+             'modules': SecureModuleImporter,
              }
         return c
 
@@ -304,6 +305,16 @@ class Src(Acquisition.Explicit):
 d = ZopePageTemplate.__dict__
 d['source.xml'] = d['source.html'] = Src()
 
+from Products.PythonScripts.Guarded import safebin
+class _SecureModuleImporter:
+    __allow_access_to_unprotected_subobjects__ = 1
+    def __getitem__(self, module):
+        mod = safebin['__import__'](module)
+        path = split(module, '.')
+        for name in path[1:]:
+            mod = getattr(mod, name)
+        return mod
+SecureModuleImporter = _SecureModuleImporter()
 
 # Product registration and Add support
 from urllib import quote
