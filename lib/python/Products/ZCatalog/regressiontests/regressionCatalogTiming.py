@@ -25,6 +25,11 @@ from Products.ZCatalog import ZCatalog
 from unittest import TestCase, TestSuite, JUnitTextTestRunner,\
      VerboseTextTestRunner, makeSuite
 
+from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
+from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
+from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
+from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
+
 from Testing.makerequest import makerequest
 
 TextTestRunner = VerboseTextTestRunner
