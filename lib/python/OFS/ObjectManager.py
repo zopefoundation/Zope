@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.19 1997/11/11 21:25:29 brian Exp $"""
+$Id: ObjectManager.py,v 1.20 1997/11/18 14:10:50 jim Exp $"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -387,6 +387,12 @@ class ObjectManager(Acquirer,Management,Persistent):
 	'<TEXTAREA NAME="%s:lines" ROWS="10" COLS="40">%s</TEXTAREA>'
 	% (n,v))
 
+    def _tokensInput(self,n,t,v):
+	try: v=html_quote(join(v,' '))
+	except: v=''
+        return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
+		% (n,t,html_quote(v)))
+
     def _textInput(self,n,t,v):
         return ('<TEXTAREA NAME="%s" ROWS="10" COLS="40">%s</TEXTAREA>'
 		% (n,html_quote(v)))
@@ -399,11 +405,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	'lines': 	_linesInput,
 	'text':  	_textInput,
 	'date':	 	_defaultInput,
-	'regex':	_stringInput,
-	'Regex':	_stringInput,
-	'regexs':	_stringInput,
-	'Regexs':	_stringInput,
-	'tokens':	_stringInput,	
+	'tokens':	_tokensInput,	
 #	'boolean':	_booleanInput,	
 	}
 
@@ -449,6 +451,10 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.20  1997/11/18 14:10:50  jim
+# Fixed a bug in handling 'tokens' properties and got rid of regex
+# properties.
+#
 # Revision 1.19  1997/11/11 21:25:29  brian
 # Added copy/paste support, restricted unpickling, fixed DraftFolder bug
 #
