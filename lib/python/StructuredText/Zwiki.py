@@ -1,3 +1,4 @@
+#!/usr/bin/python
 ##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
@@ -83,30 +84,75 @@
 # 
 ##############################################################################
 
-import HTMLClass, DocumentClass
-import ClassicDocumentClass
-from StructuredText import html_with_references, HTML
-from ST import Basic
-import DocBookClass
-import HTMLWithImages
-import DocumentWithImages
+from Html   import HTML
+from string import split
+from ST     import DOC
+import re
 
-ClassicHTML=HTML
-HTMLNG=HTMLClass.HTMLClass()
+"""
+This is the new structured text type.
+"""
 
-def HTML(src, level=0, type=type, StringType=type('')):
-    if type(src) is StringType:
-        return ClassicHTML(src, level)
-    return HTMLNG(src, level)
+class Zwiki_Title:
+   def __init__(self,str=''):
+      self.expr1   = re.compile('([A-Z]+[A-Z]+[a-zA-Z]*)').search
+      self.expr2   = re.compile('([A-Z]+[a-z]+[A-Z]+[a-zA-Z]*)').search
+      self.str    = [str]
+      self.typ    = "Zwiki_Title"
 
-Classic=ClassicDocumentClass.DocumentClass()
-Document=DocumentClass.DocumentClass()
-DocumentWithImages=DocumentWithImages.DocumentWithImages()
-HTMLWithImages=HTMLWithImages.HTMLWithImages()
+   def type(self):
+      return '%s' % self.typ
 
-DocBookBook=DocBookClass.DocBookBook
-DocBookChapter=DocBookClass.DocBookChapter()
-DocBookChapterWithFigures=DocBookClass.DocBookChapterWithFigures()
-DocBookArticle=DocBookClass.DocBookArticle()
+   def string(self):
+      return self.str
 
+   def __getitem__(self,index):
+      return self.str[index]
 
+   def __call__(self,raw_string,subs):
+
+      """
+      The raw_string is checked to see if it matches the rules
+      for this structured text expression. If the raw_string does,
+      it is parsed for the sub-string which matches and a doc_inner_link
+      instance is returned whose string is the matching substring.
+      If raw_string does not match, nothing is returned.
+      """
+
+      if self.expr1(raw_string):
+         start,end               = self.expr1(raw_string).span()
+         result                  = Zwiki_Title(raw_string[start:end])
+         result.start,result.end = self.expr1(raw_string).span()
+         return result
+      elif self.expr2(raw_string):
+         start,end               = self.expr2(raw_string).span()
+         result                  = Zwiki_Title(raw_string[start:end])
+         result.start,result.end = self.expr2(raw_string).span()
+         return result
+      else:
+         return None
+
+   def span(self):
+      return self.start,self.end
+
+class Zwiki_doc(DOC):
+
+   def __init__(self):
+      DOC.__init__(self)
+      """
+      Add the new type to self.types
+      """
+      self.types.append(Zwiki_Title())
+
+class Zwiki_parser(HTML):
+   def __init__(self):
+      HTML.__init__(self)
+      self.types["Zwiki_Title"] = self.zwiki_title
+
+   def zwiki_title(self,object):
+      result = ""
+      for x in object.string():
+         result = result + x
+      result = "<a href=%s>%s</a>" % (result,result)
+      #result = "<dtml-wikiname %s>" % result
+      self.string = self.string + result

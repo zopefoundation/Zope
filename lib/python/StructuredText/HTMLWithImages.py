@@ -83,30 +83,51 @@
 # 
 ##############################################################################
 
-import HTMLClass, DocumentClass
-import ClassicDocumentClass
-from StructuredText import html_with_references, HTML
-from ST import Basic
-import DocBookClass
-import HTMLWithImages
-import DocumentWithImages
+from string import join, split, find
+import re, sys, ST
+import time
 
-ClassicHTML=HTML
-HTMLNG=HTMLClass.HTMLClass()
+from HTMLClass import HTMLClass
 
-def HTML(src, level=0, type=type, StringType=type('')):
-    if type(src) is StringType:
-        return ClassicHTML(src, level)
-    return HTMLNG(src, level)
+ets = HTMLClass.element_types
+ets.update({'StructuredTextImage': 'image'})      
 
-Classic=ClassicDocumentClass.DocumentClass()
-Document=DocumentClass.DocumentClass()
-DocumentWithImages=DocumentWithImages.DocumentWithImages()
-HTMLWithImages=HTMLWithImages.HTMLWithImages()
+class HTMLWithImages(HTMLClass):
 
-DocBookBook=DocBookClass.DocBookBook
-DocBookChapter=DocBookClass.DocBookChapter()
-DocBookChapterWithFigures=DocBookClass.DocBookChapterWithFigures()
-DocBookArticle=DocBookClass.DocBookArticle()
+    element_types = ets
+
+    def document(self, doc, level, output):
+        output('<html>\n')
+        children=doc.getChildNodes()
+        if (children and
+            children[0].getNodeName() == 'StructuredTextSection'):
+           output('<head>\n<title>%s</title>\n</head>\n' %
+                  children[0].getChildNodes()[0].getNodeValue())
+        output('<body bgcolor="#FFFFFF">\n')
+        for c in children:
+           getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+        output('</body>\n')
+        output('</html>\n')
+
+
+    def image(self, doc, level, output):
+        output('<img src="%s" alt="%s">' % (doc.href, doc.getNodeValue()))
+
+
+    def image(self, doc, level, output):
+       if hasattr(doc, 'key'):
+          output('<a name="%s"></a>\n<img src="%s" alt="%s">' % (doc.key, doc.href, doc.getNodeValue()))
+       else:
+          output('<img src="%s" alt="%s">' % (doc.href, doc.getNodeValue()))
+
+
+    def xref(self, doc, level, output):
+        val = doc.getNodeValue()
+        output('<a href="#%s">%s</a>' % (val, val) )
+
+
+
+
+
 
 

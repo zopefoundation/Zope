@@ -83,30 +83,52 @@
 # 
 ##############################################################################
 
-import HTMLClass, DocumentClass
-import ClassicDocumentClass
-from StructuredText import html_with_references, HTML
-from ST import Basic
-import DocBookClass
-import HTMLWithImages
-import DocumentWithImages
+import re, ST, STDOM
+from string import split, join, replace, expandtabs, strip, find
 
-ClassicHTML=HTML
-HTMLNG=HTMLClass.HTMLClass()
+from DocumentClass import *
 
-def HTML(src, level=0, type=type, StringType=type('')):
-    if type(src) is StringType:
-        return ClassicHTML(src, level)
-    return HTMLNG(src, level)
+class StructuredTextImage(StructuredTextMarkup):
+    "A simple embedded image"
 
-Classic=ClassicDocumentClass.DocumentClass()
-Document=DocumentClass.DocumentClass()
-DocumentWithImages=DocumentWithImages.DocumentWithImages()
-HTMLWithImages=HTMLWithImages.HTMLWithImages()
+class DocumentWithImages(DocumentClass):   
+    """
 
-DocBookBook=DocBookClass.DocBookBook
-DocBookChapter=DocBookClass.DocBookChapter()
-DocBookChapterWithFigures=DocBookClass.DocBookChapterWithFigures()
-DocBookArticle=DocBookClass.DocBookArticle()
+    """
 
+
+    text_types = [
+       'doc_img',
+       ] + DocumentClass.text_types
+
+
+    def doc_img(
+        self, s,
+        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9\-.:/;,\n\~]+)').search,
+        expr2=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9\-.:/;,\n\~]+):([a-zA-Z0-9\-.:/;,\n\~]+)').search
+        ):
+
+
+        r = expr2(s)
+        if r:
+            startt, endt = r.span(1)
+            startk, endk = r.span(2)
+            starth, endh = r.span(3)
+            start, end = r.span()
+            return (StructuredTextImage(s[startt:endt], href=s[starth:endh], key=s[startk:endk]), 
+                    start, end)
+
+      
+        else:
+            
+            r=expr1(s)
+
+            if r:
+                startt, endt = r.span(1)
+                starth, endh = r.span(2)
+                start, end = r.span()
+                return (StructuredTextImage(s[startt:endt], href=s[starth:endh]),
+                        start, end)
+
+            return None
 

@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.29 2000/11/10 16:55:56 brian Exp $'''
+$Id: StructuredText.py,v 1.30 2001/01/04 15:01:59 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,6 +256,9 @@ $Id: StructuredText.py,v 1.29 2000/11/10 16:55:56 brian Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.30  2001/01/04 15:01:59  brian
+# Merged StructuredText-Dev
+#
 # Revision 1.29  2000/11/10 16:55:56  brian
 # Fixed stx to allow ampersands in urls.
 #

@@ -82,31 +82,134 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""Provide a thread-safe interface to regex
+"""
+import regex, regsub #, Sync
+from regex import *
+from regsub import split, sub, gsub, splitx, capwords
 
-import HTMLClass, DocumentClass
-import ClassicDocumentClass
-from StructuredText import html_with_references, HTML
-from ST import Basic
-import DocBookClass
-import HTMLWithImages
-import DocumentWithImages
+try: 
+    import thread
+except:
+    class allocate_lock:
+        def acquire(*args): pass
+        def release(*args): pass
 
-ClassicHTML=HTML
-HTMLNG=HTMLClass.HTMLClass()
+else:
+    class SafeFunction:
+        _l=thread.allocate_lock()
+        _a=_l.acquire
+        _r=_l.release
 
-def HTML(src, level=0, type=type, StringType=type('')):
-    if type(src) is StringType:
-        return ClassicHTML(src, level)
-    return HTMLNG(src, level)
+        def __init__(self, f):
+            self._f=f
 
-Classic=ClassicDocumentClass.DocumentClass()
-Document=DocumentClass.DocumentClass()
-DocumentWithImages=DocumentWithImages.DocumentWithImages()
-HTMLWithImages=HTMLWithImages.HTMLWithImages()
+        def __call__(self, *args, **kw):
+            self._a()
+            try: return apply(self._f, args, kw)
+            finally: self._r()
 
-DocBookBook=DocBookClass.DocBookBook
-DocBookChapter=DocBookClass.DocBookChapter()
-DocBookChapterWithFigures=DocBookClass.DocBookChapterWithFigures()
-DocBookArticle=DocBookClass.DocBookArticle()
+    split=SafeFunction(split)
+    sub=SafeFunction(sub)
+    gsub=SafeFunction(gsub)
+    splitx=SafeFunction(splitx)
+    capwords=SafeFunction(capwords)
+
+    allocate_lock=thread.allocate_lock
+
+class compile:
+
+    _r=None
+    groupindex=None
+
+    def __init__(self, *args):
+        self._r=r=apply(regex.compile,args)
+        self._init(r)
+
+    def _init(self, r):
+        lock=allocate_lock()
+        self.__a=lock.acquire
+        self.__r=lock.release
+        self.translate=r.translate
+        self.givenpat=r.givenpat
+        self.realpat=r.realpat
+
+    def match(self, string, pos=0):
+        self.__a()
+        try: return self._r.match(string, pos)
+        finally: self.__r()
+
+    def search(self, string, pos=0):
+        self.__a()
+        try: return self._r.search(string, pos)
+        finally: self.__r()
+        
+    def search_group(self, str, group, pos=0):
+        """Search a string for a pattern.
+
+        If the pattern was not found, then None is returned,
+        otherwise, the location where the pattern was found,
+        as well as any specified group are returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            l=r.search(str, pos)
+            if l < 0: return None
+            return l, apply(r.group, group)
+        finally: self.__r()
+
+    def match_group(self, str, group, pos=0):
+        """Match a pattern against a string
+
+        If the string does not match the pattern, then None is
+        returned, otherwise, the length of the match, as well
+        as any specified group are returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            l=r.match(str, pos)
+            if l < 0: return None
+            return l, apply(r.group, group)
+        finally: self.__r()
+
+    def search_regs(self, str, pos=0):
+        """Search a string for a pattern.
+
+        If the pattern was not found, then None is returned,
+        otherwise, the 'regs' attribute of the expression is
+        returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            r.search(str, pos)
+            return r.regs
+        finally: self.__r()
+
+    def match_regs(self, str, pos=0):
+        """Match a pattern against a string
+
+        If the string does not match the pattern, then None is
+        returned, otherwise, the 'regs' attribute of the expression is
+        returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            r.match(str, pos)
+            return r.regs
+        finally: self.__r()
+
+class symcomp(compile):
+
+    def __init__(self, *args):
+        self._r=r=apply(regex.symcomp,args)
+        self._init(r)
+        self.groupindex=r.groupindex
 
 
+
+
+        
