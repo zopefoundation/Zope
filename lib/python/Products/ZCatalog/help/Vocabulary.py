@@ -83,6 +83,17 @@
 # 
 ##############################################################################
 
+def manage_addVocabulary(self, id, title, globbing=None, REQUEST=None):
+    """
+
+    Add a Vocabulary object to an ObjectManager.
+    
+    """
+
+
+
+
+
 class Vocabulary:
     """
 
@@ -92,13 +103,12 @@ class Vocabulary:
     
     """
 
+    __constructor__=manage_addVocabulary
 
     def query(self, pattern):
         """
 
         Query Vocabulary for words matching pattern.
-
-        Pattern format -- XXX
 
         """
             
@@ -118,9 +128,3 @@ class Vocabulary:
         """
     
 
-def manage_addVocabulary(self, id, title, globbing=None, REQUEST=None):
-    """
-
-    Add a Vocabulary object to an ObjectManager.
-    
-    """

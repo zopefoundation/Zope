@@ -139,8 +139,13 @@ class ZSQLMethod:
 
            employees/employee_id/1234/service_record
 
+        Search results are returned as Record objects.  The schema of
+        a Record objects matches the schema of the table queried in
+        the search.
+
     """
 
+    __constructor__=manage_addZSQLMethod
 
     def __call__(self, REQUEST=None, **kw):
         """

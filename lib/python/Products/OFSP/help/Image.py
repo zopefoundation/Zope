@@ -131,6 +131,8 @@ class Image:
     
     """
 
+    __constructor__=manage_addImage
+
     __extends__=('OFSP.File.File',)
 
     def tag(self, height=None, width=None, alt=None,

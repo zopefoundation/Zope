@@ -129,6 +129,8 @@ class File:
       method.
     """
     
+    __constructor__=manage_addFile
+
     __extends__=(
         'OFSP.ObjectManagerItem.ObjectManagerItem',
         'OFSP.PropertyManager.PropertyManager',

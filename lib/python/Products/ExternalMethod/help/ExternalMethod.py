@@ -131,6 +131,8 @@ class ExternalMethod:
 
     """
 
+    __constructor__=manage_addExternalMethod
+
     def manage_edit(self, title, module, function, REQUEST=None):
         """
         Change the external method

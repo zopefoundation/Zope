@@ -102,6 +102,7 @@ class MailHost:
 
     """
 
+    __constructor__=manage_addMailHost
     
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):

@@ -83,6 +83,19 @@
 # 
 ##############################################################################
 
+def manage_addZCatalog(self, id, title, vocab_id=None):
+    """
+
+    Add a ZCatalog object.
+
+    'vocab_id' is the name of a Vocabulary object this catalog should
+    use.  A value of None will cause the Catalog to create its own
+    private vocabulary.
+
+    """
+
+
+
 
 class ZCatalog:
     """
@@ -95,15 +108,25 @@ class ZCatalog:
 
     Indexes
 
-      Text -- XXX
+      Text -- Text indexes index textual content.  The index can be
+      used to search for objects containing certain words.
 
-      Field -- XXX
+      Field -- Field indexes index atomic values.  The index can be
+      used to search for objects that have certain properties.
 
-      Keyword -- XXX
+      Keyword -- Keyword indexes index sequences of values.  The index
+      can be used to search for objects that match one or more of the
+      search terms.
 
     Meta-data
 
-      XXX
+      The ZCatalog can maintain a table of extra data about cataloged
+      objects.  This information can be used on search result pages to
+      show information about a search result.
+
+      The meta-data table schema is used to build the schema for
+      ZCatalog Result objects.  The objects have the same attributes
+      as the column of the meta-data table.
 
     ZCatalog does not store references to the objects themselves, but
     rather to a unique identifier that defines how to get to the
@@ -112,6 +135,8 @@ class ZCatalog:
     URL, this is an excellent unique qualifier in Zope).
 
     """
+
+    __constructor__=manage_addZCatalog
 
     def catalog_object(self, obj, uid):
         """
@@ -189,13 +214,3 @@ class ZCatalog:
         Search the catalog, the same way as 'searchResults'.
         """
 
-def manage_addZCatalog(self, id, title, vocab_id=None):
-    """
-
-    Add a ZCatalog object.
-
-    'vocab_id' is the name of a Vocabulary object this catalog should
-    use.  A value of None will cause the Catalog to create its own
-    private vocabulary.
-
-    """
