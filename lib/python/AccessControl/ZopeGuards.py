@@ -83,13 +83,14 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
 from RestrictedPython.Utilities import utility_builtins
 from SecurityManagement import getSecurityManager
 from SecurityInfo import secureModule
+from SimpleObjectPolicies import Containers
 
 Unauthorized = 'Unauthorized'
 
@@ -110,6 +111,9 @@ def guarded_getattr(inst, name, default=_marker):
             if default is not _marker:
                 return default
             raise
+        if Containers(type(inst)):
+            # Simple type.  Short circuit.
+            return v
         validate = getSecurityManager().validate
         # Filter out the objects we can't access.
         if hasattr(inst, 'aq_acquire'):
@@ -128,12 +132,26 @@ def guarded_hasattr(object, name):
     return 1
 safe_builtins['hasattr'] = guarded_hasattr
 
-slicetype = type(slice(0))
+SliceType = type(slice(0))
 def guarded_getitem(object, index):
-    if type(object) is slicetype:
-        # We don't guard slices
-        return object[index.start:index.stop]
+    if type(index) is SliceType:
+        if index.step is not None:
+            v = object[index]
+        else:
+            start = index.start
+            stop = index.stop
+            if start is None:
+                start = 0
+            if stop is None:
+                v = object[start:]
+            else:
+                v = object[start:stop]
+        # We don't guard slices.
+        return v
     v = object[index]
+    if Containers(type(object)):
+        # Simple type.  Short circuit.
+        return v
     if getSecurityManager().validate(object, object, index, v):
         return v
     raise Unauthorized, 'unauthorized access to element %s' % `i`
@@ -159,11 +177,11 @@ def guarded_filter(f, seq, skip_unauthorized=0):
 safe_builtins['filter'] = guarded_filter
 
 def guarded_map(f, *seqs):
-    for seq in seqs:
-        if type(seq) is type(''):
-            raise TypeError, 'cannot map a string'
-        list(seq) # Ensure that it's a sequence
-    return apply(map, tuple([f] + map(full_read_guard, seqs)))
+    safe_seqs = []
+    for seqno in len(seqs):
+        seq = guarded_getitem(f, seqno)
+        safe_seqs.append(seq)
+    return map(f, *safe_seqs)
 safe_builtins['map'] = guarded_map
 
 import sys
