@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.24 2003/10/24 01:21:48 chrism Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.25 2003/11/28 16:44:06 jim Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -31,7 +31,7 @@ else:
         _use_python_impl = 1
 
 
-if _use_python_impl:
+if 1 or _use_python_impl:
 
     from types import StringType, UnicodeType
 
@@ -44,6 +44,32 @@ if _use_python_impl:
     from PermissionRole import _what_not_even_god_should_do, \
          rolesForPermissionOn
 
+    tuple_or_list = tuple, list
+    def getRoles(container, name, value, default):
+        roles = getattr(value, '__roles__', _noroles)
+        if roles is _noroles:
+            if not name or not isinstance(name, basestring):
+                return default
+
+            cls = getattr(container, '__class__', None)
+            if cls is None:
+                return default
+            
+            roles = getattr(cls, name+'__roles__', _noroles)
+            if roles is _noroles:
+                return default
+
+            value = container
+
+        if roles is None or isinstance(roles, tuple_or_list):
+            return roles
+        
+        rolesForPermissionOn = getattr(roles, 'rolesForPermissionOn', None)
+        if rolesForPermissionOn is not None:
+            roles = rolesForPermissionOn(value)
+
+        return roles
+            
 
     class ZopeSecurityPolicy:
 
@@ -93,7 +119,7 @@ if _use_python_impl:
             # If roles weren't passed in, we'll try to get them from the object
 
             if roles is _noroles:
-                roles=getattr(value, '__roles__', _noroles)
+                roles = getRoles(container, name, value, _noroles)
 
             ############################################################
             # We still might not have any roles

@@ -13,8 +13,8 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.7 2003/10/24 01:21:49 chrism Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.8 2003/11/28 16:44:07 jim Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 import os, sys, unittest
 
@@ -43,6 +43,9 @@ class App(Explicit):
 class PublicMethod (Method):
     def getOwner(self):
         return None
+
+    def __call__(*args, **kw):
+        return args, kw
 
     __roles__ = None
 
@@ -267,9 +270,156 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
                 self.fail('Policy accepted bad __roles__')
 
 
+def test_getRoles():
+    """
+
+    >>> from AccessControl.ZopeSecurityPolicy import getRoles
+    
+    >>> class C:
+    ...     x = 'CRole'
+
+    >>> class V:
+    ...     x = 'VRole'
+
+    >>> c = C()
+    >>> c.v = V()
+
+    >>> getRoles(c, None, c.v, 42)
+    42
+    >>> getRoles(c, 'inabox', c.v, 42)
+    42
+
+    >>> c.v.__roles__ = ['spam', 'eggs']
+
+    >>> getRoles(c, None, c.v, 42)
+    ['spam', 'eggs']
+
+    >>> getRoles(c, 'withafox', c.v, 42)
+    ['spam', 'eggs']
+
+    >>> del c.v.__roles__
+
+    >>> V.__roles__ = ('Manager', )
+
+    >>> getRoles(c, None, c.v, 42)
+    ('Manager',)
+    >>> getRoles(c, 'withafox', c.v, 42)
+    ('Manager',)
+
+    >>> del V.__roles__
+
+    >>> c.foo__roles__ = ('Foo', )
+
+    >>> getRoles(c, None, c.v, 42)
+    42
+    >>> getRoles(c, 'foo', c.v, 42)
+    42
+
+    >>> C.foo__roles__ = ('Editor', )
+
+    >>> getRoles(c, None, c.v, 42)
+    42
+    >>> getRoles(c, 'foo', c.v, 42)
+    ('Editor',)
+
+    >>> del C.foo__roles__
+
+    >>> class ComputedRoles:
+    ...     def __init__(self, roles):
+    ...         self.roles = roles
+    ...     def rolesForPermissionOn(self, ob):
+    ...         return [ob.x] + self.roles
+
+    >>> c.v.__roles__ = ComputedRoles(['Member'])
+    >>> getRoles(c, None, c.v, 42)
+    ['VRole', 'Member']
+    >>> getRoles(c, 'foo', c.v, 42)
+    ['VRole', 'Member']
+
+    >>> c.foo__roles__ =  ComputedRoles(['Admin'])
+    >>> getRoles(c, None, c.v, 42)
+    ['VRole', 'Member']
+    >>> getRoles(c, 'foo', c.v, 42)
+    ['VRole', 'Member']
+
+    >>> del c.v.__roles__
+    >>> getRoles(c, None, c.v, 42)
+    42
+    >>> getRoles(c, 'foo', c.v, 42)
+    42
+
+    >>> C.foo__roles__ =  ComputedRoles(['Guest'])
+    >>> getRoles(c, None, c.v, 42)
+    42
+    >>> getRoles(c, 'foo', c.v, 42)
+    ['CRole', 'Guest']
+
+    >>> V.__roles__ = ComputedRoles(['Member'])
+    >>> getRoles(c, None, c.v, 42)
+    ['VRole', 'Member']
+    >>> getRoles(c, 'foo', c.v, 42)
+    ['VRole', 'Member']
+    """
+
+
+def test_zsp_gets_right_roles_for_methods():
+    """
+    >>> zsp = ZopeSecurityPolicy()
+    >>> from ExtensionClass import Base
+    >>> class C(Base):
+    ...     def foo(self):
+    ...         pass
+    ...     foo__roles__ = ['greeneggs', 'ham']
+    ...     def bar(self):
+    ...         pass
+
+    >>> class User:
+    ...     def __init__(self, roles):
+    ...         self.roles = roles
+    ...     def allowed(self, value, roles):
+    ...         for role in roles:
+    ...             if role in self.roles:
+    ...                 return True
+    ...         return False
+
+    >>> class Context:
+    ...     stack = ()
+    ...     def __init__(self, user):
+    ...         self.user = user
+
+    >>> c = C()
+    
+    >>> bool(zsp.validate(c, c, 'foo', c.foo, Context(User(['greeneggs']))))
+    True
+    
+    >>> zsp.validate(c, c, 'foo', c.foo, Context(User(['spam'])))
+    Traceback (most recent call last):
+    ...
+    Unauthorized: You are not allowed to access 'foo' in this context
+
+    >>> c.__roles__ = ['spam']
+    >>> zsp.validate(c, c, 'foo', c.foo, Context(User(['spam'])))
+    Traceback (most recent call last):
+    ...
+    Unauthorized: You are not allowed to access 'foo' in this context
+
+    >>> zsp.validate(c, c, 'bar', c.bar, Context(User(['spam'])))
+    Traceback (most recent call last):
+    ...
+    Unauthorized: You are not allowed to access 'bar' in this context
+
+    >>> c.__allow_access_to_unprotected_subobjects__ = 1
+    >>> bool(zsp.validate(c, c, 'bar', c.bar, Context(User(['spam']))))
+    True
+    
+    """
+
+from doctest import DocTestSuite
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ZopeSecurityPolicyTests, 'test'))
+    suite.addTest(DocTestSuite())
     return suite
 
 def main():
