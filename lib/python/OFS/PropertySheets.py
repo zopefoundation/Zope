@@ -12,7 +12,8 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.85 $'[11:-2]
+
+__version__='$Revision: 1.86 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -26,6 +27,7 @@ from Globals import Persistent
 from Traversable import Traversable
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
+from webdav.common import isDavCollection
 from cgi import escape
 
 class View(App.Management.Tabs, Base):
@@ -120,8 +122,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # space identifier.
 
         if id in self.__reserved_ids:
-            raise ValueError, "'%s' is a reserved Id (forbidden Ids are: %s) " % \
-                     (id, self.__reserved_ids)
+            raise ValueError(
+                  "'%s' is a reserved Id (forbidden Ids are: %s) " % (
+                  id, self.__reserved_ids
+                  ))
 
         self.id=id
         self._md=md or {}
@@ -514,7 +518,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 
     def dav__resourcetype(self):
         vself=self.v_self()
-        if (hasattr(vself, '__dav_collection__') or
+        if (isDavCollection(vself) or 
             getattr(aq_base(vself), 'isAnObjectManager', None)):
             return '<n:collection/>'
         return ''
