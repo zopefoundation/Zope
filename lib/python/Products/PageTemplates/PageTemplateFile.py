@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -167,9 +167,9 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         finally:
             security.removeContext(self)
 
-    def pt_macro(self):
+    def pt_macros(self):
         self._cook_check()
-        return PageTemplate.pt_macro(self)
+        return PageTemplate.pt_macros(self)
 
     def _cook_check(self):
         if self._v_last_read and not DevelopmentMode:
