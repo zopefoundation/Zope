@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.33 2000/08/08 16:06:00 brian Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: HTTPResponse.py,v 1.34 2000/08/16 19:30:04 brian Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -328,8 +328,9 @@ class HTTPResponse(BaseResponse):
                    base_re_search=regex.compile('\(<base[\0- ]+[^>]+>\)',
                                                 regex.casefold).search
                    ):
+
         # Only insert a base tag if content appears to be html.
-        content_type = self.headers.get('content-type', '')[:9]
+        content_type = split(self.headers.get('content-type', ''), ';')[0]
         if content_type and (content_type != 'text/html'):
             return
 
@@ -638,7 +639,7 @@ class HTTPResponse(BaseResponse):
                  self._traceback(t,v,tb)),
                  is_error=1)
 
-        elif lower(strip(b))[:6]=='<html>' or lower(strip(b))[:14]=='<!doctype html':
+        elif lower(strip(b)[:6])=='<html>' or lower(strip(b)[:14])=='<!doctype html':
             # error is an HTML document, not just a snippet of html
             tb=self.setBody(b + self._traceback(t,'(see above)',tb),
                 is_error=1)
@@ -682,7 +683,7 @@ class HTTPResponse(BaseResponse):
         headers=self.headers
         body=self.body
         if body:
-            isHTML=self.isHTML(body)
+            isHTML=contHTML=self.isHTML(body)
             if not headers.has_key('content-type'):
                 if isHTML:
                     c='text/html'
@@ -690,20 +691,19 @@ class HTTPResponse(BaseResponse):
                     c='text/plain'
                 self.setHeader('content-type',c)
             else:
-                isHTML = headers['content-type'][:9] == 'text/html'
-
+                isHTML = split(headers.get('content-type', ''),
+                               ';')[0] == 'text/html'
             if isHTML and end_of_header_search(self.body) < 0:
                 lhtml=html_search(body)
                 if lhtml >= 0:
                     lhtml=lhtml+6
                     body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
-                else:
+                elif contHTML:
                     body='<html><head></head>\n' + body
+                else:
+                    body='<html><head></head>\n' + body + '\n</html>\n'
                 self.setBody(body)
                 body=self.body
-
-#        if not headers.has_key('content-type') and self.status == 200:
-#            self.setStatus('nocontent')
 
         if not headers.has_key('content-length') and \
                 not headers.has_key('transfer-encoding'):
