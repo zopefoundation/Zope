@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.130 $'[11:-2]
+__version__='$Revision: 1.131 $'[11:-2]
 
 import Globals, string, struct
 from OFS.content_types import guess_content_type
@@ -340,8 +340,6 @@ class File(Persistent, Implicit, PropertyManager,
                     return ''
                     
                 else:
-                    # Ignore multi-part ranges for now, pretend we don't know
-                    # about ranges at all.
                     # When we get here, ranges have been optimized, so they are
                     # in order, non-overlapping, and start and end values are
                     # positive integers.
