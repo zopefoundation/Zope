@@ -4,9 +4,8 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-__version__ = '$Revision: 1.3 $'[11:-2]
-
-import sys
+# $Revision: 1.4 $
+__version__ = '0.1'
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net
@@ -46,9 +45,6 @@ class Minimal(BerkeleyBase):
         # Begin the current transaction.  Currently this just makes sure that
         # the commit log is in the proper state.
         if self._commitlog is None:
-            # BAW: the db_home attribute of the DBEnv object is only available
-            # in a suggested patch to PyBSDDB as of 3.0b4
-            #
             # JF: Chris was getting some weird errors / bizarre behavior from
             # Berkeley when using an existing directory or having non-BSDDB
             # files in that directory.
