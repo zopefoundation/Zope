@@ -25,7 +25,8 @@ can generate considerable load on the storage.
 Transient Object Containers support <b>Notification Targets</b> which
 are methods which are invoked when transient objects are added or deleted
 from the container.  A notification target is invoked with the item being
-operated upon, and the transient object container as arguments.
+operated upon, and the transient object container as arguments.  Specify
+the path to the method to be invoked to receive the notification.
 </p>
 </div>
 </tr>

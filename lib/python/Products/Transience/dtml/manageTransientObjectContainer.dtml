@@ -48,12 +48,24 @@
 </tr>
 
 <tr>
+<td>
+<p>
+Transient Object Containers support <b>Notification Targets</b> which
+are methods which are invoked when transient objects are added or deleted
+from the container.  A notification target is invoked with the item being
+operated upon, and the transient object container as arguments.  Specify
+the path to the method to be invoked to receive the notification.
+</p>
+
+</td>
+</tr>
+<tr>
   <td align="left" valign="top">
     <div class="form-label">
       <em>Add Notification Target</em>
     </div>
   </td>
-  <td align="left" valign="top".
+  <td align="left" valign="top">
      <input type="text" name="addNotification"
      	value="&dtml-getAddNotificationTarget;" size=40>
   </td>
@@ -65,12 +77,11 @@
       <em>Delete Notification Target</em>
     </div>
   </td>
-  <td align="left" valign="top".
+  <td align="left" valign="top">
      <input type="text" name="delNotification"
      	value="&dtml-getDelNotificationTarget;" size=40>
   </td>
 </tr>
-
 
 
 <tr>
