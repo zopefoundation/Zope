@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -404,7 +404,7 @@ class BaseRequest:
         user=groups=None
         i=0
 
-        if roles is not None:
+        if 1:  # Always perform authentication.
 
             last_parent_index=len(parents)
             if hasattr(object, '__allow_groups__'):
