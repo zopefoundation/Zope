@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -346,10 +346,10 @@ class UnTextIndex(Persistent, Implicit):
         if len(src) == 1:
             src=src[0]
             if src[:1]=='"' and src[-1:]=='"': return self[src]
-            r = self._index.get(self.getLexicon(self._lexicon).get(word)[0],
+            r = self._index.get(self.getLexicon(self._lexicon).get(src)[0],
                                 None)
             if r is None: r = {}
-            return ResultList(r, (word,), self)
+            return ResultList(r, (src,), self)
             
         r = None
         for word in src:
