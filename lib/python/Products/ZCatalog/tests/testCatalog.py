@@ -8,9 +8,8 @@ import ZODB, OFS.Application
 from ZODB.DemoStorage import DemoStorage
 from ZODB.DB import DB
 from Products.ZCatalog import ZCatalog,Vocabulary
-from Products.ZCatalog.Catalog import Catalog,CatalogError
+from Products.ZCatalog.Catalog import Catalog, CatalogError
 import ExtensionClass
-from zLOG import LOG
 
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
@@ -34,7 +33,8 @@ def createDatabase():
     get_transaction().commit()
 
     # Init products
-    OFS.Application.initialize(app)
+    #OFS.Application.initialize(app)
+    OFS.Application.install_products(app) # XXX: this is still icky
 
     return app
 
@@ -127,15 +127,15 @@ class TestZCatalogObject(unittest.TestCase):
         class dummy(ExtensionClass.Base):
             pass
         self.dummy = dummy()
+        newSecurityManager( None, DummyUser( 'phred' ) )
 
     def tearDown(self):
+        noSecurityManager()
         self.dummy = None
 
     def testInstantiateWithoutVocab(self):
         v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
-        newSecurityManager( None, DummyUser( 'phred' ) )
         zc = ZCatalog.ZCatalog('acatalog')
-        noSecurityManager()
         assert hasattr(zc, 'Vocabulary')
         assert zc.getVocabulary().__class__ == v.__class__
 
