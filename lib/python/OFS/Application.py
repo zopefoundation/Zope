@@ -11,11 +11,12 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.4 1997/08/08 15:51:27 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Application.py,v 1.5 1997/08/15 22:24:12 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
-import Folder, regex, string
+import Folder, regex
 import Globals
+from string import lower, find
 
 class Application(Folder.Folder):
 
@@ -30,6 +31,11 @@ class Application(Folder.Folder):
     def folderClass(self): return Folder.Folder
 
     def __class_init__(self): pass
+
+    def Redirect(self,destination,PARENT_URL):
+	"""Utility function to allow user-controlled redirects"""
+	if find(destination,'//') >= 0: raise 'Redirect', destination
+	raise 'Redirect', ("%s/%s" % (PARENT_URL, destination))
 
 def open_bobobase():
     # Open the application database
@@ -60,7 +66,7 @@ def install_products(products):
 
 	    if (not meta_type.has_key('prefix') and 
 		not regex.match('[^a-zA-Z0-9_]', name)):
-	        meta_type['prefix']=string.lower(name)
+	        meta_type['prefix']=lower(name)
 
 	    if meta_type.has_key('prefix'):
 		prefix=meta_type['prefix']
@@ -113,6 +119,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.5  1997/08/15 22:24:12  jim
+# Added Redirect
+#
 # Revision 1.4  1997/08/08 15:51:27  jim
 # Added access control support
 #
