@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.26 1998/03/13 22:05:47 jim Exp $
+  $Id: ExtensionClass.c,v 1.27 1998/03/23 20:25:59 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.26 1998/03/13 22:05:47 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.27 1998/03/23 20:25:59 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -218,6 +218,7 @@ staticforward PyTypeObject CMethodType;
 #define UnboundCMethod_Check(O) \
   ((O)->ob_type==&CMethodType && ! ((CMethod*)(O))->self)
 #define AsCMethod(O) ((CMethod*)(O))
+#define CMETHOD(O) ((CMethod*)(O))
 
 
 static PyObject *
@@ -746,10 +747,28 @@ call_PMethod(PMethod *self, PyObject *inst, PyObject *args, PyObject *kw)
 {
   PyObject *a;
 
-  a=Py_BuildValue("(O)",inst);
-  if(a) ASSIGN(a,PySequence_Concat(a,args));
-  if(a) ASSIGN(a,callMethodWithPossibleHook(inst,self->meth,a,kw));
-  return a;
+  if(CMethod_Check(self->meth)
+     && CMETHOD(self->meth)->type->tp_basicsize == sizeof(PyPureMixinObject)
+     && ! (CMETHOD(self->meth)->self)
+     )
+    {
+      /* Special HACK^H^H^Hcase:
+	 we are wrapping an abstract unbound CMethod */
+      if(HasMethodHook(inst) &&
+	 /* This check prevents infinite recursion: */
+	 CMETHOD(self->meth)->doc != hook_mark 
+	 )
+	return callCMethodWithHook(CMETHOD(self->meth),inst,args,kw);
+      return call_cmethod(CMETHOD(self->meth),inst,args,kw);
+      
+    }
+  else
+    {
+      a=Py_BuildValue("(O)",inst);
+      if(a) ASSIGN(a,PySequence_Concat(a,args));
+      if(a) ASSIGN(a,callMethodWithPossibleHook(inst,self->meth,a,kw));
+      return a;
+    }
 }
 
 static PyObject *
@@ -1456,6 +1475,10 @@ initializeBaseExtensionClass(PyExtensionClass *self)
 {
   PyMethodChain *chain, top = { ECI_methods, NULL };
   PyObject *dict;
+  int abstract;
+
+  /* Is this an abstract, or at least a dataless, class? */
+  abstract=self->tp_basicsize == sizeof(PyPureMixinObject);
 
   self->ob_type=(PyTypeObject*)&ECType;
   Py_INCREF(self->ob_type);
@@ -1482,14 +1505,20 @@ initializeBaseExtensionClass(PyExtensionClass *self)
 	{
 	  if(ml->ml_meth)
 	    {
-	      if(! PyMapping_HasKeyString(dict,ml->ml_name) &&
-		 PyMapping_SetItemString(
-		     dict,ml->ml_name,
-		     newCMethod(self, NULL, ml->ml_name, ml->ml_meth,
-				ml->ml_flags, ml->ml_doc)
-		     ) < 0
-		 )
-		return NULL;
+	      if(! PyMapping_HasKeyString(dict,ml->ml_name))
+		{
+		  PyObject *m;
+
+		  UNLESS(m=newCMethod(self, NULL, ml->ml_name, ml->ml_meth,
+				      ml->ml_flags, ml->ml_doc))
+		    return NULL;
+
+		  if(abstract) UNLESS_ASSIGN(m, newPMethod(self, m))
+		    return NULL;
+
+		  if(PyMapping_SetItemString(dict,ml->ml_name,m) < 0)
+		    return NULL;
+		}
 	    }
 	  else if(ml->ml_doc && *(ml->ml_doc))
 	    {
@@ -3320,7 +3349,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.26 $";
+  char *rev="$Revision: 1.27 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3361,6 +3390,11 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.27  1998/03/23 20:25:59  jim
+  Changed the way that methods in pure mix-in classes are constructed.
+  Now methods are wrapped in such a way that tricky wrapper objects
+  (like Acquisition wrappers) can bind them to wrapped objects.
+
   Revision 1.26  1998/03/13 22:05:47  jim
   Exposed issubclass test in CAPI.
 
