@@ -102,7 +102,7 @@ class CatalogAware:
 
     manage_editCatalogerForm=HTMLFile('editCatalogerForm', globals())
 
-    def manage_editCataloger(self, default):
+    def manage_editCataloger(self, default, REQUEST):
         """ """
         self.default_catalog=default
         message = "Your changes have been saved"
