@@ -5,6 +5,20 @@ Zope Changes
   file HISTORY.txt.
 
     Features Added
+
+     - "requestprofiler.py" script in utilities now does better analysis,
+       including:
+
+       "active" in detailed output is now slightly more meaningful.
+       It is > 0 only if other requests started after it started
+       but before it finished.  The greater the active count, the
+       more likely it is that something was going on at the time
+       in which the request ran that caused a slowdown.
+
+       Multiple files may be analyzed at the same time.
+
+       Also, script recognizes "U" opcode in big M logs as meaning a restart.
+
       - Added a "preview" field to the edit form for Image
         objects. This provides a preview of the actual image data on 
         the form to make it easier to know what you are working
