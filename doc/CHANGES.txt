@@ -6,6 +6,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Deprecated hasRole alias in User.py failed to return result.
+
       - Collector #580: TALES evaluateBoolean() was squishing 'default'.
 
       - Collector #581: TALES Path traversal should not special-case a blank

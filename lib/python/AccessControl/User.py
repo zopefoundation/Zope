@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.170 $'[11:-2]
+__version__='$Revision: 1.171 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -243,7 +243,7 @@ class BasicUser(Implicit):
         warnings.warn('BasicUser.hasRole is deprecated, please use '
             'BasicUser.allowed instead; hasRole was an alias for allowed, but '
             'you may have ment to use has_role.', DeprecationWarning)
-        self.allowed(*args, **kw)
+        return self.allowed(*args, **kw)
 
     domains=[]
 
