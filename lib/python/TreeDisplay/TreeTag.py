@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.15 1997/12/04 23:30:29 brian Exp $'
-__version__='$Revision: 1.15 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.16 1997/12/05 17:14:58 brian Exp $'
+__version__='$Revision: 1.16 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -176,6 +176,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
     if (args.has_key('sort')) and (items is not None) and (items != 1):
 	# Faster/less mem in-place sort
+	if type(items)==type(()):
+	    items=list(items)
 	sort=args['sort']
 	size=range(len(items))
 	for i in size:
