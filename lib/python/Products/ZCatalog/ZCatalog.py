@@ -15,6 +15,7 @@
 $Id$
 """
 
+from warnings import warn
 import urllib, time, sys, string,logging
 
 from Globals import DTMLFile, MessageDialog
@@ -501,11 +502,18 @@ class ZCatalog(Folder, Persistent, Implicit):
                     # products like CMF 1.4.2 and earlier that subclass from
                     # ZCatalog and don't support the update_metadata argument.
                     # May be removed some day.
-                    from warnings import warn
                     warn('catalog_object interface of %s not up to date'
                          % self.__class__.__name__,
                          DeprecationWarning)
-                    self.catalog_object(obj, p, idxs=name, pghandler=pghandler)
+                    try:
+                        self.catalog_object(obj, p, idxs=name, pghandler=pghandler)
+                    except TypeError:
+                        # Fall back to pre-Zope 2.8 interface where there is no
+                        # 'pghandler' argument.
+                        warn('catalog_object interface of %s not up to date'
+                             % self.__class__.__name__,
+                             DeprecationWarning)
+                        self.catalog_object(obj, p, idxs=name)
 
         if pghandler:
             pghandler.finish()
