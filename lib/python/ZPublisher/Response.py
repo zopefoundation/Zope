@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.26 1998/02/20 14:11:47 jim Exp $'''
+$Id: Response.py,v 1.27 1998/03/13 21:30:23 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.26 1998/02/20 14:11:47 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -493,11 +493,8 @@ class Response:
     def _cookie_list(self):
 	cookie_list=[]
 	for name, attrs in self.cookies.items():
-	    if attrs.has_key('expires'):
-		cookie='set-cookie: %s="%s"' % (name,attrs['value'])
-	    else:
-		cookie=('set-cookie: %s="%s"; Version="1"' %
-			(name,attrs['value']))
+
+            cookie='set-cookie: %s="%s"' % (name,attrs['value'])
 	    for name, v in attrs.items():
 		if name=='expires': cookie = '%s; Expires="%s"' % (cookie,v)
 		elif name=='domain': cookie = '%s; Domain="%s"' % (cookie,v)
