@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.163 2003/02/11 21:06:28 fdrake Exp $"""
+$Id: ObjectManager.py,v 1.164 2003/11/02 18:02:36 efge Exp $"""
 
-__version__='$Revision: 1.163 $'[11:-2]
+__version__='$Revision: 1.164 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -28,6 +28,7 @@ from webdav.Collection import Collection
 from Acquisition import aq_base
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from webdav.Lockable import ResourceLockedError
+from ZODB.POSException import ConflictError
 from urllib import quote
 from cStringIO import StringIO
 import marshal
@@ -300,6 +301,8 @@ class ObjectManager(
                     object.manage_beforeDelete(item, container)
             except BeforeDeleteException, ob:
                 raise
+            except ConflictError:
+                raise
             except:
                 LOG('Zope',ERROR,'manage_beforeDelete() threw',
                     error=sys.exc_info())
@@ -311,6 +314,8 @@ class ObjectManager(
         try:
             object.manage_beforeDelete(object, self)
         except BeforeDeleteException, ob:
+            raise
+        except ConflictError:
             raise
         except:
             LOG('Zope',ERROR,'manage_beforeDelete() threw',

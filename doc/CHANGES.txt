@@ -29,6 +29,11 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+
+     - ConflictError was swallowed in ObjectManager by
+       manage_beforeDelete and _delObject. This could break code
+       expecting to do cleanups before deletion.
+
      - Python 2.3 BooleanType wasn't handled properly by ZTUtils
        marshalling and ZPublisher's converters.
 
