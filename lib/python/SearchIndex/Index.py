@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -325,6 +325,7 @@ class Index(Persistent):
             else: return None
 
         return r, (id,)
+
 
 
 
