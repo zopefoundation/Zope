@@ -1,18 +1,18 @@
 """Access control package"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
 from Persistence import Persistent
 from Globals import HTMLFile, MessageDialog
 from string import join,strip,split,lower
-from App.Management import Management
+from App.Management import Navigation, Tabs
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from base64 import decodestring
 from ImageFile import ImageFile
-
+import App.Undo
 
 
 
@@ -51,7 +51,8 @@ nobody=User('Anonymous User','',('Anonymous',))
 
 
 
-class UserFolder(Implicit, Persistent, Management, Item):
+class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
+		 App.Undo.UndoSupport):
     """ """
     meta_type='User Folder'
     id       ='acl_users'

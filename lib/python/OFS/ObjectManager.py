@@ -1,23 +1,26 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.28 1997/12/31 19:17:18 jim Exp $"""
+$Id: ObjectManager.py,v 1.29 1998/01/02 17:40:12 jim Exp $"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
-
-from SingleThreadedTransaction import Persistent
+import Persistence, App.Management, Acquisition, App.Undo
 from Globals import HTMLFile, HTMLFile
 from Globals import MessageDialog
-from App.Management import Management
-from Acquisition import Acquirer
 from string import find,join,lower
 from urllib import quote
 from DocumentTemplate import html_quote
 from cgi_module_publisher import type_converters
 from DateTime import DateTime
 
-class ObjectManager(Acquirer,Management,Persistent):
+class ObjectManager(
+    App.Management.Navigation,
+    App.Management.Tabs,
+    Acquisition.Explicit,
+    Persistence.Persistent,
+    App.Undo.UndoSupport,
+    ):
     """Generic object manager
 
     This class provides core behavior for collections of heterogeneous objects. 
@@ -455,6 +458,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.29  1998/01/02 17:40:12  jim
+# Factored old Management mix-in into Navigation and Tabs.
+#
 # Revision 1.28  1997/12/31 19:17:18  jim
 # Fixed buglet in signature of manage_delObjects.
 #

@@ -16,14 +16,14 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.10 1997/12/19 19:11:17 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: SimpleItem.py,v 1.11 1998/01/02 17:41:09 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
-import Globals
+import Globals, App.Management
 from DateTime import DateTime
 from CopySupport import CopySource
 
-class Item(CopySource):
+class Item(CopySource, App.Management.Tabs):
 
     isPrincipiaFolderish=0
 
@@ -37,7 +37,6 @@ class Item(CopySource):
     # Default title.  
     title=''
 
-    manage_tabs   =Globals.HTMLFile('App/manage_tabs')
     manage_info   =Globals.HTMLFile('App/manage_info')
     manage_options=({'icon':'', 'label':'Manage',
 		     'action':'manage_main', 'target':'manage_main',
@@ -118,6 +117,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.11  1998/01/02 17:41:09  jim
+# Factored old Management mix-in into Navigation and Tabs.
+#
 # Revision 1.10  1997/12/19 19:11:17  jim
 # updated icon management strategy
 #

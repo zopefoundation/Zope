@@ -1,20 +1,22 @@
 """Standard management interface support
 
-$Id: Management.py,v 1.9 1997/12/19 19:08:21 jim Exp $"""
+$Id: Management.py,v 1.10 1998/01/02 17:39:05 jim Exp $"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys,Globals
 from Dialogs import MessageDialog
 from Globals import HTMLFile
-from Undo import UndoSupport
 
-class Management(UndoSupport):
-    """Management support"""
+class Tabs:
+    """Mix-in provides management folder tab support."""
+    manage_tabs     =HTMLFile('manage_tabs', globals())
+    manage_options  =()
+
+class Navigation:
+    """Basic (very) navigation UI support"""
 
     manage          =HTMLFile('manage', globals())
     manage_menu     =HTMLFile('menu', globals())
-    manage_tabs     =HTMLFile('manage_tabs', globals())
     manage_copyright=HTMLFile('copyright', globals())
-    manage_options  =()
 
