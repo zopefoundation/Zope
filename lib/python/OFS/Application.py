@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.85 1999/01/27 20:30:28 brian Exp $'''
-__version__='$Revision: 1.85 $'[11:-2]
+$Id: Application.py,v 1.86 1999/02/04 19:02:31 jim Exp $'''
+__version__='$Revision: 1.86 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -318,6 +318,7 @@ def open_bobobase():
         app=Application()
         app._init()
         Bobobase['Application']=app
+        get_transaction().note('created Application object')
         get_transaction().commit()
 
     # The following items marked b/c are backward compatibility hacks
@@ -331,11 +332,13 @@ def open_bobobase():
         cpl=ApplicationManager()
         cpl._init()
         app._setObject('Control_Panel', cpl)
+        get_transaction().note('Added Control_Panel')
         get_transaction().commit()
 
     # b/c: Ensure that a ProductFolder exists.
     if not hasattr(app.Control_Panel.aq_base, 'Products'):
         app.Control_Panel.Products=App.Product.ProductFolder()
+        get_transaction().note('Added Control_Panel.Products')
         get_transaction().commit()
 
     # b/c: Ensure that std err msg exists.
@@ -346,9 +349,11 @@ def open_bobobase():
             'standard_error_message',
             'Standard Error Message',
             _standard_error_msg)
+        get_transaction().note('Added standard_error_message')
         get_transaction().commit()
 
     install_products(app)
+    get_transaction().note('Product installations')
     get_transaction().commit()
 
     return Bobobase
