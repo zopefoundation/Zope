@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -351,7 +351,7 @@ class HTTPRequest(BaseRequest):
         hasattr=hasattr,
         getattr=getattr,
         setattr=setattr,
-        search_type=regex.compile(':[a-zA-Z][a-zA-Z0-9_]+$').search,
+        search_type=regex.compile('\(:[a-zA-Z][a-zA-Z0-9_]+\|\.[xy]\)$').search,
         rfind=string.rfind,
         ):
         """Process request inputs
@@ -1071,12 +1071,14 @@ class record:
     def __str__(self):
         L1 = self.__dict__.items()
         L1.sort()
-        return join(map(lambda item: "%s: %s" %item, L1), ", ") 
+        return join(map(lambda item: "%s: %s" % item, L1), ", ") 
 
     def __repr__(self):
         L1 = self.__dict__.items()
         L1.sort()
-        return join(map(lambda item: "%s: %s" %item, repr(L1)), ", ") 
+        return join(
+            map(lambda item: "%s: %s" % (item[0], repr(item[1])), L1)
+            , ", ") 
 
 # Flags
 SEQUENCE=1

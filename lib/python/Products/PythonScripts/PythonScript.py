@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -363,7 +363,7 @@ class PythonScript(Script, Historical, Cacheable):
         self._validateProxy()
         self.ZCacheable_invalidate()
         self._proxy_roles=tuple(roles)
-        if REQUEST: return Globals.MessageDialog(
+        if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
                     action ='manage_main')
