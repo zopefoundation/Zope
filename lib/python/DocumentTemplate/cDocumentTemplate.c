@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.14 1998/04/14 11:44:05 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.15 1998/05/07 22:05:56 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -687,7 +687,6 @@ static struct PyMethodDef Module_Level__methods[] = {
   {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
 };
 
-
 static PyObject *
 validate(PyObject *self, PyObject *args)
 {
@@ -736,6 +735,12 @@ validate(PyObject *self, PyObject *args)
   /*    try: 
 	    if md.AUTHENTICATED_USER.hasRole(value, roles):
 		return 1
+	    if md is None: 
+                # None signals a resource that is protected and that
+                # has been acquired from outside the user's realm.
+	        raise 'Unauthorized', (
+		    'You are not authorized to access <em>%s</em>.' % name)
+	    
 	except AttributeError: pass
    */
   if(md=PyObject_GetAttr(md,py_AUTHENTICATED_USER))
@@ -748,6 +753,16 @@ validate(PyObject *self, PyObject *args)
 	    {
 	      Py_DECREF(__roles__);
 	      return md;
+	    }
+	  if(md==Py_None)
+	    {
+	      if(name=PyString_Format(py_Unauthorized_fmt, name))
+		{
+		  PyErr_SetObject(py_Unauthorized, name);
+		  Py_DECREF(name);
+		}
+	      Py_DECREF(md);
+	      return NULL;
 	    }
 	  Py_DECREF(md);
 	}
@@ -830,7 +845,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.14 $";
+  char *rev="$Revision: 1.15 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -880,6 +895,10 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.15  1998/05/07 22:05:56  jim
+  Added protocol for hasRole to signal that an error should be raised
+  by returning None, rather than 0.
+
   Revision 1.14  1998/04/14 11:44:05  jim
   Fixed bug in validate.
 
