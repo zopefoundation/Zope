@@ -36,6 +36,12 @@ values and click "Save Changes".
   <!--#if "type in ('string', 'int', 'long', 'float', 'date')"-->
   <input type="text" name="<!--#var id-->:<!--#var type-->" size="35"
    value="<!--#var "_[id]"-->">
+  <!--#elif "type=='string'"-->
+  <input type="text" name="<!--#var id-->:string" size="35"
+   value="<!--#var "_[id]" html_quote-->">
+  <!--#elif "type=='boolean'"-->
+  <input type="checkbox" name="<!--#var id-->:boolean" size="35"
+   <!--#if "_[id]"-->CHECKED<!--#/if-->>
   <!--#elif "type=='tokens'"-->
   <input type="text" name="<!--#var id-->:tokens" size="35"
    value="<!--#in "_[id]"--><!--#var sequence-item--> <!--#endin-->">
@@ -93,12 +99,15 @@ button.
   <th align="left" valign="top">Type</th>
   <td align="left" valign="top">
     <select name="type">
-    <!--#in "('int', 'float', 'long', 'string', 
-              'lines', 'text', 'date','tokens',
-             )"-->
-      <option<!--#if "_['sequence-item']=='string'"--> selected<!--#/if
-      -->><!--#var sequence-item-->
-    <!--#/in-->
+      <option>boolean</option>
+      <option>date</option>
+      <option>float</option>
+      <option>int</option>
+      <option>lines</option>
+      <option>long</option>
+      <option SELECTED>string</option>
+      <option>text</option>
+      <option>tokens</option>
     </select>
   </td>
 </tr>
