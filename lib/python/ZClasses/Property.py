@@ -198,7 +198,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         if t=='selection':
             return ('''
             <!--#if "_.has_key('%(select_variable)s')"-->
-            <select name="<!--#var %(id)s-->">
+            <select name="%(id)s">
               <!--#in %(select_variable)s-->
                 <option
                   <!--#if "_['sequence-item']==%(id)s"-->
