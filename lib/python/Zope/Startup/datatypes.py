@@ -140,7 +140,7 @@ def root_config(section):
         section.lock_filename = os.path.join(section.clienthome, 'Z2.lock')
 
     if not section.databases:
-        section.databases = getDefaultDatabaseFactories(section)
+        section.databases = []
 
     mount_factories = {} # { name -> factory}
     mount_points = {} # { virtual path -> name }
@@ -220,49 +220,3 @@ class ZopeDatabase(ZODBDatabase):
                 return (real_root, real_path, container_class)
         raise LookupError('Nothing known about mount path %s' % mount_path)
     
-def getDefaultDatabaseFactories(context):
-    # default to a filestorage named 'Data.fs' in clienthome
-    # and a temporary storage for session data
-    from ZODB.Connection import Connection
-    from ZODB.config import FileStorage
-    from tempstorage.config import TemporaryStorage
-
-    l = []
-    class dummy:
-        def __init__(self, name, **kw):
-            self.name = name
-            for k, v in kw.items():
-                setattr(self, k, v)
-
-        def getSectionName(self):
-            return self.name
-
-    path = os.path.join(context.clienthome, 'Data.fs')
-
-    fs = dummy('default filestorage at %s' % path, path=path,
-                  create=None, read_only=None, quota=None)
-    main = ZopeDatabase(dummy('main', storage=FileStorage(fs), cache_size=5000,
-                              pool_size=7, version_pool_size=3,
-                              version_cache_size=100, mount_points=['/'],
-                              connection_class=Connection,
-                              class_factory=None, container_class=None))
-
-    l.append(main)
-
-    ts = dummy('temporary storage for sessioning')
-    temporary = ZopeDatabase(dummy('temporary',
-                                   storage=TemporaryStorage(ts),
-                                   cache_size=5000, pool_size=7,
-                                   version_pool_size=3, version_cache_size=100,
-                                   mount_points=['/temp_folder'],
-                                   connection_class=Connection,
-                                   class_factory=None,
-                                   container_class=('Products.TemporaryFolder.'
-                                                    'TemporaryFolder.'
-                                                    'SimpleTemporaryContainer')
-                                   ))
-    l.append(temporary)
-
-    return l
-    
-
