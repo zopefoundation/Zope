@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.96 $'[11:-2]
+__version__='$Revision: 1.97 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -194,8 +194,8 @@ class File(Persistent,Implicit,PropertyManager,
         header=REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header=string.split(header, ';')[0]
-            mod_since=DateTime(header).timeTime()
-            last_mod =self._p_mtime
+            mod_since=int(DateTime(header).timeTime())
+            last_mod =int(self._p_mtime)
             if last_mod > 0 and last_mod <= mod_since:
                 RESPONSE.setStatus(304)
                 return RESPONSE
