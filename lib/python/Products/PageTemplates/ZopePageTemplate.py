@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -44,6 +44,23 @@ try:
     SUPPORTS_WEBDAV_LOCKS = 1
 except ImportError:
     SUPPORTS_WEBDAV_LOCKS = 0
+
+
+
+class Src(Acquisition.Explicit):
+    " "
+
+    PUT = document_src = Acquisition.Acquired
+    index_html = None
+
+    def __before_publishing_traverse__(self, ob, request):
+        if getattr(request, '_hacked_path', 0):
+            request._hacked_path = 0
+
+    def __call__(self, REQUEST, RESPONSE):
+        " "
+        return self.document_src(REQUEST)
+
 
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
@@ -94,7 +111,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected('View management screens',
       'pt_editForm', 'manage_main', 'read',
       'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
-      'document_src', 'source.html', 'source.xml')
+      'document_src', 'source_dot_xml')
 
     security.declareProtected('FTP access',
       'manage_FTPstat','manage_FTPget','manage_FTPlist')
@@ -103,6 +120,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                                    __name__='pt_editForm')
     pt_editForm._owner = None
     manage = manage_main = pt_editForm
+
+    source_dot_xml = Src()
 
     security.declareProtected('Change Page Templates',
       'pt_editAction', 'pt_setTitle', 'pt_edit',
@@ -294,24 +313,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         def wl_isLocked(self):
             return 0
 
-
-class Src(Acquisition.Explicit):
-    " "
-
-    PUT = document_src = Acquisition.Acquired
-    index_html = None
-
-    def __before_publishing_traverse__(self, ob, request):
-        if getattr(request, '_hacked_path', 0):
-            request._hacked_path = 0
-
-    def __call__(self, REQUEST, RESPONSE):
-        " "
-        return self.document_src(REQUEST)
-
-d = ZopePageTemplate.__dict__
-d['source.xml'] = d['source.html'] = Src()
-
+setattr(ZopePageTemplate, 'source.xml',  ZopePageTemplate.source_dot_xml)
+setattr(ZopePageTemplate, 'source.html', ZopePageTemplate.source_dot_xml)
 
 # Product registration and Add support
 manage_addPageTemplateForm = PageTemplateFile(
