@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.24 $'.split()[-2:][0]
+__version__ = '$Revision: 1.25 $'.split()[-2:][0]
 
 import os
 import time
@@ -119,14 +119,14 @@ class BerkeleyConfig:
       never automatically do classic packs.  For Minimal storage, this value
       is ignored -- all packs are classic packs.
     """
-    interval = 0
+    interval = 120
     kbyte = 0
     min = 0
     logdir = None
     cachesize = 128 * 1024 * 1024
     frequency = 0
     packtime = 4 * 60 * 60
-    classicpack = 24
+    classicpack = 0
 
 
 
@@ -181,7 +181,11 @@ class BerkeleyBase(BaseStorage):
         else:
             self._env = env
 
-        BaseStorage.__init__(self, name)
+        # Use the absolute path to the environment directory as the name.
+        # This should be enough of a guarantee that sortKey() -- which via
+        # BaseStorage uses the name -- is globally unique.
+        envdir = os.path.abspath(self._env.db_home)
+        BaseStorage.__init__(self, envdir)
 
         # Instantiate a pack lock
         self._packlock = ThreadLock.allocate_lock()
@@ -398,7 +402,7 @@ def env_from_string(envname, config):
     env.set_cachesize(gbytes, bytes)
     env.open(envname,
              db.DB_CREATE          # create underlying files as necessary
-             | db.DB_RECOVER_FATAL # run normal recovery before opening
+             | db.DB_RECOVER       # run normal recovery before opening
              | db.DB_INIT_MPOOL    # initialize shared memory buffer pool
              | db.DB_INIT_TXN      # initialize transaction subsystem
              | db.DB_THREAD        # we use the environment from other threads
