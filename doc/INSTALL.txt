@@ -1,23 +1,92 @@
 Building and installing Zope
 
-  This document describes buiding and installing Zope on Unix.
-  We will provide Windows instructions in later releases.
+  This document describes building and installing Zope on Unix.
+  We will provide Windows instructions in later releases. We
+  will also provide binary releases for some platforms.
+
+Building Zope:
   
   There are some python scripts in the top-level directory that should
-  help you get started.  You must run these scripts from the top-level
+  help you get started. You must run these scripts from the top-level
   directory.
 
-  If you want to try out zope in the simplest fashion using a 
-  Python web server, then run the script wo_pcgi::
+  If you want to try out Zope in the simplest fashion using a 
+  Python web server, then run the script wo_pcgi:
 
     python wo_pcgi.py
 
-  then to start the web server, run the serve script::
-
-    python serve.py
-
-  If you want to use PCGI and an existing web server, run w_pcgi::
+  If you want to use PCGI and an existing web server, run w_pcgi:
 
     python w_pcgi.py
 
-  and configure the web server appropriately.
+  Notes:
+  
+  * You should be using Python 1.5 to run the build scripts.
+  * If you just want to use Zope components it's not necessary to build Zope
+    but it's a good idea since it will compile Python C extensions for you.
+	
+Using Zope with ZopeHTTPServer:
+
+  ZopeHTTPServer is a simple web server written in Python and it
+  allows you to run Zope without using PCGI and another web server.
+  To start Zope using ZopeHTTPServer cd to the Zope directory and
+  issue this command:
+
+    python server.py 
+
+Setting the Zope super user name and password: 
+
+  The ZOpe super user has full access to Zope online management
+  facilities. Zope defaults to 'superuser' and '123' as the super
+  user name and password. You can change this by creating a file
+  named 'access' in the Zope directory. The file should contain one
+  line that has the user name followed by a colon followed by the
+  password. For example:
+
+    mario:nintendoRulez
+  
+Using Zope with PCGI:
+
+  PCGI is the traditional way of running Zope. PCGI mediates
+  between your existing web server and Zope. To use PCGI copy the
+  Zope.cgi file to your web server's cgi-bin directory. You can also
+  create a symbolic link to Zope.cgi from your cgi-bin directory.
+  For example:
+
+    ln -s /home/amos/Zope/Zope.cgi /usr/local/apache/cgi-bin/Zope
+
+  If you are using Apache you will need to trick Apache into passing
+  authentication headers to Zope. The easiest way to do this is to
+  use mod_rewrite. Here is an example of configuration information
+  which you would place in an Apache conf file:
+
+    # Zope configuration maps /Zope/ to the Zope.cgi PCGI script
+    RewriteEngine on
+    RewriteCond %{HTTP:Authorization}  ^(.*)
+    RewriteRule ^/Zope/(.*) /usr/local/apache/cgi-bin/Zope.cgi/$1 [e=HTTP_CGI_AUTHORIZATION:%1,t=application/x-httpd-cgi,l]
+
+  Note that the RewriteRule should be one long line.
+  
+Accessing Zope:
+  
+  After you either start ZopeHTTPServer or set up PCGI you should be
+  able to start using Zope through the web. Point your browser to either
+  
+  http://localhost:8080/manage
+  
+  if you are using ZopeHTTPServer or whatever the relevant URL is, if
+  you are using PCGI. If you're using PCGI make sure to tack '/manage'
+  on after the name of the Zope cgi-script so that you go to the
+  management screen.
+  
+  You will be prompted to enter a user name and a password. Enter the
+  user name and password you specified in the access file.
+  
+  Now your off and running!
+  
+  If you haven't used Zope before, you should head to the Zope web site
+  and read some documentation.
+  
+  http://www.zope.org
+  
+  Have fun!
