@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals, Moniker, rPickle
 from cPickle import loads, dumps
@@ -24,8 +24,6 @@ class CopyContainer:
 
     def validClipData(self):
 	# Return true if clipboard data is valid.
-	moniker=rPickle.loads(unquote(self.REQUEST['clip_data']))
-
 	try:    moniker=rPickle.loads(unquote(self.REQUEST['clip_data']))
 	except: return 0
 	v=self.REQUEST['validClipData']=moniker.assert()
