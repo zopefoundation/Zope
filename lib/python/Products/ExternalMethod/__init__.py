@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.11 1999/03/30 19:26:19 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: __init__.py,v 1.12 1999/12/13 23:26:41 amos Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import ExternalMethod
 
@@ -99,3 +99,4 @@ def initialize(context):
         icon='extmethod.gif',
         )
 
+    context.registerHelp()

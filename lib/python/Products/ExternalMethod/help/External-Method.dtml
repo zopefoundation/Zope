@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>External Method</h1>
+<p>External Methods allow you to add functionality to Zope by writing
+		Python functions which are exposed as callable Zope objects.</p>
+<dtml-var standard_html_footer>
