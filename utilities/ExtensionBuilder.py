@@ -389,7 +389,8 @@ def build_zope(path):
                  'lib/python/Shared/DC/xml/pyexpat',
                  'lib/python/Products/PluginIndexes/TextIndex/Splitter/ZopeSplitter',
                  'lib/python/Products/PluginIndexes/TextIndex/Splitter/ISO_8859_1_Splitter',
-                 'lib/python/Products/PluginIndexes/TextIndex/Splitter/UnicodeSplitter'
+                 'lib/python/Products/PluginIndexes/TextIndex/Splitter/UnicodeSplitter',
+                 'lib/python/Products/ZCTextIndex'
                  ):
         dirpath = string.join(string.split(item, '/'), os.sep)
         builder.make(dirpath)
