@@ -14,10 +14,15 @@
 
 """Windows Services installer/controller for Zope/ZEO/ZRS instance homes"""
 
-import win32serviceutil
-import win32service
+import win32api
+import win32con
 import win32event
+import win32file
+import win32pipe
 import win32process
+import win32security
+import win32service
+import win32serviceutil
 import pywintypes
 import time
 import os
@@ -49,6 +54,9 @@ class Service(win32serviceutil.ServiceFramework):
         r'"C:\Program Files\Zope-2.7.0-a1\lib\python\Zope\Startup\run.py" '
         r'-C "C:\Zope-Instance\etc\zope.conf"'
         )
+    
+    capture_io = False
+    log_file = None
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -69,9 +77,12 @@ class Service(win32serviceutil.ServiceFramework):
         win32event.SetEvent(self.hWaitStop)
 
     def createProcess(self, cmd):
-        return win32process.CreateProcess(
-            None, cmd, None, None, 0, 0, None, None,
-            win32process.STARTUPINFO())
+        if self.capture_io:
+            return self.createProcessCaptureIO(cmd)
+        else:
+            return win32process.CreateProcess(
+                None, cmd, None, None, 0, 0, None, None,
+                win32process.STARTUPINFO()), None
 
     def logmsg(self, event):
         # log a service event using servicemanager.LogMsg
@@ -124,12 +135,14 @@ class Service(win32serviceutil.ServiceFramework):
         
         while 1:
             start_time = time.time()
-            info = self.createProcess(self.start_cmd)
+            info, handles = self.createProcess(self.start_cmd)
+            # XXX integrate handles into the wait and make a loop
+            # that reads data and writes it into a logfile
             self.hZope = info[0] # the pid
             if backoff_interval > BACKOFF_INITIAL_INTERVAL:
                 self.info("created process")
             rc = win32event.WaitForMultipleObjects(
-                (self.hWaitStop, self.hZope), 0, win32event.INFINITE)
+                (self.hWaitStop, self.hZope) + handles, 0, win32event.INFINITE)
             if rc == win32event.WAIT_OBJECT_0:
                 # user sent a stop service request
                 self.SvcStop()
@@ -161,8 +174,51 @@ class Service(win32serviceutil.ServiceFramework):
                     backoff_cumulative += backoff_interval
                     backoff_interval *= 2
 
-
         self.logmsg(servicemanager.PYS_SERVICE_STOPPED)
+
+    def createProcessCaptureIO(self, cmd):
+        stdin = self.newPipe()
+        stdout = self.newPipe()
+        stderr = self.newPipe()
+
+        si = win32process.STARTUPINFO()
+        si.hStdInput = stdin[0]
+        si.hStdOutput = stdout[1]
+        si.hStdError = stderr[1]
+        si.dwFlags = (win32process.STARTF_USESTDHANDLES
+                      | win32process.STARTF_USESHOWWINDOW)
+        si.wShowWindow = win32con.SW_HIDE
+
+        c_stdin = self.dup(stdin[1])
+        c_stdout = self.dup(stdout[0])
+        c_stderr = self.dup(stderr[0])
+
+        # pass True to allow handles to be inherited.  Inheritance is
+        # problematic in general, but should work in the controlled
+        # circumstances of a service process.
+        info = win32process.CreateProcess(None, cmd, None, None, True, 0,
+                                          None, None, si)
+
+        win32file.CloseHandle(stdin[0])
+        win32file.CloseHandle(stdout[1])
+        win32file.CloseHandle(stderr[1])
+
+        return info, (c_stdin, c_stdout, c_stderr)
+
+    def newPipe(self):
+        sa = win32security.SECURITY_ATTRIBUTES()
+        sa.bInheritHandle = True
+        return win32pipe.CreatePipe(sa, 0)
+
+    def dup(self, pipe):
+        # create a duplicate handle that is not inherited, so that
+        # it can be closed in the parent.  close the original pipe in
+        # the process.
+        pid = win32api.GetCurrentProcess()
+        dup = win32api.DuplicateHandle(pid, pipe, pid, 0, 0,
+                                       win32con.DUPLICATE_SAME_ACCESS)
+        win32file.CloseHandle(pipe)
+        return dup
 
 if __name__ == '__main__':
     win32serviceutil.HandleCommandLine(Service)
