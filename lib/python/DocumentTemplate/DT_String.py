@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.22 1999/03/10 00:15:07 klm Exp $"
+"$Id: DT_String.py,v 1.23 1999/03/25 20:30:56 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -269,7 +269,7 @@ class String:
                 # Either a continuation tag or an end tag
                 section=self.SubTemplate(sname)
                 section.blocks=self.parse(text[:l],sstart)
-                section.cooked=None
+                section._v_cooked=None
                 blocks.append((tname,sargs,section))
     
                 start=self.skip_eol(text,l+len(tag))
@@ -373,8 +373,8 @@ class String:
              ):
         cooklock.acquire()
         try:
-            self.blocks=self.parse(self.read())
-            self.cooked=None
+            self._v_blocks=self.parse(self.read())
+            self._v_cooked=None
         finally:
             cooklock.release()
 
@@ -448,7 +448,7 @@ class String:
 
         if mapping is None: mapping = {}
 
-        if not hasattr(self,'cooked'):
+        if not hasattr(self,'_v_cooked'):
             try: changed=self.__changed__()
             except: changed=1
             self.cook()
@@ -510,7 +510,7 @@ class String:
             pushed=pushed+1
 
         try:
-            return render_blocks(self.blocks,md)
+            return render_blocks(self._v_blocks, md)
         finally:
             if pushed: md._pop(pushed) # Get rid of circular reference!
             md.level=level # Restore previous level
