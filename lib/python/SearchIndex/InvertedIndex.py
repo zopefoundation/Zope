@@ -27,15 +27,12 @@ Example usage:
     i.index(doc, key)
 
     # perform a test search
-    try:
-      print i['blah']
-    except KeyError:
-      print 'No such key, "blah"'
+    print i['blah']
 
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.4 1996/12/03 18:11:57 chris Exp $'''
+$Id: InvertedIndex.py,v 1.5 1996/12/03 18:15:07 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -87,6 +84,9 @@ $Id: InvertedIndex.py,v 1.4 1996/12/03 18:11:57 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.5  1996/12/03 18:15:07  chris
+# Updated doc strings
+#
 # Revision 1.4  1996/12/03 18:11:57  chris
 # Went back to returning empty ResultLists for failed searches.
 #
@@ -104,7 +104,7 @@ $Id: InvertedIndex.py,v 1.4 1996/12/03 18:11:57 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -291,10 +291,7 @@ class Index:
     i.index(doc, key)
 
     # perform a test search
-    try:
-      print i['blah']
-    except KeyError:
-      print 'No such key, "blah"'
+    print i['blah']
   '''
 
   list_class = ResultList
@@ -558,11 +555,8 @@ class Persistent(Index):
       i.index(doc, key)
 
       # perform a test search
-      try:
-        print i['blah']
-      except KeyError:
-        print 'No such key, "blah"'
-
+      print i['blah']
+ 
     Using an existing index:
 
       doc = open('/usr/users/chris/doc2.txt', 'r').read()
@@ -577,10 +571,7 @@ class Persistent(Index):
       i.index(doc, key)
 
       # perform a test search
-      try:
-        print i['blah']
-      except KeyError:
-        print 'No such key, "blah"'
+      print i['blah']
   '''
 
   list_class = PersistentResultList
@@ -703,10 +694,7 @@ class Transactional(Index):
       get_transaction().commit()
 
       # perform a test search
-      try:
-        print i['blah']
-      except KeyError:
-        print 'No such key, "blah"'
+      print i['blah']
 
     Using an existing index:
 
@@ -722,10 +710,7 @@ class Transactional(Index):
       i.index(doc, key)
 
       # perform a test search
-      try:
-        print i['blah']
-      except KeyError:
-        print 'No such key, "blah"'
+      print i['blah']
   '''
 
   list_class = STPResultList
