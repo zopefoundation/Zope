@@ -7,7 +7,7 @@ __doc__=DT_Doc.__doc__ % {
     'In': DT_In.__doc__,
     'If': DT_If.__doc__,
     'Var': DT_Var.__doc__,
-    'id': '$Id: DocumentTemplate.py,v 1.2 1997/08/27 19:34:43 jim Exp $'
+    'id': '$Id: DocumentTemplate.py,v 1.3 1997/09/02 20:35:36 jim Exp $'
     }
 
 ############################################################################
@@ -62,16 +62,20 @@ __doc__=DT_Doc.__doc__ % {
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 
 from DT_String import String, File
 from DT_HTML import HTML, HTMLFile, HTMLDefault
 import DT_UI # Install HTML editing
+from DT_Var import html_quote
 
 ############################################################################
 # $Log: DocumentTemplate.py,v $
+# Revision 1.3  1997/09/02 20:35:36  jim
+# export html_quote
+#
 # Revision 1.2  1997/08/27 19:34:43  jim
 # *** empty log message ***
 #
