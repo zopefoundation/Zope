@@ -152,7 +152,7 @@ class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
                  debug=0, wrap=60, metal=1, tal=1, showtal=-1,
-                 strictinsert=1):
+                 strictinsert=1, stackLimit=100):
         self.program = program
         self.macros = macros
         self.engine = engine
@@ -168,6 +168,7 @@ class TALInterpreter:
             showtal = (not tal)
         self.showtal = showtal
         self.strictinsert = strictinsert
+        self.stackLimit = stackLimit
         self.html = 0
         self.endsep = "/>"
         self.macroStack = []
@@ -448,6 +449,9 @@ class TALInterpreter:
         if mode != (self.html and "html" or "xml"):
             raise METALError("macro %s has incompatible mode %s" %
                              (`macroName`, `mode`), self.position)
+        if len(self.macroStack) >= self.stackLimit:
+            raise METALError("macro nesting limit (%d) exceeded "
+                             "by macro %s" % (self.stackLimit, `macroName`))
         self.macroStack.append((macroName, compiledSlots))
         self.interpret(macro)
         self.macroStack.pop()
