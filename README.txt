@@ -29,11 +29,11 @@ Introduction
 License
 
   The Zope License is included in LICENSE.txt Send your feedback
-  about the license to zope-license@zope.org. 
+  about the license to zope-license@zope.org.
 
 Important
 
-  This release requires Python 2.1.
+  This release requires Python 2.2.2.
 
 Installing Zope
 
@@ -41,9 +41,8 @@ Installing Zope
 
 Notes
 
-  * Zope requires Python 2.1.
+  * Zope requires Python 2.2.2.
 
   * Don't forget to check the Zope web site and mailing list.
 
   * Read the source and have fun!
-
