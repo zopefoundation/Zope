@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.1 1997/11/07 16:13:15 jim Exp $'''
+$Id: Session.py,v 1.2 1997/11/07 17:43:19 jim Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -86,6 +86,12 @@ class Session(Persistence.Persistent,
 	REQUEST[Globals.SessionNameName]=''
 	return self.index_html(self, REQUEST)
 	
+    def leave_another(self, REQUEST, RESPONSE):
+	'Leave a session that may not be the current session'
+	self.leave(REQUEST, RESPONSE)
+	RESPONSE.setStatus(302)
+	RESPONSE['Location']=REQUEST['URL2']+'/manage_main'
+	
     def save(self, remark, REQUEST):
 	'Make session changes permanent'
 	Globals.SessionBase[self.cookie].commit(remark)
@@ -98,7 +104,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 
@@ -106,6 +112,9 @@ __version__='$Revision: 1.1 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.2  1997/11/07 17:43:19  jim
+# Added a feature to exit another session.
+#
 # Revision 1.1  1997/11/07 16:13:15  jim
 # *** empty log message ***
 #

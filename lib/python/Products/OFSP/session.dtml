@@ -13,6 +13,10 @@
     Leave <strong><!--#var Principia-Session--></strong> first and then
     you may work in this session.
 
+    <form action=leave_another>
+    <input type=submit value="Quit Working in <!--#var Principia-Session-->">
+    </form>
+
   <!--#else-->
 
     <h2>Active <!--#var title_or_id--> Session Operations</h2>
