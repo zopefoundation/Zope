@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.47 2002/08/01 16:00:39 mj Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.48 2002/08/05 20:51:14 shane Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -665,7 +665,7 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 {
   PyObject *block, *t, *args;
   int l, i, k=0, append;
-  int skip_html_quote = 0;
+  int skip_html_quote;
 
   if ((l=PyList_Size(blocks)) < 0) return -1;
   for (i=0; i < l; i++)
@@ -690,6 +690,7 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 
               if (t == NULL) return -1;
 
+	      skip_html_quote = 0;
 	      if (! ( PyString_Check(t) || PyUnicode_Check(t) ) )
 	        {
 		  /* This might be a TaintedString object */
