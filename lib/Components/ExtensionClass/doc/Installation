@@ -1,5 +1,7 @@
 Installation
 
+   "Copyright (C) 1996-1998, Digital Creations":COPYRIGHT.html.
+
    The ExtensionClass distribution now uses the "Universal Unix
    Makefile for Python extensions", 'Makefile.pre.in', which was
    introduced as part of Python1.4.  Copies of this file for Python

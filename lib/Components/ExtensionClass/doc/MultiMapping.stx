@@ -1,5 +1,7 @@
 Example: MultiMapping objects
 
+  "Copyright (C) 1996-1998, Digital Creations":COPYRIGHT.html.
+
   As an example, consider an extension class that implements a
   "MultiMapping". A multi-mapping is an object that encapsulates 0
   or more mapping objects.  When an attempt is made to lookup an
@@ -400,3 +402,7 @@ Example: MultiMapping objects
     m['spam'] # returns 3
     m['ham']  # returns 4
     m['foo']  # raises a key error
+
+  Note that the source file included in the ExtensionClass
+  distribution has numerous enhancements beyond the version shown in
+  this document.

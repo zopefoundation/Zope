@@ -1,15 +1,17 @@
 Acquisition
 
+  "Copyright (C) 1996-1998, Digital Creations":COPYRIGHT.html.
+
   Acquisition [1] is a mechanism that allows objects to obtain
   attributes from their environment.  It is similar to inheritence,
   except that, rather than traversing an inheritence hierarchy
   to obtain attributes, a containment hierarchy is traversed.
 
-  The ExtensionClass release includes mix-in extension base classes
-  that can be used to add acquisition as a feature to extension
-  subclasses.  These mix-in classes use the context-wrapping feature
-  of ExtensionClasses to implement acquisition. Consider the following
-  example::
+  The "ExtensionClass":ExtensionClass.html. release includes mix-in
+  extension base classes that can be used to add acquisition as a
+  feature to extension subclasses.  These mix-in classes use the
+  context-wrapping feature of ExtensionClasses to implement
+  acquisition. Consider the following example::
 
     import ExtensionClass, Acquisition
 
