@@ -5,17 +5,17 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<!--#if Principia-Version-->
-  <!--#if expr="_vars['Principia-Version'] != cookie"-->
+<!--#if Zope-Version-->
+  <!--#if expr="_vars['Zope-Version'] != cookie"-->
     <h2>Another version is active!</h2>
   
     You cannot start working in this version while another version,
-    <strong><!--#var Principia-Version--></strong> is active.
-    Leave <strong><!--#var Principia-Version--></strong> first and then
+    <strong><!--#var Zope-Version--></strong> is active.
+    Leave <strong><!--#var Zope-Version--></strong> first and then
     you may work in this version.
 
     <form action=leave_another>
-    <input type=submit value="Quit Working in <!--#var Principia-Version-->">
+    <input type=submit value="Quit Working in <!--#var Zope-Version-->">
     </form>
 
   <!--#else-->
@@ -24,9 +24,9 @@
   
       <form action=leave>
         You <strong>are</strong> currently working in the
-        <!--#var Principia-Version--> version.  To
+        <!--#var Zope-Version--> version.  To
         <strong>quit</strong> working in this version click on this button: 
-        <input type=submit value="Quit Working in <!--#var Principia-Version-->">
+        <input type=submit value="Quit Working in <!--#var Zope-Version-->">
       </form>
   <!--#/if-->
 <!--#else-->
