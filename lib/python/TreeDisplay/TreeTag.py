@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.7 1997/11/19 15:27:40 jim Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.8 1997/11/19 15:52:31 jim Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -101,7 +101,7 @@ def tpRender(self, md, section, args):
 	      'tree-colspan': colspan,
 	      'tree-state': state }
     
-    md.push(treeData)
+    md._push(treeData)
 
     try:
 	for item in self.tpValues():
@@ -109,7 +109,7 @@ def tpRender(self, md, section, args):
 			       section,md,treeData, level, args)
 	if state is substate: data.append('</TABLE>\n')
 	result=join(data,'')
-    finally: md.pop(1)
+    finally: md._pop(1)
     return result
 
 def tpStateLevel(state, level=0):
@@ -225,7 +225,7 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 	    # leaves
 	    treeData['-tree-substate-']=sub
 	    treeData['tree-level']=level
-	    md.push(treeData)
+	    md._push(treeData)
 	    output(md.getitem(args['leaves'],0)(
 		self,md,
 		standard_html_header=(
@@ -234,13 +234,13 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 		    % (h, dataspan-1)),
 		standard_html_footer='</TD></TR>',
 		))
-	    md.pop(1)
+	    md._pop(1)
 	elif have_arg('expand'):
 	    treeData['-tree-substate-']=sub
 	    treeData['tree-level']=level
-	    md.push(treeData)
+	    md._push(treeData)
 	    output(md.getitem(args['expand'],0)(self,md))
-	    md.pop(1)
+	    md._pop(1)
 	else:
 	    __traceback_info__=sub, args, state, substate
 	    for item in items:
