@@ -276,7 +276,8 @@ class TestRequestRange(unittest.TestCase):
             part.rewindbody()
             body = part.fp.read()
             # Whotcha! Bug in MultiFile; the CRLF that is part of the boundary
-            # is returned as part of the body.
+            # is returned as part of the body. Note that this bug is resolved
+            # in Python 2.2.
             if body[-2:] == '\r\n':
                 body = body[:-2]
             
