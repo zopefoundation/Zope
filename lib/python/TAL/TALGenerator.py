@@ -94,6 +94,9 @@ from TALDefs import *
 
 class TALGenerator:
 
+    inMacroUse = 0
+    inMacroDef = 0
+    
     def __init__(self, expressionCompiler=None, xml=1):
         if not expressionCompiler:
             from DummyEngine import DummyEngine
@@ -341,11 +344,13 @@ class TALGenerator:
         if not re.match('%s$' % NAME_RE, macroName):
             raise METALError("invalid macro name: %s" % `macroName`, position)
         self.macros[macroName] = program
+        self.inMacroDef = self.inMacroDef - 1
         self.emit("defineMacro", macroName, program)
 
     def emitUseMacro(self, expr):
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
+        self.inMacroUse = 0
         self.emit("useMacro", expr, cexpr, self.popSlots(), program)
 
     def emitDefineSlot(self, slotName, position=(None, None)):
@@ -364,6 +369,7 @@ class TALGenerator:
         if not re.match('%s$' % NAME_RE, slotName):
             raise METALError("invalid slot name: %s" % `slotName`, position)
         self.slots[slotName] = program
+        self.inMacroUse = 1
         self.emit("fillSlot", slotName, program)
 
     def unEmitWhitespace(self):
@@ -472,21 +478,35 @@ class TALGenerator:
         if position != (None, None):
             # XXX at some point we should insist on a non-trivial position
             self.emit("setPosition", position)
-        if defineMacro:
-            self.pushProgram()
-            self.emit("version", TAL_VERSION)
-            self.emit("mode", self.xml and "xml" or "html")
-            todo["defineMacro"] = defineMacro
-        if useMacro:
-            self.pushSlots()
-            self.pushProgram()
-            todo["useMacro"] = useMacro
-        if fillSlot:
-            self.pushProgram()
-            todo["fillSlot"] = fillSlot
-        if defineSlot:
-            self.pushProgram()
-            todo["defineSlot"] = defineSlot
+        if self.inMacroUse:
+            if fillSlot:
+                self.pushProgram()
+                todo["fillSlot"] = fillSlot
+                self.inMacroUse = 0
+        else:
+            if fillSlot:
+                raise METALError, ("fill-slot must be within a use-macro",
+                                   position)
+        if not self.inMacroUse:
+            if defineMacro:
+                self.pushProgram()
+                self.emit("version", TAL_VERSION)
+                self.emit("mode", self.xml and "xml" or "html")
+                todo["defineMacro"] = defineMacro
+                self.inMacroDef = self.inMacroDef + 1
+            if useMacro:
+                self.pushSlots()
+                self.pushProgram()
+                todo["useMacro"] = useMacro
+                self.inMacroUse = 1
+            if defineSlot:
+                if not self.inMacroDef:
+                    raise METALError, (
+                        "define-slot must be within a define-macro",
+                        position)
+                self.pushProgram()
+                todo["defineSlot"] = defineSlot
+
         if taldict:
             dict = {}
             for item in attrlist:
@@ -496,7 +516,7 @@ class TALGenerator:
             todo["scope"] = 1
         if onError:
             self.pushProgram() # handler
-            self.emitStartTag(name, attrlist)
+            self.emitStartTag(name, list(attrlist)) # Must copy attrlist!
             self.pushProgram() # block
             todo["onError"] = onError
         if define:
