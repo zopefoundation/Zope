@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -228,16 +228,19 @@ class UserFolderHandler:
     """ """
     meta_types_=({'name':'User Folder', 'action':'manage_addUserFolder'},)
 
-    def manage_addUserFolder(self,dtself,REQUEST,**ignored):
+    def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
         """ """
         i=UserFolder()
         i._init()
-	try:    self._setObject('acl_users', i)
-	except: return MessageDialog(title='Item Exists',
-                       message='This object already contains a User Folder',
-                       action='%s/manage_main' % REQUEST['PARENT_URL'])
+	if REQUEST:
+	    try:    self._setObject('acl_users', i)
+	    except: return MessageDialog(
+		title='Item Exists',
+		message='This object already contains a User Folder',
+		action='%s/manage_main' % REQUEST['PARENT_URL'])
+	else: self._setObject('acl_users', i)
         self.__allow_groups__=self.acl_users
-        return self.manage_main(self,REQUEST)
+	if REQUEST: return self.manage_main(self,REQUEST)
 
     def UserFolderIds(self):
 	t=[]
@@ -265,6 +268,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.25  1997/12/23 21:09:45  jim
+# Made REQUEST argument to addUserFolder optional.
+#
 # Revision 1.24  1997/12/19 19:03:54  jim
 # updated icon management strategy
 #
