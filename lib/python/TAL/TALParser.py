@@ -309,13 +309,13 @@ class TALParser(XMLParser):
             self.gen.emitFillSlot(fillSlot)
 
     def CommentHandler(self, text):
-        self.gen.emit("comment", text)
+        self.gen.emitRawText("<!--%s-->" % text)
 
     def CharacterDataHandler(self, text):
         self.gen.emitText(text)
 
     def DefaultHandler(self, text):
-        self.gen.emit("rawtext", text)
+        self.gen.emitRawText(text)
 
 def test():
     import sys
