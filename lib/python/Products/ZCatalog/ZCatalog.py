@@ -98,7 +98,7 @@ import Products
 from Acquisition import Implicit
 from Persistence import Persistent
 from Catalog import Catalog, orify
-import pdb
+import pdb, traceback
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
@@ -141,6 +141,7 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
     manage_catalogView = HTMLFile('catalogView',globals())
     manage_catalogFind = HTMLFile('catalogFind',globals())
     manage_catalogFindResult = HTMLFile('catalogFindResult',globals())
+    manage_catalogSchema = HTMLFile('catalogSchema', globals())
 
     manage_main = HTMLFile('catalogView',globals())
     
@@ -163,7 +164,17 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
 	""" index all Zope objects that 'urls' point to """
 	if urls:
 	    for url in urls:
-		obj = self.resolve_url(url, REQUEST)
+                try:
+                    # if an error happens here, the catalog will be in
+                    # an unstable state.  If this happens, ignore the
+                    # object.
+                    obj = self.resolve_url(url, REQUEST)
+                except:
+##                    print 'resolve_url failed while cataloging'
+##                    c, i, t = sys.exc_info()
+##                    traceback.print_exc()
+                    continue
+                
 		self.catalog_object(obj, url)
 
 	return MessageDialog(title="Bah!",
@@ -176,7 +187,14 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
 
 	if urls:
 	    for url in urls:
-		obj = self.resolve_url(url, REQUEST)
+                try:
+                    obj = self.resolve_url(url, REQUEST)
+                except:
+                    print 'resolve_url failed while uncataloging'
+                    c, i, t = sys.exc_info()
+                    traceback.print_exc()
+                    continue
+                print 'uncataloging %s' % url
 		self.uncatalog_object(url)
 
 	return MessageDialog(title="Bah!",
@@ -188,6 +206,8 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
 	""" iterate over the whole catalog, deleting inexistent
 	references and refreshing objects"""
 	items = tuple(self._catalog.uids.items())
+
+        self._catalog.clear()
 
 	for path, i in items:
 	    try:
@@ -340,12 +360,21 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
             # waaa - traversal may return a "default object"
             # like an index_html document, though you really
             # wanted to get a Folder back :(
-            if callable(object.id):
-                name=object.id()
-            else: name=object.id
-            if name != os.path.split(path)[-1] and \
-               hasattr(object, 'aq_parent'):
-                return object.aq_parent
+##            print path
+##            print `object`
+##            print (str(req.PARENTS))
+
+            if hasattr(object, 'id'):
+                if callable(object.id):
+                    name=object.id()
+                else: name=object.id
+            elif hasattr(object, '__name__'):
+                name=object.__name__
+            else: name=''
+
+                
+            if name != os.path.split(path)[-1]:
+                return req.PARENTS[0]
             return object
         raise rsp.errmsg, sys.exc_value
 

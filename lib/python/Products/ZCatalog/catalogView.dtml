@@ -37,8 +37,8 @@ can also remove or update individual catalog records.
   <!--#/in-->
 
 <form action="<!--#var URL1-->/">
-<input type="submit" value=" Remove " NAME="manage_catalogRemove:method">
-<input type="submit" value=" Update " NAME="manage_catalogReindex:method">
+<input type="submit" value=" Remove " NAME="manage_uncatalogObject:method">
+<input type="submit" value=" Update " NAME="manage_catalogObject:method">
 <!--#comment-->
 <input type="submit" value=" VOODOO "
 NAME="manage_enterDebuger:method">
@@ -50,8 +50,8 @@ NAME="manage_enterDebuger:method">
 
      <tr valign=top>
 	    <td valign="middle" align="center">
-	    <INPUT TYPE="checkbox" NAME="ids:int:list" VALUE="<!--#var
-data_record_id_-->">
+	    <INPUT TYPE="checkbox" NAME="urls:list" VALUE="<!--#var
+data_record_unique_id_-->">
 	    </TD>
 	    <td valign="top"><!--#var meta_type--></td>
 	    <td valign="top" align="left">

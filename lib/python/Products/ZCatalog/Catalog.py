@@ -95,6 +95,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         for key, value in self.schema.items():
             scopy[key]=value
         scopy['data_record_id_']=len(self.schema.keys())
+        scopy['data_record_unique_id_'] = seLfy.paths[scopy['data_record_id_']]
 
         mybrains.__theCircularGottaCoverUpABugRefOfJoy = mybrains
         mybrains.__record_schema__ = scopy
