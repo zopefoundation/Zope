@@ -217,7 +217,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                     # if an error happens here, the catalog will be in
                     # an unstable state.  If this happens, ignore the
                     # object.
-                    obj = REQUEST.resolve_url(url, REQUEST)
+                    obj = self.resolve_url(url, REQUEST)
                 except:
                     continue
                 
@@ -229,11 +229,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def manage_uncatalogObject(self, REQUEST, urls=None):
         """ removes Zope object 'urls' from catalog """
-
+##	import pdb
+##	pdb.set_trace()
         if urls:
             for url in urls:
                 try:
-                    obj = REQUEST.resolve_url(url, REQUEST)
+                    obj = self.resolve_url(url, REQUEST)
                 except:
                     continue
                 self.uncatalog_object(url)
@@ -246,11 +247,11 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         """ clear the catalog, then re-index everything """
 	
         paths = tuple(self._catalog.paths.values())
-	self.manage_catalogClear()
+	self.manage_catalogClear(REQUEST)
 
 	for p in paths:
 	    try:
-		obj = REQUEST.resolve_url(p)
+		obj = self.resolve_url(p, REQUEST)
 		self.catalog_object(obj, p)		
 	    except:
 		pass
@@ -369,9 +370,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         """
         if REQUEST is None:
             REQUEST=self.REQUEST
-        url='%s/%s' %(REQUEST.script, self.getpath(rid))
 	try:
-	    obj = REQUEST.resolve_url(url)
+	    obj = self.resolve_url(self.getpath(rid), REQUEST)
 	except:
 	    return None
         return obj
@@ -496,8 +496,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             return object
         req.close()
         raise rsp.errmsg, sys.exc_value
-
-
 
 
 Globals.default__class_init__(ZCatalog)
