@@ -35,7 +35,7 @@
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="title"size="40" value="<dtml-var 
+  <input type="text" name="name" size="40" value="<dtml-var 
    name html_quote>" />
   </td>
 </tr>
