@@ -1,9 +1,11 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.6
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
+# 
+# This license has been certified as Open Source(tm).
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -17,12 +19,13 @@
 #    the documentation and/or other materials provided with the
 #    distribution.
 # 
-# 3. Any use, including use of the Zope software to operate a website,
-#    must either comply with the terms described below under
-#    "Attribution" or alternatively secure a separate license from
-#    Digital Creations.  Digital Creations will not unreasonably
-#    deny such a separate license in the event that the request
-#    explains in detail a valid reason for withholding attribution.
+# 3. Digital Creations requests that attribution be given to Zope
+#    in any manner possible. Zope includes a "Powered by Zope"
+#    button that is installed by default. While it is not a license
+#    violation to remove this button, it is requested that the
+#    attribution remain. A significant investment has been put
+#    into Zope, and this effort will continue if the Zope community
+#    continues to grow. This is one way to assure that growth.
 # 
 # 4. All advertising materials and documentation mentioning
 #    features derived from or use of this software must display
@@ -73,27 +76,6 @@
 #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #   SUCH DAMAGE.
 # 
-# Attribution
-# 
-#   Individuals or organizations using this software as a web
-#   site ("the web site") must provide attribution by placing
-#   the accompanying "button" on the website's main entry
-#   point.  By default, the button links to a "credits page"
-#   on the Digital Creations' web site. The "credits page" may
-#   be copied to "the web site" in order to add other credits,
-#   or keep users "on site". In that case, the "button" link
-#   may be updated to point to the "on site" "credits page".
-#   In cases where this placement of attribution is not
-#   feasible, a separate arrangment must be concluded with
-#   Digital Creations.  Those using the software for purposes
-#   other than web sites must provide a corresponding
-#   attribution in locations that include a copyright using a
-#   manner best suited to the application environment.  Where
-#   attribution is not possible, or is considered to be
-#   onerous for some other reason, a request should be made to
-#   Digital Creations to waive this requirement in writing.
-#   As stated above, for valid requests, Digital Creations
-#   will not unreasonably deny such requests.
 # 
 # This software consists of contributions made by Digital Creations and
 # many individuals on behalf of Digital Creations.  Specific
@@ -103,7 +85,7 @@
 """Try to do all of the installation steps.
 
 This must be run from the top-level directory of the installation.
-(Yes, this is cheezy.  We'll fix this when we have a chance.
+\(Yes, this is cheezy.  We'll fix this when we have a chance.
 
 """
 
