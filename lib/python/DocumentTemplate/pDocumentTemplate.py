@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.9 1998/04/02 19:06:39 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.10 1998/04/08 17:47:48 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import regex, string
 from string import join
@@ -115,7 +115,7 @@ class InstanceDict:
 	    except AttributeError: raise KeyError, key
 
 	v=self.validate
-	if v is not None: v(self.namespace,inst,key,r)
+	if v is not None: v(inst,inst,key,r,self.namespace)
 
 	self.cache[key]=r
 	return r
@@ -226,6 +226,9 @@ def render_blocks(blocks, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.10  1998/04/08 17:47:48  jim
+# Fixed bug in calling validation method.
+#
 # Revision 1.9  1998/04/02 19:06:39  jim
 # *** empty log message ***
 #
