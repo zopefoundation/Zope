@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.18 2004/01/15 23:00:17 tseaver Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Tree.py,v 1.19 2004/05/04 19:33:07 caseman Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -232,7 +232,7 @@ def b2a(s):
 
     Encoded string use only alpahnumeric characters, and "._-".
     '''
-    return translate(base64.encodestring(str(s)), a2u_map)
+    return translate(base64.encodestring(str(s)), a2u_map).replace('\n', '')
 
 def a2b(s):
     '''Decode a b2a-encoded string.'''

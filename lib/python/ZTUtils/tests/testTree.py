@@ -187,6 +187,7 @@ class TreeTests(unittest.TestCase):
         treeroot1 = self.tm.tree(self.root, self.expansionmap)
 
         encoded = Tree.encodeExpansion(treeroot1.flat())
+        self.failIf(encoded.find('\n') != -1)
         decodedmap = Tree.decodeExpansion(encoded)
 
         treeroot2 = self.tm.tree(self.root, decodedmap)
