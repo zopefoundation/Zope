@@ -112,7 +112,7 @@
    as desired.
 ''' 
 
-from DT_Util import render_blocks, Eval, ParseError, strip
+from DT_Util import render_blocks, Eval, ParseError
 from DT_Util import str # Probably needed due to hysterical pickles.
 import re
 
