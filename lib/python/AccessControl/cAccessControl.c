@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.8 2001/07/03 19:37:52 matt Exp $
+  $Id: cAccessControl.c,v 1.9 2001/07/11 20:49:13 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -436,12 +436,18 @@ static void unauthErr(PyObject *name, PyObject *value) {
 		if (_name == NULL) {
 			PyErr_Clear();
 			_name = PyObject_GetAttrString(value,"__name__");
+                        if (_name == NULL) {
+                          PyErr_Clear();
+                        }
 		}
 		
 		if (_name != NULL && PyCallable_Check(_name)) {
 			_name1 = PyObject_CallObject(_name, NULL);
 			Py_DECREF(_name);
 			_name = _name1;
+                        if (_name == NULL) {
+                          PyErr_Clear();
+                        }
 		}
 	}
 	if (_name == NULL) {
@@ -450,7 +456,10 @@ static void unauthErr(PyObject *name, PyObject *value) {
 	}
 
 	_name1 = PyObject_Str(_name);
-	if (_name1 == NULL) s = "None";
+	if (_name1 == NULL) {
+          PyErr_Clear();
+          s = "? (non-printable object)";
+        }
 	else s = PyString_AsString(_name1);
 
 	snprintf(msgbuff,sizeof(msgbuff)-1,
@@ -1484,6 +1493,8 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 				}
 			}
 		}
+                else
+                  PyErr_Clear();
 
 	/*|    obj = getattr(obj, 'aq_inner', None)
 	**|    if obj is None: break
@@ -1763,7 +1774,7 @@ static PyObject *permissionName(PyObject *name) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.8 $";
+	char *rev = "$Revision: 1.9 $";
 
 	if (!ExtensionClassImported) return;
 
