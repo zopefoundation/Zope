@@ -234,7 +234,11 @@ class BaseIndex(Persistent):
         else:
             # _add_wordinfo() is called for each update.  If the map
             # size exceeds the DICT_CUTOFF, convert to an IIBTree.
-            if len(doc2score) == self.DICT_CUTOFF:
+            # Obscure:  First check the type.  If it's not a dict, it
+            # can't need conversion, and then we can avoid an expensive
+            # len(IIBTree).
+            if (isinstance(doc2score, type({})) and
+                len(doc2score) == self.DICT_CUTOFF):
                 doc2score = IIBTree(doc2score)
         doc2score[docid] = f
         self._wordinfo[wid] = doc2score # not redundant:  Persistency!
@@ -248,14 +252,15 @@ class BaseIndex(Persistent):
     #
     # except that _mass_add_wordinfo doesn't require so many function calls.
     def _mass_add_wordinfo(self, wid2weight, docid):
+        dicttype = type({})
         get_doc2score = self._wordinfo.get
         for wid, weight in wid2weight.items():
             doc2score = get_doc2score(wid)
             if doc2score is None:
                 doc2score = {}
-            else:
-                if len(doc2score) == self.DICT_CUTOFF:
-                    doc2score = IIBTree(doc2score)
+            elif (isinstance(doc2score, dicttype) and
+                 len(doc2score) == self.DICT_CUTOFF):
+                doc2score = IIBTree(doc2score)
             doc2score[docid] = weight
             self._wordinfo[wid] = doc2score # not redundant:  Persistency!
 
