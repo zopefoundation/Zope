@@ -82,6 +82,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1133: TreeTag choked on Ids of type long.
+
      - Collector #1012: A carefully crafted compressed tree state
        could violate size limit.  Limit is no longer hardcoded.
 

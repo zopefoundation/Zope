@@ -12,8 +12,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.55 2003/11/18 13:17:14 tseaver Exp $'
-__version__='$Revision: 1.55 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.56 2003/12/11 22:49:17 evan Exp $'
+__version__='$Revision: 1.56 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -92,8 +92,20 @@ String.commands['tree']=Tree
 
 pyid=id # Copy builtin
 
+simple_types = {str: 1, unicode: 1, int: 1, float: 1, long: 1,
+                tuple: 1, list: 1, dict: 1}
+
+def try_call_attr(ob, attrname, simple_types=simple_types):
+    attr = getattr(ob, attrname)
+    if type(attr) in simple_types:
+        return attr
+    try:
+        return attr()
+    except TypeError:
+        return attr
+
 def tpRender(self, md, section, args,
-             simple_type={type(''):0, type(1):0, type(1.0):0}.has_key):
+             try_call_attr=try_call_attr):
     """Render data organized as a tree.
 
     We keep track of open nodes using a cookie.  The cookie stored the
@@ -118,8 +130,7 @@ def tpRender(self, md, section, args,
 
     idattr=args['id']
     if hasattr(self, idattr):
-        id=getattr(self, idattr)
-        if not simple_type(type(id)): id=id()
+        id = try_call_attr(self, idattr)
     elif hasattr(self, '_p_oid'): id=oid(self)
     else: id=pyid(self)
 
@@ -206,7 +217,7 @@ def tpRender(self, md, section, args,
 
 def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                   colspan, section, md, treeData, level=0, args=None,
-                  simple_type={type(''):0, type(1):0, type(1.0):0}.has_key,
+                  try_call_attr=try_call_attr,
                   ):
     "Render a tree as a table"
 
@@ -216,8 +227,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     if level >= 0:
         urlattr=args['url']
         if urlattr and hasattr(self, urlattr):
-            tpUrl=getattr(self, urlattr)
-            if not simple_type(type(tpUrl)): tpUrl=tpUrl()
+            tpUrl = try_call_attr(self, urlattr)
             url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
             root_url = root_url or tpUrl
 
@@ -438,8 +448,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             ids={}
             for item in items:
                 if hasattr(item, idattr):
-                    id=getattr(item, idattr)
-                    if not simple_type(type(id)): id=id()
+                    id = try_call_attr(item, idattr)
                 elif hasattr(item, '_p_oid'): id=oid(item)
                 else: id=pyid(item)
                 if len(sub)==1: sub.append([])
@@ -586,7 +595,7 @@ def tpStateLevel(state, level=0):
     return level
 
 def tpValuesIds(self, get_items, args,
-                simple_type={type(''):0, type(1):0, type(1.0):0}.has_key,
+                try_call_attr=try_call_attr,
                 ):
     # get_item(node) is a function that returns the subitems of node
 
@@ -603,8 +612,7 @@ def tpValuesIds(self, get_items, args,
                 if get_items(item):
 
                     if hasattr(item, idattr):
-                        id=getattr(item, idattr)
-                        if not simple_type(type(id)): id=id()
+                        id = try_call_attr(item, idattr)
                     elif hasattr(item, '_p_oid'): id=oid(item)
                     else: id=pyid(item)
 
