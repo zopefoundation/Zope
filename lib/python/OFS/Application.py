@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.104 1999/05/04 21:47:15 amos Exp $'''
-__version__='$Revision: 1.104 $'[11:-2]
+$Id: Application.py,v 1.105 1999/05/05 13:24:37 brian Exp $'''
+__version__='$Revision: 1.105 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -167,7 +167,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     """Top-level system object"""
     title    ='Zope'
     __roles__=['Manager', 'Anonymous']
-    __defined_roles__=('Manager','Anonymous')
+    __defined_roles__=('Manager','Anonymous','Owner')
     web__form__method='GET'
     isTopLevelPrincipiaApplicationObject=1
     _isBeingUsedAsAMethod_=0
