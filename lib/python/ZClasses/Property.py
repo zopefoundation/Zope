@@ -111,7 +111,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     def __init__(self, id, title):
         self.id=id
         self.title=title
-        self.md={}
+        self._md={}
 
     def v_self(self):
         klass=self.aq_inner.aq_parent.aq_parent.aq_parent._zclass_
