@@ -241,6 +241,7 @@ def _global(m, n):
             m=n='ExtensionClass'
         else:
             raise 'Unexpected BoboPOS class', (m, n)
+    elif m=='PersistentMapping': m='Persistence'
 
     return Global(m,n)
     
