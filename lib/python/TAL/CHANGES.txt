@@ -4,15 +4,8 @@ TAL changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.4.1
+    Version 1.5.0
 
-      Bugs Fixed
+      Features Added
 
-        - tal:on-error was mangling other attributes
-
-        - TAL and METAL attributes with blank values were ignored.
-
-        - METAL statement nesting was not enforced.
-
-        - METAL expansion didn't always do the right thing to nested
-          METAL attributes.
+        - Line and column numbers are added to more exceptions.
