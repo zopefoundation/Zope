@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.4 1997/02/20 00:55:29 jim Exp $
+  $Id: Acquisition.c,v 1.5 1997/06/19 19:24:21 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: Acquisition.c,v $
+  Revision 1.5  1997/06/19 19:24:21  jim
+  Many fixes and consolodation with Xaq.
+
   Revision 1.4  1997/02/20 00:55:29  jim
   *** empty log message ***
 
@@ -86,6 +89,7 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 #define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
+#define OBJECT(O) ((PyObject*)(O))
 
 static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__mod__, *py__pow__, *py__divmod__, *py__lshift__, *py__rshift__,
@@ -162,7 +166,10 @@ typedef struct {
   PyObject *container;
 } Wrapper;
 
-staticforward PyExtensionClass Wrappertype;
+staticforward PyExtensionClass Wrappertype, XaqWrappertype;
+
+#define isWrapper(O) ((O)->ob_type==(PyTypeObject*)&Wrappertype || \
+		      (O)->ob_type==(PyTypeObject*)&XaqWrappertype)
 
 static PyObject *
 Wrapper__init__(Wrapper *self, PyObject *args)
@@ -180,20 +187,14 @@ Wrapper__init__(Wrapper *self, PyObject *args)
 
 /* ---------------------------------------------------------------- */
 
-static struct PyMethodDef Wrapper_methods[] = {
-  {"__init__", (PyCFunction)Wrapper__init__, 0,
-   "Initialize an Acquirer Wrapper"},
-  {NULL,		NULL}		/* sentinel */
-};
-
 /* ---------- */
 
 static Wrapper *
-newWrapper(PyObject *obj, PyObject *container)
+newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
 {
   Wrapper *self;
   
-  UNLESS(self = PyObject_NEW(Wrapper, (PyTypeObject*)&Wrappertype)) return NULL;
+  UNLESS(self = PyObject_NEW(Wrapper, Wrappertype)) return NULL;
   Py_INCREF(obj);
   Py_INCREF(container);
   self->obj=obj;
@@ -218,7 +219,7 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 
   if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
     {
-      if(r->ob_type==(PyTypeObject*)&Wrappertype)
+      if(r->ob_type==self->ob_type)
 	{
 	  if(r->ob_refcnt==1)
 	    {
@@ -227,7 +228,7 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 	    }
 	  else
 	    ASSIGN(r,(PyObject*)newWrapper(((Wrapper*)r)->obj,
-					   (PyObject*)self));
+					   (PyObject*)self,self->ob_type));
 	}
       else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
@@ -239,12 +240,76 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 
   name=PyString_AsString(oname);
 
-  if(self->container && *name != '_') 
+  if(*name != '_')
     {
-      if(r=PyObject_GetAttr(self->container,oname))
-	return r;
-      PyErr_Clear();
+      
+      if(*name++=='a' && *name++=='q' && *name++=='_')
+	{
+	  if(strcmp(name,"parent")==0)
+	    {
+	      if(self->container) r=self->container;
+	      else r=Py_None;
+	      Py_INCREF(r);
+	      return r;
+	    }
+	  if(strcmp(name,"self")==0)
+	    {
+	      if(self->obj) r=self->obj;
+	      else r=Py_None;
+	      Py_INCREF(r);
+	      return r;
+	    }
+	}
+
+      if(self->container) 
+	{
+	  if(r=PyObject_GetAttr(self->container,oname))
+	    return r;
+	  PyErr_Clear();
+	}
     }
+
+  if(*name++=='_' && strcmp(name,"_init__")==0)
+    return Py_FindAttr((PyObject*)self,oname);
+
+  PyErr_SetObject(PyExc_AttributeError,oname);
+  return NULL;
+}
+
+static PyObject *
+Xaq_getattro(Wrapper *self, PyObject *oname)
+{
+  PyObject *r;
+  char *name;
+
+  if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
+    {
+      if(r->ob_type==self->ob_type)
+	{
+	  if(r->ob_refcnt==1)
+	    {
+	      Py_INCREF(self);
+	      ASSIGN(((Wrapper*)r)->container,(PyObject*)self);
+	    }
+	  else
+	    ASSIGN(r,(PyObject*)newWrapper(((Wrapper*)r)->obj,
+					   (PyObject*)self, self->ob_type));
+	}
+      else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
+	ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
+      else if(has__of__(r))
+	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
+      return r;
+    }
+  if(self->obj) PyErr_Clear();
+
+  name=PyString_AsString(oname);
+
+  if(*name=='a' && strcmp(name,"acquire")==0)
+    return Py_FindAttr((PyObject*)self,oname);
+
+  if(*name=='_' && strcmp(name,"__init__")==0)
+    return Py_FindAttr((PyObject*)self,oname);
 
   if(*name++=='a' && *name++=='q' && *name++=='_')
     {
@@ -261,6 +326,76 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 	  else r=Py_None;
 	  Py_INCREF(r);
 	  return r;
+	}
+    }
+
+  PyErr_SetObject(PyExc_AttributeError,oname);
+  return NULL;
+}
+
+static PyObject *
+Wrapper_acquire(Wrapper *self, PyObject *oname)
+{
+  PyObject *r;
+  char *name;
+
+  if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
+    {
+      if(r->ob_type==self->ob_type)
+	{
+	  if(r->ob_refcnt==1)
+	    {
+	      Py_INCREF(self);
+	      ASSIGN(((Wrapper*)r)->container,(PyObject*)self);
+	    }
+	  else
+	    ASSIGN(r,(PyObject*)newWrapper(((Wrapper*)r)->obj,
+					   (PyObject*)self, self->ob_type));
+	}
+      else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
+	ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
+      else if(has__of__(r))
+	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
+      return r;
+    }
+  if(self->obj) PyErr_Clear();
+
+  name=PyString_AsString(oname);
+
+  if(*name != '_')
+    {
+
+      if(*name++=='a' && *name++=='q' && *name++=='_')
+	{
+	  if(strcmp(name,"parent")==0)
+	    {
+	      if(self->container) r=self->container;
+	      else r=Py_None;
+	      Py_INCREF(r);
+	      return r;
+	    }
+	  if(strcmp(name,"self")==0)
+	    {
+	      if(self->obj) r=self->obj;
+	      else r=Py_None;
+	      Py_INCREF(r);
+	      return r;
+	    }
+	}
+
+      if(self->container) 
+	{
+	  if(isWrapper(self->container))
+	    {
+	      if(r=Wrapper_acquire((Wrapper*)self->container,oname))
+		return r;
+	    }
+	  else
+	    {
+	      if(r=PyObject_GetAttr(self->container,oname))
+		return r;
+	    }
+	  PyErr_Clear();
 	}
     }
 
@@ -457,14 +592,18 @@ static PyMappingMethods Wrapper_as_mapping = {
 
 /* -------------------------------------------------------- */
 
-static char Wrappertype__doc__[] = 
-""
-;
+static struct PyMethodDef Wrapper_methods[] = {
+  {"__init__", (PyCFunction)Wrapper__init__, 0,
+   "Initialize an Acquirer Wrapper"},
+  {"acquire", (PyCFunction)Wrapper_acquire, 0,
+   "Get an attribute, acquiring it if necessary"},
+  {NULL,		NULL}		/* sentinel */
+};
 
 static PyExtensionClass Wrappertype = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
-  "AcquirerWrapper",			/*tp_name*/
+  "ImplicitAcquirerWrapper",		/*tp_name*/
   sizeof(Wrapper),       		/*tp_basicsize*/
   0,					/*tp_itemsize*/
   /* methods */
@@ -485,28 +624,39 @@ static PyExtensionClass Wrappertype = {
 
   /* Space for future expansion */
   0L,0L,
-  Wrappertype__doc__, /* Documentation string */
+  "Wrapper object for implicit acquisition", /* Documentation string */
   METHOD_CHAIN(Wrapper_methods),
   EXTENSIONCLASS_BINDABLE_FLAG,
 };
 
-/* End of code for Wrapper objects */
-/* -------------------------------------------------------- */
+static PyExtensionClass XaqWrappertype = {
+  PyObject_HEAD_INIT(NULL)
+  0,					/*ob_size*/
+  "ExplicitAcquirerWrapper",		/*tp_name*/
+  sizeof(Wrapper),       		/*tp_basicsize*/
+  0,					/*tp_itemsize*/
+  /* methods */
+  (destructor)Wrapper_dealloc,		/*tp_dealloc*/
+  (printfunc)0,				/*tp_print*/
+  (getattrfunc)0,			/*tp_getattr*/
+  (setattrfunc)0,			/*tp_setattr*/
+  (cmpfunc)Wrapper_compare,    		/*tp_compare*/
+  (reprfunc)Wrapper_repr,      		/*tp_repr*/
+  0,					/*tp_as_number*/
+  &Wrapper_as_sequence,			/*tp_as_sequence*/
+  &Wrapper_as_mapping,			/*tp_as_mapping*/
+  (hashfunc)Wrapper_hash,      		/*tp_hash*/
+  (ternaryfunc)Wrapper_call,		/*tp_call*/
+  (reprfunc)Wrapper_str,       		/*tp_str*/
+  (getattrofunc)Xaq_getattro,		/*tp_getattr with object key*/
+  (setattrofunc)Wrapper_setattro,      	/*tp_setattr with object key*/
 
-
-/* List of methods defined in the module */
-
-static struct PyMethodDef Wrap_methods[] = {
-  
-  {NULL,		NULL}		/* sentinel */
+  /* Space for future expansion */
+  0L,0L,
+  "Wrapper object for explicit acquisition", /* Documentation string */
+  METHOD_CHAIN(Wrapper_methods),
+  EXTENSIONCLASS_BINDABLE_FLAG,
 };
-
-
-/* Initialization function for the module (*must* be called initWrap) */
-
-static char Wrap_module_documentation[] = 
-""
-;
 
 static PyObject *
 acquire_of(PyObject *self, PyObject *args)
@@ -523,7 +673,25 @@ acquire_of(PyObject *self, PyObject *args)
       return NULL;
     }
 
-  return (PyObject*)newWrapper(self,args);
+  return (PyObject*)newWrapper(self,args,(PyTypeObject *)&Wrappertype);
+}
+
+static PyObject *
+xaq_of(PyObject *self, PyObject *args)
+{
+  PyObject *inst;
+
+  UNLESS(PyArg_Parse(args,"O",&inst)) return NULL;
+
+  UNLESS(PyExtensionInstance_Check(inst))
+    {
+      PyErr_SetString(PyExc_TypeError,
+		      "attempt to wrap extension method using an object that\n"
+		      "is not an extension class instance.");
+      return NULL;
+    }
+
+  return (PyObject*)newWrapper(self,args,(PyTypeObject *)&XaqWrappertype);
 }
 
 static struct PyMethodDef Acquirer_methods[] = {
@@ -532,27 +700,46 @@ static struct PyMethodDef Acquirer_methods[] = {
   {NULL,		NULL}		/* sentinel */
 };
 
-static struct PyMethodDef methods[] = {{NULL,	NULL}};
+static struct PyMethodDef Xaq_methods[] = {
+  {"__of__",(PyCFunction)xaq_of,0,""},
+  
+  {NULL,		NULL}		/* sentinel */
+};
 
+static struct PyMethodDef methods[] = {{NULL,	NULL}};
 
 void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.5 $";
   PURE_MIXIN_CLASS(Acquirer,
-	"Base class for objects that acquire attributes from containers\n"
-	, Acquirer_methods);
+    "Base class for objects that implicitly"
+    " acquire attributes from containers\n"
+    , Acquirer_methods);
+  PURE_MIXIN_CLASS(ExplicitAcquirer,
+    "Base class for objects that explicitly"
+    " acquire attributes from containers\n"
+    , Xaq_methods);
+
+  UNLESS(ExtensionClassImported) return;
 
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
-		     "",
+		     "Provide base classes for acquiring objects",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   init_py_names();
   PyExtensionClass_Export(d,"Acquirer",AcquirerType);
-  PyExtensionClass_Export(d,"Wrapper",Wrappertype);
+  PyExtensionClass_Export(d,"ImplicitAcquisitionWrapper",Wrappertype);
+  PyExtensionClass_Export(d,"ExplicitAcquirer",ExplicitAcquirerType);
+  PyExtensionClass_Export(d,"ExplicitAcquisitionWrapper",XaqWrappertype);
+
+  /* Create aliases */
+  PyDict_SetItemString(d,"Implicit",OBJECT(&AcquirerType));
+  PyDict_SetItemString(d,"Explicit",OBJECT(&ExplicitAcquirerType));
+  
   PyDict_SetItemString(d,"__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
