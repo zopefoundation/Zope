@@ -411,7 +411,32 @@ class zope_ftp_channel(ftp_channel):
         else:
             self.client_dc.channel.respond('426 Error creating file.')       
         self.client_dc.close()
-        
+
+    def cmd_rnfr (self, line):
+        'rename from'
+        if len (line) != 2:
+            self.command_not_understood (string.join (line))
+        else:
+            self.fromfile = line[1]
+            self.respond ('350 RNFR command successful.')
+
+    def cmd_rnto (self, line):
+        if len (line) != 2:
+            self.command_not_understood (string.join (line))
+            return
+        pathf,idf=os.path.split(self.fromfile)
+        patht,idt=os.path.split(line[1])
+        response=make_response(self, self.rnto_completion)
+        request=FTPRequest(pathf,('RNTO',idf,idt),self,response)
+        handle(self.module,request,response)       
+
+    def rnto_completion(self,response):   
+        status=response.getStatus()
+        if status==200:
+            self.respond ('250 RNTO command successful.')
+        else:
+            self.respond ('550 error renaming file.')
+
     def cmd_dele(self, line):
         if len (line) != 2:
             self.command.not_understood (string.join (line))
@@ -530,6 +555,7 @@ class zope_ftp_channel(ftp_channel):
         
     def cmd_appe(self, line):
         self.respond('502 Command not implemented.')
+
 
 
 # Override ftp server receive channel reponse mechanism 

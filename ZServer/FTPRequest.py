@@ -162,6 +162,12 @@ class FTPRequest(HTTPRequest):
             env['PATH_INFO']=self._join_paths(channel.path, 
                                               path, 'manage_addFolder')
             env['QUERY_STRING']='id=%s' % args[0]
+
+        elif command=='RNTO':
+            env['PATH_INFO']=self._join_paths(channel.path, 
+                                              path, 'manage_renameObject')
+            env['QUERY_STRING']='id=%s&amp;new_id=%s' % (args[0],args[1])
+            
         elif command=='STOR':
             env['PATH_INFO']=self._join_paths(channel.path, path)
             env['REQUEST_METHOD']='PUT'
