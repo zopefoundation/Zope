@@ -1,0 +1,37 @@
+#!python
+##############################################################################
+#
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+
+import os
+import sys
+
+mydir = os.path.dirname(os.path.abspath(sys.argv[0]))
+zopehome = os.path.dirname(mydir)
+softwarehome = os.path.join(zopehome, "lib", "python")
+
+if softwarehome not in sys.path:
+    sys.path.append(softwarehome)
+
+from ZEO.mkzeoinst import ZEOInstanceBuilder
+
+class InstanceBuilder(ZEOInstanceBuilder):
+    def get_params(self, *args, **kw):
+        params = ZEOInstanceBuilder.get_params(self, *args, **kw)
+        sw = os.path.join(softwarehome, "lib", "python")
+        params["server"] = os.path.join(sw, "ZEO", "runzeo.py")
+        params["zdrun"] = os.path.join(sw, "zdaemon", "zdrun.py")
+        params["zdctl"] = os.path.join(sw, "zdaemon", "zdctl.py")
+        return params
+
+if __name__ == "__main__":
+    InstanceBuilder().run()

@@ -1,0 +1,73 @@
+# Zope2 build and install Makefile.
+
+# We do as much as possible in Python in order to avoid needing to
+# learn autoconf or some other awful thing. ;-)
+
+NAME=Zope
+MAJOR_VERSION=<<ZOPE_MAJOR_VERSION>>
+MINOR_VERSION=<<ZOPE_MINOR_VERSION>>
+RELEASE_TAG=<<VERSION_RELEASE_TAG>>
+PACKAGE_NAME=${NAME}-${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}
+
+PYTHON="<<PYTHON>>"
+TARGET_DIR=<<TARGET_DIR>>
+BUILD_DIR=<<BUILD_DIR>>
+RM=rm -f
+RMRF=rm -rf
+FIND=find
+XARGS=xargs
+CD=cd
+LN=ln -sf
+CP=cp
+INSTALL_COPY=${PYTHON} inst/install.py
+WRITE_INFILE=${PYTHON} inst/file_from_infile.py
+
+.PHONY : clean install uninstall instance links hacklinks untestinst testinst
+.PHONY : default
+
+default: build
+	@echo
+	@echo Zope built.  Next, do \'make install\' \(or \'make instance\'
+	@echo to run a Zope instance directly from the build directory\).
+	@echo
+
+build:
+	${PYTHON} inst/setup.py <<DISTUTILS_OPTS>> build_ext -i
+
+install: build
+	${PYTHON} inst/setup.py <<DISTUTILS_OPTS>> install \
+	   --home="${TARGET_DIR}" <<OPT_FLAGS>>
+	@echo
+	@echo Zope binaries installed successfully.
+	@echo Now run \'${TARGET_DIR}/bin/mkzopeinstance\'
+
+instance: build
+	${PYTHON} bin/mkzopeinstance .
+
+# testinst makes an instance home in the build directory without asking
+# any questions.  this is useful when testing.  instances made with
+# this can be removed via "make untestinst"
+testinst: build
+	${PYTHON} bin/mkzopeinstance --user=admin:admin .
+
+# remove the instance files made with testinst (w/ prejudice)
+untestinst:
+	${RM} bin/zopectl.py
+	${RM} bin/ntservice.py
+	${RMRF} etc
+	${RMRF} log
+
+uninstall:
+	${RMRF} "${TARGET_DIR}"
+
+TESTOPTS=-v1 -d lib/python
+
+test: build
+	${PYTHON} utilities/testrunner.py ${TESTOPTS}
+
+clean:
+	${RMRF} build lib/python/build
+	${FIND} . -name '*.py[co]' -o -name 'core*' | ${XARGS} ${RM}
+
+clobber: clean untestinst
+	${FIND} lib/python -name '*.so' | ${XARGS} ${RM}
