@@ -163,19 +163,19 @@ class SecurityInfo(Acquisition.Implicit):
         """Declare names to be associated with a permission."""
         self._setaccess(names, permission_name)
 
-    objectPublic__roles__=ACCESS_PRIVATE    
-    def objectPublic(self):
-        """Declare names to be publicly accessible."""
+    declareObjectPublic__roles__=ACCESS_PRIVATE    
+    def declareObjectPublic(self):
+        """Declare the object to be publicly accessible."""
         self._setaccess((), ACCESS_PUBLIC)
 
-    objectPrivate__roles__=ACCESS_PRIVATE
-    def objectPrivate(self):
-        """Declare names to be inaccessible to restricted code."""
+    declareObjectPrivate__roles__=ACCESS_PRIVATE
+    def declareObjectPrivate(self):
+        """Declare the object to be inaccessible to restricted code."""
         self._setaccess((), ACCESS_PRIVATE)
 
-    objectProtected__roles__=ACCESS_PRIVATE
-    def objectProtected(self, permission_name):
-        """Declare names to be associated with a permission."""
+    declareObjectProtected__roles__=ACCESS_PRIVATE
+    def declareObjectProtected(self, permission_name):
+        """Declare the object to be associated with a permission."""
         self._setaccess((), permission_name)
 
     setDefaultRoles__roles__=ACCESS_PRIVATE
@@ -311,6 +311,11 @@ class ModuleSecurityInfo(SecurityInfo):
     declareProtected__roles__=ACCESS_PRIVATE
     def declareProtected(self, permission_name, *names):
         """Cannot declare module names protected."""
+        pass
+
+    declareObjectProtected__roles__=ACCESS_PRIVATE
+    def declareObjectProtected(self, permission_name):
+        """Cannot declare module protected."""
         pass
 
     setDefaultRoles__roles__=ACCESS_PRIVATE
