@@ -41,8 +41,7 @@ class Lexicon(Persistent, Implicit):
     # default for older objects
     stop_syn={}
 
-    def __init__(self, stop_syn=None,useSplitter=None):
-
+    def __init__(self, stop_syn=None,useSplitter=None,extra=None):
 
         self.clear()
         if stop_syn is None:
@@ -52,7 +51,7 @@ class Lexicon(Persistent, Implicit):
     
         self.useSplitter = Splitter.splitterNames[0]
         if useSplitter: self.useSplitter=useSplitter
-
+        self.splitterParams = extra
         self.SplitterFunc = Splitter.getSplitter(self.useSplitter)
 
 
@@ -153,10 +152,17 @@ class Lexicon(Persistent, Implicit):
 
     def Splitter(self, astring, words=None, encoding = "latin1"):
         """ wrap the splitter """
-        if words is None:
-            words = self.stop_syn
+        if words is None: words = self.stop_syn
+
         try:
-            return self.SplitterFunc(astring, words, encoding)
+            return self.SplitterFunc(
+                    astring, 
+                    words, 
+                    encoding=encoding,
+                    singlechar=self.splitterParams.splitterSingleChars,
+                    indexnumbers=self.splitterParams.splitterIndexNumbers,
+                    casefolding=self.splitterParams.splitterCasefolding
+                    )
         except:
             return self.SplitterFunc(astring, words)
 
@@ -164,10 +170,6 @@ class Lexicon(Persistent, Implicit):
     def query_hook(self, q):
         """ we don't want to modify the query cuz we're dumb """
         return q
-        
-
-
-
 
 stop_words=(
     'am', 'ii', 'iii', 'per', 'po', 're', 'a', 'about', 'above', 'across',
@@ -216,7 +218,4 @@ stop_words=(
     )
 stop_word_dict={}
 for word in stop_words: stop_word_dict[word]=None
-
-
-
 

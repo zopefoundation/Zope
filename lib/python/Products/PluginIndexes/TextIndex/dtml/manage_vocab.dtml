@@ -4,15 +4,28 @@
 <dtml-var manage_tabs>
 
 <p class="form-text">
-  <dtml-try> 
-    <dtml-let x="getLexicon().multi_wc"></dtml-let>
-    Globbing is <em>enabled</em>
+
+  <dtml-let lexicon="getLexicon()">
+
+    <dtml-try> 
+      <dtml-let x="lexicon().multi_wc"></dtml-let>
+      Globbing is <em>enabled</em>
+      <dtml-except>
+      Globbing is <em>disabled</em>
+    </dtml-try>
+
+    <dtml-if useSplitter>
+     , Splitter is <em><dtml-var useSplitter></em>   
+    </dtml-if>
+
+    <dtml-try>
+     , Index number=<dtml-var "lexicon.splitterParams.splitterIndexNumbers">
+     , Case-insensitve=<dtml-var "lexicon.splitterParams.splitterCasefolding">
+     , Index single characters=<dtml-var "lexicon.splitterParams.splitterSingleChars">
     <dtml-except>
-    Globbing is <em>disabled</em>
-  </dtml-try>
-  <dtml-if useSplitter>
-   , Splitter is <em><dtml-var useSplitter></em>   
-  </dtml-if>
+    </dtml-try>
+
+  </dtml-let>
 </p>
 
 

@@ -45,15 +45,56 @@
      </td>
    </tr>
   </dtml-if>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Globbing?
-  </td>
-  <td align="left" valign="top">
-  <input type="checkbox" name="globbing" />
-  </td>
-</tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Index numbers
+    </td>
+    <td align="left" valign="top">
+    <select name="extra.splitterIndexNumbers:record:int">
+     <option value="0" selected>no
+     <option value="1">yes
+    </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Index single characters 
+    </td>
+    <td align="left" valign="top">
+    <select name="extra.splitterSingleChars:record:int" >
+     <option value="0" selected>no
+     <option value="1">yes
+    </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Case-insensitive
+    </td>
+    <td align="left" valign="top">
+    <select name="extra.splitterCasefolding:record:int">
+     <option value="0" >no
+     <option value="1"selected>yes
+    </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    globbing?
+    </td>
+    <td align="left" valign="top">
+    <input type="checkbox" name="globbing" />
+    </td>
+  </tr>
+
   <tr>
     <td align="left" valign="top">
     </td>

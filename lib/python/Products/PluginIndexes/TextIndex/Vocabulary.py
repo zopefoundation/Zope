@@ -23,17 +23,20 @@ from Products.PluginIndexes.TextIndex import Splitter
 
 manage_addVocabularyForm=DTMLFile('dtml/addVocabulary',globals())
 
-def manage_addVocabulary(self, id, title, globbing=None, splitter='', REQUEST=None):
+def manage_addVocabulary(self, id, title, globbing=None, extra=None,
+                         splitter='', REQUEST=None):
     """Add a Vocabulary object
     """
     id=str(id)
     title=str(title)
     if globbing: globbing=1
-    
-    c=Vocabulary(id, title, globbing,splitter)
+
+    c=Vocabulary(id, title, globbing,splitter,extra)
     self._setObject(id, c)
     if REQUEST is not None:
         return self.manage_main(self,REQUEST,update_menu=1)
+
+class _extra: pass
 
 
 class Vocabulary(Item, Persistent, Implicit,
@@ -75,20 +78,28 @@ class Vocabulary(Item, Persistent, Implicit,
     manage_main = DTMLFile('dtml/manage_vocab', globals())
     manage_query = DTMLFile('dtml/vocab_query', globals())
 
-    def __init__(self, id, title='', globbing=None,splitter=None):
+    def __init__(self, id, title='', globbing=None,splitter=None,extra=None):
         """ create the lexicon to manage... """
         self.id = id
         self.title = title
         self.globbing = not not globbing
-            
+
         self.useSplitter = Splitter.splitterNames[0]    
         if splitter:
             self.useSplitter = splitter
 
+        if not extra:
+            extra = _extra()
+            extra.splitterIndexNumbers = 0
+            extra.splitterSingleChars  = 0
+            extra.splitterCasefolding  = 1
+
         if globbing:
-            self.lexicon = GlobbingLexicon.GlobbingLexicon(useSplitter=self.useSplitter)
+            self.lexicon = GlobbingLexicon.GlobbingLexicon(
+                                useSplitter=self.useSplitter,extra=extra)
         else:
-            self.lexicon = Lexicon.Lexicon(stop_word_dict,useSplitter=self.useSplitter)
+            self.lexicon = Lexicon.Lexicon(stop_word_dict,
+                                useSplitter=self.useSplitter,extra=extra)
 
     def getLexicon(self):
         return self.lexicon
@@ -114,8 +125,6 @@ class Vocabulary(Item, Persistent, Implicit,
 
     def manage_stop_syn(self, stop_syn, REQUEST=None):
         pass
-
-
 
     def insert(self, word=''):
         self.lexicon.set(word)

@@ -28,8 +28,7 @@ def getSplitter(name=None):
 
     if not name: name = splitterNames[0] 
     if not vars().has_key(name):
-        exec( "from %s import Splitter as %s" % (name,name))
-
+        exec( "from %s.%s import %s" % (name,name,name))
 
     return vars()[name]
     

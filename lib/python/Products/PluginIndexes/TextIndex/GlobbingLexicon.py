@@ -14,7 +14,6 @@
 from Lexicon import Lexicon
 import Splitter
 
-
 import re, string
 
 from BTrees.IIBTree import IISet, union, IITreeSet
@@ -56,9 +55,10 @@ class GlobbingLexicon(Lexicon):
     eow = '$'
 
 
-    def __init__(self,useSplitter=None):
+    def __init__(self,useSplitter=None,extra=None):
         self.clear()
         self.useSplitter = useSplitter
+        self.splitterParams = extra
         self.SplitterFunc = Splitter.getSplitter(self.useSplitter)
 
     def clear(self):
@@ -239,9 +239,16 @@ class GlobbingLexicon(Lexicon):
         ## sense in stemming a globbing lexicon.
 
         try:
-            return self.SplitterFunc(astring,None,encoding)
+            return self.SplitterFunc(
+                    astring, 
+                    words, 
+                    encoding=encoding,
+                    singlechar=self.splitterParams.splitterSingleChars,
+                    indexnumbers=self.splitterParams.splitterIndexNumbers,
+                    casefolding=self.splitterParams.splitterCasefolding
+                    )
         except:
-            return self.SplitterFunc(astring,None)
+            return self.SplitterFunc(astring, words)
 
 
     def createRegex(self, pat):
@@ -268,5 +275,4 @@ class GlobbingLexicon(Lexicon):
         result = result.replace( '?', '.')
 
         return "%s$" % result 
-
 

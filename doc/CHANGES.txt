@@ -42,6 +42,13 @@ Zope Changes
       - Nicer formatting for the increasingly tall permissions
         table.
 
+      - TextIndex: Enhanced splitter functionality now allows the
+        TextIndex to index numbers, single characters. It is also 
+        possible to enable case-sensitive indexing. The new 
+        configuration options are available through the addForm
+        of the Vocabulary object.
+        
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff
