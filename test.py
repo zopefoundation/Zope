@@ -487,18 +487,10 @@ def get_suite(file, result):
     modname = finder.module_from_path(file)
     try:
         mod = package_import(modname)
-    except ImportError, err:
-        result.addError(PseudoTestCase(modname), sys.exc_info())
-        return None
-    try:
-        suite_func = mod.test_suite
+        return mod.test_suite()
     except AttributeError:
         result.addError(PseudoTestCase(modname), sys.exc_info())
         return None
-    try:
-        return suite_func()
-    except:
-        result.addError(PseudoTestCase(modname), sys.exc_info())
 
 def filter_testcases(s, rx):
     new = unittest.TestSuite()
