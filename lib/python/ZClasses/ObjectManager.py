@@ -132,5 +132,5 @@ class ZObjectManager:
     propertysheets=ZObjectManagerPropertySheets()
 
     manage_options=(
-        {'label': 'Subobjects', 'action' :'propertysheets/subobjects'},
+        {'label': 'Subobjects', 'action' :'propertysheets/subobjects/manage'},
         )
