@@ -23,9 +23,11 @@ def configure(configfile):
     Zope before attempting to do 'app = Zope.app(). Should be used as
     follows:  from Zope.Startup.run import configure;
     configure('/path/to/configfile'); import Zope; app = Zope.app() """
-    from Zope.Startup import dropPrivileges
+    from Zope.Startup import ZopeStarter
     opts = _setconfig(configfile)
-    dropPrivileges(opts.configroot)
+    starter = ZopeStarter(opts.configroot)
+    starter.setupSecurityOptions()
+    starter.dropPrivileges()
 
 def _setconfig(configfile=None):
     """ Configure a Zope instance based on ZopeOptions.  Optionally

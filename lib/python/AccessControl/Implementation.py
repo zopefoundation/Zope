@@ -96,3 +96,6 @@ _policy_names = {
 
 # start with the default, mostly because we need something for the tests
 setImplementation("C")
+
+# allow the implementation to change from the default
+_implementation_set = 0
