@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.106 $'[11:-2]
+__version__='$Revision: 1.107 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -426,7 +426,14 @@ class DA(
 
         security=getSecurityManager()
         security.addContext(self)
-        try:     query=apply(self.template, (p,), argdata)
+        try:
+            try:     query=apply(self.template, (p,), argdata)
+            except TypeError, msg:
+                msg = str(msg)
+                if find(msg,'client'):
+                    raise NameError("'client' may not be used as an " +
+                        "argument name in this context")
+                else: raise
         finally: security.removeContext(self)
 
         if src__: return query
