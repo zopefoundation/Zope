@@ -20,6 +20,12 @@ Introduction:
   If you just want to use Zope easily and aren't a programmer
   the binary release will probably suit you better.
 
+License
+
+  A preliminary version of the Zope License is included in docs/LICENSE.txt
+  We are still working on finalizing the license. Send your feeback about
+  the license to paul@digicool.com
+
 Installing Zope:
 
   Follow the instructions in INSTALL.txt to install Zope. You
