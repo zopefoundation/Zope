@@ -84,8 +84,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.9 2001/08/29 21:02:57 evan Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Traversable.py,v 1.10 2001/09/04 13:49:48 andreasjung Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -130,7 +130,7 @@ class Traversable:
         '''
         path = (self.getId(),)
         
-        p = aq_parent(aq_inner(self)
+        p = aq_parent(aq_inner(self))
         if p is not None: 
             path = p.getPhysicalPath() + path
 
