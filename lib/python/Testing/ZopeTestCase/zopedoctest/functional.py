@@ -12,6 +12,7 @@ from zope.testing import doctest
 from Testing.ZopeTestCase import ZopeTestCase
 from Testing.ZopeTestCase import FunctionalTestCase
 from Testing.ZopeTestCase import Functional
+from Testing.ZopeTestCase import folder_name
 from Testing.ZopeTestCase import user_name
 from Testing.ZopeTestCase import user_password
 from Testing.ZopeTestCase import user_role
@@ -182,7 +183,9 @@ class ZopeSuiteFactory:
     def __init__(self, *args, **kw):
         self._args = args
         self._kw = kw
-        self.run()
+        self.setup_globs()
+        self.setup_test_class()
+        self.setup_optionflags()
 
     def doctestsuite(self):
         return doctest.DocTestSuite(*self._args, **self._kw)
@@ -190,13 +193,9 @@ class ZopeSuiteFactory:
     def docfilesuite(self):
         return doctest.DocFileSuite(*self._args, **self._kw)
 
-    def run(self):
-        self.setup_globs()
-        self.setup_test_class()
-        self.setup_optionflags()
-
     def setup_globs(self):
         globs = self._kw.setdefault('globs', {})
+        globs['folder_name'] = folder_name
         globs['user_name'] = user_name
         globs['user_password'] = user_password
         globs['user_role'] = user_role
@@ -213,9 +212,9 @@ class ZopeSuiteFactory:
         if not hasattr(test_class, 'runTest'):
             setattr(test_class, 'runTest', None)
 
-        # Create a TestCase instance which will be used to
-        # execute the setUp and tearDown methods, as well as
-        # be passed into the test globals as 'self'.
+        # Create a TestCase instance which will be used to execute
+        # the setUp and tearDown methods, as well as be passed into
+        # the test globals as 'self'.
         test_instance = test_class()
 
         kwsetUp = self._kw.get('setUp')
@@ -223,10 +222,10 @@ class ZopeSuiteFactory:
             test_instance.setUp()
             test.globs['test'] = test
             test.globs['self'] = test_instance
-            test.globs['app'] = test_instance.app
+            if hasattr(test_instance, 'app'):
+                test.globs['app'] = test_instance.app
             if hasattr(test_instance, 'folder'):
                 test.globs['folder'] = test_instance.folder
-                test.globs['folder_name'] = test_instance.folder.getId()
             if hasattr(test_instance, 'portal'):
                 test.globs['portal'] = test_instance.portal
                 test.globs['portal_name'] = test_instance.portal.getId()
@@ -283,13 +282,7 @@ class FunctionalSuiteFactory(ZopeSuiteFactory):
                                        | doctest.NORMALIZE_WHITESPACE)
 
 
-def ZopeDocTestSuite(module=None, globs=None, extraglobs=None, test_finder=None, **kw):
-    if globs is not None:
-        kw['globs'] = globs
-    if extraglobs is not None:
-        kw['extraglobs'] = extraglobs
-    if test_finder is not None:
-        kw['test_finder'] = test_finder
+def ZopeDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return ZopeSuiteFactory(module, **kw).doctestsuite()
 
@@ -300,13 +293,7 @@ def ZopeDocFileSuite(*paths, **kw):
     return ZopeSuiteFactory(*paths, **kw).docfilesuite()
 
 
-def FunctionalDocTestSuite(module=None, globs=None, extraglobs=None, test_finder=None, **kw):
-    if globs is not None:
-        kw['globs'] = globs
-    if extraglobs is not None:
-        kw['extraglobs'] = extraglobs
-    if test_finder is not None:
-        kw['test_finder'] = test_finder
+def FunctionalDocTestSuite(module=None, **kw):
     module = doctest._normalize_module(module)
     return FunctionalSuiteFactory(module, **kw).doctestsuite()
 
