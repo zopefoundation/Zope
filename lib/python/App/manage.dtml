@@ -12,7 +12,7 @@ function update_menu()
 <FRAMESET COLS="150,*">
   <FRAME SRC="<!--#var URL1-->/manage_menu" NAME="manage_menu"
    MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
-  <FRAME SRC="<!--#var URL1-->/manage_main" NAME="manage_main"
+  <FRAME SRC="<!--#var URL1-->/manage_workspace" NAME="manage_main"
    MARGINWIDTH="2" MARGINHEIGHT="0" SCROLLING="auto">
 </FRAMESET>
 <NOFRAMES>

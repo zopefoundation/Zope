@@ -7,12 +7,12 @@
 <TR>
   <TD VALIGN="TOP" NOWRAP>
   <!--#if icon-->
-  <A HREF="manage_main" TARGET="manage_main">
+  <A HREF="manage_workspace" TARGET="manage_main">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
    ALT="Click to open this item"></A> 
   <!--#/if-->
   <STRONG>
-  <A HREF="manage_main" TARGET="manage_main">
+  <A HREF="manage_workspace" TARGET="manage_main">
   <!--#if expr="URL1[-(_.len(SCRIPT_NAME)):]==SCRIPT_NAME"-->
   <!--#var expr="SCRIPT_NAME[1:]"-->
   <!--#else-->
@@ -25,11 +25,11 @@
 </TABLE>
 <!--#tree sort=id nowrap=1-->
 <!--#if icon-->
-<A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
+<A HREF="<!--#var tree-item-url-->/manage_workspace" TARGET="manage_main">
 <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
  ALT="Click to open this item"></A> 
 <!--#/if-->
-<A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
+<A HREF="<!--#var tree-item-url-->/manage_workspace" TARGET="manage_main">
 <!--#var id-->
 </A>
 <!--#/tree-->
