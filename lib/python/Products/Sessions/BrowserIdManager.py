@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -84,7 +84,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
 
     security = ClassSecurityInfo()
     ok = {'meta_type':1, 'id':1, 'title': 1, 'icon':1,
-          'bobobase_modification_time':1 }
+          'bobobase_modification_time':1, 'title_or_id':1 }
     security.setDefaultAccess(ok)
     security.setPermissionDefault(MGMT_SCREEN_PERM, ['Manager'])
     security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])
