@@ -19,19 +19,24 @@
 
 <dtml-if constructor>
 <hr noshade>
-<h3>Constructor</h3>
+<h3>Product Constructor</h3>
   <dtml-with constructor>
     <dtml-var view>
   </dtml-with>
 </dtml-if>
 
+<dtml-if "attributes or methods">
 <hr noshade>
-<h3>Methods</h3>
+</dtml-if>
 
 <dtml-in attributes>
   <dtml-var view>
 </dtml-in>
 
+<dtml-if methods>
+<h3>Methods</h3>
 <dtml-in methods>
   <dtml-var view>
 </dtml-in>
+</dtml-if>
+
