@@ -1,6 +1,7 @@
 cPickle, A C Pickle Implementation
 
-  cPickle is a C implementation of the Python module, pickle.py, and is
+  "cPickle", http://www.digicool.com/releases/cPickle/cPickle-0.3.1.tar.gz,
+  is a C implementation of the Python module, pickle.py, and is
   fully compatible with pickle: all types picklable by pickle can be
   pickled using cPickle [1], and pickles generated using pickle may be
   unpickled using cPickle and vice versa.
@@ -111,9 +112,9 @@ cPickle, A C Pickle Implementation
   
   Status
 
-    The current release of cPickle is "0.3",
-    http://www.digicool.com/releases/cPickle/cPickle-0.3.tar.gz.
-    This release requires Python version 1.4.
+    The current release of cPickle is "0.3.1",
+    http://www.digicool.com/releases/cPickle/cPickle-0.3.1.tar.gz.
+    This release requires Python version 1.4 or higher.
 
     This version introduces a special binary mode format for floats.
     Since this could not be implemented in the python version, it is
@@ -238,24 +239,79 @@ cPickle, A C Pickle Implementation
 
 	0.3.1 -- Bug Fix
 
-	  - There is a reference counting bug in the code that
+	  - Fixed a reference counting bug in the code that
 	    unpickles global objects.  (I incorrectly assumed that
-	    PyEval_GetGlobals incremented the reference cound of the
+	    PyEval_GetGlobals incremented the reference count of the
 	    object it returned.)  This bug caused really bizarre
 	    things to happen after unpickling a pickle with lots of
 	    global references.
-	       
+
+
+     1.0 -- Official release
+
+        This is the release that I expect to be included in Python
+        1.5 final.
+
+	Old new features
+
+          Some important features were added in earlier releases, but
+          are not mentioned above.
+
+          - Flexible module import.  Now cPickle calles __import__
+            so it works with ni and other specialized import
+            mechanisms.
+
+	  - New unpickler methods and features to support persistent
+	    object systems:
+
+	    - The persistent_load attribute can be set to a list instead
+	      of a function.  In this case, persistent ids encountered
+	      during unpickling are added to the list.
+
+	    - Unpickler 'noload' method is like 'load' except that
+	      it doesn't create any objects.  This is useful in
+	      finding persistent ids in a pickle::
+
+	        f=StringIO(some_pickle)
+		u=Unpickler(f)
+		ids=[]
+		u.persistent_load=ids
+		u.noload()
+	        # at this point, ids contains any persistent ids
+		# found in the pickle.
+
+	      Note that this technique works even if instances are
+	      encountered for classes defined in modules that cannot
+	      be imported, since no attempt is made to actually
+	      instantiate the instances.
+	      
+
+        New feature
+
+        - In cPickle, cPickle checks to see if a class has a __module__
+          attribute and, if present, uses that attribute to pickle the
+          class.
+
+	- A new instance pickling/unpickling protocol is used.  If
+	  a class defines no __getinitargs__ method, then __init__
+	  method is not called when an instance is unpickled.
+
+	- Support for restricted execution environments was finished
+	  in cPickle.  
+
+        Bug Fix
+
+        - Changed the way __version__ is created to avoid seg fault when
+          different C version strings are used.
+
+        Cleanup
+
+        - A number of cleanups done by Guido were incorporated.
 
   To do
 
     I actually thought I was done some time ago, but a couple of
     things have come up:
-
-    - ni support
-
-      We don't use ni, so I'm not certain that cPickle is broken, or
-      that it is any more broken than the original pickle module was.
-      I need to look into this when I get a chance.
 
     - Support for pickling humongous arrays. Konrad Hinsen summed up
       the issue:
