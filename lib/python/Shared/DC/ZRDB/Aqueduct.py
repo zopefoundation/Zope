@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.37 1999/09/21 15:43:18 jeffrey Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
+$Id: Aqueduct.py,v 1.38 1999/11/03 16:22:22 brian Exp $'''
+__version__='$Revision: 1.38 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -214,12 +214,12 @@ def default_input_form(id,arguments,action='query',
         return (
             "%s\n%s%s" % (
                 '<html><head><title>%s Input Data</title></head><body>\n%s\n'
-                '<form action="<!--#var URL2-->/<!--#var id-->/%s" '
+                '<form action="<dtml-var URL2>/<dtml-var id>/%s" '
                 'method="get">\n'
                 '<h2>%s Input Data</h2>\n'
                 'Enter query parameters:<br>'
                 '<table>\n'
-                % (id,tabs,action,id),
+                % (id, tabs, action,id),
                 string.joinfields(
                     map(
                         lambda a:
@@ -240,27 +240,27 @@ def default_input_form(id,arguments,action='query',
                 '\n'),
                 '\n<tr><td colspan=2 align=center>\n'
                 '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
-                '<!--#if HTTP_REFERER-->\n'
+                '<dtml-if HTTP_REFERER>\n'
                 '  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
                 '  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"\n'
-                '         VALUE="<!--#var HTTP_REFERER-->">\n'
-                '<!--#/if HTTP_REFERER-->\n'
+                '         VALUE="<dtml-var HTTP_REFERER>">\n'
+                '</dtml-if>\n'
                 '</td></tr>\n</table>\n</form>\n</body>\n</html>\n'
                 )
             )
     else:
         return (
             '<html><head><title>%s Input Data</title></head><body>\n%s\n'
-            '<form action="<!--#var URL2-->/<!--#var id-->/%s" '
+            '<form action="<dtml-var URL2>/<dtml-var id>/%s" '
             'method="get">\n'
             '<h2>%s Input Data</h2>\n'
             'This query requires no input.<p>\n'
             '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
-            '<!--#if HTTP_REFERER-->\n'
+            '<dtml-if HTTP_REFERER>\n'
             '  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
             '  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"\n'
-            '         VALUE="<!--#var HTTP_REFERER-->">\n'
-            '<!--#/if HTTP_REFERER-->\n'
+            '         VALUE="<dtml-var HTTP_REFERER>">\n'
+            '</dtml-if>\n'
             '</td></tr>\n</table>\n</form>\n</body>\n</html>\n'
             % (id, tabs, action, id)
             )

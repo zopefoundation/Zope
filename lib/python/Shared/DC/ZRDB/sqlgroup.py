@@ -105,23 +105,23 @@
     optional, but want to require *some* input.  We can
     use DTML source like the following::
 
-      <!--#sqlgroup required-->
-        <!--#sqlgroup-->
-          <!--#sqltest name column=nick_name type=nb multiple optional-->
-        <!--#or-->
-          <!--#sqltest name column=first_name type=nb multiple optional-->
-        <!--#/sqlgroup-->
-      <!--#and-->
-        <!--#sqltest home_town type=nb optional-->
-      <!--#and-->
-        <!--#if minimum_age-->
-           age >= <!--#sqlvar minimum_age type=int-->
-        <!--#/if-->
-      <!--#and-->
-        <!--#if maximum_age-->
-           age <= <!--#sqlvar maximum_age type=int-->
-        <!--#/if-->
-      <!--#/sqlgroup-->
+      <dtml-sqlgroup required>
+        <dtml-sqlgroup>
+          <dtml-sqltest name column=nick_name type=nb multiple optional>
+        <dtml-or>
+          <dtml-sqltest name column=first_name type=nb multiple optional>
+        </dtml-sqlgroup>
+      <dtml-and>
+        <dtml-sqltest home_town type=nb optional>
+      <dtml-and>
+        <dtml-if minimum_age>
+           age >= <dtml-sqlvar minimum_age type=int>
+        </dtml-if>
+      <dtml-and>
+        <dtml-if maximum_age>
+           age <= <dtml-sqlvar maximum_age type=int>
+        </dtml-if>
+      </dtml-sqlgroup>
 
     This example illustrates how groups can be nested to control
     boolean evaluation order.  It also illustrates that the grouping
@@ -141,8 +141,8 @@
 #       rights reserved.
 #
 ############################################################################ 
-__rcs_id__='$Id: sqlgroup.py,v 1.6 1999/03/10 00:15:44 klm Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: sqlgroup.py,v 1.7 1999/11/03 16:22:22 brian Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DocumentTemplate.DT_Util import parse_params
 str=__builtins__['str']

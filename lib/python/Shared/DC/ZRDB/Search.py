@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.12 1999/08/11 19:21:11 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Search.py,v 1.13 1999/11/03 16:22:22 brian Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify, Args
@@ -135,8 +135,8 @@ def manage_addZSearch(self, report_id, report_title, report_style,
 
     self.manage_addDocument(
         report_id,report_title,
-        ('<!--#var standard_html_header-->\n%s\n'
-         '<!--#var standard_html_footer-->' % 
+        ('<dtml-var standard_html_header>\n%s\n'
+         '<dtml-var standard_html_footer>' % 
          join(map(lambda q, report_style=report_style:
                   custom_default_report(q.id, q, no_table=report_style), qs),
               '\n<hr>\n')))
@@ -197,9 +197,9 @@ def default_input_form(arguments,action='query',
         items=arguments.items()
         return (
             "%s\n%s%s" % (
-                '<!--#var standard_html_header-->\n%s\n'
+                '<dtml-var standard_html_header>\n%s\n'
                 '<form action="%s" method="get">\n'
-                '<h2><!--#var document_title--></h2>\n'
+                '<h2><dtml-var document_title></h2>\n'
                 'Enter query parameters:<br>'
                 '<table>\n'
                 % (tabs,action),
@@ -224,17 +224,17 @@ def default_input_form(arguments,action='query',
                 '\n<tr><td colspan=2 align=center>\n'
                 '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
                 '</td></tr>\n</table>\n</form>\n'
-                '<!--#var standard_html_footer-->\n'
+                '<dtml-var standard_html_footer>\n'
                 )
             )
     else:
         return (
-            '<!--#var standard_html_header-->\n%s\n'
+            '<dtml-var standard_html_header>\n%s\n'
             '<form action="%s" method="get">\n'
-            '<h2><!--#var document_title--></h2>\n'
+            '<h2><dtml-var document_title></h2>\n'
             'This query requires no input.<p>\n'
             '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
             '</td></tr>\n</table>\n</form>\n'
-            '<!--#var standard_html_footer-->\n'
+            '<dtml-var standard_html_footer>\n'
             % (tabs, action)
             )

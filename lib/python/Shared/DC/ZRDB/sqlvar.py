@@ -106,7 +106,7 @@
 
     For example, given the tag::
 
-      <!--#sqlvar x type=nb optional>
+      <dtml-sqlvar x type=nb optional>
 
     if the value of 'x' is::
  
@@ -119,7 +119,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.8 1999/04/09 17:17:38 jim Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.9 1999/11/03 16:22:22 brian Exp $'
 
 ############################################################################
 #     Copyright 
@@ -129,7 +129,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.8 1999/04/09 17:17:38 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof

@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.73 1999/10/28 13:16:30 brian Exp $'''
-__version__='$Revision: 1.73 $'[11:-2]
+$Id: DA.py,v 1.74 1999/11/03 16:22:22 brian Exp $'''
+__version__='$Revision: 1.74 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -281,7 +281,7 @@ class DA(
         " "
         input_src=default_input_form(self.title_or_id(),
                                      self._arg, 'manage_test',
-                                     '<!--#var manage_tabs-->')
+                                     '<dtml-var manage_tabs>')
         return DocumentTemplate.HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
     def manage_test(self, REQUEST):
@@ -305,7 +305,7 @@ class DA(
 
             report=DocumentTemplate.HTML(
                 '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
-                '<!--#var manage_tabs-->\n<hr>\n%s\n\n'
+                '<dtml-var manage_tabs>\n<hr>\n%s\n\n'
                 '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
                 '</body></html>'
                 % (r,src))
