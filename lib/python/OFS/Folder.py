@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.79 1999/05/24 17:49:04 brian Exp $"""
+$Id: Folder.py,v 1.80 1999/05/24 21:03:34 jim Exp $"""
 
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 import Globals, SimpleItem
 from ObjectManager import ObjectManager
@@ -131,6 +131,7 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
 
     manage_options=(
         {'label':'Contents', 'action':'manage_main'},
+        {'label':'View', 'action':'index_html'},
         {'label':'Properties', 'action':'manage_propertiesForm'},
         {'label':'Import/Export', 'action':'manage_importExportForm'},
         {'label':'Security', 'action':'manage_access'},
