@@ -2,12 +2,14 @@
 # To run these tests, use:
 #   python unittest.py DateTime.tests.suite
 
-import os
 import unittest
 from DateTime import DateTime
 import string
 import math
 import time
+
+import os
+__basedir__ = os.getcwd()
 
 class DateTimeTests (unittest.TestCase):
 
