@@ -84,7 +84,7 @@
 ##############################################################################
 """Help system support module"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 import Globals, Acquisition
@@ -183,7 +183,7 @@ class classobject(object):
     def get_metatype(self):
         try: return self._obj_.meta_type
         except:
-            t, v, tb = sys.exc_info()
+            t, v = sys.exc_info()[:2]
             return '%s %s' % (t, v)
     
     def get_module(self):
@@ -357,7 +357,7 @@ class methodobject(object):
     def get_signature(self):
         try: return self.get_signaturex()
         except:
-            t, v, tb=sys.exc_info()
+            t, v = sys.exc_info()[:2]
             return '%s %s' % (t, v)
 
 
