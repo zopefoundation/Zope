@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -475,9 +475,9 @@ class DateTime:
         DateTimes may be created with from zero to seven arguments.
 
 
-          - If the function is called with no arguments, then the
-            current date/time is returned, represented in the
-            timezone of the local machine.
+          - If the function is called with no arguments or with None, 
+            then the current date/time is returned, represented in the
+            timezone of the local machine. 
 
           - If the function is invoked with a single string argument
             which is a recognized timezone name, an object representing
