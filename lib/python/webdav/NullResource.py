@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -104,6 +104,13 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         self.id=id
         self.__parent__=parent
         self.__roles__=parent.__roles__
+
+    def __getitem__(self, key):
+        if hasattr(self, 'REQUEST'):
+            method=self.REQUEST.get('REQUEST_METHOD', 'GET')
+            if method in ('MKCOL',):
+                raise 'Conflict', 'Collection ancestors must already exist.'
+        raise 'Not Found', 'The requested resource was not found.'
 
     def __bobo_traverse__(self, REQUEST, name=None):
         # We must handle traversal so that we can recognize situations
