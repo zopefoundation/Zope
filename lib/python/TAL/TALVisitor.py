@@ -115,7 +115,7 @@ class TALVisitor(CopyingDOMVisitor):
         self.slotIndex = None
 
     def visitElement(self, node):
-        if not node.attributes:
+        if not node.hasAttributes():
             CopyingDOMVisitor.visitElement(self, node)
             return
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "use-macro")
@@ -131,12 +131,10 @@ class TALVisitor(CopyingDOMVisitor):
                 if slotNode:
                     self.visitElement(slotNode)
                     return
-        if node.getAttributeNS(ZOPE_TAL_NS, "omit"):
-            # XXX Problem: this DOM implementation doesn't
-            # differentiate between argument empty and argument
-            # absent.
+        if node.getAttributeNodeNS(ZOPE_TAL_NS, "omit"):
             # XXX Question: should 'omit' be done before or after
-            # 'define'?
+            # 'define'?  (I.e., is it a shortcut for
+            # z:condition:"false" or is it stronger?)
             return
         defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
         if defines:
