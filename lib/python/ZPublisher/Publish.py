@@ -102,9 +102,9 @@ Published objects
   concatinating the sub-object name with the special attribute
   name. For example, let 'foo.bar' be a dictionary, and foo.bar.spam
   an item in the dictionary.  When attempting to obtain the special
-  attribute '__realm__', the object publisher will first try to
-  evaluate 'foo.bar.spam.__realm__', and then try to evaluate:
-  'foo.bar["spam"+"__realm__"]'. 
+  attribute '__roles__', the object publisher will first try to
+  evaluate 'foo.bar.spam.__roles__', and then try to evaluate:
+  'foo.bar["spam"+"__roles__"]'. 
 
 Access Control
 
@@ -117,11 +117,7 @@ Access Control
   a collection of named groups.  Each group must be a dictionary that
   use names as keys (i.e. sets of names).  The values in these
   dictionaries may contain passwords for authenticating each of the
-  names.  Alternatively, passwords may be provided in separate "realm"
-  objects.  If no realm is provided, then basic authentication will be
-  used and the object publisher will attempt to authenticate the
-  access to the object using one of the supplied name and password
-  pairs.  The basic authentication realm name used is
+  names.  The basic authentication realm name used is
   'module_name.server_name', where 'module_name' is the name of the
   module containing the published objects, and server_name is the name
   of the web server.
@@ -154,41 +150,23 @@ Access Control
   set to None, in which case the object will be public, even if
   containing objects are not.
 
-  Realms
+  Roles
 
-      Realms provide a mechanism for separating authentication and
-      authorization.  
-      
-      An object may have an attribute '__realm__', which should be
-      either a realm object, or a mapping object mapping names to
-      passwords.
-      
-      If a mapping object is provided, then it will be used for
-      basic authentication using a realm name of
-      "module_name.server_name", where "module_name" is the name of
-      the module containing the published objects, and server_name
-      is the name of the web server.
-      
-      If a realm object is used, then it will use an application
-      supplied realm name and password mapping object, and may use
-      other than basic authentication.  If a realm is provided that
-      does not include it's own name to password mapping, then the
-      name to password mappings contained in an object's
-      '__allow_groups__' attribute will be used.
-      
-      An object may "acquir" a realm from one of it's parent
-      objects in the URI path to the object, including the module
-      used to publish the object.
+      Meaning of __roles__:
+
+         None  -- Public
+         False and not None -- private
+         A sequence of role names.
 
   Fixed-attribute objects
 
       For some interesting objects, such as functions, and methods,
       it may not be possible for applications to set
-      '__allow_groups__' or '__realm__' attributes.  In these cases, the
-      object's parent object may contain attributes
-      'object_name__allow_groups__' or 'object_name__realm__', which
-      will be used as surrogates for the object's '__allow_groups__'
-      and '__realm__' attributes.
+      '__roles__' attributes.  In these cases, the
+      object's parent object may contain attribute
+      'object_name__roles__', which
+      will be used as surrogates for the object's
+      '__role__' attribute.
 
   Determining the authenticated user name
 
@@ -479,18 +457,13 @@ Examples
 	# web_objects={'greet':hi, 'addxy':add}
 
 
-	# Here's out "password" database.
-	from Realm import Realm
-	__realm__=Realm('spam.digicool.com',
-			{'jim':'spam', 'paul':'eggs'})
-
 Publishing a module using CGI
 
     o Do not copy the module to be published to the cgi-bin
       directory.
 
     o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
-      Realm.pyc, and newcgi.pyc, to the directory containing the
+      and newcgi.pyc, to the directory containing the
       module to be published, or to a directory in the standard
       (compiled in) Python search path.
 
@@ -504,7 +477,7 @@ Publishing a module using CGI
 Publishing a module using Fast CGI
 
     o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
-      Realm.pyc, and newcgi.pyc, to the directory containing the
+      and newcgi.pyc, to the directory containing the
       module to be published, or to a directory in the standard
       (compiled in) Python search path.
 
@@ -518,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.46 1997/07/28 22:01:58 jim Exp $"""
+$Id: Publish.py,v 1.47 1997/09/02 21:18:53 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +545,8 @@ $Id: Publish.py,v 1.46 1997/07/28 22:01:58 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.46 $'[11:-2]
+##########################################################################
+__version__='$Revision: 1.47 $'[11:-2]
 
 
 def main():
@@ -582,12 +556,13 @@ def main():
 
 if __name__ == "__main__": main()
 
-import sys, os, string, types, cgi, regex, regsub
+import sys, os, string, types, cgi, regex, regsub, base64
+from string import *
 from CGIResponse import Response
-from Realm import Realm, allow_group_composition
 from urllib import quote
 from cgi import FieldStorage, MiniFieldStorage
-from string import upper, lower, strip
+
+UNSPECIFIED_ROLES=''
 
 try:
     from ExtensionClass import Base
@@ -605,6 +580,93 @@ except:
 
 
 class ModulePublisher:
+
+    def __init__(self,
+		 stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+		 environ=os.environ):
+	self.environ=environ
+	fp=None
+	try:
+	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
+	except: pass
+
+	try:
+	    self.HTTP_AUTHORIZATION=environ['HTTP_AUTHORIZATION']
+	    del environ['HTTP_AUTHORIZATION']
+	except:
+	    try:
+		self.HTTP_AUTHORIZATION=environ['HTTP_CGI_AUTHORIZATION']
+		del environ['HTTP_CGI_AUTHORIZATION']
+	    except: pass
+
+	form={}
+
+	if environ.has_key('HTTP_COOKIE'):
+	    parse_cookie(self.environ['HTTP_COOKIE'], form)
+
+	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+	try: fslist=fs.list
+	except: fslist=None
+	if fslist is None: form={'BODY':fs}
+	else:
+	    tuple_items={}
+
+	    type_re=regex.compile('\(:\|%3[aA]\)\([a-zA-Z][a-zA-Z0-9_]+\)')
+	    type_search=type_re.search
+	    lt=type([])
+	    CGI_name=isCGI_NAME
+	    for item in fslist:
+		key=item.name
+		
+		try:
+		    if (item.file and
+			(item.filename is not None or
+			 'content-type' in map(lower,
+					       item.headers.keys()))):
+		        item=FileUpload(item)
+		    else:
+			item=item.value
+		except: pass
+
+		seqf=None
+
+		l=type_search(key)
+		while l >= 0:
+		    type_name=type_re.group(2)
+		    key=key[:l]+key[l+len(type_re.group(0)):]
+		    if type_name == 'list':
+			seqf=list
+		    elif type_name == 'tuple':
+			seqf=tuple
+			tuple_items[key]=1
+		    else:
+			item=type_converters[type_name](item)
+		    l=type_search(key)
+		    
+		# Filter out special names from form:
+		if CGI_name(key) or key[:5]=='HTTP_': continue
+
+		try:
+		    found=form[key]
+		    if type(found) is lt: found.append(item)
+		    else:
+			found=[found,item]
+			form[key]=found
+		except:
+		    if seqf: item=[item]
+		    form[key]=item
+
+	    for key in tuple_items.keys(): form[key]=tuple(form[key])
+
+	
+
+        request=self.request=Request(environ,form,stdin)
+	self.response=Response(stdout=stdout, stderr=stderr)
+	self.stdin=stdin
+	self.stdout=stdout
+	self.stderr=stderr
+	self.base=request.base
+	self.script=request.script
 
     def html(self,title,body):
 	return ("<html>\n"
@@ -633,43 +695,19 @@ class ModulePublisher:
 	    "<!--%s-->"
 	    % (name,self.request))
 
+    def unauthorized(self, realm):
+	self.response['WWW-authenticate']='basic realm="%s"' % realm
+	raise 'Unauthorized', (
+	    """<strong>You are not authorized to access this resource.
+	    </strong>
+	    """
+	    )
+
     def forbiddenError(self,object=None):
 	raise 'NotFound',self.html(
 	    "Resource not found",
 	    "Sorry, the requested document does not exist.\n"
 	    "<!--%s-->" % object)
-    
-    def env(self,key):
-	try: return self.environ[key]
-	except:
-          if key == 'HTTP_AUTHORIZATION':
-            try:
-              return self.environ['HTTP_CGI_AUTHORIZATION']
-            except:
-              return ''
-          return ''
-
-
-    def validate(self,groups,realm=None):
-	sys.stdout=self.stdout
-	if not realm:
-	    try: realm=self.realm
-	    except:
-		realm=Realm("%s.%s" %
-				(self.module_name,self.request.SERVER_NAME))
-		self.realm=realm
-	    
-	try:
-	    user=realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
-	    self.request['AUTHENTICATED_USER']=user
-	    get_transaction().note("%s\t%s" % (user,self.env('PATH_INFO')))
-	    return user
-	except realm.Unauthorized, v:
-	    auth,v=v
-	    self.response['WWW-authenticate']=auth
-	    raise 'Unauthorized', v
-	except:
-	    self.forbiddenError()
 
     def get_request_data(self,request_params):
 	try: request_params=request_params()
@@ -680,21 +718,13 @@ class ModulePublisher:
 
     def get_module_info(self, server_name, module_name, module):
 
-	realm_name="%s.%s" % (module_name,server_name)
-	
+	realm="%s.%s" % (module_name,server_name)
+		
 	try: bobo_before=module.__bobo_before__
 	except: bobo_before=None
 
 	try: bobo_after=module.__bobo_after__
 	except: bobo_after=None
-
-	# Try to get realm from module
-	try:
-	    realm=module.__realm__
-	    if type(realm) is type(''):
-		realm_name=realm
-		realm=None
-	except: realm=None
 
 	# Get request data from outermost environment:
 	try: request_params=module.__request_data__
@@ -708,14 +738,14 @@ class ModulePublisher:
 	except: groups=None
 
 	web_objects=None
-	find_object=old_find_object
 	try:
 	    object=module.bobo_application
-	    find_object=new_find_object
 	    try:
 		groups=object.__allow_groups__
 		inherited_groups.append(groups)
 	    except: groups=None
+	    try: roles=object.__roles__
+	    except: roles=UNSPECIFIED_ROLES
 	except: 
 	    try:
 		web_objects=module.web_objects
@@ -728,9 +758,9 @@ class ModulePublisher:
 	    if web_objects is not None: doc=' '
 	    else: doc=None
 	
-	return (bobo_before, bobo_after, realm, realm_name, request_params,
-		inherited_groups, groups,
-		object, doc, published, find_object)
+	return (bobo_before, bobo_after, request_params,
+		inherited_groups, groups, roles,
+		object, doc, published, realm)
 		
 
     def publish(self, module_name, after_list, published='web_objects',
@@ -739,7 +769,7 @@ class ModulePublisher:
         # First check for "cancel" redirect:
 	cancel=''
 	try:
-	    if string.lower(self.request['SUBMIT'])=='cancel':
+	    if lower(self.request['SUBMIT'])=='cancel':
 		cancel=self.request['CANCEL_ACTION']
 	except: pass
 	if cancel:
@@ -747,13 +777,14 @@ class ModulePublisher:
 
 	if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 	self.module_name=module_name
+	request=self.request
 	response=self.response
-	server_name=self.request.SERVER_NAME
+	server_name=request.SERVER_NAME
 
 	try:
-	    (bobo_before, bobo_after, realm, realm_name, request_params,
-	     inherited_groups, groups,
-	     object, doc, published, find_object
+	    (bobo_before, bobo_after, request_params,
+	     inherited_groups, groups, roles,
+	     object, doc, published, realm
 	     ) = info = module_dicts[server_name, module_name]
 	except:
 	    info={}
@@ -762,16 +793,13 @@ class ModulePublisher:
 		info=self.get_module_info(server_name, module_name,
 					  info[module_name])
 		module_dicts[server_name, module_name]=info
-		(bobo_before, bobo_after, realm, realm_name, request_params,
-		 inherited_groups, groups,
-		 object, doc, published, find_object
+		(bobo_before, bobo_after, request_params,
+		 inherited_groups, groups, roles,
+		 object, doc, published, realm
 		 ) = info
 	    except: raise ImportError, (
 		sys.exc_type, sys.exc_value, sys.exc_traceback)
 	    
-
-	if find_object is old_find_object: response.setBase(self.base,'')
-
 	after_list[0]=bobo_after
 
 	if bobo_before is not None: bobo_before();
@@ -779,13 +807,13 @@ class ModulePublisher:
 	if request_params: self.get_request_data(request_params)
 
 	# Get a nice clean path list:
-	path=(string.strip(self.env('PATH_INFO')))
+	path=strip(request['PATH_INFO'])
 	if path[:1]=='/': path=path[1:]
 	if path[-1:]=='/': path=path[:-1]
-	path=string.splitfields(path,'/')
+	path=split(path,'/')
 	while path and not path[0]: path = path[1:]
 
-	method=upper(self.request['REQUEST_METHOD'])
+	method=upper(request['REQUEST_METHOD'])
 	if method=='GET' or method=='POST': method='index_html'
 
     	# Get default object if no path was specified:
@@ -803,56 +831,124 @@ class ModulePublisher:
     	    if not path: path = ['help']
 
 	# Traverse the URL to find the object:
-	(object, parents, URL, groups, realm, inherited_groups,
-	 realm_name,roles) = find_object(self, info, path, method)
-	
-	# Do authorization checks
-	if groups is not None:
-
-	    # Do composition, if we've got a named group:
-	    try: 
-		try: groups.keys  # See if we've got a mapping
-		except:
-		    groups=groups()
-		    groups.keys
-		g={None:None}
-		for i in inherited_groups[:-1]:
-		    g=allow_group_composition(g,i)
-		if roles:
-		    groups=allow_group_composition(g,inherited_groups[-1])
-		    if type(roles) is type(''): 
-			groups=(g[roles],)
-		    else:
-			groups=map(lambda role: g[role], roles)
+	URL=self.script
+	parents=[]
+    
+	try:  # Try to bind the top-level object to the request
+	    object=object.__of__(RequestContainer(REQUEST=self.request))
+	except: pass
+    
+	while path:
+	    entry_name,path=path[0], path[1:]
+	    URL="%s/%s" % (URL,quote(entry_name))
+	    got=0
+	    if entry_name:
+		if entry_name[:1]=='_': self.forbiddenError(entry_name)
+		try: traverse=object.__bobo_traverse__
+		except: traverse=None
+		if traverse is not None:
+		    request['URL']=URL
+		    subobject=traverse(request,entry_name)
 		else:
-		    groups=allow_group_composition(groups,g)
-	    except:
-		# groups was not a mapping (or a function returning a
-		# mapping), so no point in composing.
-		pass 
-
-	    if groups is not None:
-
-		if not groups: self.forbiddenError()
-		try:
-		    if realm.name is None:
-			realm.name=realm_name
-		except:
 		    try:
-			len(realm)
-			realm=Realm(realm_name,realm)
-		    except: pass
-		self.validate(groups,realm)
+			subobject=getattr(object,entry_name)
+		    except AttributeError:
+			try:
+			    subobject=object[entry_name]
+			    got=1
+			except:
+			    self.notFoundError("%s" % (entry_name))
+    
+		try:
+		    try: doc=subobject.__doc__
+		    except: doc=getattr(subobject, entry_name+'__doc__')
+		    if not doc: raise AttributeError, entry_name
+		except: self.notFoundError("%s" % (entry_name))
+		
+		try: roles=subobject.__roles__
+		except:
+		    if not got:
+			try: roles=getattr(object,entry_name+'__roles__')
+			except:
+			    if (entry_name=='manage' or
+				entry_name[:7]=='manage_'):
+				roles='manage',
+    
+		# Promote subobject to object
+		parents.append(object)
+		object=subobject
+    
+		# Check for method:
+		if (not path and hasattr(object,method) and
+		    entry_name != method):
+		    response.setBase(URL+'/','')
+		    path=[method]
+    
+	if entry_name != method and method != 'index_html':
+	    self.notFoundError(method)
+	
+	parents.append(object)
+	parents.reverse()
+
+	# Do authorization checks
+	user=None
+	if roles is not None:
+
+	    last_parent_index=len(parents)
+	    for i in range(last_parent_index):
+		try: groups=parents[i].__allow_groups__
+		except: groups=-1
+		if groups == -1: continue
+
+		try: v=groups.validate
+		except: v=old_validation
+
+		if v is old_validation and roles is UNSPECIFIED_ROLES:
+		    # No roles, so if we have a named group, get roles from
+		    # group keys
+		    try: roles=groups.keys()
+		    except AttributeError:
+			try: groups=groups()
+			except: pass
+			try: roles=groups.keys()
+			except: pass
+
+		    if groups is None: break # Public group
+
+		try: auth=self.HTTP_AUTHORIZATION
+		except: self.unauthorized(realm)
+
+		if v is old_validation:
+		    user=old_validation(groups, auth, roles)
+		elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
+		else: user=v(request, auth, roles)
+
+		while user is None and i < last_parent_index:
+		    try: groups=parents[i].__allow_groups__
+		    except: groups=-1
+		    i=i+1
+		    if groups == -1: continue
+		    try: v=groups.validate
+		    except: v=old_validation
+		    if v is old_validation:
+			user=old_validation(groups, auth, roles)
+		    elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
+		    else: user=v(request, auth, roles)
+		    
+		if user is None: self.unauthorized(realm)
+
+		break
+
+	if user is not None: request['AUTHENTICATED_USER']=user
+	del parents[0]
    
 	# Attempt to start a transaction:
 	try: transaction=get_transaction()
 	except: transaction=None
 	if transaction is not None:
-	    info="\t" + self.env('PATH_INFO')
+	    info="\t" + request['PATH_INFO']
 	    try:
-		u=self.request['AUTHENTICATED_USER']
-		try: u="%s.%s" % (u, self.request['session__domain'])
-		except: pass
+		u=request['AUTHENTICATED_USER']
 		try: info=u+info
 		except: pass
 	    except: pass
@@ -885,26 +981,24 @@ class ModulePublisher:
 	    except:
 		return response.setBody(object)
 
-	query=self.request
-	query['RESPONSE']=response
-	query['URL']=URL
-	query['PARENT_URL']=URL[:string.rfind(URL,'/')]
+	request['RESPONSE']=response
+	request['URL']=URL
+	request['PARENT_URL']=URL[:rfind(URL,'/')]
 	if parents:
-	    parents.reverse()
 	    selfarg=parents[0]
 	    for i in range(len(parents)):
 		try:
 		    p=parents[i].aq_self
 		    parents[i]=p
 		except: pass
-	query['PARENTS']=parents
+	request['PARENTS']=parents
 
 	args=[]
 	nrequired=len(argument_names) - (len(defaults or []))
 	for name_index in range(len(argument_names)):
 	    argument_name=argument_names[name_index]
 	    try:
-		v=query[argument_name]
+		v=request[argument_name]
 		args.append(v)
 	    except (KeyError,AttributeError,IndexError):
 		if argument_name=='self': args.append(selfarg)
@@ -944,255 +1038,6 @@ def str_field(v):
 	except: pass
     return v
 
-def attr_meta_data(object, subobject, entry_name, 
-		   inherited_groups, groups,
-		   realm, realm_name, default_realm_name, roles):
-    try:
-        groups=subobject.__allow_groups__
-        inherited_groups.append(groups)
-    except:
-        try:
-            groups=getattr(object, entry_name+'__allow_groups__')
-            inherited_groups.append(groups)
-        except: pass
-
-    try: roles=subobject.__roles__
-    except:
-        try: roles=getattr(object,entry_name+'__roles__')
-        except: pass
-
-    try: doc=subobject.__doc__
-    except:
-        try: doc=getattr(object,entry_name+'__doc__')
-        except: doc=None
-
-    try:
-        realm=subobject.__realm__
-        realm_name=default_realm_name
-    except:
-        try:
-            realm=getattr(object,entry_name+'__realm__')
-            realm_name=default_realm_name
-        except: pass
-
-    return inherited_groups, groups, realm, realm_name, doc, roles
-
-def item_meta_data(subobject,
-		   inherited_groups, groups,
-		   realm, realm_name, default_realm_name, roles):
-    try:
-        groups=subobject.__allow_groups__
-        inherited_groups.append(groups)
-    except: pass
-
-    try: doc=subobject.__doc__
-    except: doc=None
-
-    try: roles=subobject.__roles__
-    except: roles=None
-
-    try:
-        realm=subobject.__realm__
-        realm_name=default_realm_name
-    except: pass
-
-    return inherited_groups, groups, realm, realm_name, doc, roles
-    
-
-def new_find_object(self, info, path, method): 
-    (bobo_before, bobo_after, realm, realm_name, request_params,
-     inherited_groups, groups,
-     object, doc, published, ignore) = info
-
-    default_realm_name=realm_name
-    inherited_groups=inherited_groups[:]
-
-    request=self.request
-
-    URL=self.script
-    parents=[]
-
-    try:  # Try to bind the top-level object to the request
-	object=object.__of__(RequestContainer(
-	    REQUEST=self.request, RESPONSE=self.response))
-    except: pass
-
-    roles=()
-
-    while path:
-        entry_name,path=path[0], path[1:]
-        URL="%s/%s" % (URL,quote(entry_name))
-        default_realm_name="%s.%s" % (entry_name,default_realm_name)
-        if entry_name:
-	    try: traverse=object.__bobo_traverse__
-	    except: traverse=None
-	    if traverse is not None:
-		request['URL']=URL
-                subobject=traverse(request,entry_name)
-		(inherited_groups, groups,
-		 realm, realm_name, doc, roles) = attr_meta_data(
-		     object, subobject, entry_name,
-		     inherited_groups, groups,
-		     realm, realm_name, default_realm_name, roles)
-	    else:
-            	try:
-            	    subobject=getattr(object,entry_name)
-		    (inherited_groups, groups,
-		     realm, realm_name, doc, roles) = attr_meta_data(
-			object, subobject, entry_name,
-			inherited_groups, groups,
-			realm, realm_name, default_realm_name, roles)
-            	except AttributeError:
-            	    try:
-            		subobject=object[entry_name]
-			(inherited_groups, groups,
-			 realm, realm_name, doc, roles) = item_meta_data(
-			     subobject,
-			     inherited_groups, groups,
-			     realm, realm_name, default_realm_name, roles)
-            	    except (TypeError,AttributeError,KeyError), mess:
-            		if not path and entry_name=='help' and doc:
-            		    object=doc
-            		    entry_name, subobject = (
-			    '__doc__', self.html
-			    ('Documentation for ' +
-			     ((self.env('PATH_INFO') or
-			       ('/'+self.module_name))[1:]),
-			     '<pre>\n%s\n</pre>' % doc)
-			    )
-            		else:
-            		    self.notFoundError("%s: %s" % (entry_name,mess))
-
-            # Perform simple checks
-            if (entry_name != '__doc__' and
-                (not doc or entry_name[0]=='_')
-                ):
-                if not doc: entry_name=str(subobject)
-                self.forbiddenError(entry_name)
-
-            # Promote subobject to object
-            parents.append(object)
-            object=subobject
-
-            # Check for method:
-            if (not path and hasattr(object,method) and
-                entry_name != method):
-                path=[method]
-
-    if entry_name != method and method != 'index_html':
-	self.notFoundError(method)
-
-    return (object, parents, URL, groups, realm, inherited_groups,
-            realm_name, roles)
-
-def old_find_object(self, info, path, method):
-    (bobo_before, bobo_after, realm, realm_name, request_params,
-     inherited_groups, groups,
-     object, doc, published, ignore) = info
-
-    default_realm_name=realm_name
-    inherited_groups=inherited_groups[:]
-
-    URL=self.script
-    parents=[]
-
-    # sad_pathetic_persistence_hack:
-    try: setstate=object.__dict__['_p_setstate']
-    except: setstate=None
-    if setstate: setstate(object)
-
-    topobject=object
-
-    while path:
-
-        if object is not topobject and topobject is not None:
-            topobject=None
-            try:  # Try to bind the top-level object to the request
-                object=object.__of__(RequestContainer(
-                    REQUEST=self.request, RESPONSE=self.response))
-            except: pass
-
-        entry_name,path=path[0], path[1:]
-        URL="%s/%s" % (URL,quote(entry_name))
-        default_realm_name="%s.%s" % (entry_name,default_realm_name)
-        if entry_name:
-            try:
-                subobject=getattr(object,entry_name)
-
-                # sad_pathetic_persistence_hack:
-                try: setstate=subobject.__dict__['_p_setstate']
-                except: setstate=None
-                if setstate: setstate(subobject)
-
-		(inherited_groups, groups,
-		 realm, realm_name, doc) = attr_meta_data(
-		    object, subobject, entry_name,
-		    inherited_groups, groups,
-		    realm, realm_name, default_realm_name)
-
-                try:
-                    request_params=getattr(subobject,'__request_data__')
-                    self.get_request_data(request_params)
-                except: pass
-            except AttributeError:
-                try:
-                    subobject=object[entry_name]
-
-                    # sad_pathetic_persistence_hack:
-                    try: setstate=subobject.__dict__['_p_setstate']
-                    except: setstate=None
-                    if setstate: setstate(subobject)
-
-		    (inherited_groups, groups,
-		     realm, realm_name, doc) = item_meta_data(
-			 subobject,
-			 inherited_groups, groups,
-			 realm, realm_name, default_realm_name)
-
-                    try:
-                        request_params=getattr(subobject,'__request_data__')
-                        self.get_request_data(request_params)
-                    except: pass
-
-                except (TypeError,AttributeError,KeyError), mess:
-                    if not path and entry_name=='help' and doc:
-                        object=doc
-                        entry_name, subobject = (
-                            '__doc__', self.html
-                            ('Documentation for ' +
-                             ((self.env('PATH_INFO') or
-                               ('/'+self.module_name))[1:]),
-                             '<pre>\n%s\n</pre>' % doc)
-                            )
-                    else:
-                        self.notFoundError("%s: %s" % (entry_name,mess))
-
-            if published:
-                # Bypass simple checks the first time
-                published=None
-            else:
-                # Perform simple checks
-                if (type(subobject)==types.ModuleType or
-                    entry_name != '__doc__' and
-                    (not doc or entry_name[0]=='_')
-                    ):
-                    if not doc: entry_name=str(subobject)
-                    self.forbiddenError(entry_name)
-
-            # Promote subobject to object
-            parents.append(object)
-            object=subobject
-
-            # Check for method:
-            if (not path and hasattr(object,method) and
-                entry_name != method):
-                path=[method]
-
-    if entry_name != method and method != 'index_html':
-	self.notFoundError(method)
-
-    return (object, parents, URL, groups, realm, inherited_groups,
-            realm_name, None)
 
 class FileUpload:
     '''\
@@ -1222,23 +1067,6 @@ class FileUpload:
 	self.filename=aFieldStorage.filename
     
 
-def flatten_field(v,converter=None):
-    if type(v) is types.ListType:
-	if len(v) > 1: return map(flatten_field,v)
-	v=v[0]
-
-    try:
-	if v.file and (v.filename is not None or
-		       'content-type' in map(string.lower,
-					     v.headers.keys())):
-	    v=FileUpload(v)
-	else:
-	    v=v.value
-    except: pass
-
-    if converter: v=converter(v)
-    return v
-
 def field2string(v):
     try: v=v.read()
     except: v=str(v)
@@ -1253,28 +1081,28 @@ def field2text(v, nl=regex.compile('\r\n\|\n\r'), sub=regsub.gsub):
 def field2required(v):
     try: v=v.read()
     except: v=str(v)
-    if string.strip(v): return v
+    if strip(v): return v
     raise ValueError, 'No input for required field'
 
 def field2int(v):
     try: v=v.read()
     except: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
-    if v: return string.atoi(v)
+    if v: return atoi(v)
     raise ValueError, 'Empty entry when integer expected'
 
 def field2float(v):
     try: v=v.read()
     except: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
-    if v: return string.atof(v)
+    if v: return atof(v)
     raise ValueError, 'Empty entry when floating-point number expected'
 
 def field2long(v):
     try: v=v.read()
     except: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
-    if v: return string.atol(v)
+    if v: return atol(v)
     raise ValueError, 'Empty entry when integer expected'
 
 def field2Regex(v):
@@ -1290,25 +1118,25 @@ def field2regex(v):
 def field2Regexs(v):
     try: v=v.read()
     except: v=str(v)
-    v= map(lambda v: regex.compile(v), string.split(v))
+    v= map(lambda v: regex.compile(v), split(v))
     if v: return v
 
 def field2regexs(v):
     try: v=v.read()
     except: v=str(v)
-    v= map(lambda v: regex.compile(v, regex.casefold), string.split(v))
+    v= map(lambda v: regex.compile(v, regex.casefold), split(v))
     if v: return v
 
 def field2tokens(v):
     try: v=v.read()
     except: v=str(v)
-    return string.split(v)
+    return split(v)
 
 def field2lines(v, crlf=regex.compile('\r\n\|\n\r')):
     try: v=v.read()
     except: v=str(v)
     v=regsub.gsub(crlf,'\n',v)
-    return string.split(v,'\n')
+    return split(v,'\n')
 
 def field2date(v):
     from DateTime import DateTime
@@ -1395,34 +1223,26 @@ class Request:
     """
 
     def __init__(self,environ,form,stdin):
-	try: environ['HTTP_AUTHORIZATION']= \
-	     environ['HTTP_CGI_AUTHORIZATION']
-	except: pass
 	self.environ=environ
-	self.form=form
+	self.other=form
 	self.stdin=stdin
-	self.other={}
 
-	def env(key,d=environ):
-	    try:    return d[key]
-	    except: return ''
-
-	b=script=string.strip(environ['SCRIPT_NAME'])
+	b=script=strip(environ['SCRIPT_NAME'])
 	while b and b[-1]=='/': b=b[:-1]
-	p = string.rfind(b,'/')
+	p = rfind(b,'/')
 	if p >= 0: b=b[:p+1]
 	else: b=''
 	while b and b[0]=='/': b=b[1:]
 	try:
 	    try:
-		server_url="http://%s" % string.strip(environ['HTTP_HOST'])
+		server_url="http://%s" % strip(environ['HTTP_HOST'])
 	    except:
-		server_url=string.strip(environ['SERVER_URL'])
+		server_url=strip(environ['SERVER_URL'])
 	    if server_url[-1:]=='/': server_url=server_url[:-1]
 	except:
-	    server_port=env('SERVER_PORT')
+	    server_port=environ['SERVER_PORT']
 	    server_url=('http://'+
-			string.strip(environ['SERVER_NAME']) +
+			strip(environ['SERVER_NAME']) +
 			(server_port and ':'+server_port)
 			)
 			
@@ -1439,23 +1259,20 @@ class Request:
 	
 	self.other[key]=value
 
-    __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
-
-
     def __str__(self):
 
 	def str(self,name):
 	    dict=getattr(self,name)
 	    return "%s:\n\t%s\n\n" % (
 		name,
-		string.joinfields(
+		join(
 		    map(lambda k, d=dict: "%s: %s" % (k, d[k]), dict.keys()),
 		    "\n\t"
 		    )
 		)
 	    
-	return "%s\n%s\n%s\n%s" % (
-	    str(self,'other'),str(self,'form'),str(self,'environ'),
+	return "%s\n%s\n%s" % (
+	    str(self,'other'),str(self,'environ'),
 	    str(self,'cookies'))
 
     __repr__=__str__
@@ -1466,7 +1283,10 @@ class Request:
 	    return 1
 	except: return 0
 
-    def __getitem__(self,key):
+    def __getitem__(self,key,
+		    URLmatch=regex.compile('URL[0-9]$').match,
+		    BASEmatch=regex.compile('BASE[0-9]$').match,
+		    ):
 	"""Get a variable value
 
 	Return a value for the required variable name.
@@ -1480,84 +1300,42 @@ class Request:
 	try: return other[key]
 	except: pass
 
-	if self.special_names.has_key(key) or key[:5] == 'HTTP_':
+	if URLmatch(key) >= 0 and other.has_key('URL'):
+	    n=ord(key[3])-ord('0')
+	    URL=other['URL']
+	    for i in range(0,n):
+		l=rfind(URL,'/')
+		if l >= 0: URL=URL[:l]
+		else: raise KeyError, key
+	    other[key]=URL
+	    return URL
+
+	if isCGI_NAME(key) or key[:5] == 'HTTP_':
 	    try: return self.environ[key]
 	    except: return ''
 
 	if key=='REQUEST': return self
 
-	if key!='cookies':
-	    try:
-		converter=None
-		try:
-		    v=self.form[key]
-		except:
-		    # Hm, maybe someone used a form with a name like: name:type
-		    try: tf=self.__dict__['___typed_form']
-		    except:
-			tf=self.__dict__['___typed_form']={}
-			form=self.form
-			colon=self.__http_colon
-			search=colon.search
-			group=colon.group
-			for k in form.keys():
-			    l = search(k)
-			    if l > 0: 
-				tf[k[:l]]=form[k],k[l+len(group(1)):]
-
-		    v,t=tf[key]
-		    try: converter=type_converters[t]
-		    except: pass
-		v=flatten_field(v,converter)
-		other[key]=v
-		return v
-	    except (KeyError,AttributeError,IndexError): pass
-
-	if not self.__dict__.has_key('cookies'):
-	    if self.environ.has_key('HTTP_COOKIE'):
-		cookies=parse_cookie(self.environ['HTTP_COOKIE'])
-	    else: cookies={}
-	    self.cookies=cookies
-	
-	if key=='cookies': return self.cookies
-
-	try:
-	    r=self.cookies[key]
-	    other[key]=r
-	    return r
-	except: pass
-
-	try:
-	    if regex.match('BASE[0-9]$',key) >= 0:
-		n=ord(key[4])-ord('0')
-		URL=self['URL']
-		baselen=len(self.base)
-		for i in range(0,n):
-		    baselen=string.find(URL,'/',baselen+1)
-		    if baselen < 0:
-			baselen=len(URL)
-			break
-		base=URL[:baselen]
-		if base[-1:]=='/': base=base[:-1]
-		other[key]=base
-		return base
-	    if regex.match('URL[0-9]$',key) >= 0:
-		n=ord(key[3])-ord('0')
-		URL=self['URL']
-		if URL[-1:]=='/': URL=URL[:-1]
-		for i in range(0,n):
-		    l=string.rfind(URL,'/')
-		    if l >= 0: URL=URL[:l]
-		    else: raise KeyError, key
-		other[key]=URL
-		return URL
-	except: pass
+        if BASEmatch(key) >= 0 and other.has_key('URL'):
+            n=ord(key[4])-ord('0')
+            URL=other['URL']
+            baselen=len(self.base)
+            for i in range(0,n):
+                baselen=find(URL,'/',baselen+1)
+                if baselen < 0:
+                    baselen=len(URL)
+                    break
+            base=URL[:baselen]
+            if base[-1:]=='/': base=base[:-1]
+            other[key]=base
+            return base
 
 	raise KeyError, key
 
     __getattr__=__getitem__
 
-    special_names = {
+
+isCGI_NAME = {
 	'SERVER_SOFTWARE' : 1, 
 	'SERVER_NAME' : 1, 
 	'GATEWAY_INTERFACE' : 1, 
@@ -1575,7 +1353,8 @@ class Request:
 	'REMOTE_IDENT' : 1, 
 	'CONTENT_TYPE' : 1, 
 	'CONTENT_LENGTH' : 1, 
-	}
+	}.has_key
+
 		
 
 def parse_cookie(text,
@@ -1610,44 +1389,42 @@ def parse_cookie(text,
 
     return apply(parse_cookie,(text[l:],result))
 
+def old_validation(groups, HTTP_AUTHORIZATION, roles=UNSPECIFIED_ROLES):
+    if lower(HTTP_AUTHORIZATION[:6]) != 'basic ': return None
+    [name,password] = string.splitfields(
+	    base64.decodestring(
+		split(HTTP_AUTHORIZATION)[-1]), ':')
 
+    if roles is None: return name
 
-class CGIModulePublisher(ModulePublisher):
-
-    def __init__(self,
-		 stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-		 environ=os.environ):
-	self.environ=environ
-	fp=None
+    keys=None
+    try:
+	keys=groups.keys
+    except:
 	try:
-	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
+	    groups=groups() # Maybe it was a method defining a group
+	    keys=groups.keys
 	except: pass
-	
-	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
-	try: list=fs.list
-	except: list=None
-	if list is None: form={'BODY':fs}
-	else:
-	    form={}
-	    lt=type([])
-	    for item in list:
-		key=item.name
-		try:
-		    found=form[key]
-		    if type(found) is lt: found.append(item)
-		    else:
-			found=[found,item]
-			form[key]=found
-		except:
-		    form[key]=item
 
-        request=self.request=Request(environ,form,stdin)
-	self.response=Response(stdout=stdout, stderr=stderr)
-	self.stdin=stdin
-	self.stdout=stdout
-	self.stderr=stderr
-	self.base=request.base
-	self.script=request.script
+    if keys is not None:
+	# OK, we have a named group, so apply the roles to the named
+	# group.
+	if roles is UNSPECIFIED_ROLES: roles=keys()
+	g=[]
+	for role in roles:
+	    if groups.has_key(role): g.append(groups[role])
+	groups=g
+
+    for d in groups:
+	if d.has_key(name) and d[name]==password: return name
+
+    if keys is None:
+	# Not a named group, so don't go further
+	raise 'Forbidden', (
+	    """<strong>You are not authorized to access this resource""")
+
+    return None
+	
 
 def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
@@ -1657,9 +1434,8 @@ def publish_module(module_name,
     after_list=[None]
     try:
 	response=Response(stdout=stdout, stderr=stderr)
-	publisher = CGIModulePublisher(stdin=stdin, stdout=stdout,
-				       stderr=stderr,
-				       environ=environ)
+	publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
+				    environ=environ)
 	response = publisher.response
 	response = publisher.publish(module_name,after_list,debug=debug)
     except SystemExit:
@@ -1687,6 +1463,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.47  1997/09/02 21:18:53  jim
+# Implemented new authorization model.
+# No longer use Realm module.
+#
 # Revision 1.46  1997/07/28 22:01:58  jim
 # Tries to get rid of base ref.
 #
