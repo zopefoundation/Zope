@@ -165,6 +165,12 @@ Options:
 
     Use ZODB 2 (aka BoboPOS) rather than ZODB 3
 
+  -l path
+
+    Path to the ZServer log file. If this is a relative path then the
+    log file will be written to the 'var' directory. The default is
+    %(LOG_FILE)s. 
+
 Environment settings are of the form: NAME=VALUE.
 
 Note: you *must* use Python 1.5.2 or later!
@@ -198,12 +204,15 @@ DNS_IP=''
 # ZServer is started by root.
 UID='nobody'
 
+# Log file location. If this is a relative path, then it is joined the
+# the 'var' directory.
+LOG_FILE='Z2.log'
+
 ## HTTP configuration
 ##
 
 # Port for HTTP Server. The standard port for HTTP services is 80.
 HTTP_PORT=9673
-
 
 # HTTP enivornment settings.
 HTTP_ENV={}
@@ -238,7 +247,7 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:2D')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:l:2D')
 
     # Get environment variables
     for a in args:
@@ -289,6 +298,8 @@ try:
             print __doc__ % vars()
             sys.exit(0)
         elif o=='-2': MODULE='Main'
+        elif o=='-l': LOG_FILE=v
+
 
 except SystemExit: sys.exit(0)
 except:
@@ -321,7 +332,10 @@ exec "import "+MODULE in {}
 # Location of the ZServer log file. This file logs all ZServer activity.
 # You may wish to create different logs for different servers. See
 # medusa/logger.py for more information.
-LOG_FILE=os.path.join(INSTANCE_HOME, 'var', 'Z2.log')
+if not os.path.isabs(LOG_FILE):
+    LOG_PATH=os.path.join(INSTANCE_HOME, 'var', LOG_FILE)
+else:
+    LOG_PATH=LOG_FILE
 
 # Location of the ZServer pid file. When ZServer starts up it will write
 # its PID to this file.
@@ -347,7 +361,7 @@ if DNS_IP:
     rs = resolver.caching_resolver(DNS_IP)
 else:
     rs=None
-lg = logger.file_logger(LOG_FILE)
+lg = logger.file_logger(LOG_PATH)
 
 # HTTP Server
 if HTTP_PORT:
