@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -87,12 +87,12 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         if self.wl_isLocked():
             raise ResourceLockedError, (
                 'This document has been locked via WebDAV.')
-                
-        if type(file) is not type(''): 
-            if REQUEST and not file: 
+
+        if type(file) is not type(''):
+            if REQUEST and not file:
                 raise ValueError, 'No file specified'
             file=file.read()
-        
+
         self.munge(file)
         self.ZCacheable_invalidate()
         if REQUEST:
@@ -114,7 +114,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         if hasattr(self, 'aq_explicit'):
             bself=self.aq_explicit
         else: bself=self
-        
+
         security=getSecurityManager()
         security.addContext(self)
 
@@ -178,5 +178,3 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
-
-

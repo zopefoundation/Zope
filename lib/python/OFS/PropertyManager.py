@@ -1,5 +1,5 @@
 ##############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -8,11 +8,11 @@
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -90,9 +90,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     manage_options=(
         {'label':'Properties', 'action':'manage_propertiesForm',
-         'help':('OFSP','Properties.stx')},         
+         'help':('OFSP','Properties.stx')},
         )
-    
+
     manage_propertiesForm=DTMLFile('dtml/properties', globals(),
                                    property_extensible_schema__=1)
     manage_propertyTypeForm=DTMLFile('dtml/propertyType', globals())
@@ -134,7 +134,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         return 0
 
     def getProperty(self, id, d=None):
-        """Get the property 'id', returning the optional second 
+        """Get the property 'id', returning the optional second
            argument or None if no such property is found."""
         if self.hasProperty(id):
             return getattr(self, id)
@@ -165,7 +165,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         # for selection and multiple selection properties
         # the value argument indicates the select variable
         # of the property
-        
+
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
@@ -213,7 +213,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def propertyItems(self):
         """Return a list of (id,property) tuples """
-        return map(lambda i,s=self: (i['id'],getattr(s,i['id'])), 
+        return map(lambda i,s=self: (i['id'],getattr(s,i['id'])),
                                     self._properties)
     def _propertyMap(self):
         """Return a tuple of mappings, giving meta-data for properties """
@@ -289,7 +289,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return self.manage_propertiesForm(self,REQUEST,manage_tabs_message=message)
 
     # Note - this is experimental, pending some community input.
-    
+
     def manage_changePropertyTypes(self, old_ids, props, REQUEST=None):
         """Replace one set of properties with another
 
@@ -307,7 +307,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             self._setProperty(prop.new_id, prop.new_value, prop.new_type)
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
-            
+
 
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Object monikers
 
@@ -18,7 +18,7 @@
    and aquisition relationships via a simple interface.
 
 """
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 import Globals
@@ -28,7 +28,7 @@ class Moniker:
     persistent object. A moniker can be turned back into
     a real object that retains its correct version context
     and acquisition relationships via a simple interface."""
-    
+
     def __init__(self, ob=None):
         if ob is None: return
         self.idpath = ob.getPhysicalPath()

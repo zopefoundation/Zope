@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Property sheets"""
 
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -43,7 +43,7 @@ class View(App.Management.Tabs, Base):
         RESPONSE.redirect(URL1+'/manage')
 
     def tpURL(self): return self.getId()
-        
+
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
@@ -58,7 +58,7 @@ class View(App.Management.Tabs, Base):
                 if l >= 0:
                     pre=pre[:l]
             pre=pre+'/'
-            
+
         r=[]
         for d in self.aq_parent.aq_parent.manage_options:
             path=d['action']
@@ -109,7 +109,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
          ),
         )
 
-    __reserved_ids= ('values','items') 
+    __reserved_ids= ('values','items')
 
     def property_extensible_schema__(self):
         """Return a flag indicating whether new properties may be
@@ -195,7 +195,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if hasattr(aq_base(self),id):
             if not (id=='title' and not self.__dict__.has_key(id)):
                 raise 'Bad Request', (
-                    'Invalid property id, <em>%s</em>. It is in use.' % 
+                    'Invalid property id, <em>%s</em>. It is in use.' %
                         escape(id))
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
@@ -261,7 +261,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def propertyItems(self):
         # Return a list of (id, property) tuples.
-        return map(lambda i, s=self: (i['id'], s.getProperty(i['id'])), 
+        return map(lambda i, s=self: (i['id'], s.getProperty(i['id'])),
                    self._propertyMap())
 
     def propertyInfo(self, id):
@@ -316,7 +316,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 attrs=''.join(attrs)
             else:
                 # Quote non-xml items here?
-                attrs='' 
+                attrs=''
 
             if hasattr(self,"dav__"+name):
                 prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
@@ -326,7 +326,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             result.append(prop)
         if not result: return ''
         result='\n'.join(result)
-        
+
         return propstat % (self.xml_namespace(), result, '200 OK', '')
 
     def dav__propnames(self, propstat=propstat):
@@ -375,7 +375,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
             if not result.has_key(code):
                 result[code]=[prop]
             else: result[code].append(prop)
-            return            
+            return
 
 
     del propstat
@@ -383,7 +383,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
 
     # Web interface
-    
+
     manage=DTMLFile('dtml/properties', globals())
     def manage_propertiesForm(self, URL1):
         " "
@@ -456,7 +456,7 @@ class Virtual:
 
     def __init__(self):
         pass
-    
+
     def v_self(self):
         return self.aq_parent.aq_parent
 
@@ -485,7 +485,7 @@ class DAVProperties(Virtual, PropertySheet, View):
         {'id':'supportedlock',    'mode':'r'},
         {'id':'lockdiscovery',    'mode':'r'},
         )
-     
+
     def getProperty(self, id, default=None):
         method='dav__%s' % id
         if not hasattr(self, method):
@@ -506,10 +506,10 @@ class DAVProperties(Virtual, PropertySheet, View):
         if hasattr(self.v_self(), '_p_mtime'):
             return self.pm + ({'id':'getlastmodified',  'mode':'r'},)
         return self.pm
-    
+
     def propertyMap(self):
         return map(lambda dict: dict.copy(), self._propertyMap())
-    
+
     def dav__creationdate(self):
         return iso8601_date(43200.0)
 
@@ -518,7 +518,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 
     def dav__resourcetype(self):
         vself=self.v_self()
-        if (isDavCollection(vself) or 
+        if (isDavCollection(vself) or
             getattr(aq_base(vself), 'isAnObjectManager', None)):
             return '<n:collection/>'
         return ''
@@ -559,7 +559,7 @@ class DAVProperties(Virtual, PropertySheet, View):
     def dav__lockdiscovery(self):
         security = getSecurityManager()
         user = security.getUser().getUserName()
-        
+
 
         vself = self.v_self()
         out = '\n'
@@ -570,9 +570,9 @@ class DAVProperties(Virtual, PropertySheet, View):
                 creator = lock.getCreator()[-1]
                 if creator == user: fake=0
                 else:               fake=1
-                    
+
                 out = '%s\n%s' % (out, lock.asLockDiscoveryProperty('n',fake=fake))
-                
+
             out = '%s\n' % out
 
         return out
@@ -584,7 +584,7 @@ Globals.default__class_init__(DAVProperties)
 class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
-    
+
     id='propertysheets'
 
     __ac_permissions__=(
@@ -603,7 +603,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     webdav =DAVProperties()
     def _get_defaults(self):
         return (self.webdav,)
-    
+
     def __propsets__(self):
         propsets=self.aq_parent.__propsets__
         __traceback_info__= propsets, type(propsets)
@@ -631,7 +631,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
             r.append((id, n.__of__(self)))
 
         return r
-        
+
     def get(self, name, default=None):
         for propset in self.__propsets__():
             if propset.id==name or (hasattr(propset, 'xml_namespace') and \
@@ -657,7 +657,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
             if propset.getId() != name and  propset.xml_namespace() != name:
                 result.append(propset)
         self.parent.__propsets__=tuple(result)
-        
+
     def __len__(self):
         return len(self.__propsets__())
 
@@ -683,7 +683,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
                 if l >= 0:
                     pre=pre[:l]
             pre=pre+'/'
-            
+
         r=[]
         for d in self.aq_parent.manage_options:
             r.append({'label': d['label'], 'action': pre+d['action']})
@@ -734,7 +734,7 @@ class FixedSchema(PropertySheet):
             if 'd' in mode:
                 d['mode']=filter(lambda c: c != 'd', mode)
             r.append(d)
-            
+
         return tuple(r)
 
     def propertyMap(self):
@@ -745,7 +745,7 @@ class FixedSchema(PropertySheet):
         return self._base._extensible
 
 Globals.default__class_init__(FixedSchema)
-    
+
 
 
 class vps(Base):
@@ -757,7 +757,7 @@ class vps(Base):
     """
     def __init__(self, c=PropertySheets):
         self.c=c
-        
+
     def __of__(self, parent):
         return self.c().__of__(parent)
 
@@ -771,7 +771,7 @@ def xml_escape(v):
     """ convert any content from ISO-8859-1 to UTF-8
     The main use is to escape non-US object property values
     (e.g. containing accented characters). Also we convert "<" and ">"
-    to entities to keep the properties XML compliant. 
+    to entities to keep the properties XML compliant.
     """
     v = str(v)
     v = v.replace('&', '&amp;')

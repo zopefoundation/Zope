@@ -1,24 +1,24 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''This module implements a simple item mix-in for objects that have a
 very simple (e.g. one-screen) management interface, like documents,
 Aqueduct database adapters, etc.
 
 This module can also be used as a simple template for implementing new
-item types. 
+item types.
 
-$Id: SimpleItem.py,v 1.101 2002/06/25 20:52:56 caseman Exp $'''
-__version__='$Revision: 1.101 $'[11:-2]
+$Id: SimpleItem.py,v 1.102 2002/08/14 21:42:56 mj Exp $'''
+__version__='$Revision: 1.102 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -49,7 +49,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     """A common base class for simple, non-container objects."""
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
-    
+
     def manage_afterAdd(self, item, container): pass
     def manage_beforeDelete(self, item, container): pass
     def manage_afterClone(self, item): pass
@@ -81,17 +81,17 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     # Meta type used for selecting all objects of a given type.
     meta_type='simple item'
 
-    # Default title.  
+    # Default title.
     title=''
 
     # Default propertysheet info:
     __propsets__=()
- 
+
     manage_options=(
         App.Undo.UndoSupport.manage_options
         +AccessControl.Owned.Owned.manage_options
         )
-    
+
     # Attributes that must be acquired
     REQUEST=Acquisition.Acquired
 
@@ -121,7 +121,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             title=title()
         id = self.getId()
         return title and ("%s (%s)" % (title,id)) or id
-    
+
     def this(self):
         # Handy way to talk to ourselves in document templates.
         return self
@@ -147,7 +147,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         try:
             if error_type  is None: error_type =sys.exc_info()[0]
             if error_value is None: error_value=sys.exc_info()[1]
-            
+
             # allow for a few different traceback options
             if tb is None and error_tb is None:
                 tb=sys.exc_info()[2]
@@ -171,7 +171,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 # Stop if there is recursion.
                 raise error_type, error_value, tb
             self._v_eek=1
-   
+
             if str(error_type).lower() in ('redirect',):
                 raise error_type, error_value, tb
 
@@ -227,7 +227,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
 
     def manage(self, URL1):
         " "
-        raise 'Redirect', "%s/manage_main" % URL1 
+        raise 'Redirect', "%s/manage_main" % URL1
 
     # This keeps simple items from acquiring their parents
     # objectValues, etc., when used in simple tree tags.
@@ -236,14 +236,14 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
     objectIds=objectItems=objectValues
 
     # FTP support methods
-    
+
     def manage_FTPstat(self,REQUEST):
         "psuedo stat, used by FTP for directory listings"
         from AccessControl.User import nobody
         mode=0100000
-        
+
         # check read permissions
-        if (hasattr(aq_base(self),'manage_FTPget') and 
+        if (hasattr(aq_base(self),'manage_FTPget') and
             hasattr(self.manage_FTPget, '__roles__')):
             try:
                 if getSecurityManager().validateValue(self.manage_FTPget):
@@ -252,17 +252,17 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             if nobody.allowed(self.manage_FTPget,
                               self.manage_FTPget.__roles__):
                 mode=mode | 0004
-                
+
         # check write permissions
         if hasattr(aq_base(self),'PUT') and hasattr(self.PUT, '__roles__'):
             try:
                 if getSecurityManager().validateValue(self.PUT):
                     mode=mode | 0220
             except: pass
-            
+
             if nobody.allowed(self.PUT, self.PUT.__roles__):
                 mode=mode | 0002
-                
+
         # get size
         if hasattr(aq_base(self), 'get_size'):
             size=self.get_size()
@@ -295,7 +295,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             if not hasattr(ob,'aq_parent'):
                 break
             ob=ob.aq_parent
-            
+
         stat=marshal.loads(self.manage_FTPstat(REQUEST))
         id = self.getId()
         return marshal.dumps((id,stat))
@@ -331,11 +331,11 @@ class Item_w__name__(Item):
         and getPhysicalPath() are designed to operate together.
         '''
         path = (self.__name__,)
-        
+
         p = aq_parent(aq_inner(self))
-        if p is not None: 
+        if p is not None:
             path = p.getPhysicalPath() + path
-            
+
         return path
 
 
@@ -358,7 +358,7 @@ class SimpleItem(Item, Globals.Persistent,
          'action':'manage_access',
          'help':('OFSP', 'Security.stx')},
         )
- 
+
     __ac_permissions__=(('View', ()),)
 
     def __repr__(self):
@@ -385,4 +385,3 @@ class SimpleItem(Item, Globals.Persistent,
             res += ' used for %s' % context_path
         res += '>'
         return res
-

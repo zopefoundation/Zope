@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """FTP Support for Zope classes.
@@ -23,11 +23,11 @@ All FTP methods should be governed by a single permission:
 
 class FTPInterface:
     "Interface for FTP objects"
-    
+
     # XXX The stat and list marshal format should probably
     #     be XML, not marshal, maybe Andrew K's xml-marshal.
     #     This will probably be changed later.
-        
+
     def manage_FTPstat(self,REQUEST):
         """Returns a stat-like tuple. (marshalled to a string) Used by
         FTP for directory listings, and MDTM and SIZE"""
@@ -37,13 +37,13 @@ class FTPInterface:
         (id,stat) tuples, marshaled to a string. Note, the listing it
         should include '..' if there is a Folder above the current
         one.
-        
+
         In the case of non-foldoid objects it should return a single
         tuple (id,stat) representing itself."""
-        
+
     # Optional method to support FTP download.
     # Should not be implemented by Foldoid objects.
-    
+
     def manage_FTPget(self):
         """Returns the source content of an object. For example, the
         source text of a Document, or the data of a file."""

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Objects for packages that have been uninstalled.
@@ -23,7 +23,7 @@ from cgi import escape
 broken_klasses={}
 broken_klasses_lock = allocate_lock()
 
-class BrokenClass(Acquisition.Explicit, SimpleItem.Item, 
+class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
                   Persistence.Overridable):
     _p_changed=0
     meta_type='Broken Because Product is Gone'
@@ -47,7 +47,7 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
 
     manage=manage_main=Globals.DTMLFile('dtml/brokenEdit',globals())
     manage_workspace=manage
-    
+
 
 def Broken(self, oid, pair):
     broken_klasses_lock.acquire()

@@ -1,23 +1,23 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__="""Implement Observable interface (see
 http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't derive
 from any Zope persistence classes, for instance).
 
-$Id: DefaultObservable.py,v 1.5 2002/02/07 17:20:59 andreasjung Exp $"""
+$Id: DefaultObservable.py,v 1.6 2002/08/14 21:42:56 mj Exp $"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from types import StringType
 
@@ -57,12 +57,12 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification
     def __init__( self, debug=0 ):
         self._observers = []
         self._debug = debug
-    
+
     def _normalize( self, observer ):
 
         # Assert that observer is a string or a sequence of strings.
         if type( observer ) != StringType:
-            observer = '/'.join( observer) 
+            observer = '/'.join( observer)
 
         return observer
 
@@ -102,13 +102,13 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification
                         traceback.print_exc()
             else:
                 bozos.append( observer )
-            
+
         for bozo in bozos:
             try: # avoid race condition if unregister() called before now
                 self._observers.remove( bozo )
             except:
                 pass
-        
+
 
 #
 #   Unit tests
@@ -117,7 +117,7 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification
 if __name__ == '__main__':
 
     class DontGoHere( Exception ): pass
-        
+
     class TestSubject( DefaultObservable ):
 
         def __init__( self, paths ):
@@ -134,29 +134,29 @@ if __name__ == '__main__':
         if cbrec is None:
             cbrec = callbacks[ name ] = []
         cbrec.append( ( subject, event ) )
-        
+
 
     class TestObserver:
 
         def __call__( self, subject, event ):
             recordCallback( 'direct', subject, event )
-        
+
         def namedCallback( self, subject, event ):
             recordCallback( 'named', subject, event )
-        
+
         def named2Callback( self, subject, event ):
             recordCallback( 'named2', subject, event )
-        
+
         def boundCallback( self, subject, event ):
             recordCallback( 'bound', subject, event )
 
     def freefuncObserver( subject, event ):
-        recordCallback( 'freefunc', subject, event ) 
-    
+        recordCallback( 'freefunc', subject, event )
+
     def tryVeto( subject, event ):
         """ Simulate attempted veto. """
         raise 'Idawanna!'
-    
+
     observer = TestObserver()
 
     # Simulate Zope's path traversal mechanism.
@@ -204,4 +204,3 @@ if __name__ == '__main__':
         print '[%s]' % key
         for cb in callbacks[ key ]:
             print '    %s' % `cb`
-

@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals, ExtensionClass, difflib
 from DateTime import DateTime
@@ -92,7 +92,7 @@ class Historical(ExtensionClass.Base):
           )
          ),
         )
-    
+
     manage_options=({'label':'History', 'action':'manage_change_history_page',
                      'help':('OFSP','History.stx')
                      },
@@ -110,7 +110,7 @@ class Historical(ExtensionClass.Base):
         if request is not None:
             first=request.get('first_transaction', first)
             last=request.get('last_transaction',last)
-        
+
 
         r=self._p_jar.db().history(self._p_oid, None, last)
         r=r[first:]
@@ -146,7 +146,7 @@ class Historical(ExtensionClass.Base):
             base._p_deactivate()
             base.__setstate__(state)
             base._p_changed=1
-            
+
             self.manage_afterHistoryCopy()
 
         if RESPONSE is not None and URL1 is not None:
@@ -154,7 +154,7 @@ class Historical(ExtensionClass.Base):
 
     def manage_afterHistoryCopy(self): pass # ? (Hook)
 
-    
+
     _manage_historyComparePage=Globals.DTMLFile(
         'dtml/historyCompare', globals(), management_view='History')
     def manage_historyCompare(self, rev1, rev2, REQUEST,
@@ -174,10 +174,10 @@ class Historical(ExtensionClass.Base):
         if len(keys) > 2:
             raise HistorySelectionError, (
                 "Only two historical revision can be compared<p>")
-        
+
         serial=apply(pack, ('>HHHH',)+tuple(map(int, keys[-1].split('.'))))
         rev1=historicalRevision(self, serial)
-        
+
         if len(keys)==2:
             serial=apply(pack,
                          ('>HHHH',)+tuple(map(int, keys[0].split('.'))))
@@ -187,7 +187,7 @@ class Historical(ExtensionClass.Base):
             rev2=self
 
         return self.manage_historyCompare(rev1, rev2, REQUEST)
-        
+
 Globals.default__class_init__(Historical)
 
 def dump(tag, x, lo, hi, r):

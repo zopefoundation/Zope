@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.139 $'[11:-2]
+__version__='$Revision: 1.140 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -45,7 +45,7 @@ def manage_addFile(self,id,file='',title='',precondition='', content_type='',
     title=str(title)
     content_type=str(content_type)
     precondition=str(precondition)
-    
+
     id, title = cookId(id, title, file)
 
     self=self.this()
@@ -66,11 +66,11 @@ def manage_addFile(self,id,file='',title='',precondition='', content_type='',
 class File(Persistent, Implicit, PropertyManager,
            RoleManager, Item_w__name__, Cacheable):
     """A File object is a content object for arbitrary files."""
-    
+
     __implements__ = (WriteLockInterface, HTTPRangeSupport.HTTPRangeInterface)
     meta_type='File'
 
-    
+
     precondition=''
     size=None
 
@@ -79,7 +79,7 @@ class File(Persistent, Implicit, PropertyManager,
     manage_editForm._setName('manage_editForm')
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
-    
+
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
@@ -107,7 +107,7 @@ class File(Persistent, Implicit, PropertyManager,
         ('Delete objects',
          ('DELETE',)),
         )
-   
+
 
     _properties=({'id':'title', 'type': 'string'},
                  {'id':'content_type', 'type':'string'},
@@ -117,7 +117,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.__name__=id
         self.title=title
         self.precondition=precondition
-       
+
         data, size = self._read_data(file)
         content_type=self._get_content_type(file, data, id, content_type)
         self.update_data(data, content_type, size)
@@ -162,8 +162,8 @@ class File(Persistent, Implicit, PropertyManager,
                     return ''
 
         if self.precondition and hasattr(self,self.precondition):
-            # Grab whatever precondition was defined and then 
-            # execute it.  The precondition will raise an exception 
+            # Grab whatever precondition was defined and then
+            # execute it.  The precondition will raise an exception
             # if something violates its terms.
             c=getattr(self,self.precondition)
             if hasattr(c,'isDocTemp') and c.isDocTemp:
@@ -217,7 +217,7 @@ class File(Persistent, Implicit, PropertyManager,
                         break
 
                 if not satisfiable:
-                    RESPONSE.setHeader('Content-Range', 
+                    RESPONSE.setHeader('Content-Range',
                         'bytes */%d' % self.size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setHeader('Last-Modified',
@@ -229,18 +229,18 @@ class File(Persistent, Implicit, PropertyManager,
 
                 # Can we optimize?
                 ranges = HTTPRangeSupport.optimizeRanges(ranges, self.size)
-                                
+
                 if len(ranges) == 1:
                     # Easy case, set extra header and return partial set.
                     start, end = ranges[0]
                     size = end - start
-                    
+
                     RESPONSE.setHeader('Last-Modified',
                         rfc1123_date(self._p_mtime))
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
-                    RESPONSE.setHeader('Content-Range', 
+                    RESPONSE.setHeader('Content-Range',
                         'bytes %d-%d/%d' % (start, end - 1, self.size))
                     RESPONSE.setStatus(206) # Partial content
 
@@ -258,11 +258,11 @@ class File(Persistent, Implicit, PropertyManager,
                             lstart = l - (pos - start)
 
                             if lstart < 0: lstart = 0
-                            
+
                             # find the endpoint
                             if end <= pos:
                                 lend = l - (pos - end)
-                                
+
                                 # Send and end transmission
                                 RESPONSE.write(data[lstart:lend])
                                 break
@@ -271,26 +271,26 @@ class File(Persistent, Implicit, PropertyManager,
                             RESPONSE.write(data[lstart:])
 
                         data = data.next
-                    
+
                     return ''
-                    
+
                 else:
                     # When we get here, ranges have been optimized, so they are
                     # in order, non-overlapping, and start and end values are
                     # positive integers.
                     boundary = choose_boundary()
-                    
+
                     # Calculate the content length
                     size = (8 + len(boundary) + # End marker length
                         len(ranges) * (         # Constant lenght per set
-                            49 + len(boundary) + len(self.content_type) + 
+                            49 + len(boundary) + len(self.content_type) +
                             len('%d' % self.size)))
                     for start, end in ranges:
                         # Variable length per set
-                        size = (size + len('%d%d' % (start, end - 1)) + 
+                        size = (size + len('%d%d' % (start, end - 1)) +
                             end - start)
-                            
-                    
+
+
                     # Some clients implement an earlier draft of the spec, they
                     # will only accept x-byteranges.
                     draftprefix = (request_range is not None) and 'x-' or ''
@@ -313,7 +313,7 @@ class File(Persistent, Implicit, PropertyManager,
                             self.content_type)
                         RESPONSE.write(
                             'Content-Range: bytes %d-%d/%d\r\n\r\n' % (
-                                start, end - 1, self.size)) 
+                                start, end - 1, self.size))
 
                         if type(data) is StringType:
                             RESPONSE.write(data[start:end])
@@ -328,11 +328,11 @@ class File(Persistent, Implicit, PropertyManager,
                                     lstart = l - (pos - start)
 
                                     if lstart < 0: lstart = 0
-                                    
+
                                     # find the endpoint
                                     if end <= pos:
                                         lend = l - (pos - end)
-                                        
+
                                         # Send and loop to next range
                                         RESPONSE.write(data[lstart:lend])
                                         # Back up the position marker, it will
@@ -420,7 +420,7 @@ class File(Persistent, Implicit, PropertyManager,
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
-        
+
     def _get_content_type(self, file, body, id, content_type=None):
         headers=getattr(file, 'headers', None)
         if headers and headers.has_key('content-type'):
@@ -432,9 +432,9 @@ class File(Persistent, Implicit, PropertyManager,
         return content_type
 
     def _read_data(self, file):
-        
+
         n=1 << 16
-        
+
         if type(file) is StringType:
             size=len(file)
             if size < n: return file, size
@@ -448,7 +448,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         seek=file.seek
         read=file.read
-        
+
         seek(0,2)
         size=end=file.tell()
 
@@ -460,9 +460,9 @@ class File(Persistent, Implicit, PropertyManager,
         # Make sure we have an _p_jar, even if we are a new object, by
         # doing a sub-transaction commit.
         get_transaction().commit(1)
-        
+
         jar=self._p_jar
-        
+
         if jar is None:
             # Ugh
             seek(0)
@@ -478,7 +478,7 @@ class File(Persistent, Implicit, PropertyManager,
             if pos < n: pos=0 # we always want at least n bytes
             seek(pos)
             data=Pdata(read(end-pos))
-            
+
             # Woooop Woooop Woooop! This is a trick.
             # We stuff the data directly into our jar to reduce the
             # number of updates necessary.
@@ -487,17 +487,17 @@ class File(Persistent, Implicit, PropertyManager,
             # This is needed and has side benefit of getting
             # the thing registered:
             data.next=next
-            
+
             # Now make it get saved in a sub-transaction!
             get_transaction().commit(1)
 
             # Now make it a ghost to free the memory.  We
             # don't need it anymore!
             data._p_changed=None
-            
+
             next=data
             end=pos
-        
+
         return next, size
 
     def PUT(self, REQUEST, RESPONSE):
@@ -507,7 +507,7 @@ class File(Persistent, Implicit, PropertyManager,
         type=REQUEST.get_header('content-type', None)
 
         file=REQUEST['BODYFILE']
-        
+
         data, size = self._read_data(file)
         content_type=self._get_content_type(file, data, self.__name__,
                                             type or self.content_type)
@@ -515,7 +515,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         RESPONSE.setStatus(204)
         return RESPONSE
-    
+
     def get_size(self):
         """Get the size of a file or image.
 
@@ -538,7 +538,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     def __str__(self): return str(self.data)
     def __len__(self): return 1
-    
+
     manage_FTPget=index_html
 
 
@@ -563,13 +563,13 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
     # First, we create the image without data:
     self._setObject(id, Image(id,title,'',content_type, precondition))
-        
+
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
     self._getOb(id).manage_upload(file)
     if content_type:
         self._getOb(id).content_type=content_type
-    
+
     if REQUEST is not None:
         try:    url=self.DestinationURL()
         except: url=REQUEST['URL1']
@@ -584,7 +584,7 @@ def getImageInfo(data):
     width = -1
     content_type = ''
 
-    # handle GIFs   
+    # handle GIFs
     if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
         # Check to see if content_type is correct
         content_type = 'image/gif'
@@ -601,7 +601,7 @@ def getImageInfo(data):
         w, h = struct.unpack(">LL", data[16:24])
         width = int(w)
         height = int(h)
-            
+
     # Maybe this is for an older PNG version.
     elif (size >= 16) and (data[:8] == '\211PNG\r\n\032\n'):
         # Check to see if we have the right content type
@@ -642,7 +642,7 @@ class Image(File):
     __implements__ = (WriteLockInterface,)
     meta_type='Image'
 
-    
+
     height=''
     width=''
 
@@ -683,7 +683,7 @@ class Image(File):
     manage_editForm._setName('manage_editForm')
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
-    
+
     # private
     update_data__roles__=()
     def update_data(self, data, content_type=None, size=None):
@@ -773,14 +773,14 @@ def cookId(id, title, file):
         id=filename[max(filename.rfind('/'),
                         filename.rfind('\\'),
                         filename.rfind(':'),
-                        )+1:]                  
+                        )+1:]
     return id, title
 
 class Pdata(Persistent, Implicit):
     # Wrapper for possibly large data
 
     next=None
-    
+
     def __init__(self, data):
         self.data=data
 
@@ -800,14 +800,5 @@ class Pdata(Persistent, Implicit):
             self=next
             r.append(self.data)
             next=self.next
-        
+
         return ''.join(r)
-
-
-
-
-
-
-
-
-

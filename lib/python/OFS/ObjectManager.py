@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.157 2002/08/14 19:59:18 mj Exp $"""
+$Id: ObjectManager.py,v 1.158 2002/08/14 21:42:56 mj Exp $"""
 
-__version__='$Revision: 1.157 $'[11:-2]
+__version__='$Revision: 1.158 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -102,7 +102,7 @@ class ObjectManager(
     ):
     """Generic object manager
 
-    This class provides core behavior for collections of heterogeneous objects. 
+    This class provides core behavior for collections of heterogeneous objects.
     """
 
     __ac_permissions__=(
@@ -123,7 +123,7 @@ class ObjectManager(
     meta_type  ='Object Manager'
 
     meta_types=() # Sub-object types that are specific to this object
-    
+
     _objects   =()
 
     manage_main=DTMLFile('dtml/main', globals())
@@ -148,7 +148,7 @@ class ObjectManager(
             except: pass
         mt.sort()
         self.meta_types=tuple(mt)
-        
+
         default__class_init__(self)
 
     def all_meta_types(self, interfaces=None):
@@ -179,11 +179,11 @@ class ObjectManager(
                     eil = entry.get('interfaces',None)
                     if eil is not None:
                         for ei in eil:
-                            for i in interfaces: 
+                            for i in interfaces:
                                 if ei is i or ei.extends(i):
-                                    interface_constrained_meta_types.append(entry) 
+                                    interface_constrained_meta_types.append(entry)
                                     raise BreakoutException # only append 1ce
-                except BreakoutException:   
+                except BreakoutException:
                     pass
 
         # Meta types specified by this instance are not checked against the
@@ -316,7 +316,7 @@ class ObjectManager(
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
 
-        # Indicate to the object that it has been deleted. This is 
+        # Indicate to the object that it has been deleted. This is
         # necessary for object DB mount points. Note that we have to
         # tolerate failure here because the object being deleted could
         # be a Broken object, and it is not possible to set attributes
@@ -410,7 +410,7 @@ class ObjectManager(
                             vals.append(get(id))
                             seen[physicalPath]=1
                     except: pass
-                    
+
             if hasattr(obj,'aq_parent'):
                 obj=obj.aq_parent
                 relativePhysicalPath = ('..',) + relativePhysicalPath
@@ -424,7 +424,7 @@ class ObjectManager(
 
     def manage_delObjects(self, ids=[], REQUEST=None):
         """Delete a subordinate object
-        
+
         The objects specified in 'ids' get deleted.
         """
         if type(ids) is type(''): ids=[ids]
@@ -447,7 +447,7 @@ class ObjectManager(
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
-                return self.manage_main(self, REQUEST, update_menu=1)
+            return self.manage_main(self, REQUEST, update_menu=1)
 
 
     def tpValues(self):
@@ -475,7 +475,7 @@ class ObjectManager(
 
     def manage_exportObject(self, id='', download=None, toxml=None,
                             RESPONSE=None,REQUEST=None):
-        """Exports an object to a file and returns that file."""        
+        """Exports an object to a file and returns that file."""
         if not id:
             # can't use getId() here (breaks on "old" exported objects)
             id=self.id
@@ -484,7 +484,7 @@ class ObjectManager(
         else: ob=self._getOb(id)
 
         suffix=toxml and 'xml' or 'zexp'
-        
+
         if download:
             f=StringIO()
             if toxml: XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
@@ -502,7 +502,7 @@ class ObjectManager(
             ob._p_jar.exportFile(ob._p_oid, f)
 
         if REQUEST is not None:
-            return self.manage_main(self, REQUEST, 
+            return self.manage_main(self, REQUEST,
                 manage_tabs_message=
                 '<em>%s</em> sucessfully exported to <em>%s</em>' % (id,f),
                 title = 'Object exported')
@@ -518,7 +518,7 @@ class ObjectManager(
 
         instance_home = INSTANCE_HOME
         zope_home = ZOPE_HOME
-        
+
         for impath in (instance_home, zope_home):
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
@@ -528,9 +528,9 @@ class ObjectManager(
 
         self._importObjectFromFile(filepath, verify=not not REQUEST,
                                    set_owner=set_owner)
-        
+
         if REQUEST is not None:
-            return self.manage_main(self, REQUEST, 
+            return self.manage_main(self, REQUEST,
                 manage_tabs_message='<em>%s</em> sucessfully imported' % id,
                 title = 'Object imported',
                 update_menu=1)
@@ -556,7 +556,7 @@ class ObjectManager(
         ob.manage_changeOwnershipType(explicit=0)
 
     # FTP support methods
-    
+
     def manage_FTPlist(self, REQUEST):
         "Directory listing for FTP"
         out=()
@@ -569,7 +569,7 @@ class ObjectManager(
             if not hasattr(ob,'aq_parent'):
                 break
             ob=ob.aq_parent
-        
+
         files=self.objectItems()
 
         # recursive ride through all subfolders (ls -R) (ajung)
@@ -582,7 +582,7 @@ class ObjectManager(
                     all_files.extend(findChilds(f[1]))
                 else:
                     all_files.append(f)
-            
+
             files = all_files
 
         try:
@@ -592,7 +592,7 @@ class ObjectManager(
             files.sort()
 
         # Perform globbing on list of files (ajung)
-           
+
         globbing = REQUEST.environ.get('GLOBBING','')
         if globbing :
             files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g) , files)
@@ -602,7 +602,7 @@ class ObjectManager(
         except AttributeError:
             files=list(files)
             files.sort()
-            
+
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
             files.insert(0,('..',self.aq_parent))
@@ -614,7 +614,7 @@ class ObjectManager(
             except: stat=None
             if stat is not None:
                 out=out+((k,stat),)
-        return marshal.dumps(out)   
+        return marshal.dumps(out)
 
     def manage_FTPstat(self,REQUEST):
         "Psuedo stat used for FTP listings"

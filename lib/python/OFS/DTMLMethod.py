@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -101,7 +101,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             if data is not _marker:
                 # Return cached results.
                 return data
-        
+
         kw['document_id']   =self.getId()
         kw['document_title']=self.title
 
@@ -113,7 +113,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             self.__dict__['validate'] = security.DTMLValidate
             first_time_through = 1
         try:
-        
+
             if client is None:
                 # Called as subtemplate, so don't need error propagation!
                 r=apply(HTML.__call__, (self, client, REQUEST), kw)
@@ -179,7 +179,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         Returns the cacheNamespaceKeys.
         '''
         return self._cache_namespace_keys
-        
+
     def setCacheNamespaceKeys(self, keys, REQUEST=None):
         '''
         Sets the list of names that should be looked up in the
@@ -220,14 +220,14 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
     def _er(self,data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
         dr,dc = self._size_changes[SUBMIT]
-        
+
         rows=str(max(1,int(dtpref_rows)+dr))
-        
+
         if dtpref_cols[-1]=='%':
             cols= str(min(100, max(25,int(dtpref_cols[:-1])+dc)))+'%'
         else:
             cols=str(max(35,int(dtpref_cols)+dc))
-            
+
         e=(DateTime('GMT') + 365).rfc822()
         resp=REQUEST['RESPONSE']
         resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
@@ -267,11 +267,11 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if self.wl_isLocked():
             raise ResourceLockedError, 'This DTML Method is locked via WebDAV'
 
-        if type(file) is not type(''): 
-            if REQUEST and not file: 
+        if type(file) is not type(''):
+            if REQUEST and not file:
                 raise ValueError, 'No file specified'
             file=file.read()
-            
+
         self.munge(file)
         self.ZCacheable_invalidate()
         if REQUEST:
@@ -297,7 +297,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         raise 'Forbidden', (
             'You are not authorized to change <em>%s</em> because you '
             'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
-            
+
 
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
@@ -368,11 +368,11 @@ def decapitate(html, RESPONSE=None):
         headers.append(header)
         spos = m.end() + 1
         while spos < len(html) and html[spos] in ' \t':
-            eol = find(html, '\r\n', spos)            
+            eol = find(html, '\r\n', spos)
             if eol <> -1:
                 eolen = 2
             else:
-                eol = find(html, '\n', spos)                
+                eol = find(html, '\n', spos)
                 if eol < 0: return html
                 eolen = 1
             header.append(strip(html[spos:eol]))
@@ -387,7 +387,7 @@ def decapitate(html, RESPONSE=None):
 default_dm_html="""<dtml-var standard_html_header>
 <h2><dtml-var title_or_id> <dtml-var document_title></h2>
 <p>
-This is the <dtml-var document_id> Document 
+This is the <dtml-var document_id> Document
 in the <dtml-var title_and_id> Folder.
 </p>
 <dtml-var standard_html_footer>"""
@@ -411,4 +411,3 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
-

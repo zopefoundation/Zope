@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.186 2002/08/09 14:51:53 chrism Exp $'''
-__version__='$Revision: 1.186 $'[11:-2]
+$Id: Application.py,v 1.187 2002/08/14 21:42:55 mj Exp $'''
+__version__='$Revision: 1.187 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -57,7 +57,7 @@ class Application(Globals.ApplicationDefaultPermissions,
     # emergency user can still access the system if the top-level
     # UserFolder is deleted. This is necessary to allow people
     # to replace the top-level UserFolder object.
-    
+
     __allow_groups__=UserFolder()
 
     # Set the universal default method to index_html
@@ -129,7 +129,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         """Move a resource to a new location."""
         self.dav__init(REQUEST, RESPONSE)
         raise 'Forbidden', 'This resource cannot be moved.'
-    
+
     test_url___allow_groups__=None
     test_url=ZopeAttributionButton
 
@@ -276,7 +276,7 @@ def initialize(app):
         get_transaction().note('Added temp_folder')
         get_transaction().commit()
         del tf
-        
+
     # Ensure that there is a transient container in the temp folder
     tf = app.temp_folder
     if not hasattr(aq_base(tf), 'session_data'):
@@ -344,7 +344,7 @@ def initialize(app):
         del delnotify
         del timeout_spec
         del env_has
-        
+
     del tf
 
     # Ensure that a browser ID manager exists
@@ -437,7 +437,7 @@ def initialize(app):
 
     # Check for dangling pointers (broken zclass dependencies) in the
     # global class registry. If found, rebuild the registry. Note that
-    # if the check finds problems but fails to successfully rebuild the 
+    # if the check finds problems but fails to successfully rebuild the
     # registry we abort the transaction so that we don't leave it in an
     # indeterminate state.
 
@@ -528,37 +528,36 @@ def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
     modules=sys.modules
     have_module=modules.has_key
 
-    if 1:  # Preserve indentation for diff :-)
-        try:
-            package_dir=path_join(product_dir, product_name)
-            if not isdir(package_dir): return
-            if not exists(path_join(package_dir, '__init__.py')):
-                if not exists(path_join(package_dir, '__init__.pyc')):
-                    if not exists(path_join(package_dir, '__init__.pyo')):
-                        return
+    try:
+        package_dir=path_join(product_dir, product_name)
+        if not isdir(package_dir): return
+        if not exists(path_join(package_dir, '__init__.py')):
+            if not exists(path_join(package_dir, '__init__.pyc')):
+                if not exists(path_join(package_dir, '__init__.pyo')):
+                    return
 
-            pname="Products.%s" % product_name
-            try:
-                product=__import__(pname, global_dict, global_dict, silly)
-                if hasattr(product, '__module_aliases__'):
-                    for k, v in product.__module_aliases__:
-                        if not have_module(k):
-                            if type(v) is _st and have_module(v): v=modules[v]
-                            modules[k]=v
-            except:
-                exc = sys.exc_info()
-                if log_exc:
-                    LOG('Zope', ERROR, 'Could not import %s' % pname,
-                        error=exc)
-                f=StringIO()
-                traceback.print_exc(100,f)
-                f=f.getvalue()
-                try: modules[pname].__import_error__=f
-                except: pass
-                if raise_exc:
-                    raise exc[0], exc[1], exc[2]
-        finally:
-            exc = None
+        pname="Products.%s" % product_name
+        try:
+            product=__import__(pname, global_dict, global_dict, silly)
+            if hasattr(product, '__module_aliases__'):
+                for k, v in product.__module_aliases__:
+                    if not have_module(k):
+                        if type(v) is _st and have_module(v): v=modules[v]
+                        modules[k]=v
+        except:
+            exc = sys.exc_info()
+            if log_exc:
+                LOG('Zope', ERROR, 'Could not import %s' % pname,
+                    error=exc)
+            f=StringIO()
+            traceback.print_exc(100,f)
+            f=f.getvalue()
+            try: modules[pname].__import_error__=f
+            except: pass
+            if raise_exc:
+                raise exc[0], exc[1], exc[2]
+    finally:
+        exc = None
 
 
 def install_products(app):
@@ -608,115 +607,115 @@ def install_product(app, product_dir, product_name, meta_types,
     silly=('__doc__',)
 
     if 1:  # Preserve indentation for diff :-)
-            package_dir=path_join(product_dir, product_name)
-            __traceback_info__=product_name
-            if not isdir(package_dir): return
-            if not exists(path_join(package_dir, '__init__.py')):
-                if not exists(path_join(package_dir, '__init__.pyc')):
-                    if not exists(path_join(package_dir, '__init__.pyo')):
-                        return
-            try:
-                product=__import__("Products.%s" % product_name,
-                                   global_dict, global_dict, silly)
+        package_dir=path_join(product_dir, product_name)
+        __traceback_info__=product_name
+        if not isdir(package_dir): return
+        if not exists(path_join(package_dir, '__init__.py')):
+            if not exists(path_join(package_dir, '__init__.pyc')):
+                if not exists(path_join(package_dir, '__init__.pyo')):
+                    return
+        try:
+            product=__import__("Products.%s" % product_name,
+                               global_dict, global_dict, silly)
 
-                # Install items into the misc_ namespace, used by products
-                # and the framework itself to store common static resources
-                # like icon images.
-                misc_=pgetattr(product, 'misc_', {})
-                if misc_:
-                    if type(misc_) is DictType:
-                        misc_=Misc_(product_name, misc_)
-                    Application.misc_.__dict__[product_name]=misc_
+            # Install items into the misc_ namespace, used by products
+            # and the framework itself to store common static resources
+            # like icon images.
+            misc_=pgetattr(product, 'misc_', {})
+            if misc_:
+                if type(misc_) is DictType:
+                    misc_=Misc_(product_name, misc_)
+                Application.misc_.__dict__[product_name]=misc_
 
-                # Here we create a ProductContext object which contains
-                # information about the product and provides an interface
-                # for registering things like classes and help topics that
-                # should be associated with that product. Products are
-                # expected to implement a method named 'initialize' in
-                # their __init__.py that takes the ProductContext as an
-                # argument.
-                productObject=App.Product.initializeProduct(
-                    product, product_name, package_dir, app)
-                context=ProductContext(productObject, app, product)
+            # Here we create a ProductContext object which contains
+            # information about the product and provides an interface
+            # for registering things like classes and help topics that
+            # should be associated with that product. Products are
+            # expected to implement a method named 'initialize' in
+            # their __init__.py that takes the ProductContext as an
+            # argument.
+            productObject=App.Product.initializeProduct(
+                product, product_name, package_dir, app)
+            context=ProductContext(productObject, app, product)
 
-                # Look for an 'initialize' method in the product. If it does
-                # not exist, then this is an old product that has never been
-                # updated. In that case, we will analyze the product and
-                # build up enough information to do initialization manually.
-                initmethod=pgetattr(product, 'initialize', None)
-                if initmethod is not None:
-                    initmethod(context)
+            # Look for an 'initialize' method in the product. If it does
+            # not exist, then this is an old product that has never been
+            # updated. In that case, we will analyze the product and
+            # build up enough information to do initialization manually.
+            initmethod=pgetattr(product, 'initialize', None)
+            if initmethod is not None:
+                initmethod(context)
 
-                # Support old-style product metadata. Older products may
-                # define attributes to name their permissions, meta_types,
-                # constructors, etc.
-                permissions={}
-                new_permissions={}
-                for p in pgetattr(product, '__ac_permissions__', ()):
-                    permission, names, default = (
-                        tuple(p)+('Manager',))[:3]
-                    if names:
-                        for name in names:
-                            permissions[name]=permission
-                    elif not folder_permissions.has_key(permission):
-                        new_permissions[permission]=()
+            # Support old-style product metadata. Older products may
+            # define attributes to name their permissions, meta_types,
+            # constructors, etc.
+            permissions={}
+            new_permissions={}
+            for p in pgetattr(product, '__ac_permissions__', ()):
+                permission, names, default = (
+                    tuple(p)+('Manager',))[:3]
+                if names:
+                    for name in names:
+                        permissions[name]=permission
+                elif not folder_permissions.has_key(permission):
+                    new_permissions[permission]=()
 
-                for meta_type in pgetattr(product, 'meta_types', ()):
-                    # Modern product initialization via a ProductContext
-                    # adds 'product' and 'permission' keys to the meta_type
-                    # mapping. We have to add these here for old products.
-                    pname=permissions.get(meta_type['action'], None)
-                    if pname is not None:
-                        meta_type['permission']=pname
-                    meta_type['product']=productObject.id
-                    meta_type['visibility'] = 'Global'
-                    meta_types.append(meta_type)
+            for meta_type in pgetattr(product, 'meta_types', ()):
+                # Modern product initialization via a ProductContext
+                # adds 'product' and 'permission' keys to the meta_type
+                # mapping. We have to add these here for old products.
+                pname=permissions.get(meta_type['action'], None)
+                if pname is not None:
+                    meta_type['permission']=pname
+                meta_type['product']=productObject.id
+                meta_type['visibility'] = 'Global'
+                meta_types.append(meta_type)
 
-                for name,method in pgetattr(
-                    product, 'methods', {}).items():
-                    if not hasattr(Folder.Folder, name):
-                        setattr(Folder.Folder, name, method)
-                        if name[-9:]!='__roles__': # not Just setting roles
-                            if (permissions.has_key(name) and
-                                not folder_permissions.has_key(
-                                    permissions[name])):
-                                permission=permissions[name]
-                                if new_permissions.has_key(permission):
-                                    new_permissions[permission].append(name)
-                                else:
-                                    new_permissions[permission]=[name]
+            for name,method in pgetattr(
+                product, 'methods', {}).items():
+                if not hasattr(Folder.Folder, name):
+                    setattr(Folder.Folder, name, method)
+                    if name[-9:]!='__roles__': # not Just setting roles
+                        if (permissions.has_key(name) and
+                            not folder_permissions.has_key(
+                                permissions[name])):
+                            permission=permissions[name]
+                            if new_permissions.has_key(permission):
+                                new_permissions[permission].append(name)
+                            else:
+                                new_permissions[permission]=[name]
 
-                if new_permissions:
-                    new_permissions=new_permissions.items()
-                    for permission, names in new_permissions:
-                        folder_permissions[permission]=names
-                    new_permissions.sort()
-                    Folder.Folder.__dict__['__ac_permissions__']=tuple(
-                        list(Folder.Folder.__ac_permissions__)+new_permissions)
+            if new_permissions:
+                new_permissions=new_permissions.items()
+                for permission, names in new_permissions:
+                    folder_permissions[permission]=names
+                new_permissions.sort()
+                Folder.Folder.__dict__['__ac_permissions__']=tuple(
+                    list(Folder.Folder.__ac_permissions__)+new_permissions)
 
-                if (os.environ.get('ZEO_CLIENT') and
-                    not os.environ.get('FORCE_PRODUCT_LOAD')):
-                    # we don't want to install products from clients
-                    # (unless FORCE_PRODUCT_LOAD is defined).
-                    get_transaction().abort()
-                else:
-                    get_transaction().note('Installed product '+product_name)
-                    get_transaction().commit()
-
-            except:
-                if log_exc:
-                    LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
-                        error=sys.exc_info())
+            if (os.environ.get('ZEO_CLIENT') and
+                not os.environ.get('FORCE_PRODUCT_LOAD')):
+                # we don't want to install products from clients
+                # (unless FORCE_PRODUCT_LOAD is defined).
                 get_transaction().abort()
-                if raise_exc:
-                    raise
+            else:
+                get_transaction().note('Installed product '+product_name)
+                get_transaction().commit()
+
+        except:
+            if log_exc:
+                LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
+                    error=sys.exc_info())
+            get_transaction().abort()
+            if raise_exc:
+                raise
 
 def install_standards(app):
     # Check to see if we've already done this before
     # Don't do it twice (Casey)
     if getattr(app, '_standard_objects_have_been_added', 0):
         return
-        
+
     # Install the replaceable standard objects
     from Products.PageTemplates.PageTemplateFile import PageTemplateFile
     std_dir = os.path.join(Globals.package_home(globals()), 'standard')

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.14 2002/02/07 17:20:59 andreasjung Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Traversable.py,v 1.15 2002/08/14 21:42:56 mj Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -57,9 +57,9 @@ class Traversable:
         and getPhysicalPath() are designed to operate together.
         '''
         path = (self.getId(),)
-        
+
         p = aq_parent(aq_inner(self))
-        if p is not None: 
+        if p is not None:
             path = p.getPhysicalPath() + path
 
         return path
@@ -94,7 +94,7 @@ class Traversable:
             self=self.getPhysicalRoot()
             if (restricted and not securityManager.validateValue(self)):
                 raise Unauthorized, name
-                    
+
         try:
             object = self
             while path:
@@ -127,7 +127,7 @@ class Traversable:
                         if (not securityManager.validate(object,
                                                          container, name, o)):
                             raise Unauthorized, name
-                      
+
                 else:
                     o=get(object, name, M)
                     if o is not M:
@@ -142,7 +142,7 @@ class Traversable:
                                 if not securityManager.validate(
                                     object, N, name, o):
                                     raise Unauthorized, name
-                        
+
                     else:
                         o=object[name]
                         if (restricted and not securityManager.validate(

@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 import sys, os, time, Globals, ExtensionClass
@@ -42,10 +42,10 @@ class FindSupport(ExtensionClass.Base):
          ('manage_findFrame', 'manage_findForm', 'manage_findAdv',
           'manage_findResult')),
         )
-    
+
     manage_options=(
-        {'label':'Find', 'action':'manage_findForm', 
-         'help':('OFSP','Find.stx')},         
+        {'label':'Find', 'action':'manage_findForm',
+         'help':('OFSP','Find.stx')},
         )
 
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
@@ -61,7 +61,7 @@ class FindSupport(ExtensionClass.Base):
 
             if obj_metatypes and 'all' in obj_metatypes:
                 obj_metatypes=None
-                
+
             if obj_mtime and type(obj_mtime)==type('s'):
                 obj_mtime=DateTime(obj_mtime).timeTime()
 
@@ -70,7 +70,7 @@ class FindSupport(ExtensionClass.Base):
 
             if obj_roles and type(obj_roles) is type('s'):
                 obj_roles=[obj_roles]
-                
+
             if obj_expr:
                 # Setup expr machinations
                 md=td()
@@ -97,7 +97,7 @@ class FindSupport(ExtensionClass.Base):
         for id, ob in items:
             if pre: p="%s/%s" % (pre, id)
             else:   p=id
-            
+
             dflag=0
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
                 dflag=1
@@ -148,9 +148,9 @@ class FindSupport(ExtensionClass.Base):
 
 
 
-    
+
     PrincipiaFind=ZopeFind
- 
+
     def ZopeFindAndApply(self, obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,
                          obj_mtime=None, obj_mspec=None,
@@ -165,7 +165,7 @@ class FindSupport(ExtensionClass.Base):
 
             if obj_metatypes and 'all' in obj_metatypes:
                 obj_metatypes=None
-                
+
             if obj_mtime and type(obj_mtime)==type('s'):
                 obj_mtime=DateTime(obj_mtime).timeTime()
 
@@ -174,7 +174,7 @@ class FindSupport(ExtensionClass.Base):
 
             if obj_roles and type(obj_roles) is type('s'):
                 obj_roles=[obj_roles]
-                
+
             if obj_expr:
                 # Setup expr machinations
                 md=td()
@@ -196,7 +196,7 @@ class FindSupport(ExtensionClass.Base):
         for id, ob in items:
             if pre: p="%s/%s" % (pre, id)
             else:   p=id
-            
+
             dflag=0
             if hasattr(ob, '_p_changed') and (ob._p_changed == None):
                 dflag=1
@@ -229,7 +229,7 @@ class FindSupport(ExtensionClass.Base):
                 else:
                     add_result((p, ob))
                     dflag=0
-                    
+
             if search_sub and hasattr(bs, 'objectItems'):
                 self.ZopeFindAndApply(ob, obj_ids, obj_metatypes,
                                       obj_searchterm, obj_expr,
@@ -261,14 +261,14 @@ def expr_match(ob, ed, c=InstanceDict, r=0):
 
 def mtime_match(ob, t, q, fn=hasattr):
     if not fn(ob, '_p_mtime'):
-        return 0    
+        return 0
     return q=='<' and (ob._p_mtime < t) or (ob._p_mtime > t)
 
 
 def role_match(ob, permission, roles, lt=type([]), tt=type(())):
     pr=[]
     fn=pr.append
-    
+
     while 1:
         if hasattr(ob, permission):
             p=getattr(ob, permission)
@@ -307,5 +307,3 @@ def absattr(attr):
 
 def p_name(name):
     return '_' + translate(name, name_trans) + '_Permission'
-
-

@@ -1,23 +1,23 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Folder object
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.100 2002/06/07 18:10:31 caseman Exp $"""
+$Id: Folder.py,v 1.101 2002/08/14 21:42:56 mj Exp $"""
 
-__version__='$Revision: 1.100 $'[11:-2]
+__version__='$Revision: 1.101 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -46,7 +46,7 @@ def manage_addFolder(self, id, title='',
     self._setObject(id, ob)
     ob=self._getOb(id)
 
-    checkPermission=getSecurityManager().checkPermission    
+    checkPermission=getSecurityManager().checkPermission
 
     if createUserF:
         if not checkPermission('Add User Folders', ob):
@@ -61,7 +61,7 @@ def manage_addFolder(self, id, title='',
                   'You are not authorized to add Page Templates.'
                   )
         ob.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-            id='index_html', title='') 
+            id='index_html', title='')
 
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)

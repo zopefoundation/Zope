@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -77,7 +77,7 @@ class CopyContainer(ExtensionClass.Base):
             REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
         return cp
-    
+
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
         if ids is None and REQUEST is not None:
@@ -130,7 +130,7 @@ class CopyContainer(ExtensionClass.Base):
                 cp=REQUEST['__cp']
         if cp is None:
             raise CopyError, eNoData
-        
+
         try:    cp=_cb_decode(cp)
         except: raise CopyError, eInvalid
 
@@ -186,7 +186,7 @@ class CopyContainer(ExtensionClass.Base):
                 # try to make ownership explicit so that it gets carried
                 # along to the new location if needed.
                 ob.manage_changeOwnershipType(explicit=1)
-                
+
                 aq_parent(aq_inner(ob))._delObject(id)
                 ob = aq_base(ob)
                 orig_id=id
@@ -232,7 +232,7 @@ class CopyContainer(ExtensionClass.Base):
                       action ='manage_main')
         ob=self._getOb(id)
         if not ob.cb_isMoveable():
-            raise CopyError, eNotSupported % id            
+            raise CopyError, eNotSupported % id
         self._verifyObjectPaste(ob)
         try:    ob._notifyOfCopyTo(self, op=1)
         except: raise CopyError, MessageDialog(
@@ -242,7 +242,7 @@ class CopyContainer(ExtensionClass.Base):
         self._delObject(id)
         ob = aq_base(ob)
         ob._setId(new_id)
-        
+
         # Note - because a rename always keeps the same context, we
         # can just leave the ownership info unchanged.
         self._setObject(new_id, ob, set_owner=0)
@@ -308,7 +308,7 @@ class CopyContainer(ExtensionClass.Base):
         #
         # Passing a false value for the validate_src argument will skip
         # checking the passed in object in its existing context. This is
-        # mainly useful for situations where the passed in object has no 
+        # mainly useful for situations where the passed in object has no
         # existing context, such as checking an object during an import
         # (the object will not yet have been connected to the acquisition
         # heirarchy).
@@ -390,7 +390,7 @@ class CopySource(ExtensionClass.Base):
     __ac_permissions__=(
         ('Copy or Move', (), ('Anonymous', 'Manager',)),
         )
-    
+
     def _canCopy(self, op=0):
         """Called to make sure this object is copyable. The op var
         is 0 for a copy, 1 for a move."""
@@ -430,7 +430,7 @@ class CopySource(ExtensionClass.Base):
         # Called after the copy is finished to accomodate special cases.
         # The op var is 0 for a copy, 1 for a move.
         pass
-    
+
     def _setId(self, id):
         # Called to set the new id of a copied object.
         self.id=id
