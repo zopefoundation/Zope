@@ -93,11 +93,10 @@ class ZCIndexTestsBase:
         extra = Extra()
         extra.doc_attr = 'text'
         extra.lexicon_id = 'lexicon'
-        caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
-                               StopWordRemover()))
+        self.lexicon = Lexicon(Splitter(), CaseNormalizer(), StopWordRemover())
+        caller = LexiconHolder(self.lexicon)
         self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
         self.index = self.zc_index.index
-        self.lexicon = self.zc_index.lexicon
 
     def parserFailure(self, query):
         self.assertRaises(ParseError, self.zc_index.query, query)
