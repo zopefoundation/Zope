@@ -8,10 +8,26 @@ Zope Changes
 
     Zope 1.9
 
+      New Features
+
+        - Zope now provides better information about products.  If a 
+          Product has a README.txt, then it will be readable through
+          the product management interface.   
+
+          If a product encounters an error during startup, the
+          traceback is available through the product management
+          interface.
+
+        - Cache statistics are displayed in minutes, rather than seconds.
+
       Bugs Fixed
 
         - ZPublisher.Client used the obsolete rand module.
 
+        - Errors occuring during product import caused Zope to fail to come
+          up.
+
+        - Product version information was not displayed correctly.
 
     Zope 1.9 beta 3
 
