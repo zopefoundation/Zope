@@ -16,17 +16,17 @@
 <!--#in objectItems sort-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
-  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var sequence-key-->">
+  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var sequence-key fmt=url-quote-->">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <!--#if icon-->
-  <A HREF="<!--#var sequence-key-->/manage_workspace">
+  <A HREF="<!--#var sequence-key fmt=url-quote-->/manage_workspace">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
    ALT="[<!--#var meta_type-->]" BORDER="0"></A>
   <!--#/if icon-->
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_workspace">
+  <A HREF="<!--#var sequence-key fmt=url-quote-->/manage_workspace">
   <!--#var sequence-key--> <!--#if title-->(<!--#var title-->)<!--#/if-->
   </A>
   <!--#if locked_in_session-->
