@@ -91,6 +91,7 @@ from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
 import os.path
 import string
+import Globals
 
 class HelpTopicBase:
     "Mix-in Help Topic support class"
@@ -181,6 +182,7 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
     
     meta_type='Help Topic'
     icon='p_/HelpTopic_icon'
+    _v_last_read = 0
 
     manage_options=(
         {'label':'Properties', 'action':'manage_propertiesForm'},
@@ -246,6 +248,7 @@ class TextTopic(HelpTopic):
     def __init__(self, id, title, file, permissions=None, categories=None):
         self.id=id
         self.title=title
+        self.file = file
         self.obj=open(file).read()
         if permissions is not None:
             self.permissions=permissions
@@ -254,6 +257,14 @@ class TextTopic(HelpTopic):
         
     def index_html(self, REQUEST=None):
         "View the Help Topic"
+        if Globals.DevelopmentMode:
+            try:    mtime=os.stat(self.file)
+            except: mtime=0
+            if mtime != self._v_last_read:
+                self.obj = open(self.file).read()
+                self._v_last_read=mtime
+                self.reindex_object()
+
         return self.obj
 
     def SearchableText(self):
@@ -265,14 +276,23 @@ class STXTopic(TextTopic):
     """
     A structured-text topic. Holds a HTMLFile object.
     """
-    index_html_=HTML("""\
+    def index_html(self, REQUEST=None):
+        """ View the STX Help Topic """
+        if Globals.DevelopmentMode:
+            try:    mtime=os.stat(self.file)
+            except: mtime=0
+            if mtime != self._v_last_read:
+                self.obj = open(self.file).read()
+                self._v_last_read=mtime
+                self.reindex_object()
+
+        return self.htmlfile(self, REQUEST)
+
+    htmlfile = HTML("""\
 <dtml-var standard_html_header>
 <dtml-var obj fmt="structured-text">
 <dtml-var standard_html_footer>""")
 
-    def index_html(self, REQUEST):
-        """ """
-        return self.index_html_(self, REQUEST)
 
 class ImageTopic(HelpTopic):
     """
@@ -284,6 +304,7 @@ class ImageTopic(HelpTopic):
     def __init__(self, id, title, file, categories=None, permissions=None):
         self.id=id
         self.title=title
+        self.file = file
         dir, file=os.path.split(file)
         self.image=ImageFile(file, dir)
         if permissions is not None:
@@ -293,9 +314,17 @@ class ImageTopic(HelpTopic):
     
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
+        if Globals.DevelopmentMode:
+            try:    mtime=os.stat(self.file)
+            except: mtime=0
+            if mtime != self._v_last_read:
+                self.obj = open(self.file).read()
+                self._v_last_read=mtime
+                self.reindex_object()
+
         return self.image.index_html(REQUEST, RESPONSE)
         
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
         return ''
-        
+
