@@ -11,7 +11,7 @@
 
     <span z:insert="str:here/id">here/id</span>
 
-    <p z:define="x str:template/title; global five python:2+3" z:insert="text var:x">template/title</p>
+    <p z:define="x str:template/title; global five python:2+3;" z:insert="text var:five">5</p>
 
     <p z:repeat="car python:['honda', 'subaru', 'acura']">
       honda

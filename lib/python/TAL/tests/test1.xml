@@ -5,13 +5,17 @@
 
   <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
 <h1 z:condition="python:0">This title is not displayed</h1>
-    <h1 z:condition="python:1" z:insert="str:This Is The Replaced Title">Title</h1>
+    <h1 z:condition="python:1" z:insert="str:This
+Is
+The
+Replaced
+Title">Title</h1>
 
   <!-- examples adapted from TemplateAttributeLanguageSyntax -->
 
     <span z:insert="str:here/id"/>
 
-    <p z:define="x str:template/title; global five python:2+3" z:insert="text var:x"/>
+    <p z:define="x str:template/title; global five python:2+3;" z:insert="text var:five"/>
 
     <p z:repeat="car python:['honda', 'subaru', 'acura']">
       <span z:replace="var:car"/>
