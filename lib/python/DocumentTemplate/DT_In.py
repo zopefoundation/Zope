@@ -124,7 +124,8 @@
       sort -- Define the sort order for sequence items.  If an item in
       the sequence does not define 
 
-      reverse -- Reverse the sequence (may be combined with sort).
+      reverse -- Reverse the sequence (may be combined with sort).  Note
+      that this can cause a huge memory use in lazy activation instances. 
 
       Within an 'in' block, variables are substituted from the
       elements of the iteration.  The elements may be either
@@ -381,8 +382,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.37 1999/06/21 21:29:42 jim Exp $'
-__version__='$Revision: 1.37 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.38 1999/08/27 14:56:27 petrilli Exp $'
+__version__='$Revision: 1.38 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError
@@ -492,7 +493,7 @@ class InClass:
             sequence=self.sort_sequence(sequence)
 
         if self.reverse is not None:
-            sequence.reverse()
+            sequence=self.reverse_sequence(sequence)
             
         next=previous=0
         try: start=int_param(params,md,'start',0)
@@ -622,6 +623,7 @@ class InClass:
         return result
 
     def renderwob(self, md):
+        """RENDER WithOutBatch"""
         expr=self.expr
         name=self.__name__
         if expr is None:
@@ -646,7 +648,7 @@ class InClass:
             sequence=self.sort_sequence(sequence)
 
         if self.reverse is not None:
-            sequence.reverse()
+            sequence=self.reverse_sequence(sequence)
             
         vars=sequence_variables(sequence)
         kw=vars.data
@@ -728,6 +730,12 @@ class InClass:
         for k, client in s: sequence.append(client)
 
         return sequence
+
+
+    def reverse_sequence(self, sequence):
+        s=list(sequence)
+        s.reverse()
+        return s
 
 
 basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1
