@@ -145,11 +145,11 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.50 2002/02/07 17:47:42 andreasjung Exp $'
-__version__='$Revision: 1.50 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.51 2002/03/18 20:15:27 andreasjung Exp $'
+__version__='$Revision: 1.51 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
-import string, re,  sys
+import os, string, re,  sys
 from urllib import quote, quote_plus
 from cgi import escape
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -357,7 +357,9 @@ def structured_text(v, name='(Unknown name)', md={}):
 
     else: txt = str(v)
         
-    return HTML(txt,level=3,header=0)
+    return HTML(txt, 
+                level=int(os.environ.get('STX_DEFAULT_LEVEL',3)),
+                header=0)
         
 
 def sql_quote(v, name='(Unknown name)', md={}):

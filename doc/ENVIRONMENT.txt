@@ -238,6 +238,14 @@ WebDAV
             WEBDAV_SOURCE_PORT_CLIENTS="cadaver.*"   enables retrieval
             of the document source for the Cadaver WebDAV client                
 
+Structured Text
+
+    STX_DEFAULT_LEVEL
+
+       Set this variable to change the default level for <Hx> elements.
+       The default level is 3.  
+
+
 Esoteric 
 
     Z_MAX_STACK_SIZE
