@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -573,15 +573,13 @@ class MultiPart:
              }
 
 
-a=Resource('http://tarzan.digicool.com/dev/brian3')
-b=Resource('http://tarzan.digicool.com/dev/brian3',
-           username='brian',
-           password='123')
-z=Resource('http://www.zope.org/')
-x=Resource('http://sandbox.xerox.com:8080/')
+bri =Resource('http://tarzan.digicool.com/dev/brian3/',
+              username='brian',
+              password='123')
+abri=Resource('http://tarzan.digicool.com/dev/brian3/')
 
-t=Resource('http://tarzan.digicool.com/')
+dav =Resource('http://tarzan.digicool.com/dev/dav/',
+              username='brian',
+              password='123')
+adav=Resource('http://tarzan.digicool.com/dev/dav/')
 
-f=Resource('http://www.fwi.com:8080/',
-           username='BrianL',
-           password='999999')

@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -172,7 +172,7 @@ class PropPatch:
                     attrs={}
                     val.remap({})
                     for attr in val.attrs():
-                        md[attr.name()]=attr.value()
+                        attrs[attr.name()]=attr.value()
                     md={'attrs':attrs, 'nsid': val.__nskey__}
                     item=(val.name(), val.namespace(), val.strval(), md)
                     vals.append(item)
