@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -65,6 +65,7 @@ class User(Implicit, Persistent):
 	    if role in usr_roles:
                 if (hasattr(self,'aq_parent') and
                     hasattr(self.aq_parent,'aq_parent')):
+		    if parent is None: return 1
                     if (not hasattr(parent, 'aq_inContextOf') and
                         hasattr(parent, 'im_self')):
                         # This is a method, grab it's self.
