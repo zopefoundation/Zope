@@ -93,6 +93,14 @@ Zope Changes
             import Zope
             Zope.debug('spam', d=1)
 
+        - Added a 'getobject' method to ZCatalog. This allows you to more
+          easily get at a cataloged object from 'searchResults'. For
+          example::
+          
+            <!--#in searchResults-->
+            <!--#var "getobject(data_record_id_).title_or_id()"--><br>
+            <!--#/in-->
+
       Bugs fixed
 
         - Changed the logic used to detect binary content types to
