@@ -16,7 +16,7 @@ edit the value and click the "Change Properties" button.
 <!--#in propertyInputs mapping-->
   <TR>
     <TD ALIGN="LEFT" VALIGN="TOP"><B><!--#var id fmt=spacify--></B></TD>
-    <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input--></TD>
+    <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input fmt=html_quote--></TD>
   </TR>
 <!--#/in propertyInputs-->
 <!--#/if propertyInputs-->
