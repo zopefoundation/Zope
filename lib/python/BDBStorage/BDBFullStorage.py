@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.29 $'[-2:][0]
+__version__ = '$Revision: 1.30 $'[-2:][0]
 
 import sys
 import struct
@@ -165,6 +165,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         #self._nextserial = 0L
         
     def close(self):
+        if self._commitlog is not None:
+            self._commitlog.close()
         self._serials.close()
         self._pickles.close()
         self._vids.close()

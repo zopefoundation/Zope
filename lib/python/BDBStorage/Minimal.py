@@ -4,7 +4,7 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-__version__ = '$Revision: 1.9 $'[-2:][0]
+__version__ = '$Revision: 1.10 $'[-2:][0]
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net.  It is compatible with release 3.0 of
@@ -122,6 +122,8 @@ class Minimal(BerkeleyBase):
         # that just to reclaim the garbage?
         self._serials.close()
         self._pickles.close()
+        if self._commitlog is not None:
+            self._commitlog.close()
         # Base class implements some useful close behavior
         BerkeleyBase.close(self)
 
