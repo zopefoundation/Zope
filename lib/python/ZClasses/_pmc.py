@@ -57,6 +57,9 @@ class _p_DataDescr(object):
     def __get__(self, inst, cls):
         if inst is None:
             return self
+
+        if '__global_persistent_class_not_stored_in_DB__' in inst.__dict__:
+            raise AttributeError, self.__name__
         return inst._p_class_dict.get(self.__name__)
     
     def __set__(self, inst, v):

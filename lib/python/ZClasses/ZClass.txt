@@ -6,65 +6,86 @@ ZClasses were designed mainly to be used from the web.
 
 To do anything, we need a working Zope object space:
 
-  >>> from ZODB.DemoStorage import DemoStorage
-  >>> s = DemoStorage()
-  >>> import ZODB.DB
-  >>> db = ZODB.DB(s)
-  >>> conn = db.open()
-  >>> from OFS.Application import Application
-  >>> app = Application()
-  >>> conn.root()['Application'] = app
-  >>> from OFS.Application import initialize
-  >>> initialize(app)
+    >>> conn = some_database.open()
+    >>> from OFS.Application import Application
+    >>> app = Application()
+    >>> conn.root()['Application'] = app
+    >>> from OFS.Application import initialize
+    >>> initialize(app)
 
 Once we have an object space, we need to create a product to hold the ZClass:
 
-  >>> app.Control_Panel.Products.manage_addProduct('test', '')
-  >>> test = app.Control_Panel.Products['test']
+    >>> app.Control_Panel.Products.manage_addProduct('test', '')
+    >>> test = app.Control_Panel.Products['test']
 
 Then we can create the ZClass in the product:
 
-  >>> test.manage_addZClass('C', zope_object=True,  CreateAFactory=True)
+    >>> test.manage_addZClass('C', zope_object=True,  CreateAFactory=True)
 
 Having create a ZClass, we can create an instance:
 
-  >>> c = test.C()
-  >>> c._setId('c')
-  >>> app._setObject('c', c)
-  'c'
+    >>> c = test.C()
+    >>> c._setId('c')
+    >>> app._setObject('c', c)
+    'c'
 
 Now, ZClass instances aren't very interesting by themselves.  We can
 give them data by defining property sheets:
 
-  >>> test.C.propertysheets.common.manage_addCommonSheet('basic', '')
-  >>> test.C.propertysheets.common['basic'].manage_addProperty(
-  ...     'x', 'hee ', 'string')
-  >>> app.c.x
-  'hee '
-  >>> test.C.propertysheets.common['basic'].manage_addProperty('y', 42, 'int')
-  >>> app.c.y
-  42
+    >>> test.C.propertysheets.common.manage_addCommonSheet('basic', '')
+    >>> test.C.propertysheets.common['basic'].manage_addProperty(
+    ...     'x', 'hee ', 'string')
+    >>> app.c.x
+    'hee '
+    >>> test.C.propertysheets.common['basic'].manage_addProperty(
+    ...                   'y', 42, 'int')
+    >>> app.c.y
+    42
 
 Of course, we can change the data:
 
-  >>> app.c.x = 'hi '
-  >>> app.c.y = 3
-  >>> app.c.x, app.c.y
-  ('hi ', 3)
+    >>> app.c.x = 'hi '
+    >>> app.c.y = 3
+    >>> app.c.x, app.c.y
+    ('hi ', 3)
 
 We can also add methods, such as Python scripts:
 
-  >>> test.C.propertysheets.methods.manage_addProduct[
-  ...      'PythonScripts'].manage_addPythonScript('eek')
-  ''
-  >>> test.C.propertysheets.methods['eek'].ZPythonScript_edit('',
-  ...      'return container.x * container.y')
+    >>> test.C.propertysheets.methods.manage_addProduct[
+    ...      'PythonScripts'].manage_addPythonScript('eek')
+    ''
+    >>> test.C.propertysheets.methods['eek'].ZPythonScript_edit('',
+    ...      'return container.x * container.y')
 
-  >>> app.c.eek()
-  'hi hi hi '
+    >>> app.c.eek()
+    'hi hi hi '
 
-We're done, so clean up:
+Let's commit our changes:
 
-  >>> import transaction
-  >>> transaction.commit()
-  >>> db.close()
+    >>> import transaction
+    >>> transaction.commit()
+
+We can access the class in another connection:
+
+    >>> import threading
+    >>> def run(func):
+    ...     thread = threading.Thread(target=func)
+    ...     thread.start()
+    ...     thread.join()
+
+    >>> def read_class():
+    ...     connection = some_database.open()
+    ...     app = connection.root()['Application']
+    ...     test = app.Control_Panel.Products['test']
+    ...     c2 = test.C()
+    ...     c2._setId('c')
+    ...     app._setObject('c2', c2)
+    ...     app.c2.x = '*'
+    ...     print app.c2.x, app.c2.y, app.c2.eek(), '!'
+    ...     print app.c.x, app.c.y, app.c.eek(), '!'
+    ...     connection.close()
+
+
+    ... run(read_class)
+    hee 42 ****************************************** !
+    hi  3 hi hi hi  !

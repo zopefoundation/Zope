@@ -44,11 +44,13 @@ def test_suite():
     return unittest.TestSuite((
 
         # To do:
-        # - test integration: doctest.DocFileSuite("ZClass.txt"),
+        # - Beef up basic test
         # - Test working with old pickles
+        # - Test proper handling of __of__
         # - Test export/import
         
         doctest.DocFileSuite("_pmc.txt", setUp=setUp, tearDown=tearDown),
+        doctest.DocFileSuite("ZClass.txt", setUp=setUp, tearDown=tearDown),
         ))
 
 if __name__ == '__main__':

@@ -22,6 +22,7 @@ from ComputedAttribute import ComputedAttribute
 from Products.PythonScripts.PythonScript import PythonScript
 from zExceptions import BadRequest, Redirect
 import webdav.Collection
+import ZClasses._pmc
 
 import marshal
 
@@ -91,7 +92,18 @@ from OFS.misc_ import p_
 p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
 
 class PersistentClass(Base, webdav.Collection.Collection ):
-    def __class_init__(self): pass
+
+    __metaclass__ = ZClasses._pmc.ZClassPersistentMetaClass
+
+    # We need this class to be treated as a normal global class, even
+    # though it is an instance of ZClassPersistentMetaClass.
+    # Subclasses should be stored in the database.  See
+    # _pmc._p_DataDescr.__get__.
+    
+    __global_persistent_class_not_stored_in_DB__ = True
+    
+    def __class_init__(self):
+        pass
 
 manage_addZClassForm=Globals.DTMLFile(
     'dtml/addZClass', globals(),
