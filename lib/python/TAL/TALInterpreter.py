@@ -252,15 +252,19 @@ class TALInterpreter:
             if len(item) > 2:
                 action = item[2]
                 if action == "replace" and len(item) > 3 and self.tal:
-                    value = self.engine.evaluateText(item[3])
+                    if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
+                        ok = self.engine.evaluateBoolean(item[3])
+                        if not ok:
+                            continue
+                        else:
+                            value = None
+                    else:
+                        value = self.engine.evaluateText(item[3])
                 elif (action == "macroHack" and self.currentMacro and
                       name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro
-            if (self.html and not value and
-                string.lower(name) in BOOLEAN_HTML_ATTRS):
-                s = name
-            elif value is None:
+            if value is None:
                 s = name
             else:
                 s = "%s=%s" % (name, quote(value))
