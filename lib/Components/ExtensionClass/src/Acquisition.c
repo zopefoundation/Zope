@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.17 1998/03/24 16:17:01 jim Exp $
+  $Id: Acquisition.c,v 1.18 1998/03/24 16:21:17 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -256,6 +256,8 @@ Wrapper_special(Wrapper *self, char *name, PyObject *oname)
     {
       return Py_FindAttr(OBJECT(self),oname);
     }
+
+  return NULL;
 }
 
 static int
@@ -857,7 +859,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.17 $";
+  char *rev="$Revision: 1.18 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -876,7 +878,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.17 1998/03/24 16:17:01 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.18 1998/03/24 16:21:17 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -899,6 +901,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.18  1998/03/24 16:21:17  jim
+  Fixed bad return in wrapper special.
+
   Revision 1.17  1998/03/24 16:17:01  jim
   Rearranged.
 
