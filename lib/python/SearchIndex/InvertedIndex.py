@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.51 1997/07/01 14:15:35 jim Exp $'''
+$Id: InvertedIndex.py,v 1.52 1997/07/03 13:51:33 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,7 +82,7 @@ $Id: InvertedIndex.py,v 1.51 1997/07/01 14:15:35 jim Exp $'''
 #   (540) 371-6909
 #
 # 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 
 import regex, string, copy
@@ -743,14 +743,19 @@ class Index:
 	for position in positions:
 	    if lpos != position:
 		lpos=position
-		start, end = ws.pos(position)
-		text = (text[:start] + before + text[start:end] +
-			after + text[end:])
+		try:
+		    start, end = ws.pos(position)
+		    text = (text[:start] + before + text[start:end] +
+			    after + text[end:])
+		except: pass
     
 	return text
 
 ############################################################################
 # $Log: InvertedIndex.py,v $
+# Revision 1.52  1997/07/03 13:51:33  jim
+# Made highlighting more tolerant of bad data.
+#
 # Revision 1.51  1997/07/01 14:15:35  jim
 # Fixed bug in merge map.
 #
