@@ -1,15 +1,13 @@
 Welcome to the Zope Tutorial
 
-  This tutorial show you the basics of using Zope. You will
-  learn how to create and manage Zope resources by building
-  a web site devoted to tracking Elvis sightings. Each lesson
-  includes working examples in Zope that allow you to learn
-  by hands-on experimentation.
+  This tutorial shows you the basics of using Zope. You will learn how
+  to create and manage Zope resources by building a web site devoted
+  to tracking Elvis sightings. Each lesson includes working examples
+  that allow you to learn by hands-on experimentation.
   
   The tutorial assumes that you are familiar with basic Internet
   technologies such as <a href="http://www.w3.org/MarkUp/Guide/"
-  target="_blank">HTML</a>,
-  URLs, and web browsers.
+  target="_blank">HTML</a>, URLs, and web browsers.
   
   The "Back" and "Next" buttons on the bottom of each tutorial
   page allow you to navigate the tutorial.
@@ -30,7 +28,7 @@ Welcome to the Zope Tutorial
     examples.
   
       1. Go to the Zope management screen and choose 'Zope Tutorial' from
-      the product add list.
+      the "Select type to add..." list.
   
       2. Choose an id for the tutorial and click the 'Add' button.
   
@@ -48,13 +46,13 @@ Lesson 1. "Elvis Lives" Home Page
   First you need to create a [DTML Document]
   for the home page. Zope uses 'DTML Documents' for web pages.
   
-    1. Select 'DTML Document' from the product add list.
+    1. Select 'DTML Document' from the "Select type to add..." list.
 
     2. Type 'home.html' for the document [id].
     
     3. Type 'Elvis Lives' for the document [title].
   
-    4. Click 'Add and Edit'.
+    4. Click the 'Add and Edit' button.
   
   You should now see a screen
   where you can edit your web page.
@@ -78,9 +76,9 @@ Lesson 1. "Elvis Lives" Home Page
   The contents of the document are a mixture of HTML and special
   tags called [DTML].
   
-  The [<dtml-var>] tag inserts things into
-  web pages. In this page we insert a page header, a page footer,
-  an image, and a title with DTML.
+  The [<dtml-var>] tag inserts things into web pages.  In this page,
+  we use this tag to insert a page header, an image, a title, and a
+  page footer.
   
   Now let's see what our page
   looks like.
@@ -98,11 +96,12 @@ Lesson 1. "Elvis Lives" Home Page
     * Zope uses [DTML Document]s
     for web pages.
 
-    * Create Zope objects by choosing them from the product add list.
+    * You can create Zope objects by choosing them from the "Select
+      type to add..." list.
 
-    * View Zope objects by clicking the 'View' tab.
+    * You can view Zope objects by clicking the 'View' tab.
 
-    * Insert content in web pages with the
+    * You can insert content in web pages with the
     [<dtml-var>] tag.
 
   In the next lesson you'll expand
@@ -125,14 +124,12 @@ Lesson 2. Going to Graceland
   'index.html' or a 'default.htm' file works with a conventional
   web server.
 
-  Notice that the location of the 'graceland' folder appears at the
-  top of the management screen. This tells you the URL of the
-  folder. 
-  
-  You can navigate between Zope management screens using the location
-  links. Go back up to the enclosing folders by clicking their ids in
-  the URL.
-    
+  At the top of the management screen, you will find a folder icon
+  followed by "Folder at", and the URL of the current folder. In
+  addition to being informative, this URL is a navigation aid. Each
+  part of this URL is a link, and can be used to go to the management
+  screens of parent folders.
+      
     3. Return to the enclosing folder by clicking the 'lesson2' link
     in the folder's URL.
     
@@ -189,11 +186,11 @@ Lesson 3. Elvis's Favorite Foods
 
   <dtml-var "tutorialShowLesson(3, REQUEST)">
 
-  Elvis really liked to eat. Right now we have a couple pages about
+  Elvis really liked to eat. Right now we have a of couple pages about
   foods Elvis liked. But as our web site grows we'll need a whole area
   devoted to food. Let's create a [Folder] for food information.
   
-    1. Select 'Folder' from the product add list.
+    1. Select 'Folder' from the "Select type to add..." list.
     
     2. Type 'food' for the folder id.
     
@@ -216,7 +213,7 @@ Lesson 3. Elvis's Favorite Foods
   Now that we've moved some objects, we need to update the links to
   them because an object's URL is related to its location.
   
-    1. Return the the 'home.html' document in the 'lesson3' folder,
+    1. Return to the 'home.html' document in the 'lesson3' folder,
     by clicking on the 'lesson3' location link and then clicking 
     on the 'home.html' document.
     
@@ -272,11 +269,13 @@ Lesson 4. Site Contact Information
     
     4. Click the 'Add' button.
     
-  Now you've created a property that defines your email address. Now
-  let's put a link to this address in the web page footer.
+  You have created a property that holds your e-mail address and that
+  can be used throughout your site.  Let's see how we can use this
+  address on each web page by changing the standard web page footer.
   
     1. Click the 'Contents' tab to return to the list of items in the
-       folder, then click the 'standard_html_footer' [DTML Method] to edit it.
+      folder, then click the 'standard_html_footer' [DTML Method] to
+      edit it.
     
     2. Change the contents of the method to::
     
@@ -454,7 +453,8 @@ Lesson 7. Elvis Photo Archive
   the photos by title and includes a link each
   picture.
   
-    1. Click the 'photos' document to edit it.
+    1. Click your browser's back button to return to the 'photos'
+    document to edit it.
     
     2. Change the document contents to::
     
@@ -603,7 +603,7 @@ Lesson 9. Elvis, Up Close and Personal
   
     4. Click the 'sightingsFolder' folder to enter it.
     
-    5. Choose 'DTML Method' from the product add list.
+    5. Choose 'DTML Method' from the "Select type to add..." list.
     
     6. Type 'Seattle' for the id. Since the title is optional and isn't
     really needed in this case, leave the title field blank.
