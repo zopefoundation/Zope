@@ -127,7 +127,7 @@ class Response:
     def appendHeader(name, value, delimiter=","):
         '''
         
-        Append a value to a cookie
+        Append a value to a header.
         
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
