@@ -132,6 +132,8 @@ def main(args=None):
     c = ZopeCmd(options)
     if options.args:
         c.onecmd(" ".join(options.args))
+    else:
+        options.interactive = 1
     if options.interactive:
         try:
             import readline
