@@ -6,11 +6,12 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.16 2000/06/02 14:22:48 brian Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.17 2000/06/22 20:11:16 matt Exp $'
 
 # python modules
 import os
 import regex
+import re
 import socket
 import stat
 import string
@@ -675,17 +676,14 @@ def get_header (head_reg, lines, group=1):
 			return head_reg.group(group)
 	return ''
 
-REQUEST = regex.compile ('\([^ ]+\) \([^ ]+\)\(\( HTTP/\([0-9.]+\)\)$\|$\)')
+REQUEST = re.compile ('([^ ]+) (?:[^ :]+://[^ /]*)?([^ ]+)(( HTTP/([0-9.]+))$|$)')
 
 def crack_request (r):
-	if REQUEST.match (r) == len(r):
-		if REQUEST.group(3):
-			version = REQUEST.group(5)
-		else:
-			version = None
-		return string.lower (REQUEST.group (1)), REQUEST.group(2), version
-	else:
-		return None, None, None	
+    m = REQUEST.match(r)
+    if m is not None:
+        return string.lower (m.group (1)), m.group(2), m.group(5)
+    else:
+        return None, None, None	
 
 class fifo:
 	def __init__ (self, list=None):
