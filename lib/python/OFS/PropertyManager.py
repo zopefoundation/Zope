@@ -83,14 +83,16 @@
 # 
 ##############################################################################
 
-"""Property management."""
-__version__='$Revision: 1.3 $'[11:-2]
+"""Property management"""
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split
 from DocumentTemplate import html_quote
+from Acquisition import Implicit
+from Globals import Persistent
 from DateTime import DateTime
 
 
@@ -101,27 +103,65 @@ class PropertyManager:
     transparent property management. An object which wants to
     have properties should inherit from PropertyManager.
 
-    An object which inherits from PropertyManager should include
-    the following entry in its manage_options structure:
+    An object may specify that it has one or more predefined
+    properties, by specifying an _properties structure in its
+    class::
 
-    {'label':'Properties', 'action':'manage_propertiesForm',}
+      _properties=({'id':'title', 'type': 'string', 'mode': 'w'},
+                   {'id':'color', 'type': 'string', 'mode': 'w'},
+                   )
 
-    An object which inherits from PropertyManager should also
-    include the following entry in its __ac_permissions__
-    structure:
+    The _properties structure is a sequence of dictionaries, where
+    each dictionary represents a predefined property. Note that if a
+    predefined property is defined in the _properties structure, you
+    must provide an attribute with that name in your class or instance
+    that contains the default value of the predefined property.
 
-    ('Manage properties', ('manage_addProperty',
-                           'manage_editProperties',
-                           'manage_delProperties',
-                           'manage_changeProperties',)),
+    Each entry in the _properties structure must have at least an 'id'
+    and a 'type' key. The 'id' key contains the name of the property,
+    and the 'type' key contains a string representing the object's type.
+    The 'type' string must be one of the values: 'float', 'int', 'long',
+    'string', 'lines', 'text', 'date' or 'tokens'.
+
+    Each entry in the _properties structure may *optionally* provide a
+    'mode' key, which specifies the mutability of the property. The 'mode'
+    string, if present, must contain 0 or more characters from the set
+    'w','d'.
+
+    A 'w' present in the mode string indicates that the value of the
+    property may be changed by the user. A 'd' indicates that the user
+    can delete the property. An empty mode string indicates that the
+    property and its value may be shown in property listings, but that
+    it is read-only and may not be deleted.
+
+    Entries in the _properties structure which do not have a 'mode' key
+    are assumed to have the mode 'wd' (writeable and deleteable).
+
+    To fully support property management, including the system-provided
+    tabs and user interfaces for working with properties, an object which
+    inherits from PropertyManager should include the following entry in
+    its manage_options structure::
+
+      {'label':'Properties', 'action':'manage_propertiesForm',}
+
+    to ensure that a 'Properties' tab is displayed in its management
+    interface. Objects that inherit from PropertyManager should also
+    include the following entry in its __ac_permissions__ structure::
+
+      ('Manage properties', ('manage_addProperty',
+                             'manage_editProperties',
+                             'manage_delProperties',
+                             'manage_changeProperties',)),
     """
     manage_propertiesForm=HTMLFile('properties', globals())
 
-    _properties=({'id':'title', 'type': 'string'},)
+    title=''
+    _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
     _reserved_names=()
 
     def valid_property_id(self, id):
-        if not id or id[:1]=='_' or hasattr(aq_base(self), id):
+        if not id or id[:1]=='_' or (' ' in id) \
+           or hasattr(aq_base(self), id):
             return 0
         return 1
 
@@ -134,7 +174,7 @@ class PropertyManager:
         
     def _setProperty(self, id, value, type='string'):
         if not self.valid_property_id(id):
-            raise 'Bad Request', 'Invalid property id'
+            raise 'Bad Request', 'Invalid or duplicate property id'
         self._properties=self._properties+({'id':id,'type':type},)
         setattr(self,id,value)
 
@@ -168,11 +208,12 @@ class PropertyManager:
         """Return a tuple of mappings, giving meta-data for properties """
         return self._properties
 
-    def propertyMap_d(self):
-        v=self._properties
-        try:    n=self._reserved_names
-        except: return v
-        return filter(lambda x,r=n: x['id'] not in r, v)
+    def propdict(self):
+        dict={}
+        for p in self._properties:
+            dict[p['id']]=p
+        return dict
+
 
     # Web interface
     
@@ -210,8 +251,11 @@ class PropertyManager:
             for name, value in kw.items():
                 props[name]=value
 
+        propdict=self.propdict()
         for name, value in props.items():
             if self.hasProperty(name):
+                if not 'w' in propdict[name].get('mode', 'wd'):
+                    raise 'BadRequest', '%s cannot be changed' % name
                 setattr(self, name, value)
     
         if REQUEST is not None:
@@ -221,30 +265,34 @@ class PropertyManager:
                 action ='manage_propertiesForm')
 
 
-
     def manage_delProperties(self, ids=None, REQUEST=None):
-        """Delete one or more properties
-
-        Deletes properties specified by 'ids'
-        """
+        """Delete one or more properties specified by 'ids'."""
         if ids is None:
             return MessageDialog(
                    title='No property specified',
                    message='No properties were specified!',
                    action ='./manage_propertiesForm',)
-        rnames=self._reserved_names
-        for n in ids:
-            if n in rnames:
+        propdict=self.propdict()
+        nd=self._reserved_names
+        for id in ids:
+            if not hasattr(aq_base(self), id):
+                raise 'BadRequest', (
+                      'The property <em>%s</em> does not exist' % id)
+            if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):
                 return MessageDialog(
-                title  ='Cannot delete %s' % n,
-                message='The property <I>%s</I> cannot be deleted.' % n,
+                title  ='Cannot delete %s' % id,
+                message='The property <em>%s</em> cannot be deleted.' % id,
                 action ='manage_propertiesForm')
-            try:    self._delProperty(n)
-            except: raise 'BadRequest', (
-                          'The property <I>%s</I> does not exist' % n)
+            self._delProperty(id)
+
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
+    def propertyMap_d(self):
+        v=self._properties
+        try:    n=self._reserved_names
+        except: return v
+        return filter(lambda x,r=n: x['id'] not in r, v)
 
     def _defaultInput(self,n,t,v):
         return '<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>' % (n,t,v)
@@ -253,11 +301,11 @@ class PropertyManager:
         return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
                 % (n,t,html_quote(v)))
 
-    def _booleanInput(self,n,t,v):
-        if v: v="CHECKED"
-        else: v=''
-        return ('<INPUT TYPE="CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
-                % (n,t,v))
+##     def _booleanInput(self,n,t,v):
+##         if v: v="CHECKED"
+##         else: v=''
+##         return ('<INPUT TYPE="CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
+##                 % (n,t,v))
 
     def _selectInput(self,n,t,v):
         s=['<SELECT NAME="%s:%s">' % (n,t)]
@@ -291,25 +339,25 @@ class PropertyManager:
         'text':         _textInput,
         'date':         _defaultInput,
         'tokens':       _tokensInput,   
-#       'boolean':      _booleanInput,  
         }
 
-    propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
-    propertyTypes.sort()
-    propertyTypes=map(lambda key:
-                      {'id': key[1],
-                       'selected': key[1]=='string' and 'SELECTED' or ''},
-                      propertyTypes)
-                      
-    def propertyInputs(self):
-        imap=self._inputMap
-        r=[]
-        for p in self._properties:
-            n=p['id']
-            t=p['type']
-            v=getattr(self,n)
-            r.append({'id': n, 'input': imap[t](None,n,t,v)})
-        return r
+     propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
+     propertyTypes.sort()
+     propertyTypes=map(lambda key:
+                       {'id': key[1],
+                        'selected': key[1]=='string' and 'SELECTED' or ''},
+                       propertyTypes)
+
+           
+     def propertyInputs(self):
+         imap=self._inputMap
+         r=[]
+         for p in self._properties:
+             n=p['id']
+             t=p['type']
+             v=getattr(self,n)
+             r.append({'id': n, 'input': imap[t](None,n,t,v)})
+         return r
 
 
 def aq_base(ob):
