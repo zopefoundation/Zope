@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -8,6 +8,22 @@ from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
 from Persistence import Persistent
 from Acquisition import Implicit
+
+
+
+class Pdata(Persistent, Implicit):
+    # Wrapper for possibly large data
+    def __init__(self, data):
+	self.data=data
+
+    def __str__(self):
+	return self.data
+
+    def __len__(self):
+	return len(self.data)
+
+
+
 
 
 class File(Persistent,Implicit,RoleManager,Item_w__name__):
@@ -49,12 +65,13 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	    if not content_type:
 		raise 'BadValue', 'No content type specified'
 	    self.content_type=content_type
-	    self.data=file
+	    self.data=Pdata(file)
 	else:
 	    self.content_type=headers['content-type']
-	    self.data=file.read()
+	    self.data=Pdata(file.read())
 	self.__name__=id
 	self.title=title
+	self.size=len(self.data)
 
     def id(self): return self.__name__
 
@@ -74,11 +91,10 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
     def manage_upload(self,file='',REQUEST=None):
 	""" """
-	headers=file.headers
+	self.content_type=file.headers['content-type']
 	data=file.read()
-	content_type=headers['content-type']
-	self.data=data
-	self.content_type=content_type
+	self.data=Pdata(data)
+	self.size=len(data)
 	if REQUEST: return MessageDialog(
 		    title  ='Success!',
 		    message='Your changes have been saved',
@@ -87,16 +103,18 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     PUT__roles__=['Manager']
     def PUT(self, BODY, REQUEST):
 	'handle PUT requests'
-	self.data=BODY
+	self.data=Pdata(BODY)
+	self.size=len(BODY)
 	try:
 	    type=REQUEST['CONTENT_TYPE']
 	    if type: self.content_type=type
 	except KeyError: pass
 
-    def __str__(self): return self.data
+    def size(self):    return len(self.data)
+    def __str__(self): return str(self.data)
     def __len__(self): return 1
 
-    def size(self): return len(self.data) 
+
 
 
 class Image(File):
