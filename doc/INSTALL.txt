@@ -70,17 +70,17 @@ Setting permissions ons on the var directory.
   Note: Zope normally runs as nobody, so full read and write permissions
   on the var directory is normally needed.
  
+
 Using Zope with ZopeHTTPServer:
 
   ZopeHTTPServer is a simple web server written in Python and it
   allows you to run Zope without using PCGI and another web server.
-  To start Zope using ZopeHTTPServer cd to the Zope directory and
-  issue this command:
+  The build script automatically creates a shell script named serve.sh
+  which will run the built-in server. To start Zope using ZopeHTTPServer 
+  cd to the Zope directory and issue the command:
 
-    python serve.py 
+    serve.sh
 
-  Note: you may wish to run ZopeHTTPServer in the background and redirect
-  its output to a logfile or to /dev/null
 
 Using Zope with PCGI:
 

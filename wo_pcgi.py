@@ -5,7 +5,7 @@ This must be run from the top-level directory of the installation.
 
 """
 
-import os
+import sys, os
 home=os.getcwd()
 print
 print '-'*78
@@ -37,6 +37,16 @@ if not os.path.exists(ac_path):
     acfile.write('superuser:123\n')
     acfile.close()
     os.system('chmod 744 access')
+
+sh_path=os.path.join(home, 'serve.sh')
+if not os.path.exists(sh_path):
+    print 'creating serve.sh'
+    s='#!/bin/sh\n%s serve.py >var/serve.log 2>var/serve.log &\n'
+    shfile=open(sh_path, 'w')
+    shfile.write(s % sys.executable)
+    shfile.close()
+    os.system('chmod 775 serve.sh')
+
     
 print
 print '-'*78
