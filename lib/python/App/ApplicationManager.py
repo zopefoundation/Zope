@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -53,6 +53,9 @@ class ApplicationManager(Acquirer,Management):
 
     def manage_shutdown(self):
         """Shut down the application"""
+	db=Globals.Bobobase._jar.db
+	db.save_index()
+	db.file.close()
 	sys.exit(0)
 
     def revert_points(self): return ()
