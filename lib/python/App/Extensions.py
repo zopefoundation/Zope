@@ -86,8 +86,8 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.4 1998/12/04 20:15:25 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Extensions.py,v 1.5 1998/12/11 21:09:19 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
@@ -101,8 +101,10 @@ class FuncCode:
         self.co_argcount=f.func_code.co_argcount-im
 
     def __cmp__(self,other):
-        return cmp((self.co_argcount, self.co_varnames),
-                   (other.co_argcount, other.co_varnames))
+        if other is None: return 1
+        try: return cmp((self.co_argcount, self.co_varnames),
+                        (other.co_argcount, other.co_varnames))
+        except: return 1
 
 
 def getObject(module, name, reload=0, modules={}):
