@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.115 $'[11:-2]
+__version__='$Revision: 1.116 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -166,7 +166,7 @@ class File(Persistent,Implicit,PropertyManager,
          ('manage_edit','manage_upload','PUT')),
         ('View',
          ('index_html', 'view_image_or_file', 'get_size',
-          'getContentType', '__call__', '')),
+          'getContentType', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
         ('Delete objects',
@@ -447,7 +447,7 @@ class Image(File):
          ('manage_edit','manage_upload','PUT')),
         ('View',
          ('index_html', 'tag', 'view_image_or_file', 'get_size',
-          'getContentType', '__call__', '')),
+          'getContentType', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
         ('Delete objects',
