@@ -75,7 +75,7 @@ class CosineIndex(BaseIndex):
         for wid in wids:
             assert self._wordinfo.has_key(wid)  # caller responsible for OOV
             d2w = self._wordinfo[wid] # maps docid to w(docid, wid)
-            idf = inverse_doc_frequency(len(d2w), N)  # this is an unscaled float
+            idf = inverse_doc_frequency(len(d2w), N)  # an unscaled float
             #print "idf = %.3f" % idf
             if isinstance(d2w, DictType):
                 d2w = IIBucket(d2w)
