@@ -85,14 +85,13 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
-import os, sys
+import os, sys, Products
 from Common import package_home
 
 try: home=os.environ['SOFTWARE_HOME']
 except:
-    import Products
     home=package_home(Products.__dict__)
     if not os.path.isabs(home):
         home=os.path.join(os.getcwd(), home)
@@ -114,3 +113,11 @@ except:
     
 sys.modules['__builtin__'].INSTANCE_HOME=INSTANCE_HOME=chome
 
+# If there is a Products package in INSTANCE_HOME, add it to the
+# Products package path
+ip=os.path.join(INSTANCE_HOME, 'Products')
+
+if os.path.isdir(ip) and ip not in Products.__path__:
+    Products.__path__.insert(0, ip)
+    
+    

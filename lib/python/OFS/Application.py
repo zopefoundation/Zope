@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.105 1999/05/05 13:24:37 brian Exp $'''
-__version__='$Revision: 1.105 $'[11:-2]
+$Id: Application.py,v 1.106 1999/05/11 18:31:27 jim Exp $'''
+__version__='$Revision: 1.106 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -360,46 +360,51 @@ def initialize(app):
 def import_products(_st=type('')):
     # Try to import each product, checking for and catching errors.
     path_join=os.path.join
-    product_dir=path_join(SOFTWARE_HOME,'Products')
     isdir=os.path.isdir
     exists=os.path.exists
     DictType=type({})
-
-    product_names=os.listdir(product_dir)
-    product_names.sort()
     global_dict=globals()
     silly=('__doc__',)
     modules=sys.modules
     have_module=modules.has_key
+    done={}
 
-    for product_name in product_names:
-        package_dir=path_join(product_dir, product_name)
-        if not isdir(package_dir): continue
-        if not exists(path_join(package_dir, '__init__.py')):
-            if not exists(path_join(package_dir, '__init__.pyc')):
-                continue
+    for product_dir in Products.__path__:
 
-        pname="Products.%s" % product_name
-        try:
-            product=__import__(pname, global_dict, global_dict, silly)
-            if hasattr(product, '__module_aliases__'):
-                for k, v in product.__module_aliases__:
-                    if not have_module(k):
-                        if type(v) is _st and have_module(v): v=modules[v]
-                        modules[k]=v
-        except:
-            f=StringIO()
-            traceback.print_exc(100,f)
-            f=f.getvalue()
-            try: modules[pname].__import_error__=f
-            except: pass
+        product_names=os.listdir(product_dir)
+        product_names.sort()
+
+        for product_name in product_names:
+
+            if done.has_key(product_name): continue
+            done[product_name]=1
+
+            package_dir=path_join(product_dir, product_name)
+            if not isdir(package_dir): continue
+            if not exists(path_join(package_dir, '__init__.py')):
+                if not exists(path_join(package_dir, '__init__.pyc')):
+                    continue
+
+            pname="Products.%s" % product_name
+            try:
+                product=__import__(pname, global_dict, global_dict, silly)
+                if hasattr(product, '__module_aliases__'):
+                    for k, v in product.__module_aliases__:
+                        if not have_module(k):
+                            if type(v) is _st and have_module(v): v=modules[v]
+                            modules[k]=v
+            except:
+                f=StringIO()
+                traceback.print_exc(100,f)
+                f=f.getvalue()
+                try: modules[pname].__import_error__=f
+                except: pass
 
 def install_products(app):
     # Install a list of products into the basic folder class, so
     # that all folders know about top-level objects, aka products
 
     path_join=os.path.join
-    product_dir=path_join(SOFTWARE_HOME,'Products')
     isdir=os.path.isdir
     exists=os.path.exists
     DictType=type({})
@@ -412,72 +417,81 @@ def install_products(app):
 
     meta_types=[]
 
-    product_names=os.listdir(product_dir)
-    product_names.sort()
     global_dict=globals()
     silly=('__doc__',)
 
-    for product_name in product_names:
-        package_dir=path_join(product_dir, product_name)
-        __traceback_info__=product_name
-        if not isdir(package_dir): continue
-        if not exists(path_join(package_dir, '__init__.py')):
-            if not exists(path_join(package_dir, '__init__.pyc')):
-                continue
+    done={}
 
-        product=__import__("Products.%s" % product_name,
-                           global_dict, global_dict, silly)
-        
-        misc_=pgetattr(product, 'misc_', {})
-        if misc_:
-            if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
-            Application.misc_.__dict__[product_name]=misc_
+    for product_dir in Products.__path__:
 
-        # Set up dynamic project information.
-        productObject=App.Product.initializeProduct(
-            product, product_name, package_dir, app)
+        product_names=os.listdir(product_dir)
+        product_names.sort()
 
-        pgetattr(product, 'initialize', lambda context: None)(
-            ProductContext(productObject, app, product))
+        for product_name in product_names:
 
-        permissions={}
-        new_permissions={}
-        for p in pgetattr(product, '__ac_permissions__', ()):
-            permission, names, default = (tuple(p)+('Manager',))[:3]
-            if names:
-                for name in names:
-                    permissions[name]=permission
-                        
-            elif not folder_permissions.has_key(permission):
-                new_permissions[permission]=()
+            if done.has_key(product_name): continue
+            done[product_name]=1
+            
+            package_dir=path_join(product_dir, product_name)
+            __traceback_info__=product_name
+            if not isdir(package_dir): continue
+            if not exists(path_join(package_dir, '__init__.py')):
+                if not exists(path_join(package_dir, '__init__.pyc')):
+                    continue
 
-        for meta_type in pgetattr(product, 'meta_types', ()):
-            if product_name=='OFSP': meta_types.insert(0,meta_type)
-            else: meta_types.append(meta_type)
+            product=__import__("Products.%s" % product_name,
+                               global_dict, global_dict, silly)
+
+            misc_=pgetattr(product, 'misc_', {})
+            if misc_:
+                if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
+                Application.misc_.__dict__[product_name]=misc_
+
+            # Set up dynamic project information.
+            productObject=App.Product.initializeProduct(
+                product, product_name, package_dir, app)
+
+            pgetattr(product, 'initialize', lambda context: None)(
+                ProductContext(productObject, app, product))
+
+            permissions={}
+            new_permissions={}
+            for p in pgetattr(product, '__ac_permissions__', ()):
+                permission, names, default = (tuple(p)+('Manager',))[:3]
+                if names:
+                    for name in names:
+                        permissions[name]=permission
+
+                elif not folder_permissions.has_key(permission):
+                    new_permissions[permission]=()
+
+            for meta_type in pgetattr(product, 'meta_types', ()):
+                if product_name=='OFSP': meta_types.insert(0,meta_type)
+                else: meta_types.append(meta_type)
 
 
-        for name,method in pgetattr(product, 'methods', {}).items():
-            if not hasattr(Folder, name):
-                setattr(Folder, name, method)
-                if name[-9:]!='__roles__': # not Just setting roles
-                    if (permissions.has_key(name) and
-                        not folder_permissions.has_key(permissions[name])):
-                        permission=permissions[name]
-                        if new_permissions.has_key(permission):
-                            new_permissions[permission].append(name)
-                        else:
-                            new_permissions[permission]=[name]
-        
-        if new_permissions:
-            new_permissions=new_permissions.items()
-            for permission, names in new_permissions:
-                folder_permissions[permission]=names
-            new_permissions.sort()
-            Folder.__dict__['__ac_permissions__']=tuple(
-                list(Folder.__ac_permissions__)+new_permissions)
+            for name,method in pgetattr(product, 'methods', {}).items():
+                if not hasattr(Folder, name):
+                    setattr(Folder, name, method)
+                    if name[-9:]!='__roles__': # not Just setting roles
+                        if (permissions.has_key(name) and
+                            not folder_permissions.has_key(permissions[name])):
+                            permission=permissions[name]
+                            if new_permissions.has_key(permission):
+                                new_permissions[permission].append(name)
+                            else:
+                                new_permissions[permission]=[name]
 
-        get_transaction().note('Installed product '+product_name)
-        get_transaction().commit()
+            if new_permissions:
+                new_permissions=new_permissions.items()
+                for permission, names in new_permissions:
+                    folder_permissions[permission]=names
+                new_permissions.sort()
+                Folder.__dict__['__ac_permissions__']=tuple(
+                    list(Folder.__ac_permissions__)+new_permissions)
+
+            get_transaction().note('Installed product '+product_name)
+            get_transaction().commit()
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
 
