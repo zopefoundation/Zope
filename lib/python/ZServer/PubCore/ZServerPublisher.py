@@ -13,14 +13,12 @@
 from ZPublisher import publish_module
 
 class ZServerPublisher:
+    """ A class which publishes a module over and over """
     def __init__(self, accept):
         while 1:
             try:
-                name, request, response=accept()
-                publish_module(
-                    name,
-                    request=request,
-                    response=response)
+                name, request, response = accept()
+                publish_module(name, request=request, response=response)
             finally:
                 response._finish()
-                request=response=None
+                request = response = None
