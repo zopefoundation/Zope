@@ -87,7 +87,7 @@ values and click "Save Changes".
       size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
       <dtml-in "_[select_variable]">
          <option<dtml-if 
-         "_['sequence-item'] in getProperty(id)"> SELECTED</dtml-if
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"> SELECTED</dtml-if
          >><dtml-var sequence-item html_quote></option>
       </dtml-in>
     </select>
