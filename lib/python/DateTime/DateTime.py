@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -387,7 +387,7 @@ class DateTime:
 
         The module function Timezones() will return a list of the 
         timezones recognized by the DateTime module. Recognition of 
-        timezone names is case-insensitive."""
+        timezone names is case-insensitive.""" #'
 
 	d=t=s=None
 	ac=len(args)
@@ -707,11 +707,19 @@ class DateTime:
 	elif not month and ints[2] > 31:
 	    month=ints[0]
 	    day=ints[1]
+            year=ints[2]
 	    del ints[:3]
 	else:
 	    raise self.SyntaxError, string
 
-	if not month or month > 12: raise self.SyntaxError, string
+
+        if not month: raise SyntaxError,string
+	if month > 12:
+            # using euro format?
+            tmp=month
+            month=day
+            day=tmp
+
 	if year<100: year=year+CENTURY
 	leap = year%4==0 and (year%100!=0 or year%400==0)
 	if not day or day > self._month_len[leap][month]:
