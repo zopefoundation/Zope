@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.15 2002/03/21 15:48:54 htrd Exp $
+  $Id: cAccessControl.c,v 1.16 2002/04/12 15:21:47 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1519,13 +1519,13 @@ static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args) {
 
 static void PermissionRole_dealloc(PermissionRole *self) {
 
-	Py_DECREF(self->__name__);
+	Py_XDECREF(self->__name__);
 
-	Py_DECREF(self->_p);
+	Py_XDECREF(self->_p);
 
-	Py_DECREF(self->__roles__);
+	Py_XDECREF(self->__roles__);
 
-	Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
+	Py_XDECREF(self->ob_type);	/* Extensionclass init incref'd */
 
 	PyMem_DEL(self);  
 }
@@ -2097,7 +2097,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.15 2002/03/21 15:48:54 htrd Exp $\n");
+		"$Id: cAccessControl.c,v 1.16 2002/04/12 15:21:47 matt Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
