@@ -13,9 +13,9 @@
 ##############################################################################
 """Zope user bootstrap system"""
 
-__version__='$Revision: 1.14 $ '[11:-2]
+__version__='$Revision: 1.15 $ '[11:-2]
 
-import sys,  sha, binascii, whrandom, getopt, getpass, os
+import sys,  sha, binascii, random, getopt, getpass, os
 
 try:
     from crypt import crypt
@@ -27,7 +27,7 @@ def generate_salt():
     salt_choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     "abcdefghijklmnopqrstuvwxyz"
                     "0123456789./")
-    return whrandom.choice(salt_choices)+whrandom.choice(salt_choices)
+    return random.choice(salt_choices)+random.choice(salt_choices)
 
 def generate_passwd(password, encoding):
     encoding=encoding.upper()
@@ -41,14 +41,13 @@ def generate_passwd(password, encoding):
     return pw
 
 def write_generated_password(home, ac_path, username):
-    import whrandom
     pw_choices = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                   "abcdefghijklmnopqrstuvwxyz"
                   "0123456789!")
     acfile=open(ac_path, 'w')
     pw = ''
     for i in range(8):
-        pw = pw + whrandom.choice(pw_choices)
+        pw = pw + random.choice(pw_choices)
     acfile.write('%s:%s' % (username, generate_passwd(pw, 'SHA')))
     acfile.close()
     os.system('chmod 644 %s' % ac_path)
