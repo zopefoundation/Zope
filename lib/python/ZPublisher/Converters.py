@@ -82,10 +82,11 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import regex
 from string import atoi, atol, atof, join, split, strip
+from types import ListType, TupleType
 
 def field2string(v):
     if hasattr(v,'read'): v=v.read()
@@ -114,6 +115,8 @@ def field2required(v):
     raise ValueError, 'No input for required field<p>'
 
 def field2int(v):
+    if type(v) in (ListType, TupleType):
+        return map(field2int, v)
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
@@ -121,6 +124,8 @@ def field2int(v):
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2float(v):
+    if type(v) in (ListType, TupleType):
+        return map(field2float, v)
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
@@ -129,6 +134,8 @@ def field2float(v):
         'Empty entry when <strong>floating-point number</strong> expected')
 
 def field2long(v):
+    if type(v) in (ListType, TupleType):
+        return map(field2long, v)
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
@@ -149,23 +156,16 @@ def field2date(v):
     else: v=str(v)
     return DateTime(v)
 
-def field2date(v):
-    from DateTime import DateTime
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    return DateTime(v)
-
 def field2boolean(v):
     return v
 
-ListType=type([])
 
 def field2list(v):
     if type(v) is not ListType: v=[v]
     return v
 
 def field2tuple(v):
-    if type(v) is not ListType: v=(v,)
+    if type(v) is not TupleType: v=(v,)
     return tuple(v)
 
 type_converters = {
