@@ -512,7 +512,7 @@ exec "import "+MODULE in {}
 
 
 import zLOG
-from Zope import ZLogger
+import ZLogger
 
 if READ_ONLY:
     zLOG._stupid_dest=sys.stderr
