@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.141 $'[11:-2]
+__version__='$Revision: 1.142 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -55,7 +55,8 @@ def manage_addFile(self,id,file='',title='',precondition='', content_type='',
 
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
-    self._getOb(id).manage_upload(file)
+    if file:
+        self._getOb(id).manage_upload(file)
     if content_type:
         self._getOb(id).content_type=content_type
 
@@ -574,7 +575,8 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
     # Now we "upload" the data.  By doing this in two steps, we
     # can use a database trick to make the upload more efficient.
-    self._getOb(id).manage_upload(file)
+    if file:
+        self._getOb(id).manage_upload(file)
     if content_type:
         self._getOb(id).content_type=content_type
 
