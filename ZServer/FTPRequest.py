@@ -117,12 +117,12 @@ class FTPRequest(HTTPRequest):
                 self.other[k]=v
    
     def retry(self):
+        self.retry_count=self.retry_count+1
         r=self.__class__(stdin=self.stdin,
                          environ=self._orig_env,
                          response=self.response.retry(),
                          channel=self, # For my cookies
                          )
-        r._held=self._held
         return r
     
     def _get_env(self, path, command, channel, stdin):

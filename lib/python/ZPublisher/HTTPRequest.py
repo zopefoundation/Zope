@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -171,14 +171,14 @@ class HTTPRequest(BaseRequest):
     args=()
 
     retry_max_count=3
-    def supports_retry(self): return self.retry_count < self.retry_max_coun
+    def supports_retry(self): return self.retry_count < self.retry_max_count
 
     def retry(self):
+        self.retry_count=self.retry_count+1
         r=self.__class__(stdin=self.stdin,
                          environ=self._orig_env,
                          response=self.response.retry()
                          )
-        r._held=self._held
         return r
 
     def __init__(self, stdin, environ, response, clean=0):
