@@ -5,6 +5,2573 @@ Zope History
   in the file CHANGES.txt.
 
 
+  Zope 2.7.5 RC 2
+
+    Bugs fixed
+
+      - Renamed utility methods in zdaemon/tests/test_zdrun.py to avoid
+        a clash with unittest.TestCase methods (the clash surfaced only
+        under Python 2.4.1c1, due to subtle changes in MRO behavior).
+
+      - Removed redundant 'getIndexSourceNames' implementation in
+        lib/python/Products/PluginIndexes/common/UnIndex.py.
+
+      - Hardened a locale-sensitive unit test in
+        Zope/Startup/tests/testStarter.py against platform-specific
+        return type of 'getlocale'.
+
+      - Updated doc/INSTALL.txt to match currently preferred and
+        acceptable Python versions.
+
+      - Use 'del' instead of 'list.remove()' in
+        Catalog.delColumn(). There can be only one column with the
+        same name, and it could potentially break catalog metadata as
+        remove() may remove more than one element from the list if
+        they have the same value. Also, we already have the list index
+        we are interested in deleting so it doesn't make sense to look
+        up the value and call 'list.remove()' on it.
+
+  Zope 2.7.5 RC 1 (2005/03/09)
+
+    Bugs fixed
+
+      - Collector #1721: Fixed handling of the 'extra' parameter in UnIndex.py
+
+
+  Zope 2.7.5 beta 1 (2005/02/28)
+
+    Features added
+ 
+      - Collector #533: ZMI Find now searches in text Files.
+
+    Bugs fixed
+
+      - Collector #1705: CopySource._postCopy is never called
+
+      - guarded_getattr: Restored ability to aquire "through" unprotected
+        contexts, broken through overzealous cleanup in Zope 2.7.3.
+
+      - ZEO/zrpc: Fixed several thread and asyncore races in ZEO's
+        connection dance.
+
+      - Collector #1683: fixing batching in the DA "Test" tab
+
+      - Got rid of import order dependencies in PageTemplates, TAL, and
+        ZTUtils. This also means that the Z2 implementation of PageTemplates
+        no longer works outside of Zope.
+
+      - Collector #1648: Fix bug in Medusa FTP
+
+      - OFS.OrderSupport: Added tpValues method.
+        Trees like the ZMI menu did not show subfolders in the defined order.
+        (http://collector.zope.org/Zope/1339)
+
+      - The IStreamIterator interface had inappropriate "self" arguments
+        in its method definitions.
+
+      - Clarified implementation of getUserById. The method should return
+        None if the requested user does not exist.
+
+      - Collector #1667: allow 'max-number-of-session-objects 0' to have
+        the same effect as setting the value via the web interface (i.e.,
+        make the number of session objects unlimited, rather than falling
+        back to the default).
+
+      - Collector #1661: make 'python-check-interval' setting in zope.conf
+        actually work as documented.  This setting allows for important
+        tuning opportunities for production Zope servers.
+
+      - Collector #1657: Don't break host-based virtual hosting when
+        purging an HTTP accelerator cache.
+
+      - Collector: #1651: removed compiler warning 
+
+  Zope 2.7.4 final (2005/01/15)
+
+    Bugs fixed
+
+      - Restored test.py to the version shipping with Zope 2.7.3.
+
+      - Collector #1655: fixed severe memory leak in TemporaryStorage
+
+      - Collector #1656: Several iterator operations were broken,
+        particularly enumerate().
+
+      - DTML Methods were not interoperable with the new filestream_iterator
+        and caches based on it (FileCacheManager).
+
+
+  Zope 2.7.4 RC 2 (2005/01/07)
+
+    Bugs fixed
+      
+      - Collector #1407: fixed XML escaping problem introduced in 2.7.4 b1
+
+      - moved Docutils back to lib/python/docutils
+
+      - removed sitecustomize.py file introduced in 2.7.4b1
+
+      - updated Docutils to V 0.3.7
+
+  Zope 2.7.4 RC 1 (2004/12/23)
+
+    Bugs fixed
+
+      - Added a workaround that allows MSIE's (buggy) WebFolders client
+        to display modified and created dates properly for Zope objects.
+
+      - Running Zope as a service under Windows did not work.
+
+      - Collector #1626: webdav.NullResource raised Forbidden as a
+        last resort for any exception type, which masked genuine
+        errors and also caused problems for clients legitimiately expecting
+        an Unauthorized response.  Fixed to raise Unauthorized if
+        we get a CopyError, and let everything else pass through.
+
+      - Collector #1151: HTTP compression was broken on error pages
+
+  Zope 2.7.4 beta 2 (2004/12/15)
+
+    Bugs fixed
+
+      - Collector #1617: fixed unchecked buffer accesses and unchecked 
+        Python API calls in cAccessControl.c (thanks to Tim Peters)
+
+  Zope 2.7.4 beta 1 (2004/12/02)
+
+    Features added
+
+      - RAMCacheManager: Allow invalidation of a cache entry from the
+        Statistics view in the ZMI
+
+      - Collector #1454/OFS.File: Accept content types ending with
+        "javascript" as editable through the File edit form, just like
+        text/<foo> types
+
+    Bugs fixed
+
+      - The REQUEST now contains a new entry ACTUAL_URL which contains the
+        full URL without query string as it appears within the location bar of
+        the browser. The key has been added to provide a single key that is 
+        available for vhosted and non-vhosted installations.
+
+      - Collector #1605: VHM did not quote URLs
+
+      - webdav.NullResource: doing a PUT of a large file could
+        potentially bring your box to a halt, because the whole file
+        would be read into memory just to detect the
+        content-type. Added a 'large-file-threshold' directive to
+        control the boundary where a file gets read completely into
+        memory. The same directive controls the creation of a tmpfile
+        vs. reading the whole request into memory on ZServer as well.
+
+      - The 'connection-limit' directive was not taking effect as it
+        modified a module-level global that was already bound to the
+        functions that used it by the time the directive took
+        effect. Modified the functions so that they import the
+        variable in the function body instead of at the top of the
+        module.
+
+      - webdav.Resource: during COPY, manage_afterClone was called way
+        too early, thus the object wasn't bound to the database and
+        couldn't find a context. Changed to behave the same way as
+        CopySupport.
+
+      - RAMCacheManager: opimized performance by using cPickle instead
+        of pickle and by using the highest pickle protocol available
+        instead of using ASCII pickles (patch by Dieter Maurer)
+
+      - Collector #631: Image URLs in StructuredText containing port
+        numbers were not rendered correctly
+
+      - Collector #1003: added new 'http-header-max-length' directive
+        to zope.conf to specific the maximum length of a HTTP request
+        header before it is considered as a possible DoS attack and
+        discarded.
+
+      - bin/zopectl test now uses os.execv, instead os os.system,
+        so that options with characters that needs shell quoting
+        doesn't break the command.
+
+      - Updated doc/UNITTEST.txt and lib/python/Testing/README.txt to
+        reflect progress made since UNITTEST.txt was originally written.
+
+      - Collector #1498: Don't choke on malformed cookies. Cookies of
+        the form "foo=bar; hmm; baz=gee" will give an empty value for
+        'hmm' instead of silently discarding it and the rest of the
+        string. (Thanks to 'sirilyan' for the patch.)
+
+      - Collector #945: Couldn't programmatically add "empty" PythonScripts.
+
+      - Collector #1219: XML export is working again (Thanks Tres)
+
+      - Collector #1510: Allow encoding of application/xhtml+xml pages
+        according to the charset specified in the Content-Type header
+        (thanks to Jacek Konieczny for the patch).
+
+      - Collector #1599: made sqltest work with unicode strings (thanks
+        to Peter Sabaini for the patch).
+
+      - zopectl: fixed handling of child processes (patch by Dieter Maurer)
+
+      - Collector #1593: fixed dumb _get_id() implementation in
+        OFS.CopySupport that produced copy_of_copy_of....files (thanks
+        to Alexandre Boeglin for the patch).
+
+      - Collector #1450: files in utilities/ZODBTools are now installed
+        during the installation process in the 'bin' directory
+
+      - Collector #1371: added new 'cgi-maxlen' directive to zope.conf
+        to limit the amount of form data being processed by Zope
+        to prevent DoS attacks
+
+      - Collector #1407: changed WebDAV display name for objects
+        to title_or_id()
+
+      - the 'trusted-proxy' directive in zope.conf now also accepts
+        hostnames instead of IP addresses only (patch by Dieter Maurer)
+
+      - Fixed test.py to not over-resolve symbolic links. Needed to run
+        tests when the Products directory and a product are symlinks.
+
+      - Collector #1583/ZReST: Fixed handling of the title attribute
+        for non-ascii characters.
+
+      - Collector #1577: Fixed cryptic error message in ZPublisher if a
+        non-ASCII string is passed to a date, int, long or float property.
+
+      - Collector #1576: Fixed Z Search Interface to use proper HTML.
+
+      - Collector #1569/DateTime: Added a new ISO8601-method that will
+        return correctly formatted ISO 8601-representations to augment
+        the ISO method which isn't compliant with ISO 8601.
+
+      - Collector #1127: strftime did not take timezone into account.
+
+      - ZPublisher: changed some hardcoded 'latin1' arguments to 'iso-8859-15'
+        since latin1 is obsolete.
+
+      - Collector #1566: Installation of Zope on some older Solaris versions
+        could fail due to a broken "echo" implementation causing the
+        creation of a borked version.txt file.
+
+      - Collector #934: Image and File objects are now always internally
+        split into small chunks even when initialized from a string.
+
+      - docutils: updated to V 0.3.5. The Zope core now contains a full copy
+        of the docutils package except some GPLed files which can not be
+        included with the Zope distribution due to license constraints on
+        cvs.zope.org.
+
+      - docutils: moved from lib/python/docutils to
+        lib/python/third_party/docutils
+
+      - Collector #1557/OFS.Image: Introducing new 'alt' property. The 'alt'
+        attribute is no longer taken from the 'title' property but from the new
+       'alt' property.  The border="0" attribute is no longer part of the HTML
+        output except specified otherwise.
+
+      - Set a default value of '' for the new 'alt' property as not to
+        break existing content.
+
+      - Collector #1511: made IPCServer show up in the Control Panel under
+        "Network Services"
+
+      - Collector #1443: Applied patch by Simon Eisenmann that reimplements
+        the XML parser used in WebDAV fixing a memory leak.
+
+      - Always unescape element contents on webdav.xmltools
+
+      - Use saxutils to escape/unescape values for/from
+        PROPFIND/PROPPATCH.
+
+      - Make OFS.PropertySheet use the escaping function from
+        webdav.xmltools.
+
+      - Escape/unescape &quot; and &apos;
+
+      - Don't escape properties stored as XML (ie: having a
+        __xml_attrs__ metadata set by PROPPATCH) when building a
+        PROPFIND response.
+
+      - If a PROPPATCH element value contains only a CDATA section,
+        store the CDATA contents only.
+
+      - Catch AttributeErrors and KeyErrors raised from
+        __bobo_traverse__ and convert them to NotFound. In debug mode
+        a more verbose error message is issued, the same way it's done
+        on attribute/item traversal.
+
+  Zope 2.7.3 final (2004/10/24)
+
+    Bugs fixed
+
+
+  Zope 2.7.3 beta 2 (2004/10/11)
+
+    Bugs fixed
+
+     - PageTemplates/TAL: Enabled i18n namespace for XML mode.
+       http://collector.zope.org/Zope/1101
+
+     - Re-added the DAV header (Collector #1518) which had been removed
+       in beta 1.
+
+     - Added a "reset" button to the TOC management page and a reset
+       argument to the associated target method.  This allows users
+       to decide to ditch the contents of their TOC and "start over".
+       (Useful for people having problems with upgrades from older
+       Zope versions).
+
+     - Make TransientObjectContainer __setstate__ actually work.
+       Upgrades should be flawless from Zope 2.7.0, 2.7.1, and 2.7.2.
+       Upgrades from 2.6.3 will work, but data may not be retained.
+
+     - Changed default resolution for new TransientObjectContainers to 60
+       seconds (this is helpful to prevent certain classes of conflicts,
+       see http://www.plope.com/Members/dunny/conflicts for more info).
+
+  Zope 2.7.3 beta 1 (2004/09/26)
+
+    Features added
+
+     - Made test.py follow symbolic links on POSIX systems.
+
+     - added a set of unit tests for the SiteErrorLog.
+
+     - Add a knob (not exposed to UI) to TransientObjectContainer to
+       turn off "inband" housekeeping Housekeeping can now optionally
+       be done using an external scheduling facility by calling the
+       "housekeep" method regularly.
+
+    Bugs fixed
+
+     - Collector #1425: correct example for trace logger in zope.conf.
+
+     - Collector #1457: ZCTextIndex's QueryError and ParseError
+       are now available for import from untrusted code.
+
+     - Collector #1491: talgettext.py did not create a proper header
+       for the generated .pot file if multiple pagetemplate files
+       were processed.
+
+     - A composite of sessioning/ZODB/publisher bugfixes should help
+       various KeyError/SystemError symptoms when using Plone / PTS or
+       under very high sessioning load See
+       http://zope.org/Collectors/Zope/1401
+       and http://collector.zope.org/Zope/789 .
+
+     - TransientObject conflict resolver could potentially fail; when
+       it failed, the conflict resolution machinery could resolve the
+       TransientObject to None.  (never reported)
+
+     - Collector #1477: TaintedString.strip() now implements the
+       same signature as str.strip()
+
+     - Collector 789:  Add Michael Dunstan's "explicit abort after error
+       propagates into publisher" patch as documented in
+       http://zope.org/Collectors/Zope/789 and as required by recent changes
+       to ZODB which prevent a connection from being cleanly closed if
+       modifications are extant in that connection.  (Reports exist of
+       improved sessioning behavior as a result also.)
+
+     - If an object implementing the IStreamIterator interface
+       (ala filestream_iterator) was returned by Zope to the publisher
+       and for whatever reason, the ZServer response object was
+       leaked, a reference to the stream iterator was kept around, which
+       could result in a symptom of many files being held open by Zope
+       after a large number of response objects had leaked.  The
+       response now explicitly removes the reference that it has to
+       the stream producer after response output, sealing this variety
+       of leak.
+
+     - OFS: Fixed 'Last Modified' reverse sorting in main.dtml.
+
+     - TAL: tal:on-error does not trap ConflictError anymore.
+
+     - OFS.CopySupport: Enforced "Delete objects" permission during
+       move (CMF Collector #259).
+
+     - Removed DWIM'y attempt to filter acquired-but-not-aceessible
+       results from 'guarded_getattr'.
+
+     - Collector #1267: applied patch to fix segmentation faults on
+       x86_64 systems
+
+     - ZReST: the charset used in the rendered HTML was not set to the
+       corresponding output_encoding property of the ZReST instance. In addition
+       changing the encodings through the Properties tab did not re-render
+       the HTML.
+
+     - Collector #1234: an exception triple passed to LOG() was not propagated
+       properly to the logging module of Python
+
+     - Python 2.3.4 is now the recommended Python version, Python 2.3.3
+       is still a valid choice
+
+     - Collector #1441: Removed headers introduced to make Microsoft
+       webfolders and office apps happy, since they make a lot of
+       standards-compliant things unhappy AND they trick MS Office
+       into trying to edit office files stored in Zope via WebDAV even
+       when the user isn't allowed to edit them and is only trying to
+       download them.
+
+       If you NEED this functionality then uncomment the lines
+       prefixed with:
+
+       # XXMSXX
+
+       ...in the following files:
+
+       lib/python/webdav/Resource.py
+       lib/python/webdav/Collection.py
+       lib/python/ZServer/HTTPResponse.py
+
+       AND file an issue in http://www.zope.org/Collectors/Zope since
+       these headers are getting totally deleted in Zope 2.8 unless
+       you do!
+
+     - Collector #1445: Fixed bad interaction between -p and -v(v)
+       options to test.py that resulted in exceptions being printed
+       when they shouldn't have been.
+
+     - Collector #1370: Fixed html generated by Z Search interface.
+
+     - Collector #729: manage_main doesn't display the correct page title
+       most of the time. It is not completely fixed but using title_or_id
+       makes folders display the correct id as a fallback.
+
+     - Collector #1295: Fixed minor niglet with the Elvis tutorial.
+
+     - Collector #1436: applied patch to fix a memory leak in
+       cAccessControl.
+
+     - Collector #1435: fixed mis-spelled variable name in zopeservice.py
+
+     - Collector #1431: fix in initgroups.c for NetBSD
+
+     - Added Stefan Holek's changes to test.py that allow for tests to be
+       run from an instance
+
+     - added "version.txt" to setup.py to avoid untrue "unreleased version"
+       messages within the control panel
+
+  Zope 2.7.2 final (2004/07/21)
+
+    Bugs fixed
+
+     - ZEO/ClientStorage: fixed check for temporary cache files (patch
+       by Dieter Maurer)
+
+  Zope 2.7.2 RC1 (2004/07/14)
+
+    Bugs fixed
+
+     - Collector #1403: Transience._getCallback raised NameError when
+       a path naming an onAdd or onDelete method pointed to a nonexistent
+       object.
+
+     - Collector #1384: Fixed LazyCat length calculation after all contained
+       sequences have been fully accessed.
+
+     - Collector #1386: Fixed ISO 1386, making the colon in the timezone
+       offset optional.
+
+     - Collector #1392: ExternalMethod ignored management_page_charset
+
+     - Fix for issue 233 in the Zope 3 collector. This corresponds to the
+       Hotfix_2004-07-13 product.
+
+
+  Zope 2.7.1 final (2004/06/21)
+
+    Bugs fixed
+
+     - reST support has been broken due to a failed import
+
+  Zope 2.7.1 beta2 (2004/06/12)
+
+    Bugs fixed
+
+     - Zope can now be embedded in C/C++ without exceptions being raised
+       in zdoptions.
+
+     - Sessioning machinery "delete notifier" could in many cases be called
+       much later than the expiration of the actual session data object
+       it was called upon.  It is now guaranteed to be called on the first
+       exercising of the session machinery after object expiration +
+       'session-resolution-seconds'.
+
+     - Collector #1293: missing 'address' parameters within one of the server
+       sections raise an exception.
+
+     - Collector #1265: Fixed handling of orphans in ZTUtil.Batch
+
+     - Collector #1213: Fixed wrong labels of cache parameters
+
+     - Collector #596: Page Templates can now be added via
+       ZPublisher.Client or any other situation in which
+       REQUEST is passed without a file and a text arg is provided.
+
+    Features Added
+
+     - Collector #1317: FindSupport.ZopeFind now searches
+       in SearchableText() if available (i.e. CMF content)
+
+
+  Zope 2.7.1 beta1 (2004/05/23)
+
+    Features Added
+
+     - Collector #1233: Scripts written before the new configuration
+       behavior in Zope 2.7 used to be able to simply do "import Zope;
+       app = Zope.app()" to get a hold of the root Zope object.  With
+       the introduction of the new configuration machinery, an extra
+       step needed to be taken, so the equivalent becomes "import Zope;
+       Zope.configure('/path/to/configfile'); app=Zope.app()".
+       This feature "fixes" that by allowing an environment variable
+       "ZOPE_CONFIG" to be set.  If the ZOPE_CONFIG envvar is set,
+       the "Zope.configure(..)" line can be omitted, as the startup
+       process will take the vaule of ZOPE_CONFIG as the config file
+       name.
+
+     - New top-level configuration file directive:
+       'session-esolution-seconds'.  This represents an integer value
+       specifying the number of seconds to be used as the "timeout resolution"
+       of the '/temp_folder/session_data' transient object container in Zope's
+       object database.
+
+     - New knob for transient object containers:  'timeout resolution (in
+       seconds).  Setting this higher than the default (20 seconds)
+       allows the transience machinery to do fewer "writes" at
+       the expense of causing items to time out later than the "Data
+       object timeout value" by a factor of (at most) this many
+       seconds. This number must divide evenly into the number of
+       timeout seconds ("Data object timeout value" * 60) and cannot
+       be set higher than the timeout value in seconds.
+
+     - New "transience" implementation which is more stable under high
+       load.  This fixes some sessioning problems.  Much gratitude to
+       Michael Dunstan for providing a function testing rig for sessioning
+       that allowed for the reproduction of various failures at will!
+
+     - Recataloging a ZCatalog instance is now more safe and predictable.
+       Indexing errors are catched and logged. In addition the progress of the
+       recataloging operation is logged. So one can see how much documents are
+       already processed and how much documents are remaining.
+
+     - AccessControl/Role.py: permission_settings() has a new optional
+       parameter 'permission' to retrieve the settings for a specific
+       permission.
+
+     - OFS.OrderSupport: Added optional 'subset_ids' argument to move methods.
+       This is useful in combination with views that filter out some hidden
+       sub-objects.
+
+     - Zope application code can now return a "stream iterator" object
+       to ZPublisher.  If a stream iterator is returned from
+       application code, it will be unwound by Zope's networking code
+       and its data will be rendered as the body of the response to a
+       client.  An example:
+
+          def method_returning_a_stream_iterator(self):
+	      import os, stat
+              from ZPublisher.Iterators import filestream_iterator
+	      path = '/var/zope/Z2.log'
+              size = os.stat(path)[stat.ST_SIZE]
+	      self.REQUEST.RESPONSE.setHeader('Content-Length', size)
+              return filestream_iterator('/var/zope/Z2.log', 'r')
+
+       'filestream_iterator' is a class which implements the
+       "IStreamIterator" interface, which just signifies a "normal"
+       Python iterator that is guaranteed to iterate over a stream of
+       bytes.  This interface is defined within the
+       ZPublisher.Iterators module.  Any instance of a class which
+       implements this interface may be returned to ZPublisher.
+
+       Before a stream iterator is returned from Zope code the
+       'Content-Length' header of the response *must* be set.
+
+       The major use for this feature is to allow application code to
+       serve static files from the filesystem without first needing to
+       read all file data into memory or explicitly chunking data from
+       static files out via 'RESPONSE.write' (both of which are slower
+       than just letting medusa itself handle the output via a native
+       producer).
+
+       http://dev.zope.org/Wikis/DevSite/Proposals/FasterStaticContentServing
+       has more information.
+
+     - OFS.Image's index_html method now calls its own ZCacheable_set
+       method with the single argument None.  Existing cache managers
+       such as HTTPAcceleratedCacheManager and RAMCacheManager will do
+       nothing with this value, but other cache managers are free to
+       inspect the caller and cache its data.
+
+     - OFS.Image's index_html method now attempts to retrieve data
+       from a cache manager via its own ZCacheable_get method.
+       Previously, this method did call in to ZCacheable_get, but did
+       nothing with the data that it retrieved (under the assumption
+       that there are no cache manager implementations which could
+       handle large file data).  Existing cache managers will return a
+       null value from ZCacheable_get, but future cache managers will
+       be free to return a stream iterator, which can be returned
+       directly to the publisher.  For a sample implementation of such
+       a cache manager, see cvs.zope.org:/Products/FileCacheManager.
+
+     - OFS.Image's manage_FTPget now attempts to get data from a cache
+       manager before sending back data out of the database.
+
+     - New restructured text implementation with an updated docutils
+       package v0.3.4.
+
+     - New zope.conf directive called rest-header-level with a default
+       value of 3. It's setting the initial header level for rest like
+       structured-text-header-level for stx.
+
+     - Collector #1233: Introducing a new environment variable ZOPE_CONFIG
+       has can be used to specify the location of the zope.conf file for
+       scripts importing the 'Zope' module directly. In earlier versions
+       it has been necessary to call Zope.configure explict.
+
+       Example::
+
+          export ZOPE_CONFIG=$INSTANCE_HOME/etc/zope.conf
+
+          From  Python script:
+
+              import Zope
+              # Zope.configure('etc/zope.conf')  <-- no longer needed
+              app = Zope.app()
+
+     - The testrunner.py has been removed since it is replaced with the
+       test.py script.
+
+
+    Bugs Fixed
+
+     - Collector #789: Zope's transaction behavior flawed.  Historically,
+       if an error bubbled up to Zope's publishing machinery, execution
+       of the error handler code would be performed in a context
+       that was essentially "between" two transactions.  This caused
+       problems for applications (like sessioning) which want to be able
+       to write to the database during an error message.  That need may sound
+       insane, but since the transaction is aborted after the error handler
+       has executed, it has the same effect as the "old" behavior inasmuch
+       as no inconsistent state will ever be committed to the database
+       as a result of this behavior unless someone really wants to shoot
+       themselves by calling "get_transaction().commit()" during error
+       handling code.
+
+     - TransientObjects (session data objects) may have lost state at
+       ZODB commit time after they were mutated via their __setitem__,
+       __delitem__, update, or clear methods because they did not
+       signal to the ZODB persistence machinery that they had been
+       modified.
+
+
+     - Collector #852: Bug in the error reporting of some failure
+       cases in transactions meant that the cause of the failure was
+       not logged.
+
+     - Collector #1345: AcceleratedHTTPCacheManager now sends the
+       Last-Modified header.
+
+     - Fixed inconsistency between the way MultiHook and traverse() call
+       traversal hooks.
+
+     - Collector #1304: zopectl doesn't allow specification of zdrun
+       effective user.  zopectl now supports the -u switch which
+       tells it to setuid to the specified username/uid when
+       running the daemon manager.
+
+     - Collector #1341: TemporaryStorage was not usable under a ZEO server.
+
+     - Collector #777: 'HTTPRequest.__str__' was perfectly happy to display
+       the values of password fields;  the issue notes their presence in the
+       error log, but '<dtml-var REQEUEST>' or
+       '<div tal:replace structure request>' had the same effect.
+
+     - Fixed bug in catalog merging which could cause a KeyError when
+       merging results sorted by an index with few keys.
+
+     - Collector #1126: ZPublisher.Converters.field2lines now using
+       splitlines() instead of split('\n').
+
+     - Collector #1322: fixed HTML quoting problem with ZSQL methods
+       in DA.py
+
+     - TemporaryStorage bug fixed where KeyErrors could be reported
+       coming from TemporaryStorage.load (most often reported seen
+       during sessioning usage).
+
+     - Collector #1261:  fspack.py neglected to import the oid_repr()
+       function, but used it to produce error output.
+
+     - Collector #1124: The ZReST product now uses the same reST encoding
+       parameters from zope.conf as the low-level reStructuredText
+       implementation.
+
+     - Collector #1259: removed the "uninstall" target from the Makefile
+       since the uninstall routine could also remove non-Zope files. Because
+       this was to dangerous it has been removed completely.
+
+     - Collector #1299: Fixed bug in sequence.sort()
+
+     - Collector #1309:  The reference counts reported by
+       DB.cacheExtremeDetails() for ghosts were one too small.
+
+     - Collector #1159: Added test for __MACH__ to initgroups.c so the
+       initgroups method becomes available on Mac OS X.
+
+     - Collector #1226: ZTUtils.Tree encoding could include carriage
+       returns, which would result in a malformed cookie HTTP header.
+
+     - Collector #1222: Fixed broken API help by adding missing security
+       declarations in APIHelpTopic.py.
+
+     - Collector #1004: text,token properties were missing in
+       PropertyManager management page.
+
+     - Collector #553: sporadic Zope crashes
+       BTree bucket conflict resolution could segfault if fed three empty
+       buckets.  A BTree had to start out empty, and two overlapping
+       transactions had to each add something to the tree and delete it
+       again before committing, so this was unlikely and hard to reproduce.
+
+     - Collector #1298, ZSQLMethods now have a __traceback_supplement__
+       so they are not rendered in the site error log.
+
+     - Collector #562: pDocumentTemplate is now disconnected because it
+       has been broken for some time. It will no longer get imported
+       if cDocumentTemplate isn't there. It is left only as an implementation
+       reference for the C version.
+
+     - Collector #1300, Fixed persistence of dtml-tree state which was
+       caused by an overly cautious unpickler.
+
+     - Collector #544: Remove Content-Length header for 304 responses from
+       images/files which violated RFC 2616. This was a workaround for a
+       since fixed Apache proxy-cache bug.
+
+     - Display index name on error message when index can't be used as
+       'sort_on'.
+
+     - PUT would fail if the created object had a __len__ = 0 (eg:
+       BTreeFolder2) and fallback to _default_put_factory. Fix by
+       checking if the returned object is None instead.
+
+     - Fix performance bug when calculating the number of objects in a
+       large ZCatalog. This made clicking on the indexes tab of such a
+       catalog extremely expensive.
+
+     - Collector #1289: Allow ZSQL methods to be edited via WebDAV.
+
+     - Collector #1283: DTML Method "standard_error_message" with uppercase
+       html tag
+
+     - WebDAV property values were not being properly escaped on
+       'propstat'.
+
+     - WebDAV 'supportedlock' was not checking if the object did
+       implement the WriteLockInterface before returning it's
+       value.
+
+     - FTP download speed was very slow because the buffer size used
+       for the feeding of data into asyncore was very small.  Increasing
+       it to a "normal" amount sped up FTP downloads by ~ 100X.
+
+     - OFS.Image's insanely long index_html method was factored out
+       into several parts.
+
+     - ZCatalog result/brain methods getPath() and getObject() now properly
+       propagate database conflict errors which should eliminate spurious
+       missing results on busy servers.
+
+     - Collector #1160: HTTPResponse.expireCookie() potentially didn't
+       when an 'expires' keyword argument was passed.
+
+     - reStructuredText ignored the encoding parameters in zope.conf
+
+     - ObjectManager no longer raises string exceptions.
+
+     - Collector #1260: Testing/__init__.py no longer changes the
+       INSTANCE_HOME.
+
+     - App.config.setConfiguration() did not update the legacy source
+       for debug_mode, Globals.DevelopmentMode.
+
+     - Collector #1255:  getWrappedOwner() must return None if the object
+       is owned by the UnownableOwner.
+
+     - Collector 434: meta-refresh on web-based restart was set too low,
+       and would often try to hit the server too soon on slower machines,
+       displaying a 500 error, which caused people to panic.  It was
+       5 seconds, it's now 10.
+
+     - Minor usability tweaks
+
+       * Made selection widgets of FindSupport forms 8 lines high.
+
+     - Stop testrunner.py from recursing into the 'build-base' directory
+       created by setup.py.
+
+     - Pass along command line args to scripts called via "zopectl run".
+       This allows you to use scripts which require arguments using
+       zopectl run.  If you do "zopectl run scriptname.py arg1 arg2", the
+       value of sys.argv within the script will consist of
+       ['scriptname.py', 'arg1', 'arg2'].
+
+     - The security-policy-implementation directive had no effect.
+       It was not possible to switch from the C implementation.
+
+     - DeprecationWarnings in Scripts were converted into mysterious
+       exceptions.  Scripts now gain a '_filepath' attribute, used at
+       runtime as the '__file__' global value.
+
+     - zopectl under daemon mode on MacOS X 10.3, Solaris, Linux 2.6 kernels
+       emitted a traceback upon startup.  This has been fixed.
+       See http://zope.org/Collectors/Zope/1235 for more info.
+
+     - mkzeoinst.py complained if there was already a process listening
+       on the port that the new instance was told to listen on, and would
+       not install instance files until the process was shut down.  This
+       has been fixed.
+
+     - ZPublisher/Test.py publish() function now conveys
+       publisher-specific environment variables on when explicitly
+       specified in the -e env variable.  This change should be very
+       backwards compatable, since it was previously futile to
+       provide these values.  Also, publish_module() now notices when
+       it gets a mapping-like argument named 'form' and puts it on
+       the request - a handy way to get form data to the publisher.
+       This change may be suprising if you're used to having your
+       forms ignored.
+
+       I think these Zope.debug() enhancments are pretty safe, since
+       up to now it's been a tool good for not much more than poking
+       and prodding.  Now it should be more useful for more thorough
+       testing purposes.
+
+     - ObjectManager will now attempt to set Owner local role keyed
+       to the user's id, rather than username.
+
+  Zope 2.7.0 (2004/02/11)
+
+    (no changes from rc2)
+
+  Zope 2.7.0 rc 2 (2004/01/30)
+
+    Bugs Fixed
+
+     - One of the 2.6.3 fixes added a previously missing security check
+       when binding 'context' and 'container' to Python Scripts. Because
+       many existing scripts appear in containers that users cannot access,
+       this caused a lot of unauthorized errors in existing (mostly CMF)
+       sites, since 'container' is bound by default. The fix has been
+       adjusted so that an unauthorized is only raised if the bound name
+       is actually used in a script, making backward compatibility much
+       better.
+
+     - Collector #1154 / # 615: interaction with sessions could cause
+       the security context to be discarded, potentially breaking scripts
+       that depend on proxy roles.
+
+     - Stopped overriding the version of xmlrpclib in the Python
+       standard library.  As of Python 2.3, the standard xmlrpclib now
+       includes all the features Zope needs, plus bugfixes and
+       integration with new Python types.
+
+     - A pre-existing bug that could cause subtly different results
+       when calling the C vs. Python version of validate() through the
+       authorize() method of a UserFolder was found and fixed.
+
+     - An inadvertant change to the behavior of Owned.getOwner was
+       reverted.
+
+     - Fix for bug 1207: errors building in read-only directories.
+
+
+  Zope 2.7.0 rc1 (2004/01/19)
+
+    Bugs Fixed
+
+     - Collector #1182: Functions for handling decisions about
+       unprotected subobjects were not passed "names" when doing
+       unnamed (item) access.  In 2.6.3 we changed access checks when
+       doing item access to pass None rather than the key value when
+       validating access. This broke some existing applications.  We
+       have reverted these changes.
+
+     - Collector #1186:  some globals required to support certain operations
+       in restricted code (e.g., list comprehensions in DTML expressions)
+       were not propagated to all the right places.
+
+     - Collector #1074: Change Scripts' __name__ to None, added unit
+       tests for the effect of __name__ on class definitions and imports.
+
+     - README.txt (and other file-like objects or directories without
+       an __init__.py) on the Products path are no longer considered
+       to be Products.  A warning message is no longer raised about
+       duplicate README.txt "products" upon startup in a default
+       installation.
+
+     - XMLRPC queries failed due to a missing import.
+
+     - Forward-ported Toby's unicode encoding hacks for propertysheets
+       from the 2.6 branch.
+
+     - Some potential refcount issues in cAccessControl.c were fixed.
+
+     - Fixed bug in ZEO server's monitor option.  The -m / --monitor
+       option used to specify the monitor address did not work.
+
+  Zope 2.7.0b4 (2004/01/09)
+
+    Default config file changes
+
+     - Zope no longer creates "default" ZODB databases if none exist in
+       the zope config file.  At least one database (the root database,
+       at mount-point /) must be specified in zope.conf for Zope to start
+       properly now.  In zope.conf files generated by older 2.7 betas,
+       just uncomment the "main" and "temporary" zodb_db definitions
+       in the zope.conf file to be in parity with what would have been
+       generated in 2.7b4 and beyond.
+
+     - Zope no longer configures a "default" set of servers if no
+       servers are specified in the config file.  If no servers are
+       specified in the config file, no servers are started.
+
+    Features added
+
+     - Folder listings in FTP now include "." as well as "..".
+
+     - Using "_usage" parameters in a ZCatalog query is deprecated and
+       logged as DeprecationWarning.
+
+     - Added a "mime-types" configuration value which names a file
+       giving additional MIME type to filename extension mappings.
+       The "mime-types" setting may be given more than once in the
+       configuration file; the files have the same format at the
+       mime.types file distributed with Apache.
+
+     - Added a "warnfilter" config directive which allows for
+       the specification of Python warning filters from within
+       the Zope configuration file.
+
+     - When a VHM is activated, it adds the mapping
+       'VIRTUAL_URL_PARTS': (SERVER_URL, BASEPATH1, virtual_url_path)
+       to the request's 'other' dictionary.  If BASEPATH1 is empty, it
+       is omitted from the tuple.  The joined parts are also added
+       under the key 'VIRTUAL_URL'.  Since the parts are evaluated
+       before traversal continues, they will not reflect modifications
+       to the path during traversal or by the addition of a default
+       method such as 'index_html'.
+
+     - Added VHM regression tests to the SiteAccess product. Also see
+       Collector #809.
+
+     - Updated the interactive Zope tutorial to use ZPT in place of
+       DTML.
+
+     - When installing, symlink the Python used to build Zope into the
+       installed 'bin' directory (unless it has a 'python' already).
+
+     - Python 2.3 builtins 'sum', 'dict', and 'enumerate' exposed to
+       guarded code.
+
+    Bugs fixed
+
+     - Collector #1140: setting the access control implementation from
+       the configuration file didn't work.  The ZOPE_SECURITY_POLICY
+       environment variable is no longer honored.
+
+     - Browsers that do not escape html in query strings such as
+       Internet Explorer 5.5 could potentially send a script tag in a
+       query string to the ZSearch interface for cross-site scripting.
+
+     - FilteredSets (used within TopicIndex) are defined via an expression,
+       which was naievely eval'ed.
+
+     - The ZTUtils SimpleTree decompressed tree state data from the
+       request without checking for final size, which could allow for
+       certain types of DoS attacks.
+
+     - Inadequate security assertions on administrative "find" methods
+       could potentially be abused.
+
+     - Some improper security assertions on DTMLDocument objects could
+       potentially allow access to members that should be protected.
+
+     - Class security was not properly intialized for PythonScripts,
+       potentially allowing access to variables that should be protected.
+       It turned out that most of the security assertions were in fact
+       activated as a side effect of other code, but this fix is still
+       appropriate to ensure that all security declarations are properly
+       applied.
+
+     - The dtml-tree tag used an "eval" of user-supplied data; its
+       efforts to prevent abuse were ineffective.
+
+     - XML-RPC marshalling of class instances used the instance
+       __dict__ to marshal the object, and could include attributes
+       prefixed with an underscore name. These attributes are considered
+       private in Zope and should generally not be disclosed.
+
+     - Some property types were stored in a mutable data type (list) which
+       could potentially allow untrusted code to effect changes on those
+       properties without going through appropriate security checks in
+       particular scenarios.
+
+     - Inadequate type checking could allow unicode values passed to
+       RESPONSE.write() to be passed into deeper layers of asyncore,
+       where an exception would eventually be generated at a level that
+       would cause the Zserver main loop to terminate.
+
+     - The variables bound to page templates and Python scripts such as
+       "context" and "container" were not checked adequately, allowing
+       a script to potentially access those objects without ensuring the
+       necessary permissions on the part of the executing user.
+
+     - Iteration over sequences could in some cases fail to check access
+       to an object obtained from the sequence. Subsequent checks (such
+       as for attributes access) of such an object would still be
+       performed, but it should not have been possible to obtain the
+       object in the first place.
+
+     - List and dictionary instance methods such as the get method of
+       dictionary objects were not security aware and could return an
+       object without checking access to that object. Subsequent checks
+       (such as for attributes access) of such an object would still be
+       performed, but it should not have been possible to obtain the
+       object in the first place.
+
+     - Use of 'import as. in Python scripts could potentially rebind
+       names in ways that could be used to avoid appropriate security
+       checks.
+
+     - A number of newer built-ins (min, max, enumerate, iter, sum)
+       were either unavailable in untrusted code or did not perform
+       adequate security checking.
+
+     - Unpacking via function calls, variable assignment, exception
+       variables and other contexts did not perform adequate security
+       checks, potentially allowing access to objects that should have
+       been protected.
+
+     - DTMLMethods with proxy rights could incorrectly transfer those
+       rights via acquisition when traversing to a parent object.
+
+     - Range searches with KeywordIndexes did not work with record-style
+       query parameters
+
+     - Collector #484: Depending on the server's timezone (east of Greenwich)
+       and os (Windows) _calcTimezoneName didn't work with 1970/01/01 and some
+       other special dates.
+
+     - Item_w__name__ now has a working getId() method
+
+     - PageTemplateFile now using Item_w__name__ mixin, fixing
+       its getId() and absolute_url() methods.
+
+     - PCGI, FCGI, and HTTP servers now check for unicode types in their
+       close methods.
+
+     - Only one VirtualHostMonster is allowed per container.
+
+     - Collector #1133: TreeTag choked on Ids of type long.
+
+     - Collector #1012: A carefully crafted compressed tree state
+       could violate size limit.  Limit is no longer hardcoded.
+
+     - Collector #1139: tal:attributes didn't escape double quotes.
+
+     - Collector #809: Added and documented Traversable.py methods
+       absolute_url_path and virtual_url_path, and reverted earlier
+       change to absolute_url behaviour.
+
+     - Collector #927: Raise a more specific exception than BadRequest
+       when disconnected.
+
+     - Collector #1129: Improper parsing of ISO8601 in DateTime.
+
+     - updated docutils packages (fixes several problems with
+       RestructuredText)
+
+     - Fixed a bug in the ZEO server's getInvalidations() method.  If
+       it had the requested invalidations, it would send all the
+       invalidations in its queue rather than just the requested ones.
+       This didn't affect correctness of the cache, but did cause it
+       to throw out valid data.
+
+  Zope 2.7.0b3 (2003/11/18)
+
+    Features added
+
+     - Add 'parity' method to ZTUtils Iterators.
+
+     - Allow untrusted code to mutate ZPublisher record objects.
+
+     - Changed the ZEO server and control process to work with a
+       single configuration file; this is now the default way to
+       configure these processes.  (It's still possible to use
+       separate configuration files.)  The ZEO configuration file can
+       now include a "runner" section used by the control process and
+       ignored by the ZEO server process itself.  If present, the
+       control process can use the same configuration file.
+
+     - ZConfig was updated to version 2.0.  The new version includes
+       two new ways to perform schema extension; of particular
+       interest in Zope is the ability for a configuration file to
+       "import" new schema components to allow 3rd-party components
+       (such as storages, databases, or logging handlers) to be used.
+
+     - Add an update_metadata keyword argument to instances of a
+       Catalog's catalogObject method and an ZCatalog's catalog_object
+       method.  This argument defaults to true.  If this argument is
+       specified false, the catalog update will not update the
+       metadata for the object.  If the obejct has never been
+       cataloged before, the metadata is always added and the flag has
+       no effect.
+
+     - The standard ProperyManager now includes the same label
+       functionality as the CMF SimpleItemWithProperties object.
+       By adding a 'label' entry to the property definition you
+       can now display a prettier label for the property.
+
+    Bugs fixed
+
+     - Removed all cases where string literals were raised as exceptions,
+       and where named strings caused deprecation messages during unit
+       tests (some named strings may still be hiding in the woodwork).
+
+     - AccessControl.User used a misleading string exeception,
+       'NotImplemented', which shadowed the Python builtin.
+
+     - Collector #1112: logfile reopening didn't work.
+
+     - Collector #1110: Under Python 2.3, some DateIndex tests were failing.
+
+     - Collector #426: Inconsistent, undocumented error() method.
+
+     - Collector #799: Eliminate improper uses of SCRIPT_NAME.
+
+     - Collector #445: Add internal global declaration for Script bindings.
+
+     - Collector #616: Make CONTEXTS available to TALES Python expressions.
+
+     - Collector #1074: Give Script execution context a __name__
+
+     - Collector #1095: Allow TAL paths starting with '/varname' as a
+       preferred spelling for 'CONTEXTS/varname'.
+
+     - Collector #391: Cut and paste now requires delete permissions.
+
+     - Collector #331: Referenses to URL in manage_tabs was changed
+       to REQUEST.URL to prevent accidental overriding.
+
+     - Made the control panel properly reflect the cache-size setting
+       of ZODB's object cache once again.
+
+     - ConflictError was swallowed in ObjectManager by
+       manage_beforeDelete and _delObject. This could break code
+       expecting to do cleanups before deletion.
+
+     - Python 2.3 BooleanType wasn't handled properly by ZTUtils
+       marshalling and ZPublisher's converters.
+
+     - Collector #1065: bin/ scripts didn't export HOME envars.
+
+     - Collector #1034: METAL macros with content-type text/xml raised
+       Unauthorized errors inappropriately.
+
+     - Collector #572: WebDAV GET protected by 'FTP Access' permission.
+       Two new methods have been added to WebDAV resources, "manage_DAVget"
+       and "listDAVObjects". These are now used by WebDAV instead of the
+       earlier "manage_FTPget" and "objectValues". This separates the
+       permissions, and allows WebDAV specific overriding of these methods.
+
+     - Workaround for Collector #1081: The 'title' property for objects
+       derived from OFS.Folder or PropertyManager can now be
+       removed and replaced with a ustring property. This allows the usage
+       of non-ISO-8859-1 or ASCII charsets
+
+     - profile-publisher-file config file directive now works properly
+       (thanks to Andy McKay for the report).
+
+     - Collector #904: Platform specific signals in zdaemon/Daemon.py
+       (fixed by removing the "fossil" module from 2.7 branch and head).
+
+     - Collector #951: DateTime(None) now equal to DateTime()
+
+     - Collector #1056: aq_acquire() ignored the default argument
+
+     - Collector #1087: ZPT: "repeat/item/length" did not work as documented
+       in the Zope Book.
+
+     - Collector #1079: Fixed BaseRequest's traversal loop to avoid some
+       infinite loop scenarios.
+
+     - The View tab in the ZMI in some cases pointed back to
+       manage_workspace.
+
+     - Added the name "context" as a synonym for "here" in page
+       templates, since "context" is better understood.  This unifies
+       the convention in templates, scripts, and Zope 3.
+
+     - Disassociate zeo-client-name from enable-product-installation
+       ZConfig keys.  In the past, if you ran an appserver as ZEO
+       client with a persistent cache, the startup logic prevented
+       products from being loaded.  This was a hack that got baked in
+       via the weird interaction between the FORCE_PRODUCT_LOAD and
+       ZEO_CLIENT environment variables and was carried over into Zope
+       2.7 by inertia.  Now they have nothing to do with each other
+       and can be specified independently.
+
+     - Monitor server would start even if an emergency user didn't exist.
+
+     - Collector #721: Entities in tal:attribute values weren't
+       properly escaped.
+
+     - Collector #851: Traversable.py: A bare try..except shadowed
+       conflict errors
+
+     - Collector #1058: Several fixes for PropertySheets when used
+       outside ZClasses
+
+     - Collector #1053: parseIndexRequest turned empty sequence of search
+       terms into unrestricted search.
+
+     - manage_tabs had a namespace problem with the acquisition of names from
+       the manage_options variable resulting to acquire "target" and "action"
+       from objects above in the hierachy.
+
+     - PathIndex and TopicIndex are now using a counter for the number
+       of indexed objects instead of using a very expensive calculation
+       based on the keys of their indexes.
+
+     - Collector #1039: Whitespace problem in Z2.log fixed
+
+     - Collector #78: Proxy roles not respected when calling
+       manage_pasteObjects.
+
+     - changed some bare try: except:'s in Shared.DC.ZRDB.Connection
+       so that they now log exceptions that occur.
+
+     - Responses from Zope's FTP server could sometimes be HTML!
+
+  Zope 2.7.0b2 (2003/08/26)
+
+    Features added
+
+     - New zopectl feature: adduser.  Instead of using the inituser
+       mechanism, "zopectl adduser <name> <password>" will add a user
+       with the 'Manager' role to your site.  This is useful both
+       interactively and for packagers.
+
+     - New top-level package: nt_svcutils.  This takes the place of
+       the Zope.Startup.nt package to allow for reuse outside of Zope.
+
+     - Renamed the "service file" for a Zope instance under Windows
+       from ntservice.py to zopeservice.py to allow a ZEO server
+       instance to share the same instance home as a Zope instance
+       (the ZEO service file will be called zeoservice.py).
+
+     - The TemporaryStorage module was moved from
+       Products/TemporaryFolder to a new top-level package named
+       tempstorage.
+
+     - Split functionality of mkzopeinstance into two separate
+       modules: mkzopeinstance.py and copyzopeskel.py.
+       copyzopeskel.py can be used directly by packagers to install
+       custom skeleton directories or mkzopeinstance can use a custom
+       skeleton directory via the '--skelsrc' flag.
+
+     - Added 'environment' and 'path' directives to config file directive
+       list.  'environment' is a section which allows the user to specify
+       environment variables within the config file.  'path' allows the
+       user to specify additional directories to insert into sys.path
+       when configuration is processed.
+
+     - Moved temporary storage related files into their own module
+       within lib/python, out of Products.TemporaryStorage.  This was
+       necessary in order to prevent the configuration machinery from
+       prematurely importing some modules that it didn't need to
+       during startup (the transitive set of all imported modules
+       within Products.TemporaryStorage).
+
+     - Add a check to the configurator to ensure that the Python found
+       has an expat parser.
+
+    Bugs fixed
+
+     - The Products directory in an instance home was not
+       automatically added to the Products.__path__ (it needed to be
+       specified manually).  It is now automatically added at instance
+       startup.
+
+     - The Windows runzope.bat file generated by mkzopeinstance from
+       the default skeleton directory now uses python.exe instead of
+       pythonw.exe, so you can actually see output from the Zope
+       process when you run it interactively.
+
+     - backport of TAL fixes from z3
+
+       * i18n and metal interactions
+
+       * fix handling of nested translations with tal:content/replace
+         and i18n:name
+
+     - Collector #1017: reST has been broken
+
+     - backward compatibility for i18n:attributes
+
+       if items are separated with spaces and there are more than two items,
+       all are treated as attributes plus deprecation warning
+
+       if items are separated with spaces and there are two items :
+
+       * i18n:attributes="value msg_id;" (with semicolon) will always be
+         treated as <attr> <msg_id>
+
+       * i18n:attributes="value title" will be treated as <attr> <attr>
+         as long as title exist as attribute (both as static or in
+         tal:attributes) plus deprecation warning
+
+     - deny attributes being both part of tal:attributes
+       and having a messageid in i18n:attributes
+
+     - Fixed failing Zope.Startup tests caused by import of
+       nonexistent Startup.getSchema function.
+
+     - VHM: manage_edit has been broken
+
+     - The container-class keyword to database sections
+       didn't work.
+
+     - ZConfig didn't report a line number and munged capitalization
+       of replacement keys when a replacement error was provided.
+
+     - log-to-stderr on startup will now emit messages to the console at
+       the lowest logging level defined by any of the handlers in the
+       eventlog section.
+
+     - entirely removed warning when the starting user's umask is "too
+       permissive".  it wasn't clear that it added any value under normal
+       operations.
+
+     - debug-mode config file option did not work.
+
+     - ZClasses that subclassed ObjectManager that were created in
+       earlier versions of Zope would not load under 2.6, due to
+       the new Interfaces package. Added back a simple stub module
+       and changed a constructor to allow these ZClasses to work.
+
+     - Bugfix: if zopectl is run as the root user, the debug, run, and
+       adduser commands will cause the Python process which performs
+       those actions to switch users to the effective user.  This
+       prevents ZODB index files, log files, etc. from being written
+       as root, potentially preventing later startup by the effective
+       user.
+
+     - Bugfix: allow the zopectl process to ascertain the program that
+       zdrun should run from the Zope config file.  This is necessary
+       if the file is moved out of a "single-directory-as-instance"
+       instance home.
+
+     - Various fixes to content of ZopeTutorial to deal with URLs moving
+       on new.zope.org (thanks to Stefane Fermigier).
+
+     - Added optparse and textwrap modules to docutils package to prevent
+       ReST barfage (AJ).
+
+     - Added a sample zeoclient and tempstorage stanzas to the default
+       config file (zope.conf.in).
+
+     - Various tweaks to the dbtab configuration code (Shane).
+
+     - Various fixes/enhancements to ZODB/ZEO (PythonLabs).
+
+     - Removed 'inst/Zope.spec' Zope RPM spec file in favor of placing
+       it in a separate internal ZC repository.  It will be available
+       in the SRPM.
+
+     - Fix for Collector 823 (XML RPC exception values were always
+       converted to strings and thus turned into a Fault object).
+       Thanks to Sandor Palfy for the patch.
+
+     - Remove --zeo/-z flags from mkzopeinstance.py, as custom_zodb.py
+       is no longer the preferred method of configuring custom
+       storages now that we have DBTab in the core, and you should be
+       able to create a custom skeleton dir with the right
+       zope.conf.in that has a zeo client storage set up if you need
+       to.
+
+     - 'make sdist' now creates a file with an extension of '.tgz'
+       rather than .'.tar.gz' (mainly to meet the expectations of
+       Zope.org about file names).
+
+     - moved 'zpasswd.py' into utilities directory in source tree.
+
+  Zope 2.7.0b1 (2003/07/21)
+
+    Features added
+
+     - zopectl command now has 'debug' and 'run' options.
+
+     - the zodb_db section in zope.conf now accepts a 'connection-class'
+       key that accepts a python dotted-path-name to use as the
+       connection class for the database.
+
+     - The ReST input and output encodings are now configured via the
+       'rest-input-encoding' and 'rest-output-encoding' config file
+       directives rather than the REST_INPUT_ENCODING and
+       REST_OUTPUT_ENCODING environment variables.
+
+     - Datetime-format settings are now configured via the
+       'datetime-format' configuration file directive rather than the
+       DATETIME_FORMAT environment variable.
+
+     - Trusted proxies are now configured via the 'trusted-proxy'
+       configuration file directive rather than the
+       ZOPE_TRUSTED_PROXIES environment variable.
+
+     - The maximum number of sockets that ZServer will open in order to
+       service incoming connections can now be specified via the
+       max-listen-sockets conf file parameter.
+
+     - Shane Hathaway's DBTab product has been integrated.  The
+       Control_Panel -> Databases tab now allows you to control all
+       mounted databases.  You can add a mount point by editing the
+       zope.conf file, adding a zodb_db section for the main database
+       and other mounted databases, and choosing "ZODB Mount Point"
+       from the Zope "Add" list.
+
+     - DTML Methods and Documents supply a traceback supplement when called.
+
+     - Windows installer contains NT/2K/XP service support on
+       a per-instance-home basis.
+
+     - zopectl command now has 'debug' and 'run' options.
+
+     - the zodb_db section in zope.conf now accepts a 'connection-class'
+       key that accepts a python dotted-path-name to use as the
+       connection class for the database.
+
+    Bugs Fixed
+
+     - mkzopeinstance did not expand tildes in directory name input.
+
+     - The 'configure' script did not work under Solaris sh.
+
+     - The SiteErrorLog object did not ignore NotFound errors,
+       which caused (mainly) useless messages to be kept in the log.
+
+     - The addition of a linefeed to version.txt in lib/python caused
+       Apache proxies to choke because the string was injected into
+       a header including the linefeed.  This has been fixed.
+
+     - Collector: #964: standard_error_message refers to looking into the
+       HTML code for more information which is deprecated. Referring to
+       the error log now.
+
+     - Collector #893: Mailhost: munge_header has been broken for addresses
+       containing the recipients full name
+
+     - Zope's setup.py didn't include the ZEO.auth package.
+
+     - Collector #628: Applied patch to fix several textarea resize
+       problems.
+
+     - Collector #953: fixed namespace collision with form_title in ZMI
+
+     - Collector #342: Avoiding insertion of a BASE tag for file objects
+       with content-type text/html
+
+     - Windows installer properly deletes pyc/pyo files on uninstall.
+
+     - Windows binary post-install quickstart page is now more
+       informative.
+
+     - Fixed a potential bug in ZTUtils.Tree.decodeExpansion where a
+       potentially empty string was tested for it's first character; used
+       .startswith for safety.
+
+  Zope 2.7.0a1 (2003/07/03)
+
+    Features added
+
+     - OFS: OrderSupport and OrderedFolder added. OrderSupport is a mixin class
+       that adds the IOrderedContainer interface to ObjectManagers.
+       OrderedFolder - meta_type 'Folder (Ordered)' - is a new Folder class
+       using OrderSupport.
+       (thanks to Stephan Richter for inspiration and some code)
+
+     - Folder: Constructor now takes an optional 'id' argument.
+
+     - Show known medusa servers in Control_Panel.
+
+     - New startup and installation regime (./configure; make; make install
+       instances use a config file, daemon is now a separate process).  See
+       http://dev.zope.org/Wikis/DevSite/Proposals/InstallationAndConfiguration
+       for more information.
+
+     - New module: App.config.  New API for getting a configuration
+       object.  This should be the preferred way for all code in Zope
+       to get configured values for many settings.  For settings made
+       available via this module, alternate locations are deprecated,
+       though will to be supported for Zope 2.7.
+
+     - Collector #435: Support for passwords encoded using MySQL's
+       PASSWORD() function add to lib/python/AccessControl/AuthEncoding.py.
+
+     - Collector #167: Support __getattr__ on cAccessControl PermissionRole
+       objects to allow gathering of permission names for products like
+       DocFinder and VerboseSecurity.
+
+     - Added a new REQUEST method, getClientAddr(), to determine a clients
+       IP address. Address restrictions in the user folder have been changed
+       to use this method. By default the value returned by this method is the
+       same as the initial value of REQUEST['REMOTE_ADDR']. Zope also has
+       support for obtaining a more useful value from other headers if a
+       front-end proxy is in use. See doc/ENVIRONMENT.txt for details.
+
+     - DateTime module: added support to parse international dateformats. The
+       Datetime constructor has a new "datefmt" parameter to enforce the
+       parsing of a date as "us" or "international" date. The new field
+       descriptor field descriptor "date_international" can be used to
+       enforce this behaviour inside the ZPublisher. See also
+       doc/ENVIRONMENT.txt to check with the DATETIME_FORMAT
+
+     - KeywordIndex, FieldIndex and ZCTextIndex  are now able to index more
+       than one attribute of an object. This removes the ties between the
+       indexes ID and the attribute name to be indexed.
+
+     - Integration of reStructuredText (reST) and the ZReST product
+       by Richard Jones.  See doc/RESTRUCTUREDTEXT.txt for details.
+
+     - Objects locked through WebDAV are now marked with a lock icon
+       inside the ZMI.
+
+     - Collector #741: Applied patch to provide better FTP error messages.
+
+     - Made all PluginIndexes and ZCTextIndex use 'safe_callable',
+       which is aware of extension classes that fill 'tp_callable'
+       but don't define '__call__'.
+
+     - Made KeywordIndex be more robust about receiving a value that
+       is not a string or an iterable type.
+
+    Bugs Fixed
+
+     - Collector #954: clear() method of TopicIndex removed all filter sets
+       instead of clearing them.
+
+     - Collector #939: Fixed typo in TopicIndexes
+
+     - Collector #937: UnicodeError exception available within PythonScripts
+
+     - Collector #902: recursive Scripts were broken due to shared globals.
+
+     - Product initialization would only consult a file named "version.txt"
+       to read version information. Now it will check version.txt, VERSION.txt
+       and VERSION.TXT.
+
+     - Collector #928: DateIndex ignored timezones when indexing and
+       querying
+
+     - Collector #892: misleading error msg when initializing an OIBTree
+       from a dict with a float value.  The message claimed that the
+       dict's items didn't consist of 2-element tuples, but of course
+       they do.  The TypeError now says "expected integer value".
+
+     - Collector #882: delPropertySheet was broken due to a typo
+
+     - Collector #683: WeDAV request without XML preamble
+       were not recognized by Zope and raised an exception.
+
+     - Index constructors were called without acquisition context of the
+       calling object. This caused caller.getPhysicalPath() to fail for
+       indexes depending on this information.
+
+     - Collector #814: PathIndexes now uses IITreeSet instead of
+       IISet. This should result in less memory usage.
+
+     - Fixed a whitespace problem in Z2.log (AWStats failed to process
+       Zope logfiles)
+
+     - Collector #816: dtml-sendmail corrupted header if message was
+       left blank.
+
+     - Collector #790: WebDAV access is granted by default only
+       to Managers and Authenticated users instead to Anonymous users.
+       This restricts access to the Control_Panel and especially
+       to the Products management to trusted users.
+
+     - Rename, Cut & Delete operations on locked objects (WebDAV) are
+       no longer permitted and will raise an exception. Copies of
+       locked objects are copied without lock.
+
+     - Collector #634: Image objects can now be rendered without border
+       attribute by calling "image.tag(border='')".
+
+     - Collector #695: Object IDs "." and ".." are no longer permitted.
+
+     - Collector #771: ZCatalog failed to index DTML Document if the name
+       of a catalog metadata was identical with the name of an acquired
+       object.
+
+     - Collector #686: intSets no longer lose their values.
+
+     - Collector #685: Improved documentation explaining how, where and
+       why security assertions should be placed in:
+       lib/python/Products/PythonScripts/README.txt
+       lib/python/Products/PythonScripts/module_access_examples.py
+
+     - The ZEO unit tests and wo_pcgi.py didn't run on Windows if the path
+       to the python executable included a space.
+
+     - Some calls to os.system('chmod') has been replaced with the more
+       portable os.chmod() call, to make install work properly on Windows.
+
+     - Fixed an isinstance() check in SimpleItem on standard_error_message
+       handling that would always break if the first argument was not
+       an extension class because the second argument was a type.
+
+     - Any write request could be tricked into writing into a version
+       be setting a version cookie or by including a version name in
+       the request.  Now we require the user to globally have
+       permission to join or leave versions to run a request in a
+       version.
+
+    Backward incompatabilities
+
+      - We no longer honor local security settings that would allow
+        someone to join or leave versions unless the location of the
+        settings is a folder directly or indirectly containing the
+        user's user folder.
+
+    Bugs Fixed
+
+      - Collector #956: automatically installing Examples at startup
+        could be a security risk.  Examples now must be installed
+        explicitly by the user (thanks to Jamie Heilman and day0).
+
+      - Collector #954: clear() method of TopicIndex removed all filter sets
+        instead of clearing them.
+
+      - Collector #882: Fixed typo in PropertySheets
+
+      - Collector #939: Fixed typo in TopicIndexes
+
+      - Collector #937: UnicodeError exception available within PythonScripts
+
+      - Collector #902: recursive Scripts were broken due to shared globals.
+
+      - Product initialization would only consult a file named "version.txt"
+        to read version information. Now it will check version.txt, VERSION.txt
+        and VERSION.TXT.
+
+      - Make ZCTextIndex much less prone to generating conflict errors.
+        Previously *any* concurrent updates would provoke a conflict.
+
+      - Fix query performance and scalability bug in ZCTextIndex.
+
+      - Collector #928: DateIndex ignored timezones when indexing and
+        querying
+
+      - Any write request could be tricked into writing into a version
+        be setting a version cookie or by including a version name in
+        the request.  Now we require the user to globally have
+        permission to join or leave versions to run a request in a
+        version.
+
+      - Fixed a problem with potentially mis-acquiring 'func_code' in
+        publisher BeforeTraverse hook.
+
+      - Fix for issue 683: Image cache manager headers were not sent
+        when an image request returned a 304 (in response to an if-mod-since
+        request).
+
+      - Made all PluginIndexes and ZCTextIndex use 'safe_callable',
+        which is aware of extension classes that fill 'tp_callable'
+        but don't define '__call__'.
+
+      - Made KeywordIndex be more robust about receiving a value that
+        is not a string or an iterable type.
+
+      - Fixed incorrect docstring in OFSP/Image help.
+
+      - Fixed unhelpful signal description.
+
+
+  Zope 2.6.2 beta 2
+
+    Bugs Fixed
+    
+      - TemporaryStorage (which is used by TemporaryFolder, and thus
+        the default sessioning configuration) no longer uses a
+        "LowConflictConnection" database connection.   This fixes
+        a bug in which data structures used for session housekeeping
+        data could become desynchronized; the symptom for this was
+        KeyErrors being raised from TransientObjectContainer's 'get'
+        method.  As a result, many more conflicts will be raised under
+        high session load, but desynchronization will not occur.
+    
+      - Fix potential performance bug in PathIndex.
+    
+      - Scored result sets from catalog (i.e., from text indexes) can now be
+        merged and sorted together across queries like unscored results.
+
+      - Fixed a memory leak in TALES.  If an exception propagated from
+        a tal:repeat block, an uncollectable cycle held a reference to
+        everything in the TALES context.
+
+      - If you're running in development mode, Zope will now
+        raise an exception if a product cannot be initialized properly
+        instead of silently continuing.  This is to prevent a debugging
+        frenzy in which you spelunk through one more more half-initialized
+        modules wondering why the class you wanted isn't part of the
+        module namespace.  If not in development mode, the process
+        continues silently.
+
+      - Though Python 2.2.2 is not officially supported, a potential 
+        issue was found when running under 2.2.2. Some built-in types 
+        gained docstrings in the 2.2.2 release, making them
+        publishable where they weren't publishable before. A fix has 
+        been added to the publisher to ensure that the types of
+        objects that are publishable do not change between 2.1 and
+        2.2.
+
+  Zope 2.6.1 beta 2
+    
+    Features added
+
+      - DateTime objects now have a tzoffset() method that returns the objects
+        timezones offset from GMT in seconds.
+
+    Bugs Fixed
+
+      - Collector #740: DateTime now handles positive numerical timezones correcly.
+
+      - Collector #763: There was no error when you had a sendmail-tag
+        without specifying a mailhost or smpthost. Also added a missing import.
+
+      - Work around potential BTrees key enumeration bugs in Transience
+        package by checking explicitly for error cases.
+
+      - Collector #736: ZPublisher now allows marshalling tags to contain
+        a '-'. This is the first step towards a fix for Collector #737
+
+      - Collector #714: CopySupport's manage_clone now calls 
+        manage_afterClone in the saem way that manage_pasteObjects does.
+
+      - Collector #697: Multiple selection properties were incorrectly
+        marshalled. note than any non-ascii multiple selection properties
+        modified in versions without this fix will have been corrupted in
+        the zodb.
+
+      - Collector #256: Added a check in _doChangeUser to make sure 
+        passwords isn't encrypted twice.
+
+      - Added a sortKey() method to Shared.DC.ZRDB.TM to silence warnings
+        from updated ZODB that DAs dont have that method.
+
+  Zope 2.6.1 beta 1
+
+    Bugs Fixed
+
+      - VirtualHostMonster handles empty Mapping paths properly.
+    
+      - Deadlock prevention code added.
+
+        It was possible for earlier versions of ZODB to deadlock when
+        using multiple storages.  If multiple transactions committed
+        concurrently and both transactions involved two or more shared
+        storages, deadlock was possible.  This problem has been fixed
+        by introducing a sortKey() method to the transaction and
+        storage APIs that is used to define an ordering on transaction
+        participants.  This solution will prevent deadlocks provided
+        that all transaction participants that use locks define a
+        valid sortKey() method.  A warning is raised if a participant
+        does not define sortKey().  For backwards compatibility,
+        BaseStorage provides a sortKey() that uses __name__.
+
+      - Fixed bug in FileStorage related to object uncreation.  An
+        attempt to load an uncreated object now raises KeyError.
+
+      - Fixed a couple bugs in FileStorage recover() that wrote
+        incorrect backpointers.
+
+      - Fixed data_txn attribute of iterator data records to use
+        the transaction id of the previous transaction, even if it
+        also has a data_txn field.
+
+      - Fixed conflict resolution bug that raised a NameError when a
+        class involved in a conflict could not be loaded.
+
+      - Fixed C extensions that included standard header files before
+        Python.h, which is not allowed.
+
+      - Added code to ThreadedAsync/LoopCallback.py to work around a
+        bug in asyncore.py: a handled signal can cause unwanted reads
+        to happen.
+    
+      - Collector #651: WebDAV Lock Manager was broken.
+
+      - Collector #646: metal:slot was lost during the I18n merge.
+
+      - Collector #640: Fix security assertion on ZCTextIndex query method.
+
+      - Delayed opening the ZODB until after the "Zope" module has
+        been imported, fixing a deadlock issue involving ZEO.  The
+        "Zope" module now has a "startup()" function.
+
+      - Fixed a NameError in the recent change to DateTime.rfc822().
+
+      - Made DateTime.rfc822() simpler and independent of local timezone.
+
+      - Fixed bug in Transience reported by kedai which caused spurious
+        KeyErrors under heavy sessioning usage.
+
+      - Fixed bug in the Interface Verify package; base interfaces were not
+        included in an interface compliancy test.
+
+      - Collector #650: Fixed implicit list marshalling for lists where the
+        first two values are tainted.
+
+      - Collector #671: HTTP Ranges were broken for files and images whose
+        length wasn't exactly divisible by 2**16.
+
+      - ModuleSecurityInfo declarations could be lost if further declarations
+        were made after the Info object already had been applied. Such
+        additional declarations could take place in Python trusted code run
+        after Zope strartup or during a Product refresh.
+
+      - Collector #699: MailHosts created in 2.5 breaks in 2.6.
+
+      - Collector #694: dtml-sendmail mailto specification replaces "To:" header. 
+      - Collector #702: DateTime.rfc822() fails without daylight saving
+
+      - Collector #703: KeyErrors raised when unindexing a PathIndex (and 
+        TopicIndexes) should be swallowed and logged.
+
+  Zope 2.6.0
+
+    Bugs Fixed
+
+      - Caused many places throughout the code base to use
+        calls to user.getId() rather than user.getUserName().  With
+        most (all?) user folder implementations today, this will have
+        no behavioral change, as getId is always alised to getUserName.
+        However, this makes it possible to write user folder
+        implementations which make the distinction between the user's
+        id and the user's name.  These user folders will allow users
+        to change names independent of their identity.
+
+      - WebDAV Lock Manager actually gives the user a chance to
+        specify a starting path **before** searching for locks,
+        shortening query times and memory usage in large Zope
+        instances.
+
+      - PageTemplateFiles were previously owned by whatever object
+        contained them.  This resulted in very hard bugs if the user who
+        owned the container was removed.  Since PageTemplateFiles come
+        from the filesystem, they are now "unowned", similar to
+        DTMLFiles.  Security is still applied, but now it is applied
+        correctly.
+
+      - Collector #411: DateTime.rfc822 is not rfc822 compliant 
+
+  Zope 2.6.0 beta 2
+
+
+    Bugs Fixed
+
+      - The ability to add multiple select properties to
+        PropertyManagers was broken (issue 612).
+
+      - Removed the signal handler hung off USR1 for packing the database. 
+        This feature proved dangerous as the pack operation would happen in
+        the main thread, causing all asyncore operations to stop until it 
+        was finished.
+
+      - Collector #372: tal:attributes failed when combined with tal:replace.
+
+      - Don't try to close network connections in the signal handler
+        for shutdown.  This hosed ZEO clients.
+
+      - Collector #292: PythonScript.write() didn't properly refresh bindings.
+
+      - Dumb bug in zdaemon fixed in which it would try to kill
+        process numbers 1, 2, 3, 10, 12, and 15 when it caught a
+        signal related to any of these signal numbers.   Instead, it
+        actually tries now to kill its child process with the same
+        signal.
+
+      - Write pidfiles out with trailing newlines.
+
+      - Fix setVirtualRoot in the face of unicode paths (such as occur
+        during an XML-RPC request.
+
+      - Collector #539: Fixed rendering of TAL namespace tags with an
+        'on-error' statement.
+
+      - Collector #586:  Generated 'start' scripts had a nonsensical
+        export of an "INST_HOME" environment variable.
+
+      - Collector #580: TALES evaluateBoolean() was squishing 'default'.
+
+      - Collector #581: TALES Path traversal should not special-case a blank
+        string in the second element position.  It now skips directly
+        to item access when a path element is blank or has a leading '_'.
+
+      - Fixed inconsistent attribute access in TALES Paths.
+
+      - Deprecated hasRole alias failed to return result.
+
+      - Collector #538: Hybrid path expressions no longer attempt to call
+        a value returned by the final, non-path alternate.
+
+      - Collector #573: ZTUtils Iterator didn't catch AttributeError.
+
+      - Collector #517: The properties page incorrectly rendered properties
+        with non-latin1 values if there were no unicode properties defined,
+        and incorrectly processed properties with non-ascii names.
+
+      - ZTUtils.SimpleTree could not build a tree with a root other than the
+        ZODB root object. Also, filter functions didn't work at all, let
+        alone in accordance with the documentation in the code.
+
+      - Collector #603: ZTUtils.Tree.encodeExpansion encoded depth with '.'
+        characters, but decodeExpansion could possibly see an encoded node
+        id as an encoded depth when that encoded id started with a '.'.
+
+      - Collector #605: ZTUtils.Tree.decodeExpansion set no limits on the
+        string to be decoded, allowing for a DoS attack with very large
+        strings.
+
+      - The fix for issue #144 broke the ability to create an empty Image or
+        File object. This functionality is now reenabled again.
+
+      - ZTUtils.Zope.TreeSkipMixin allows you to skip unauthorized objects in
+        the tree, but the filter wasn't applied when trying to filter candidate
+        child nodes through a custom setChildAccess filter.
+
+      - Emails sent through MailHost now automatically include a Date header if
+        not already present, in compliance with RFC822 and RFC2822.
+      
+    Features Added
+
+      - Add optional 'relative' argument to getURL the method in CatalogBrains.
+        This allows it to generate site relative URLs like absolute_url can.
+
+      - ZTUtils.Tree.encodeExpansion now will use zlib compression by default,
+        allowing for a far larger number of open tree states to be encoded.
+        decodeExpansion handles compressed expansion states automatically.
+
+      - ZTUtils.Tree.TreeMaker now has additional methods for setting
+        various flags and attributes that influence how the tree is built,
+        making these aspects accessible to PythonScripts.
+
+      - ZTUtils.Tree.TreeMaker has a new method setStateFunction, which
+        allows you to set a callback function that can influence the state
+        (open, closed, leaf) of each node in the tree.
+
+      - Pidfile handling improved.  When Zope is started under
+        zdaemon, it no longer writes its own pidfile.  Instead, it
+        passes in the path to Z2.pid to zdaemon as its pidfile name.
+        The 'zProcessManager.pid' file is no longer ever written.
+        This caused a change to the -Z option of z2.py which should be
+        mostly backwards-compatible (unless people were relying on
+        zProcessManager.pid to be written).  Now the -Z option is a
+        boolean.  -Z1 means use a daemon.  -Z0 means dont.  The
+        default is -Z1.
+
+  Zope 2.6.0 beta 1
+
+    Bugs Fixed
+    
+      - Collector #587: fixed wrong migration to string methods in 
+        DTMLMethod.py
+
+      - Collector #583: Searching for '/' with PathIndexes failed.
+
+      - Fixed bug in manage_editProperties which used an incorrect default
+        for several types of property when they were not found in the
+        REQUEST.
+
+      - Collector #574: Fixed write on HEAD requests caused by overzealous
+        ETag support.
+
+      - Fixed bug in z2.py where it would eat certain socket error exceptions
+        at startup.
+    
+      - Collector #550: Exceptions in XML-RPC requests no longer envoke
+        standard_error_message. Plain text error messages are instead added to
+        the fault string. In debug mode, a full traceback is also included
+        since access to the error log is not a given for XML-RPC developers.
+
+      - Collector #512,541: Fixed broken WebDAV compatiblity
+        with Cadaver 0.20.X due to a missing Lock-Token header.
+
+      - Zope Page Templates set a 'content-type' header even if
+        the result of their execution was not rendered to the browser.
+        We now check to make sure a content-type header is not
+        already set before allowing a page template to set its own.
+
+      - The title_or_id attribute of browser id managers and
+        session data managers is now accessible publically.
+   
+      - Collector #510: When Python scripts and other "Script" objects were
+        acquired during URL traversal, the __before_publishing_traverse__ code
+        did not properly stop traversal at the script and populate
+        traverse_subpath with the remaining url path elements.
+
+      - Collector #238: Version Save and Discard buttons were too
+        close to each other in Version management screens.
+
+      - The "Add Browser ID Manager" permission was renamed to
+        "Add Browser Id Manager".
+
+      - Collector #437: dtml-sqltest now renders 'v not in (b,c)'
+        when used as <dtml-sqltest v type=... multiple op=ne>.  
+        Previously, a sqltest for inequality would render 'v <> b'
+        when a single value was submitted, but would render
+        'a in (b,c)' when multiple values were present and the
+        'multiple' switch was set.
+
+      - Collector #478: Z Search Interfaces with no parameters are now
+        generating correct HTML.
+
+      - Collector #448: Z Search Interfaces created as PageTemplates
+        have a correct title, not a fragment of dtml.
+
+      - Fixed brokenness of session data manager hasSessionData method.
+        The old method created a session data object as a result of the
+        call; it does not now.
+
+      - Collector #458: Fixed broken reindex_all in CatalogAwareness classes.
+
+      - The default "start" script now causes the event log to be sent to
+        standard output unless the "EVENT_LOG_FILE" or "STUPID_LOG_FILE"
+        environment variable is found in the environment.
+
+      - The much-hated name "STUPID_LOG_FILE" now has a preferred
+        alias:  "EVENT_LOG_FILE".
+
+      - Collector #454: The "default" session_data transient object
+        container was not created if an object named "session_data"
+        existed in the root.
+    
+      - Restored behavior of ZCatalog when arguments with empty string are
+        passed in to searchResults. These values are now ignored. If only 
+        empty string values are passed to searchResults, then it returns all
+        results (it is assuming what was passed is essentially an empty
+        filter).
+
+      - Collector #160: Allow TemporaryStorages to participate
+        when a version is active.
+    
+      - Collector #446: Fixed management security assertions on
+        ZCatalogIndexes class.
+
+      - The BTree module functions weightedIntersection() and
+        weightedUnion() now treat negative weights as documented.  It's
+        hard to explain what their effects were before this fix, as
+        the sign bits were getting confused with an internal
+        distinction between whether the result should be a set or a
+        mapping.
+
+      - New "Transience" (session data storage) implementation.
+        More reliable under high load.
+
+      - Collector #402: PythonScript recompile utility should only be
+        usable by Manager to prevent abuse.
+
+      - Collector #433: Fixed broken Splitter backwards compatiblity
+        issue caused by code cleanup.
+
+      - Collector #151: The Python 2.1 / 2.2 fcntl compatibility hacks
+        were bypassed when using medusa directly without importing
+        ZServer first (as when using monitor_client.py).
+
+      - Collector #72: Start on Windows 95 machines with no network
+        devices installed.
+
+      - Collector #79: Don't swallow App.FindHomes exceptions.
+
+      - The set operation difference(X, None) was returning None
+        instead of returning X, contradicting the docs and common
+        sense.  difference(None, X) continues to return None.
+
+      - Fix bug in ISO_8859_1 splitter which corruped storage on
+        initialization.
+
+      - Collector #421: Storage leak in cAccessControl
+
+      - FileLibrary and GuestBook example applications gave anonymous
+        users the Manager proxy role when uploading files - a potential 
+        vulnerability on production servers.
+
+      - Exceptions that use untrusted information from a REQUEST object in
+        the exception message now html-quote that information.
+
+      - Stop leaking FastCGI Authorization header in environment to
+        prevent password compromise
+
+      - #178: Don't compile PythonScripts in skins directories
+
+      - Fixed the help registration system and Zope tutorial to honor
+        the environment variables, FORCE_PRODUCT_LOAD, and ZEO_CACHE,
+        that affect whether products are installed in the database at
+        application startup.
+
+      - Collector #547: xmlrpclib SlowParser should also handle CDATA
+        sections.
+
+      - Collector #525: Don't mask Unautorized exceptions as XML-RPC faults.
+        Fix based on patch from Brad Clements.
+
+      - Collector #465: Allow XML-RPC requests with no <params /> tag.
+
+      - Collector #528: Don't clear REQUEST_METHOD for XML-RPC requests;
+        instead check for an XML-RPC Response objetc in
+        BaseRequest.traverse.
+
+    Features Added
+    
+      - Browser ids can now be encoded in the URL and Zope can be
+        instructed to automatically include the browser id in its
+        generated URLs.
+ 
+      - Browser Id Managers now provide a saner way to obtain a
+        hidden form element which encodes the browser id name and
+        browser id.  An interface method named "getHiddenFormField"
+        on browser id managers now exists which returns a snippet of
+        HTML as a hidden form field that encodes these values.
+
+      - A Site Error Log object is now created in the root at Zope
+        startup time.
+
+      - Added 'url_unquote' and 'url_unquote_plus' modifiers
+        to DTML (also fmt=url-unquote and fmt=url-unquote-plus),
+        and made the same functions available in the PythonScripts.standard
+        module.
+
+      - Collector #186: Added urlencode to the standard importables for
+        Python scripts.
+
+      - <dtml-var name> and &dtml.-name; will now automatically HTML-quote
+        unsafe data taken implictly from the REQUEST object. Data taken
+        explicitly from the REQUEST object is not affected, as well as any
+        other data not originating from REQUEST. This can be disabled (at
+        your own risk!) by setting the environment variable
+        ZOPE_DTML_REQUEST_AUTOQUOTE to one of 'no', '0', or 'disabled'.
+
+      - ZCatalog index management ui is now integrated into ZCatalog rather
+        than being a subobject managment screen with different tabs.
+        
+      - ZCTextIndexes can now be instantiated without constructing a silly 
+        "extra" record object if desired.        
+    
+      - SimpleItem class now passes a new argument "error_log_url" to
+        the standard_error_message template on error. If the site contains
+        an error log object, this will contain the url to the applicable log
+        entry for the error.
+
+      - The IOBTree module also supports multiunion() now.
+
+      - BTrees and TreeSets are complex objects, with parent->child
+        pointers, sibling pointers, and multi-level parent->descendant
+        pointers.  About half the pointers are formally redundant, but
+        speed operations.  BTrees and TreeSets now support a ._check()
+        method, which does a thorough job of examining all these
+        pointers for consistency.  It raises AssertionError if it finds
+        any problems, else returns None.  In Zope 2.5, in rare cases a
+        key deletion could leave these internal pointers in an
+        inconsistent state (what was supposed to be redundant
+        information became conflicting information).  The most likely
+        symptom was that tree.keys() would yield an object that
+        disgreed with the tree about how many keys there are.
+        tree._check() can be used if you suspect such a problem (and if
+        you find one, rebuilding the tree is the best solution for now).
+
+      - Added support for the ZOPE_HOME environment variable, which
+        points to the Zope root, where the ZServer package and default
+        imports may be found.
+
+      - Collector #516 -- "title" property on image tags
+
+      - Collector #117 -- change External Method DTML to name="id" vs
+        unquoted id
+
+      - Collector #61 -- now manage_PasteObjects return a list of dictionaries
+    containing {'id':original_id,'new_id':newly_pasted_obj_id} when called
+    with REQUEST=None
+
+      - Changed FORCE_PRODUCT_LOAD so that if it is set, it determines
+        whether products are installed regardless of whether ZEO_CACHE is
+        set. This means that you can disable product installation by setting
+        FORCE_PRODUCT_LOAD to an empty string even if you are not using a
+        ZEO persistent cache.
+      
+        Documented FORCE_PRODUCT_LOAD
+
+      - xmlrpclib has been updated to the Python 2.2 version, which includes
+        support for the Expat parser for unmarshalling data, which speeds up
+        things considerably.
+
+      - Binary builds for Linux are now built against glibc 2.1.3 with large
+        file support enabled.
+
+      - Binary builds for Solaris are now built against Solaris 8 with large
+        file support enabled.
+
+      - Added i18n support in TAL processing
+      
+  Zope 2.6.0 alpha 1
+
+    Features Added
+
+      - The IIBTree module has a new multiunion function.  It accepts
+        a sequence of sets, treesets, etc, and returns the union of
+        the keys of these objects, as an IISet.  It's designed
+        for peak speed when the input sequence contains many objects.
+
+      - Set the default sys checkinterval to a higher value (500) to
+        take better advantage of faster processors. Since there is no
+        way to scientifically determine a number that works best for
+        everyone, this at least should err on the side of better
+        performance "out of the box" for higher-end production
+        systems.
+
+        Note that you can always use the -i argument to z2 to change
+        the check interval.
+
+      - Added support for gzip content compression for clients that
+        support it. See lib/python/ZPublisher/HTTPResponse.py for more
+        details.
+
+      - Added ZCTextIndex plug-in index product. A replacement for TextIndex.
+
+      - Removed the venerable but senile QuickStart folder from the
+        default FileStorage.  "Alas, poor Yorick!  I knew him, Horatio."
+
+      - Signal handling and log rotation
+
+        All Zope process will respond to signals in the specified manner:
+
+        SIGHUP  - close open database connections and sockets, then restart the
+                  process
+
+        SIGTERM - close open database connections and sockets, then shut down.
+
+        SIGINT  - same as SIGTERM
+
+        SIGUSR2 - rotate all Zope log files (z2.log, event log, detailed log)
+
+        The common idiom for doing automated logfile rotation will become:
+
+         kill -USR2 `cat /path/to/var/z2.pid`
+
+        The common idiom for doing "prophylactic" restarts will become:
+
+         kill -HUP `cat /path/to/var/z2.pid`
+
+        When a process is interrupted via ctrl-C or via a TERM signal
+        (INT, TERM), all open database connections and sockets will be closed
+        before the process dies.  This will speed up restart time for sites
+        that use a FileStorage as its index will be written to the filesystem
+        before shutdown.
+
+        Unspecified signals kill the process without doing cleanup.
+
+      - ZCatalog no longer has a hand in managing text index vocabularies.
+        The cruft associated with this functionality has been exorcised.
+        No default indexes or metadata elements are defined for you when
+        you create a new ZCatalog. Since we now have many new kinds of
+        plug-in indexes it no longer made sense to do this
+        anymore.
+
+      - A new permission "Copy or Move" was added.  This permission
+        may be used respective to an object to prevent objects
+        from being copyable or movable while within the management
+        interface.  The "old" behavior stipulated that users whom
+        possessed the "View management screens" permission to an object's
+        container could copy or move the object arbitrarily, even if they
+        had limited access to the object itself.  Once the object was
+        moved or copied, the user became the owner of the new object,
+        allowing them to see potentially sensitive information in
+        the management interface for the object itself.  This permission
+        is granted to Manager and Anonymous by default, and must be
+        revoked on an object-by-object basis if site managers intend
+        to provide management screen access to folders which contain
+        sensitive subobjects.  This patch came as a result of
+        Collector #376 (thanks to Chris Deckard).
+
+      - Structured Text's "DocumentWithImages" class did not recognize
+        image filenames with underscores.
+
+      - The getElementsByTagName method of STDOM (used by Structured Text)
+        would croak on most documents, especially those containing
+        unwrapped text nodes.  Fixed.
+
+      - FileUpload objects now evaluate false when the have an empty file
+        name. Making it easier to check for omitted file upload form fields.
+
+      - ZClasses now use a python script as their constructor method
+        instead of a DTML method. Also, ZClasses inherit from
+        CatalogPathAwareness now instead of CatalogAwareness.
+
+      - added browser_default hook to ZPublisher. This allows objects to
+        specify the path to the default method that the publisher calls
+        when the object is published. The default for objects not defining
+        browser_default is still 'index_html' for bw compatibility.
+        A ZMI configurable browser_default implementation has been added
+        to ObjectManager. You can configure browser_default for OMs via
+        a new "settings" management tab.
+
+      - added TopicIndexes: a TopicIndex is a container for
+        so-called FilteredSet. A FilteredSet consists of an
+        expression and a set of internal ZCatalog document
+        identifiers that represent a pre-calculated result list for
+        performance reasons. Instead of executing the same query on
+        a ZCatalog multiple times it is much faster to use a
+        TopicIndex instead.
+
+      - requestprofiler: added new --daysago option and added
+        support for reading gzipped detailed logfiles
+
+      - DateTime: new functions JulianDay() and week()
+        to perform calculation of the week number based on the
+        Julian calendar.
+
+      - WebDAV: the new environment variable WEBDAV_SOURCE_PORT_CLIENTS
+        enables retrieval of the document source for dedicated WebDAV
+        clients (see ENVIRONMENT.txt for usage)
+
+      - Collector #272: Optimizations for RESPONSE.write
+
+      - Collector #271: New environment variables are now used
+        to send the access log into syslog. ZSYSLOG_ACCESS,
+        ZSYSLOG_ACCESS_FACILITY, and SYSLOG_ACCESS_SERVER now
+        do the same job as the old environment variables without
+        _ACCESS in their name. Those old environment variables
+        still do the same job of sending the event log to syslog.
+
+      - When run as a daemon on Unix, Zope will now redirect
+        stdin/stdout/stderr to /dev/null
+
+      - Nicer formatting for the increasingly tall permissions
+        table.
+
+      - TextIndex: Enhanced splitter functionality now allows the
+        TextIndex to index numbers, single characters. It is also
+        possible to enable case-sensitive indexing. The new
+        configuration options are available through the addForm
+        of the Vocabulary object.
+
+      - ICP server support. For more information see
+        http://www.zope.org/Members/htrd/icp/intro
+
+      - STXNG: added new env. variable STX_DEFAULT_LEVEL to change
+        the default level for <Hx> elements (see doc/ENVIRONMENT.txt)
+
+      - Collector #304: several catalog optimisations
+
+      - New implementation of ZODB object cache.  The new
+        implemenation is more likely to keep the size of the object
+    cache close to the target size.  This change means that memory
+    consumption may be reduced.  Some users will need to increase
+    the default cache size, because a too small setting is more
+    likely to hurt performance than it did in the past.
+
+        Third-party C extensions that use the persistence API must be
+        recompiled, and may need to be updated to work correctly with
+        the new cache; see PER_GHOSTIFY().
+
+      - The ZODB Connection is now resposible for registering changed
+        objects with the current transaction.
+
+      - Implementation of RestrictedCreation fishbowl proposal;
+        Product registration can now include a function used to
+        determine whether that product constructor want to allow
+        objects to be created in the specified container object.
+
+      - Collector 196: manage_page_style.css is now cacheable.
+        Added freshness information to ImageFile, to improve
+        cacheability of management interface
+
+      - Collector 358: added a new parameter no_push_item to
+        dtml-in, to inhibit automatically pushing sequence-item
+        onto the namespace stack.
+
+      - STXNG: Structured Text now supports images by default
+        by using the HTMLWithImages class (has been disabled prior
+        to Zope 2.6)
+
+      - new option --force-http-connection-close for z2.py to prevent
+        clients from maintaing pipelined connections to the Zope server
+        (Collector #412)
+
+      - Updated the Interface package to be compatible with Zope 3
+        Interfaces. This included changing some interface APIs that
+        may affect existing products.
+
+      - Added a database activity monitoring graph to the control panel,
+        making it easier to tune the ZODB cache size.
+
+    Bugs Fixed
+
+      - External methods didn't properly setup func_defaults and func_code
+        when they were first loaded. This meant mapply couldn't properly map
+        arguments on the first try.
+
+      - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
+        compliant browsers. This allows better control for browsers that have a
+        hard time knowing what 100% means.
+
+      - Fix for Collector #319: filtered_manage_options didn't
+        correctly filter tabs based on permission.
+
+      - Made repr of an HTTPRequest.record eval'able as a dict (Collector
+        #89).
+
+      - Fixed bug #144: Upload button on dtml, py scripts, images, files and
+        pts now raises an error if the file is not specified rather than
+        clearing the source.
+
+      - Fixed bug #275: setPermissionDefault didn't actually set the
+        right permission -> role mappings.
+
+      - Fixed bug reported on maillist during EWOULDBLOCK when using FTP server
+        (http:// lists.zope.org/pipermail/zope/2002-March/111521.html).
+
+      - App/FindHomes.py now computes the "real" path for SOFTWARE_HOME and
+        INSTANCE_HOME, resolving any symlinks in any element within paths
+        passed in via the INSTANCE_HOME or SOFTWARE_HOME envvars.  Paths that
+        are computed by "dead reckoning" from os.getcwd and module paths are
+        also "realpathed".  So for instance, if you use '/home/chrism/Instance'
+        as your INSTANCE_HOME, and '/home/chrism' is a symlink to
+        '/other/home/chrism', your INSTANCE_HOME will be computed as
+        '/other/home/chrism/Instance'.  This is necessary to avoid
+        weirdnesses while using "dead reckoning" from INSTANCE_HOME and
+        SOFTWARE_HOME in other parts of the code.  POSIX systems only.
+
+      - Fixed PropertyManager/PropertySheets so that you can safely add a
+        property named 'ids' without breaking your properties page.
+
+      - Removed spurious 'self' from scarecrow interfaces;  updated
+        method-generation in Interface package to ignore self when
+        source is a method (rather than a function).
+
+      - Collector #32: Use difflib instead of ndiff
+
+      - Fixed long standing bug in PythonScript where get_size returned
+        the incorrect length. This broke editing using EMACS via FTP or
+        WebDAV. Thanks to John Glavin at South River Technologies for
+        help finding the bug.
+
+      - Collector #207: fixed problem with inner links in STXNG
+
+      - Collector #210: HTML() function of StructuredText produced wrong
+        <h0> tags.
+
+      - Collector #166: ObjectManger.all_meta_types() implemented only
+        an incomplete filter based on interfaces.
+
+      - FTP: Downloading files through FTP has been broken since 2.4.0
+        because the downloaded file has been stored with a HTTP
+        header at the beginning of the file. Fixed!
+
+      - FTP: Spaces in usernames inside a FTP file listing are now
+        replaced by underscores to avoid confusion with some FTP clients.
+
+      - Collector #227: improved handling of unicode string in TextIndex.py
+        with unmodified default encoding in site.py.
+
+      - Collector #227: z2.py, TextIndex/dtml/manage_vocab.dtml modified
+        to display unicode strings in the vocabulary properly (now using
+        UTF-8 encoding for display purposes)
+
+      - Collector #250: applied several patches for TextIndex for better
+        unicode support for the GlobbingLexicon
+
+      - Collector #254: return owner object from getOwner wrapped in its
+        context
+
+      - Collector #259: walkandscrub.py did not delete all .pyc and .pyo
+        files during installation. Fixed.
+
+      - Collector #231: BTrees ignoring errors from comparison function
+
+      - Collector #278: DocumentWithImages could not handle URLs with
+        underscores
+
+      - Collector #279: changed exception handling for safegmtime() to
+        provide a more intuitive traceback for operating systems with a
+        limited gmtime() implementations
+
+      - Collector #285: Zope changes its working directory
+        to the var directory at startup
+
+      - WebDAV: removing an non-existing property now returns a HTTP
+        200-OK response instead of 404 (now compliant with RFC 2518)
+
+      - Fixed a bug in TM.py that would cause database adapters to hang
+        on errors in the second phase of the two-phase commit.
+
+      - Collector #291: ZCatalog not unindexing deleted properties
+
+      - Collector #266: Retried requests losing track of http request
+        headers, causing Connection:Close requests to stall
+
+      - Collector #17: Fixed broken links in StandardCacheManagers help
+
+      - Collector #1: UNIX security fixes: make starting Zope as 'root'
+        secure, stop using 'nobody', warn of insecure umasks
+
+      - Collector #303: Properties of type 'long' got truncated
+
+      - Collector #325: adding a new TextIndex to an existing Catalog
+        cleared the standard Vocabulary.
+
+      - Collector #373: content_type property for Image objects
+        are no longer deletable to prevent malfunction.
+
+      - Collector #343: The ZCatalogs 'Indexes' view showed the
+        wrong number of indexed objects for FieldIndexes.
+
+      - FTP server: replaced 'System_Process' by 'Sysproc' to
+        avoid breaking some FTP clients and the output format
+        with overlong usernames.
+
+      - Fixed a potential bug with cAccessControl's permission
+        role deallocator which would try to decref things which
+        may not have been set, due to a change in the initializer
+        (which will bail out if it doesnt get called with a tuple
+        argument)
+
+      - Collector #185, 341: PCGIServer and FCGIServer logs corrected
+        and now output extended information like HTTPServer does.
+
+      - Propertysheets: Ids like 'values' and 'items' are
+        now forbidden as they break WebDAV functionality. Existing
+        Propertysheets are not affected
+
+      - Collector #348: decapitate() now recognizes both \r\n and \n\n
+        to be compliant with the HTTP RFC
+
+      - Collector #386: workaround for hanging FTP connections
+        with NcFTP
+
+      - Collector #419: repaired off-by-1 errors and IndexErrors
+        when slicing BTree-based data structures.  For example,
+        an_IIBTree.items()[0:0] had length 1 (should be empty) if
+        the tree wsan't empty.
+
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
