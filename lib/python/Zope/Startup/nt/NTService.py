@@ -43,9 +43,9 @@ class ZopeService(win32serviceutil.ServiceFramework):
     _svc_display_name_ = r'Zope instance at C:\Zope-Instance'
 
     start_cmd = (
-        r'"C:\Program Files\Zope-2.7.0-a1\bin\pythonw.exe" '
-        '"C:\Program Files\Zope-2.7.0-a1\lib\python\Zope\Startup\run.py" '
-        '-C "C:\Zope-Instance\etc\zope.conf"'
+        r'"C:\Program Files\Zope-2.7.0-a1\bin\python.exe" '
+        r'"C:\Program Files\Zope-2.7.0-a1\lib\python\Zope\Startup\run.py" '
+        r'-C "C:\Zope-Instance\etc\zope.conf"'
         )
 
     def __init__(self, args):
@@ -96,6 +96,7 @@ class ZopeService(win32serviceutil.ServiceFramework):
             servicemanager.EVENTLOG_INFORMATION_TYPE,
             servicemanager.PYS_SERVICE_STARTED,
             (self._svc_name_, ' (%s)' % self._svc_display_name_))
+        
             
 
         while 1:
