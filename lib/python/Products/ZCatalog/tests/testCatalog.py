@@ -2,11 +2,14 @@
 
 """
     Testsuite for testing Catalogs
-    $Id: testCatalog.py,v 1.3 2001/03/23 23:34:14 chrism Exp $
+    $Id: testCatalog.py,v 1.4 2001/04/05 16:15:36 chrism Exp $
     
     Andreas Jung, andreas@digicool.com
     
     $Log: testCatalog.py,v $
+    Revision 1.4  2001/04/05 16:15:36  chrism
+    added test for empty mapping returns all.
+
     Revision 1.3  2001/03/23 23:34:14  chrism
     Merge from branch.
 
@@ -788,6 +791,11 @@ class TestCatalogObject(unittest.TestCase):
         a = self._catalog()
         assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
 
+    def checkEmptyMappingReturnsAll(self):
+        upper = self.upper
+        a = self._catalog({})
+        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+
     def checkFieldIndexLength(self):
         a = self._catalog(att1='att1')
         assert len(a) == self.upper, 'should be %s, but is %s' % (self.upper,
@@ -846,7 +854,6 @@ class TestCatalogObject(unittest.TestCase):
     def uncatalog(self):
         for x in range(0, self.upper):
             self._catalog.uncatalogObject(`x`)
-
 
 class objRS(ExtensionClass.Base):
 
