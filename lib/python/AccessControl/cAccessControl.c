@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.17 2002/07/23 14:08:55 matt Exp $
+  $Id: cAccessControl.c,v 1.18 2002/12/16 19:13:00 chrism Exp $
 
   If you have questions regarding this software,
   contact:
@@ -343,6 +343,8 @@ static PyObject *PermissionRole_init(PermissionRole *self, PyObject *args);
 static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args);
 static void PermissionRole_dealloc(PermissionRole *self);
 
+static PyObject *PermissionRole_getattro(PermissionRole *self, PyObject *name);
+
 static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args);
 static int imPermissionRole_length(imPermissionRole *self);
 static PyObject *imPermissionRole_get(imPermissionRole *self,
@@ -370,6 +372,10 @@ static PyObject *SecurityManager_getattro(SecurityManager *self,
                                           PyObject *name);
 static int SecurityManager_setattro(SecurityManager *self, 
                                     PyObject *name, PyObject *value);
+
+static getattrofunc ExtensionClassGetattro;
+
+
 /*
 ** Constants
 */
@@ -547,7 +553,7 @@ static PyExtensionClass PermissionRoleType = {
 	NULL,					/* tp_hash	*/
 	NULL,					/* tp_call	*/
 	NULL,					/* tp_str	*/
-	NULL,					/* tp_getattro	*/
+	(getattrofunc) PermissionRole_getattro,	/* tp_getattro	*/
 	NULL,					/* tp_setattro	*/
 	/* Reserved fields	*/
 	0,					/* tp_xxx3	*/
@@ -1530,6 +1536,42 @@ static void PermissionRole_dealloc(PermissionRole *self) {
 	PyMem_DEL(self);  
 }
 
+
+/* for DocFinder */
+/*
+** PermissionRole_getattro
+**
+*/
+
+static PyObject *PermissionRole_getattro(PermissionRole *self, PyObject *name) {
+  	PyObject  *result= NULL;
+  	char      *name_s= PyString_AsString(name);
+
+	/* see whether we know the attribute */
+	/* we support both the old "_d" (from the Python implementation)
+	   and the new "__roles__"
+	*/
+	if (name_s[0] == '_') {
+		if (name_s[1] == '_') {
+			if (strcmp(name_s,"__name__") == 0) 
+                                result= self->__name__;
+			else if (strcmp(name_s,"__roles__") == 0)
+                                result= self->__roles__;
+		}
+		else if (name_s[1] == 'p' && name_s[2] == 0)
+                                result= self->_p;
+		else if (name_s[1] == 'd' && name_s[2] == 0)
+                                result= self->__roles__;
+	}
+	if (result) {
+		Py_INCREF(result);
+		return result;
+	} else {
+		return ExtensionClassGetattro((PyObject *)self,name);
+	}
+}
+
+
 /*
 ** imPermissionRole_of
 **
@@ -2089,15 +2131,14 @@ void initcAccessControl(void) {
 	ZopeSecurityPolicyType.tp_getattro =
 		(getattrofunc) PyExtensionClassCAPI->getattro;
 
-	PermissionRoleType.tp_getattro =
-		(getattrofunc) PyExtensionClassCAPI->getattro;
+	ExtensionClassGetattro= PyExtensionClassCAPI->getattro;
 
 	imPermissionRoleType.tp_getattro =
 		(getattrofunc) PyExtensionClassCAPI->getattro;
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.17 2002/07/23 14:08:55 matt Exp $\n");
+		"$Id: cAccessControl.c,v 1.18 2002/12/16 19:13:00 chrism Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
