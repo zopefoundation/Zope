@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.152 $'[11:-2]
+__version__='$Revision: 1.153 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -753,8 +753,15 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def domainSpecValidate(self, spec):
         for ob in spec:
             sz=len(ob)
-            if not ((addr_match(ob) == sz) or (host_match(ob) == sz)):
-                return 0
+            am = addr_match(ob)
+            hm = host_match(ob)
+            if am or hm:
+                if am: am = am.end()
+                else: am = -1
+                if hm: hm = hm.end()
+                else: hm = -1
+                if not ( (am == sz) or (hm == sz) ):
+                    return 0
         return 1
 
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
@@ -911,8 +918,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         v = self._domain_auth_mode = domain_auth_mode and 1 or 0
         return 'Domain authentication mode set to %d' % v
 
-
-
+    def domainAuthModeEnabled(self):
+        """ returns true if domain auth mode is set to true"""
+        return getattr(self, '_domain_auth_mode', None)
 
 class UserFolder(BasicUserFolder):
     """Standard UserFolder object
