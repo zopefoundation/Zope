@@ -116,6 +116,15 @@ hs = zhttp_server(
     resolver=rs,
     logger_object=lg)
 
+# Handler for a published module. zhttp_handler takes 3 arguments:
+# The name of the module to publish, and optionally the URI base which
+# is basically the SCIRPT_NAME, and optionally a dictionary with CGI
+# environment variables which override default settings. The URI base
+# setting is useful when you want to publish more than one module with
+# the same HTTP server. The CGI environment setting is useful when you
+# want to proxy requests from another web server to ZServer, and would
+# like the CGI environment to reflect the CGI environment of the other
+# web server.
 zh = zhttp_handler(MODULE,'')
 hs.install_handler(zh)
 
