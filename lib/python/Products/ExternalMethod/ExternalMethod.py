@@ -191,6 +191,3 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
     def function(self): return self._function
     def module(self): return self._module
 
-import __init__
-__init__.need_license=1
-

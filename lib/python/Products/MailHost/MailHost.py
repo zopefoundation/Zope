@@ -11,8 +11,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.30 1998/05/07 19:55:27 jeffrey Exp $ 
-__version__ = "$Revision: 1.30 $"[11:-2]
+#$Id: MailHost.py,v 1.31 1998/11/23 16:28:58 jim Exp $ 
+__version__ = "$Revision: 1.31 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -247,94 +247,3 @@ def decapitate(message):
     hd['subject']=mo.getheader('subject') or "No Subject"
 
     return hd, mfile.read()
-
-import __init__
-__init__.need_license=1
-
-	
-####################################################################
-#
-#$Log: MailHost.py,v $
-#Revision 1.30  1998/05/07 19:55:27  jeffrey
-#started using rfc822 module to parse headers
-#
-#Revision 1.29  1998/04/30 19:04:49  jeffrey
-#first step in some new cleanups.
-#
-#Revision 1.28  1998/04/22 20:43:03  jeffrey
-#comma-delimeted strings can now be sent to the .send() method for the
-#'mto' parameter.  MailHost appropriately breaks them into multiple
-#recipiants now.
-#
-#Revision 1.27  1998/04/13 19:28:24  brian
-#*** empty log message ***
-#
-#Revision 1.26  1998/04/08 15:34:52  jeffrey
-#Added timeout attribute
-#
-#Revision 1.25  1998/01/13 23:06:10  brian
-#Removed __ac_types__
-#
-#Revision 1.24  1998/01/05 19:34:12  jeffrey
-#split out the SendMail tag machinery into new module
-#
-#Revision 1.23  1998/01/02 22:55:44  jeffrey
-#minor cleanups, added SendMailTag class for DTML.
-#
-#Revision 1.22  1997/12/31 21:15:19  brian
-#Security update
-#
-#Revision 1.21  1997/12/19 21:46:37  jeffrey
-#fixees
-#
-#Revision 1.20  1997/12/18 16:45:37  jeffrey
-#changeover to new ImageFile and HTMLFile handling
-#
-#Revision 1.19  1997/12/12 22:05:18  brian
-#ui update
-#
-#Revision 1.18  1997/12/05 17:11:58  brian
-#New UI
-#
-#Revision 1.17  1997/09/25 13:29:13  brian
-#Removed index_html
-#
-#Revision 1.16  1997/09/18 20:08:51  brian
-#Added meta_type for auto-detection
-#
-#Revision 1.15  1997/09/17 21:08:15  jeffrey
-#threadsafe calls to Scheduler, added .scheduledSend method which is
-#the same interface as send, but uses the schedular to send message
-#instead of calling the SendMail class directly.
-#
-#Revision 1.14  1997/09/17 16:20:48  jim
-#Added use of scheduler.
-#
-#Revision 1.13  1997/09/17 15:40:09  jeffrey
-#Further SMTP and socket improvements
-#
-#Revision 1.12  1997/09/16 18:15:17  jeffrey
-#Further SMTP updates...
-#
-#Revision 1.11  1997/09/16 16:59:01  jeffrey
-#New SMTP checking..?
-#
-#Revision 1.10  1997/09/16 15:51:46  jeffrey
-#(Hopefully) fixed some socket problems
-#
-#Revision 1.9  1997/09/12 15:00:00  jeffrey
-#Finally added full support for RoleManager, also use of MessageDialog
-#in the management process.
-#
-#Revision 1.8  1997/09/11 21:32:54  jeffrey
-#sniffs out the 'local host' (web server host name thingy computer)
-#
-#Revision 1.6  1997/09/10 21:57:56  jeffrey
-#Fixed nasty little squeeks, especially in:
-# - header handling (now handles multi-line again)
-# - an minor typo in the __del__ action for SendMail
-#   (the class that actually communicates the SMTP)
-#
-#Revision 1.5  1997/09/10 18:41:19  jeffrey
-#The grand "Should Be Working" version...
-##

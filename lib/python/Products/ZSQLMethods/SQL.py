@@ -11,8 +11,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.4 1998/04/15 15:25:23 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: SQL.py,v 1.5 1998/11/23 16:28:57 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import AqueductDA.DA
 from Globals import HTMLFile
@@ -106,22 +106,3 @@ class SQL(AqueductDA.DA.DA):
 		
     manage_main=HTMLFile('edit', globals())
 
-import __init__
-__init__.need_license=1
-
-############################################################################## 
-#
-# $Log: SQL.py,v $
-# Revision 1.4  1998/04/15 15:25:23  jim
-# *** empty log message ***
-#
-# Revision 1.3  1998/03/18 20:57:57  jim
-# Added encyclopedic info
-#
-# Revision 1.2  1998/02/23 19:00:31  jim
-# updated permissions
-#
-# Revision 1.1  1998/01/07 16:29:29  jim
-# Split out Database Methods
-#
-#

@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -120,81 +120,3 @@ class Session(Persistent,Implicit,RoleManager,Item):
                 "You cannot copy a %s object with <b>unsaved</b> changes.\n"
                 "You must <b>save</b> the changes first."
                 % self.meta_type)
-
-
-import __init__
-__init__.need_license=1
-
-
-############################################################################## 
-#
-# $Log: Session.py,v $
-# Revision 1.22  1998/11/20 18:16:37  jim
-# First crack at new layout and 1.5 support
-#
-# Revision 1.21  1998/09/24 20:13:40  jim
-# Added checks to prevent moving uncommitted sessions and drafts
-#
-# Revision 1.20  1998/09/24 19:21:52  jim
-# added Draft objects
-#
-# Revision 1.19  1998/05/20 22:07:32  jim
-# Updated permissions.
-#
-# Revision 1.18  1998/05/20 17:58:17  jim
-# Got rid of ac_types.
-#
-# Revision 1.17  1998/05/20 17:57:40  jim
-# Included '' in permission settings.
-#
-# Revision 1.16  1998/04/13 19:23:06  jim
-# Added license flag
-#
-# Revision 1.15  1998/03/11 18:21:56  jim
-# Fixed bug in permissions settings.
-#
-# Revision 1.14  1998/02/10 18:40:38  jim
-# Changed creation method names for latest security scheme.
-#
-# Revision 1.13  1998/01/02 17:41:19  brian
-# Made undo available only in folders
-#
-# Revision 1.12  1997/12/31 20:34:05  brian
-# Fix bad ref to SimpleItem caused by moving
-#
-# Revision 1.11  1997/12/31 19:34:57  jim
-# Brians changes.
-#
-# Revision 1.10  1997/12/31 17:17:04  brian
-# Security update
-#
-# Revision 1.9  1997/12/19 17:06:20  jim
-# moved Sessions and Daft folders here.
-#
-# Revision 1.8  1997/12/18 16:42:02  jeffrey
-# *** empty log message ***
-#
-# Revision 1.7  1997/12/18 13:36:57  jim
-# Rearranged management options to make the join/leave screen the
-# default.
-#
-# Revision 1.6  1997/12/12 21:49:44  brian
-# ui update
-#
-# Revision 1.5  1997/12/05 17:13:51  brian
-# New UI
-#
-# Revision 1.4  1997/11/11 19:25:48  jim
-# Changed title_and_id method to include a flag to indicate whether a
-# session has unsaved changes.
-#
-# Revision 1.3  1997/11/07 18:51:13  jim
-# Made an implicit acquirer.
-#
-# Revision 1.2  1997/11/07 17:43:19  jim
-# Added a feature to exit another session.
-#
-# Revision 1.1  1997/11/07 16:13:15  jim
-# *** empty log message ***
-#
-#
