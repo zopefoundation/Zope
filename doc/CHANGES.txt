@@ -43,6 +43,11 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #790:WebDAV access is granted by default only
+       to Managers and Authenticated users instead to Anonymous users.
+       This restricts access to the Control_Panel and especially
+       to the Products management to trusted users.
+
      - Cut & Delete operations on locked objects (WebDAV) are no longer
        permitted and will raise an exception. Copies of locked objects
        are copied without lock.
