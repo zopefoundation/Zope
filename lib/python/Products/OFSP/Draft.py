@@ -46,10 +46,12 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         self.__allow_groups__=uf
     
     def icon(self):
-        return getattr(self.aq_parent.aq_base,self._refid).icon
+        try: return getattr(self.aq_parent.aq_base,self._refid).icon
+        except: return 'p_/broken'
 
     def manage_options(self):
-        return getattr(self.aq_parent.aq_base,self._refid).manage_options
+        try: return getattr(self.aq_parent.aq_base,self._refid).manage_options
+        except: return ()
 
     def title(self):
         return 'draft of '+self._refid
@@ -94,7 +96,25 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
 	Globals.SessionBase[self._session].abort()
 	if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
-    
+
+    def _notifyOfCopyTo(self, container, isMove=0):
+        if isMove and self.nonempty():
+            raise 'Copy Error', (
+                "You cannot copy a %s object with <b>unapproved</b> changes.\n"
+                "You must <b>approve</b> the changes first."
+                % self.meta_type)
+
+    def _postCopy(self, container, op=0):
+
+        try: 
+            session=self.REQUEST['PATH_INFO']
+            l=rfind(session,'/')
+            if l >= 0: session=session[:l]
+            self._session="%s/%s" % (session, self.id)
+        finally:
+          if 0:
+            raise 'Copy Error', (
+                "This object can only be copied through the web.<p>")
 
 def getdraft(ob, session):
     if hasattr(ob,'aq_parent'):

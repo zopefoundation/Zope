@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -113,7 +113,13 @@ class Session(Persistent,Implicit,RoleManager,Item):
 	if REQUEST: return self.manage_main(self, REQUEST)
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
-
+    
+    def _notifyOfCopyTo(self, container, isMove=0):
+        if isMove and self.nonempty():
+            raise 'Copy Error', (
+                "You cannot copy a %s object with <b>unsaved</b> changes.\n"
+                "You must <b>save</b> the changes first."
+                % self.meta_type)
 
 
 import __init__
@@ -123,6 +129,9 @@ __init__.need_license=1
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.21  1998/09/24 20:13:40  jim
+# Added checks to prevent moving uncommitted sessions and drafts
+#
 # Revision 1.20  1998/09/24 19:21:52  jim
 # added Draft objects
 #
