@@ -1,9 +1,10 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
-import sys, os, DateTime
+import sys, os
+from DateTime import DateTime
 from string import atof, rfind
 
 try:
@@ -138,6 +139,9 @@ else:
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.15  1998/05/26 22:28:14  jim
+# Fixed stupid bug in bobobase_modification_time
+#
 # Revision 1.14  1998/05/22 22:25:42  jim
 # Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
 # right into Persistent here.
