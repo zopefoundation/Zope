@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -268,7 +268,8 @@ class File(Persistent,Implicit,PropertyManager,
         jar=self._p_jar
         if size <= 2*n or jar is None or Globals.DatabaseVersion=='2':
             seek(0)
-            if size < n: read(size), size
+            if size < n:
+                return read(size), size
             return Pdata(read(size)), size
 
         # Now we're going to build a linked list from back
