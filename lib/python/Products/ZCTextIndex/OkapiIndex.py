@@ -60,13 +60,8 @@ class OkapiIndex(BaseIndex):
     def __init__(self, lexicon):
         BaseIndex.__init__(self, lexicon)
 
+        # ._wordinfo for Okapi is
         # wid -> {docid -> frequency}; t -> D -> f(D, t)
-        # There are two kinds of OOV words:  wid 0 is explicitly OOV,
-        # and it's possible that the lexicon will return a non-zero wid
-        # for a word *we've* never seen (e.g., lexicons can be shared
-        # across indices, and a query can contain a word some other
-        # index knows about but we don't).
-        self._wordinfo = IOBTree()
 
         # docid -> # of words in the doc
         # This is just len(self._docwords[docid]), but _docwords is stored
@@ -100,38 +95,6 @@ class OkapiIndex(BaseIndex):
         count = self._doclen[docid]
         del self._doclen[docid]
         self._totaldoclen -= count
-
-    def search(self, term):
-        wids = self._lexicon.termToWordIds(term)
-        if not wids:
-            return None # All docs match
-        wids = self._remove_oov_wids(wids)
-        return mass_weightedUnion(self._search_wids(wids))
-
-    def search_glob(self, pattern):
-        wids = self._lexicon.globToWordIds(pattern)
-        return mass_weightedUnion(self._search_wids(wids))
-
-    def search_phrase(self, phrase):
-        wids = self._lexicon.termToWordIds(phrase)
-        cleaned_wids = self._remove_oov_wids(wids)
-        if len(wids) != len(cleaned_wids):
-            # At least one wid was OOV:  can't possibly find it.
-            return IIBTree()
-        scores = self._search_wids(cleaned_wids)
-        hits = mass_weightedIntersection(scores)
-        if not hits:
-            return hits
-        code = WidCode.encode(wids)
-        result = IIBTree()
-        for docid, weight in hits.items():
-            docwords = self._docwords[docid]
-            if docwords.find(code) >= 0:
-                result[docid] = weight
-        return result
-
-    def _remove_oov_wids(self, wids):
-        return filter(self._wordinfo.has_key, wids)
 
     # The workhorse.  Return a list of (IIBucket, weight) pairs, one pair
     # for each wid t in wids.  The IIBucket, times the weight, maps D to
