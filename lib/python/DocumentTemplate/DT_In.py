@@ -230,7 +230,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.9 1997/11/07 17:08:33 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.10 1997/11/11 18:38:03 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -284,7 +284,7 @@ __rcs_id__='$Id: DT_In.py,v 1.9 1997/11/07 17:08:33 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -536,7 +536,10 @@ class sequence_variables:
     def letter(self,index): return chr(ord('a')+index)
     def Letter(self,index): return chr(ord('A')+index)
     def key(self,index):    return self.items[index][0]
-    def item(self,index):   return self.items[index]
+    def item(self,index, tt=type(())):
+	i=self.items[index]
+	if type(i) is tt and len(i)==2: return i[1]
+	return i
 
     def roman(self,index): return lower(self.Roman(index))
 
@@ -788,6 +791,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.10  1997/11/11 18:38:03  jim
+# Made sequence-items work when iterating over mapping items.
+#
 # Revision 1.9  1997/11/07 17:08:33  jim
 # Changed so exception is raised if a sequence cannot be gotten during
 # rendering.
