@@ -32,6 +32,7 @@ def configure(configfile):
     starter.setConfiguration(opts.configroot)
     starter.setupSecurityOptions()
     starter.dropPrivileges()
+    return starter
 
 def _setconfig(configfile=None):
     """ Configure a Zope instance based on ZopeOptions.  Optionally

@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+     - made Zope.configure return the starter instance to enable other
+       methods to be called, such as starter.setupConfiguredLoggers()
+
      - Improved Unicode handling in Page Templates. Template contents
        and title will now be saved as a Unicode string if 
        the management_page_charset variable can be acquired and is true.
