@@ -166,3 +166,25 @@ class DummyEngine:
             from Products.ParsedXML.DOM import ExpatBuilder
             doc = ExpatBuilder.parse(fileName, 1)
             return doc, macroName[i+1:]
+
+    def setupLoop(self, name, expr):
+        seq = self.evaluateSequence(expr)
+        return Iterator(name, seq, self)
+
+class Iterator:
+
+    def __init__(self, name, seq, engine):
+        self.name = name
+        self.seq = seq
+        self.engine = engine
+        self.nextIndex = 0
+
+    def next(self):
+        i = self.nextIndex
+        try:
+            item = self.seq[i]
+        except IndexError:
+            return 0
+        self.nextIndex = i+1
+        self.engine.setLocal(self.name, item)
+        return 1
