@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -385,11 +385,10 @@ def safegmtime(t):
     '''gmtime with a safety zone.'''
     try:
         t_int = int(t)
-    except OverflowError:
+        return  gmtime(t_int)
+    except (IOError, OverflowError):
         raise 'TimeError', 'The time %f is beyond the range ' \
               'of this Python implementation.' % float(t)
-    rval = gmtime(t_int)
-    return rval
 
 def safelocaltime(t):
     '''localtime with a safety zone.'''

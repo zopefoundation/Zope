@@ -81,6 +81,11 @@ Zope Changes
       - Collector #278: DocumentWithImages could not handle URLs with
         underscores
 
+      - Collector #279: changed exception handling for safegmtime() to
+        provide a more intuitive traceback for operating systems with a 
+        limited gmtime() implementations
+
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
