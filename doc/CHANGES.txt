@@ -4,6 +4,12 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+
+    Features Added
+
+      - added doc/ENVIRONMENT.txt to document all used environment
+        variables Zope is using
+
     Bugs Fixed
     
       - STXNG: added '+' as allowed character inside URLs
