@@ -151,7 +151,7 @@ text
             self.assert_(e.lineno == 1,
                          "did not receive correct position information")
         else:
-            raise AssertionError("expected parse error: bad nesting")
+            self.fail("expected parse error: bad nesting")
 
     def check_attr_syntax(self):
         output = [
