@@ -122,10 +122,8 @@ class Vocabulary(Item, Persistent, Implicit,
     
     manage_options=(
         (
-        {'label': 'Vocabulary', 'action': 'manage_main',
-         'target': 'manage_workspace'},
-        {'label': 'Query', 'action': 'manage_query',
-         'target': 'manage_workspace'},
+        {'label': 'Vocabulary', 'action': 'manage_main'},
+        {'label': 'Query', 'action': 'manage_query'},
         )
         +Item.manage_options
         +AccessControl.Role.RoleManager.manage_options
