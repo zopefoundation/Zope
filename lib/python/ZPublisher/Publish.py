@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.35 1997/02/14 21:53:34 jim Exp $"""
+$Id: Publish.py,v 1.36 1997/03/20 22:31:46 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.35 1997/02/14 21:53:34 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 
 def main():
@@ -585,7 +585,7 @@ if __name__ == "__main__": main()
 import sys, os, string, types, cgi, regex, regsub
 from CGIResponse import Response
 from Realm import Realm, allow_group_composition
-
+from urllib import quote
 from cgi import FieldStorage, MiniFieldStorage
 
 try:
@@ -785,7 +785,7 @@ class ModulePublisher:
 		except: pass
 
 	    entry_name,path=path[0], path[1:]
-	    URL="%s/%s" % (URL,entry_name)
+	    URL="%s/%s" % (URL,quote(entry_name))
 	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
 	    if entry_name:
 		try:
@@ -1426,6 +1426,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.36  1997/03/20 22:31:46  jim
+# Added logic to requote URL components as I re-build URL path.
+#
 # Revision 1.35  1997/02/14 21:53:34  jim
 # Added logic to make REQUEST and RESPONSE available for acquisition
 # by published objects.
