@@ -28,6 +28,9 @@ Zope Changes
           This is useful when simply importing Main from the Python
           prompt in the lib/python directory.
 
+        - The ThreadLock module has been changed to reflect changes
+          in the Python API in Python 1.5.2.
+
       Bugs Fixed
  
         - Permissions for manage_clone method were wrong, meaning that
