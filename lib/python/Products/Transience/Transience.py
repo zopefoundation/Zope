@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.17 2001/11/08 22:05:29 matt Exp $
+$Id: Transience.py,v 1.18 2001/11/14 00:19:58 chrism Exp $
 """
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -647,7 +647,7 @@ class TransientObject(Persistent, Implicit):
 
     def get(self, k, default=_notfound):
         v = self._container.get(k, default)
-        if v is _notfound: raise KeyError, k
+        if v is _notfound: return None
         return v
         
     def has_key(self, k):
