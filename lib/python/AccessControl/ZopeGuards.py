@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -125,6 +125,10 @@ safe_builtins['map'] = guarded_map
 
 import sys
 def guarded_import(mname, globals={}, locals={}, fromlist=None):
+    
+    # do initial import to give module a chance to make security declarations
+    __import__(mname, globals, locals, fromlist)
+
     mnameparts = mname.split('.')
     firstmname = mnameparts[0]
     validate = getSecurityManager().validate

@@ -25,6 +25,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #685: made security declarations work for python packages
+        that are not Zope products.
+
       - Collector #697: Multiple selection properties were incorrectly
         marshalled. note than any non-ascii multiple selection properties
         modified in versions without this fix will have been corrupted in
