@@ -73,7 +73,8 @@ class StdoutHandler:
 
     def report(self, current, *args, **kw):
         if current % self._steps == 0: 
-            self.output('%d/%d (%.2f%%)' % (current, self._max, (100.0 * current / self._max)))
+            self.output('%d/%d (%.2f%%)' % (current, self._max, 
+                                           (100.0 * current / self._max)))
 
     def output(self, text):
         print >>self.fp, '%s: %s' % (self._ident, text)
