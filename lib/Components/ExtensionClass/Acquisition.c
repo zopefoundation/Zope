@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.13 1997/11/19 13:51:14 jim Exp $
+  $Id: Acquisition.c,v 1.14 1998/01/05 13:38:31 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -79,6 +79,8 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__getslice__, *py__setslice__, *py__delslice__,
   *py__concat__, *py__repeat__, *py__len__, *py__of__, *py__call__,
   *py__repr__, *py__str__;
+
+static PyObject *Acquired=0;
 
 static void
 init_py_names()
@@ -198,22 +200,25 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 
   if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
     {
-      if(r->ob_type==self->ob_type)
+      if(r != Acquired)
 	{
-	  if(r->ob_refcnt==1)
+	  if(r->ob_type==self->ob_type)
 	    {
-	      Py_INCREF(self);
-	      ASSIGN(((Wrapper*)r)->container,OBJECT(self));
+	      if(r->ob_refcnt==1)
+		{
+		  Py_INCREF(self);
+		  ASSIGN(((Wrapper*)r)->container,OBJECT(self));
+		}
+	      else
+		ASSIGN(r, newWrapper(((Wrapper*)r)->obj,
+				     OBJECT(self),self->ob_type));
 	    }
-	  else
-	    ASSIGN(r, newWrapper(((Wrapper*)r)->obj,
-				 OBJECT(self),self->ob_type));
+	  else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
+	    ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
+	  else if(has__of__(r))
+	    ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
+	  return r;
 	}
-      else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
-	ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
-      else if(has__of__(r))
-	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
-      return r;
     }
   if(self->obj) PyErr_Clear();
 
@@ -222,6 +227,7 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 #ifdef IMPLICIT_ACQUIRE___ROLES__
      || strcmp(name,"__roles__")==0
 #endif
+     || r==Acquired
      )
     {      
       if(*name++=='a' && *name++=='q' && *name++=='_')
@@ -269,6 +275,7 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
 
   if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
     {
+      if(r==Acquired) return Wrapper_getattro(self,oname);
       if(r->ob_type==self->ob_type)
 	{
 	  if(r->ob_refcnt==1)
@@ -759,7 +766,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.13 $";
+  char *rev="$Revision: 1.14 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -771,10 +778,14 @@ initAcquisition()
 
   UNLESS(ExtensionClassImported) return;
 
+  UNLESS(Acquired=PyString_FromStringAndSize(NULL,42)) return;
+  strcpy(PyString_AsString(Acquired),
+	 "<Special Object Used to Force Acquisition>");
+
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
-		     "Provide base classes for acquiring objects\n\n"
-		     "$Id: Acquisition.c,v 1.13 1997/11/19 13:51:14 jim Exp $\n",
+	   "Provide base classes for acquiring objects\n\n"
+	   "$Id: Acquisition.c,v 1.14 1998/01/05 13:38:31 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -790,12 +801,18 @@ initAcquisition()
   
   PyDict_SetItemString(d,"__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
+  PyDict_SetItemString(d,"Acquired",Acquired);
 
   CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.14  1998/01/05 13:38:31  jim
+  Added special module variable, 'Acquired'.  If the value of this
+  variable is assigned to an attribute, then the value of the attribute
+  will be acquired, even if it might not otherwize be acquired.
+
   Revision 1.13  1997/11/19 13:51:14  jim
   Extended compile option to implicitly acquire __roles__ to
   implicitly acquire roles even for explicit acquirers.
