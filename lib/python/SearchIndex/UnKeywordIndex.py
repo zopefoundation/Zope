@@ -115,7 +115,7 @@ class UnKeywordIndex(UnIndex):
             newKeywords = getattr(obj, self.id)
             if callable(newKeywords):
                 newKeywords = newKeywords()
-        except Except:
+        except AttributeError:
             newKeywords = MV
 
         if type(newKeywords) is StringType:
