@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.44 2001/04/07 16:01:29 jim Exp $'''
-__version__='$Revision: 1.44 $'[11:-2]
+$Id: HTTPResponse.py,v 1.45 2001/04/07 16:07:09 jim Exp $'''
+__version__='$Revision: 1.45 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -524,7 +524,8 @@ class HTTPResponse(BaseResponse):
   <UL>
   <LI>The URL may be incorrect.</LI>
   <LI>The parameters passed to this resource may be incorrect.</LI>
-  <LI>A resource that this resource relies on may be encountering an error.</LI>
+  <LI>A resource that this resource relies on may be
+      encountering an error.</LI>
   </UL>
 
   <P>For more detailed information about the error, please
@@ -665,7 +666,8 @@ class HTTPResponse(BaseResponse):
                  self._traceback(t,v,tb)),
                  is_error=1)
 
-        elif lower(strip(b)[:6])=='<html>' or lower(strip(b)[:14])=='<!doctype html':
+        elif (lower(strip(b)[:6])=='<html>' or
+              lower(strip(b)[:14])=='<!doctype html'):
             # error is an HTML document, not just a snippet of html
             tb=self.setBody(b + self._traceback(t,'(see above)',tb),
                 is_error=1)
