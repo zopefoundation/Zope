@@ -99,7 +99,7 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
     <OPTION value="<dtml-var action fmt="url-quote">"><dtml-var name>
   </dtml-in>
   </SELECT>
-  <NOSCRIPT><INPUT TYPE="SUBMIT" VALUE=" Add "></NOSCRIPT>
+  <INPUT TYPE="SUBMIT" VALUE=" Add ">
   </FORM>
 </TD>
 </TR>
