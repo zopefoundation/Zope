@@ -510,13 +510,15 @@ def set_locale(val):
 if LOCALE_ID is not None:
     set_locale(LOCALE_ID)
 
+import zdaemon
 # from this point forward we can use the zope logger
+# importing ZDaemon before importing ZServer causes ZServer logging
+# not to work.
 
 # Import ZServer before we open the database or get at interesting
 # application code so that ZServer's asyncore gets to be the
 # official one. Also gets SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME
 import ZServer
-import zdaemon
 
 # install signal handlers
 from SignalHandler import SignalHandler
