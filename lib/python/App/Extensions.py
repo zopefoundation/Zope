@@ -86,10 +86,10 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.11 1999/11/03 14:35:41 brian Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Extensions.py,v 1.12 1999/11/08 17:09:27 brian Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
-from string import find
+from string import find, split
 import os, zlib, rotor
 path_split=os.path.split
 path_join=os.path.join
@@ -156,7 +156,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
             if l > 0:
                 p=name[:l]
                 n=name[l+1:]
-                r=_getPath(home, "Products/%s/%s/" % (p,prefix),
+                r=_getPath(home, "lib/python/Products/%s/%s/" % (p,prefix),
                            n, suffixes)
                 if r is not None: return r
         r=_getPath(home, prefix, name, suffixes)
@@ -190,10 +190,11 @@ def getObject(module, name, reload=0,
     __traceback_info__=p, module
 
     if p[-4:]=='.pyp':
+        prod_id=split(module, '.')[0]
         data=zlib.decompress(
-            rotor.newrotor(d+' shshsh').decrypt(open(p,'rb').read())
+            rotor.newrotor(prod_id +' shshsh').decrypt(open(p,'rb').read())
             )
-        execsrc=compile(data,module,'exec')
+        execsrc=compile(data, module, 'exec')
     else:
         try: execsrc=open(p)
         except: raise "Module Error", (
