@@ -84,17 +84,45 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
-import time, string
+import time, string, App.Management
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
-from string import find,join,lower,split
+from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
 from ExtensionClass import Base
 from Globals import Persistent
 
+class View(App.Management.Tabs):
+    """A view of an object, typically used for management purposes
+    """
 
+    def manage_options(self):
+        """Return a manage option data structure for me instance
+        """
+        try: r=self.REQUEST
+        except: r=None
+        if r is None: pre='../../'
+        else:
+            pre=r['URL']
+            for i in (1,2,3):
+                l=rfind(pre,'/')
+                if l >= 0:
+                    pre=pre[:l]
+            pre=pre+'/'
+            
+        r=[]
+        for d in self.aq_parent.aq_parent.manage_options:
+            r.append({'label': d['label'],
+                      'action': pre+d['action']+'/index_html'})
+        return r
+
+    def tabs_path_info(self, script, path):
+        l=rfind(path,'/')
+        if l >= 0: path=path[:l]
+        return PropertySheet.inheritedAttribute('tabs_path_info')(
+            self, script, path)
 
 class PropertySheet(Persistent, Implicit):
     """A PropertySheet is a container for a set of related properties and
@@ -315,6 +343,7 @@ class PropertySheet(Persistent, Implicit):
 
 
 
+
 class DefaultProperties(PropertySheet):
     """The default property set mimics the behavior of old-style Zope
        properties -- it stores its property values in the instance of
@@ -446,7 +475,7 @@ class PropertySheets(Implicit):
     default=DefaultProperties()
     webdav =DAVProperties()
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         pass
 
     def __propsets__(self):
