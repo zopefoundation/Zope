@@ -1,5 +1,6 @@
 from unittest import TestCase, TestSuite, makeSuite, main
 
+import Testing
 import Zope
 Zope.startup()
 from Interface.Verify import verifyClass

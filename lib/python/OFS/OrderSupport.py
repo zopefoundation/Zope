@@ -12,7 +12,7 @@
 ##############################################################################
 """ Order support for 'Object Manager'.
 
-$Id: OrderSupport.py,v 1.5 2003/12/11 17:39:18 yuppie Exp $
+$Id: OrderSupport.py,v 1.6 2004/04/09 12:26:26 yuppie Exp $
 """
 
 from types import StringType
@@ -130,68 +130,76 @@ class OrderSupport:
     #
 
     security.declareProtected(manage_properties, 'moveObjectsByDelta')
-    def moveObjectsByDelta(self, ids, delta):
+    def moveObjectsByDelta(self, ids, delta, subset_ids=None):
         """ Move specified sub-objects by delta.
         """
         if type(ids) is StringType:
             ids = (ids,)
         min_position = 0
         objects = list(self._objects)
-        obj_dict = {}
-        for obj in self._objects:
-            obj_dict[ obj['id'] ] = obj
+        if subset_ids == None:
+            subset_ids = [ obj['id'] for obj in objects ]
+        else:
+            subset_ids = list(subset_ids)
         # unify moving direction
         if delta > 0:
             ids = list(ids)
             ids.reverse()
-            objects.reverse()
+            subset_ids.reverse()
         counter = 0
 
         for id in ids:
-            try:
-                object = obj_dict[id]
-            except KeyError:
-                raise ValueError('The object with the id "%s" does not exist.'
-                                 % id)
-            old_position = objects.index(object)
+            old_position = subset_ids.index(id)
             new_position = max( old_position - abs(delta), min_position )
             if new_position == min_position:
                 min_position += 1
             if not old_position == new_position:
-                objects.remove(object)
-                objects.insert(new_position, object)
+                subset_ids.remove(id)
+                subset_ids.insert(new_position, id)
                 counter += 1
 
         if counter > 0:
             if delta > 0:
-                objects.reverse()
+                subset_ids.reverse()
+            obj_dict = {}
+            for obj in objects:
+                obj_dict[ obj['id'] ] = obj
+            pos = 0
+            for i in range( len(objects) ):
+                if objects[i]['id'] in subset_ids:
+                    try:
+                        objects[i] = obj_dict[ subset_ids[pos] ]
+                        pos += 1
+                    except KeyError:
+                        raise ValueError('The object with the id "%s" does '
+                                         'not exist.' % subset_ids[pos])
             self._objects = tuple(objects)
 
         return counter
 
     security.declareProtected(manage_properties, 'moveObjectsUp')
-    def moveObjectsUp(self, ids, delta=1):
+    def moveObjectsUp(self, ids, delta=1, subset_ids=None):
         """ Move specified sub-objects up by delta in container.
         """
-        return self.moveObjectsByDelta(ids, -delta)
+        return self.moveObjectsByDelta(ids, -delta, subset_ids)
 
     security.declareProtected(manage_properties, 'moveObjectsDown')
-    def moveObjectsDown(self, ids, delta=1):
+    def moveObjectsDown(self, ids, delta=1, subset_ids=None):
         """ Move specified sub-objects down by delta in container.
         """
-        return self.moveObjectsByDelta(ids, delta)
+        return self.moveObjectsByDelta(ids, delta, subset_ids)
 
     security.declareProtected(manage_properties, 'moveObjectsToTop')
-    def moveObjectsToTop(self, ids):
+    def moveObjectsToTop(self, ids, subset_ids=None):
         """ Move specified sub-objects to top of container.
         """
-        return self.moveObjectsByDelta( ids, -len(self._objects) )
+        return self.moveObjectsByDelta( ids, -len(self._objects), subset_ids )
 
     security.declareProtected(manage_properties, 'moveObjectsToBottom')
-    def moveObjectsToBottom(self, ids):
+    def moveObjectsToBottom(self, ids, subset_ids=None):
         """ Move specified sub-objects to bottom of container.
         """
-        return self.moveObjectsByDelta( ids, len(self._objects) )
+        return self.moveObjectsByDelta( ids, len(self._objects), subset_ids )
 
     security.declareProtected(manage_properties, 'orderObjects')
     def orderObjects(self, key, reverse=None):
