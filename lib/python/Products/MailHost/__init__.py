@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.19 2000/12/08 21:05:23 shane Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: __init__.py,v 1.20 2000/12/11 17:49:13 shane Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import MailHost
 import SendMailTag
@@ -93,7 +93,8 @@ def initialize(context):
     context.registerClass(
         MailHost.MailHost,
         permission='Add MailHost objects',
-        constructors=(MailHost.addForm, MailHost.add),
+        constructors=(MailHost.manage_addMailHostForm,
+                      MailHost.manage_addMailHost),
         icon='www/MailHost_icon.gif',
     )
 

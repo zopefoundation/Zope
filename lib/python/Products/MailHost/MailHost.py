@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.57 2000/11/27 16:01:21 brian Exp $"""
-__version__ = "$Revision: 1.57 $"[11:-2]
+$Id: MailHost.py,v 1.58 2000/12/11 17:49:13 shane Exp $"""
+__version__ = "$Revision: 1.58 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -99,10 +99,10 @@ from cStringIO import StringIO
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
-addForm=HTMLFile('addMailHost_form', globals())
-def add(self, id, title='', smtp_host=None,
-        localhost='localhost', smtp_port=25,
-        timeout=1.0, REQUEST=None):
+manage_addMailHostForm=HTMLFile('addMailHost_form', globals())
+def manage_addMailHost(self, id, title='', smtp_host=None,
+                       localhost='localhost', smtp_port=25,
+                       timeout=1.0, REQUEST=None):
     ' add a MailHost into the system '
 
     id=str(id)
@@ -121,6 +121,8 @@ def add(self, id, title='', smtp_host=None,
     self._setObject(id,i)   #register it
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+add = manage_addMailHost
 
 class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     'a mailhost...?'
