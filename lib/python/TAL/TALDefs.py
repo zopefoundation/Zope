@@ -172,8 +172,7 @@ def parseAttributeReplacements(arg):
 def parseSubstitution(arg, position=(None, None)):
     m = _subst_re.match(arg)
     if not m:
-        raise TALError("Bad syntax in substitution text: " + `onError`,
-                       position)
+        raise TALError("Bad syntax in substitution text: " + `arg`, position)
     key, expr = m.group(1, 2)
     if not key:
         key = "text"
@@ -215,7 +214,4 @@ import cgi
 _cgi = cgi
 del cgi
 def quote(s):
-    if '"' in s and "'" not in s:
-        return "'%s'" % _cgi.escape(s)
-    else:
-        return '"%s"' % _cgi.escape(s, 1)
+    return '"%s"' % _cgi.escape(s, 1)
