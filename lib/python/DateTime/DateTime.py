@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1009,7 +1009,7 @@ class DateTime:
         """Return a new DateTime object that represents the earliest
            possible time (in whole seconds) that still falls within
            the current object\'s day, in the object\'s timezone context"""
-        return self.__class__(self._year,self._month,self._day,0,0,1,self._tz)
+        return self.__class__(self._year,self._month,self._day,0,0,0,self._tz)
 
     def latestTime(self):
         """Return a new DateTime object that represents the latest
