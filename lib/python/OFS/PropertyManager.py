@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -238,6 +238,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         # for selection and multiple selection properties
         # the value argument indicates the select variable
         # of the property
+        
+        id=id.strip()
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
