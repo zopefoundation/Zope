@@ -195,6 +195,8 @@ class Catalog(Persistent, Acquisition.Implicit):
         catalog is first activated (from the persistent storage) """
         Persistent.__setstate__(self, state)
         self.useBrains(self._v_brains)
+        if not hasattr(self, 'lexicon'):
+            self.lexicon = Lexicon()
 
     def useBrains(self, brains):
         """ Sets up the Catalog to return an object (ala ZTables) that
