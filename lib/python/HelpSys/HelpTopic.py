@@ -265,12 +265,14 @@ class STXTopic(TextTopic):
     """
     A structured-text topic. Holds a HTMLFile object.
     """
-    
-    index_html=HTML("""\
+    index_html_=HTML("""\
 <dtml-var standard_html_header>
 <dtml-var obj fmt="structured-text">
 <dtml-var standard_html_footer>""")
 
+    def index_html(self, REQUEST):
+        """ """
+        return self.index_html_(self, REQUEST)
 
 class ImageTopic(HelpTopic):
     """
