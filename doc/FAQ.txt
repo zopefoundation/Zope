@@ -194,6 +194,33 @@ Zope Installation Frequently Asked Questions
        (yay) it's var/z2.pid, for pcgi (not so yay), it's
        var/pcgi.pid.
 
+    4. After moving my old Data.fs to Zope 2.8 I get an 
+       "AttributeError, _length" when trying to use the ZCatalog?
+
+       In Zope 2.8 we cleaned up the index implementations and therefore
+       you need to migrate every single ZCatalog manually:
+
+        - go to the ZMI 
+
+        - click on your ZCatalog instance (or portal_catalog inside
+          your CMF or Plone instance)
+
+        - you will get an "AttributeError, _length"...don't panic
+
+        - call the "manage_convertIndexes" method of the ZCatalog 
+          (by replacing the "manage_main" part of the URL with
+           "manage_convertIndexes")
+
+        - depending on the size of your ZCatalog the migration may
+          take a while
+
+        - after the conversion a message will appear: "Indexes
+          converted and reindexes"
+
+        - Notice: **YOU SHOULD BACKUP YOUR var/Data.fs file before
+          starting the migration**
+
+
   General
 
 
