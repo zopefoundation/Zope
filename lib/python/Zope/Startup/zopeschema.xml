@@ -4,7 +4,8 @@
 
   <!-- type definitions -->
 
-  <import package="zLOG"/>
+  <import package="ZConfig.components.logger" file="handlers.xml"/>
+  <import package="ZConfig.components.logger" file="eventlog.xml"/>
   <import package="ZODB"/>
   <import package="ZServer"/>
   <import package="tempstorage"/>
@@ -13,8 +14,9 @@
   <sectiontype name="logger" datatype=".LoggerFactory">
     <description>
       This "logger" type only applies to access and request ("trace")
-      logging; event logging is handled by the zLOG package, which
-      provides the loghandler type used here.
+      logging; event logging is handled by the "logging" package in
+      the Python standard library.  The loghandler type used here is
+      provided by the "ZConfig.components.logger" package.
     </description>
     <key name="level"
          datatype="ZConfig.components.logger.datatypes.logging_level"

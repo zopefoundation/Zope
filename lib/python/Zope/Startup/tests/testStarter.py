@@ -121,8 +121,6 @@ class ZopeStarterTestCase(unittest.TestCase):
         starter = ZopeStarter(conf)
         starter.setupStartupHandler()
         self.assert_(not zLOG._call_initialize)
-        self.assertEqual(starter.startup_handler.formatter,
-                         zLOG.EventLogger.formatters['file'])
 
         # startup handler should take on the level of the event log handler
         # with the lowest level

@@ -110,9 +110,6 @@ class ZopeStarter:
     def setupStartupHandler(self):
         # set up our initial logging environment (log everything to stderr
         # if we're not in debug mode).
-        import zLOG
-        import zLOG.EventLogger
-
         from ZConfig.components.logger.loghandler import StartupHandler
 
         if self.cfg.eventlog is not None:
@@ -125,7 +122,9 @@ class ZopeStarter:
 
         self.startup_handler = StartupHandler(sys.stderr)
         self.startup_handler.setLevel(level)
-        formatter = zLOG.EventLogger.formatters['file']
+        formatter = logging.Formatter(
+            fmt='------\n%(asctime)s %(levelname)s %(name)s %(message)s',
+            datefmt='%Y-%m-%dT%H:%M:%S')
         self.startup_handler.setFormatter(formatter)
         if not self.cfg.debug_mode:
             # prevent startup messages from going to stderr if we're not

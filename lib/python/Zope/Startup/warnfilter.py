@@ -53,5 +53,3 @@ def warning_filter_handler(section):
     warnings.filterwarnings(section.action, section.message, section.category,
                             section.module, section.lineno, 1)
     return section
-
-
