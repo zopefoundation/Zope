@@ -1,8 +1,8 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
-import sys, os, string,  time, types,re
+import sys, os,  time, types,re
 import socket, httplib, mimetools
 from types import FileType
 from mimetypes import guess_type
@@ -30,22 +30,22 @@ class HTTP(httplib.HTTP):
 
     def getreply(self):
         file=self.sock.makefile('rb')
-        data=string.join(file.readlines(), '')
+        data=''.join(file.readlines())
         file.close()
         self.file=StringIO(data)
         line = self.file.readline()
         try:
-            [ver, code, msg] = string.split(line, None, 2)
+            [ver, code, msg] = line.split( None, 2)
         except ValueError:
           try:
-              [ver, code] = string.split(line, None, 1)
+              [ver, code] = line.split( None, 1)
               msg = ""
           except ValueError:
               return -1, line, None
         if ver[:5] != 'HTTP/':
             return -1, line, None
-        code=string.atoi(code)
-        msg =string.strip(msg)
+        code=int(code)
+        msg =msg.strip()
         headers =mimetools.Message(self.file, 0)
         return ver, code, msg, headers
 
@@ -62,7 +62,7 @@ class Resource:
         if mo: 
             host,port,uri=mo.group(1,2,3)
             self.host=host
-            self.port=port and string.atoi(port[1:]) or 80
+            self.port=port and int(port[1:]) or 80
             self.uri=uri or '/'
         else: raise ValueError, url
 
@@ -91,7 +91,7 @@ class Resource:
             return headers
         if atype=='Basic':
             headers['Authorization']=(
-                "Basic %s" % string.replace(encodestring('%s:%s' % (self.username,self.password)),
+                "Basic %s" % (encodestring('%s:%s' % (self.username,self.password))).replace(
 					    '\012',''))
             return headers
         raise ValueError, 'Unknown authentication scheme: %s' % atype
@@ -99,14 +99,14 @@ class Resource:
     def __enc_formdata(self, args={}):
         formdata=[]
         for key, val in args.items():
-            n=string.rfind(key, '__')
+            n=key.rfind( '__')
             if n > 0:
                 tag=key[n+2:]
                 key=key[:n]
             else: tag='string'
             func=varfuncs.get(tag, marshal_string)
             formdata.append(func(key, val))
-        return string.join(formdata, '&')
+        return '&'.join(formdata)
 
     def __enc_multipart(self, args={}):
         return MultiPart(args).render()
@@ -280,7 +280,7 @@ class Resource:
 
     def getprops(self, *names):
         if not names: return self.propfind()
-        tags=string.join(names, '/>\n  <')
+        tags='/>\n  <'.join(names )
         body='<?xml version="1.0" encoding="utf-8"?>\n' \
               '<d:propfind xmlns:d="DAV:">\n' \
               '  <d:prop>\n' \
@@ -295,7 +295,7 @@ class Resource:
         tags=[]
         for key, val in props.items():
             tags.append('  <%s>%s</%s>' % (key, val, key))
-        tags=string.join(tags, '\n')
+        tags='\n'.join(tags )
         body='<?xml version="1.0" encoding="utf-8"?>\n' \
               '<d:propertyupdate xmlns:d="DAV:">\n' \
               '<d:set>\n' \
@@ -309,7 +309,7 @@ class Resource:
     def delprops(self, *names):
         if not names:
             raise ValueError, 'No property names specified.'
-        tags=string.join(names, '/>\n  <')
+        tags='/>\n  <'.join(names)
         body='<?xml version="1.0" encoding="utf-8"?>\n' \
               '<d:propertyupdate xmlns:d="DAV:">\n' \
               '<d:remove>\n' \
@@ -344,7 +344,7 @@ class http_response:
         return '%s %s' % (self.code, self.msg)
 
     def get_header(self, name, val=None):
-        return self.headers.dict.get(string.lower(name), val)
+        return self.headers.dict.get(name.lower(), val)
 
     def get_headers(self):
         return self.headers.dict
@@ -358,7 +358,7 @@ class http_response:
         map(data.append, self.headers.headers)
         data.append('\r\n')
         data.append(self.body)
-        return string.join(data, '')
+        return ''.join(data)
 
 
 set_xml="""<?xml version="1.0" encoding="utf-8"?>
@@ -450,7 +450,7 @@ def marshal_list(name, seq, tname='list', lt=type([]), tt=type(())):
         if tp in (lt, tt):
             raise TypeError, 'Invalid recursion in data to be marshaled.'
         result.append(marshal_var("%s:%s" % (name, tname), v))    
-    return string.join(result, '&')
+    return '&'.join(result)
 
 def marshal_tuple(name, seq):
     return marshal_list(name, seq, 'tuple')
@@ -502,8 +502,8 @@ class MultiPart:
             if hasattr(val,'name'):
                 ct, enc=guess_type(val.name)
                 if not ct: ct='application/octet-stream'
-                fn=string.replace(val.name,'\\','/')
-                fn=fn[(string.rfind(fn,'/')+1):]
+                fn=val.name.replace('\\','/')
+                fn=fn[(fn.rfind('/')+1):]
             else:
                 ct='application/octet-stream'
                 enc=''
@@ -522,7 +522,7 @@ class MultiPart:
                 d.append(l)
                 l=val.read(8192)
         else:
-            n=string.rfind(name, '__')
+            n=name.rfind( '__')
             if n > 0: name='%s:%s' % (name[:n], name[n+2:])
             h['Content-Disposition']['_v']='form-data'
             h['Content-Disposition']['name']='"%s"' % name
@@ -538,7 +538,7 @@ class MultiPart:
         return '%s_%s_%s' % (int(time.time()), os.getpid(), random())
 
     def render(self):
-        join=string.join
+        
         h=self._headers
         s=[]
 
@@ -555,12 +555,12 @@ class MultiPart:
             for d in self._data:
                 p.append(d.render())
             t.append('--%s\n' % b)
-            t.append(join(p,'\n--%s\n' % b))
+            t.append(('\n--%s\n' % b).join(p))
             t.append('\n--%s--\n' % b)
-            t=join(t,'')
+            t=''.join(t)
             s.append('Content-Length: %s\n\n' % len(t))
             s.append(t)
-            return join(s,'')
+            return ''.join(s)
 
         else:
             for n,v in h.items():
@@ -577,11 +577,11 @@ class MultiPart:
                 for d in self._data:
                     p.append(d.render())
                 s.append('--%s\n' % b)
-                s.append(join(p,'\n--%s\n' % b))
+                s.append(('\n--%s\n' % b).join(p))
                 s.append('\n--%s--\n' % b)
-                return join(s,'')
+                return ''.join(s)
             else:
-                return join(s+self._data,'')
+                return ''.join(s+self._data)
 
 
     _extmap={'':     'text/plain',
