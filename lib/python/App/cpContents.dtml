@@ -28,12 +28,30 @@ such as database and product management.
 	    </FONT>
     </td>
     <td> Click &quot;Shutdown&quot; to shutdown the <em>Zope</em>
-	    process.<br> 
-	 It will be restarted upon receipt of the next web request.
+	    process.	 
     </td>
   </tr>
 </table>
 </FORM>
+
+<!--#if manage_restartable-->
+
+<FORM ACTION="manage_restart" METHOD="POST">
+
+<table CELLPADDING="5">
+  <tr>
+    <td ALIGN="center">
+	    <FONT COLOR="#FF5060">
+	 <INPUT TYPE="SUBMIT" VALUE="Restart">
+	    </FONT>
+    </td>
+    <td> Click &quot;Restart&quot; to restart the <em>Zope</em>
+	    process.
+    </td>
+  </tr>
+</table>
+</FORM>
+<!--#/if-->
 
 <!--#if Principia-Version-->
 <EM>You are currently working in version <!--#var Principia-Version--></EM>
