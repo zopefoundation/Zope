@@ -179,8 +179,6 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             published=app.__bobo_traverse__(REQUEST).__of__(
                 RequestContainer(REQUEST))
 
-        get_transaction().begin() # Just to be sure.
-
         published=getattr(published, 'im_self', published)
         while 1:
             f=getattr(published, 'raise_standardErrorMessage', None)

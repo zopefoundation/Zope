@@ -119,8 +119,6 @@ def publish(request, module_name, after_list, debug=0,
 
         return response
     except:
-        if transactions_manager:
-            transactions_manager.abort()
 
         # DM: provide nicer error message for FTP
         sm = None
@@ -138,19 +136,29 @@ def publish(request, module_name, after_list, debug=0,
             if parents:
                 parents=parents[0]
             try:
-                return err_hook(parents, request,
-                                sys.exc_info()[0],
-                                sys.exc_info()[1],
-                                sys.exc_info()[2],
-                                )
-            except Retry:
-                # We need to try again....
-                if not request.supports_retry():
-                    return err_hook(parents, request,
+                response = err_hook(parents, request,
                                     sys.exc_info()[0],
                                     sys.exc_info()[1],
                                     sys.exc_info()[2],
                                     )
+                if transactions_manager:
+                    transactions_manager.abort()
+                return response
+
+            except Retry:
+                if not request.supports_retry():
+                    response = err_hook(parents, request,
+                                        sys.exc_info()[0],
+                                        sys.exc_info()[1],
+                                        sys.exc_info()[2],
+                                        )
+                    if transactions_manager:
+                        transactions_manager.abort()
+                    return response
+
+
+                if transactions_manager:
+                    transactions_manager.abort()
                 newrequest=request.retry()
                 request.close()  # Free resources held by the request.
                 try:
@@ -159,6 +167,8 @@ def publish(request, module_name, after_list, debug=0,
                     newrequest.close()
 
         else:
+            if transactions_manager:
+                transactions_manager.abort()
             raise
 
 
