@@ -215,7 +215,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             self._version=self.absolute_url(1)
 
     def manage_beforeDelete(self, item, container):        
-        if self._nonempty():
+        if self.nonempty():
             raise 'Version Error', (
                 'Attempt to %sdelete a non-empty version.<p>'
                 ((self is not item) and 'indirectly ' or ''))

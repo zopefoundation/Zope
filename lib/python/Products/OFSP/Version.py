@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -238,7 +238,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
             self.cookie=self.absolute_url(1)
 
     def manage_beforeDelete(self, item, container):        
-        if self._nonempty():
+        if self.nonempty():
             raise 'Version Error', (
                 'Attempt to %sdelete a non-empty version.<p>'
                 ((self is not item) and 'indirectly ' or ''))
