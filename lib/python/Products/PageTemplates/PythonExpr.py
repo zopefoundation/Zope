@@ -86,7 +86,7 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from string import strip, split, join, replace, lstrip
 
@@ -117,10 +117,10 @@ class PythonExpr:
     def _bind_used_names(self, econtext):
         # Bind template variables
         names = {}
-        var = econtext.contexts['var']
+        vars = econtext.vars
         getType = econtext._engine.getTypes().get
         for vname in self._f_varnames:
-            has, val = var.has_get(vname)
+            has, val = vars.has_get(vname)
             if not has:
                 has = val = getType(vname)
                 if has:

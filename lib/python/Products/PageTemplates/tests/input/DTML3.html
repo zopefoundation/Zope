@@ -11,7 +11,7 @@
           </span>
           <dl>
             <span tal:repeat="arg options/batch">
-              <dt><span tal:replace="local/arg">??</span>.</dt>
+              <dt><span tal:replace="arg">??</span>.</dt>
               <dd>Argument <span tal:define="num arg/num"
                                  tal:replace="string: $num"
                   >99</span> was <span tal:replace="arg"

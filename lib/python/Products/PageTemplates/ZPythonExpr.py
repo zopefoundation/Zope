@@ -89,7 +89,7 @@ Handler for Python expressions, using the pre-Python 2.1 restriction
 machinery from PythonScripts.
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from AccessControl import getSecurityManager
 from Products.PythonScripts.Guarded import _marker, \
@@ -128,7 +128,7 @@ def call_with_ns(f, ns, arg=1):
     td.this = None
     td._push(ns['request'])
     td._push(InstanceDict(ns['here'], td))
-    td._push(ns['var'])
+    td._push(ns)
     try:
         if arg==2:
             return f(None, td)

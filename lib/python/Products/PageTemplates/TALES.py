@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -230,49 +230,49 @@ class Context:
         contexts['nothing'] = None
         contexts['default'] = Default
 
-        # Keep track of what contexts get pushed as each scope begins.
-        self._ctxts_pushed = []
-        # These contexts will need to be pushed.
-        self._current_ctxts = {'local': 1, 'repeat': 1}
-        
-        lv = self._context_class()
-        init_local = contexts.get('local', None)
-        if init_local:
-            lv._push(init_local)
-        contexts['local'] = lv
-        contexts['repeat'] = rep =  self._context_class()
+        self.repeat_vars = rv = {}
+        # Wrap this, as it is visible to restricted code
+        contexts['repeat'] = rep =  self._context_class(rv)
         contexts['loop'] = rep # alias
-        contexts['global'] = gv = contexts.copy()
-        contexts['var'] = self._context_class(gv, lv)
-        
+
+        self.global_vars = gv = contexts.copy()
+        self.local_vars = lv = {}
+        self.vars = self._context_class(gv, lv)
+
+        # Keep track of what needs to be popped as each scope ends.
+        self._scope_stack = []
+
     def beginScope(self):
-        oldctxts = self._current_ctxts
-        self._ctxts_pushed.append(oldctxts)
-        self._current_ctxts = ctxts = {}
-        contexts = self.contexts
-        for ctxname in oldctxts.keys():
-            # Push fresh namespace on each local stack.
-            ctxts[ctxname] = ctx = {}
-            contexts[ctxname]._push(ctx)
+        self._scope_stack.append([self.local_vars.copy()])
 
     def endScope(self):
-        self._current_ctxts = ctxts = self._ctxts_pushed.pop()
-        # Pop the ones that were pushed at the beginning of the scope.
-        contexts = self.contexts
-        for ctxname in ctxts.keys():
-            # Pop, then make sure there's no circular garbage
-            contexts[ctxname]._pop().clear()
+        scope = self._scope_stack.pop()
+        self.local_vars = lv = scope[0]
+        v = self.vars
+        v._pop()
+        v._push(lv)
+        # Pop repeat variables, if any
+        i = len(scope) - 1
+        while i:
+            name, value = scope[i]
+            if value is None:
+                del self.repeat_vars[name]
+            else:
+                self.repeat_vars[name] = value
+            i = i - 1
 
     def setLocal(self, name, value):
-        self._current_ctxts['local'][name] = value
+        self.local_vars[name] = value
 
     def setGlobal(self, name, value):
-        self.contexts['global'][name] = value
+        self.global_vars[name] = value
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
         it = self._engine.Iterator(name, expr, self)
-        self._current_ctxts['repeat'][name] = it
+        old_value = self.repeat_vars.get(name)
+        self._scope_stack[-1].append((name, old_value))
+        self.repeat_vars[name] = it
         return it
 
     def evaluate(self, expression,
