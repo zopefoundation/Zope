@@ -13,10 +13,10 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.5 2002/04/04 20:22:42 chrism Exp $
+$Id: TransientObject.py,v 1.6 2002/06/11 15:19:38 chrism Exp $
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Persistence import Persistent
 from Acquisition import Implicit
@@ -138,12 +138,17 @@ class TransientObject(Persistent, Implicit):
     def __setitem__(self, k, v):
         # if the key or value is a persistent instance,
         # set up its _p_jar immediately
-        if hasattr(v, '_p_jar') and v._p_jar is None:
-            v._p_jar = self._p_jar
-            v._p_changed = 1
-        if hasattr(k, '_p_jar') and k._p_jar is None:
-            k._p_jar = self._p_jar
-            k._p_changed = 1
+        # XXX
+        # not sure why the below was here, so I'm taking it out
+        # because it apparently causes problems when a
+        # transaction is aborted (the connection attempts to
+        # invalidate an oid of None in "abort")
+##         if hasattr(v, '_p_jar') and v._p_jar is None:
+##             v._p_jar = self._p_jar
+##             v._p_changed = 1
+##         if hasattr(k, '_p_jar') and k._p_jar is None:
+##             k._p_jar = self._p_jar
+##             k._p_changed = 1
         self._container[k] = v
         self.setLastModified()
 
