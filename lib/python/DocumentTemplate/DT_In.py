@@ -402,8 +402,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.55 2001/10/16 15:29:55 klm Exp $'
-__version__='$Revision: 1.55 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.56 2001/10/22 19:48:23 jeremy Exp $'
+__version__='$Revision: 1.56 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
@@ -646,9 +646,8 @@ class InClass:
                                 params['skip_unauthorized']):
                                 if index==first: pkw['sequence-start']=0
                                 continue
-                            tb = sys.exc_info()[2]
                             raise ValidationError, '(item %s): %s' % (
-                                index, vv), tb
+                                index, vv), sys.exc_info()[2]
                     else:
                         client = sequence[index]
 
@@ -677,7 +676,6 @@ class InClass:
                 result = ''.join(result)
 
         finally:
-            tb = None
             if cache: pop()
             pop()
 
@@ -747,9 +745,8 @@ class InClass:
                                 self.args['skip_unauthorized']):
                                 if index==1: pkw['sequence-start']=0
                                 continue
-                            tb = sys.exc_info()[2]
                             raise ValidationError, '(item %s): %s' % (
-                                index, vv), tb
+                                index, vv), sys.exc_info()[2]
                     else:
                         client = sequence[index]
 
@@ -776,7 +773,6 @@ class InClass:
                 result = ''.join(result)
 
         finally:
-            tb = None
             if cache: pop()
             pop()
 
