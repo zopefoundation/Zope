@@ -6,19 +6,24 @@ import sys
 import utils
 import unittest
 
+from StringIO import StringIO
+
 from TAL.TALDefs import METALError
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALInterpreter import TALInterpreter
 from TAL.DummyEngine import DummyEngine
 
 
-class MacroErrorsTestCase(unittest.TestCase):
+class TestCaseBase(unittest.TestCase):
 
     def _compile(self, source):
         parser = HTMLTALParser()
         parser.parseString(source)
         program, macros = parser.getCode()
         return program, macros
+
+
+class MacroErrorsTestCase(TestCaseBase):
 
     def setUp(self):
         dummy, macros = self._compile('<p metal:define-macro="M">Booh</p>')
@@ -42,9 +47,32 @@ class MacroErrorsTestCase(unittest.TestCase):
         self.macro[0] = ("version", "duh")
 
 
+class OutputPresentationTestCase(TestCaseBase):
+
+    def check_attribute_wrapping(self):
+        # To make sure the attribute-wrapping code is invoked, we have to
+        # include at least one TAL/METAL attribute to avoid having the start
+        # tag optimized into a rawtext instruction.
+        INPUT = r"""
+        <html this='element' has='a' lot='of' attributes=', so' the='output'
+              needs='to' be='line' wrapped='.' tal:define='foo nothing'>
+        </html>"""
+        EXPECTED = r'''
+        <html this="element" has="a" lot="of"
+              attributes=", so" the="output" needs="to"
+              be="line" wrapped=".">
+        </html>''' "\n"
+        program, macros = self._compile(INPUT)
+        sio = StringIO()
+        interp = TALInterpreter(program, {}, DummyEngine(), sio, wrap=60)
+        interp()
+        self.assertEqual(sio.getvalue(), EXPECTED)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MacroErrorsTestCase, "check_"))
+    suite.addTest(unittest.makeSuite(OutputPresentationTestCase, "check_"))
     return suite
 
 
