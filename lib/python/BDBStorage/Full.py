@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.14 $
+# $Revision: 1.15 $
 __version__ = '0.1'
 
 import struct
@@ -631,16 +631,34 @@ class Full(BerkeleyBase):
                 # the state changes couldn't be resolved.
                 revid = self._serials[oid]
                 if revid == tid:
-                    # We can always undo the last transaction
                     vid, nvrevid, lrevid, prevrevid = struct.unpack(
                         '>8s8s8s8s', self._metadata[oid+tid])
-                    if prevrevid == ZERO:
-                        # We're undoing the object's creation.  The only thing
-                        # to undo from there is the zombification of the
-                        # object, i.e. restore the current revision.
-                        newrevs.append((oid, vid+nvrevid+DNE+revid))
-                    else:
-                        newrevs.append((oid, self._metadata[oid+prevrevid]))
+                    # We can always undo the last transaction.  The prevrevid
+                    # pointer doesn't necessarily point to the previous
+                    # transaction, if the revision we're undoing was itself an
+                    # undo.  Use a cursor to find the previous revision of
+                    # this object.
+                    mdc = self._metadata.cursor()
+                    try:
+                        mdc.set(oid+revid)
+                        mrec = mdc.prev()
+                        # If we're undoing the first record, either for the
+                        # whole system or for this object, just write a
+                        # zombification record
+                        if not mrec or mrec[0][:8] <> oid:
+                            newrevs.append((oid, vid+nvrevid+DNE+revid))
+                            continue
+                        # BAW: If the revid of this object record is the same
+                        # as the revid we're being asked to undo, then I think
+                        # we have a problem (since the storage invariant is
+                        # that it doesn't retain metadata records for multiple
+                        # modifications of the object in the same txn).
+                        if mrec[0][8:] == revid:
+                            raise StorageSystemError
+                        # All is good, so just restore this metadata record
+                        newrevs.append((oid, mrec[1]))
+                    finally:
+                        mdc.close()
                 else:
                     # We need to compare the lrevid (pickle pointers) of the
                     # transaction previous to the current one, and the
@@ -934,6 +952,9 @@ class Full(BerkeleyBase):
             self._lock_release()
 
     # Other interface assertions
+    def supportsTransactionalUndo(self):
+        return 1
+
     def supportsUndo(self):
         return 1
 
