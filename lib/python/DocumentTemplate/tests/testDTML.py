@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.9 2001/11/28 15:50:56 matt Exp $'
-__version__='$Revision: 1.9 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.10 2002/02/06 19:13:36 chrisw Exp $'
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os
 import unittest
@@ -26,7 +26,7 @@ else:
     here = tests.__path__[0]
 
 def read_file(name):
-    f = open(os.path.join(here, name), 'rb')
+    f = open(os.path.join(here, name), 'r')
     res = f.read()
     f.close()
     return res
@@ -42,7 +42,6 @@ class D:
     def __repr__(self): return "D(%s)" % `self.__dict__`
 
 def d(**kw): return kw
-
 
 class DTMLTests (unittest.TestCase):
 
@@ -163,7 +162,7 @@ class DTMLTests (unittest.TestCase):
         html=self.doc_class(read_file('dealers.dtml'))
         res = html(inventory=items, first_ad=15)
         expected = read_file('dealers.out')
-        assert res == expected, res
+        self.assertEqual(res,expected)
 
     def testSequenceSummaries(self):
         def d(**kw): return kw
