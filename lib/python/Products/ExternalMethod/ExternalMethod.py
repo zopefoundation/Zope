@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
@@ -159,9 +159,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
     manage_options=(
         (
         {'label':'Properties', 'action':'manage_main',
-         'help':('ExternalMethod','External-Method_Properties.dtml')},
+         'help':('ExternalMethod','External-Method_Properties.stx')},
         {'label':'Try It', 'action':'',
-         'help':('ExternalMethod','External-Method_Try-It.dtml')},
+         'help':('ExternalMethod','External-Method_Try-It.stx')},
         )
         +OFS.SimpleItem.Item.manage_options
         +AccessControl.Role.RoleManager.manage_options
