@@ -155,7 +155,7 @@ class Product(Folder):
     icon='p_/Product_icon'
     version=''
     configurable_objects_=()
-    __import_error__=None
+    import_error_=None
 
     def new_version(self,
                     _intending=regex.compile("[.]?[0-9]+$").search,
@@ -401,7 +401,7 @@ def initializeProduct(productp, name, home, app):
 
     products=app.Control_Panel.Products
 
-    if hasattr(productp, '__import_error__'): ie=productp.__import_error__
+    if hasattr(productp, 'import_error_'): ie=productp.import_error_
     else: ie=None
 
     try: fver=strip(open(home+'/version.txt').read())
@@ -411,8 +411,8 @@ def initializeProduct(productp, name, home, app):
         if ihasattr(products,name):
             old=getattr(products, name)
             if (ihasattr(old,'version') and old.version==fver and
-                hasattr(old, '__import_error__') and
-                old.__import_error__==ie):
+                hasattr(old, 'import_error_') and
+                old.import_error_==ie):
                 return
     except: pass
     
