@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -139,9 +139,9 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         + SimpleItem.manage_options \
         + Cacheable.manage_options
 
-    _properties=({'id':'title', 'type': 'string'},
-                 {'id':'content_type', 'type':'string'},
-                 {'id':'expand', 'type':'boolean'},
+    _properties=({'id':'title', 'type': 'string', 'mode': 'w'},
+                 {'id':'content_type', 'type':'string', 'mode': 'w'},
+                 {'id':'expand', 'type':'boolean', 'mode': 'w'},
                  )
 
     def __init__(self, id, text=None, content_type=None):
@@ -355,8 +355,8 @@ d = ZopePageTemplate.__dict__
 d['source.xml'] = d['source.html'] = Src()
 
 # Product registration and Add support
-manage_addPageTemplateForm = PageTemplateFile('www/ptAdd', globals())
-manage_addPageTemplateForm.__name__ = 'manage_addPageTemplateForm'
+manage_addPageTemplateForm = PageTemplateFile(
+    'www/ptAdd', globals(), __name__='manage_addPageTemplateForm')
 
 from urllib import quote
 

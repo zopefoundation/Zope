@@ -11,3 +11,11 @@ Page Template changes
         - Error reporting is improved, with line numbers added.
 
         - In the ZMI, errors are separated from the text and highlighted.
+
+        - A template can be marked explicitly as XML or HTML by giving
+        it a boolean 'is_html' property.
+
+      Bugs Fixed
+
+        - The starting properties could be deleted.  This is only
+        fixed for new templates.
