@@ -335,6 +335,15 @@ class Product(Folder, PermissionManager):
     def zclass_product_name(self):
         return self.id
 
+    def getProductHelp(self):
+        """
+        Returns the ProductHelp object associated
+        with the Product.
+        """
+        if not hasattr(self, 'Help'):
+            self._setObject('Help', ProductHelp('Help', '%s Help' % self.id))
+        return self.Help
+
 class CompressedOutputFile:
     def __init__(self, rot):
         self._c=zlib.compressobj()

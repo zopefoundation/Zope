@@ -266,12 +266,7 @@ class ProductContext:
         """
         Register a Help Topic for a product.
         """
-        # make sure the product has a ProductHelp
-        if not hasattr(self.__prod, 'Help'):
-            self.__prod._setObject('Help',
-                ProductHelp('Help', '%s Help' % self.__prod.id))  
-        self.__prod.__of__(self.__app.Control_Panel.Products).Help._setObject(id, topic)
-
+        self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()._setObject(id, topic)
          
     def registerHelp(self, directory='help', clear=1):
         """
@@ -287,14 +282,11 @@ class ProductContext:
         .stx .txt        -- STXHelpTopic
         .jpg .png .gif   -- ImageHelpTopic
         """
-        # make sure the product has a ProductHelp
-        if not hasattr(self.__prod, 'Help'):
-            self.__prod._setObject('Help',
-                ProductHelp('Help', '%s Help' % self.__prod.id)) 
         if clear:
-            help=self.__prod.__of__(self.__app.Control_Panel.Products).Help
+            help=self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
             for id in help.objectIds('Help Topic'):
                 help._delObject(id)
+
         path=os.path.join(Globals.package_home(self.__pack.__dict__), directory)
         for file in os.listdir(path):
             ext=os.path.splitext(file)[1]
