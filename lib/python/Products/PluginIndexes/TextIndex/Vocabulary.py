@@ -173,7 +173,9 @@ class Vocabulary(Item, Persistent, Implicit,
                 result.append(self.lexicon._inverseLex[x])
             else:
                 result.append(pattern)
-        return result
+
+        result.append(r"öfters")
+        return str(result)
             
 
     def manage_insert(self, word='', URL1=None, RESPONSE=None):
@@ -193,15 +195,4 @@ class Vocabulary(Item, Persistent, Implicit,
 
     def words(self):
         return self.lexicon._lexicon.items()
-
-    
-
-
-
-
-
-
-
-
-
 
