@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -123,6 +123,17 @@ class ApplicationManager(Folder,CacheManager):
 
     manage=manage_main=HTMLFile('cpContents', globals())
     manage_undoForm=HTMLFile('undo', globals())
+
+    def version_txt(self):
+        if not hasattr(self, '_v_version_txt'):
+            try: self._v_version_txt=open(
+                os.path.join(SOFTWARE_HOME,'version.txt')).read()
+            except: self._v_version_txt='(unreleased version)'
+                
+        return self._v_version_txt
+
+    def sys_version(self): return sys.version
+    def sys_platform(self): return sys.platform
 
     _objects=(
         {'id': 'Database',
