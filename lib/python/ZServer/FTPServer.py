@@ -203,7 +203,7 @@ class zope_ftp_channel(ftp_channel):
     def cmd_cwd (self, line):
         'change working directory'
         response=make_response(self, self.cwd_completion,
-                self._join_paths(self.path,line[1]))
+                               self._join_paths(self.path,line[1]))
         request=FTPRequest(line[1],'CWD',self,response)
         handle(self.module,request,response)
 
@@ -507,6 +507,13 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_appe(self, line):
         self.respond('502 Command not implemented.')
+
+    def cmd_feat(self, line):
+        # specified in RFC 2389; gives a list of supported extensions
+        self.respond('211-Extensions supported:\r\n'
+                     ' MDTM\r\n'
+                     ' SIZE\r\n'
+                     '211 END')
 
 
 
