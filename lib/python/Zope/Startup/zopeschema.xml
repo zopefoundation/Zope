@@ -302,16 +302,13 @@
     <metadefault>unset</metadefault>
   </key>
 
-  <key name="enable-product-installation" datatype="boolean" default="on"
-       handler="enable_product_installation">
+  <key name="enable-product-installation" datatype="boolean" default="on">
     <description>
      If this directive is turned on, Zope performs 'product installation'
      (the registration of Python modules in various Products directories)
      at startup. Turning this off can speed Zope startup time, but it can
      also cause your Control_Panel Product list to become desynchronized
-     with the contents of your Products directories. If the
-     'zeo_client_name' directive is set, and this directive is unset, this
-     directive will be implicitly turned off.
+     with the contents of your Products directories.
     </description>
     <metadefault>on</metadefault>
   </key>

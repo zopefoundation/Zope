@@ -140,32 +140,18 @@ instancehome $INSTANCE
 # Directive: enable-product-installation
 #
 # Description:
-#     If this directive is turned on and the 'zeo-client-name' setting
-#     is also set, Zope performs 'product installation' (the
-#     registration of Python modules in various Products directories)
+#     If this directive is turned, Zope performs 'product installation'
+#     (the registration of Python modules in various Products directories)
 #     at startup. Turning this off can speed Zope/ZEO startup time,
 #     but it can also cause your Control_Panel Product list to become
 #     desynchronized with the contents of your Products
-#     directories. If the 'zeo-client-name' directive is set, and this
-#     directive is unset, this directive will be implicitly turned off
-#     By default, it is on.  A table explaining how the effective
-#     combinations of 'enable-product-installation' and
-#     'zeo-client-name' effect the behavior of product loading is
-#     below:
-#
-#     'enable-product-installation' 'zeo-client-name'  result
-#     -------------------------------------------------------
-#      on                            unset             Products are loaded
-#      on                            set               Products are loaded
-#      off                           unset             Products are loaded
-#      off                           set               Products are not loaded
+#     directories. 
 #
 # Default: on
 #
 # Example:
 #
 #    enable-product-installation off
-
 
 # Directive: locale
 #
@@ -606,8 +592,7 @@ instancehome $INSTANCE
 #     zeo-client-name, the client cache is stored in temporary files
 #     which are removed when the ClientStorage shuts down.  The value
 #     of zeo-client-name is used to uniquely identify the local cache
-#     files created if this Zope is a ZEO client.  See also
-#     'enable-product-installation'.
+#     files created if this Zope is a ZEO client.
 #
 # Default: unset
 #

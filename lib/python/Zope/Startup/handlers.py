@@ -22,10 +22,6 @@ def debug_mode(value):
     Globals.DevelopmentMode = not not value
     return value
 
-def enable_product_installation(value):
-    value and _setenv('FORCE_PRODUCT_LOAD', '1')
-    return value
-
 def locale(value):
     import locale
     locale.setlocale(locale.LC_ALL, value)

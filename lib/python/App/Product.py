@@ -591,7 +591,5 @@ def ihasattr(o, name):
 
 
 def doInstall():
-    if os.environ.has_key('FORCE_PRODUCT_LOAD'):
-        return not not os.environ['FORCE_PRODUCT_LOAD']
+    return getConfiguration().enable_product_installation
 
-    return not os.environ.get('ZEO_CLIENT')
