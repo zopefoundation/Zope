@@ -77,7 +77,7 @@ class HTMLTests(unittest.TestCase):
         t.write(util.read_input(fname))
         assert not t._v_errors, 'Template errors: %s' % t._v_errors
         expect = util.read_output(fname)
-        out = apply(t, args, kwargs)
+        out = t(*args, **kwargs)
         util.check_html(expect, out)
 
     def assert_expected_unicode(self, t, fname, *args, **kwargs):
@@ -85,7 +85,7 @@ class HTMLTests(unittest.TestCase):
         assert not t._v_errors, 'Template errors: %s' % t._v_errors
         expect = util.read_output(fname)
         expect = unicode(expect, 'utf8')
-        out = apply(t, args, kwargs)
+        out = t(*args, **kwargs)
         util.check_html(expect, out)
 
     def getProducts(self):
