@@ -1,5 +1,7 @@
-#!/usr/local/bin/python1.4
-# $What$
+#!/bin/sh
+""":"
+exec python $0 ${1+"$@"}
+"""
 
 __doc__='''Command-line Bobo
 
@@ -74,7 +76,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.12 1997/09/02 21:15:34 jim Exp $
+$Id: Test.py,v 1.13 1998/04/09 15:20:10 jim Exp $
 '''
 #     Copyright 
 #
@@ -128,10 +130,7 @@ $Id: Test.py,v 1.12 1997/09/02 21:15:34 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.12 $'[11:-2]
-
-
-#! /usr/local/bin/python
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys,traceback, profile
 repeat_count=100
@@ -338,6 +337,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.13  1998/04/09 15:20:10  jim
+# Fixed way that Python is invoked in command-line mode.
+#
 # Revision 1.12  1997/09/02 21:15:34  jim
 # Added 'Main' as default module.
 # Took out break in non-existent xxx_find_object.
