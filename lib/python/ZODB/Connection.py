@@ -227,8 +227,6 @@ class Connection(ExportImport, object):
 
         self._inv_lock = threading.Lock()
         self._invalidated = d = {}
-        self._invalid = d.has_key
-        
 
         # We intend to prevent committing a transaction in which
         # ReadConflictError occurs.  _conflicts is the set of oids that
