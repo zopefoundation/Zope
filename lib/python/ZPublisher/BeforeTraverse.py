@@ -10,11 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
 
 from zLOG import LOG, ERROR
+import sys
 
 # Interface
 
