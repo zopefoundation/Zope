@@ -1,0 +1,17 @@
+
+Aqueduct Gadfly Changes
+-----------------------
+
+  AqueductGadfly 1.1
+
+    Features Added
+
+      - Added permission for adding Gadfly database connections.
+     
+      - The Gadfly Database Adapter Databases are stored in the
+        'var/gadfly' directory of the Principia installation.  If this
+        directory doesn't exist, it is automatically created, as is a
+        'demo' database.
+
+      - Some descriptive information, as well as the Gadfly copyright
+        notice have been added to the add-connection interface.
