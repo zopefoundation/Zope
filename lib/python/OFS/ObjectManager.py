@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.142 2001/10/17 20:00:32 tseaver Exp $"""
+$Id: ObjectManager.py,v 1.143 2001/10/26 15:11:59 andreasjung Exp $"""
 
-__version__='$Revision: 1.142 $'[11:-2]
+__version__='$Revision: 1.143 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -109,7 +109,7 @@ customImporters={
     XMLExportImport.magic: XMLExportImport.importXML,
     }
 
-bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$# ]').search #TS
+bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# ]').search #TS
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -124,6 +124,7 @@ def checkValidId(self, id, allow_dup=0):
     # only check that the id string contains no illegal chars;
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
+
     if not id or (type(id) != type('')):
         raise BadRequestException, 'Empty or invalid id specified.'
     if bad_id(id) is not None:

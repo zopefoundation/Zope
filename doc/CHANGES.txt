@@ -96,6 +96,10 @@ Zope Changes
         are considered to be safe and do not need any escaping. This 
         caused Zope to be completely incomplete with Windows XP. Fixed !
 
+      - WebDAV: '(' and ')' are now allowed in Ids for Zope objects.
+        This is needed when one tries to duplicate files using cut&paste
+        through Microsoft webfolders.
+
       - Collector #2532: ZCatalog.availableSplitters is now protected
         by security mechanism.
 
