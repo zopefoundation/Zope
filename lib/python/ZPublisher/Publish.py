@@ -249,14 +249,28 @@ Function, method, and class objects
     
 	string -- python strings
     
+	Required -- non-blank python strings
+    
 	regex -- Python case-sensitive regular expressions
     
 	Regex -- Python case-insensitive regular expressions
     
+	regexs -- Multiple Python case-sensitive regular expressions
+	          separated by spaces
+    
+	Regexs -- Multiple Python case-insensitive regular expressions
+	          separated by spaces
+
 	date -- Date-time values
 
         list -- Python list of values, even if there is only
 	        one value.
+
+        lines -- Python list of values entered as multiple lines
+	         in a single field
+
+        tokens -- Python list of values entered as multiple space-separated
+	          tokens in a single field
 
         tuple -- Python tuple of values, even if there is only one.
 
@@ -504,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.28 1997/01/08 23:22:45 jim Exp $"""
+$Id: Publish.py,v 1.29 1997/01/28 23:02:49 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -556,126 +570,9 @@ $Id: Publish.py,v 1.28 1997/01/08 23:22:45 jim Exp $"""
 #
 #   (540) 371-6909
 #
-# $Log: Publish.py,v $
-# Revision 1.28  1997/01/08 23:22:45  jim
-# Added code to overcome Python 1.3 bug in string conversion functions.
+# See end of file for change log.
 #
-# Revision 1.27  1996/12/30 14:36:12  jim
-# Fixed a spelling error.
-#
-# Revision 1.26  1996/11/26 22:06:18  jim
-# Added support for __bobo_before__ and __bobo_after__.
-#
-# Revision 1.25  1996/11/06 14:27:09  jim
-# Added logic to return status code from publish method.
-# This is needed by the Bobo server.
-#
-# Revision 1.24  1996/10/29 19:21:43  jim
-# Changed rule (and terminology) for acquiring authorization data
-# so that a subobject can aquire data from a container even if an
-# intervening object does not use named groups.
-#
-# Added better string formating of requests.
-#
-# Revision 1.23  1996/10/28 22:13:45  jim
-# Fixed bug in last fix.
-#
-# Revision 1.22  1996/10/25 19:34:27  jim
-# Fixed bug in handling of import errors.
-#
-# Revision 1.21  1996/10/15 15:45:35  jim
-# Added tuple argument type and enhances error handling.
-#
-# Revision 1.20  1996/09/16 14:43:27  jim
-# Changes to make shutdown methods work properly.  Now shutdown methods
-# can simply sys.exit(0).
-#
-# Added on-line documentation and debugging support to bobo.
-#
-# Revision 1.19  1996/09/13 22:51:35  jim
-# *** empty log message ***
-#
-# Revision 1.18  1996/08/30 23:40:40  jfulton
-# Fixed bug in argument marshalling!!!
-#
-# Revision 1.17  1996/08/30 17:08:53  jfulton
-# Disallowed index_html/index_html.
-#
-# Revision 1.16  1996/08/29 22:20:26  jfulton
-# *** empty log message ***
-#
-# Revision 1.15  1996/08/07 19:37:54  jfulton
-# Added:
-#
-#   - Regex, regex input types,
-#   - New rule for acquiring allow groups,
-#   - Support for index_html attribute,
-#   - Support for relative base refs
-#   - Added URL as magic variable
-#   - Added error checking of typed fields
-#
-# Revision 1.14  1996/08/05 11:33:54  jfulton
-# Added first cut at group composition.
-#
-# Revision 1.13  1996/07/25 16:42:48  jfulton
-# - Added FileUpload objects.
-# - Added logic to check for non-file fields in forms with file upload.
-# - Added new type conversion types: string (esp for use with file-upload)
-#   and date.
-#
-# Revision 1.12  1996/07/25 12:39:09  jfulton
-# Added support for __allow_groups__ method.
-# Made auto-generation of realms smarter about realm names.
-#
-# Revision 1.11  1996/07/23 20:56:40  jfulton
-# Updated the documentation.
-#
-# Revision 1.10  1996/07/23 20:48:55  jfulton
-# Changed authorization model so that sub-object allow_groups override,
-# rather than augment (tighten) parent groups.
-#
-# Note that now a valid group is None, which makes a subobject public,
-# even a parent is protected.
-#
-# Revision 1.9  1996/07/23 19:59:29  jfulton
-# Fixed bugs:
-#
-#   - object[entryname] can fail with attribute as well as type error
-#   - flatten didn't work with multiple values\
-#   - inserted base was not absolute
-#
-# Added transaction support.
-#
-# Revision 1.8  1996/07/18 14:59:54  jfulton
-# Fixed bug in getting web_objects.
-#
-# Revision 1.7  1996/07/11 19:39:07  jfulton
-# Fixed bug in new feature: 'AUTHENTICATED_USER'
-#
-# Revision 1.6  1996/07/10 22:53:54  jfulton
-# Fixed bug in use of default realm.
-#
-# If authentication is performed, then the name of the authenticated
-# user is saved in the request with the name 'AUTHENTICATED_USER', and
-# will be passed to called objects through the argument name
-# 'AUTHENTICATED_USER'.
-#
-# Revision 1.5  1996/07/08 20:34:11  jfulton
-# Many changes, including:
-#
-#   - Better realm management
-#   - Automatic type conversion
-#   - Improved documentation
-#   - ...
-#
-# Revision 1.4  1996/07/04 22:57:20  jfulton
-# Added lots of documentation.  A few documented features have yet to be
-# implemented.  The module needs to be retested after adding some new
-# features.
-#
-#
-# 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 
 def main():
@@ -1130,6 +1027,12 @@ def field2string(v):
     except: v=str(v)
     return v
 
+def field2required(v):
+    try: v=v.read()
+    except: v=str(v)
+    if string.strip(v): return v
+    raise ValueError, 'No input for required field'
+
 def field2int(v):
     try: v=v.read()
     except: v=str(v)
@@ -1160,6 +1063,28 @@ def field2regex(v):
     try: v=v.read()
     except: v=str(v)
     if v: return regex.compile(v,regex.casefold)
+
+def field2Regexs(v):
+    try: v=v.read()
+    except: v=str(v)
+    v= map(lambda v: regex.compile(v), string.split(v))
+    if v: return v
+
+def field2regexs(v):
+    try: v=v.read()
+    except: v=str(v)
+    v= map(lambda v: regex.compile(v, regex.casefold), string.split(v))
+    if v: return v
+
+def field2tokens(v):
+    try: v=v.read()
+    except: v=str(v)
+    return string.split(v)
+
+def field2lines(v):
+    try: v=v.read()
+    except: v=str(v)
+    return string.split(v,'\n')
 
 def field2date(v):
     from DateTime import DateTime
@@ -1279,6 +1204,11 @@ class Request:
 	'tuple':	field2tuple,
 	'regex':	field2regex,
 	'Regex':	field2Regex,
+	'regexs':	field2regexs,
+	'Regexs':	field2Regexs,
+	'Required':	field2Required,
+	'tokens':	field2tokens,
+	'lines':	field2lines,
 	}
 
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
@@ -1467,3 +1397,127 @@ def publish_module(module_name,
     sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
     return status
 
+#
+# $Log: Publish.py,v $
+# Revision 1.29  1997/01/28 23:02:49  jim
+# Moved log.
+# Added new data type conversion options.
+#
+# Revision 1.28  1997/01/08 23:22:45  jim
+# Added code to overcome Python 1.3 bug in string conversion functions.
+#
+# Revision 1.27  1996/12/30 14:36:12  jim
+# Fixed a spelling error.
+#
+# Revision 1.26  1996/11/26 22:06:18  jim
+# Added support for __bobo_before__ and __bobo_after__.
+#
+# Revision 1.25  1996/11/06 14:27:09  jim
+# Added logic to return status code from publish method.
+# This is needed by the Bobo server.
+#
+# Revision 1.24  1996/10/29 19:21:43  jim
+# Changed rule (and terminology) for acquiring authorization data
+# so that a subobject can aquire data from a container even if an
+# intervening object does not use named groups.
+#
+# Added better string formating of requests.
+#
+# Revision 1.23  1996/10/28 22:13:45  jim
+# Fixed bug in last fix.
+#
+# Revision 1.22  1996/10/25 19:34:27  jim
+# Fixed bug in handling of import errors.
+#
+# Revision 1.21  1996/10/15 15:45:35  jim
+# Added tuple argument type and enhances error handling.
+#
+# Revision 1.20  1996/09/16 14:43:27  jim
+# Changes to make shutdown methods work properly.  Now shutdown methods
+# can simply sys.exit(0).
+#
+# Added on-line documentation and debugging support to bobo.
+#
+# Revision 1.19  1996/09/13 22:51:35  jim
+# *** empty log message ***
+#
+# Revision 1.18  1996/08/30 23:40:40  jfulton
+# Fixed bug in argument marshalling!!!
+#
+# Revision 1.17  1996/08/30 17:08:53  jfulton
+# Disallowed index_html/index_html.
+#
+# Revision 1.16  1996/08/29 22:20:26  jfulton
+# *** empty log message ***
+#
+# Revision 1.15  1996/08/07 19:37:54  jfulton
+# Added:
+#
+#   - Regex, regex input types,
+#   - New rule for acquiring allow groups,
+#   - Support for index_html attribute,
+#   - Support for relative base refs
+#   - Added URL as magic variable
+#   - Added error checking of typed fields
+#
+# Revision 1.14  1996/08/05 11:33:54  jfulton
+# Added first cut at group composition.
+#
+# Revision 1.13  1996/07/25 16:42:48  jfulton
+# - Added FileUpload objects.
+# - Added logic to check for non-file fields in forms with file upload.
+# - Added new type conversion types: string (esp for use with file-upload)
+#   and date.
+#
+# Revision 1.12  1996/07/25 12:39:09  jfulton
+# Added support for __allow_groups__ method.
+# Made auto-generation of realms smarter about realm names.
+#
+# Revision 1.11  1996/07/23 20:56:40  jfulton
+# Updated the documentation.
+#
+# Revision 1.10  1996/07/23 20:48:55  jfulton
+# Changed authorization model so that sub-object allow_groups override,
+# rather than augment (tighten) parent groups.
+#
+# Note that now a valid group is None, which makes a subobject public,
+# even a parent is protected.
+#
+# Revision 1.9  1996/07/23 19:59:29  jfulton
+# Fixed bugs:
+#
+#   - object[entryname] can fail with attribute as well as type error
+#   - flatten didn't work with multiple values\
+#   - inserted base was not absolute
+#
+# Added transaction support.
+#
+# Revision 1.8  1996/07/18 14:59:54  jfulton
+# Fixed bug in getting web_objects.
+#
+# Revision 1.7  1996/07/11 19:39:07  jfulton
+# Fixed bug in new feature: 'AUTHENTICATED_USER'
+#
+# Revision 1.6  1996/07/10 22:53:54  jfulton
+# Fixed bug in use of default realm.
+#
+# If authentication is performed, then the name of the authenticated
+# user is saved in the request with the name 'AUTHENTICATED_USER', and
+# will be passed to called objects through the argument name
+# 'AUTHENTICATED_USER'.
+#
+# Revision 1.5  1996/07/08 20:34:11  jfulton
+# Many changes, including:
+#
+#   - Better realm management
+#   - Automatic type conversion
+#   - Improved documentation
+#   - ...
+#
+# Revision 1.4  1996/07/04 22:57:20  jfulton
+# Added lots of documentation.  A few documented features have yet to be
+# implemented.  The module needs to be retested after adding some new
+# features.
+#
+#
+# 
