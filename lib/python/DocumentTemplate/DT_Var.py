@@ -119,7 +119,7 @@ __doc__='''Variable insertion parameters
        the C-Style format is applied to the result of calling
        the custom formatting method.
 
-    Null values
+    Null values and missing variables
 
        In some applications, and especially in database applications,
        data variables may alternate between "good" and "null" or
@@ -138,7 +138,22 @@ __doc__='''Variable insertion parameters
        database that is either a number or a missing value, the
        following variable insertion might be used::
 
-           <!--#var cost fmt="$%.2d" null=\'n/a\'-->
+           <dtml-var cost fmt="$%.2d" null=\'n/a\'>
+
+       Missing values are providing for variables which are not
+       present in the name space, rather than raising an NameError,
+       you could do this:
+
+           <dtml-var cost missing=0>
+
+       and in this case, if cost was missing, it would be set to 0.
+       In the case where you want to deal with both at the same time,
+       you can use 'default':
+
+           <dtml-var description default=''>
+
+       In this case, it would use '' if the value was null or if the
+       variable was missing.
 
     String manipulation
 
@@ -202,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.33 1999/10/28 19:20:06 brian Exp $'
-__version__='$Revision: 1.33 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.34 1999/11/04 20:29:04 petrilli Exp $'
+__version__='$Revision: 1.34 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -220,7 +235,7 @@ class Var:
                             capitalize=1, spacify=1, null='', fmt='s',
                             size=0, etc='...', thousands_commas=1,
                             html_quote=1, url_quote=1, sql_quote=1,
-                            url_quote_plus=1,
+                            url_quote_plus=1, missing='',
                             newline_to_br=1, url=1)
         self.args=args
         
@@ -241,15 +256,22 @@ class Var:
             self.simple_form=expr,
 
     def render(self, md):
-        name=self.__name__
-        val=self.expr
-        if val is None:
-            val = md[name]
-        else:
-            val=val.eval(md)
-
         args=self.args
         have_arg=args.has_key
+        name=self.__name__
+
+        val=self.expr
+
+        if val is None:
+            if md.has_key(name):
+                val = md[name]
+            else:
+                if have_arg('missing'):
+                    return args['missing']
+                else:
+                    raise KeyError
+        else:
+            val=val.eval(md)
 
         __traceback_info__=name, val, args
 
