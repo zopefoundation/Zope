@@ -11,15 +11,13 @@
 __doc__='''Collected utilities to support database indexing.
 
 
-$Id: __init__.py,v 1.2 1997/11/21 18:43:49 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1997/12/05 21:34:30 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
-import sys, string, os
+import sys, string
 
-__path__=__.__path__
-
-__path__.append("%s/bin-%s/%s" % (
-    __path__[0], string.split(sys.version)[0], sys.platform))
+__.__path__.append("%s/bin-%s/%s" % (
+    __.__path__[0], string.split(sys.version)[0], sys.platform))
     
 for m in 'BTree', 'IIBTree', 'IOBTree', 'OIBTree', 'intSet':
     sys.modules['SearchIndex.%s' % m]=__import__(m)
@@ -27,6 +25,9 @@ for m in 'BTree', 'IIBTree', 'IOBTree', 'OIBTree', 'intSet':
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.3  1997/12/05 21:34:30  jim
+# Delamification
+#
 # Revision 1.2  1997/11/21 18:43:49  jim
 # hack, hack, hack sys.modules to make old pickles work. :-(
 #
