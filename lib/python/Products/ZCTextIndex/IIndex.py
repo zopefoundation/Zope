@@ -22,6 +22,9 @@ class IIndex(Interface.Base):
     def length():
         """Return the number of documents in the index."""
 
+    def get_words(docid):
+        """Return a list of wordids for the given docid."""
+
     def search(term):
         """Execute a search on a single term given as a string.
 
