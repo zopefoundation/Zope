@@ -1,1 +1,12 @@
-*shared*
+# install Application.py
+# install Document.py
+# install Folder.py
+# install Image.py
+# install ObjectManager.py
+# install documentAdd.dtml
+# install folderAdd.dtml
+# install imageAdd.dtml
+# install imageEdit.dtml
+# install main.dtml
+# install properties.dtml
+# install www www/%(package)s

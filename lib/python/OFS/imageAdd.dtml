@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>New Image</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2" COLOR="#77003B">New Image</FONT>
+<P>
+ You can create a new image in the system using the form below. 
+ Select an image from your local computer by clicking the <I>Browse</I> 
+ button. The image file you select will be uploaded to the application.
+
+<FORM ACTION="<!--#var PARENT_URL-->/manage_add_Image" METHOD="POST"
+      ENCTYPE="multipart/form-data" TARGET="manage_main">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Name</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="name" SIZE="50"></TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Image</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="file" NAME="file" SIZE="30" VALUE="">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Description</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="description" SIZE="50"></TD>
+</TR>
+<TR>
+<TD></TD>
+<TD><BR><INPUT TYPE="SUBMIT" VALUE="Add Image"></TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+

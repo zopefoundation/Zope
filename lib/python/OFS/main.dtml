@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var name fmt=spacify--></TITLE>
+</HEAD>
+<BODY>
+<FONT SIZE="+2" COLOR="#77003B"><!--#var name fmt=spacify--></FONT>
+<BR>
+
+<!--#if parentObject-->
+  <!--#in parentObject-->
+     <A HREF="<!--#var URL2-->/manage" target="_top">
+     <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/dirup.jpg" BORDER=0>
+     </A>
+     Go up to
+     <!--#var name fmt=spacify-->
+     <!--#var description-->
+     <BR>
+  <!--#/in parentObject-->
+<!--#/if parentObject-->
+
+<!--#if objectValues-->
+  <P>
+  The following items have been defined.  To edit an item, click
+  on the item's icon.  To view an item, click on the item's name.
+  <P>
+
+  <!--#in objectValues-->
+    <A HREF="<!--#var URL1-->/<!--#var name-->/manage"
+    <!--#if sequence-var-manage_options-->
+    TARGET="_top"
+    <!--#else sequence-var-manage_options-->
+    TARGET="manage_main"
+    <!--#endif sequence-var-manage_options-->>
+    <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0">
+    </A>
+    <A HREF="<!--#var URL1-->/<!--#var name-->"><!--#var name fmt=spacify-->
+    </A> <!--#var description--><BR>
+  <!--#/in objectValues-->
+  <P>
+<!--#/if objectValues-->
+
+<TABLE>
+<TR>
+  <TD VALIGN="TOP">
+  To add a new item, select an item type and click the &quot;Add&quot; button.
+  </TD>
+  <TD VALIGN="TOP">
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_addObject" METHOD="GET">
+  <SELECT NAME="type">
+  <!--#in all_meta_types mapping-->
+    <OPTION VALUE="<!--#var name-->"><!--#var name fmt=spacify-->
+  <!--#/in all_meta_types-->
+  </SELECT><BR>
+  <INPUT TYPE="SUBMIT" VALUE="Add">
+  </FORM>
+  </TD>
+</TR>
+
+<!--#if objectValues-->
+  <TR>
+    <TD VALIGN="TOP">
+    To delete items, select one or more items and
+    click the &quot;Delete&quot; button.
+    </TD>
+    <TD VALIGN="TOP">  
+    <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
+    <SELECT NAME="names:list" MULTIPLE SIZE="5">
+    <!--#in objectValues-->
+      <OPTION VALUE="<!--#var name-->"><!--#var name fmt=spacify-->
+    <!--#/in objectValues-->
+    </SELECT><br>
+    <INPUT TYPE="SUBMIT" VALUE="Delete">
+    </FORM>
+    </TD>
+  </TR>
+<!--#/if objectValues-->
+</TABLE>
+</BODY>
+</HTML>

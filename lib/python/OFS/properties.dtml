@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<TITLE>Properties</TITLE>
+</HEAD>
+<BODY>
+<FONT SIZE="+2">Properties</FONT>
+<P>
+
+<!--#if propertyMap-->
+<FORM ACTION="<!--#var URL1-->/manage_editProperties">
+The following properties are defined.  To change a property value, 
+edit the value and click the "Change Properties" button.
+<P>
+<TABLE CELLPADDING="4">
+<!--#if propertyInputs-->
+<!--#in propertyInputs mapping-->
+  <TR>
+    <TD ALIGN="LEFT" VALIGN="TOP"><B><!--#var name fmt=spacify--></B></TD>
+    <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input--></TD>
+  </TR>
+<!--#/in propertyInputs-->
+<!--#/if propertyInputs-->
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" VALUE="Change Properties">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+<!--#else propertyMap-->
+<I>No properties have been defined.</I>
+<!--#/if propertyMap-->
+<P>
+
+<FORM ACTION="<!--#var URL1-->/manage_addProperty" METHOD="POST">
+You may add a property by filling in the name, type, and initial
+value fields below and then clicking on the "Add Property" button.
+<BR>
+<TABLE>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">Name:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="name" SIZE="16">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">Type:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="type">
+  <!--#in propertyTypes-->
+    <OPTION><!--#var __str__-->
+  <!--#/in propertyTypes-->
+  </SELECT>
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">Value:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="value" SIZE="50">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" VALUE="Add Property">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+<P>
+
+<!--#if propertyMap-->
+<FORM ACTION="<!--#var URL1-->/manage_delProperties" METHOD="POST">
+You may delete properties by selecting one or more property names 
+from the list below and clicking the &quot;Delete Properties&quot;
+button.
+<BR>
+<TABLE>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="names:list" SIZE="5" MULTIPLE>
+  <!--#in propertyMap mapping-->
+    <OPTION VALUE="<!--#var name-->"><!--#var name fmt=nicify-->
+  <!--#/in propertyMap-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="SUBMIT" VALUE="Delete Properties">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+<!--#/if propertyMap-->
+</BODY>
+</HTML>
+
