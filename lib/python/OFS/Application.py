@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.10 1997/09/10 18:42:35 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Application.py,v 1.11 1997/09/19 18:22:29 brian Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -22,7 +22,7 @@ from AccessControl.User import UserFolder
 
 class Application(Folder.Folder):
     web__form__method='GET'
-    title='Site Studio'
+    title='Principia'
     id   =title
 
     manage_options=(
@@ -34,9 +34,27 @@ class Application(Folder.Folder):
      'action':'manage_rolesForm',   'target':'manage_main'},
     {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
      'action':'app/manage',   'target':'_top'},
-    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-     'action':'manage_help',   'target':'_new'},
+#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
+#     'action':'manage_help',   'target':'_new'},
     )
+
+    _reserved_names=('standard_html_header',
+		     'standard_html_footer',
+		     'acl_users')
+
+    __allow_groups__=UserFolder()
+
+    def _init(self):
+        self.manage_addDocument('standard_html_header',
+	                        'Standard Html Header',
+				'<HTML><HEAD><TITLE><!--#var title_or_id-->' \
+				'</TITLE></HEAD><BODY>')
+        self.manage_addDocument('standard_html_footer',
+				'Standard Html Footer',
+				'</BODY></HTML>')
+	self._setObject('acl_users', self.__allow_groups__)
+
+
 
     def folderClass(self): return Folder.Folder
 
@@ -47,7 +65,7 @@ class Application(Folder.Folder):
 	if find(destination,'//') >= 0: raise 'Redirect', destination
 	raise 'Redirect', ("%s/%s" % (PARENT_URL, destination))
 
-    __allow_groups__=UserFolder()
+
 	
 
 def open_bobobase():
@@ -145,6 +163,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.11  1997/09/19 18:22:29  brian
+# Nicified Application
+#
 # Revision 1.10  1997/09/10 18:42:35  jim
 # Added SimpleItem mix-in and new title/id methods.
 #
