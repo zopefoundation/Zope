@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.138 1999/08/17 16:52:54 jim Exp $"""
-__version__='$Revision: 1.138 $'[11:-2]
+$Id: Publish.py,v 1.139 1999/08/18 00:24:46 amos Exp $"""
+__version__='$Revision: 1.139 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -250,65 +250,65 @@ def get_module_info(module_name, modules={},
     acquire()
     tb=None
     try:
-      try:
-        module=__import__(module_name, globals(), globals(), ('__doc__',))
-    
-        realm=module_name
-                
-        # Let the app specify a realm
-        if hasattr(module,'__bobo_realm__'):
-            realm=module.__bobo_realm__
-        elif os.environ.has_key('Z_REALM'):
-            realm=os.environ['Z_REALM']
-        elif os.environ.has_key('BOBO_REALM'):
-            realm=os.environ['BOBO_REALM']
-        else: realm=module_name
+        try:
+            module=__import__(module_name, globals(), globals(), ('__doc__',))
 
-        # Check for debug mode
-        if hasattr(module,'__bobo_debug_mode__'):
-            debug_mode=not not module.__bobo_debug_mode__
-        elif (os.environ.has_key('Z_DEBUG_MODE') or
-              os.environ.has_key('BOBO_DEBUG_MODE')):
-            if os.environ.has_key('Z_DEBUG_MODE'):
-                debug_mode=lower(os.environ['Z_DEBUG_MODE'])
-            else:
-                debug_mode=lower(os.environ['BOBO_DEBUG_MODE'])
-            if debug_mode=='y' or debug_mode=='yes':
-                debug_mode=1
-            else:
-                try: debug_mode=atoi(debug_mode)
-                except: debug_mode=None
-        else: debug_mode=None
- 
-        if hasattr(module,'__bobo_before__'):
-            bobo_before=module.__bobo_before__
-        else: bobo_before=None
-                
-        if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
-        else: bobo_after=None
-    
-        if hasattr(module,'bobo_application'):
-            object=module.bobo_application
-        elif hasattr(module,'web_objects'):
-            object=module.web_objects
-        else: object=module
+            realm=module_name
 
-        error_hook=getattr(module,'zpublisher_exception_hook', None)
+            # Let the app specify a realm
+            if hasattr(module,'__bobo_realm__'):
+                realm=module.__bobo_realm__
+            elif os.environ.has_key('Z_REALM'):
+                realm=os.environ['Z_REALM']
+            elif os.environ.has_key('BOBO_REALM'):
+                realm=os.environ['BOBO_REALM']
+            else: realm=module_name
 
-        try: get_transaction()
-        except: have_transactions=0
-        else: have_transactions=1
-    
-        info= (bobo_before, bobo_after, object, realm, debug_mode,
-               error_hook, have_transactions)
-    
-        modules[module_name]=modules[module_name+'.cgi']=info
+            # Check for debug mode
+            if hasattr(module,'__bobo_debug_mode__'):
+                debug_mode=not not module.__bobo_debug_mode__
+            elif (os.environ.has_key('Z_DEBUG_MODE') or
+                  os.environ.has_key('BOBO_DEBUG_MODE')):
+                if os.environ.has_key('Z_DEBUG_MODE'):
+                    debug_mode=lower(os.environ['Z_DEBUG_MODE'])
+                else:
+                    debug_mode=lower(os.environ['BOBO_DEBUG_MODE'])
+                if debug_mode=='y' or debug_mode=='yes':
+                    debug_mode=1
+                else:
+                    try: debug_mode=atoi(debug_mode)
+                    except: debug_mode=None
+            else: debug_mode=None
 
-        return info
-      except:
-          t,v,tb=sys.exc_info()
-          v=str(v)
-          raise ImportError, (t, v), tb
+            if hasattr(module,'__bobo_before__'):
+                bobo_before=module.__bobo_before__
+            else: bobo_before=None
+
+            if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
+            else: bobo_after=None
+
+            if hasattr(module,'bobo_application'):
+                object=module.bobo_application
+            elif hasattr(module,'web_objects'):
+                object=module.web_objects
+            else: object=module
+
+            error_hook=getattr(module,'zpublisher_exception_hook', None)
+
+            try: get_transaction()
+            except: have_transactions=0
+            else: have_transactions=1
+
+            info= (bobo_before, bobo_after, object, realm, debug_mode,
+                   error_hook, have_transactions)
+
+            modules[module_name]=modules[module_name+'.cgi']=info
+            
+            return info
+        except:
+            t,v,tb=sys.exc_info()
+            v=str(v)
+            raise ImportError, (t, v), tb
     finally:
         tb=None
         release()
