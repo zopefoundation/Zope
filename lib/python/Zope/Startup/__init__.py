@@ -173,7 +173,7 @@ def _warn_nobody():
 def check_python_version():
     # check for Python version
     python_version = sys.version.split()[0]
-    optimum_version = '2.2.2'
+    optimum_version = '2.2.3'
     if python_version < '2.2':
         raise ZConfig.ConfigurationError(
             'Invalid python version ' + python_version)
