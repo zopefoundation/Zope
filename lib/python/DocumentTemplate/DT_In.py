@@ -212,7 +212,7 @@
       of the module 'Missing', if present.
 '''
 
-__rcs_id__='$Id: DT_In.py,v 1.4 1997/09/25 18:56:38 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.5 1997/09/25 20:58:24 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -266,15 +266,19 @@ __rcs_id__='$Id: DT_In.py,v 1.4 1997/09/25 18:56:38 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DT_Util import *
+from string import find, atoi, join
+import regex
+from regsub import gsub
 
 class In:
     blockContinuations=('else',)
     name='in'
     elses=None
     expr=None
+    start_name_re=None
     
     def __init__(self, blocks):
 	tname, args, section = blocks[0]
@@ -282,6 +286,16 @@ class In:
 			  orphan='3',overlap='1',mapping=1,
 			  previous=1, next=1, expr='')
 	self.args=args
+	if args.has_key('start'):
+	    v=args['start']
+	    if type(v)==type(''):
+		try: atoi(v)
+		except:
+		    self.start_name_re=regex.compile(
+			'[?&]'+
+			join(map(lambda c: "[%s]" % c, v),'')+
+			'=[0-9]+\(&\|$\)')
+		    
 	name,expr=name_param(args,'in',1)
 	self.__name__, expr = name, expr
 	self.section=section
@@ -336,7 +350,11 @@ class In:
 
 	last=end-1
 	first=start-1
-	vars=sequence_variables(sequence)
+
+	try: query_string=md['QUERY_STRING']
+	except: query_string=''
+
+	vars=sequence_variables(sequence,'?'+query_string,self.start_name_re)
 	kw=vars.data
 	# kw['sequence-length']=l
 	kw['mapping']=mapping
@@ -411,7 +429,7 @@ class In:
 		    if mapping:
 			client=mapping_wrapper(client)
 		    result.append(section(client,md))
-		result=string.join(result, '')
+		result=join(result, '')
 	finally:
 	    md.pop(1)
 
@@ -471,8 +489,12 @@ class mapping_wrapper:
 
 class sequence_variables:
 
-    def __init__(self,items=None):
+    def __init__(self,items=None,query_string='',start_name_re=None):
+	
 	self.items=items
+	self.query_string=query_string
+	self.start_name_re=start_name_re
+
 	self.data={
 	    'previous-sequence': 0,
 	    'next-sequence': 0,
@@ -665,6 +687,18 @@ class sequence_variables:
 		elif key=='sequence-length':
 		    data[key]=l=len(self.items)
 		    return l
+		elif key=='sequence-query' and self.start_name_re is not None:
+		    query_string=self.query_string
+		    re=self.start_name_re
+		    l=re.search(query_string)
+		    if l >= 0:
+			v=re.group(0)
+			if v[:1]=='?' or v[-1:]=='&': b=l+1
+			else: b=l
+			query_string=query_string[:b]+query_string[l+len(v):]
+		    data[key]=query_string
+		    return query_string
+		    
 		raise KeyError, key
 
     def next_batches(self):
@@ -682,7 +716,8 @@ class sequence_variables:
 	r=[]
 	while end < l:
 	    start,end,spam=opt(end+1-overlap,None,sz,orphan,sequence)
-	    v=sequence_variables(self.items)
+	    v=sequence_variables(self.items,
+				 self.query_string,self.start_name_re)
 	    d=v.data
 	    d['batch-start-index']=start-1
 	    d['batch-end-index']=end-1
@@ -707,7 +742,8 @@ class sequence_variables:
 	r=[]
 	while start > 1:
 	    start,end,spam=opt(None,start-1+overlap,sz,orphan,sequence)
-	    v=sequence_variables(self.items)
+	    v=sequence_variables(self.items,
+				 self.query_string,self.start_name_re)
 	    d=v.data
 	    d['batch-start-index']=start-1
 	    d['batch-end-index']=end-1
@@ -720,6 +756,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.5  1997/09/25 20:58:24  jim
+# Added sequence-query to *vastly* simplify browse by batch!
+#
 # Revision 1.4  1997/09/25 18:56:38  jim
 # fixed problem in reporting errors
 #
