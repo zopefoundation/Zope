@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -225,6 +225,8 @@ class Context:
     An instance of this class holds context information that it can
     use to evaluate compiled expressions.
     '''
+
+    _context_class = SafeMapping
 
     def __init__(self, engine, contexts):
         self._engine = engine
