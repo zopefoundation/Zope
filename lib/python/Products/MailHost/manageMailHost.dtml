@@ -13,19 +13,19 @@
 <TR VALIGN="TOP">
   <TD ALIGN="LEFT"><STRONG><EM>Title</EM></STRONG></TD>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TD ALIGN="LEFT"><STRONG>Local Host</STRONG></TD>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localHost" SIZE="50" VALUE="<!--#var localHost-->">
+    <INPUT TYPE="TEXT" NAME="localHost" SIZE="40" VALUE="<!--#var localHost-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TD ALIGN="LEFT"><STRONG>SMTP Host</STRONG></TD>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE=50 VALUE="<!--#var smtpHost-->">
+    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<!--#var smtpHost-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
