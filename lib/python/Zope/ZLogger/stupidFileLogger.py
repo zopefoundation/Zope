@@ -1,4 +1,4 @@
-import time, sys, string
+import time, sys, string, os
 
 
 _stupid_dest=None
@@ -56,6 +56,22 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
         else:
             _stupid_dest=_no_stupid_log
 
+    import os
+    if os.environ.has_key('Z_DEBUG_MODE'):
+        import sys
+        sys.stderr.write(
+            "------\n"
+            "%s %s %s %s\n%s"
+            %
+            (log_time(),
+             severity_string(severity),
+             subsystem,
+             summary,
+             detail,
+             )
+            )
+        sys.stderr.flush()
+
     if _stupid_dest is _no_stupid_log: return
 
     _stupid_dest.write(
@@ -69,6 +85,9 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
          detail,
          )
         )
+
+
+
     _stupid_dest.flush()
 
     if error:
