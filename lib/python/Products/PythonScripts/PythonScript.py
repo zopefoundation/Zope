@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -41,7 +41,7 @@ Python_magic = imp.get_magic()
 del imp
 
 # This should only be incremented to force recompilation.
-Script_magic = 2
+Script_magic = 3
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 _default_file = os.path.join(package_home(globals()),
