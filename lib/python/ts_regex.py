@@ -84,82 +84,17 @@
 ##############################################################################
 """Provide a thread-safe interface to regex
 """
-import regex, regsub, Sync
+import regex, regsub #, Sync
 from regex import *
 from regsub import split, sub, gsub, splitx, capwords
 
-class compile(Sync.Synchronized):
-
-    _r=None
-    groupindex=None
-
-    def __init__(self, *args):
-        self._r=r=apply(regex.compile,args)
-        self._init(r)
-
-    def _init(self, r):
-        self.search=r.search
-        self.match=r.match
-        self.translate=r.translate
-        self.givenpat=r.givenpat
-        self.realpat=r.realpat
-        
-    def search_group(self, str, group, pos=0):
-        """Search a string for a pattern.
-
-        If the pattern was not found, then None is returned,
-        otherwise, the location where the pattern was found,
-        as well as any specified group are returned.
-        """
-        r=self._r
-        l=r.search(str, pos)
-        if l < 0: return None
-        return l, apply(r.group, group)
-
-    def match_group(self, str, group, pos=0):
-        """Match a pattern against a string
-
-        If the string does not match the pattern, then None is
-        returned, otherwise, the length of the match, as well
-        as any specified group are returned.
-        """
-        r=self._r
-        l=r.match(str, pos)
-        if l < 0: return None
-        return l, apply(r.group, group)
-
-    def search_regs(self, str, pos=0):
-        """Search a string for a pattern.
-
-        If the pattern was not found, then None is returned,
-        otherwise, the 'regs' attribute of the expression is
-        returned.
-        """
-        r=self._r
-        r.search(str, pos)
-        return r.regs
-
-    def match_regs(self, str, pos=0):
-        """Match a pattern against a string
-
-        If the string does not match the pattern, then None is
-        returned, otherwise, the 'regs' attribute of the expression is
-        returned.
-        """
-        r=self._r
-        r.match(str, pos)
-        return r.regs
-
-class symcomp(compile):
-
-    def __init__(self, *args):
-        self._r=r=apply(regex.symcomp,args)
-        self._init(r)
-        self.groupindex=r.groupindex
-
 try: 
     import thread
-except: pass
+except:
+    class allocate_lock:
+        def acquire(*args): pass
+        def release(*args): pass
+
 else:
     class SafeFunction:
         _l=thread.allocate_lock()
@@ -179,6 +114,101 @@ else:
     gsub=SafeFunction(gsub)
     splitx=SafeFunction(splitx)
     capwords=SafeFunction(capwords)
+
+    allocate_lock=thread.allocate_lock
+
+class compile:
+
+    _r=None
+    groupindex=None
+
+    def __init__(self, *args):
+        self._r=r=apply(regex.compile,args)
+        self._init(r)
+        lock=allocate_lock()
+        self.__a=lock.acquire
+        self.__r=lock.release
+
+    def _init(self, r):
+        self.translate=r.translate
+        self.givenpat=r.givenpat
+        self.realpat=r.realpat
+
+    def match(self, string, pos=0):
+        self.__a()
+        try: return self._r.match(string, pos)
+        finally: self.__r()
+
+    def search(self, string, pos=0):
+        self.__a()
+        try: return self._r.search(string, pos)
+        finally: self.__r()
+        
+    def search_group(self, str, group, pos=0):
+        """Search a string for a pattern.
+
+        If the pattern was not found, then None is returned,
+        otherwise, the location where the pattern was found,
+        as well as any specified group are returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            l=r.search(str, pos)
+            if l < 0: return None
+            return l, apply(r.group, group)
+        finally: self.__r()
+
+    def match_group(self, str, group, pos=0):
+        """Match a pattern against a string
+
+        If the string does not match the pattern, then None is
+        returned, otherwise, the length of the match, as well
+        as any specified group are returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            l=r.match(str, pos)
+            if l < 0: return None
+            return l, apply(r.group, group)
+        finally: self.__r()
+
+    def search_regs(self, str, pos=0):
+        """Search a string for a pattern.
+
+        If the pattern was not found, then None is returned,
+        otherwise, the 'regs' attribute of the expression is
+        returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            r.search(str, pos)
+            return r.regs
+        finally: self.__r()
+
+    def match_regs(self, str, pos=0):
+        """Match a pattern against a string
+
+        If the string does not match the pattern, then None is
+        returned, otherwise, the 'regs' attribute of the expression is
+        returned.
+        """
+        self.__a()
+        try:
+            r=self._r
+            r.match(str, pos)
+            return r.regs
+        finally: self.__r()
+
+class symcomp(compile):
+
+    def __init__(self, *args):
+        self._r=r=apply(regex.symcomp,args)
+        self._init(r)
+        self.groupindex=r.groupindex
+
 
 
 
