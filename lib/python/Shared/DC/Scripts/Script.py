@@ -122,7 +122,8 @@ class Script(SimpleItem, BindingsUI):
         """
         vv = []
         for argvar in argvars:
-            vv.append("%s=%s" % (quote(argvar.name), quote(argvar.value)))
+            if argvar.value:
+                vv.append("%s=%s" % (quote(argvar.name), quote(argvar.value)))
         raise "Redirect", "%s?%s" % (REQUEST['URL1'], join(vv, '&'))
 
     from Signature import _setFuncSignature
