@@ -211,10 +211,11 @@ class TALInterpreter:
         return self.macroStack.pop()
 
     def macroContext(self, what):
-        i = len(self.macroStack)
+        macroStack = self.macroStack
+        i = len(macroStack)
         while i > 0:
             i = i-1
-            if self.macroStack[i][0] == what:
+            if macroStack[i][0] == what:
                 return i
         return -1
 
@@ -284,48 +285,49 @@ class TALInterpreter:
     def do_startTag(self, name, attrList, end=">"):
         if not attrList:
             s = "<%s%s" % (name, end)
-            self.do_rawtextOffset(s, len(s))
+            self._stream_write(s)
+            self.col = self.col + len(s)
             return
         _len = len
-        self._stream_write("<" + name)
-        self.col = self.col + _len(name) + 1
-        align = self.col + 1 + _len(name)
-        if align >= self.wrap/2:
-            align = 4 # Avoid a narrow column far to the right
-        for item in attrList:
-            if _len(item) == 2:
-                name, value = item
-            else:
-                ok, name, value = self.attrAction(item)
-                if not ok:
-                    continue
-            if value is None:
-                s = name
-            else:
-                s = "%s=%s" % (name, quote(value))
-            if (self.wrap and
-                self.col >= align and
-                self.col + 1 + _len(s) > self.wrap):
-                self._stream_write("\n" + " "*align)
-                self.col = align
-            else:
-                s = " " + s
-            self._stream_write(s)
-            if "\n" in s:
-                self.col = _len(s) - (rfind(s, "\n") + 1)
-            else:
-                self.col = self.col + _len(s)
-        self._stream_write(end)
-        self.col = self.col + _len(end)
+        _quote = quote
+        _stream_write = self._stream_write
+        _stream_write("<" + name)
+        col = self.col + _len(name) + 1
+        wrap = self.wrap
+        align = col + 1 + _len(name)
+        if align >= wrap/2:
+            align = 4  # Avoid a narrow column far to the right
+        try:
+            for item in attrList:
+                if _len(item) == 2:
+                    name, s = item
+                else:
+                    ok, name, value = self.attrAction(item)
+                    if not ok:
+                        continue
+                    if value is None:
+                        s = name
+                    else:
+                        s = "%s=%s" % (name, _quote(value))
+                if (wrap and
+                    col >= align and
+                    col + 1 + _len(s) > wrap):
+                    _stream_write("\n" + " "*align)
+                    col = align + _len(s)
+                else:
+                    s = " " + s
+                    col = col + 1 + _len(s)
+                _stream_write(s)
+            _stream_write(end)
+            col = col + _len(end)
+        finally:
+            self.col = col
     bytecode_handlers["startTag"] = do_startTag
 
     actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4}
     def attrAction(self, item):
         name, value = item[:2]
-        try:
-            action = self.actionIndex[item[2]]
-        except KeyError:
-            raise TALError, ('Error in TAL program', self.position)
+        action = self.actionIndex[item[2]]
         if not self.showtal and action > 1:
             return 0, name, value
         ok = 1
@@ -345,9 +347,10 @@ class TALInterpreter:
                     if action == 1: # Cancelled insert
                         ok = 0
                 else:
-                    value = evalue
-                    if value is None:
+                    if evalue is None:
                         ok = 0
+                    else:
+                        value = evalue
         elif action == 2 and self.metal:
             i = rfind(name, ":") + 1
             prefix, suffix = name[:i], name[i:]
@@ -390,10 +393,13 @@ class TALInterpreter:
     bytecode_handlers["endTag"] = do_endTag
 
     def do_beginScope(self, dict):
-        self.engine.beginScope()
-        self.scopeLevel = self.scopeLevel + 1
         if self.tal:
-            self.engine.setLocal("attrs", dict)
+            engine = self.engine
+            engine.beginScope()
+            engine.setLocal("attrs", dict)
+        else:
+            self.engine.beginScope()
+        self.scopeLevel = self.scopeLevel + 1
     bytecode_handlers["beginScope"] = do_beginScope
 
     def do_endScope(self):
@@ -560,8 +566,7 @@ class TALInterpreter:
             self.restoreState(state)
             engine = self.engine
             engine.beginScope()
-            err.lineno = self.position[0]
-            err.offset = self.position[1]
+            err.lineno, err.offset = self.position
             engine.setLocal('error', err)
             self.interpret(handler)
             engine.endScope()
