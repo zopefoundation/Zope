@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.48 $'.split()[-2:][0]
+__version__ = '$Revision: 1.49 $'.split()[-2:][0]
 
 import sys
 import time
@@ -1758,7 +1758,6 @@ class _GetItemBase:
         # Ignore the index, since we expect .next() will raise the appropriate
         # IndexError when the iterator is exhausted.
         return self.next()
-
 
 
 
