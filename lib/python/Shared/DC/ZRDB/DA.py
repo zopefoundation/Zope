@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.49 1998/07/12 21:01:20 jim Exp $'''
-__version__='$Revision: 1.49 $'[11:-2]
+$Id: DA.py,v 1.50 1998/07/12 23:15:09 jim Exp $'''
+__version__='$Revision: 1.50 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -104,25 +104,25 @@ class DA(
         }
 
     def _er(self,title,connection_id,arguments,template,
-            SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
+            SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST):
         dr,dc = self._size_changes[SUBMIT]
         
-        rows=max(1,atoi(dtpref_rows)+dr)
-        cols=max(40,atoi(dtpref_cols)+dc)
+        rows=max(1,atoi(sql_pref__rows)+dr)
+        cols=max(40,atoi(sql_pref__cols)+dc)
         e='Friday, 31-Dec-99 23:59:59 GMT'
         resp=REQUEST['RESPONSE']
-        resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
-        resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
+        resp.setCookie('sql_pref__rows',str(rows),path='/',expires=e)
+        resp.setCookie('sql_pref__cols',str(cols),path='/',expires=e)
         return self.manage_main(
 	    self,REQUEST,
             title=title,
             arguments_src=arguments,
             connection_id=connection_id,
-            template=template,
-	    dtpref_cols=cols,dtpref_rows=rows)
+            src=template,
+	    sql_pref__cols=cols,sql_pref__rows=rows)
 
     def manage_edit(self,title,connection_id,arguments,template,
-                    SUBMIT='Change',dtpref_cols='50', dtpref_rows='20',
+                    SUBMIT='Change',sql_pref__cols='50', sql_pref__rows='20',
                     REQUEST=None):
 	"""Change database method  properties
 
@@ -139,7 +139,7 @@ class DA(
 
         if self._size_changes.has_key(SUBMIT):
             return self._er(title,connection_id,arguments,template,
-                            SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
+                            SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST)
 
 	self.title=title
 	self.connection_id=connection_id
@@ -474,6 +474,11 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.50  1998/07/12 23:15:09  jim
+# Changed editing screen:
+#   - size prefs now separate from Document prefs
+#   - Fized bug that caused src changes to be lost
+#
 # Revision 1.49  1998/07/12 21:01:20  jim
 # Added support for DA's that return data directly as list of item descriptions
 # (i.e. schema) and list of rows.
