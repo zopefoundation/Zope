@@ -42,7 +42,10 @@ class HTMLClass:
 
 
     def dispatch(self, doc, level, output):
-        getattr(self, self.element_types[doc.getNodeName()])(doc, level, output)
+        node_name = doc.getNodeName()
+        element_type = self.element_types[node_name] 
+        element_method = getattr(self, element_type)
+        element_method(doc, level, output)
 
     def __call__(self, doc, level=1, header=1):
         r=[]
@@ -55,7 +58,7 @@ class HTMLClass:
 
     def document(self, doc, level, output):
         children=doc.getChildNodes()
-
+ 
         if self.header:
             output('<html>\n')
             if (children and
@@ -65,7 +68,7 @@ class HTMLClass:
             output('<body>\n')
 
         for c in children:
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
 
         if self.header:
             output('</body>\n')
@@ -74,12 +77,13 @@ class HTMLClass:
     def section(self, doc, level, output):
         children=doc.getChildNodes()
         for c in children:
-            getattr(self, self.element_types[c.getNodeName()])(c, level+1, output)
+            self.dispatch(c, level+1, output)
 
     def sectionTitle(self, doc, level, output):
         output('<h%d>' % (level))
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
+
         output('</h%d>\n' % (level))
 
     def description(self, doc, level, output):
@@ -87,7 +91,7 @@ class HTMLClass:
         if p is None or  p.getNodeName() is not doc.getNodeName():
             output('<dl>\n')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         n=doc.getNextSibling()
         if n is None or n.getNodeName() is not doc.getNodeName():
             output('</dl>\n')
@@ -95,13 +99,13 @@ class HTMLClass:
     def descriptionTitle(self, doc, level, output):
         output('<dt>')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('</dt>\n')
 
     def descriptionBody(self, doc, level, output):
         output('<dd>')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('</dd>\n')
 
     def bullet(self, doc, level, output):
@@ -110,7 +114,7 @@ class HTMLClass:
             output('\n<ul>\n')
         output('<li>')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         n=doc.getNextSibling()
         output('</li>\n')
         if n is None or n.getNodeName() is not doc.getNodeName():
@@ -122,7 +126,7 @@ class HTMLClass:
             output('\n<ol>\n')
         output('<li>')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         n=doc.getNextSibling()
         output('</li>\n')
         if n is None or n.getNodeName() is not doc.getNodeName():
@@ -136,31 +140,28 @@ class HTMLClass:
                 output(escape(c.getNodeValue()))
                 output('\n</pre>\n')
             else:
-                getattr(self, self.element_types[c.getNodeName()])(
-                    c, level, output)
+                self.dispatch(c, level, output)
 
     def paragraph(self, doc, level, output):
 
         output('<p>')
         for c in doc.getChildNodes():
             if c.getNodeName() in ['StructuredTextParagraph']:
-                getattr(self, self.element_types[c.getNodeName()])(
-                    c, level, output)
+                self.dispatch(c, level, output)
             else:
-                getattr(self, self.element_types[c.getNodeName()])(
-                    c, level, output)
+                self.dispatch(c, level, output)
         output('</p>\n')
 
     def link(self, doc, level, output):
         output('<a href="%s">' % doc.href)
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('</a>')
 
     def emphasis(self, doc, level, output):
         output('<em>')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('</em>')
 
     def literal(self, doc, level, output):
@@ -172,36 +173,36 @@ class HTMLClass:
     def strong(self, doc, level, output):
         output('<strong>')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('</strong>')
 
     def underline(self, doc, level, output):
         output("<u>")
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output("</u>")
 
     def innerLink(self, doc, level, output):
         output('<a href="#ref');
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('">[')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output(']</a>')
 
     def namedLink(self, doc, level, output):
         output('<a name="ref')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output('">[')
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
         output(']</a>')
 
     def sgml(self,doc,level,output):
         for c in doc.getChildNodes():
-            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+            self.dispatch(c, level, output)
 
     def xref(self, doc, level, output):
         val = doc.getNodeValue()
@@ -227,7 +228,7 @@ class HTMLClass:
                     str = '<td colspan="%s">' % column.getSpan()
                 output(str)
                 for c in column.getChildNodes():
-                    getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+                    self.dispatch(c, level, output)
                 if hasattr(column,"getType"):
                     output("</"+column.getType()+">\n")
                 else:
