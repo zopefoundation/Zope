@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.18 1999/01/27 20:30:37 brian Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: __init__.py,v 1.19 1999/02/22 20:51:44 jim Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
-import Session, Draft
+import Session, Draft, ZClasses
 import OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument
 from ImageFile import ImageFile
@@ -99,16 +99,26 @@ classes=('OFS.DTMLMethod.DTMLMethod', 'OFS.DTMLDocument.DTMLDocument',
 klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 
 meta_types=(
-    {'name': Draft.Draft.meta_type, 'action':'manage_addPrincipiaDraftForm'},
-    {'name': 'User Folder', 'action':'manage_addUserFolder'},
-    {'name': 'Session', 'action':'manage_addSessionForm'},
-    {'name': 'File', 'action':'manage_addFileForm'},
-    {'name': 'Image', 'action':'manage_addImageForm'},
-    {'name': 'Folder', 'action':'manage_addFolderForm'},
-    {'name': 'DTML Method', 'action':'manage_addDTMLMethodForm'},
-    {'name': 'DTML Document', 'action':'manage_addDTMLDocumentForm'},
+    ZClasses.meta_types+
+    (
+        {'name': Draft.Draft.meta_type,
+         'action':'manage_addPrincipiaDraftForm'},
+        {'name': 'User Folder',
+         'action':'manage_addUserFolder'},
+        {'name': 'Session',
+         'action':'manage_addSessionForm'},
+        {'name': 'File',
+         'action':'manage_addFileForm'},
+        {'name': 'Image',
+         'action':'manage_addImageForm'},
+        {'name': 'Folder',
+         'action':'manage_addFolderForm'},
+        {'name': 'DTML Method',
+         'action':'manage_addDTMLMethodForm'},
+        {'name': 'DTML Document',
+         'action':'manage_addDTMLDocumentForm'},
+        )
     )
-
 
 def PUT(self):
     # This is here mainly as a hac^H^Hook for holding PUT permissions
@@ -116,8 +126,7 @@ def PUT(self):
 
 methods={
     # for bw compatibility
-    'manage_addDocument': OFS.DTMLMethod.add,
-    
+    'manage_addDocument': OFS.DTMLMethod.add,    
     'manage_addDTMLMethod': OFS.DTMLMethod.add,
     'manage_addDTMLMethodForm': OFS.DTMLMethod.addForm,
     'manage_addDTMLDocument': OFS.DTMLDocument.add,
@@ -136,30 +145,35 @@ methods={
     'manage_addPrincipiaDraftForm': Draft.manage_addPrincipiaDraftForm,
     'manage_addPrincipiaDraft': Draft.manage_addPrincipiaDraft,
     }
+methods.update(ZClasses.methods)
 
 misc_={
     'session': ImageFile('images/session.gif', globals()),
     }
+misc_.update(ZClasses.misc_)
 
 __ac_permissions__=(
-    ('Add Sessions',('manage_addSessionForm', 'manage_addSession')),
-    ('Add Documents, Images, and Files',
-     ('manage_addDTMLDocumentForm', 'manage_addDTMLDocument',
-      'manage_addDTMLMethodForm', 'manage_addDTMLMethod',
-      'manage_addFileForm', 'manage_addFile',
-      'manage_addImageForm', 'manage_addImage',
-      'PUT')
-     ),
-    ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
-    ('Add User Folders',('manage_addUserFolder',)),
-    ('Change DTML Documents', ()),
-    ('Change DTML Methods', ()),
-    ('Change Images and Files', ()),
-    ('Change proxy roles', ()),
-    ('Change Sessions', ()),
-    ('Join/leave Sessions', ()),
-    ('Save/discard Session changes', ()),
-    ('Manage users', ()),
-    #('Add DraftFolders',
-    # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),
+    ZClasses.__ac_permissions__+
+    (
+        ('Add Sessions',('manage_addSessionForm', 'manage_addSession')),
+        ('Add Documents, Images, and Files',
+         ('manage_addDTMLDocumentForm', 'manage_addDTMLDocument',
+          'manage_addDTMLMethodForm', 'manage_addDTMLMethod',
+          'manage_addFileForm', 'manage_addFile',
+          'manage_addImageForm', 'manage_addImage',
+          'PUT')
+         ),
+        ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
+        ('Add User Folders',('manage_addUserFolder',)),
+        ('Change DTML Documents', ()),
+        ('Change DTML Methods', ()),
+        ('Change Images and Files', ()),
+        ('Change proxy roles', ()),
+        ('Change Sessions', ()),
+        ('Join/leave Sessions', ()),
+        ('Save/discard Session changes', ()),
+        ('Manage users', ()),
+        #('Add DraftFolders',
+        # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),
+        )
     )
