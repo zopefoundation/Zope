@@ -122,6 +122,7 @@ class CommitLog:
         # BAW: is our filename unique enough?  Are we opening it up with too
         # much or too little security?
         self._unlink = 1
+        self._fp = None
         if file is None:
             # Create the file from scratch.  We know the file has to be in the
             # init state, so just go ahead and write the appropriate header.
