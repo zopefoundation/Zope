@@ -95,8 +95,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.34 1999/02/16 14:48:54 brian Exp $ 
-__version__ = "$Revision: 1.34 $"[11:-2]
+#$Id: MailHost.py,v 1.35 1999/02/16 16:10:05 brian Exp $ 
+__version__ = "$Revision: 1.35 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -283,14 +283,16 @@ class SendMail:
 
     def _check(self, lev='250'):
         line = self.getLine()
-        if not line: return 0   #can't check an empty line, eh?
+        if not line: return 0
         try:
             code=string.atoi(line[:3])
         except:
-            raise smtpError, "Cannot convert line from SMTP: %s" % line
-
-        if code > 400:
-            raise smtpError, "Recieved error code %s from SMTP: %s"\
+            raise smtpError, \
+                  "Cannot convert line from SMTP: %s" % line
+    
+        if code > 400: # my change...
+            raise smtpError, \
+                  "Recieved error code %s from SMTP: %s"\
                   % (code, line)
         return 1
 
