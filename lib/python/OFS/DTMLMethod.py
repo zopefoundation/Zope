@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -93,6 +93,7 @@ from OFS.content_types import guess_content_type
 from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
+from AccessControl.User import verify_watermark
 from webdav.common import rfc1123_date
 from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
@@ -282,6 +283,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         if not roles: return
         user=u=request.get('AUTHENTICATED_USER',None)
         if user is not None:
+            verify_watermark(user)
             user=user.hasRole
             for r in roles:
                 if r and not user(self, (r,)):
