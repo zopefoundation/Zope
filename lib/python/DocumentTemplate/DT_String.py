@@ -9,6 +9,13 @@ class String:
     __doc__=DT_Doc.String__doc__
     isDocTemp=1
 
+    # Document Templates masquerade as functions:
+    class func_code: pass
+    func_code=func_code()
+    func_code.co_varnames='self','REQUEST'
+    func_code.co_argcount=2
+    func_defaults=()
+
     def errQuote(self, s): return s
       
     def parse_error(self, mess, tag, text, start):
@@ -245,9 +252,7 @@ class String:
 	if globals:
 	    for k in globals.keys():
 		if k[:1] != '_' and not vars.has_key(k): vars[k]=globals[k]
-	self.func_defaults=()
 	self.globals=vars
-	self.func_code=func_code()
 	self._vars={}
 
     __state_names__=('raw', 'globals', '__name__', '_vars')
@@ -410,8 +415,3 @@ class File(FileMixin, String):
     """
     def manage_edit(self,data): raise TypeError, 'cannot edit files'
 
-
-class func_code:
-    def __init__(self,varnames=('self','REQUEST')):
-	self.co_varnames=varnames
-	self.co_argcount=len(varnames)

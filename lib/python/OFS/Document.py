@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -15,6 +15,12 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
     icon           ='OFS/Document_icon.gif'
     __state_names__=HTML.__state_names__+('title','__roles__')
 
+    # Documents masquerade as functions:
+    class func_code: pass
+    func_code=func_code()
+    func_code.co_varnames='self','REQUEST','RESPONSE'
+    func_code.co_argcount=3
+
     manage_options=({'icon':'', 'label':'Edit',
 		     'action':'manage_main', 'target':'manage_main',
 	            },
@@ -28,13 +34,6 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 		     'action':'manage_rolesForm', 'target':'manage_main',
 		    },
 		   )
-
-    def initvars(self, mapping, vars):
-	"""Hook to override signature so we can detect whether we are
-	running from the web"""
-	HTML.initvars(self, mapping, vars)
-	self.func_code.__init__(('self','REQUEST','RESPONSE'))
-	self.func_defaults=(None,)
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
 	kw['document_id']   =self.id
