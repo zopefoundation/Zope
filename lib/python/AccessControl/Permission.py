@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Permission.py,v 1.1 1998/05/08 14:45:20 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Permission.py,v 1.2 1998/05/11 14:58:28 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Globals import HTMLFile, MessageDialog
 from string import join, strip, split, find
@@ -80,15 +80,19 @@ class Permission:
 	return roles
 
     def setRoles(self, roles):
+	obj=self.obj
+
 	if type(roles) is ListType and not roles:
-	    if hasattr(self.obj, self._p): delattr(self.obj, self._p)
+	    if hasattr(obj, self._p): delattr(obj, self._p)
 	else:
-	    setattr(self.obj, self._p, roles)
+	    setattr(obj, self._p, roles)
 	
 	for name in self.data:
-	    if name=='': attr=self.obj
-	    else: attr=getattr(self.obj, name)
+	    if name=='': attr=obj
+	    else: attr=getattr(obj, name)
 	    try: del attr.__roles__
+	    except: pass
+	    try: delattr(obj,name+'__roles__')
 	    except: pass
 
     def setRole(self, role, present):
@@ -113,6 +117,9 @@ class Permission:
 ############################################################################## 
 #
 # $Log: Permission.py,v $
+# Revision 1.2  1998/05/11 14:58:28  jim
+# Added some machinery to fix bugs in reseting old permission settings.
+#
 # Revision 1.1  1998/05/08 14:45:20  jim
 # new permission machinery
 #
