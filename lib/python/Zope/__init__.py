@@ -7,7 +7,7 @@ import sys, os, App.FindHomes
 sys.path.insert(0, os.path.join(SOFTWARE_HOME, 'ZopeZODB3'))
 #######################################################################
 
-import ZODB, ZODB.FileStorage, ZODB.ZApplication
+import ZODB, ZODB.ZApplication, imp
 import Globals, OFS.Application, sys
 
 Globals.BobobaseName = '%s/Data.fs' % Globals.data_dir
@@ -17,7 +17,18 @@ Globals.DatabaseVersion='3'
 OFS.Application.import_products()
 
 # Open the database
-DB=ZODB.FileStorage.FileStorage(Globals.BobobaseName)
+try:
+    # Try to use custom storage
+    m=imp.find_module('custom_zodb',[INSTANCE_HOME])
+except:
+    import ZODB.FileStorage
+    DB=ZODB.FileStorage.FileStorage(Globals.BobobaseName)
+else:
+    m=imp.load_module('Zope.custom_zodb', m[0], m[1], m[2])
+    DB=m.Storage
+    Globals.BobobaseName = DB.getName()
+    sys.modules['Zope.custom_zodb']=m
+
 DB=ZODB.DB(DB)
 Globals.DB=DB # Ick, this is temporary until we come up with some registry
 Globals.opened.append(DB)
