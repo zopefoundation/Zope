@@ -15,7 +15,7 @@
 
 def getZopeVersion():
     import App.version_txt
-    App.version_txt.version_txt()
+    return App.version_txt.version_txt()
 
 def patchAsyncoreLogger():
     # Poke zLOG default logging into asyncore to send
