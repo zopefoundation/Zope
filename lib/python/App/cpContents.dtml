@@ -29,7 +29,7 @@ such as database and product management.
     </td>
     <td> Click &quot;Shutdown&quot; to shutdown the <em>Zope</em>
 	    process.<br> 
-	 It will be restarted on the next web request.
+	 It will be restarted upon receipt of the next web request.
     </td>
   </tr>
 </table>
