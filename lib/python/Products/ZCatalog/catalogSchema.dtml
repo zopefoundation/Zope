@@ -20,7 +20,7 @@ useful, for example, to keep the 'summary' meta data of a text
 document (like the first 200 characters) but <i>not</i> the text
 content in it's entirety (it is useful in this example to <i>index</i>
 the text contents, which is configured in the <b>Indexes</b> View
-tab).  This way, the summary data may be show in the search results.</p>
+tab).  This way, the summary data may be shown in the search results.</p>
 
 <form action="<!--#var URL1-->">
 
