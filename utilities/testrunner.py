@@ -28,10 +28,11 @@ VERBOSE = 2
 class TestRunner:
     """Test suite runner"""
 
-    def __init__(self, basepath, verbosity=VERBOSE):
+    def __init__(self, basepath, verbosity=VERBOSE, results=[]):
         # initialize python path
         self.basepath=path=basepath
         self.verbosity = verbosity
+        self.results = results
         pjoin=os.path.join
         if sys.platform == 'win32':
             sys.path.insert(0, pjoin(path, 'lib/python'))
@@ -79,7 +80,7 @@ class TestRunner:
 
     def runSuite(self, suite):
         runner=unittest.TextTestRunner(verbosity=self.verbosity)
-        runner.run(suite)
+        self.results.append(runner.run(suite))
 
     def report(self, message):
         print message
@@ -204,6 +205,22 @@ def main(args):
         testrunner.runPath(pathname)
     elif filename:
         testrunner.runFile(filename)
+
+
+    ## Report overall errors / failures if there were any
+    fails = reduce(lambda x, y: x + len(y.failures), testrunner.results, 0)
+    errs  = reduce(lambda x, y: x + len(y.errors), testrunner.results, 0)
+    if fails or errs:
+        msg = '=' * 70
+        msg += "\nOVERALL FAILED ("
+        if fails:
+            msg += "total failures=%d" % fails
+        if errs:
+            if fails: msg += ", "
+            msg += "total errors=%d" % errs
+        msg += ")"
+        err_exit(msg, 1)
+        
     sys.exit(0)
 
 
