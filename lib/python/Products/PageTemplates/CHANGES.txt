@@ -1,3 +1,14 @@
+2001-05-21  Evan Simpson <evan@digicool.com>
+
+        * Version 1.3.0
+        * Guido fixed use of nested macros.
+        * New builtin variables 'default', 'user', and 'attrs'.
+        * Removed path modifiers.
+        * Added '|' operator for paths.
+        * Tweaked parameters passed when calling DTML.
+        * Expression types now have corresponding builtin functions in
+          Python expressions.
+
 2001-05-07  Evan Simpson <evan@digicool.com>
 
         * Version 1.2.1
