@@ -215,6 +215,9 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
         return ''
 
+    def _on_delete_object(self):
+        for d in self._properties:
+            self.delClassAttr(d['id'])
 
     def manage_createEditor(self, id, title='', REQUEST=None):
         """Create an edit interface for a property sheet
