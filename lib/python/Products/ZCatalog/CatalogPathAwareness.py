@@ -118,7 +118,7 @@ class CatalogAware:
         if hasattr(aq_base(obj), 'objectValues'):
             sub=obj.objectValues()
             for item in obj.objectValues():
-                reindex_all(self, item)
+                self.reindex_all(self, item)
         return 'done!'
 
 class CatalogPathAware(CatalogAware):
