@@ -150,21 +150,26 @@ class Lexicon(Persistent, Implicit):
             self.counter = self.counter + 1
             return self.counter - 1 
 
+    
     def get(self, key, default=None):
         """  """
         return [self._lexicon.get(key, default)]
 
+
     def __getitem__(self, key):
         return self.get(key)
 
+
     def __len__(self):
         return len(self._lexicon)
+
 
     def Splitter(self, astring, words=None):
         """ wrap the splitter """
         if words is None:
             words = self.stop_syn
         return Splitter(astring, words)
+
 
     def grep(self, query):
         """
@@ -179,6 +184,7 @@ class Lexicon(Persistent, Implicit):
             if expr.search(x):
                 hits.append(x)
         return hits
+
 
     def query_hook(self, q):
         """ we don't want to modify the query cuz we're dumb """

@@ -190,7 +190,7 @@ class ZCatalog(Folder, Persistent, Implicit):
           
           'manage_catalogView', 'manage_catalogFind',
           'manage_catalogSchema', 'manage_catalogIndexes',
-          'manage_catalogAdvanced',
+          'manage_catalogAdvanced', 'manage_objectInformation',
           
           'manage_catalogReindex', 'manage_catalogFoundItems',
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
@@ -212,7 +212,8 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_catalogSchema = DTMLFile('dtml/catalogSchema', globals())
     manage_catalogIndexes = DTMLFile('dtml/catalogIndexes', globals())
     manage_catalogAdvanced = DTMLFile('dtml/catalogAdvanced', globals())
-
+    manage_objectInformation = DTMLFile('dtml/catalogObjectInformation',
+                                        globals())
 
     threshold=10000
     _v_total=0
@@ -397,7 +398,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
-    
+
     def catalog_object(self, obj, uid):
         """ wrapper around catalog """
         self._v_total = (self._v_total +
@@ -429,10 +430,24 @@ class ZCatalog(Folder, Persistent, Implicit):
         """
         Return a cataloged object given a 'data_record_id_'
         """
-        if REQUEST is None:
-            REQUEST=self.REQUEST
-        return self.resolve_url(self.getpath(rid), REQUEST)
+        try:
+            obj = self.aq_parent.restrictedTraverse(self.getpath(rid))
+            if not obj:
+                if REQUEST is None:
+                    REQUEST=self.REQUEST
+                obj = self.sq_parent.resolve_url(self.getpath(rid), REQUEST)
+            return obj
+        except:
+            pass
 
+    def getMetadataForRID(self, rid):
+        """return the correct metadata for the cataloged record id"""
+        return self._catalog.getMetadataForRID(int(rid))
+
+    def getIndexDataForRID(self, rid):
+        """return the current index contents for the specific rid"""
+        return self._catalog.getIndexDataForRID(rid)
+    
     def schema(self):
         return self._catalog.schema.keys()
 

@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 from Globals import Persistent
@@ -195,6 +195,7 @@ class UnTextIndex(Persistent, Implicit):
     def __len__(self):
         return len(self._unindex)
 
+
     def clear(self):
         self._index = IOBTree()
         self._unindex = IOBTree()
@@ -211,7 +212,23 @@ class UnTextIndex(Persistent, Implicit):
 
         return histogram
 
+
+    def getEntryForObject(self, rid, default=None):
+        wordMap = self.getLexicon(self._lexicon)._lexicon.items()
+        results = self._unindex.get(rid, None)
+
+        if results is None:
+            return default
+        else:
+            # Now that we've got them, let's resolve out the word
+            # references
+            resolved = []
+            for (word, wordId) in wordMap:
+                if wordId in results:
+                    resolved.append(word)
+            return tuple(resolved)
         
+            
     def insertForwardIndexEntry(self, entry, documentId, score=1):
         """Uses the information provided to update the indexes.
 
@@ -256,12 +273,14 @@ class UnTextIndex(Persistent, Implicit):
             self._index[entry] = (documentId, score)
         return 1
 
+
     def insertReverseIndexEntry(self, entry, documentId):
         """Insert the correct entry into the reverse indexes for future
         unindexing."""
         newEntry = self._unindex.get(documentId, [])
         newEntry.append(entry)
         self._unindex[documentId] = newEntry
+
         
     def index_object(self, documentId, obj, threshold=None):
         
@@ -325,6 +344,7 @@ class UnTextIndex(Persistent, Implicit):
         ## return the number of words you indexed
         return wordCount
 
+
     def unindex_object(self, i): 
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
@@ -344,6 +364,7 @@ class UnTextIndex(Persistent, Implicit):
                             'unindex_object tried to unindex nonexistent'
                             ' document %s' % str(i))
             del unindex[i]
+
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"

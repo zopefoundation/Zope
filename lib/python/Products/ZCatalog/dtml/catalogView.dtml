@@ -40,8 +40,8 @@
     <td align="left" valign="top">&nbsp;</td>
     <td align="left" valign="top">
     <div class="form-text">
-    <a href="<dtml-var
-     "getURL" url_quote>/manage_workspace">&dtml-getPath;</a>
+    <a href="&dtml-URL1;/manage_objectInformation?rid=&dtml-getRID;"
+     target="_objectinfo_&dtml-getRID;">&dtml-getPath;</a>
     </div>
     </td>
     <td align="left" valign="top">

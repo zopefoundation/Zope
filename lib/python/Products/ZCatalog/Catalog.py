@@ -372,8 +372,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 LOG('Catalog', ERROR, ('catalogObject was passed '
                                        'bad index object %s.' % str(x)))
 
-        self.data = data
-
         return total
 
     def uncatalogObject(self, uid):
@@ -453,12 +451,24 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         return tuple(record)
 
     def instantiate(self, record):
-
         r=self._v_result_class(record[1])
         r.data_record_id_ = record[0]
         return r.__of__(self)
 
 
+    def getMetadataForRID(self, rid):
+        record = self.data[rid]
+        result = {}
+        for (key, pos) in self.schema.items():
+            result[key] = record[pos]
+        return result
+
+    def getIndexDataForRID(self, rid):
+        result = {}
+        for (id, index) in self.indexes.items():
+            result[id] = index.__of__(self).getEntryForObject(rid, "")
+        return result
+    
 ## Searching engine.  You don't really have to worry about what goes
 ## on below here...  Most of this stuff came from ZTables with tweaks.
 

@@ -85,7 +85,8 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
+
 
 
 from Globals import Persistent
@@ -154,6 +155,7 @@ class UnIndex(Persistent, Implicit):
     def __len__(self):
         return len(self._unindex)
 
+
     def histogram(self):
         """Return a mapping which provides a histogram of the number of
         elements found at each point in the index."""
@@ -165,6 +167,21 @@ class UnIndex(Persistent, Implicit):
 
         return histogram
 
+
+    def referencedObjects(self):
+        """Generate a list of IDs for which we have referenced objects."""
+        return self._unindex.keys()
+
+
+    def getEntryForObject(self, documentId, default=None):
+        """Takes a document ID and returns all the information we have
+        on that specific object."""
+        if default is None:
+            return self._unindex.get(documentId, default)
+        else:
+            return self._unindex.get(documentId)
+            
+        
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId
         in its entry in the index."""
@@ -173,6 +190,8 @@ class UnIndex(Persistent, Implicit):
         if indexRow is not MV:
             try:
                 indexRow.remove(documentId)
+                if len(indexRow) == 0:
+                    del self._index[entry]
             except:
                 LOG(self.__class__.__name__, ERROR,
                     ('unindex_object could not remove '
@@ -184,6 +203,7 @@ class UnIndex(Persistent, Implicit):
                 ('unindex_object tried to retrieve set %s '
                  'from index %s but couldn\'t.  This '
                  'should not happen.' % (repr(set),str(k))))
+
         
     def insertForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and put it in the correct place
@@ -199,6 +219,7 @@ class UnIndex(Persistent, Implicit):
             self._index[entry] = intSet()
             indexRow = self._index[entry]
         indexRow.insert(documentId)
+
 
     def index_object(self, documentId, obj, threshold=None):
         """ index and object 'obj' with integer id 'documentId'"""
@@ -309,7 +330,7 @@ class UnIndex(Persistent, Implicit):
         else:           #not a range
             get = index.get
             for key in keys:
-                if key:
+                if nonempty(key):
                     anyTrue = 1
                 set=get(key)
                 if set is not None:

@@ -35,10 +35,10 @@ that have one or more keywords specified in a search query.
         <td width="1%" align="right"  valign="top">&nbsp;</td>
         <td width="64%" align="left" valign="top">
           <div class="list-item">Index Name</div></td>
-        <td width="20%" align="right" valign="top">
+        <td width="20%" align="left" valign="top">
           <div class="list-item">Index Type</div></td>
-        <td width="15%" align="right" valign="top">
-          <div class="list-item">Objects Indexed</div></td>
+        <td width="15%" align="left" valign="top">
+          <div class="list-item">Size</div></td>
       </tr>
   </dtml-if>
   <dtml-if name="sequence-odd"><tr class="row-normal">
@@ -49,12 +49,11 @@ that have one or more keywords specified in a search query.
     </td>
     <td width="60%" align="left" valign="top">
       <div class="list-item">
-      <a href="">&dtml-id;</a></div></td>
-    <td width="20%" align="right" valign="top">
+      <a href="" target="_index_info_&dtml-id;">&dtml-id;</a></div></td>
+    <td width="20%" align="left" valign="top">
       <div class="list-item">&dtml-meta_type;</div></td>
-    <td width="15%" align="right" valign="top">
-      <div class="list-item">
-      <dtml-var expr="_.len(_['sequence-item'])" thousands_commas>
+    <td width="15%" align="left" valign="top"><div class="list-item"
+      ><dtml-var expr="_.len(_['sequence-item'])" thousands_commas>
       </div>
     </td>
   </tr>

@@ -119,7 +119,7 @@ class UnKeywordIndex(UnIndex):
             newKeywords = MV
 
         if type(newKeywords) is StringType:
-            newKeywords = (keywords, )
+            newKeywords = (newKeywords, )
 
         # Now comes the fun part, we need to figure out what's changed
         # if anything from the previous record.

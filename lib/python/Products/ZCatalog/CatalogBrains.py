@@ -106,14 +106,22 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
         except:
             return self.getPath()
 
-    def getObject(self):
+    def getObject(self, REQUEST=None):
         """Try to return the object for this record"""
         try:
-            return self.aq_parent.restrictedTraverse(self.getPath())
+            obj = self.aq_parent.restrictedTraverse(self.getPath())
+            if not obj:
+                if REQUEST is None:
+                    REQUEST = self.REQUEST
+                obj = self.aq_parent.resolve_url(self.getPath(), REQUEST)
+            return obj
         except:
             pass
         
-
+    def getRID(self):
+        """Return the record ID for this object."""
+        return self.data_record_id_
+    
 class NoBrainer:
     """ This is an empty class to use when no brain is specified. """
     pass
