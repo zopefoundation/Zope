@@ -349,8 +349,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.30 1998/09/14 22:03:32 jim Exp $'
-__version__='$Revision: 1.30 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.31 1998/10/21 14:58:12 jim Exp $'
+__version__='$Revision: 1.31 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict
@@ -384,7 +384,10 @@ class InClass:
         self.args=args
         has_key=args.has_key
 
-        if has_key('sort'): self.sort=args['sort']
+        if has_key('sort'):
+            self.sort=sort=args['sort']
+            if sort=='sequence-item': self.sort=''
+            
         if has_key('mapping'): self.mapping=args['mapping']
         for n in 'start', 'size', 'end':
             if has_key(n): self.batch=1
@@ -438,6 +441,10 @@ class InClass:
         if not sequence:
             if self.elses: return render_blocks(self.elses, md)
             return ''
+
+        if type(sequence) is type(''):
+            raise 'InError', (
+                'Strings are not allowed as input to the in tag.')
 
         section=self.section
         params=self.args
@@ -586,6 +593,10 @@ class InClass:
         if not sequence:
             if self.elses: return render_blocks(self.elses, md)
             return ''
+
+        if type(sequence) is type(''):
+            raise 'InError', (
+                'Strings are not allowed as input to the in tag.')
 
         section=self.section
         
