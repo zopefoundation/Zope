@@ -11,7 +11,7 @@ Zope Logging
  example::
 
   $ python2.1 z2.py ZSYSLOG_SERVER="syslog.mydomain.com:514" \
-     STUPID_LOG_FILE=var/Zope.log"
+     STUPID_LOG_FILE="var/Zope.log"
 
  Currently, the following environment variables can be set:
 
