@@ -10,7 +10,10 @@
 <P>
 The listing below shows the current security settings for this item. 
 Permissions are rows and roles are columns.  Checkboxes are used to
-indicate where roles are assigned permissions.
+indicate where roles are assigned permissions. You can also assign 
+<strong><a href="manage_listLocalRoles">local roles</a></strong> to 
+users, which give users extra roles in the context of this object and 
+its subobjects.
 </P>
 <P>  
 When a role is assigned to a permission, users with the given role
@@ -20,9 +23,11 @@ then the containing objects's permission settings are used. Note: the
 acquired permission settings may be augmented by selecting Roles for
 a permission in addition to selecting to acquire permissions.
 </P>
-<P>You can define new Roles by using the <EM>User defined roles</EM>
-form below.</P>
 
+<P>
+You can define new Roles by using the <EM>User defined roles</EM>
+form below.<
+/P>
 
 <style type="text/css">
 <!--

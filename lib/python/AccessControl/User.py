@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -129,6 +129,24 @@ class BasicUser(Implicit):
         """Return the list of roles assigned to a user."""
         raise NotImplemented
 
+    def getRolesInContext(self, object):
+        """Return the list of roles assigned to the user,
+           including local roles assigned in context of
+           the passed in object."""
+        name=self.getUserName()
+        roles=self.getRoles()
+        local={}
+        while 1:
+            if hasattr(object, '__ac_local_roles__'):
+                for r in object.__ac_local_roles__.get(name, []):
+                    local[r]=1
+            if not hasattr(object, 'aq_parent'):
+                break
+            object=object.aq_parent
+        joined=rolejoin(roles, local.keys())
+        return joined
+
+
     def getDomains(self):
         """Return the list of domain restrictions for a user"""
         raise NotImplemented
@@ -163,28 +181,12 @@ class BasicUser(Implicit):
                 parent=parent.aq_parent
             else: return r
 
-    def allowed(self,parent,roles=None):
-        """Check wether the user has access to parent
-
-        assuming that parent.__roles__ is the given roles.
-        """
-        usr_roles=self.getRoles()
-        try:
-            if roles is None or 'Anonymous' in roles:
-                return 1
-        except:
-            l=[]
-            ob=roles
-            while 1:
-                if hasattr(ob, 'id'):
-                    id=ob.id
-                else: id='?'
-                l.append('%s: %s' % (id, `ob`))
-                if not hasattr(ob, 'aq_parent'):
-                    break
-                ob=ob.aq_parent
-            raise 'spam', `l`
-
+    def allowed(self, parent, roles=None):
+        """Check whether the user has access to parent, assuming that
+           parent.__roles__ is the given roles."""
+        if roles is None or 'Anonymous' in roles:
+            return 1
+        usr_roles=self.getRolesInContext(parent)
         for role in roles:
             if role in usr_roles:
                 if (hasattr(self,'aq_parent') and
@@ -208,7 +210,7 @@ class BasicUser(Implicit):
             if roles is None or 'Anonymous' in roles: return 1
             while 'Shared' in roles: roles.remove('Shared')
             return self.allowed(parent,roles)
-            
+
         return None
 
     hasRole=allowed
@@ -677,7 +679,15 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
 
 
 
-
+def rolejoin(roles, other):
+    dict={}
+    for role in roles:
+        dict[role]=1
+    for role in other:
+        dict[role]=1
+    roles=dict.keys()
+    roles.sort()
+    return roles
 
 addr_match=regex.compile('[0-9\.\*]*').match
 host_match=regex.compile('[A-Za-z0-9\.\*]*').match

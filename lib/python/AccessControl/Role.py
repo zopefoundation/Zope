@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -92,6 +92,7 @@ from string import join, strip, split, find
 from Acquisition import Implicit
 import Globals
 from Permission import Permission
+from Common import aq_base
 
 ListType=type([])
 
@@ -107,11 +108,15 @@ class RoleManager:
           'manage_changePermissions', 'permissionsOfRole',
           'rolesOfPermission', 'acquiredRolesAreUsedBy',
           'manage_defined_roles',
+          'manage_listLocalRoles', 'manage_editLocalRoles',
+          'manage_setLocalRoles',  'manage_delLocalRoles',
           )),
         ('View management screens', ('manage_access',)),
         )
    
     __ac_roles__=('Manager', 'Anonymous')
+
+
 
     #------------------------------------------------------------
 
@@ -276,8 +281,76 @@ class RoleManager:
         raise 'Invalid Permission', (
             "The permission <em>%s</em> is invalid." % permission)
 
-            
-            
+
+    # Local roles support
+    # -------------------
+    #
+    # Local roles allow a user to be given extra roles in the context
+    # of a particular object (and its children). When a user is given
+    # extra roles in a particular object, an entry for that user is made
+    # in the __ac_local_roles__ dict containing the extra roles.
+    
+    __ac_local_roles__={}
+
+    manage_listLocalRoles=HTMLFile('listLocalRoles', globals())
+    manage_editLocalRoles=HTMLFile('editLocalRoles', globals())
+
+    def has_local_roles(self):
+        return len(self.__ac_local_roles__)
+
+    def get_local_roles(self):
+        dict=self.__ac_local_roles__
+        keys=dict.keys()
+        keys.sort()
+        info=[]
+        for key in keys:
+            info.append((key, dict[key]))
+        return info
+
+    def get_valid_userids(self):
+        item=self
+        dict={}
+        while 1:
+            if hasattr(aq_base(item), 'acl_users') and \
+               hasattr(item.acl_users, 'user_names'):
+                for name in item.acl_users.user_names():
+                    dict[name]=1
+            if not hasattr(item, 'aq_parent'):
+                break
+            item=item.aq_parent
+        keys=dict.keys()
+        keys.sort()
+        return keys
+
+    def get_local_roles_for_userid(self, userid):
+        return self.__ac_local_roles__.get(userid, [])
+
+    def manage_setLocalRoles(self, userid, roles, REQUEST=None):
+        """Set local roles for a user."""
+        if not roles:
+            raise ValueError, 'One or more roles must be given!'
+        if not self.validate_roles(roles):
+            raise ValueError, 'Invalid role given.'
+        dict=self.__ac_local_roles__
+        dict[userid]=roles
+        self.__ac_local_roles__=dict
+        if REQUEST is not None:
+            stat='Your changes have been saved.'
+            return self.manage_listLocalRoles(self, REQUEST, stat=stat)
+
+    def manage_delLocalRoles(self, userids, REQUEST=None):
+        """Remove all local roles for a user."""
+        dict=self.__ac_local_roles__
+        for userid in userids:
+            if dict.has_key(userid):
+                del dict[userid]
+        self.__ac_local_roles__=dict
+        if REQUEST is not None:
+            stat='Your changes have been saved.'
+            return self.manage_listLocalRoles(self, REQUEST, stat=stat)
+
+
+
 
     #------------------------------------------------------------
 
@@ -365,6 +438,9 @@ class RoleManager:
         data.append(role)
         self.__ac_roles__=tuple(data)
         return self.manage_access(self, REQUEST)
+
+
+
 
     def _delRoles(self, roles, REQUEST):
         if not roles:

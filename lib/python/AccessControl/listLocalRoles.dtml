@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>Manage Local Roles</title>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#endif-->
+
+<!--#if stat-->
+<hr>
+<font color="red"><!--#var stat--></font>
+<hr>
+<!--#endif-->
+
+<p>
+<strong>Local roles</strong> allow you to give particular users extra roles 
+in the context of this object, in addition to the roles they already have. 
+
+<!--#if has_local_roles-->
+<br>
+The following users have been given local roles. To modify the local roles 
+given to a particular user, click on the name of the user. To remove all 
+local roles from a user, select the checkbox next to the name of the user 
+and click the <em>Remove</em> button.
+</p>
+<form action="manage_delLocalRoles" method="POST">
+<table cellspacing="2" border="0">
+<!--#in get_local_roles-->
+<tr>
+  <td align="left" valign="top">
+  <input type="checkbox" name="userids:list" value="<!--#var sequence-key-->">
+  </td>
+  <td align="left" valign="top">
+  <a href="manage_editLocalRoles?userid=<!--#var sequence-key 
+   fmt="url-quote"-->"><!--#var sequence-key--></a> (<!--#in 
+   sequence-item--><!--#var sequence-item--><!--#unless 
+   sequence-end-->, <!--#/unless--><!--#endin-->)
+  </td>
+</tr>
+<!--#endin-->
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <input type="submit" value="Remove">
+  </td>
+</tr>
+</table>
+</form>
+<!--#endif-->
+
+<p>
+To give a user extra roles when accessing this object (and its children), 
+select a user from the <em>User</em> list below, select the extra 
+roles that should be given to that user from the <em>Roles</em> list.
+
+<form action="manage_setLocalRoles" method="POST">
+<table cellspacing="2" border="0">
+<tr>
+  <td align="left" valign="top">
+  <strong>User</strong>
+  <br>
+  <select name="userid" size="5">
+  <!--#in get_valid_userids-->
+  <option value="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#endin-->
+  </select>
+  </td>
+
+  <td align="left" valign="top">
+  <strong>Roles</strong>
+  <br>
+  <select name="roles:list" size="5" multiple>
+<!--#in valid_roles--><!--#if 
+"_vars['sequence-item'] not in ('Anonymous', 'Shared')"-->
+<option value="<!--#var sequence-item-->"><!--#var sequence-item-->
+<!--#endif-->
+<!--#endin-->
+  </select>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <input type="submit" value="Add">
+  </td>
+  <td></td>
+</tr>
+</table>
+</form>
+
+
+
+
+</body>
+</html>
