@@ -130,6 +130,11 @@ Zope Changes
 
       - #178: Don't compile PythonScripts in skins directories
 
+      - Fixed the help registration system and Zope tutorial to honor
+        the environment variables, FORCE_PRODUCT_LOAD, and ZEO_CACHE,
+        that affect whether products are installed in the database at
+        application startup.
+
     Features Added
     
       - Collector #186: Added urlencode to the standard importables for
@@ -183,6 +188,15 @@ Zope Changes
 	containing {'id':original_id,'new_id':newly_pasted_obj_id} when called
 	with REQUEST=None
 
+
+      - Changed FORCE_PRODUCT_LOAD so that if it is set, it determines
+        whether products are installed regardless of whether ZEO_CACHE is
+        set. This means that you can disable product installation by setting
+        FORCE_PRODUCT_LOAD to an empty string even if you are not using a
+        ZEO persistent cache.
+      
+        Documented FORCE_PRODUCT_LOAD
+      
   Zope 2.6.0 alpha 1
 
     Features Added
