@@ -46,7 +46,7 @@ The Zope Object Database, ZODB, version 3.0
       app._p_jar.close()
 
     You have to import the Zope application module, which uses
-    ZODB 2 rather than ZODB 2.  In ZODB 3, you have to get a
+    ZODB 3 rather than ZODB 2.  In ZODB 3, you have to get a
     connection to a database before you access an object.  The
     'app()' function combines opening a connection and getting the
     top level object.  When your done using the top-level object
