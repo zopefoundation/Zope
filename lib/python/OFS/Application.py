@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.76 1998/12/03 15:29:20 jim Exp $'''
-__version__='$Revision: 1.76 $'[11:-2]
+$Id: Application.py,v 1.77 1998/12/03 20:08:42 jim Exp $'''
+__version__='$Revision: 1.77 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -285,6 +285,8 @@ def install_products(app):
 
     product_names=os.listdir(product_dir)
     product_names.sort()
+    global_dict=globals()
+    silly=('__doc__',)
 
     for product_name in product_names:
 	package_dir=path_join(product_dir, product_name)
@@ -293,7 +295,8 @@ def install_products(app):
 	    if not exists(path_join(package_dir, '__init__.pyc')):
 		continue
 
-	product=getattr(__import__("Products.%s" % product_name), product_name)
+        product=__import__("Products.%s" % product_name,
+                           global_dict, global_dict, silly)
 
 	permissions={}
 	new_permissions={}
@@ -389,6 +392,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.77  1998/12/03 20:08:42  jim
+# Fixed the way __import__ is called.
+#
 # Revision 1.76  1998/12/03 15:29:20  jim
 # rearranged SOFTWARE_HOME and INSTANCE_HOME
 #
