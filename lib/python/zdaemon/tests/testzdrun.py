@@ -217,15 +217,24 @@ class ZDaemonTests(unittest.TestCase):
             sys.executable,
             [sys.executable, os.path.join(self.here, 'parent.py')]
             )
-        time.sleep(2) # race condition possible here
+        # Wait for it to start, but no longer than a minute.
+        deadline = time.time() + 60
+        is_started = False
+        while time.time() < deadline:
+             response = send_action('status\n', zdrun_socket)
+             if response is None:
+                 time.sleep(0.05)
+             else:
+                 is_started = True
+                 break
+        self.assert_(is_started, "spawned process failed to start in a minute")
+        # Kill it, and wait a little to ensure it's dead.
         os.kill(zdctlpid, signal.SIGINT)
-        try:
-            response = send_action('status\n', zdrun_socket) or ''
-        except socket.error, msg:
-            response = ''
-        params = response.split('\n')
-        self.assert_(len(params) > 1, repr(response))
-        # kill the process
+        time.sleep(0.25)
+        # Make sure the child is still responsive.
+        response = send_action('status\n', zdrun_socket)
+        self.assert_(response is not None and '\n' in response)
+        # Kill the process.
         send_action('exit\n', zdrun_socket)
 
     def testUmask(self):
