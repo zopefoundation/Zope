@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.18 1997/02/10 23:48:43 jim Exp $
+     $Id: cPickle.c,v 1.19 1997/02/17 22:11:27 jim Exp $
 
      Copyright 
 
@@ -59,12 +59,8 @@ static char cPickle_module_documentation[] =
 #include "Python.h"
 #include "cStringIO.h"
 #include "graminit.h"
-#include "PyErr_Format.h"
 
 #include <errno.h>
-
-static PyObject *ErrorObject;
-
 
 #define UNLESS(E) if (!(E))
 
@@ -180,6 +176,56 @@ typedef struct {
  
 static PyTypeObject Unpicklertype;
 
+PyObject *
+#ifdef HAVE_STDARG_PROTOTYPES
+/* VARARGS 2 */
+PyErr_Format(PyObject *ErrType, char *stringformat, char *format, ...)
+#else
+/* VARARGS */
+PyErr_Format(va_alist) va_dcl
+#endif
+{
+  va_list va;
+  PyObject *args=0, *retval=0;
+#ifdef HAVE_STDARG_PROTOTYPES
+  va_start(va, format);
+#else
+  PyObject *ErrType;
+  char *stringformat, *format;
+  va_start(va);
+  ErrType = va_arg(va, PyObject *);
+  stringformat   = va_arg(va, char *);
+  format   = va_arg(va, char *);
+#endif
+  
+  if(format) args = Py_VaBuildValue(format, va);
+  va_end(va);
+  if(format && ! args) return NULL;
+  if(stringformat && !(retval=PyString_FromString(stringformat))) return NULL;
+
+  if(retval)
+    {
+      if(args)
+	{
+	  PyObject *v;
+	  v=PyString_Format(retval, args);
+	  Py_DECREF(retval);
+	  Py_DECREF(args);
+	  if(! v) return NULL;
+	  retval=v;
+	}
+    }
+  else
+    if(args) retval=args;
+    else
+      {
+	PyErr_SetObject(ErrType,Py_None);
+	return NULL;
+      }
+  PyErr_SetObject(ErrType,retval);
+  Py_DECREF(retval);
+  return NULL;
+}
 
 static int 
 write_file(Picklerobject *self, char *s, int  n) {
@@ -2842,15 +2888,14 @@ load_mark(Unpicklerobject *self, PyObject *args) {
     if ((len = PyList_Size(self->stack)) < 0)
         return -1;
 
-    if (!self->num_marks) {
-        UNLESS(self->marks = (int *)malloc(20 * sizeof(int))) {
+    if (!self->marks_size) {
+        self->marks_size = 20;
+        UNLESS(self->marks = (int *)malloc(self->marks_size * sizeof(int))) {
             PyErr_NoMemory();
             return -1;
-        }
- 
-        self->marks_size = 20;
+        } 
     }
-    else if ((self->num_marks + 1) > self->marks_size) {
+    else if ((self->num_marks + 1) >= self->marks_size) {
         UNLESS(self->marks = (int *)realloc(self->marks,
             (self->marks_size + 20) * sizeof(int))) {
             PyErr_NoMemory();
@@ -3105,11 +3150,12 @@ Unpickler_load(Unpicklerobject *self, PyObject *args) {
             default: 
                 PyErr_Format(UnpicklingError, "invalid load key, '%s'.", 
                     "c", s[0]);
-                return NULL;
+                goto err;
         }
 
         break;
     }
+
 
     if (self->diddled_ptr) {
         *self->diddled_ptr = self->diddled_char;
@@ -3118,27 +3164,23 @@ Unpickler_load(Unpicklerobject *self, PyObject *args) {
 
     if ((err = PyErr_Occurred()) == PyExc_EOFError) {
         PyErr_SetNone(PyExc_EOFError);
-        return NULL;
+        goto err;
     }    
 
-    if (err)    
-        return NULL;
+    if (err) goto err;
 
-    if ((len = PyList_Size(self->stack)) < 0)  
-        return NULL;
+    if ((len = PyList_Size(stack)) < 0) goto err;
 
-    UNLESS(val = PyList_GetItem(self->stack, len - 1))  
-        return NULL;
+    UNLESS(val = PyList_GetItem(stack, len - 1)) goto err;
     Py_INCREF(val);
 
-    if (DEL_LIST_SLICE(self->stack, len - 1, len) < 0) {
-        Py_DECREF(val);
-        return NULL;
-    }
+    Py_DECREF(stack);
 
+    self->stack=NULL;
     return val;
 
 err:
+    self->stack=NULL;
     Py_XDECREF(stack);
 
     return NULL;
@@ -3520,6 +3562,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
+    char *rev="$Revision: 1.19 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("cPickle", cPickle_methods,
@@ -3531,8 +3574,8 @@ initcPickle() {
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
-    ErrorObject = PyString_FromString("cPickle.error");
-    PyDict_SetItemString(d, "error", ErrorObject);
+    PyDict_SetItemString(d,"__version__",
+			 PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
     init_stuff(m, d);
     CHECK_FOR_ERRORS("can't initialize module cPickle");
