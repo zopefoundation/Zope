@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -95,6 +95,8 @@ from Permission import Permission
 from App.Common import aq_base
 
 ListType=type([])
+
+DEFAULTMAXLISTUSERS=250
 
 def _isBeingUsedAsAMethod(self):
     return aq_get(self, '_isBeingUsedAsAMethod_', 0)
@@ -374,14 +376,24 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     def get_valid_userids(self):
         item=self
         dict={}
+        _notfound = []
         while 1:
-            if hasattr(aq_base(item), 'acl_users') and \
-               hasattr(item.acl_users, 'user_names'):
-                for name in item.acl_users.user_names():
-                    dict[name]=1
-            if not hasattr(item, 'aq_parent'):
+            aclu = getattr(aq_base(item), 'acl_users', _notfound)
+            if aclu is not _notfound:
+                mlu = getattr(aclu, 'maxlistusers', _notfound)
+                if type(mlu) != type(1): mlu = DEFAULTMAXLISTUSERS
+                if mlu < 0: raise OverflowError
+                un = getattr(aclu, 'user_names', _notfound)
+                if un is not _notfound:
+                    unl = un()
+                    # maxlistusers of 0 is list all
+                    if len(unl) > mlu and mlu != 0:
+                        raise OverflowError
+                    for name in un():
+                        dict[name]=1
+            item = getattr(item, 'aq_parent', _notfound)
+            if item is _notfound:
                 break
-            item=item.aq_parent
         keys=dict.keys()
         keys.sort()
         return tuple(keys)

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.157 $'[11:-2]
+__version__='$Revision: 1.158 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -95,7 +95,7 @@ from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from base64 import decodestring
 from App.ImageFile import ImageFile
-from Role import RoleManager
+from Role import RoleManager, DEFAULTMAXLISTUSERS
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 import AuthEncoding
 from AccessControl import getSecurityManager, Unauthorized
@@ -479,6 +479,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     isPrincipiaFolderish=1
     isAUserFolder=1
+    maxlistusers = DEFAULTMAXLISTUSERS
 
     encrypt_passwords = 0
 
@@ -795,11 +796,17 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             management_view='Properties')
 
     def manage_setUserFolderProperties(self, encrypt_passwords=0,
-                                       update_passwords=0, REQUEST=None):
+                                       update_passwords=0,
+                                       maxlistusers=DEFAULTMAXLISTUSERS,
+                                       REQUEST=None):
         """
         Sets the properties of the user folder.
         """
         self.encrypt_passwords = not not encrypt_passwords
+        try:
+            self.maxlistusers = int(maxlistusers)
+        except ValueError:
+            self.maxlistusers = DEFAULTMAXLISTUSERS
         if encrypt_passwords and update_passwords:
             changed = 0
             for u in self.getUsers():

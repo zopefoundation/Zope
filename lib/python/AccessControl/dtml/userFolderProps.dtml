@@ -17,6 +17,14 @@
    </dtml-let>
   </td>
 </tr>
+<tr>
+ <td align="left" valign="center" class="form-label">
+  Role assignment presents search dialog when more users than N (-1 is always, 0 is never).
+ </td>
+ <td align="left" valign="center" class="form-element">
+ <input type=text name="maxlistusers" value="&dtml.missing-maxlistusers;" size=3>
+ </td>
+</tr>
 
 </table>
 
