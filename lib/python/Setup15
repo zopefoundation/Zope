@@ -10,6 +10,9 @@ Sync              ../Components/ExtensionClass/Sync.c              -I../Componen
 Record            ../Components/ExtensionClass/Record.c            -I../Components/ExtensionClass
 ComputedAttribute ../Components/ExtensionClass/ComputedAttribute.c -I../Components/ExtensionClass
 
+cStringIO      ../Components/cPickle/cStringIO.c
+cPickle        ../Components/cPickle/cPickle.c
+
 BTree         ../Components/BTree/BTree.c     -I../Components/ExtensionClass  -I../Components/BTree -I./ZODB
 IIBTree        ../Components/BTree/IIBTree.c  -I../Components/ExtensionClass  -I../Components/BTree -I./ZODB
 IOBTree        ../Components/BTree/IOBTree.c  -I../Components/ExtensionClass  -I../Components/BTree -I./ZODB
