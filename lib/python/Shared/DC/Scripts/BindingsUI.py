@@ -91,7 +91,9 @@ from Bindings import Bindings
 class BindingsUI(Bindings):
     
     manage_options = (
-        {'label':'Bindings', 'action':'ZBindingsHTML_editForm'},
+        {'label':'Bindings',
+         'action':'ZBindingsHTML_editForm',
+         'help':('PythonScripts', 'Bindings.stx')},
         )
 
     __ac_permissions__ = (
