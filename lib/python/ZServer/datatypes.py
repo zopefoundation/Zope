@@ -16,8 +16,31 @@
 Each server type is represented by a ServerFactory instance.
 """
 
+import socket
+
+
+_default_host_info = None
+
+def get_default_host_info():
+    global _default_host_info
+    if _default_host_info is None:
+        hostname = socket.gethostname()
+        try:
+            ip = socket.gethostbyname(hostname)
+        except socket.error:
+            hostname = 'localhost'
+            ip = socket.gethostbyname(hostname)
+        try:
+            hostname = socket.gethostbyaddr(ip)[0]
+        except socket.error:
+            hostname = ip
+        _default_host_info = hostname, ip
+    return _default_host_info
+
+
 class ServerFactory:
     def __init__(self, address=None):
+        self.ip = None
         if address is None:
             self.host = None
             self.port = None
@@ -26,17 +49,24 @@ class ServerFactory:
 
     def prepare(self, defaulthost=None, dnsresolver=None,
                 module=None, env=None, portbase=None):
-        if defaulthost is not None:
-            self._set_default_host(defaulthost)
+        if defaulthost:
+            hostname = defaulthost
+            ip = socket.gethostbyname(hostname)
+        else:
+            hostname, ip = get_default_host_info()
+        if not self.host:
+            self._set_default_host(hostname, ip)
+        else:
+            self.ip = socket.gethostbyname(self.host)
         self.dnsresolver = dnsresolver
         self.module = module
         self.cgienv = env
         if portbase and self.port is not None:
             self.port += portbase
 
-    def _set_default_host(self, host):
-        if not self.host:
-            self.host = host
+    def _set_default_host(self, host, ip):
+        self.host = host
+        self.ip = ip
 
     def servertype(self):
         s = self.__class__.__name__
@@ -64,7 +94,7 @@ class HTTPServerFactory(ServerFactory):
         handler._force_connection_close = self.force_connection_close
         if self.webdav_source_clients:
             handler.set_webdav_source_clients(self.webdav_source_clients)
-        server = HTTPServer.zhttp_server(ip=self.host, port=self.port,
+        server = HTTPServer.zhttp_server(ip=self.ip, port=self.port,
                                          resolver=self.dnsresolver,
                                          logger_object=access_logger)
         server.install_handler(handler)
@@ -88,7 +118,7 @@ class FTPServerFactory(ServerFactory):
     def create(self):
         from ZServer.AccessLogger import access_logger
         from ZServer.FTPServer import FTPServer
-        return FTPServer(ip=self.host, port=self.port,
+        return FTPServer(ip=self.ip, hostname=self.host, port=self.port,
                          module=self.module, resolver=self.dnsresolver,
                          logger_object=access_logger)
 
@@ -119,14 +149,14 @@ class FCGIServerFactory(ServerFactory):
         ServerFactory.__init__(self, address)
         self.path = path
 
-    def _set_default_host(self, host):
+    def _set_default_host(self, host, ip):
         if self.path is None:
-            ServerFactory._set_default_host(self, host)
+            ServerFactory._set_default_host(self, host, ip)
 
     def create(self):
         from ZServer.AccessLogger import access_logger
         from ZServer.FCGIServer import FCGIServer
-        return FCGIServer(ip=self.host, port=self.port,
+        return FCGIServer(ip=self.ip, port=self.port,
                           socket_file=self.path,
                           module=self.module, resolver=self.dnsresolver,
                           logger_object=access_logger)
@@ -167,4 +197,4 @@ class ICPServerFactory(ServerFactory):
 
     def create(self):
         from ZServer.ICPServer import ICPServer
-        return ICPServer(self.host, self.port)
+        return ICPServer(self.ip, self.port)
