@@ -85,8 +85,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.16 1999/11/02 16:51:32 brian Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: DT_InSV.py,v 1.17 2000/05/12 18:36:39 tseaver Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 from string import lower, rfind, split, join
 from math import sqrt
@@ -240,7 +240,10 @@ class sequence_variables:
                 try:
                     if item is mv:
                         item = None
-                    s=item*item
+                    if type(item)==type(1):
+                        s=item*long(item)
+                    else:
+                        s=item*item
                     sum=sum+item
                     sumsq=sumsq+s
                     values.append(item)
