@@ -122,7 +122,7 @@ class DummyEngine:
         if self.locals is self.stack[-1]:
             # Unmerge this scope's locals from previous scope of first set
             self.locals = self.locals.copy()
-            self.locals[name] = value
+        self.locals[name] = value
 
     def setGlobal(self, name, value):
         self.globals[name] = value
