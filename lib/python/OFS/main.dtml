@@ -20,13 +20,13 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <!--#if icon-->
-  <A HREF="<!--#var sequence-key-->/manage_main">
+  <A HREF="<!--#var sequence-key-->/manage_workspace">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
    ALT="[<!--#var meta_type-->]" BORDER="0"></A>
   <!--#/if icon-->
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_main">
+  <A HREF="<!--#var sequence-key-->/manage_workspace">
   <!--#var sequence-key--> <!--#if title-->(<!--#var title-->)<!--#/if-->
   </A>
   <!--#if locked_in_session-->
