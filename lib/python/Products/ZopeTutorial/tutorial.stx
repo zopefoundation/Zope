@@ -821,7 +821,7 @@ Lesson 12. The Elvis Files, cont.
 
     2. Click on the 'reportAction' DTML Document to view its contents.
 
-  This document its simplier than the 'reportAction' document in
+  This document is more simple than the 'reportAction' document in
   Lesson 10. All it does is 
   thank the user and call the 'insertSighting' ZSQL Method with this
   code::
