@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.9 2003/06/20 00:34:33 chrism Exp $
-# $Revision: 1.9 $
+# $Id: configure,v 1.10 2003/06/20 01:12:11 chrism Exp $
+# $Revision: 1.10 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -83,7 +83,7 @@ get_python() {
                 else
                     i=1;
                     for ACC in $ACCEPTABLE; do
-                        let "i = i + 1"
+                        i=$(($i+1))
 			for SLOT in $FOUNDLIST; do
                             if [ $SLOT == $i ]; then
                                 # slot "i" already populated.  This means we've
