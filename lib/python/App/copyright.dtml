@@ -162,6 +162,15 @@ ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
 OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
+
+<hr>
+<p>Zope uses the C expat library by James Clark, for parsing XML text.</p>
+
+<P>Copyright (c) 1998, 1999 James Clark.  Expat is subject to the <A
+HREF="http://www.mozilla.org/NPL/NPL-1_1Final.html">Mozilla Public
+License Version 1.1</A>.
+</p>
+
 <hr>
 
 <A NAME="CREDITS">
