@@ -35,6 +35,12 @@ Zope Changes
           reporting logic.  The bugs were made far more effective
           by Python 1.5.1.
 
+        - Databases (or export files) created in binary distributions
+          were not usable in source distributions due to cPickle
+          limitations in stock Python 1.5.1.  We now link/copy the
+          cPickle extension to BoboPOS to make sure that it uses the
+          latest version.
+
     Zope  1.10.2
 
       Bugs Fixed
