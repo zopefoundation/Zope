@@ -10,7 +10,7 @@
 
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.3 1998/01/16 21:13:28 jim Exp $"
+"\n$Id: Record.c,v 1.4 1998/07/27 13:09:58 jim Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -141,7 +141,7 @@ Record_deal(Record *self)
 
 #ifdef PERSISTENCE
 static PyObject *
-Record__p___reinit__(Record *self, PyObject *args)
+Record__p_deactivate(Record *self, PyObject *args)
 {
   Record_deal(self);
   self->schema=NULL;
@@ -163,8 +163,8 @@ static struct PyMethodDef Record_methods[] = {
    "__init__([v]) -- Initialize a record, possibly with state"
   },
 #ifdef PERSISTENCE
-  {"_p___reinit__",	(PyCFunction)Record__p___reinit__,	METH_VARARGS,
-   "_p___reinit__() -- Reset the record's data"
+  {"_p_deactivate",	(PyCFunction)Record__p_deactivate,	METH_VARARGS,
+   "_p_deactivate() -- Reset the record's data"
   },
 #endif
   {NULL,		NULL}		/* sentinel */
@@ -512,7 +512,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -551,6 +551,9 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.4  1998/07/27 13:09:58  jim
+  Changed _p___reinit__ to _p_deactivate.
+
   Revision 1.3  1998/01/16 21:13:28  jim
   Added extra ignored parent object argument to __init__ and
   __setstate__.
