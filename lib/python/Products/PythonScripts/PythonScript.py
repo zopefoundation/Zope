@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -142,9 +142,9 @@ class PythonScript(Script, Historical):
     __ac_permissions__ = (
         ('View management screens',
           ('ZPythonScriptHTML_editForm', 'ZPythonScript_changePrefs',
-           'manage_main', 'ZScriptHTML_tryForm')),
+           'manage_main', 'ZScriptHTML_tryForm', 'read')),
         ('Change Python Scripts',
-          ('ZPythonScript_edit', 'PUT', 'manage_FTPput',
+          ('ZPythonScript_edit', 'PUT', 'manage_FTPput', 'write',
            'ZPythonScript_setTitle', 'ZPythonScriptHTML_upload',
            'ZPythonScriptHTML_uploadForm', 'manage_historyCopy',
            'manage_beforeHistoryCopy', 'manage_afterHistoryCopy')),
@@ -189,7 +189,7 @@ class PythonScript(Script, Historical):
     def ZPythonScriptHTML_upload(self, REQUEST, file=''):
         """Replace the body of the script with the text in file."""
         if type(file) is not type(''): file = file.read()
-        self._setText(file)
+        self.write(file)
         message = 'Content changed.'
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
                                                manage_tabs_message=message)
@@ -328,13 +328,13 @@ class PythonScript(Script, Historical):
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
-        self._setText(REQUEST.get('BODY', ''))
+        self.write(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
         return RESPONSE        
 
     manage_FTPput = PUT
 
-    def _setText(self, text):
+    def write(self, text):
         self._validateProxy()
         mdata = self._metadata_map()
         st = 0
@@ -375,7 +375,7 @@ class PythonScript(Script, Historical):
             self._body = rstrip(body)
             self._makeFunction(1)
         except:
-            LOG(self.meta_type, ERROR, '_setText failed', error=sys.exc_info())
+            LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
             raise
 
     def manage_FTPget(self):
