@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.36 1998/01/08 17:40:21 jim Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: Application.py,v 1.37 1998/01/12 21:31:13 jim Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -25,8 +25,8 @@ from ImageFile import ImageFile
 
 class Application(Folder.Folder):
     title    ='Principia'
-    __roles__=None
-    __defined_roles__=('manage',)
+    __roles__=['Manager', 'Anonymous']
+    __defined_roles__=('Manager','Anonymous','Shared')
     web__form__method='GET'
 
     class misc_:
@@ -283,6 +283,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.37  1998/01/12 21:31:13  jim
+# Made application default Manager, Anonymous
+#
 # Revision 1.36  1998/01/08 17:40:21  jim
 # Modified __class_init__ to use default class init defined in Globals.
 #
