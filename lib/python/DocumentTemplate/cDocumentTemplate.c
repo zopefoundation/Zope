@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.15 1998/05/07 22:05:56 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.16 1998/05/20 17:18:34 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -697,17 +697,10 @@ validate(PyObject *self, PyObject *args)
     return NULL;
 
   /*
-        if hasattr(value, '__roles__'):
-	    roles=value.__roles__
-	elif inst is parent:
-	    return 1
+        if hasattr(value, '__roles__'): roles=value.__roles__
+	elif inst is parent: return 1
 	else:
-	    # if str(name)[:6]=='manage': return 0
-	    if hasattr(parent,'__roles__'):
-		roles=parent.__roles__
-	    elif hasattr(parent, 'aq_acquire'):
-		try: roles=parent.aq_acquire('__roles__')
-		except AttributeError: return 0
+	    if hasattr(parent,'__roles__'): roles=parent.__roles__
 	    else: return 0
 	    value=parent
    */
@@ -718,9 +711,7 @@ validate(PyObject *self, PyObject *args)
       UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
 	{
 	  PyErr_Clear();
-	  UNLESS(__roles__=PyObject_GetAttr(parent,py_acquire)) goto err0;
-	  ASSIGN(__roles__,PyObject_CallFunction(__roles__,"O",py___roles__));
-	  UNLESS(__roles__) goto err0;
+	  return PyInt_FromLong(0);
 	}
       value=parent;
     }
@@ -753,16 +744,6 @@ validate(PyObject *self, PyObject *args)
 	    {
 	      Py_DECREF(__roles__);
 	      return md;
-	    }
-	  if(md==Py_None)
-	    {
-	      if(name=PyString_Format(py_Unauthorized_fmt, name))
-		{
-		  PyErr_SetObject(py_Unauthorized, name);
-		  Py_DECREF(name);
-		}
-	      Py_DECREF(md);
-	      return NULL;
 	    }
 	  Py_DECREF(md);
 	}
@@ -809,26 +790,15 @@ validate(PyObject *self, PyObject *args)
 
   Py_DECREF(__roles__);
 
-  /*     if inst is parent:
-	    raise 'Unauthorized', (
+  /*     raise 'Unauthorized', (
 		'You are not authorized to access <em>%s</em>.' % name)
    */
-  if(inst==parent)
+  if(name=PyString_Format(py_Unauthorized_fmt, name))
     {
-      if(name=PyString_Format(py_Unauthorized_fmt, name))
-	{
-	  PyErr_SetObject(py_Unauthorized, name);
-	  Py_DECREF(name);
-	}
-      return NULL;
+      PyErr_SetObject(py_Unauthorized, name);
+      Py_DECREF(name);
     }
-
-  /* return 0 */
-  return PyInt_FromLong(0);
-
-err0:
-  PyErr_Clear();
-  return PyInt_FromLong(0);
+  return NULL;
 }
 
   
@@ -845,7 +815,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.15 $";
+  char *rev="$Revision: 1.16 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -895,6 +865,10 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.16  1998/05/20 17:18:34  jim
+  Simplified validate method by getting rid of attempt to acquire roles.
+  Also fixed bug in handling proxy roles.
+
   Revision 1.15  1998/05/07 22:05:56  jim
   Added protocol for hasRole to signal that an error should be raised
   by returning None, rather than 0.
