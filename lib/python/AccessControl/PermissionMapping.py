@@ -92,10 +92,9 @@ need the object's ordinary permissions intact so we can manage it.
 import ExtensionClass, Acquisition
 from Permission import pname
 from Owned import UnownableOwner
+from AccessControl.PermissionRole import PermissionRole
 
 class RoleManager:
-
-        
     def manage_getPermissionMapping(self):
         """Return the permission mapping for the object
 
@@ -119,6 +118,9 @@ class RoleManager:
             p=perms.get(getPermissionMapping(ac_perms[0], wrapper), '')
             a({'permission_name': ac_perms[0], 'class_permission': p})
         return r
+    
+    manage_getPermissionMapping__roles__=PermissionRole('Change permissions')
+
 
     def manage_setPermissionMapping(self,
                                     permission_names=[],
@@ -148,6 +150,8 @@ class RoleManager:
             return self.manage_access(
                 REQUEST, 
                 manage_tabs_message='The permission mapping has been updated')
+
+    manage_setPermissionMapping__roles__=PermissionRole('Change permissions')
 
     def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
         try:
