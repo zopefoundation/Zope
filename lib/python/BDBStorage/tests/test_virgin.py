@@ -12,9 +12,9 @@ class FullNewInsertsTest(test_create.FullBaseFramework):
 
     def checkNewInserts(self):
         """Full: Commiting on a newly created database"""
-        from BTree import BTree
+        from Persistence import PersistentMapping
 
-        self._root['names'] = names = BTree()
+        self._root['names'] = names = PersistentMapping()
         names['Warsaw'] = 'Barry'
         names['Hylton'] = 'Jeremy'
         get_transaction().commit()
@@ -28,9 +28,9 @@ class MinimalNewInsertsTest(test_create.MinimalBaseFramework):
 
     def checkNewInserts(self):
         """Minimal: Committing on a newly created database"""
-        from BTree import BTree
+        from Persistence import PersistentMapping
 
-        self._root['names'] = names = BTree()
+        self._root['names'] = names = PersistentMapping()
         names['Warsaw'] = 'Barry'
         names['Hylton'] = 'Jeremy'
         get_transaction().commit()
