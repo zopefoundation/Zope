@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.19 1997/12/18 16:45:43 jeffrey Exp $'
-__version__='$Revision: 1.19 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.20 1997/12/22 15:09:52 jim Exp $'
+__version__='$Revision: 1.20 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -173,6 +173,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     exp=0
     sub=None
     output=data.append
+    script=md['SCRIPT_NAME']
 
     try:    items=getattr(self, args['branches'])()
     except: items=None
@@ -231,16 +232,18 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
 	    if exp:
 		treeData['tree-item-expanded']=1
-		output('<A HREF="%s?tree-c=%s">%s</A>' %
-		       (root_url,s, icoMinus))
+		output('<A HREF="%s?tree-c=%s">'
+		       '<IMG SRC="%s/p_/mi" BORDER=0></A>' %
+		       (root_url,s, script))
 	    else:
-		output('<A HREF="%s?tree-e=%s">%s</A>' %
-		       (root_url,s, icoPlus))
+		output('<A HREF="%s?tree-e=%s">'
+		       '<IMG SRC="%s/p_/pl" BORDER=0></A>' %
+		       (root_url,s, script))
 	    output('</TD>\n')
 	else:
 	    if level > 2: output('<TD COLSPAN="%s"></TD>' % level)
 	    elif level > 0: output('<TD></TD>' * level)
-	    output('<TD WIDTH="16">%s</TD>\n' % icoSpace)
+	    output('<TD WIDTH="16"></TD>\n')
 	    
     
 	# add item text
@@ -463,9 +466,9 @@ def tpValuesIds(self, branches):
     return r
     
 
-icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
-icoPlus ='<IMG SRC="Plus_icon" BORDER="0">'
-icoMinus='<IMG SRC="Minus_icon" BORDER="0">'
+#icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
+#icoPlus ='<IMG SRC="Plus_icon" BORDER="0">'
+#icoMinus='<IMG SRC="Minus_icon" BORDER="0">'
 
 
 
