@@ -187,23 +187,23 @@ class ProductRegistryMixin:
         values=filter(
             lambda d, product=product, id=id:
             not (d['product']==product and d['id']==id),
-            list(self._getProductRegistryData(type))
+            list(self.aq_acquire('_getProductRegistryData')(type))
             )
 
         data['product']=product
         data['id']=id
         values.append(data)
 
-        self._setProductRegistryData(type, tuple(values))
+        self.aq_acquire('_setProductRegistryData')(type, tuple(values))
 
     def _manage_remove_product_data(self, type, product, id):
         values=filter(
             lambda d, product=product, id=id:
             not (d['product']==product and d['id']==id),
-            self._getProductRegistryData(type)
+            self.aq_acquire('_getProductRegistryData')(type)
             )
 
-        self._setProductRegistryData(type, tuple(values))
+        self.aq_acquire('_setProductRegistryData')(type, tuple(values))
 
 
 
