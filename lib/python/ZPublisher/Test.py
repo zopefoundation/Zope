@@ -9,10 +9,42 @@ Usage:
 
 Options:
 
-   -u username=password
+   -u username:password
+
+         Supply HTTP authorization information
+
+   -p profiler_data_file
+
+         Run under profiler control, generating the profiler
+         data file, profiler_data_file.
+
+   -d
+
+         Run in debug mode.  With this option, bobo will run
+         under Python debugger control.  Two useful breakpoints
+         are set.  The first is at the beginning of the module
+         publishing code.  Steping through this code shows how 
+         bobo finds objects and obtains certain meta-data.  The
+         second breakpoint is at the point just before the published 
+         object is called.  To jump to the second breakpoint, you must
+         enter 's' followed by a carriage return to step into the
+         module, then enter a 'c' followed by a carriage return to
+         jump to the first breakpoint and then another 'c' followed by
+         a carriage return to jump to the point where the object is
+         called.  Finally, enter 's' followed a carriage return.
+
+         For example, to debug a published object (such as a method)
+         spam the following might be entered::
+
+	    bobo -d /prj/lib/python/mymod container/spam
+            s
+            c
+            c
+            s
 
 
-$Id: Test.py,v 1.1 1996/09/13 22:51:52 jim Exp $'''
+$Id: Test.py,v 1.2 1996/09/16 14:43:26 jim Exp $
+'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -64,12 +96,18 @@ $Id: Test.py,v 1.1 1996/09/13 22:51:52 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Test.py,v $
+# Revision 1.2  1996/09/16 14:43:26  jim
+# Changes to make shutdown methods work properly.  Now shutdown methods
+# can simply sys.exit(0).
+#
+# Added on-line documentation and debugging support to bobo.
+#
 # Revision 1.1  1996/09/13 22:51:52  jim
 # *** empty log message ***
 #
 #
 # 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 #! /usr/local/bin/python
@@ -85,7 +123,7 @@ def main():
 
     try:
 	optlist,args=getopt.getopt(sys.argv[1:], 'du:p:')
-	if len(args) > 2: raise TypeError, None
+	if len(args) > 2 or len(args) < 1: raise TypeError, None
 	if len(args) == 2: path_info=args[1]
     except:
 	sys.stderr.write(__doc__)
@@ -178,12 +216,12 @@ def publish(script,path_info,u=None,p=None,d=None):
 	code=ModulePublisher.call_object.im_func.func_code
 	lineno = codehack.getlineno(code)
 	filename = code.co_filename
-	db.set_break(filename,lineno)
+	db.set_break(filename,lineno+1)
 	db.prompt='pdb> '
 	# db.set_continue()
 
 	print '''Type "s<cr>c<cr>" to jump to beginning of real
-		 publishing process. Then type c<ret> to jub to
+		 publishing process. Then type c<ret> to jump to
 		 published object call.'''
 	db.run('publish_module(file,environ=env,debug=1)',
 	       cgi_module_publisher.__dict__,

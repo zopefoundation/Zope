@@ -517,7 +517,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.19 1996/09/13 22:51:35 jim Exp $"""
+$Id: Publish.py,v 1.20 1996/09/16 14:43:27 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -570,6 +570,12 @@ $Id: Publish.py,v 1.19 1996/09/13 22:51:35 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.20  1996/09/16 14:43:27  jim
+# Changes to make shutdown methods work properly.  Now shutdown methods
+# can simply sys.exit(0).
+#
+# Added on-line documentation and debugging support to bobo.
+#
 # Revision 1.19  1996/09/13 22:51:35  jim
 # *** empty log message ***
 #
@@ -653,7 +659,7 @@ $Id: Publish.py,v 1.19 1996/09/13 22:51:35 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 def main():
@@ -1024,7 +1030,7 @@ class ModulePublisher:
 	return response
 
     def call_object(self,object,args):
-	result=apply(object,args)
+	result=apply(object,args) # Type s<cr> to step into published object.
 	return result
 
 def sad_pathetic_persistence_hack(object):
@@ -1385,6 +1391,9 @@ def publish_module(module_name,
 				       environ=environ)
 	response = publisher.response
 	response = publisher.publish(module_name,debug=debug)
+    except SystemExit:
+	must_die=1
+	response.exception(must_die)
     except ImportError, v:
 	sys.exc_type, sys.exc_value, sys.exc_traceback = v
 	must_die=1

@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.10 1996/09/13 22:52:10 jim Exp $'''
+$Id: Response.py,v 1.11 1996/09/16 14:43:25 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,12 @@ $Id: Response.py,v 1.10 1996/09/13 22:52:10 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.11  1996/09/16 14:43:25  jim
+# Changes to make shutdown methods work properly.  Now shutdown methods
+# can simply sys.exit(0).
+#
+# Added on-line documentation and debugging support to bobo.
+#
 # Revision 1.10  1996/09/13 22:52:10  jim
 # *** empty log message ***
 #
@@ -103,7 +109,7 @@ $Id: Response.py,v 1.10 1996/09/13 22:52:10 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -454,6 +460,7 @@ class Response:
 		n = n+1
 	result.append(string.joinfields(
 	    traceback.format_exception_only(etype, value), ' '))
+	sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
 	return result
 
     def _traceback(self,t,v,tb):
@@ -487,10 +494,16 @@ class Response:
 
 	b=v
 	if fatal:
-	    return self.setBody(
-		(str(t),
-		 'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
-		 + self._traceback(t,v,tb)))
+	    if t is SystemExit and v==0:
+		return self.setBody(
+		    (str(t),
+		    'This application has exited normally.<p>'
+		     + self._traceback(t,v,tb)))
+	    else:
+		return self.setBody(
+		    (str(t),
+		    'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
+		     + self._traceback(t,v,tb)))
 
 	if type(b) is not types.StringType or regex.search('[ \t\n]',b) < 0:
 	    return self.setBody(
