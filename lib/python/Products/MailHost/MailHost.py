@@ -9,19 +9,20 @@ import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.25 1998/01/13 23:06:10 brian Exp $ 
-__version__ = "$Revision: 1.25 $"[11:-2]
+#$Id: MailHost.py,v 1.26 1998/04/08 15:34:52 jeffrey Exp $ 
+__version__ = "$Revision: 1.26 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
 addForm=HTMLFile('addMailHost_form', globals(), localhost=gethostname())
 def add(self, id, title='', smtp_host=None, 
-        localhost='localhost', smtp_port=25, REQUEST=None):
+        localhost='localhost', smtp_port=25, timeout=1.0, REQUEST=None):
     ' add a MailHost into the system '
     i=MailHost()            #create new mail host
     i.id=id                 #give it id
     i.title=title           #title
-    i._init(localHost=localhost, smtpHost=smtp_host, smtpPort=smtp_port)
+    i._init(localHost=localhost, smtpHost=smtp_host, smtpPort=smtp_port,
+	    timeout=timeout)
     self._setObject(id,i)   #register it
     if REQUEST: return self.manage_main(self,REQUEST)
 
@@ -32,6 +33,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     manage=manage_main=HTMLFile('manageMailHost', globals())
     index_html=None
     icon='misc_/MailHost/MHIcon'
+
+    timeout=1.0
 
     manage_options=({'icon':'', 'label':'Edit',
 		     'action':'manage_main', 'target':'manage_main',
@@ -54,19 +57,20 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         'nothing yet'
         pass
 
-    def _init(self, localHost, smtpHost, smtpPort):
+    def _init(self, localHost, smtpHost, smtpPort, timeout=1):
         self.localHost=localHost
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
-        self.sentMessages=0
+	self.timeout=timeout
 
     def manage_makeChanges(self,title,localHost,smtpHost,smtpPort,
-			   REQUEST=None):
+			   timeout, REQUEST=None):
         'make the changes'
         self.title=title
         self.localHost=localHost
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
+	self.timeout=timeout
 	if REQUEST: return MessageDialog(
             title  ='Changed %s' % self.__name__,
             message='%s has been updated' % self.id,
@@ -90,7 +94,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 	Globals.Scheduler.schedule(OneTimeEvent(
 	    Send,
 	    (trueself.smtpHost, trueself.smtpPort, 
-	     trueself.localHost,
+	     trueself.localHost, trueself.timeout, 
 	     headers['from'], headers['to'],
 	     headers['subject'], messageText
 	     ),
@@ -115,9 +119,10 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
     
-        SendMail(self.smtpHost, self.smtpPort, self.localHost).send( 
-                            mfrom=headers['from'], mto=headers['to'],
-                            subj=headers['subject'], body=messageText)
+        SendMail(self.smtpHost, self.smtpPort, self.localHost,
+		 self.timeout).send( 
+		     mfrom=headers['from'], mto=headers['to'],
+		     subj=headers['subject'], body=messageText)
 
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None):
 	if subject: messageText="subject: %s\n%s" % (subject, messageText)
@@ -131,7 +136,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     
 	Globals.Scheduler.schedule(OneTimeEvent(
 	    Send,
-	    (self.smtpHost, self.smtpPort, self.localHost,
+	    (self.smtpHost, self.smtpPort, self.localHost, self.timeout,
 	     headers['from'], headers['to'],
 	     headers['subject'], messageText
 	     ),
@@ -140,19 +145,22 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     def simple_send(self, mto, mfrom, subject, body):
         body="subject: %s\n\n%s" % (subject, body)
-        SendMail(self.smtpHost, self.smtpPort, self.localHost).send( 
-                        mfrom=mfrom, mto=mto, subj=subject, body=body)
+        SendMail(self.smtpHost, self.smtpPort, self.localHost,
+		 self.timeout).send( 
+		     mfrom=mfrom, mto=mto, subj=subject, body=body
+		     )
 
 class MailHost(Persistent, MailBase):
     "persistent version"
 
-def Send(host, port, localhost, from_, to, subject, body):
-    SendMail(host, port, localhost).send(from_, to, subject, body)
+def Send(host, port, localhost, timeout, from_, to, subject, body):
+    SendMail(host, port, localhost, timeout).send(from_, to, subject, body)
         
 class SendMail:     
-    def __init__(self, smtpHost, smtpPort, localHost="localhost"):
+    def __init__(self, smtpHost, smtpPort, localHost="localhost", timeout=1):
         self.conn = socket(AF_INET, SOCK_STREAM)
         self.conn.connect(smtpHost, smtpPort)
+	self.timeout=timeout
 	self.fd=self.conn.fileno()
         self.conn.send("helo "+localHost+"\r\n")
 	while 1:
@@ -163,8 +171,9 @@ class SendMail:
 
     def getLine(self):
 	line=''
+	tm=self.timeout
 	while 1:
-	    if not select([self.fd],[],[],1.0)[0]:	#check the socket
+	    if not select([self.fd],[],[],tm)[0]:	#check the socket
 		break
 	    data=self.conn.recv(1)
 	    if (not data) or (data == '\n'):
@@ -244,6 +253,9 @@ def decapitate(message, **kw):
 ####################################################################
 #
 #$Log: MailHost.py,v $
+#Revision 1.26  1998/04/08 15:34:52  jeffrey
+#Added timeout attribute
+#
 #Revision 1.25  1998/01/13 23:06:10  brian
 #Removed __ac_types__
 #

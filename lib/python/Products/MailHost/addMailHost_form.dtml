@@ -8,36 +8,41 @@
 <FORM ACTION="manage_addMailHost" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><STRONG>Id</STRONG></TD>
+  <TH ALIGN="LEFT">Id</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="id" SIZE="40" value="MailHost">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><STRONG><EM>Title</EM></STRONG></TD>
+  <TH ALIGN="LEFT"><EM>Title</EM></TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="title" SIZE="40">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><STRONG>Local Host</STRONG></TD>
+  <TH ALIGN="LEFT">Local Host</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="localhost" SIZE="40" VALUE="<!--#var localhost-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><STRONG>SMTP Host</STRONG></TD>
+  <TH ALIGN="LEFT">SMTP Host</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtp_host" SIZE="40">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><STRONG>SMTP Port</STRONG></TD>
+  <TH ALIGN="LEFT">SMTP Port</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtp_port:int" SIZE="4" VALUE="25">
   </TD>
 </TR>
-<!--#var smallRolesWidget-->
+<TR VALIGN="TOP">
+  <TH ALIGN="LEFT">Max. Timeout</TH>
+  <TD ALIGN="LEFT">
+    <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="1">
+  </TD>
+</TR>
 <TR VALIGN="TOP">
 <TD>&nbsp;</TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE=" Add "></TD>
