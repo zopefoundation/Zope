@@ -95,7 +95,7 @@ def main():
         if o == "-p":
             pack = int(a)
         if o == "-t":
-            trans = ont(a)
+            trans = int(a)
         if o == "-u":
             update = 1
         if o == "-w":
