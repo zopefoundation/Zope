@@ -17,12 +17,15 @@ import re
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 
+import ZODB
+from Persistence import Persistent
+
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import QueryError
 from Products.ZCTextIndex.PipelineFactory import element_factory
 
-class Lexicon:
+class Lexicon(Persistent):
 
     __implements__ = ILexicon
 
