@@ -8,6 +8,14 @@ get cataloged, the values of any attributes which match
 an index in this list will get indexed.
 </p>
 
+<p class="form-help"> 
+<b>
+If you add indexes to a Catalog which contains indexed objects, you MUST
+at the least re-index your newly added index. You may want to update the 
+whole Catalog.
+</b>
+</p>
+
 <script type="text/javascript">
 <!-- 
 
