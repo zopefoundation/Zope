@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.38 2003/11/05 01:17:44 tiran Exp $'
+__version__ = '$Id: PathIndex.py,v 1.39 2003/11/09 19:02:23 andreasjung Exp $'
 
 import warnings
 from types import StringType, ListType, TupleType
@@ -204,7 +204,7 @@ class PathIndex(Persistent, SimpleItem):
     def numObjects(self):
         """ return the number of indexed objects"""
         self._migrate_length()
-        return self._length
+        return self._length()
 
     def _migrate_length(self):
         """ migrate index to use new _length attribute """
