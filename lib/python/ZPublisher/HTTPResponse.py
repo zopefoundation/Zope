@@ -12,10 +12,11 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.61 2002/06/12 19:06:38 Brian Exp $'''
-__version__='$Revision: 1.61 $'[11:-2]
+$Id: HTTPResponse.py,v 1.62 2002/06/12 21:51:39 Brian Exp $'''
+__version__='$Revision: 1.62 $'[11:-2]
 
 import types, os, sys, re
+import zlib, struct
 from string import translate, maketrans
 from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
@@ -100,6 +101,24 @@ start_of_header_search=re.compile('(<head[^>]*>)', re.IGNORECASE).search
 accumulate_header={'set-cookie': 1}.has_key
 
 
+_gzip_header = ("\037\213" # magic
+                "\010" # compression method
+                "\000" # flags
+                "\000\000\000\000" # time
+                "\002"
+                "\377")
+
+uncompressableMimeMajorTypes = ('image',)   # these mime major types should
+                                            # not be gzip content encoded
+
+# The environment variable DONT_GZIP_MAJOR_MIME_TYPES can be set to a list
+# of comma seperated mime major types which should also not be compressed
+
+otherTypes = os.environ.get('DONT_GZIP_MAJOR_MIME_TYPES','').lower()
+if otherTypes:
+    uncompressableMimeMajorTypes += tuple(otherTypes.split(','))
+
+
 class HTTPResponse(BaseResponse):
     """\
     An object representation of an HTTP response.
@@ -126,6 +145,7 @@ class HTTPResponse(BaseResponse):
     realm='Zope'
     _error_format='text/html'
     _locked_status = 0
+    use_HTTP_content_compression = 0    # indicate if setBody should content-compress output
 
     def __init__(self,body='',status=200,headers=None,
                  stdout=sys.stdout, stderr=sys.stderr,):
@@ -292,7 +312,75 @@ class HTTPResponse(BaseResponse):
 
         self.setHeader('content-length', len(self.body))
         self.insertBase()
+        if self.use_HTTP_content_compression and \
+            not self.headers.get('content-encoding',None):
+            # use HTTP content encoding to compress body contents unless 
+            # this response already has another type of content encoding
+            if content_type.split('/')[0] not in uncompressableMimeMajorTypes:
+                # only compress if not listed as uncompressable
+                body = self.body
+                startlen = len(body)
+                co = zlib.compressobj(6,zlib.DEFLATED,-zlib.MAX_WBITS,
+                                      zlib.DEF_MEM_LEVEL,0)
+                chunks = [_gzip_header, co.compress(body),
+                          co.flush(),
+                          struct.pack("<ll",zlib.crc32(body),startlen)]
+                z = "".join(chunks)
+                newlen = len(z)
+                if newlen < startlen:
+                    self.body = z
+                    self.setHeader('content-length', newlen)
+                    self.setHeader('content-encoding','gzip')
+            
         return self
+
+    def enableHTTPCompression(self,REQUEST={},force=0,disable=0,query=0):
+        """Enable HTTP Content Encoding with gzip compression if possible
+
+           REQUEST -- used to check if client can accept compression
+           force   -- set true to ignore REQUEST headers
+           disable -- set true to disable compression
+           query   -- just return if compression has been previously requested
+
+           returns -- 1 if compression will be performed, 0 otherwise
+
+           The HTTP specification allows for transfer encoding and content
+           encoding. Unfortunately many web browsers still do not support
+           transfer encoding, but they all seem to support content encoding.
+
+           This function is designed to be called on each request to specify
+           on a request-by-request basis that the response content should
+           be compressed. This is quite useful for xml-rpc transactions, where
+           compression rates of 90% or more can be achieved for text data.
+
+           The REQUEST headers are used to determine if the client accepts
+           gzip content encoding. The force parameter can force the use
+           of gzip encoding regardless of REQUEST, and the disable parameter
+           can be used to "turn off" previously enabled encoding (but note
+           that any existing content-encoding header will not be changed).
+           The query parameter can be used to determine the if compression
+           has been previously requested.
+
+           In setBody, the major mime type is used to determine if content
+           encoding should actually be performed.
+
+           By default, image types are not compressed.
+           Additional major mime types can be specified by setting
+           the environment variable DONT_GZIP_MAJOR_MIME_TYPES to a comma-seperated
+           list of major mime types that should also not be gzip compressed.
+        """
+        if query:
+            return self.use_HTTP_content_compression
+
+        elif disable:
+            # in the future, a gzip cache manager will need to ensure that compression is off
+            self.use_HTTP_content_compression = 0
+
+        elif force or (REQUEST.get('HTTP_ACCEPT_ENCODING','').find('gzip') != -1):
+            self.use_HTTP_content_compression = 1
+            
+            
+        return self.use_HTTP_content_compression
 
     def _encode_unicode(self,body,charset_re=re.compile(r'text/[0-9a-z]+\s*;\s*charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)',re.IGNORECASE)):
         # Encode the Unicode data as requested
