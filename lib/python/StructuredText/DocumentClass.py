@@ -139,7 +139,7 @@ class StructuredTextSection(ST.StructuredTextParagraph):
              kw)
 
 # a StructuredTextTable holds StructuredTextRows
-class StructuredTextTable(ST.StructuredTextDocument):
+class StructuredTextTable(ST.StructuredTextParagraph):
     """
     rows is a list of lists containing tuples, which
     represent the columns/cells in each rows.
@@ -148,7 +148,7 @@ class StructuredTextTable(ST.StructuredTextDocument):
     """
     
     def __init__(self, rows, src, subs, **kw):
-        apply(ST.StructuredTextDocument.__init__,(self,subs),kw)
+        apply(ST.StructuredTextParagraph.__init__,(self,subs),kw)
         self._rows = []
         for row in rows:
             if row:
@@ -208,7 +208,7 @@ class StructuredTextTable(ST.StructuredTextDocument):
         return self.setColorizableTexts()
     
 # StructuredTextRow holds StructuredTextColumns
-class StructuredTextRow(ST.StructuredTextDocument):
+class StructuredTextRow(ST.StructuredTextParagraph):
     
     def __init__(self,row,kw):
         """
@@ -219,27 +219,29 @@ class StructuredTextRow(ST.StructuredTextDocument):
         [('this is column one',1), ('this is column two',1)]
         """
         
-        apply(ST.StructuredTextDocument.__init__,(self,[]),kw)
+        apply(ST.StructuredTextParagraph.__init__,(self,[]),kw)
+        
         self._columns = []
-        for column in row:            
+        for column in row:
             self._columns.append(StructuredTextColumn(column[0],
                                                       column[1],
                                                       column[2],
                                                       column[3],
+                                                      column[4],
                                                       kw))
-
+    
     def getColumns(self):
         return [self._columns]
-
+    
     def _getColumns(self):
         return [self._columns]
     
     def setColumns(self,columns):
         self._columns = columns
-        
+    
     def _setColumns(self,columns):
         return self.setColumns(columns)
-
+    
 # this holds the text of a table cell
 class StructuredTextColumn(ST.StructuredTextParagraph):
     """
@@ -249,11 +251,12 @@ class StructuredTextColumn(ST.StructuredTextParagraph):
     or StructuredTextTableData.
     """
     
-    def __init__(self,text,span,align,valign,kw):
+    def __init__(self,text,span,align,valign,typ,kw):
         apply(ST.StructuredTextParagraph.__init__,(self,text,[]),kw)
         self._span = span
         self._align = align
         self._valign = valign
+        self._type = typ
     
     def getSpan(self):
         return self._span
@@ -272,10 +275,16 @@ class StructuredTextColumn(ST.StructuredTextParagraph):
     
     def _getValign(self):
         return self.getValign()
+    
+    def getType(self):
+        return self._type
+    
+    def _getType(self):
+        return self.getType()
+    
+class StructuredTextTableHeader(ST.StructuredTextParagraph): pass
 
-class StructuredTextTableHeader(ST.StructuredTextDocument): pass
-
-class StructuredTextTableData(ST.StructuredTextDocument): pass
+class StructuredTextTableData(ST.StructuredTextParagraph): pass
 
 class StructuredTextMarkup(STDOM.Element):
     
@@ -283,22 +292,22 @@ class StructuredTextMarkup(STDOM.Element):
        self._value=v
        self._attributes=kw.keys()
        for k, v in kw.items(): setattr(self, k, v)
-
+    
     def getChildren(self, type=type, lt=type([])):
        v=self._value
        if type(v) is not lt: v=[v]
        return v
-
+    
     def getColorizableTexts(self): return self._value,
     def setColorizableTexts(self, v): self._value=v[0]
-
+    
     def __repr__(self):
        return '%s(%s)' % (self.__class__.__name__, `self._value`)
-
+    
 class StructuredTextLiteral(StructuredTextMarkup):
     def getColorizableTexts(self): return ()
     def setColorizableTexts(self, v): pass
-
+    
 class StructuredTextEmphasis(StructuredTextMarkup): pass
 
 class StructuredTextStrong(StructuredTextMarkup): pass
@@ -311,9 +320,9 @@ class StructuredTextUnderline(StructuredTextMarkup): pass
 
 class StructuredTextSGML(StructuredTextMarkup): pass
 
-class StructuredTextLink(StructuredTextMarkup): pass    
+class StructuredTextLink(StructuredTextMarkup): pass
 
-class DocumentClass:    
+class DocumentClass:
     """
     Class instance calls [ex.=> x()] require a structured text
     structure. Doc will then parse each paragraph in the structure
@@ -345,7 +354,7 @@ class DocumentClass:
         'doc_literal',
         'doc_sgml'
         ]
-
+    
     def __call__(self, doc):
         if type(doc) is type(''):
            doc=ST.StructuredText(doc)
@@ -355,10 +364,10 @@ class DocumentClass:
            doc=ST.StructuredTextDocument(self.color_paragraphs(
               doc.getSubparagraphs()))
         return doc
-
+    
     def parse(self, raw_string, text_type,
               type=type, st=type(''), lt=type([])):
-
+        
        """
        Parse accepts a raw_string, an expr to test the raw_string,
        and the raw_string's subparagraphs.
@@ -461,8 +470,8 @@ class DocumentClass:
                 break
           else:
              new_paragraphs=ST.StructuredTextParagraph(paragraph.getColorizableTexts()[0],
-                                                          self.color_paragraphs(paragraph.getSubparagraphs()),
-                                                          indent=paragraph.indent),
+                                                       self.color_paragraphs(paragraph.getSubparagraphs()),
+                                                       indent=paragraph.indent),
         
           # color the inline StructuredText types
           # for each StructuredTextParagraph
@@ -473,10 +482,10 @@ class DocumentClass:
                 text = paragraph.getColorizableTexts()
                 text = map(ST.StructuredText,text)
                 text = map(self.__call__,text)
-                #for index in range(len(text)):
-                #    text[index].setColorizableTexts(map(self.color_text,text[index].getColorizableTexts()))
+                for t in range(len(text)):
+                    text[t] = text[t].getSubparagraphs()
                 paragraph.setColorizableTexts(text)
-                        
+                
              paragraph.setColorizableTexts(
                 map(self.color_text,
                     paragraph.getColorizableTexts()
@@ -517,13 +526,15 @@ class DocumentClass:
         # or a cell part
         for index in range(len(rows)):
             tmpstr = rows[index][1:len(rows[index])-1]
-            if TDdivider(tmpstr) or THdivider(tmpstr):
-                indexes.append("divider")
+            if TDdivider(tmpstr):
+                indexes.append("TDdivider")
+            elif THdivider(tmpstr):
+                indexes.append("THdivider")
             else:
                 indexes.append("cell")
 
         for index in range(len(indexes)):
-            if indexes[index] is "divider":
+            if indexes[index] is "TDdivider" or indexes[index] is THdivider:
                 ignore = [] # reset ignore
                 #continue    # skip dividers
 
@@ -571,20 +582,20 @@ class DocumentClass:
             foo = ""
             ROWS.append(COLS)
             COLS = []
-
+        
         spans.sort()
         ROWS = ROWS[1:len(ROWS)]
 
         # find each column span
         cols    = []
         tmp     = []
-
+        
         for row in ROWS:
             for c in row:
                 tmp.append(c[1])
             cols.append(tmp)
             tmp = []
-
+        
         cur = 1
         tmp = []
         C   = []
@@ -597,12 +608,46 @@ class DocumentClass:
                     cur = 1
             C.append(tmp)
             tmp = []
-
+        
         for index in range(len(C)):
             for i in range(len(C[index])):
                 ROWS[index][i] = (ROWS[index][i][0],C[index][i])
         rows = ROWS
-
+        
+        # label things as either TableData or
+        # Table header
+        TD  = []
+        TH  = []
+        all = []
+        for index in range(len(indexes)):
+            if indexes[index] is "TDdivider":
+                TD.append(index)
+                all.append(index)
+            if indexes[index] is "THdivider":
+                TH.append(index)
+                all.append(index)
+        TD = TD[1:]
+        dividers = all[1:]
+        #print "TD  => ", TD
+        #print "TH  => ", TH
+        #print "all => ", all, "\n"
+        
+        for div in dividers:
+            if div in TD:
+                index = all.index(div)
+                for rowindex in range(all[index-1],all[index]):                    
+                    for i in range(len(rows[rowindex])):
+                        rows[rowindex][i] = (rows[rowindex][i][0],
+                                             rows[rowindex][i][1],
+                                             "td")
+            else:
+                index = all.index(div)
+                for rowindex in range(all[index-1],all[index]):
+                    for i in range(len(rows[rowindex])):
+                        rows[rowindex][i] = (rows[rowindex][i][0],
+                                             rows[rowindex][i][1],
+                                             "th")
+        
         # now munge the multi-line cells together
         # as paragraphs
         ROWS    = []
@@ -612,20 +657,20 @@ class DocumentClass:
                 if not COLS:
                     COLS = range(len(row))
                     for i in range(len(COLS)):
-                        COLS[i] = ["",1]
+                        COLS[i] = ["",1,""]
                 if TDdivider(row[index][0]) or THdivider(row[index][0]):
                     ROWS.append(COLS)
                     COLS = []
                 else:
-                    #COLS[index][0] = COLS[index][0] + strip(row[index][0]) + "\n"
                     COLS[index][0] = COLS[index][0] + (row[index][0]) + "\n"
                     COLS[index][1] = row[index][1]
+                    COLS[index][2] = row[index][2]
         
         # now that each cell has been munged together,
         # determine the cell's alignment.
         # Default is to center. Also determine the cell's
         # vertical alignment, top, middle, bottom. Default is
-        # to middle        
+        # to middle
         rows = []
         cols = []
         for row in ROWS:
@@ -688,23 +733,19 @@ class DocumentClass:
                 else:
                     valign="middle"
 
-                if left[0] == right[0]:
-                    align="center"
-                elif left[0] < 1:
-                    align="left"
+                if left[0] < 1:
+                    align = "left"
                 elif right[0] < 1:
-                    align="right"
+                    align = "right"
+                elif left[0] > 1 and right[0] > 1:
+                    align="center"
                 else:
                     align="left"
-
-                cols.append(row[index][0],row[index][1],align,valign)
-                #print text, align, valign
-                #print text, topindent, bottomindent, left[0], right[0]
+                
+                cols.append(row[index][0],row[index][1],align,valign,row[index][2])
             rows.append(cols)
             cols = []
-
         return StructuredTextTable(rows,text,subs,indent=paragraph.indent)
-        #return StructuredTextTable(ROWS,text,subs,indent=paragraph.indent)
             
     def doc_bullet(self, paragraph, expr = re.compile('\s*[-*o]\s+').match):
         top=paragraph.getColorizableTexts()[0]
