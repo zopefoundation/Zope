@@ -77,14 +77,37 @@ TO DO
 
 - Implement on-error, when it's approved.
 
+- The call to emitSubstitution() in emitEndElement() for "replace"
+  doesn't pass in anything for attrDict.
+
 - Finish implementing insertStructure(): attribute replacement isn't
   implemented yet.
 
 - TALInterpreter currently always uses an XML parser to parse inserted
   structure; it should use a parser appropriate to the mode.
 
-- Insert line number and offset information into generated code.
+- Incorporate line number and offset information into remaining
+  compile-time exceptions.
+
+- Incorporate line number and offset information into run-time
+  exceptions, including those raised by eval() of "python:..."
+  expressions.  (But how?  Can we just stick lineno, offset attributes
+  on existing exceptions?)
+
+- nsgmllib.py is a pretty silly name.  Maybe HTMLParser.py?
+
+- HTMLTALParser.py and TALParser.py are silly names too.  Should be
+  HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,
+  without "TAL"?)
+
+- The HTML parser should complain about garbage in start elements
+  attributes, e.g. <a href="foo" !@#$%>.
+
+- The HTML TAL compiler should preserve more information about the
+  start element, e.g. <img ismap /> should be output like that, not as
+  <img ismap="ismap">.
 
 - Should we preserve case of tags and attribute names in HTML?
 
-- Optimize more?
+- Do we still need the HTML mode for TALInterpreter, which tries to
+  generate HTML from an XML template?
