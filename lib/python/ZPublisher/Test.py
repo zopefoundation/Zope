@@ -78,7 +78,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.15 1998/04/29 19:08:19 jim Exp $
+$Id: Test.py,v 1.16 1998/05/04 21:37:32 jim Exp $
 '''
 #     Copyright 
 #
@@ -132,7 +132,7 @@ $Id: Test.py,v 1.15 1998/04/29 19:08:19 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys,traceback, profile, os
 repeat_count=100
@@ -229,7 +229,7 @@ def publish_module_pm(module_name,
 	except: pass
 	if after_list[0] is not None: after_list[0]()
 
-def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None):
+def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
 
     import sys, os, getopt, string
 
@@ -352,6 +352,10 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None):
 	t= time(publish_module,file,
 		stdout=open('/dev/null','w'), environ=env)
 	stdout.write('%s milliseconds\n' % t)
+    elif pm:
+	stdout=sys.stdout
+	publish_module_pm(file, environ=env, stdout=stdout)
+	print '\n%s\n' % ('_'*60)
     else:
 	if silent: stdout=open('/dev/null','w')
 	else: stdout=sys.stdout
@@ -362,6 +366,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.16  1998/05/04 21:37:32  jim
+# Added support for post-mortem debugging view pm flag to publish method.
+#
 # Revision 1.15  1998/04/29 19:08:19  jim
 # Add support for post-mortem debugging.
 #
