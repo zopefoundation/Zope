@@ -56,6 +56,5 @@ TransientObjectContainer - Manage
 
   See Also
 
-     - "Transient Objects":Transience.stx
-
      - "Transience API":TransienceInterfaces.py
+
