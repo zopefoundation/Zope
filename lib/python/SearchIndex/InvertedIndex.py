@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.44 1997/04/25 16:14:52 chris Exp $'''
+$Id: InvertedIndex.py,v 1.45 1997/04/25 17:50:26 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.44 1997/04/25 16:14:52 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.45  1997/04/25 17:50:26  chris
+# Fixed problem with tuple positions in ResultList.near()
+#
 # Revision 1.44  1997/04/25 16:14:52  chris
 # changed Index.highlight() to make sure positions are a list
 #
@@ -230,7 +233,7 @@ $Id: InvertedIndex.py,v 1.44 1997/04/25 16:14:52 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 
 import regex, string, copy
@@ -428,7 +431,7 @@ class ResultList:
 
 	    score=pow(v[0]*value[0],0.5)
     
-    	    positions = v[1] + value[1]
+    	    positions = map(None, v[1] + value[1])
     	    positions.sort()
     	    positionsr = []
     	    rel = pow(v[0] * value[0], 0.5)
