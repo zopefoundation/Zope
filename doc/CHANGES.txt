@@ -52,6 +52,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Fixed a whitespace problem in Z2.log (AWStats failed to process
+       Zope logfiles)
+
      - Collector #816: dtml-sendmail corrupted header if message was
        left blank.
 
