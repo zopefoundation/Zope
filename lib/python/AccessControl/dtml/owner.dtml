@@ -20,7 +20,7 @@ owner_info mapping>owned by &dtml-id; (&dtml-path;).</dtml-with
 <dtml-if userCanTakeOwnership>
 <br />
 <p class="form-help">
-If you have the <i>Take Ownership</i> role you can take ownership
+If you have the <i>Take Ownership</i> permission you can take ownership
 of an object. Usually when taking ownership you should also take
 ownership of sub-objects as well.
 </p>
