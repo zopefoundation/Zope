@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.91 2000/09/13 13:48:47 brian Exp $'''
-__version__='$Revision: 1.91 $'[11:-2]
+$Id: DA.py,v 1.92 2000/12/12 15:36:03 brian Exp $'''
+__version__='$Revision: 1.92 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -389,7 +389,8 @@ class DA(
                 key=keys[-1]
                 q=tcache[key]
                 del tcache[key]
-                del cache[q]
+                if int(cache[q][0]) == key:
+                    del cache[q]
                 del keys[-1]
                 
         if cache.has_key(query):
