@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -38,22 +38,17 @@ class User(Implicit, Persistent):
 		if role in usr_roles:
 		    return 1
 	    if 'Shared' in obj_roles:
-		if not hasattr(obj, 'aq_parent'):
-		    return 0
-		obj=obj.aq_parent
+                if obj is None: return 0
 		if hasattr(obj, '__roles__'):
 		    obj_roles=obj.__roles__
 		else:
 		    obj_roles=['Shared',]
+		if hasattr(obj, 'aq_parent'):
+		    obj=obj.aq_parent
+		else:
+		    obj=None
 		continue
 	    return 0
-
-# 	if (roles is None) or ('Anonymous' in roles):
-# 	    return 1
-# 	for role in roles:
-# 	    if role in self.roles:
-# 		return 1
-# 	return 0
 
     def __len__(self): return 1
     def __str__(self): return self.name
