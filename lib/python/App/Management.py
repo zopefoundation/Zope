@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.53 2001/11/09 15:00:00 faassen Exp $"""
+$Id: Management.py,v 1.54 2001/11/15 17:13:00 chrism Exp $"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -169,8 +169,9 @@ class Tabs(ExtensionClass.Base):
         for step in steps:
             script = '%s/%s' % (script, step)
             out.append(linkpat % (script, unquote(step)))
-        out.append('<a class="strong-link" href="%s/manage_workspace">%s</a>' %
-                   (script, last))
+        script = '%s/%s' % (script, last)
+        out.append('<a class="strong-link" href="%s/manage_workspace">%s</a>'%
+                   (script, unquote(last)))
         return '%s%s' % (url, join(out,'/'))
 
     def tabs_path_info(self, script, path,
