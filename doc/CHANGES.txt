@@ -62,13 +62,28 @@ Zope Changes
 
   Releases
 
-    Zope 2.x.x
+    Zope 2.2.0 alpha 1
     
       Features Changed
+
+        - Server side trojan issue fixed.
+
+        - Added new security policy architecture.
+
+        - Added formal ownership to support the default security
+          policy.
 
         - Added a new online help system. Help is now available for
           standard Zope objects. Zope developers can add help for their
           Python Products and Control Panel Products. See HELPSYS.txt
+
+        - Added logic to increase the Python interpreter "check interval"
+          which provides an average 20-50% performance improvement for 
+          most Zope sites. Also added a new -i option to z2.py so that
+          Zope users can pass in alternate values (the default is 120)
+          for the check interval. This lets users experiment and tune
+          the interval for the best results in their particular system
+          environments.
 
         - The message returned when an empty result set is returned
           from a ZSQL Method has been clarified.
@@ -147,6 +162,148 @@ Zope Changes
           not include traceback information and was not performed
           during Zope startup.  This made finding startup errors
           difficult.
+
+        - The logic for reparsing the dtml files used for the Zope management
+          screens while in development mode was broken - it was reparsing 
+          system dtml files on every request.
+
+
+
+    Zope 2.1.6
+
+      Bugs Fixed
+
+        - Some bits from the 2.2 line inadvertantly got into the ZRDB
+          package during the SQL Methods update which caused errors 
+          for certain database adapters.
+
+        - A fix to the logic in Acquisition for aq_acquire caused a bug 
+          in the handling of inner ZClasses.
+
+    Zope 2.1.5
+
+      Bugs Fixed
+
+        - Fixed a problem with the permission declarations for the Image 
+          and File classes. The problem made it impossible to change the 
+          'View' permission for File objects.
+
+	- Added logic to setgid() to the user's primary group if z2.py
+          is run by root.
+
+        - Fixed a bug in TimeStamp objects that produced a wrong 
+          date/time representation for bobobase_modification_time.
+
+        - Changed _checkId in ObjectManager to disallow REQUEST as an
+          object id.
+
+        - Fixed a bug that could allow someone with a lot of Zope zen
+          to change the apparent AUTHENTICATED_USER to access things 
+          that they shouldn't.
+
+        - Fixed a bug in ZServer that could cause server hangs under
+          certain heavy load conditions.
+
+        - Fixed a remaining '.' form target that we missed in the Zope
+          rename form. This caused rename to fail for Zope installations 
+          running behind Netscape servers.
+
+        - Fixed a potential buffer bug in PCGI reported by Larry Luther.
+
+        - In the load_site utility, binary files were misshandled on
+          windows.
+
+        - Fixed manage_renameObject to be willing to get the REQUEST 
+          via acquisition, making it easier to use from DTML.
+
+	- Changed the expireCookie method of FTPResponse to fail 
+          gracefully when attempting to delete a cookie that does
+          not exist.
+
+        - Fixed a bug that caused a traceback when all members of a 
+          multiple select property were deselected.
+
+	- The _validTime method of DateTime objects rejected time values
+          with fractional seconds between 59 and 60 (which caused problems
+          with some database date conversions).
+
+        - Changed id checking logic to disallow '/' in an object id.
+
+        - Structured Text had problems with '~' characters in URLs.
+
+        - Fixed a potential security hole that could allow users with 
+          permission to add Folders and edit DTML (and a who have a 
+          lot of Zope zen) to get access to things that they shouldn't.
+          
+        - The internal templates used by SQL methods weren't correctly 
+          applying the same access control constraints as standard DTML
+          objects.
+
+	- Fixed ZopeAttributionButton to open in the top-level of the
+          web browser.
+
+        - Fixed a problem with using the "scale" arguments to the tag
+          method of Image objects.
+
+        - Fixed a problem in the Acquisition module that could cause
+          objects accessed via aq_acquire to not be wrapped correctly.
+
+        - Fixed If-Modified-Since header handling for Images and Files.
+
+    Zope 2.1.4
+
+      Bugs Fixed 
+
+        - Removed the "feature" that allowed the REQUEST object to be
+          traversed through the web. While useful for debugging, this 
+          could be a security issue.
+
+    Zope 2.1.3
+
+      Bugs Fixed 
+
+        - A race condition in the logic for managing Zope database
+          connections caused Zope to hang on very busy sites.
+
+	- A bug in the packing code that caused records to be
+          nreadable after:
+
+	  o  someone did work in a version
+
+	  o  Someone did an (unrelated) undo
+
+	  o  the version was committed
+
+	  and the database was packed to a time before the work was done
+	  in the version. 
+
+	- Fixed a bug that caused packing to raise an
+	  error in the following situation:
+
+	    o someone modifies and then deletes an object
+	      in a version.
+
+	    o they commit the version
+
+	    o the database is packed between the time the
+	      object is deleted and the time the version
+	      is committed.
+
+        - Fixed a bug that caused Zope to sometimes hang instead of
+          shutting down or restarting when accessed over a fast network. 
+
+        - It wasn't possible to use a ZClass instance as a method of a
+          ZClass. 
+
+    Zope 2.1.2
+
+      Bugs Fixed 
+
+        - Thanks to Kevin Littlejohn's sleuthing, a sizable problem in
+	  the security machinery in DTML has been brought to our
+	  attention and resolved.  The problem is most acute in
+	  situations where untrusted people can edit DTML documents or
+	  methods.
 
     Zope 2.1.1
 
