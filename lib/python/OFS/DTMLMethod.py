@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -173,21 +173,34 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     getSize=get_size
     
     def oldvalidate(self, inst, parent, name, value, md):
+        #################################################################
+        # Note that this method is not used normally.  It is simply a
+        # Python rendition of the validate method implemented in
+        # DocumentTemplate.cDocumentTemplate. The Python version
+        # serves the role of a requirements spec for the C version and
+        # can also be useful (if temporarily renamed to validate) for
+        # debugging.
+        #################################################################
+
         if name[:3]=='aq_' and name != 'aq_parent' and name != 'aq_explicit':
             return 0
-        if hasattr(value, '__roles__'):
-            roles=value.__roles__
-        elif inst is parent:
-            return 1
+
+        # Try to get roles
+        if hasattr(value, '__roles__'): roles=value.__roles__
         else:
-            # if str(name)[:6]=='manage': return 0
-            if hasattr(parent,'__roles__'):
-                roles=parent.__roles__
+            if hasattr(parent,'__roles__'): roles=parent.__roles__
             elif hasattr(parent, 'aq_acquire'):
                 try: roles=parent.aq_acquire('__roles__')
-                except AttributeError: return 0
-            else: return 0
+                except AttributeError:
+                    if hasattr(inst, 'aq_base'): inst=inst.aq_base
+                    if hasattr(parent, 'aq_base'): parent=parent.aq_base
+                    return inst is parent
+            else:
+                if hasattr(inst, 'aq_base'): inst=inst.aq_base
+                if hasattr(parent, 'aq_base'): parent=parent.aq_base
+                return inst is parent
             value=parent
+            
         if roles is None: return 1
 
         try: 
