@@ -344,6 +344,7 @@ class String:
 		if hasattr(mapping,'AUTHENTICATED_USER'):
 		    md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
 	    md.validate=self.validate
+	    if client is not None: md.this=client
 	    pushed=0
 
 	level=md.level
