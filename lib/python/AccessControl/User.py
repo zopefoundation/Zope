@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.146 $'[11:-2]
+__version__='$Revision: 1.147 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -238,7 +238,8 @@ class BasicUser(Implicit):
                     return 0
             if object.aq_inContextOf(context, 1):
                 return 1
-        return 0
+        # This is lame, but required to keep existing behavior.
+        return 1
 
     def allowed(self, object, object_roles=None):
         """Check whether the user has access to object. The user must
