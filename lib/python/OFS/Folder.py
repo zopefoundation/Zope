@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.81 1999/07/01 14:31:57 brian Exp $"""
+$Id: Folder.py,v 1.82 1999/07/05 14:44:49 jim Exp $"""
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import Globals, SimpleItem
 from ObjectManager import ObjectManager
@@ -134,7 +134,7 @@ def manage_addFolder(self, id, title='',
                   )
         ob.manage_addDTMLDocument(id='index_html', title='')
     if REQUEST is not None:
-        return self.manage_workspace(self, REQUEST, update_menu=1)
+        return self.manage_main(self, REQUEST, update_menu=1)
 
 
 
