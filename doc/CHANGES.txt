@@ -57,6 +57,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #928: DateIndex ignored timezones when indexing and
+       querying
+
      - Collector #892: misleading error msg when initializing an OIBTree
        from a dict with a float value.  The message claimed that the
        dict's items didn't consist of 2-element tuples, but of course

@@ -11,7 +11,8 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.10 2003/01/23 17:46:19 andreasjung Exp $ """
+"""$Id: DateIndex.py,v 1.11 2003/06/08 08:56:28 andreasjung Exp $
+"""
 
 from DateTime.DateTime import DateTime
 from Products.PluginIndexes import PluggableIndex
@@ -168,12 +169,14 @@ class DateIndex(UnIndex):
 
     def _convert( self, value, default=None ):
         """Convert Date/Time value to our internal representation"""
+        # XXX: Code patched 20/May/2003 by Kiran Jonnalagadda to
+        # convert dates to UTC first.
         if isinstance( value, DateTime ):
-            t_tup = value.parts()
+            t_tup = value.toZone('UTC').parts()
         elif type( value ) in (FloatType, IntType):
             t_tup = time.gmtime( value )
         elif type( value ) is StringType:
-            t_obj = DateTime( value )
+            t_obj = DateTime( value ).toZone('UTC')
             t_tup = t_obj.parts()
         else:
             return default

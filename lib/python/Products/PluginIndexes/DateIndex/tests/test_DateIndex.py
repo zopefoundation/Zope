@@ -80,7 +80,7 @@ class DI_Tests(unittest.TestCase):
         if type(date) in (FloatType, IntType):
             yr, mo, dy, hr, mn = time.gmtime(date)[:5]
         else:
-            yr, mo, dy, hr, mn = date.parts()[:5]
+            yr, mo, dy, hr, mn = date.toZone('UTC').parts()[:5]
         return (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
 
     def test_empty(self):
