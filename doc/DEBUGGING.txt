@@ -9,7 +9,7 @@ Running Zope in Debug Mode
    o Zope will print logging information to standard error.
 
    o The Z_DEBUG_MODE environment variable gets set, which causes some 
-     other cool stuff in Zope to happen.
+     other cool stuff to happen in Zope.
 
 Using the Medusa Monitor
 
