@@ -324,6 +324,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         topics=[]
         apitopics=[]
         dtmltopics=[]
+        zpttopics=[]
         for topic in self.objectValues('Help Topic'):
             if hasattr(topic,'isAPIHelpTopic') and topic.isAPIHelpTopic:
                 apitopics.append(topic)
@@ -334,12 +335,17 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
                     id=topic.id
                 if id[:5]=='dtml-':
                     dtmltopics.append(topic)
+                if (id[:5] in ('metal', 'tales') and id[5] in ('.', '-')) or \
+                   (id[:3]=='tal' and id[3] in ('.', '-')):
+                    zpttopics.append(topic)
                 else:
                     topics.append(topic)
         if dtmltopics:
             topics = topics + [TreeCollection(' DTML Reference', dtmltopics)]
         if apitopics:
             topics = topics + [TreeCollection(' API Reference', apitopics)]
+        if zpttopics:
+            topics = topics + [TreeCollection(' ZPT Reference', zpttopics)]
         return topics
         
     def all_meta_types(self):

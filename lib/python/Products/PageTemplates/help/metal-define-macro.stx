@@ -1,4 +1,4 @@
-metal:define-macro - Define a macro
+define-macro: Define a macro
 
   Syntax
 

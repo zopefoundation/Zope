@@ -1,4 +1,4 @@
-tal:condition - Conditionally insert or remove an element
+condition: Conditionally insert or remove an element
   
   Syntax
 
