@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.10 $
+# $Revision: 1.11 $
 __version__ = '0.1'
 
 import struct
@@ -607,8 +607,8 @@ class Full(BerkeleyBase):
         return self._serial
 
     def transactionalUndo(self, tid, transaction):
-        # FIXME: what if we undo an abortVersion or commitVersion, don't we
-        # need to re-populate the currentVersions table?
+        global zero
+
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
@@ -616,7 +616,7 @@ class Full(BerkeleyBase):
         c = None
         self._lock_acquire()
         try:
-            # First, make sure the transaction isn't protected by a pack
+            # First, make sure the transaction isn't protected by a pack.
             status = self._txnMetadata[tid][1]
             if status == PROTECTED_TRANSACTION:
                 raise POSException.UndoError, 'Transaction cannot be undone'
@@ -625,42 +625,53 @@ class Full(BerkeleyBase):
             c = self._txnoids.cursor()
             rec = c.set(tid)
             while rec:
-                oid = rec[1]
+                oid = rec[1]                      # ignore the key
+                rec = c.next_dup()
                 # In order to be able to undo this transaction, we must be
                 # undoing either the current revision of the object, or we
                 # must be restoring the exact same pickle (identity compared)
                 # that would be restored if we were undoing the current
                 # revision.
+                #
+                # Note that we could do pickle equivalence comparisions
+                # instead.  That would be "temporaly clean" in that we'd still
+                # be restoring the same state.  We decided not to do this for
+                # now.  Eventually, when we have application level conflict
+                # resolution, we can ask the object if it can resolve the
+                # state change, and then we'd reject the undo only if any of
+                # the state changes couldn't be resolved.
                 revid = self._serials[oid]
                 if revid == tid:
+                    # We can always undo the last transaction
                     prevrevid = self._metadata[oid+tid][24:]
+                    if prevrevid == zero:
+                        raise POSException.UndoError, 'Nothing to undo'
                     newrevs.append((oid, self._metadata[oid+prevrevid]))
                 else:
-                    # Compare the lrevid (pickle pointers) for the current
-                    # revision of the object and the revision previous to the
-                    # one we're undoing.
-                    lrevid = self._metadata[oid+revid][16:24]
-                    # When we undo this transaction, the previous record will
-                    # become the current record.
-                    prevrevid = self._metadata[oid+tid][24:]
-                    # And here's the pickle pointer for that potentially
-                    # soon-to-be current record
-                    prevrec = self._metadata[oid+prevrevid]
-                    if lrevid <> prevrec[16:24]:
-                        # They aren't the same, so we cannot undo this txn
+                    # We need to compare the lrevid (pickle pointers) of the
+                    # transaction previous to the current one, and the
+                    # transaction previous to the one we want to undo.  If
+                    # their lrevids are the same, it's undoable.
+                    target_prevrevid = self._metadata[oid+tid][24:]
+                    if target_prevrevid == zero:
+                        raise POSException.UndoError, 'Nothing to undo'
+                    target_metadata  = self._metadata[oid+target_prevrevid]
+                    target_lrevid    = target_metadata[16:24]
+                    last_prevrevid = self._metadata[oid+revid][24:]
+                    last_lrevid    = self._metadata[oid+last_prevrevid][16:24]
+                    # BAW: Here's where application level conflict resolution,
+                    # or pickle equivalence testing would go.
+                    if target_lrevid <> last_lrevid:
                         raise POSException.UndoError, 'Cannot undo transaction'
-                    newrevs.append((oid, prevrec))
-                # Check the next txnoid record
-                rec = c.next()
-            # Okay, we've checked all the oids affected by the transaction
+                    # So far so good
+                    newrevs.append((oid, target_metadata))
+            # Okay, we've checked all the objects affected by the transaction
             # we're about to undo, and everything looks good.  So now we'll
             # write to the log the new object records we intend to commit.
-            c.close()
-            c = None
             oids = []
-            for oid, rec in newrevs:
+            for oid, metadata in newrevs:
                 vid, nvrevid, lrevid, prevrevid = struct.unpack(
-                    '>8s8s8s8s', rec)
+                    '>8s8s8s8s', metadata)
                 self._commitlog.write_moved_object(oid, vid, nvrevid, lrevid,
                                                    prevrevid)
                 oids.append(oid)
