@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -88,7 +88,9 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 
     def validate(self,request,auth='',roles=None):
 	if not auth:
-	    return nobody
+	    if roles is None:
+		return nobody
+	    return None
 	if lower(auth[:6])!='basic ':
 	    return None
 	name,password=tuple(split(decodestring(split(auth)[-1]), ':'))
