@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.39 1998/03/09 19:39:05 jim Exp $"""
+$Id: Folder.py,v 1.40 1998/03/18 21:07:46 jeffrey Exp $"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -21,7 +21,12 @@ manage_addFolderForm=HTMLFile('folderAdd', globals())
 
 def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
 			 REQUEST=None):
-    """Add a new Folder object"""
+    """Add a new Folder object with id *id*.
+
+    If the 'createPublic' and 'createUserF' parameters are set to any true
+    value, an 'index_html' and a 'UserFolder' objects are created respectively
+    in the new folder.
+    """
     i=self.folderClass()()
     i.id=id
     i.title=title
@@ -32,7 +37,10 @@ def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
 	     SimpleItem.Item,CopyContainer):
-    """ """
+    """
+    The basic container object in Principia.  Folders can hold almost all
+    other Principia objects.
+    """
     __roles__=['Manager', 'Shared']
 
     meta_type='Folder'
@@ -63,14 +71,16 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     __ac_permissions__=(
     ('View management screens',
      ['manage','manage_menu','manage_main','manage_copyright',
-      'manage_tabs','manage_propertiesForm','manage_UndoForm']),
+      'manage_tabs','manage_propertiesForm','manage_UndoForm',
+      'objectIds', 'objectValues', 'objectItems','hasProperty']),
     ('Undo changes',       ['manage_undo_transactions']),
     ('Change permissions', ['manage_access']),
     ('Add objects', ['manage_addObject']),
     ('Delete objects',     ['manage_delObjects']),
-    ('Add properties',     ['manage_addProperty']),
-    ('Change properties',  ['manage_editProperties']),
-    ('Delete properties',  ['manage_delProperties']),
+    ('Manage properties',     ['manage_addProperty', 'manage_editProperties',
+			       'manage_delProperties', 'propertyIds',
+			       'propertyValues','propertyItems',
+			       'manage_changeProperties']),
     ('Shared permission', ['']),
     )
    

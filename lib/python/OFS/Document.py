@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -108,7 +108,15 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
 		    dtpref_rows='20',REQUEST=None):
-	""" """
+	"""
+	Replaces a Documents contents with Data, Title with Title.
+
+	The SUBMIT parameter is also used to change the size of the editing
+	area on the default Document edit screen.  If the value is "Smaller",
+	the rows and columns decrease by 5.  If the value is "Bigger", the
+	rows and columns increase by 5.  If any other or no value is supplied,
+	the data gets checked for DTML errors and is saved.
+	"""
 	self._validateProxy(REQUEST)
         if SUBMIT=='Smaller':
             rows=atoi(dtpref_rows)-5
@@ -136,7 +144,9 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 		    action ='manage_main')
 
     def manage_upload(self,file='', REQUEST=None):
-	""" """
+	"""
+	replace the contents of the document with the text in file.
+	"""
 	self._validateProxy(REQUEST)
 	self.munge(file.read())
 	if REQUEST: return MessageDialog(
@@ -146,7 +156,9 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 
     PUT__roles__='Manager',
     def PUT(self, BODY, REQUEST):
-	""" """
+	"""
+   replaces the contents of the document with the BODY of an HTTP PUT request.
+	"""
 	self._validateProxy(REQUEST)
 	self.munge(BODY)
 	return 'OK'
@@ -190,7 +202,12 @@ the <!--#var title_and_id--> Folder.</P>
 manage_addDocumentForm=HTMLFile('documentAdd', globals())
 
 def manage_addDocument(self,id,title='',file='',REQUEST=None):
-    """ """
+    """
+    Add a Document object with the contents of file.
+
+    If 'file' is empty or unspecified, the created documents contents are set
+    to Principia's preset default.
+    """
     if not file: file=default_html
     i=Document(file, __name__=id)
     i.title=title

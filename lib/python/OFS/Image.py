@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -12,13 +12,19 @@ from DateTime import DateTime
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file,title='',REQUEST=None):
-    """ """
+    """Add a new File object.
+
+    Creates a new file object 'id' with the contents of 'file'"""
     self._setObject(id, File(id,title,file))
     return self.manage_main(self,REQUEST)
 
 
 class File(Persistent,Implicit,RoleManager,Item_w__name__):
-    """ """
+    """
+    Principia object for arbitrary files.  A Files string representation is
+    its contents.
+    """
+    
     meta_type='File'
     icon='p_/file'
 
@@ -36,7 +42,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
     ('Change/upload data', ['manage_edit','manage_upload','PUT']),
-    ('View', ['index_html', 'view_image_or_file', 'getSize', 'getContentType']),
+    ('View', ['index_html','view_image_or_file','getSize','getContentType']),
     ('Shared permission', ['',]),
     )
    
@@ -65,16 +71,25 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
 
     def index_html(self, RESPONSE):
-	""" """
+	"""
+	The default view of the contents of the File or Image.
+
+	Returns the contents of the file or image.  Also, sets the
+	'content-type' HTTP header to the objects content type.
+	"""
 	RESPONSE['content-type'] =self.content_type
         return self.data
 
     def view_image_or_file(self, RESPONSE):
-	""" """
+	"""
+	The default view of the contents of the File or Image.
+	"""
 	return self.index_html(RESPONSE)
 
     def manage_edit(self,title,content_type,REQUEST=None):
-	""" """
+	"""
+	Changes the title and content type attributes of the File or Image.
+	"""
 	self.title=title
 	self.content_type=content_type
 	if REQUEST: return MessageDialog(
@@ -83,7 +98,11 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 		    action ='manage_main')
 
     def manage_upload(self,file='',REQUEST=None):
-	""" """
+	"""
+	Replaces the current contents of the File or Image object with file.
+
+	The file or images contents are replaced with the contents of 'file'.
+	"""
 	self.content_type=file.headers['content-type']
 	data=file.read()
 	self.data=Pdata(data)
@@ -111,12 +130,16 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
 
     def getSize(self):
-	"""Get the size of a file or image
+	"""Get the size of a file or image.
+
+	Returns the size of the file or image.
 	"""
 	return len(self.data)
 
     def getContentType(self):
-	"""Get the content type of a file or image
+	"""Get the content type of a file or image.
+
+	Returns the content type (MIME type) of a file or image.
 	"""
 	return self.content_type
 
@@ -127,11 +150,19 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
 manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
 def manage_addImage(self,id,file,title='',REQUEST=None):
-    """ """
+    """
+    Add a new Image object.
+
+    Creates a new Image object 'id' with the contents of 'file'.
+    """
     self._setObject(id, Image(id,title,file))
     return self.manage_main(self,REQUEST)
 
 class Image(File):
+    """Principia object for *Images*, can be GIF or JPEG.  Has the same
+    methods as File objects.  Images also have a string representation
+    that renders an HTML 'IMG' tag.
+    """
     meta_type='Image'
     icon     ='p_/image'
 
