@@ -85,7 +85,7 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, time
 
@@ -126,7 +126,7 @@ def rfc1123_date(ts=None):
     if ts is None: ts=time.time()
     ts=time.asctime(time.gmtime(ts))
     ts=string.split(ts)
-    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[3],ts[4])
+    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[4],ts[3])
 
 
 
