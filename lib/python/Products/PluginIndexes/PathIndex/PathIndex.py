@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.36 2003/08/16 16:44:42 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.37 2003/11/04 15:47:35 andreasjung Exp $'
 
 import warnings
 from types import StringType, ListType, TupleType
@@ -113,6 +113,7 @@ class PathIndex(Persistent, SimpleItem):
         comps = filter(None, path.split('/'))
        
         if not self._unindex.has_key(docid):
+            self._.migrate_length()
             self._length.change(1)
 
         for i in range(len(comps)):
@@ -147,6 +148,7 @@ class PathIndex(Persistent, SimpleItem):
                     'Attempt to unindex document'
                     ' with id %s failed' % docid)
 
+        self._.migrate_length()
         self._length.change(-1)
         del self._unindex[docid]
 
@@ -201,12 +203,13 @@ class PathIndex(Persistent, SimpleItem):
 
     def numObjects(self):
         """ return the number of indexed objects"""
-        try:
-            return self._length()
-        except AttributeError:        # backward compatibility
-            l = len(self._unindex)
-            self._length = Length(l)
-            return l
+        self._migrate_length()
+        return self._length
+
+    def _migrate_length(self):
+        """ migrate index to use new _length attribute """
+        if not hasattr(self, '_length'):
+            self._length = Length(len(self._unindex))
 
     def _apply_index(self, request, cid=''):
         """ hook for (Z)Catalog
