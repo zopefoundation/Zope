@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -336,52 +336,34 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         return self.read()
 
 
+import re
+from string import find, strip
+token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
+hdr_start = re.compile('(%s):(.*)' % token).match
 
+def decapitate(html, RESPONSE=None):
+    headers = []
+    spos = 0
+    while 1:
+        m = hdr_start(html, spos)
+        if not m:
+            if html[spos:spos+1] == '\n':
+                break
+            return html
+        header = list(m.groups())
+        headers.append(header)
+        spos = m.end() + 1
+        while spos < len(html) and html[spos] in ' \t':
+            eol = find(html, '\n', spos)
+            if eol < 0: return html
+            header.append(strip(html[spos:eol]))
+            spos = eol + 1
+    if RESPONSE is not None:
+        for header in headers:
+            hkey = header.pop(0)
+            RESPONSE.setHeader(hkey, join(header, ' '))
+    return html[spos + 1:]
 
-
-
-def decapitate(html, RESPONSE=None,
-               header_re=ts_regex.compile(
-                   '\(\('
-                          '[^\n\0\- <>:]+:[^\n]*\n'
-                      '\|'
-                          '[ \t]+[^\0\- ][^\n]*\n'
-                   '\)+\)[ \t]*\n\([\0-\377]+\)'
-                   ),
-               space_re=ts_regex.compile('\([ \t]+\)'),
-               name_re=ts_regex.compile('\([^\0\- <>:]+\):\([^\n]*\)'),
-               ):
-
-    ts_results = header_re.match_group(html, (1,3))
-    if not ts_results:
-        return html
-    headers, html = ts_results[1]
-    headers=split(headers,'\n')
-
-    i=1
-    while i < len(headers):
-        if not headers[i]:
-            del headers[i]
-            continue
-
-        ts_results = space_re.match_group(headers[i], (1,))
-        if ts_results:
-            headers[i-1]="%s %s" % (headers[i-1],
-                                    headers[i][len(ts_results[1]):])
-            del headers[i]
-            continue
-
-        i=i+1
-
-    for i in range(len(headers)):
-        ts_results = name_re.match_group(headers[i], (1,2))
-        if ts_results:
-            k, v = ts_results[1]
-            v=strip(v)
-        else:
-            raise ValueError, 'Invalid Header (%d): %s ' % (i,headers[i])
-        RESPONSE.setHeader(k,v)
-    return html
 
 
 default_dm_html="""<dtml-var standard_html_header>
