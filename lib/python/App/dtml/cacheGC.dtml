@@ -14,7 +14,7 @@
 <tr>
   <td align="left" valign="top">
   <div class="form-text">
-  Remove all objects from the ZODB in-memory cache
+  Remove all objects from all ZODB in-memory caches
   </td>
   <td>
   <form action="<dtml-var URL1>/manage_minimize" method=GET>
