@@ -92,4 +92,8 @@ TO DO
   attribute replacement on the inserted text -- this would require a
   change to the TAL spec though.
 
-- In rendered HTML, the TAL attributes should be suppressed.
+- In rendered HTML or XML, the TAL attributes should be suppressed.
+  (Effectively, when TALInterpreter is invoked with tal=1.)
+
+- Treat <script>...</script> content model correctly (i.e. recognize
+  no other tags, entities etc.).
