@@ -85,22 +85,10 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
-
-
-
-import exceptions
-
-class error(exceptions.Exception):
-    def __init__(self, msg):
-        self.msg=msg
-    html='<html>\n<head>\n<title></title>\n</head>\n<body>\n' \
-         '%s\n</body></html>'
-    def __str__(self, fmt=html):
-        return fmt % self.msg
 
 
 class Resource:
