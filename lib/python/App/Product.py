@@ -34,7 +34,7 @@
 #   on restart if there is still a product directory.
 
 
-import os, re, zlib, marshal, rotor, cPickle
+import os, re, zlib, marshal, cPickle
 from cgi import escape
 from urllib import quote
 
@@ -197,6 +197,7 @@ class Product(Folder, PermissionManager):
 
         id=self.id
 
+        import rotor
         import tar
         rot=rotor.newrotor(id+' shshsh')
         ar=tar.tgzarchive("%s-%s" % (id, self.version))
@@ -437,7 +438,9 @@ class CompressedInputFile:
     def __init__(self, f, rot):
         self._c=zlib.decompressobj()
         self._b=''
-        if type(rot) is type(''): rot=rotor.newrotor(rot)
+        if isinstance(rot, str):
+            import rotor
+            rot=rotor.newrotor(rot)
         self._rot=rot
         rot.decrypt('')
         self._f=f
