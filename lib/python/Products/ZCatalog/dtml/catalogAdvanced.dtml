@@ -38,7 +38,7 @@
 </tr>
 <tr>
   <td align="left" valign="top">
-  <p class="form-help">Log progress of reindexing every N objects to the Zope logger
+  <p class="form-help">Log progress of reindexing every N objects to the Zope logger (set to 0 to disabled logging)
   </p>
   </td>
   <td align="right" valign="top">
