@@ -52,10 +52,9 @@ def startup():
         m=imp.find_module('custom_zodb',[getConfiguration().instancehome])
     except:
         # if there is no custom_zodb, use the config file specified databases
-        config = getConfiguration()
-        name = config.db_mount_tab['/']
-        DB = config.db_name_tab[name].open()
-        Globals.BobobaseName = name
+        configuration = getConfiguration()
+        DB = configuration.dbtab.getDatabase('/', is_root=1)
+        Globals.BobobaseName = DB.getName()
     else:
         m=imp.load_module('Zope.custom_zodb', m[0], m[1], m[2])
         if hasattr(m,'DB'):

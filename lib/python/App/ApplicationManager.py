@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -28,6 +28,7 @@ from Product import ProductFolder
 from version_txt import version_txt
 from cStringIO import StringIO
 from AccessControl import getSecurityManager
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 import zLOG
 import Lifetime
 
@@ -39,7 +40,7 @@ class Fake:
     def locked_in_version(self): return 0
 
 class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
-    """Database management"""
+    """Database management (legacy) """
     manage=manage_main=DTMLFile('dtml/dbMain', globals())
     manage_main._setName('manage_main')
     id        ='DatabaseManagement'
@@ -68,6 +69,70 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
 
 Globals.default__class_init__(DatabaseManager)
+
+class FakeConnection:
+    # Supports the methods of Connection that CacheManager needs
+
+    def __init__(self, db, parent_jar):
+        self._db = db
+        self.version = parent_jar.getVersion()
+
+    def db(self):
+        return self._db
+
+    def getVersion(self):
+        return self.version
+
+class DatabaseChooser (SimpleItem.SimpleItem):
+    """Lets you choose which database to view
+    """
+    meta_type = 'Database Management'
+    name = title = 'Database Management'
+    icon = 'p_/DatabaseManagement_icon'
+    isPrincipiaFolderish = 1
+
+    manage_options=(
+        {'label':'Databases', 'action':'manage_main'},
+        )
+
+    manage_main = PageTemplateFile('www/chooseDatabase.pt', globals())
+
+    def __init__(self, id):
+        self.id = id
+
+    def getDatabaseNames(self):
+        configuration = getConfiguration()
+        names = configuration.dbtab.listDatabaseNames()
+        names.sort()
+        return names
+
+    def __getitem__(self, name):
+        configuration = getConfiguration()
+        db = configuration.dbtab.getDatabase(name=name)
+        m = AltDatabaseManager()
+        m.id = name
+        m._p_jar = FakeConnection(db, self.getPhysicalRoot()._p_jar)
+        return m.__of__(self)
+
+    def __bobo_traverse__(self, request, name):
+        configuration = getConfiguration()
+        if configuration.dbtab.hasDatabase(name):
+            return self[name]
+        return getattr(self, name)
+
+    def tpValues(self):
+        names = self.getDatabaseNames()
+        res = []
+        for name in names:
+            m = AltDatabaseManager()
+            m.id = name
+            # Avoid opening the database just for the tree widget.
+            m._p_jar = None
+            res.append(m.__of__(self))
+        return res
+
+Globals.InitializeClass(DatabaseChooser)
+
 
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Version management"""
@@ -207,7 +272,7 @@ class ApplicationManager(Folder,CacheManager):
 
     __roles__=('Manager',)
     isPrincipiaFolderish=1
-    Database= DatabaseManager()
+    Database= DatabaseChooser('Database') #DatabaseManager()
     Versions= VersionManager()
     DebugInfo=DebugManager()
     DavLocks = DavLockManager()
@@ -465,3 +530,11 @@ class ApplicationManager(Folder,CacheManager):
             self._objects = tuple(lst)
 
         return Folder.objectIds(self, spec)
+
+class AltDatabaseManager(DatabaseManager, CacheManager):
+    """Database management DBTab-style
+    """
+    db_name = ApplicationManager.db_name
+    db_size = ApplicationManager.db_size
+    manage_pack = ApplicationManager.manage_pack
+

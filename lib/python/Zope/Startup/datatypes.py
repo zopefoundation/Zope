@@ -103,7 +103,7 @@ def importable_name(name):
 
 # Datatype for the root configuration object
 # (adds the softwarehome and zopehome fields; default values for some
-#  computed paths)
+#  computed paths, configures dbtab)
 
 def root_config(section):
     from ZConfig import ConfigurationError
@@ -125,31 +125,76 @@ def root_config(section):
     if not section.databases:
         section.databases = [getDefaultDatabaseFactory(section)]
 
-    section.db_mount_tab = db_mount_tab = {}
-    section.db_name_tab =  db_name_tab = {}
+    mount_factories = {} # { name -> factory}
+    mount_points = {} # { virtual path -> name }
     dup_err = ('Invalid configuration: ZODB databases named "%s" and "%s" are '
                'both configured to use the same mount point, named "%s"')
 
     for database in section.databases:
-        mount_points = database.config.mount_points
+        points = database.getVirtualMountPaths()
         name = database.config.getSectionName()
-        db_name_tab[name] = database
-        for point in mount_points:
-            if db_mount_tab.has_key(point):
-                raise ConfigurationError(dup_err % (db_mount_tab[point], name,
-                                         point))
-            db_mount_tab[point] = name
+        mount_factories[name] = database
+        for point in points:
+            if mount_points.has_key(point):
+                raise ConfigurationError(dup_err % (mount_points[point],
+                                                    name, point))
+            mount_points[point] = name
+    from DBTab.DBTab import DBTab
+    section.dbtab = DBTab(mount_factories, mount_points)
 
     return section
 
 class ZopeDatabase(ZODBDatabase):
     """ A ZODB database datatype that can handle an extended set of
-    attributes """
+    attributes for use by DBTab """
+
+    container_class = 'OFS.Folder.Folder'
+
     def open(self):
         DB = ZODBDatabase.open(self)
         # set the connection class
         DB.klass = self.config.connection_class
+        if self.config.class_factory is not None:
+            DB.setClassFactory(self.config.class_factory)
+        from ZODB.ActivityMonitor import ActivityMonitor
+        DB.setActivityMonitor(ActivityMonitor())
         return DB
+
+    def getName(self):
+        return self.name
+
+    def getOpenAtStartup(self):
+        # XXX implement
+        return 0
+
+    def computeMountPaths(self):
+        mps = []
+        for part in self.config.mount_points:
+            real_root = None
+            if ':' in part:
+                # 'virtual_path:real_path'
+                virtual_path, real_path = part.split(':', 1)
+                if real_path.startswith('~'):
+                    # Use a special root.
+                    # 'virtual_path:~real_root/real_path'
+                    real_root, real_path = real_path[1:].split('/', 1)
+            else:
+                # Virtual path is the same as the real path.
+                virtual_path = real_path = part
+            mps.append((virtual_path, real_root, real_path))
+        return mps
+
+    def getVirtualMountPaths(self):
+        return [item[0] for item in self.computeMountPaths()]
+
+    def getMountParams(self, mount_path):
+        """Returns (real_root, real_path, container_class) for a virtual
+        mount path.
+        """
+        for (virtual_path, real_root, real_path) in self.computeMountPaths():
+            if virtual_path == mount_path:
+                return (real_root, real_path, self.container_class)
+        raise LookupError('Nothing known about mount path %s' % mount_path)
     
 def getDefaultDatabaseFactory(context):
     # default to a filestorage named 'Data.fs' in clienthome
@@ -176,5 +221,6 @@ def getDefaultDatabaseFactory(context):
     db_ns.version_cache_size = 100
     db_ns.mount_points = ['/']
     db_ns.connection_class = Connection
+    db_ns.class_factory = None
     return ZopeDatabase(db_ns)
 

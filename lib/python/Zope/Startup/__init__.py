@@ -21,31 +21,6 @@ import re
 
 import ZConfig
 
-from cmdline import getOptions, getOptionDescriptions # exported
-
-# global to hold config structures
-_schema = None
-_configuration = None
-
-def getConfiguration():
-    return _configuration
-
-def getSchema():
-    global _schema
-    if _schema is None:
-        here = os.path.dirname(__file__)
-        path = os.path.join(here, 'zopeschema.xml')
-        _schema = ZConfig.loadSchema(path)
-    return _schema
-
-def configure(config_location, options):
-    global _configuration
-    import handlers
-    schema = getSchema()
-    _configuration, handler = ZConfig.loadConfig(schema, config_location)
-    handlers.handleConfig(_configuration, handler, options)
-    return _configuration
-
 def start_zope(cfg):
     # set up our initial logging environment (log everything to stderr
     # if we're not in debug mode).

@@ -139,16 +139,29 @@
       so this is a multikey.
     </description>
     <multikey name="mount-point" required="yes" attribute="mount_points"
-              datatype=".mount_point"/>
+              datatype=".mount_point">
+      <description>
+       The mount point is the slash-separated path to which this database
+       will be mounted within the Zope application server.
+      </description>
+    </multikey>
 
-    <description>
-     We want to allow people to be able to change the connection
-     class a database uses on a per-database basis to support
-     different connection policies.
-    </description>
     <key name="connection-class" datatype=".importable_name"
-              default="ZODB.Connection.Connection"/>
+              default="ZODB.Connection.Connection">
+      <description>
+       Change the connection class a database uses on a per-database basis to
+       support different connection policies.  Use a Python dotted-path
+       name to specify the connection class.
+      </description>
+    </key>
 
+   <key name="class-factory" datatype=".importable_name">
+      <description>
+       Change the class factory function a database uses on a
+       per-database basis to support different class factory policy.
+       Use a Python dotted-path name to specify the class factory function.
+      </description>
+    </key>
   </sectiontype>
 
   <!-- end of type definitions -->

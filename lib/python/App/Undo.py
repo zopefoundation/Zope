@@ -11,11 +11,12 @@
 #
 ##############################################################################
 """
-$Id: Undo.py,v 1.32 2002/10/03 18:28:54 jeremy Exp $"""
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: Undo.py,v 1.33 2003/07/20 02:55:51 chrism Exp $"""
+__version__='$Revision: 1.33 $'[11:-2]
 
 import base64
 
+from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 import Globals, ExtensionClass
@@ -86,11 +87,17 @@ class UndoSupport(ExtensionClass.Base):
             path=''
         if path: spec['user_name']=Prefix(path)
 
-        # We also only want to undo things done here
-        opath='/'.join(self.getPhysicalPath())
+        if getattr(aq_parent(aq_inner(self)), '_p_jar', None) == self._p_jar:
+            # We only want to undo things done here (and not in mounted
+            # databases)
+            opath='/'.join(self.getPhysicalPath())
+        else:
+            # Special case: at the root of a database,
+            # allow undo of any path.
+            opath = None
         if opath: spec['description']=Prefix(opath)
 
-        r=Globals.UndoManager.undoInfo(
+        r = self._p_jar.db().undoInfo(
             first_transaction, last_transaction, spec)
 
         encode = base64.encodestring
@@ -114,7 +121,8 @@ class UndoSupport(ExtensionClass.Base):
     def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """
-        undo=Globals.UndoManager.undo
+        undo=self._p_jar.db().undo
+
         for tid in transaction_info:
             tid=tid.split()
             if tid:
