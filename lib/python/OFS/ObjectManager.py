@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.134 2001/04/21 18:34:51 andreas Exp $"""
+$Id: ObjectManager.py,v 1.135 2001/04/26 00:14:15 andreas Exp $"""
 
-__version__='$Revision: 1.134 $'[11:-2]
+__version__='$Revision: 1.135 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -677,7 +677,7 @@ class ObjectManager(
 
 
 def findChilds(obj,dirname=''):
-    """ recursive walk through the object hierarcy to
+    """ recursive walk through the object hierarchy to
     find all childs of an object (ajung)
     """
 
