@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.11 1997/03/04 21:08:00 jim Exp $
+#     $Id: pickle.py,v 1.12 1997/03/04 23:11:38 chris Exp $
 #
 #     Copyright 
 #
@@ -291,7 +291,6 @@ class Pickler:
 	    if (self.bin):
                 self.save_empty_tuple(object)
             else:
-                print 'here'
                 self.save_tuple(object)
             return
 
@@ -431,17 +430,15 @@ class Pickler:
 
         write(MARK)
 
-        print '+1'
         for element in object:
             save(element)
-        print '+2'
-        if (memo.has_key(d)):
+
+        if (len(object) and memo.has_key(d)):
             write(POP * len(object) + self.get(memo[d][0]))
             return
-        print '+3'
+
         memo_len = len(memo)
         self.write(TUPLE + self.put(memo_len))
-        print '+4'
         memo[d] = (memo_len, object)
     dispatch[TupleType] = save_tuple
 
