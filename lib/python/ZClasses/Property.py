@@ -98,7 +98,13 @@ class ClassCaretaker:
         if not klass._p_changed:
             get_transaction().register(klass)
             klass._p_changed=1        
-
+    def __delattr__(self, name):
+        klass=self._k
+        delattr(klass, name)
+        if not klass._p_changed:
+            get_transaction().register(klass)
+            klass._p_changed=1 
+       
 class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     "Property Sheet that has properties common to all instances"
     meta_type="Common Instance Property Sheet"
