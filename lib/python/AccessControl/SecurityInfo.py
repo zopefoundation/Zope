@@ -198,6 +198,7 @@ class ClassSecurityInformation(ClassSecurityInfo):
     access = 0
 
 _moduleSecurity = {}
+_appliedModuleSecurity = {}
 
 def secureModule(mname, *imp):
     modsec = _moduleSecurity.get(mname, None)
@@ -209,12 +210,24 @@ def secureModule(mname, *imp):
         apply(__import__, (mname,) + tuple(imp))
     module = sys.modules[mname]
     modsec.apply(module.__dict__)
+    _appliedModuleSecurity[mname] = modsec
     return module
 
 def ModuleSecurityInfo(module_name=None):
     if module_name is not None:
         modsec = _moduleSecurity.get(module_name, None)
         if modsec is not None:
+            return modsec
+        modsec = _appliedModuleSecurity.get(module_name, None)
+        if modsec is not None:
+            # Move security info back to to-apply dict (needed for product
+            # refresh). Also invoke this check for parent packages already
+            # applied
+            del _appliedModuleSecurity[module_name]
+            _moduleSecurity[module_name] = modsec
+            dot = module_name.rfind('.')
+            if dot > 0:
+                ModuleSecurityInfo(module_name[:dot])
             return modsec
         dot = module_name.rfind('.')
         if dot > 0:
