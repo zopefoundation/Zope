@@ -147,7 +147,11 @@ class CosineIndex(Persistent):
         L = []
         DictType = type({})
         for wid in wids:
-            d2w = self._wordinfo[wid] # maps docid to w(docid, wid)
+            d2w = self._wordinfo.get(wid) # maps docid to w(docid, wid)
+            if d2w is None:
+                # Need a test case to cover this
+                L.append((IIBucket(), scaled_int(1)))
+                continue
             idf = query_term_weight(len(d2w), N)  # this is an unscaled float
             #print "idf = %.3f" % idf
             if isinstance(d2w, DictType):
@@ -165,7 +169,10 @@ class CosineIndex(Persistent):
         for wid in wids:
             if wid == 0:
                 continue
-            wt = math.log(1.0 + N / len(self._wordinfo[wid]))
+            map = self._wordinfo.get(wid)
+            if map is None:
+                continue
+            wt = math.log(1.0 + N / len(map))
             sum += wt ** 2.0
         return scaled_int(math.sqrt(sum))
 
