@@ -71,7 +71,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -555,6 +555,14 @@ The -u option may be used to provide a user name and password.
 
 Optional arguments may be provides as name=value pairs.
 
+In a name value pair, if a name ends in ":file", then the value is
+treated as a file name and the file is send using the file-upload
+protocol.   If the file name is "-", then data are taken from standard
+input.
+
+The body of the response is written to standard output.
+The headers of the response are written to standard error.
+
 """ % sys.argv[0]
 
 def main():
@@ -573,19 +581,24 @@ def main():
 	kw={}
 	for arg in args[1:]:
 	    [name,v]=split(arg,'=')
-	    if name[:2]=='-f':
-		name=name[2:]
-		v=open(v)
+	    if name[-5:]==':file':
+		name=name[:-5]
+		if v=='-': v=sys.stdin
+		else: v=open(v)
 	    kw[name]=v
 
     except:
-	print "%s: %s\n%s" % (sys.exc_type, sys.exc_value, usage)
+	# print "%s: %s\n%s" % (sys.exc_type, sys.exc_value, usage)
+	print usage
 	sys.exit(1)
 	
     # The "main" program for this module
     f=Function(url)
     if user: f.username, f.password = user, pw
-    print apply(f,(),kw)
+    headers, body = apply(f,(),kw)
+    sys.stderr.write(join(map(lambda h: "%s: %s\n" % h, headers.items()),"")
+		     +"\n\n")
+    print body
 
 
 if __name__ == "__main__":
