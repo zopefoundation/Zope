@@ -135,6 +135,9 @@ class Request:
 
         'RESPONSE' -- The Response object.
 
+        'PUBLISHED' -- The actual object published as a result of
+        url traversal.
+
         'URL' -- The URL of the Request without query string.
 
         *URLn* -- 'URL0' is the same as 'URL'. 'URL1' is the same as
