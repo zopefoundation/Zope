@@ -96,8 +96,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.7 1998/12/16 15:25:48 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Search.py,v 1.8 1998/12/29 17:01:59 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify, Args
@@ -218,9 +218,9 @@ def default_input_form(arguments,action='query',
                 join(
                     map(
                         lambda a:
-                        ('<tr>\t<th>%s</th>\n'
-                         '\t<td><input name="%s"\n'
-                         '\t     width=30 value="%s">'
+                        ('<tr><th>%s</th>\n'
+                         '    <td><input name="%s"\n'
+                         '               width=30 value="%s">'
                          '</td></tr>'
                          % (nicify(a[0]),
                             (

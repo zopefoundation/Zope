@@ -9,7 +9,7 @@
         </a>
       <!--#/if previous-sequence-->
       %(else no_table)[<table border>
-	%(heading)s
+        %(heading)s
       %(else)]
 
    <!--#/if sequence-start-->
