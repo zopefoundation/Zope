@@ -11,8 +11,8 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.7 1998/12/15 21:21:08 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: __init__.py,v 1.8 1998/12/16 15:04:42 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 from ImageFile import ImageFile
 import Shared.DC.ZRDB.Search, SQL
 
@@ -50,29 +50,3 @@ __ac_permissions__=(
     ('Change Database Connections',           ()),
     ('Use Database Methods', ()),
     )
-
-############################################################################## 
-#
-# $Log: __init__.py,v $
-# Revision 1.7  1998/12/15 21:21:08  jim
-# Changed Z to Zope.
-#
-# Revision 1.6  1998/12/15 21:10:31  jim
-# first Zope
-#
-# Revision 1.5  1998/12/02 12:11:49  jim
-# new names, esp for Aqueduct
-#
-# Revision 1.4  1998/05/11 15:00:46  jim
-# Updated permissions.
-#
-# Revision 1.3  1998/02/23 19:00:31  jim
-# updated permissions
-#
-# Revision 1.2  1998/01/29 16:29:47  brian
-# Added eval support
-#
-# Revision 1.1  1998/01/07 16:29:29  jim
-# Split out Database Methods
-#
-#

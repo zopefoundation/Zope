@@ -9,8 +9,8 @@
 ############################################################################## 
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.5 1998/12/04 16:21:03 brian Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 1998/12/16 15:04:00 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals, ImageFile, os
 
@@ -27,7 +27,7 @@ for icon in ('table', 'view', 'stable', 'what',
     misc_[icon]=ImageFile.ImageFile('icons/%s.gif' % icon, globals())
 
 meta_types=(
-    {'name':'Zope %s Database Connection' % database_type,
+    {'name':'Z %s Database Connection' % database_type,
      'action':'manage_addZ%sConnectionForm' % database_type,
      },
     )
@@ -66,7 +66,7 @@ methods={
     }
 
 __ac_permissions__=(
-    ('Add Zope Gadfly Database Connections',
+    ('Add Z Gadfly Database Connections',
      ('manage_addZGadflyConnectionForm',
       'manage_addZGadflyConnection')),
     )
