@@ -160,6 +160,13 @@ class RoleManager:
             if not r != (not wannaBe): REQUEST.response.notFoundError()
 
         return r
+
+    def _isBeingAccessedAsZClassDefinedInstanceMethod(self):
+        p=getattr(self,'aq_parent',None)
+        if p is None: return 0          # Not wrapped
+        return type(p.aq_base) is PermissionMapper  
+              
+                                        
  
 def getPermissionMapping(name, obj, st=type('')):
     obj=getattr(obj, 'aq_base', obj)
