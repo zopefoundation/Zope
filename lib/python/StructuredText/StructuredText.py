@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.20 1999/07/21 13:33:59 jim Exp $'''
+$Id: StructuredText.py,v 1.21 1999/08/02 13:26:52 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,11 @@ $Id: StructuredText.py,v 1.20 1999/07/21 13:33:59 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.21  1999/08/02 13:26:52  jim
+# paragraph_divider needs to be a regular (thread-unsafe) regex
+# since it gets passed to ts_regex.split, which is thread-safe
+# and wants to use regs.
+#
 # Revision 1.20  1999/07/21 13:33:59  jim
 # untabified.
 #
@@ -333,13 +338,13 @@ $Id: StructuredText.py,v 1.20 1999/07/21 13:33:59 jim Exp $'''
 #
 #
 # 
-import ts_regex
+import ts_regex, regex
 from ts_regex import gsub
 from string import split, join, strip, find
 
 indent_tab  =ts_regex.compile('\(\n\|^\)\( *\)\t')
 indent_space=ts_regex.compile('\n\( *\)')
-paragraph_divider=ts_regex.compile('\(\n *\)+\n')
+paragraph_divider=regex.compile('\(\n *\)+\n')
 
 def untabify(aString):
     '''\
@@ -482,7 +487,8 @@ class StructuredText:
                                      aStructuredString)
 
         self.level=level
-        paragraphs=ts_regex.split(untabify(aStructuredString),paragraph_divider)
+        paragraphs=ts_regex.split(untabify(aStructuredString),
+                                  paragraph_divider)
         paragraphs=map(indent_level,paragraphs)
 
         self.structure=structure(paragraphs)
