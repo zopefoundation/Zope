@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.43 2001/02/12 18:54:50 brian Exp $'''
-__version__='$Revision: 1.43 $'[11:-2]
+$Id: HTTPResponse.py,v 1.44 2001/04/07 16:01:29 jim Exp $'''
+__version__='$Revision: 1.44 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -498,7 +498,7 @@ class HTTPResponse(BaseResponse):
         # XXX could this try to use standard_error_message somehow?
         return ("""\
 <HTML>
-<HEAD><TITLE>Zope Error</TITLE></HEAD>
+<HEAD><TITLE>Site Error</TITLE></HEAD>
 <BODY>
 
 <TABLE BORDER="0" WIDTH="100%">
@@ -509,8 +509,8 @@ class HTTPResponse(BaseResponse):
 </TD>
 
 <TD WIDTH="90%">
-  <H2>Zope Error</H2>
-  <P>Zope has encountered an error while publishing this resource.
+  <H2>Site Error</H2>
+  <P>An error was encountered while publishing this resource.
   </P>""" + \
   """
   <P><STRONG>%s</STRONG></P>
@@ -544,7 +544,7 @@ class HTTPResponse(BaseResponse):
         self.setStatus(404)
         raise 'NotFound',self._error_html(
             "Resource not found",
-            "Sorry, the requested Zope resource does not exist.<p>" +
+            "Sorry, the requested resource does not exist.<p>" +
             "Check the URL and try again.<p>" +
             "\n<!--\n%s\n-->" % entry)
 
@@ -562,7 +562,7 @@ class HTTPResponse(BaseResponse):
         if regex.match('^[A-Z_0-9]+$',name) >= 0:
             raise 'InternalError', self._error_html(
                 "Internal Error",
-                "Sorry, an internal error occurred in this Zope resource.")
+                "Sorry, an internal error occurred in this resource.")
 
         raise 'BadRequest',self._error_html(
             "Invalid request",
@@ -661,7 +661,7 @@ class HTTPResponse(BaseResponse):
         elif type(b) is not types.StringType or tag_search(b) is None:
             tb=self.setBody(
                 (str(t),
-                'Sorry, a Zope error occurred.<p>'+
+                'Sorry, a site error occurred.<p>'+
                  self._traceback(t,v,tb)),
                  is_error=1)
 
