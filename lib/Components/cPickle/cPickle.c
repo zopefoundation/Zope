@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.44 1997/07/25 18:16:12 jim Exp $
+     $Id: cPickle.c,v 1.45 1997/10/01 02:44:54 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.44 1997/07/25 18:16:12 jim Exp $\n"
+"$Id: cPickle.c,v 1.45 1997/10/01 02:44:54 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -1908,6 +1908,7 @@ PyImport_Import(PyObject *module_name) {
     }
 
   if((globals=PyEval_GetGlobals())) {
+      Py_INCREF(globals);
       UNLESS(__builtins__=PyObject_GetItem(globals,__builtins___str)) goto err;
     }
   else {
@@ -4233,7 +4234,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.44 $";
+    char *rev="$Revision: 1.45 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -4268,6 +4269,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.45  1997/10/01 02:44:54  jim
+ Added INCREF of result from PyEval_GetGlobals
+
  Revision 1.44  1997/07/25 18:16:12  jim
  Added new mechanism for importing.
 
