@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sha, binascii
 from binascii import b2a_base64, a2b_base64
@@ -130,7 +130,7 @@ class MySQLDigestScheme:
         for i in pw:
             if i == ' ' or i == '\t':
                 continue
-            nr ^= (((nr & 63) add) * ord(i)) + (nr << 8)
+            nr ^= (((nr & 63) + add) * ord(i)) + (nr << 8)
             nr2 += (nr2 << 8) ^ nr
             add += ord(i)
         r0 = nr & ((1L << 31) - 1L)
