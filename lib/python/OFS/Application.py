@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.187 2002/08/14 21:42:55 mj Exp $'''
-__version__='$Revision: 1.187 $'[11:-2]
+$Id: Application.py,v 1.188 2002/08/20 19:37:52 jim Exp $'''
+__version__='$Revision: 1.188 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -31,6 +31,7 @@ import ZDOM
 from zLOG import LOG, ERROR, WARNING, INFO
 from HelpSys.HelpSys import HelpSys
 from Acquisition import aq_base
+from App.Product import doInstall
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -431,8 +432,7 @@ def initialize(app):
     # Note that the code from here on only runs if we are not a ZEO
     # client, or if we are a ZEO client and we've specified by way
     # of env variable that we want to force products to load.
-    if (os.environ.get('ZEO_CLIENT') and
-        not os.environ.get('FORCE_PRODUCT_LOAD')):
+    if not doInstall():
         return
 
     # Check for dangling pointers (broken zclass dependencies) in the
@@ -693,10 +693,7 @@ def install_product(app, product_dir, product_name, meta_types,
                 Folder.Folder.__dict__['__ac_permissions__']=tuple(
                     list(Folder.Folder.__ac_permissions__)+new_permissions)
 
-            if (os.environ.get('ZEO_CLIENT') and
-                not os.environ.get('FORCE_PRODUCT_LOAD')):
-                # we don't want to install products from clients
-                # (unless FORCE_PRODUCT_LOAD is defined).
+            if not doInstall():
                 get_transaction().abort()
             else:
                 get_transaction().note('Installed product '+product_name)

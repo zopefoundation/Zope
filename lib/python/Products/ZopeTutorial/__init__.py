@@ -31,6 +31,11 @@ def initialize(context):
         constructors=(TutorialTopic.addTutorialForm, TutorialTopic.addTutorial),
         )
 
+    from App.Product import doInstall
+
+    if not doInstall():
+        return
+
     # create tutorial help topics
     lesson_path=os.path.join(App.Common.package_home(globals()), 'tutorial.stx')
     glossary_path=os.path.join(App.Common.package_home(globals()), 'glossary.stx')

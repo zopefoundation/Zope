@@ -24,6 +24,7 @@ import stat
 from DateTime import DateTime
 from types import ListType, TupleType
 from Interface.Implements import instancesOfObjectImplements
+from App.Product import doInstall
 
 import ZClasses # to enable 'PC.registerBaseClass()'
 
@@ -279,6 +280,10 @@ class ProductContext:
         .jpg .png .gif   -- ImageHelpTopic
         .py              -- APIHelpTopic
         """
+
+        if not doInstall():
+            return
+        
         help=self.getProductHelp()
         path=os.path.join(Globals.package_home(self.__pack.__dict__),
                           directory)

@@ -560,8 +560,7 @@ def initializeProduct(productp, name, home, app):
             {'label':'Refresh', 'action':'manage_refresh',
              'help': ('OFSP','Product_Refresh.stx')},)
 
-    if (os.environ.get('ZEO_CLIENT') and
-        not os.environ.get('FORCE_PRODUCT_LOAD')):
+    if not doInstall():
         get_transaction().abort()
         return product
 
@@ -571,3 +570,10 @@ def initializeProduct(productp, name, home, app):
 
 def ihasattr(o, name):
     return hasattr(o, name) and o.__dict__.has_key(name)
+
+
+def doInstall():
+    if os.environ.has_key('FORCE_PRODUCT_LOAD'):
+        return not not os.environ['FORCE_PRODUCT_LOAD']
+
+    return not os.environ.get('ZEO_CLIENT')

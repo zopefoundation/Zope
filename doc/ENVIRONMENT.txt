@@ -37,6 +37,17 @@ Zope installation
         package, z2.py, and the default import directory may be found.
 
 
+    FORCE_PRODUCT_LOAD
+
+        This environment variable can be used to force or suppress
+        Zope's normal automatic (implicit) product installation. If
+        this variable is set, then products are implicitly installed
+        is and only if the environment variable has a non-empty value.
+
+        If this environment variable is not set, then products are
+        implicitly installed unless the ZEO_CLIENT environment
+        variable is set to a non-empty value.
+
 Profiling
 
     PROFILE_PUBLISHER
