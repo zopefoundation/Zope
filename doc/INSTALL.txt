@@ -7,7 +7,7 @@ Building and installing Zope from source
 System requirements when building from source
 
    bash or another Bourne shell variant
-   Python 2.3.2 or later installed somewhere in the system PATH
+   Python 2.3.3 or later installed somewhere in the system PATH
    GNU make
    A C compiler (gcc recommended)
 
@@ -148,7 +148,7 @@ Integrating Zope With An Existing Webserver
 
 Troubleshooting
 
-  - This version of Zope requires Python 2.3.2 or better.
+  - This version of Zope requires Python 2.3.3 or better.
 
   - The Python you run Zope with *must* have threads compiled in,
     which is the case for a vanilla build.  Warning: Zope will not run
