@@ -93,7 +93,8 @@ class TestRunner:
 
     def runSuite(self, suite):
         if suite:
-            runner=unittest.TextTestRunner(stream=sys.stderr, verbosity=self.verbosity)
+            runner=unittest.TextTestRunner(stream=sys.stderr,
+                                           verbosity=self.verbosity)
             self.results.append(runner.run(suite))
         else:
             self.report('No suitable tests found') 
@@ -151,7 +152,8 @@ class TestRunner:
                 except KeyboardInterrupt:
                     raise
                 except:
-                    self.report('No test suite found in file:\n%s\n' % pathname)
+                    self.report('No test suite found in file:\n%s\n'
+                                % pathname)
                     if self.verbosity > 1:
                         traceback.print_exc()
                     suite = None
@@ -187,7 +189,7 @@ class TestRunner:
         dirname, name = os.path.split(filename)
         if dirname:
             if self.verbosity > 2:
-                sys.stderr.write( '*** Changing directory to: %s\n' % dirname )
+                sys.stderr.write('*** Changing directory to: %s\n' % dirname)
             os.chdir(dirname)
         self.report('Running: %s' % filename)
         try:
@@ -202,7 +204,7 @@ class TestRunner:
         else:
             self.report('No test suite found in file:\n%s\n' % filename)
         if self.verbosity > 2:
-            sys.stderr.write( '*** Restoring directory to: %s\n' % working_dir )
+            sys.stderr.write('*** Restoring directory to: %s\n' % working_dir)
         os.chdir(working_dir)
 
 def remove_stale_bytecode(arg, dirname, names):
