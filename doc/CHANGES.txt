@@ -35,7 +35,7 @@ Zope Changes
     ZODB 3
 
       ZODB is the next generation of our object database architecture.
-      It provides a number of advantages over or existing databases:
+      It provides a number of advantages over our previous databases:
 
       - Support for concurrency,
 
