@@ -18,7 +18,7 @@
   </p>
   </td>
   <td align="right" valign="top">
-<form action="<dtml-var URL1>">
+<form action="&dtml-URL1;">
 <input class="form-element" type="submit" 
  name="manage_catalogReindex:method" value=" Update Catalog ">
 </form>
@@ -30,7 +30,7 @@
   </p>
   </td>
   <td align="right" valign="top">
-<form action="<dtml-var URL1>">
+<form action="&dtml-URL1;">
 <input class="form-element" type="submit" 
  name="manage_catalogClear:method" value=" Clear Catalog ">
 </form>
@@ -80,7 +80,7 @@
       </dtml-if></p>
   </td>
   <td align="right" valign="top">
-    <form action="<dtml-var URL1>" method="POST">
+    <form action="&dtml-URL1;" method="POST">
     <div class="form-element">
       <dtml-if threshold>
 	<input class="form-element" type="submit" 
@@ -109,8 +109,7 @@
   <td align="right" valign="top">
     <form action="manage_edit" method=POST>
      <div class="form-element">
-      <input name="threshold:int" value="<dtml-var
-      threshold html_quote>" />
+      <input name="threshold:int" value="&dtml-threshold;" />
       <input type="submit" name="submit" value="Set Threshold">
       </div>
     </form>

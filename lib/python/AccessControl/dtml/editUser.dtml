@@ -16,16 +16,14 @@ Name
 </TD>
 <TD VALIGN="TOP">
 <div class="form-text">
-<dtml-var expr="user.name">
+<dtml-var expr="user.name" html_quote>
 </div>
 </TD>
 </TR>
 <TR><TD COLSPAN=2>&nbsp;</TD></TR>
 <dtml-if remote_user_mode__>
-  <INPUT TYPE="HIDDEN" NAME="password" value="<dtml-var 
-   password html_quote>" />
-  <INPUT TYPE="HIDDEN" NAME="confirm"  value="<dtml-var 
-   password html_quote>" />
+  <INPUT TYPE="HIDDEN" NAME="password" value="&dtml-password;" />
+  <INPUT TYPE="HIDDEN" NAME="confirm"  value="&dtml-password;" />
 <dtml-else>
 <TR>
 <TD VALIGN="TOP">
@@ -56,7 +54,7 @@ Domains
 </TD>
 <TD VALIGN="TOP">
 <INPUT TYPE="TEXT" NAME="domains:tokens" SIZE="30"
-  VALUE="<dtml-if expr="user.domains"><dtml-in expr="user.domains"><dtml-var sequence-item html_quote> </dtml-in></dtml-if>" />
+  VALUE="<dtml-if expr="user.domains"><dtml-in expr="user.domains">&dtml-sequence-item; </dtml-in></dtml-if>" />
 </TD>
 </TR>
 
@@ -74,10 +72,9 @@ Roles
 <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
 <dtml-if expr="_vars['sequence-item'] != 'Shared'">
 <dtml-if expr="_vars['sequence-item'] in user.roles">
-<OPTION VALUE="<dtml-var sequence-item html_quote>" selected><dtml-var 
- sequence-item>
+<OPTION VALUE="&dtml-sequence-item;" selected>&dtml-sequence-item;
 <dtml-else>
-<OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+<OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
 </dtml-if>
 </dtml-if>
 </dtml-if>
@@ -85,8 +82,7 @@ Roles
 </dtml-in valid_roles>
 </SELECT>
 
-<INPUT TYPE="HIDDEN" NAME="name" VALUE="<dtml-var 
- expr="user.name" html_quote>" />
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<dtml-var expr="user.name" html_quote>" />
 <br /><br />
 <INPUT class="form-element" TYPE="SUBMIT" NAME="submit" VALUE="Change" />
 </div>

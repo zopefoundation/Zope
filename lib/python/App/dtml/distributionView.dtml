@@ -15,7 +15,7 @@ distributed to other Zope users using the form below.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="version" value="<dtml-var new_version html_quote>">
+  <input type="text" name="version" value="&dtml-new_version;">
   </td>
 </tr>
 <tr>
@@ -41,9 +41,9 @@ distributed to other Zope users using the form below.
   <td align="left" valign="top">
   <select name="configurable_objects:list" size=10 multiple>
   <dtml-in objectItems>
-  <option value="<dtml-var sequence-key html_quote>" <dtml-
+  <option value="&dtml-sequence-key;" <dtml-
    if "_['sequence-key'] in configurable_objects_"
-   >SELECTED</dtml-if>><dtml-var title_and_id></option>
+   >SELECTED</dtml-if>>&dtml-title_and_id;</option>
   </dtml-in>
   </select>
   </td>

@@ -8,15 +8,15 @@
 
   <p class="form-text">
   You cannot start working in this version while another version, 
-  <strong><dtml-var Zope-Version></strong> is active. 
-  Leave <strong><dtml-var Zope-Version></strong> first and then 
+  <strong>&dtml-Zope-Version;</strong> is active. 
+  Leave <strong>&dtml-Zope-Version;</strong> first and then 
   you may work in this version.
   </p>
 
   <div class="form-element">
   <form action="leave_another" method="post">
   <input class="form-element" type="submit" name="submit" 
-   value="Quit working in <dtml-var Zope-Version html_quote>">
+   value="Quit working in &dtml-Zope-Version;">
   </form>
   </div>
 
@@ -25,13 +25,13 @@
 
   <p class="form-text">
   You <strong>are</strong> currently working in the
-  <dtml-var Zope-Version> version. 
+  &dtml-Zope-Version; version. 
   </p>
 
   <div class="form-element">
   <form action="leave" method="post">
   <input class="form-element" type="submit" name="submit" 
-   value="Quit working in <dtml-var Zope-Version html_quote>">
+   value="Quit working in &dtml-Zope-Version;">
   </form>
   </div>
   </dtml-if>
@@ -41,14 +41,14 @@
 
   <p class="form-text">
   You <strong>are not</strong> currently working in the
-  <dtml-var title_and_id>
+  &dtml-title_and_id;
   version.
   </p>
 
   <div class="form-element">
   <form action="enter" method="POST">      
   <input class="form-element" type="submit" name="submit" 
-   value="Start working in <dtml-var title_or_id html_quote>">
+   value="Start working in &dtml-title_or_id;">
     </form>
   </div>
 

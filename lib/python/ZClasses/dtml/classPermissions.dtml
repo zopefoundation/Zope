@@ -42,7 +42,7 @@ permissions.
     <td align="left" valign="top">
     <div class="form-text">
     <dtml-in classInheritedPermissions sort>
-    <dtml-var sequence-item><br />
+    &dtml-sequence-item;<br />
     </dtml-in>
     </div>
     </td>

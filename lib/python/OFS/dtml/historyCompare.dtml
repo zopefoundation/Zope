@@ -6,7 +6,7 @@
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-Changes to <dtml-var id> as of
+Changes to &dtml-id; as of
   </div>
   </td>
   <td align="left" valign="top">
@@ -18,7 +18,7 @@ Changes to <dtml-var id> as of
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
-  to get to <dtml-var id> as of
+  to get to &dtml-id; as of
   </div>
   </td>
   <td align="left" valign="top">

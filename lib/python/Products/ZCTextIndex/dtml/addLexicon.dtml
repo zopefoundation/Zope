@@ -53,7 +53,7 @@
             </select>
           <dtml-else>
             <input type="checkbox" name="elements.name:records" 
-                   value="<dtml-var expr="elements[0]">" checked />
+                   value="<dtml-var expr="elements[0]" html_quote>" checked />
           </dtml-if>
         </td>
       </tr>

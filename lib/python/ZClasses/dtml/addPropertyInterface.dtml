@@ -39,8 +39,8 @@
   <div class="form-element">
     <select name=":method">
        <dtml-in "propertysheets.common.objectValues()">
-          <option value="<dtml-var id html_quote>/manage_createView"
-             ><dtml-var title_and_id html_quote></option>
+          <option value="&dtml-id;/manage_createView"
+             >&dtml-title_and_id;</option>
        </dtml-in>
     </select>
   </div>

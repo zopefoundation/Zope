@@ -28,11 +28,8 @@ modified objects that were modified by a selected transaction.
     <td align="left" valign="top">
     <div class="list-nav">
 <dtml-if first_transaction>
-    <a href="manage_UndoForm?first_transaction:int=<dtml-var
-     expr="first_transaction*2-last_transaction"
-     >&last_transaction:int=<dtml-var first_transaction
-     >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
-     >"
+    <a href="manage_UndoForm?first_transaction:int=<dtml-var expr="first_transaction*2-last_transaction"
+     >&last_transaction:int=&dtml-first_transaction;&PrincipiaUndoBatchSize:int=&dtml-PrincipiaUndoBatchSize;"
      onMouseOver="window.status='View later transactions'; return true"
      onMouseOut="window.status=''; return true">&lt; Later Transactions</a>
 <dtml-else>
@@ -44,11 +41,8 @@ modified objects that were modified by a selected transaction.
     <td align="right" valign="top" nowrap>
     <div class="list-nav">
 <dtml-if expr="_.len(undoable_transactions) == PrincipiaUndoBatchSize">
-    <a href="manage_UndoForm?first_transaction:int=<dtml-var 
-     last_transaction>&last_transaction:int=<dtml-var
-     expr="last_transaction+PrincipiaUndoBatchSize"
-     >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
-     >"
+    <a href="manage_UndoForm?first_transaction:int=&dtml-last_transaction;&last_transaction:int=<dtml-var expr="last_transaction+PrincipiaUndoBatchSize"
+     >&PrincipiaUndoBatchSize:int=&dtml-PrincipiaUndoBatchSize;"
      onMouseOver="window.status='View earlier transactions'; return true"
      onMouseOut="window.status=''; return true">Earlier Transactions &gt;</a>
  <dtml-else>
@@ -72,8 +66,8 @@ modified objects that were modified by a selected transaction.
     </td>
     <td align="left" valign="top">
     <div class="list-item">
-    <dtml-var description html_quote> by <strong><dtml-if 
-     user_name><dtml-var user_name html_quote><dtml-else
+    &dtml-description; by <strong><dtml-if 
+     user_name>&dtml-user_name;<dtml-else
      ><em>Zope</em></dtml-if></strong>
     </div>
     </td>

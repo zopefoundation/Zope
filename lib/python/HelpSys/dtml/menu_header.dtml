@@ -1,5 +1,5 @@
 <html>
 <head>
-  <title><dtml-var title></title>
+  <title>&dtml-title;</title>
 </head>
 <body bgcolor="#FFFFFF">

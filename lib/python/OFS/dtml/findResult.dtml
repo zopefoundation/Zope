@@ -29,8 +29,8 @@
 <p class="std-text">
 Displaying items
 <dtml-in name="results" size=batch_size start=query_start>
-<dtml-if sequence-start><dtml-var sequence-number></dtml-if><dtml-if 
- sequence-end>-<dtml-var sequence-number> of <dtml-var 
+<dtml-if sequence-start>&dtml-sequence-number;</dtml-if><dtml-if 
+ sequence-end>-&dtml-sequence-number; of <dtml-var 
  "_.len(results)"></dtml-if></dtml-in> items matching your query. You can 
 <a href="#form">revise</a> your search terms below.
 </p>
@@ -60,13 +60,13 @@ your search terms below.
 <td width="50%">
  <div class="list-item">
  <dtml-in name="results" previous size="batch_size" start="query_start">
- <strong> <a href="<dtml-var name="URL"><dtml-var name="sequence-query">query_start=<dtml-var name="previous-sequence-start-number">">&lt; Previous</a></strong>
+ <strong> <a href="&dtml-URL;<dtml-var name="sequence-query">query_start=<dtml-var name="previous-sequence-start-number">">&lt; Previous</a></strong>
  <dtml-else>&nbsp;</dtml-in></div>
 </td>
 <td align="right" width="50%">
  <div class="list-item">
  <dtml-in name="results" next size=batch_size start=query_start>
- <strong><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">Next &gt;</a></strong>
+ <strong><a href="&dtml-URL;<dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">Next &gt;</a></strong>
  <dtml-else>&nbsp;</dtml-in></div>
 </td>
 </tr>
@@ -82,7 +82,7 @@ your search terms below.
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
   <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
   <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;"
-   ALT="[<dtml-var meta_type>]" BORDER="0"></A>
+   ALT="[&dtml-meta_type;]" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="list-item">
@@ -114,7 +114,7 @@ your search terms below.
   <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
   <OPTION VALUE="all" <dtml-in obj_metatypes><dtml-if "_['sequence-item'] == 'all'">SELECTED</dtml-if></dtml-in>> All types
 <dtml-in all_meta_types mapping>
-  <OPTION VALUE="<dtml-var name html_quote>" <dtml-in obj_metatypes><dtml-if "_['sequence-item'] == _['name']">SELECTED</dtml-if></dtml-in>><dtml-var name>
+  <OPTION VALUE="&dtml-name;" <dtml-in obj_metatypes><dtml-if "_['sequence-item'] == _['name']">SELECTED</dtml-if></dtml-in>>&dtml-name;
 </dtml-in>
   </SELECT>
   </div>
@@ -130,7 +130,7 @@ your search terms below.
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30" VALUE="<dtml-unless "REQUEST.obj_ids == []">
 <dtml-in expr="REQUEST.obj_ids">
-<dtml-var sequence-item>&nbsp;
+&dtml-sequence-item;&nbsp;
 
 </dtml-in>
 </dtml-unless>">
@@ -144,7 +144,7 @@ your search terms below.
   </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="obj_searchterm" SIZE="30" VALUE="<dtml-var "REQUEST.obj_searchterm">">
+  <INPUT TYPE="TEXT" NAME="obj_searchterm" SIZE="30" VALUE="<dtml-var "REQUEST.obj_searchterm" html_quote>">
   </TD>
 </TR>
 
@@ -156,7 +156,7 @@ your search terms below.
   </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <TEXTAREA NAME="obj_expr" ROWS="4" COLS="30"><dtml-var obj_expr></TEXTAREA>
+  <TEXTAREA NAME="obj_expr" ROWS="4" COLS="30">&dtml-obj_expr;</TEXTAREA>
   </TD>
 </TR>
 </dtml-if>

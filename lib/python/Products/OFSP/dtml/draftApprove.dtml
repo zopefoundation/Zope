@@ -6,7 +6,7 @@
 <h3>Approve</h3>
 
 <p class="form-text">
-You can make work done in <dtml-var id> (<dtml-var title>) permanent by 
+You can make work done in &dtml-id; (&dtml-title;) permanent by 
 entering a remark in the space below and then clicking on the <em>approve</em> 
 button.
 <br />
@@ -19,7 +19,7 @@ button.
 <h3>Discard</h3>
   
 <p class="form-text">
-You can throw away work done in <dtml-var id> (<dtml-var title>) by 
+You can throw away work done in &dtml-id; (&dtml-title;) by 
 clicking on the <em>discard</em> button.
 <br />
 <input type=submit value="Discard">

@@ -36,7 +36,7 @@ services provided by high-level objects such as Documents
 and Folders. Other references will be added soon.
 </p>
 <ul>
-<li> <a href="<dtml-var BASE1>/HelpSys/ObjectRef/hs_main">
+<li> <a href="&dtml-BASE1;/HelpSys/ObjectRef/hs_main">
      Object Reference
      </a>
 

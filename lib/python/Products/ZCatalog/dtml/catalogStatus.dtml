@@ -26,7 +26,7 @@
 	<font color="red"><b>Disabled</b></font>
       </dtml-if></h3>
 
-    <form action="<dtml-var URL1>" method="POST">
+    <form action="&dtml-URL1;" method="POST">
     <div class="form-element">
       <dtml-if threshold>
 	<input class="form-element" type="submit" 
@@ -49,8 +49,7 @@
       memory.  If this number is higher, the Catalog will index
       quickly but consume much more memory.</p>
 
-      Subtransaction threshold: <input name="threshold:int" value="<dtml-var
-      threshold html_quote>" />
+      Subtransaction threshold: <input name="threshold:int" value="&dtml-threshold;" />
       <br>
       <div class="form-element">
       <input type="submit" name="submit" value="Save Changes">
@@ -65,7 +64,7 @@
       <dtml-in index_objects sort=id>
       <li>
 	<dtml-var "_.len(_['sequence-item'])"> 
-	object are indexed in <b><dtml-var "_['sequence-item'].id"></b>
+	object are indexed in <b><dtml-var "_['sequence-item'].id" html_quote></b>
       </li>
       </dtml-in>
     </ul>

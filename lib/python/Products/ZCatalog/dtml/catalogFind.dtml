@@ -19,7 +19,7 @@ are found will be automatically added to the catalog.
   <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
 <dtml-in all_meta_types mapping>
-  <OPTION VALUE="<dtml-var name html_quote>"> <dtml-var name>
+  <OPTION VALUE="&dtml-name;"> &dtml-name;
 </dtml-in>
   </SELECT>
   </div>
@@ -85,7 +85,7 @@ are found will be automatically added to the catalog.
   <div class="form-element">
   <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
 <dtml-in valid_roles>
-  <OPTION VALUE="<dtml-var sequence-item html_quote>"> <dtml-var sequence-item>
+  <OPTION VALUE="&dtml-sequence-item;"> &dtml-sequence-item;
 </dtml-in>
   </SELECT>
   </div>
@@ -101,7 +101,7 @@ are found will be automatically added to the catalog.
   <div class="form-element">
   <SELECT NAME="obj_permission">
 <dtml-in permission_settings mapping>
-  <OPTION VALUE="<dtml-var name html_quote>"> <dtml-var name>
+  <OPTION VALUE="&dtml-name;"> &dtml-name;
 </dtml-in>
   </SELECT>
   </div>

@@ -27,7 +27,7 @@ the list below.
   <dtml-if expr="_vars['sequence-item'] != 'Shared'">
   <option <dtml-if 
    expr="manage_haveProxy(_vars['sequence-item'])">selected</dtml-if
-  >><dtml-var sequence-item></option>
+  >>&dtml-sequence-item;</option>
   </dtml-if>
   </dtml-in valid_roles>
   </select>

@@ -47,19 +47,18 @@ mappings for this item.
 </dtml-if>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var permission_name>
+  &dtml-permission_name;
   </div>
   </td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input type="hidden" name="permission_names:list" value="<dtml-var 
-   permission_name html_quote>" />
+  <input type="hidden" name="permission_names:list" value="&dtml-permission_name;" />
   <select name="class_permissions:list">
   <option value=""<dtml-unless 
    class_permission> selected</dtml-unless>>(disabled)</option>
   <dtml-in valid>
   <option<dtml-if "_['sequence-item']==class_permission"
-  > selected</dtml-if>><dtml-var sequence-item></option>
+  > selected</dtml-if>>&dtml-sequence-item;</option>
   </dtml-in>
   </select>
   </div>

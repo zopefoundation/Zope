@@ -11,7 +11,7 @@ help for adding indexes....
 </p>
 
 <form action="manage_addIndex" method="post">
-<input type=hidden name="type" value="<dtml-var index_type>">
+<input type=hidden name="type" value="&dtml-index_type;">
 
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>

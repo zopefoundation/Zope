@@ -23,7 +23,7 @@
   </td>
   <td align="left" valign="top">
   <input type="text" name="title" size="40" value="<dtml-if 
-   title><dtml-var title></dtml-if>">
+   title>&dtml-title;</dtml-if>">
   </td>
 </tr>
   <tr>
@@ -39,7 +39,7 @@
                 <option value="&dtml-sequence-item;"<dtml-if 
                  expr="connection_id==_vars['sequence-item']">
                  selected</dtml-if>>
-                <dtml-var sequence-key></option>
+                &dtml-sequence-key;</option>
               </dtml-in>
     </select>
     </div>
@@ -60,8 +60,7 @@
   <div style="width: 100%;">
   <textarea name="template:text" wrap="off" style="width: 100%;"
    cols=<dtml-var sql_pref__cols html_quote missing="60">
-   rows=<dtml-var sql_pref__rows html_quote missing="20">><dtml-var
-   src fmt="html-quote"></textarea>
+   rows=<dtml-var sql_pref__rows html_quote missing="20">>&dtml-src;</textarea>
   </div>
     </td>
   </tr>

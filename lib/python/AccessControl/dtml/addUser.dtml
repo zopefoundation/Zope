@@ -76,8 +76,7 @@ Domains
   <dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
   <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
   <dtml-if expr="_vars['sequence-item'] != 'Shared'">
-  <option value="<dtml-var sequence-item html_quote>"><dtml-var 
-   sequence-item>
+  <option value="&dtml-sequence-item;">&dtml-sequence-item;
   </dtml-if>
   </dtml-if>
   </dtml-if>

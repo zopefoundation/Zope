@@ -22,18 +22,17 @@ the text contents, which is configured in the <b>Indexes</b> View
 tab).  This way, the summary data may be shown in the search results.
 </p>
 
-<form action="<dtml-var URL1>">
+<form action="&dtml-URL1;">
 
 <table cellspacing="0" cellpadding="2" border="0">
 <dtml-in schema sort=sequence-item>
   <tr>
     <td align="left" valign="top">
-    <input type="checkbox" name="names:list" value="<dtml-var 
-     sequence-item html_quote>" />
+    <input type="checkbox" name="names:list" value="&dtml-sequence-item;" />
     </td>
     <td align="left" valign="top">
     <div class="form-text">
-    <dtml-var sequence-item>
+    &dtml-sequence-item;
     </div>
     </td>
   </tr>

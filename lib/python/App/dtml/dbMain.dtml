@@ -16,7 +16,7 @@ and cache management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var db_name>
+  &dtml-db_name;
   </div>
   </td>
 </tr>
@@ -28,7 +28,7 @@ and cache management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var db_size>
+  &dtml-db_size;
   </div>
   </td>
 </tr>

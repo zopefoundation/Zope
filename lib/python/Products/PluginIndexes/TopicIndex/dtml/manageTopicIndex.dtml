@@ -27,24 +27,24 @@
       <tr>
 
         <td align="center"> 
-        <input type="checkbox" name="filterIds:list" value="<dtml-var "fs.getId()">"> 
+        <input type="checkbox" name="filterIds:list" value="<dtml-var "fs.getId()" html_quote>">
         </td>
 
         <td align="center" valign="top">
         <div class="form-label">
-         <a href="editFilteredSet?filteredSet=&dtml-id;"><dtml-var getId> </a>
+         <a href="editFilteredSet?filteredSet=&dtml-id;">&dtml-getId; </a>
         </div>
         </td>
 
         <td align="center" valign="top">
         <div class="form-label">
-         <dtml-var getType> 
+         &dtml-getType;
         </div>
         </td>
 
         <td align="left" valign="top">
         <div class="form-label">
-         <dtml-var getExpression> 
+         &dtml-getExpression;
         </div>
         </td>
 

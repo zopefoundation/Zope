@@ -33,7 +33,7 @@ report and search form objects that will be created.
   <div class="form-element">
   <select name="queries:list" size="4" multiple>
 <dtml-in ZQueryIds>
-  <option><dtml-var sequence-item></option>
+  <option>&dtml-sequence-item;</option>
 </dtml-in>
   </select>
   </div>

@@ -47,7 +47,7 @@
         <td align="left" valign="top">
         <div class="list-item">
 	<a href="&dtml-absolute_url;/HistoricalRevisions/&dtml-key;/manage_workspace"><dtml-var time fmt="%Y-%m-%d %H:%M"><dtml-if 
-        user_name> (<dtml-var user_name> )</dtml-if></a>
+        user_name> (&dtml-user_name;)</dtml-if></a>
         <br>&dtml-description;
 	<dtml-if revision>
         <br>revision: <em>&dtml-revision;</em>

@@ -13,14 +13,14 @@ Object Reference
 
 
 
-<h3><dtml-if icon><img src="&dtml-BASEPATH1;/<dtml-var icon>" height="16" width="16" alt=""></dtml-if> <dtml-var meta_type></h3>
+<h3><dtml-if icon><img src="&dtml-BASEPATH1;/&dtml-icon;" height="16" width="16" alt=""></dtml-if> &dtml-meta_type;</h3>
 
 <code>
 <dtml-var get_docstring_html>
 </code>
 
 
-<h3><dtml-var meta_type> methods</h3>
+<h3>&dtml-meta_type; methods</h3>
 
 <dtml-call "REQUEST.set('cached_method_list', get_method_list())">
 <dtml-call "REQUEST.set('row_max', _.len(cached_method_list)/2)">
@@ -33,14 +33,14 @@ Object Reference
 <td align="left" valign="top">
 <code>
 <dtml-in "cached_method_list[:row_max]">
-<a href="#<dtml-var get_name>"><dtml-var get_name></a><br>
+<a href="#&dtml.url_quote-get_name;">&dtml-get_name;</a><br>
 </dtml-in>
 </code>
 </td>
 <td align="left" valign="top">
 <code>
 <dtml-in "cached_method_list[row_max:]">
-<a href="#<dtml-var get_name>"><dtml-var get_name></a><br>
+<a href="#&dtml.url_quote-get_name;">&dtml-get_name;</a><br>
 </dtml-in>
 </code>
 </td>
@@ -51,13 +51,13 @@ Object Reference
 <dl>
 <dtml-in cached_method_list>
 <dt><code>
-    <a name="<dtml-var get_name>">
-    <strong><dtml-var get_signature></strong>
+    <a name="&dtml-get_name;">
+    <strong>&dtml-get_signature;</strong>
     </code>
 </dt>
 <dd><code>
 <dtml-if permission>
-    <strong>Permission:</strong> <dtml-var permission><br><br>
+    <strong>Permission:</strong> &dtml-permission;<br><br>
 </dtml-if>
 
 <dtml-if get_docstring_html>

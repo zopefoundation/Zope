@@ -4,7 +4,7 @@
            form_title='Add %s Connection' % database_type
 	   )">
 
-    <form action="manage_addZ<dtml-var database_type>Connection"
+    <form action="manage_addZ&dtml-database_type;Connection"
       method="POST">
       <table cellspacing="2">
 	<tr>
@@ -15,7 +15,7 @@
     </td>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="id" size="40"
-                value="<dtml-var default_id html_quote>">
+                value="&dtml-default_id;">
           </td>
 	</tr>
 	<tr>
@@ -26,7 +26,7 @@
     </td>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="title" size="40"
-                value="<dtml-var default_title html_quote>">
+                value="&dtml-default_title;">
           </td>
 	</tr>
 	<tr>

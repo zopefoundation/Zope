@@ -23,8 +23,7 @@
 <dtml-if cb_isMoveable>
   <span class="form-text">to:</span>
   <input type="hidden" name="ids:list" value="&dtml-id;" />
-  <input type="text" name="new_ids:list" size="<dtml-var 
-   "_.max(40,_.len(getId())+4)">" value="&dtml-id;" />
+  <input type="text" name="new_ids:list" size="<dtml-var "_.max(40,_.len(getId())+4)">" value="&dtml-id;" />
 <dtml-else>
   <span class="form-text">
   may not be renamed.

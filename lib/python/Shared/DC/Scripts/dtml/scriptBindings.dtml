@@ -31,8 +31,7 @@ automatically be provided under that name when the script is called.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="name_context" value="<dtml-var 
-   expr="getAssignedName('name_context', '')" html_quote>">
+  <input type="text" name="name_context" value="<dtml-var expr="getAssignedName('name_context', '')" html_quote>">
   </td>
 </tr>
 
@@ -55,8 +54,7 @@ automatically be provided under that name when the script is called.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="name_container" value="<dtml-var 
-   expr="getAssignedName('name_container', '')" html_quote>">
+  <input type="text" name="name_container" value="<dtml-var expr="getAssignedName('name_container', '')" html_quote>">
   </td>
 </tr>
 
@@ -76,8 +74,7 @@ automatically be provided under that name when the script is called.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="name_m_self" value="<dtml-var 
-   expr="getAssignedName('name_m_self', '')" html_quote>">
+  <input type="text" name="name_m_self" value="<dtml-var expr="getAssignedName('name_m_self', '')" html_quote>">
   </td>
 </tr>
 
@@ -98,8 +95,7 @@ automatically be provided under that name when the script is called.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="name_ns" value="<dtml-var 
-   expr="getAssignedName('name_ns', '')" html_quote>">
+  <input type="text" name="name_ns" value="<dtml-var expr="getAssignedName('name_ns', '')" html_quote>">
   </td>
 </tr>
 
@@ -121,8 +117,7 @@ automatically be provided under that name when the script is called.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="name_subpath" value="<dtml-var 
-   expr="getAssignedName('name_subpath', '')" html_quote>">
+  <input type="text" name="name_subpath" value="<dtml-var expr="getAssignedName('name_subpath', '')" html_quote>">
   </td>
 </tr>
 

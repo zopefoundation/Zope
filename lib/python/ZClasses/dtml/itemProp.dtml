@@ -25,7 +25,7 @@ will need to be adjusted if the class is moved.
     Base Classes
     </div>
     </td>
-  <TD ALIGN="LEFT" VALIGN="TOP"><dtml-var "_.string.join(ZClassBaseClassNames(), ', ')">
+  <TD ALIGN="LEFT" VALIGN="TOP"><dtml-var "_.string.join(ZClassBaseClassNames(), ', ')" html_quote>
   </TD>
 </TR>
 <TR>
@@ -36,7 +36,7 @@ will need to be adjusted if the class is moved.
     </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="title" SIZE="40"
-     value="<dtml-var zClassTitle html_quote>">
+     value="&dtml-zClassTitle;">
   </TD>
 </TR>
 <TR>
@@ -47,7 +47,7 @@ will need to be adjusted if the class is moved.
     </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40"
-     value="<dtml-var classMetaType html_quote>">
+     value="&dtml-classMetaType;">
   </TD>
 </TR>
 <dtml-if show_class_id>
@@ -59,7 +59,7 @@ will need to be adjusted if the class is moved.
     </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="class_id" SIZE="40"
-     value="<dtml-var class_id html_quote>">
+     value="&dtml-class_id;">
   </TD>
 </TR>
 </dtml-if>
@@ -71,7 +71,7 @@ will need to be adjusted if the class is moved.
     </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="icon" SIZE="40"
-     value="<dtml-var classIcon html_quote>">
+     value="&dtml-classIcon;">
   </TD>
 </TR>
 <TR>
@@ -82,8 +82,7 @@ will need to be adjusted if the class is moved.
     </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <dtml-if classIcon>
-  <img src="<dtml-var SCRIPT_NAME>/<dtml-var classIcon
-     >?t=<dtml-var ZopeTime fmt=second>" border="0"><br>
+  <img src="&dtml.url_quote-SCRIPT_NAME;/&dtml.url_quote-classIcon;?t=<dtml-var ZopeTime fmt=second>" border="0"><br>
   </dtml-if>
   <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
   </TD>

@@ -28,20 +28,19 @@ function toggleSelect() {
 //-->
 </script>
 
-<form action="<dtml-var name="URL1">" name="objectItems">
+<form action="&dtml-URL1;" name="objectItems">
 
 <p class="form-text">
-<dtml-var id> contains <dtml-var 
- searchResults fmt=collection-length thousands_commas> record(s).
+&dtml-id; contains <dtml-var searchResults fmt=collection-length thousands_commas> record(s).
 </p>
   <div class="form-text">
   <dtml-in searchResults previous size=20 start=query_start >
-    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+    <a href="&dtml-URL;?query_start=<dtml-var previous-sequence-start-number>">
       [Previous <dtml-var previous-sequence-size> entries]
     </a>
   </dtml-in>
   <dtml-in searchResults next size=20 start=query_start >
-    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+    <a href="&dtml-URL;?query_start=<dtml-var next-sequence-start-number>">
       [Next <dtml-var next-sequence-size> entries]
     </a>
   </dtml-in>
@@ -72,7 +71,7 @@ function toggleSelect() {
     <td align="left" valign="top">
     <div class="form-text">
       <dtml-if expr="has_key('meta_type') and meta_type">
-        <dtml-var name="meta_type" size="15">
+        <dtml-var name="meta_type" size="15" html_quote>
       <dtml-else>
         <i>Unknown</i>
       </dtml-if>

@@ -19,7 +19,7 @@ Transient data will persist, but only for a user-specified period of time
 <dtml-let l=getLen>
 <dtml-if l>
   <dtml-if "l == 1">1 item is in this transient object container.
-  <dtml-else><dtml-var l> items are in this transient object container.
+  <dtml-else>&dtml-l; items are in this transient object container.
   </dtml-if>
 <dtml-else>
   There are no items in this transient object container.

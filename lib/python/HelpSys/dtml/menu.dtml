@@ -4,9 +4,9 @@
 
 <dtml-tree sort=id>
 <dtml-if "meta_type =='Help Topic'">
-  <a href="<dtml-var absolute_url>" target="help_main"><dtml-var title_or_id></a>
+  <a href="&dtml-absolute_url;" target="help_main">&dtml-title_or_id;</a>
 <dtml-else>
-  <dtml-var title>
+  &dtml-title;
 </dtml-if>
 </dtml-tree>
 

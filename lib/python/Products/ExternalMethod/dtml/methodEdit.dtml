@@ -10,7 +10,7 @@
     </div>
     </td>
     <td align="left" valign="top">
-     <dtml-var name="id" html_quote>
+     &dtml-id;
     </td>
   </tr>
   <tr>
@@ -21,7 +21,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="title" size="40"
-     value="<dtml-var title html_quote>" />
+     value="&dtml-title;" />
     </td>
   </tr>
   <tr>
@@ -32,7 +32,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="module" size="40"
-     value="<dtml-var module html_quote>" />
+     value="&dtml-module;" />
     </td>
   </tr>
   <tr>
@@ -43,7 +43,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="function" size="40"
-     value="<dtml-var function html_quote>" />
+     value="&dtml-function;" />
     </td>
   </tr>
   <tr>

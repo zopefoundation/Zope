@@ -14,7 +14,7 @@ see the <a href="http://www.python.org/doc/current/lib/module-profile.html">
 Python profiler documentation</a>.
 </p>
 <br />
-<form action="<dtml-var URL>" method="POST">
+<form action="&dtml-URL;" method="POST">
 <table>
 <tr>
 <td><strong>Sort</strong>: 
@@ -22,18 +22,16 @@ Python profiler documentation</a>.
     <dtml-in "('time', 'cumulative', 'calls', 'pcalls',
               'name', 'file', 'module', 'line',
               'nfl', 'stdname')">
-    <option value="<dtml-var sequence-item>"<dtml-if 
-     "sort==_['sequence-item']"> selected</dtml-if>><dtml-var 
-    sequence-item>
+    <option value="&dtml-sequence-item;"<dtml-if 
+     "sort==_['sequence-item']"> selected</dtml-if>>&dtml-sequence-item;
     </dtml-in>
     </select>
 </td>
 <td><strong>Limit</strong>: 
     <select name="limit:int">
     <dtml-in "(100, 200, 300, 400, 500)">
-    <option value="<dtml-var sequence-item>"<dtml-if 
-     "limit==_['sequence-item']"> selected</dtml-if>><dtml-var 
-    sequence-item>
+    <option value="&dtml-sequence-item;"<dtml-if 
+     "limit==_['sequence-item']"> selected</dtml-if>>&dtml-sequence-item;
     </dtml-in>
     </select>
 </td>
@@ -58,7 +56,7 @@ Python profiler documentation</a>.
 </form>
 <hr>
 <pre>
-<dtml-var stats>
+&dtml-stats;
 </pre>
 
 <dtml-else>

@@ -4,7 +4,7 @@
 </dtml-with>
 <dtml-if stat>
 <hr>
-<font color="red"><dtml-var stat></font>
+<font color="red">&dtml-stat;</font>
 <hr>
 </dtml-if>
 
@@ -25,14 +25,12 @@ and click the <em>Remove</em> button.
 <dtml-in get_local_roles>
 <tr>
   <td align="left" valign="top">
-  <input type="checkbox" name="userids:list" value="<dtml-var 
-   sequence-key html_quote>" />
+  <input type="checkbox" name="userids:list" value="&dtml-sequence-key;" />
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <a href="manage_editLocalRoles?userid=<dtml-var sequence-key 
-   fmt="url-quote">"><dtml-var sequence-key></a> (<dtml-in 
-   sequence-item><dtml-var sequence-item><dtml-unless 
+  <a href="manage_editLocalRoles?userid=&dtml.url_quote-sequence-key;">&dtml-sequence-key;</a> (<dtml-in 
+   sequence-item>&dtml-sequence-item;<dtml-unless 
    sequence-end>, </dtml-unless></dtml-in>)
   </div>
   </td>
@@ -77,8 +75,7 @@ roles that should be given to that user from the <em>Roles</em> list.
   <dtml-try>
   <select name="userid" size="5">
   <dtml-in get_valid_userids>
-  <option value="<dtml-var sequence-item html_quote>"><dtml-var 
-   sequence-item></option>
+  <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
   </dtml-in>
   </select>
   <dtml-except OverflowError>
@@ -93,8 +90,7 @@ roles that should be given to that user from the <em>Roles</em> list.
   <select name="roles:list" size="5" multiple>
 <dtml-in valid_roles><dtml-if 
 "_vars['sequence-item'] not in ('Anonymous', 'Shared', 'Authenticated')">
-<option value="<dtml-var sequence-item html_quote>"><dtml-var 
- sequence-item></option>
+<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
 </dtml-if>
 </dtml-in>
   </select>

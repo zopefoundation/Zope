@@ -1,10 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html lang="en">
-  <head><title><dtml-var title_or_id> tables</title></head>
+  <head><title>&dtml-title_or_id; tables</title></head>
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
     <dtml-var manage_tabs>
     
-    <h2><dtml-var title_or_id> tables</h2>
+    <h2>&dtml-title_or_id; tables</h2>
     
     <form action="manage_wizard" method="POST">
       <table cellspacing="2">
@@ -14,8 +14,8 @@
 	  <td align="LEFT" valign="TOP">
              <select name="tables:list" size=9 multiple>
                <dtml-in table_info>
-                 <option value="<dtml-var sequence-key html_quote>">
-                   <dtml-var sequence-key> <dtml-var sequence-item>
+                 <option value="&dtml-sequence-key;">
+                   &dtml-sequence-key; &dtml-sequence-item;
                  </option>
                </dtml-in>
              </select>

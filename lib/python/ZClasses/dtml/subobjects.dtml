@@ -32,7 +32,7 @@
        <dtml-in possible_meta_types mapping>
           <option
             <dtml-if "name in selected">selected</dtml-if>
-          ><dtml-var name></option>
+          >&dtml-name;</option>
        </dtml-in>
       </dtml-with>
     </select>

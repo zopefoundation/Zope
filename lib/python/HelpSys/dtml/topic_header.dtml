@@ -1,6 +1,6 @@
 <html>
 <head>
-<title><dtml-var title></title>
+<title>&dtml-title;</title>
 
 <style type="text/css">
 

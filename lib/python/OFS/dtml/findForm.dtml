@@ -26,7 +26,7 @@ find option.
   </dtml-in>
   <dtml-call "sorted_meta_types.sort()">
   <dtml-in sorted_meta_types>
-  <OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+  <OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
   </dtml-in>
 </dtml-let>
   </SELECT>

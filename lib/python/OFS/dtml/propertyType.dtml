@@ -8,7 +8,7 @@
 
 <dtml-if Principia-Version>
 <p>
-<em>You are currently working in version <dtml-var Principia-Version></em>
+<em>You are currently working in version &dtml-Principia-Version;</em>
 </p>
 </dtml-if Principia-Version>
 
@@ -26,7 +26,7 @@
   </dtml-if>
 </dtml-unless>
 
-<form action="<dtml-var URL1>" method="POST">
+<form action="&dtml-URL1;" method="POST">
 <dtml-if old_ids>
 <p>
 To change property names and values, edit them and click
@@ -85,7 +85,7 @@ select the new types and click &quot;Edit with new Types&quot;
       </dtml-in>
     </select>
     <dtml-else>
-       No value for <dtml-var select_variable>.
+       No value for &dtml-select_variable;.
     </dtml-if>
   <dtml-elif "new_type=='multiple selection'">
     <dtml-if "_.has_key(select_variable)">
@@ -94,11 +94,11 @@ select the new types and click &quot;Edit with new Types&quot;
       <dtml-in "_[select_variable]">
          <option<dtml-if
          "_['sequence-item'] in new_value"> SELECTED</dtml-if
-         >><dtml-var sequence-item html_quote></option>
+         >>&dtml-sequence-item;</option>
       </dtml-in>
     </select>
     <dtml-else>
-    No value for <dtml-var select_variable>.
+    No value for &dtml-select_variable;.
     </dtml-if>
   <dtml-else>
   <em>Unknown property type</em>

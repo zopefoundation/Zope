@@ -57,8 +57,7 @@ a permission in addition to selecting to acquire permissions.
   <dtml-in valid_roles>
   <td align="left">
   <div class="list-item">
-  <a href="manage_roleForm?role_to_manage=<dtml-var 
-   sequence-item url_quote>"><dtml-var sequence-item></a>
+  <a href="manage_roleForm?role_to_manage=&dtml.url_quote-sequence-item;">&dtml-sequence-item;</a>
   </div>
   </td>
   </dtml-in valid_roles>
@@ -73,19 +72,17 @@ a permission in addition to selecting to acquire permissions.
 
   <dtml-unless isTopLevelPrincipiaApplicationObject>
   <td align="left" valign="top">
-  <input type="checkbox" name="a<dtml-var sequence-index>" <dtml-var 
-   acquire> />
+  <input type="checkbox" name="a&dtml-sequence-index;" &dtml-acquire; />
   </td>
   </dtml-unless>
   <td align="left" nowrap>
   <div class="list-item">
-  <a href="manage_permissionForm?permission_to_manage=<dtml-var 
-   name url_quote>"><dtml-var name></a>
+  <a href="manage_permissionForm?permission_to_manage=&dtml.url_quote-name;">&dtml-name;</a>
   </div>
   </td>
   <dtml-in roles mapping>
   <td align="center">
-  <input type="checkbox" name="<dtml-var name>" <dtml-var checked> />
+  <input type="checkbox" name="&dtml-name;" &dtml-checked; />
   </td>
   </dtml-in>
 </tr>
@@ -139,7 +136,7 @@ You can define new roles by entering a role name and clicking the
   <div class="form-element">
   <select name="roles:list">
   <dtml-in userdefined_roles>
-  <option value="&dtml-sequence-item;"><dtml-var sequence-item></option>
+  <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
   </dtml-in userdefined_roles>
   </select>
   </div>

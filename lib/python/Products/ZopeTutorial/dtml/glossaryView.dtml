@@ -27,12 +27,12 @@ PRE {
 }
 </style>
 
-<h2><dtml-var title></h2>
+<h2>&dtml-title;</h2>
 
 <dtml-var expr="formatted_content(REQUEST)">
 
 <p class="feedback">Comments on this lesson?
-<a href="mailto:zdp@zope.org?subject=<dtml-var title>">Email feedback</a>.
+<a href="mailto:zdp@zope.org?subject=&dtml.url_quote_plus-title;">Email feedback</a>.
 </p>
 
 <dtml-var standard_html_footer>

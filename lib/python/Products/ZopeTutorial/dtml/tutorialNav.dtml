@@ -7,7 +7,7 @@
 <tr valign="top"><td width="50%" align="right">
 
 <dtml-if "i > 0">
-  <form action="../<dtml-var "ids[i-1]">">
+  <form action="../<dtml-var "ids[i-1]" url_quote>">
   <div class="form-element">
   <input class="form-element" type="submit" value=" &lt; Back ">
   </div>
@@ -19,7 +19,7 @@
 
 <dtml-unless hide_next>
 <dtml-if "i < _.len(ids) -1 ">
-  <form action="../<dtml-var "ids[i+1]">">
+  <form action="../<dtml-var "ids[i+1]" url_quote>">
   <div class="form-element">
   <input class="form-element" type="submit" value=" Next &gt; ">
   </div>

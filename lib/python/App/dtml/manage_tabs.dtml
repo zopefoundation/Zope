@@ -59,16 +59,14 @@
    size="1" color="#000000">&nbsp;<a <dtml-if 
    action>href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
    ><dtml-if target> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong><dtml-var 
-   label></strong></span></a>&nbsp;</font></td>
+   >><span style="color: #000000;"><strong>&dtml-label;</strong></span></a>&nbsp;</font></td>
 <dtml-else>
   <td bgcolor="#efefef" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1" color="#000000">&nbsp;<a <dtml-if 
    action>href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
    ><dtml-if target> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong><dtml-var 
-   label></strong></span></a>&nbsp;</font></td>
+   >><span style="color: #000000;"><strong>&dtml-label;</strong></span></a>&nbsp;</font></td>
 </dtml-if>
 </dtml-in>
 </tr>
@@ -127,7 +125,7 @@
       <dtml-else>
         <img src="&dtml-BASEPATH1;/p_/lockedo"
          alt="This item has been modified in another version" />
-              (<em><dtml-var locked_in_version html_quote></em>)
+              (<em>&dtml-locked_in_version;</em>)
       </dtml-if>
     </dtml-if>
     <dtml-if wl_isLocked>
@@ -161,7 +159,7 @@
 
 <dtml-if Zope-Version>
 <div class="system-msg">
-<em>You are currently working in version <a href="&dtml-SERVER_URL;&dtml-Zope-Version;/manage_main"><dtml-var Zope-Version html_quote></a></em>
+<em>You are currently working in version <a href="&dtml-SERVER_URL;&dtml-Zope-Version;/manage_main">&dtml-Zope-Version;</a></em>
 </div>
 </dtml-if>
 </dtml-unless>

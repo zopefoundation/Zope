@@ -11,7 +11,7 @@ Select a file to upload from your local computer by clicking the
 <em>Browse</em> button.
 </p>
 
-<form action="manage_add<dtml-var Kind>" method="post"
+<form action="manage_add&dtml-Kind;" method="post"
       enctype="multipart/form-data">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>

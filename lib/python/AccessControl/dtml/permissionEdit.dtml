@@ -3,18 +3,16 @@
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
 </dtml-with>
 <p class="form-text">
-Roles assigned to the permission <strong><dtml-var 
-permission_to_manage></strong>
+Roles assigned to the permission <strong>&dtml-permission_to_manage;</strong>
 </p>
 
 <form action="manage_permission" method="post">
 <p>
-<input type="hidden" name="permission_to_manage" value="<dtml-var 
- permission_to_manage html_quote>" />
+<input type="hidden" name="permission_to_manage" value="&dtml-permission_to_manage;" />
 <div class="form-element">
 <select name="roles:list" multiple size="10">
 <dtml-in expr="rolesOfPermission(permission_to_manage)" mapping=1>
-  <option <dtml-var selected>><dtml-var name></option>
+  <option &dtml-selected;>&dtml-name;</option>
 </dtml-in>
 </select>
 </div>
@@ -23,8 +21,7 @@ permission_to_manage></strong>
 <dtml-unless isTopLevelPrincipiaApplicationObject>
 <p>
 <div class="form-text">
-<input type="checkbox" name="acquire" <dtml-var 
-expr="acquiredRolesAreUsedBy(permission_to_manage)">> 
+<input type="checkbox" name="acquire" <dtml-var expr="acquiredRolesAreUsedBy(permission_to_manage)">> 
 Also use roles acquired from folders containing this object
 </p>
 </dtml-unless>

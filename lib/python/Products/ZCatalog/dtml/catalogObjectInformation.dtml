@@ -10,7 +10,7 @@
 <tr class="location-bar">
   <td colspan="2" align="left">
   <div class="std-text">
-  <strong>Catalog record at <dtml-var expr="getpath(_.int(rid))"></strong>
+  <strong>Catalog record at <dtml-var expr="getpath(_.int(rid))" html_quote></strong>
   </div>
   </td>
 </tr>

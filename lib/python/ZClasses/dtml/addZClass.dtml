@@ -22,7 +22,7 @@
        ),
     )">
 <dtml-with "_(unselected=_.reorder(all, without=selected))">
-<form action="<dtml-var URL1>" method="get">
+<form action="&dtml-URL1;" method="get">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="top">
@@ -31,8 +31,7 @@
     </div>
     </td>
     <td align="left" valign="top" colspan="3">
-    <input type="text" name="id" value="<dtml-var 
-     id html_quote>" size="40" />
+    <input type="text" name="id" value="&dtml-id;" size="40" />
     </td>
   </tr>
   <tr>
@@ -42,8 +41,7 @@
     </div>
     </td>
     <td align="left" valign="top" colspan="3">
-    <input type="text" name="title" value="<dtml-var 
-     title html_quote>" size="40" />
+    <input type="text" name="title" value="&dtml-title;" size="40" />
     </td>
   </tr>
   <tr>
@@ -53,8 +51,7 @@
     </div>
     </td>
     <td align="left" valign="top" colspan="3">
-    <input type="text" name="meta_type" value="<dtml-var 
-     meta_type html_quote>" size="40" />
+    <input type="text" name="meta_type" value="&dtml-meta_type;" size="40" />
     </td>
   </tr>
   <tr>
@@ -87,8 +84,8 @@
     <br />
     <SELECT NAME="unselected:list" size=9 multiple>
       <dtml-in unselected>
-        <OPTION VALUE="<dtml-var sequence-key html_quote>"
-	><dtml-var sequence-item></OPTION>
+        <OPTION VALUE="&dtml-sequence-key;"
+	>&dtml-sequence-item;</OPTION>
       </dtml-in>
     </SELECT>
     </div>
@@ -98,8 +95,7 @@
     <td align="left" valign="middle">
     <div class="form-element">
     <dtml-in selected>
-    <input type=hidden name="baseclasses:list" value="<dtml-var 
-     sequence-key html_quote>"></dtml-in>
+    <input type=hidden name="baseclasses:list" value="&dtml-sequence-key;"></dtml-in>
      <INPUT class="form-element" TYPE="SUBMIT" 
       NAME="manage_addZClassForm:method" VALUE="  >>  ">
      <BR />
@@ -115,8 +111,8 @@
     <br />
     <SELECT NAME="selected:list" size=9 multiple>
       <dtml-in selected>
-        <OPTION VALUE="<dtml-var sequence-key html_quote>"
-        ><dtml-var sequence-item></OPTION>
+        <OPTION VALUE="&dtml-sequence-key;"
+        >&dtml-sequence-item;</OPTION>
       </dtml-in>
     </SELECT>
     </div>

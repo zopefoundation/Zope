@@ -25,18 +25,17 @@ Save Changes</em> button.
 </tr>
 <tr>
   <td align="left" valign="top">
-  <div class="form-text"><dtml-var userid></div>
+  <div class="form-text">&dtml-userid;</div>
   </td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input type="hidden" name="userid" value="<dtml-var userid html_quote>">
+  <input type="hidden" name="userid" value="&dtml-userid;">
 <dtml-with "_(user_roles=get_local_roles_for_userid(userid))">
   <select name="roles:list" size="5" multiple>
 <dtml-in valid_roles><dtml-if 
 "_vars['sequence-item'] not in ('Anonymous', 'Shared', 'Authenticated')">
-<option value="<dtml-var sequence-item html_quote>"<dtml-if 
-"_['sequence-item'] in user_roles"> selected</dtml-if>><dtml-var 
-sequence-item>
+<option value="&dtml-sequence-item;"<dtml-if 
+"_['sequence-item'] in user_roles"> selected</dtml-if>>&dtml-sequence-item;
 </dtml-if>
 </dtml-in>
   </select>

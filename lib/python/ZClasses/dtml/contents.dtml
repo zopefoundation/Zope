@@ -13,29 +13,29 @@
 <dtml-in objectItems sort>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
-  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<dtml-var sequence-key html_quote>">
+  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="&dtml-sequence-key;">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <dtml-if icon>
-  <A HREF="<dtml-var sequence-key>/manage_workspace">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>"
-   ALT="[<dtml-var meta_type>]" BORDER="0"></A>
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
+  <IMG SRC="&dtml.url_quote-SCRIPT_NAME;/&dtml.url_quote-icon;"
+   ALT="[&dtml-meta_type;]" BORDER="0"></A>
   </dtml-if icon>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var sequence-key>/manage_workspace">
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
   <dtml-if "_['sequence-key'][:10]=='instance__'">
-    <dtml-var "_['sequence-key'][10:]"> 
-  <dtml-else ><dtml-var sequence-key> 
+    <dtml-var "_['sequence-key'][10:]" html_quote>
+  <dtml-else >&dtml-sequence-key;
   </dtml-if>
-  <dtml-if title>(<dtml-var title>)</dtml-if>
+  <dtml-if title>(&dtml-title;)</dtml-if>
   </A>
   <dtml-if locked_in_version>
     <dtml-if modified_in_version>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/locked"
+      <IMG SRC="&dtml.url_quote-SCRIPT_NAME;/p_/locked"
        ALT="This item has been modified in this version">
     <dtml-else>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/lockedo"
+      <IMG SRC="&dtml.url_quote-SCRIPT_NAME;/p_/lockedo"
        ALT="This item has been modified in another version">
     </dtml-if>
   </dtml-if>
@@ -63,7 +63,7 @@
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <TR>
 <TD>
-There are currently no items in <EM><dtml-var title_or_id></EM>
+There are currently no items in <EM>&dtml-title_or_id;</EM>
 <P>
 <dtml-if cb_dataValid>
 <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
@@ -82,7 +82,7 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
   <FORM ACTION="." METHOD="GET">
   <SELECT NAME=":method">
   <dtml-in all_meta_types mapping>
-    <OPTION value="<dtml-var action html_quote>"><dtml-var name html_quote>
+    <OPTION value="&dtml-action;">&dtml-name;
   </dtml-in all_meta_types>
   </SELECT><BR>
   <INPUT TYPE="SUBMIT" VALUE=" Add ">

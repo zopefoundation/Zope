@@ -7,7 +7,7 @@
 <dl><dd>
 <h2 class="api">
 <dtml-in apis>
-<a href="#<dtml-var name>"><dtml-var name></a>
+<a href="#&dtml.url_quote-name;">&dtml-name;</a>
 <dtml-unless sequence-end> , </dtml-unless>
 </dtml-in>
 </h2>
@@ -19,7 +19,7 @@
 <dl><dd>
 <h2 class="api">
 <dtml-in funcs>
-<a href="#<dtml-var name>"><dtml-var name></a>
+<a href="#&dtml.url_quote-name;">&dtml-name;</a>
 <dtml-unless sequence-end> , </dtml-unless>
 </dtml-in>
 </h2>

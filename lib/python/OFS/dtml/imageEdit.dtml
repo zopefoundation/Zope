@@ -3,13 +3,12 @@
 
 
 <p class="form-help">
-You can update the data for this <dtml-var kind> using the form below. 
+You can update the data for this &dtml-kind; using the form below. 
 Select a data file from your local computer by clicking the <em>browse</em> 
-button and click <em>upload</em> to update the contents of the <dtml-var 
-kind>.
+button and click <em>upload</em> to update the contents of the &dtml-kind;.
 </p>
 
-<form action="<dtml-var URL1>/manage_edit" method="post"
+<form action="&dtml-URL1;/manage_edit" method="post"
   enctype="multipart/form-data">
 <table cellpadding="2" cellspacing="0" width="100%" border="0">
 <tr>
@@ -20,7 +19,7 @@ kind>.
   </td>
   <td align="left" valign="top">
   <input type="text" name="title" size="40" value="<dtml-if 
-   title><dtml-var title html_quote></dtml-if>">
+   title>&dtml-title;</dtml-if>">
   </td>
 </tr>
 
@@ -32,7 +31,7 @@ kind>.
   </td>
   <td align="left" valign="top">
   <input type="text" name="content_type:required" size="40" value="<dtml-if 
-   content_type><dtml-var content_type html_quote></dtml-if>">
+   content_type>&dtml-content_type;</dtml-if>">
   </td>
 </tr>
 
@@ -96,7 +95,7 @@ kind>.
 </table>
 </form>
 
-<form action="<dtml-var URL1>/manage_upload" method="post"
+<form action="&dtml-URL1;/manage_upload" method="post"
   enctype="multipart/form-data">
 <table cellpadding="2" cellspacing="0" width="100%" border="0">
 <tr>

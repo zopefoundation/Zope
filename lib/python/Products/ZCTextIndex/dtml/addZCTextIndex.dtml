@@ -65,7 +65,7 @@ from the most relevant to the least relevant.
         <select name="extra.lexicon_id:record">
       </dtml-if>
       <option value="&dtml-id;">
-        &dtml-id; <dtml-var name="title" fmt="(%s)" null>
+        &dtml-id; <dtml-var name="title" fmt="(%s)" null html_quote>
       </option>
       <dtml-if sequence-end>
         </select>

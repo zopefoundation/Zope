@@ -3,7 +3,7 @@
 <dtml-var manage_tabs>
 </dtml-with>
 
-<form action="<dtml-var URL1>" method="post">
+<form action="&dtml-URL1;" method="post">
 <table width="100%"  cellspacing="0" cellpadding="2" border="0">
 <tr class="list-header">
   <td align="left" valign="top">
@@ -28,11 +28,11 @@
   <tr>
   <td align="left" valign="top">
        <input type="checkbox" name="selected:list"
-              value="<dtml-var label html_quote>" />
+              value="&dtml-label;" />
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var label html_quote>
+  &dtml-label;
   </div>
   </td>
   <td align="left" valign="top">
@@ -41,7 +41,7 @@
          <dtml-in zclass_candidate_view_actions>
            <option
               <dtml-if "_['sequence-item'] == action">SELECTED
-              </dtml-if>><dtml-var sequence-item></option>
+              </dtml-if>>&dtml-sequence-item;</option>
          </dtml-in>
        </select>
   </div>
@@ -52,8 +52,7 @@
 	     <option></option>
                <dtml-in "getProductHelp().helpValues()">
 		 <option
-		   <dtml-if "_.has_key('help') and (_.len(help) >= 2) and _.getitem('sequence-item').id() == help[1]">SELECTED</dtml-if>><dtml-var 
-                   id></option>
+		   <dtml-if "_.has_key('help') and (_.len(help) >= 2) and _.getitem('sequence-item').id() == help[1]">SELECTED</dtml-if>>&dtml-id;</option>
 	       </dtml-in>
 	   </select>
   </div>
@@ -105,7 +104,7 @@ for the view.
   <div class="form-element">
     <select name="action"> 
       <dtml-in zclass_candidate_view_actions>
-	   <option><dtml-var sequence-item></option>
+	   <option>&dtml-sequence-item;</option>
       </dtml-in>
     </select>
   </div>
@@ -123,7 +122,7 @@ for the view.
   <select name="help">
   <option></option>
   <dtml-in "getProductHelp().helpValues()">
-  <option><dtml-var id></option>
+  <option>&dtml-id;</option>
   </dtml-in>
   </select>
   </div>

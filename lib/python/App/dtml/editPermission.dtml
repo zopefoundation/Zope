@@ -11,7 +11,7 @@
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var id>
+  &dtml-id;
   </div>
   </td>
 </tr>
@@ -23,8 +23,7 @@
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="title"size="40" value="<dtml-var 
-   title html_quote>" />
+  <input type="text" name="title"size="40" value="&dtml-title;" />
   </td>
 </tr>
 
@@ -35,8 +34,7 @@
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="name" size="40" value="<dtml-var 
-   name html_quote>" />
+  <input type="text" name="name" size="40" value="&dtml-name;" />
   </td>
 </tr>
 

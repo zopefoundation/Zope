@@ -11,7 +11,7 @@
     </td>
     <td align="left" valign="top">
     <div class="form-text">
-    <dtml-var id>
+    &dtml-id;
     </div>
     </td>
   </tr>
@@ -23,7 +23,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="title" size="40" 
-     value="<dtml-var title html_quote>"/>
+     value="&dtml-title;"/>
     </td>
   </tr>
   <tr>
@@ -34,7 +34,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="smtp_host" size="40"
-     value="<dtml-var smtp_host html_quote>"/>
+     value="&dtml-smtp_host;"/>
     </td>
   </tr>
   <tr>
@@ -45,7 +45,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="smtp_port:int" size="4"
-     value="<dtml-var smtp_port html_quote>"/>
+     value="&dtml-smtp_port;"/>
     </td>
   </tr>
   <tr>

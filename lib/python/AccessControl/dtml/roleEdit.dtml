@@ -2,17 +2,16 @@
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
 
 <p class="form-text">
-Permissions assigned to the role <strong><dtml-var role_to_manage></strong>
+Permissions assigned to the role <strong>&dtml-role_to_manage;</strong>
 </p>
 
 <form action="manage_role" method="post">
 <p>
-<input type=hidden name=role_to_manage value="<dtml-var 
- role_to_manage html_quote>">
+<input type=hidden name=role_to_manage value="&dtml-role_to_manage;">
 <div class="form-element">
 <select name="permissions:list" multiple size="10">
 <dtml-in expr="permissionsOfRole(role_to_manage)" mapping=1>
-  <option <dtml-var selected>><dtml-var name></option>
+  <option &dtml-selected;>&dtml-name;</option>
 </dtml-in>
 </select>
 </div>

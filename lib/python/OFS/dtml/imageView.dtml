@@ -2,10 +2,10 @@
 <dtml-var manage_tabs>
 
 <p>
-<img src="<dtml-var absolute_url>" <dtml-if 
- width>width="<dtml-var width>" </dtml-if><dtml-if 
- height>height="<dtml-var height>" </dtml-if
- > alt="<dtml-var title_or_id>" />
+<img src="&dtml-absolute_url;" <dtml-if 
+ width>width="&dtml-width;" </dtml-if><dtml-if 
+ height>height="&dtml-height;" </dtml-if
+ > alt="&dtml-title_or_id;" />
 </p>
 
 <dtml-var manage_page_footer>

@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<h2>Edit <dtml-var id></h2>
+<h2>Edit &dtml-id;</h2>
 
 <!--
 

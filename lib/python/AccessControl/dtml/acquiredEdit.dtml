@@ -9,7 +9,7 @@ Select permissions that acquire permission settings:
 <form action="manage_acquiredPermissions" method="post">
 <select name="permissions:list" multiple size="10">
 <dtml-in permission_settings mapping>
-  <option<dtml-if acquire> selected</dtml-if>><dtml-var name></option>
+  <option<dtml-if acquire> selected</dtml-if>>&dtml-name;</option>
 </dtml-in>
 </select>
 <p>

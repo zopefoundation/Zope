@@ -6,7 +6,7 @@ The Control Panel provides access to system information and management
 functions such as database and product management.  
 </p>
 
-<form action="<dtml-var URL1>" method="post" onSubmit="">
+<form action="&dtml-URL1;" method="post" onSubmit="">
 <table cellspacing="0" cellpadding="2" border="0">
 <tr>
   <td align="left" valign="top">
@@ -16,7 +16,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var version_txt>
+  &dtml-version_txt;
   </div>
   </td>
 </tr>
@@ -28,7 +28,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var sys_version>
+  &dtml-sys_version;
   </div>
   </td>
 </tr>
@@ -40,7 +40,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var sys_platform>
+  &dtml-sys_platform;
   </div>
   </td>
 </tr>
@@ -52,7 +52,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var getSOFTWARE_HOME>
+  &dtml-getSOFTWARE_HOME;
   </div>
   </td>
 </tr>
@@ -64,7 +64,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var getZOPE_HOME>
+  &dtml-getZOPE_HOME;
   </div>
   </td>
 </tr>
@@ -76,7 +76,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var getINSTANCE_HOME>
+  &dtml-getINSTANCE_HOME;
   </div>
   </td>
 </tr>
@@ -88,7 +88,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var getCLIENT_HOME>
+  &dtml-getCLIENT_HOME;
   </div>
   </td>
 </tr>
@@ -100,7 +100,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var process_id> (<dtml-var thread_get_ident>)
+  &dtml-process_id; (&dtml-thread_get_ident;)
   </div>
   </td>
 </tr>
@@ -112,7 +112,7 @@ functions such as database and product management.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var process_time>
+  &dtml-process_time;
   </div>
   </td>
 </tr>
@@ -138,13 +138,13 @@ functions such as database and product management.
 <dtml-in objectItems>
 <tr>
   <td width="16" align="left" valign="top">
-  <a href="<dtml-var sequence-key url_quote>/manage_workspace">
-  <img src="&dtml-BASEPATH1;/<dtml-var icon>" alt="" border="0" /></a>
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="" border="0" /></a>
   </td>
   <td align="left" valign="top">
   <div class="list-item">
-  <a href="<dtml-var sequence-key url_quote>/manage_workspace">
-  <dtml-var title> 
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-title;
   </a>
   <dtml-if locked_in_version>
     <dtml-if modified_in_version>

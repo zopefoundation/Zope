@@ -21,8 +21,7 @@ on the server.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="id" size="25" value="<dtml-if ids><dtml-var 
-  "ids[0]" html_quote></dtml-if>" class="form-element"/>
+  <input type="text" name="id" size="25" value="<dtml-if ids><dtml-var "ids[0]" html_quote></dtml-if>" class="form-element"/>
   </td>
 </tr>
 <tr>

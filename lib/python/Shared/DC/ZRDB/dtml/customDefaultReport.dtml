@@ -3,9 +3,8 @@
 
       <dtml-if previous-sequence>
 
-        <a href="<dtml-var URL><dtml-var sequence-query
-                 >query_start=<dtml-var
-                 previous-sequence-start-number>">
+        <a href="&dtml-URL;<dtml-var sequence-query
+                 >query_start=<dtml-var previous-sequence-start-number>">
         (Previous <dtml-var previous-sequence-size> results)
         </a>
 
@@ -25,9 +24,8 @@
 
       <dtml-if next-sequence>
 
-         <a href="<dtml-var URL><dtml-var sequence-query
-            >query_start=<dtml-var
-            next-sequence-start-number>">
+         <a href="&dtml-URL;<dtml-var sequence-query
+            >query_start=<dtml-var next-sequence-start-number>">
          (Next <dtml-var next-sequence-size> results)
          </a>
 
@@ -36,6 +34,6 @@
 
 <dtml-else>
 
-  There was no data matching this <dtml-var title_or_id> query.
+  There was no data matching this &dtml-title_or_id; query.
 
 </dtml-in>

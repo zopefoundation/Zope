@@ -61,7 +61,7 @@ objects in the product, typically a Python Script or DTML object.
     <select name="initial">
 <dtml-in objectItems>
 <dtml-if "meta_type != 'Principia Factory'">
-    <option><dtml-var sequence-key></option>
+    <option>&dtml-sequence-key;</option>
 </dtml-if>
 </dtml-in>
      </select>

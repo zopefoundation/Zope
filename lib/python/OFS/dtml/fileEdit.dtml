@@ -10,7 +10,7 @@ file. You may also edit the file content directly if the content is a
 text type and small enough to be edited in a text area.
 </p>
 
-<form action="<dtml-var URL1>" method="post" enctype="multipart/form-data">
+<form action="&dtml-URL1;" method="post" enctype="multipart/form-data">
 <table cellpadding="2" cellspacing="0" width="100%" border="0">
 <tr>
   <td align="left" valign="top">
@@ -20,7 +20,7 @@ text type and small enough to be edited in a text area.
   </td>
   <td align="left" valign="top">
   <input type="text" name="title" size="40" value="<dtml-if 
-   title><dtml-var title html_quote></dtml-if>">
+   title>&dtml-title;</dtml-if>">
   </td>
 </tr>
 
@@ -32,7 +32,7 @@ text type and small enough to be edited in a text area.
   </td>
   <td align="left" valign="top">
   <input type="text" name="content_type:required" size="40" value="<dtml-if 
-   content_type><dtml-var content_type html_quote></dtml-if>">
+   content_type>&dtml-content_type;</dtml-if>">
   </td>
 </tr>
 
@@ -44,7 +44,7 @@ text type and small enough to be edited in a text area.
   </td>
   <td align="left" valign="top">
   <input type="text" name="precondition" size="40" value="<dtml-if 
-   precondition><dtml-var precondition html_quote></dtml-if>">
+   precondition>&dtml-precondition;</dtml-if>">
   </td>
 </tr>
 
@@ -53,10 +53,8 @@ text type and small enough to be edited in a text area.
   <td align="left" valign="top" colspan="2">
   <div style="width: 100%;">
   <textarea name="filedata:text" wrap="off" style="width: 100%;"<dtml-if 
-   dtpref_cols> cols="<dtml-var dtpref_cols>"<dtml-else
-   > cols="50"</dtml-if><dtml-if dtpref_rows> rows="<dtml-var 
-   dtpref_rows>"<dtml-else> rows="20"</dtml-if>><dtml-var 
-   __str__ html_quote></textarea>
+   dtpref_cols> cols="&dtml-dtpref_cols;"<dtml-else
+   > cols="50"</dtml-if><dtml-if dtpref_rows> rows="&dtml-dtpref_rows;"<dtml-else> rows="20"</dtml-if>><dtml-var __str__ html_quote></textarea>
   </div>
   </td>
 </tr>

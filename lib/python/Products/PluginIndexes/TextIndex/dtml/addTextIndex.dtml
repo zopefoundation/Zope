@@ -45,7 +45,7 @@ from the most relevant to the lest relevant.
         <select name="extra.vocabulary:record">  
           <dtml-in expr="superValues('Vocabulary')">
             <option value="&dtml-id;">
-              &dtml-id; <dtml-var title fmt="(%s)" null>
+              &dtml-id; <dtml-var title fmt="(%s)" null html_quote>
             </option>
           </dtml-in>
         </select>

@@ -3,7 +3,7 @@
 <tr class="location-bar">
   <td align="left" valign="top">
   <div class="form-title">
-  <dtml-var form_title>
+  &dtml-form_title;
   </div>
   </td>
   <td align="right" valign="top">

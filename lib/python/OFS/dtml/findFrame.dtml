@@ -5,12 +5,12 @@
 </HEAD>
 <FRAMESET ROWS="52%,*">
 <dtml-if cv_ffaf>
-  <FRAME SRC="<dtml-var URL1>/manage_findAdv" NAME="findForm"
+  <FRAME SRC="&dtml-URL1;/manage_findAdv" NAME="findForm"
 <dtml-else>
-  <FRAME SRC="<dtml-var URL1>/manage_findForm" NAME="findForm"
+  <FRAME SRC="&dtml-URL1;/manage_findForm" NAME="findForm"
 </dtml-if>
    MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
-  <FRAME SRC="<dtml-var URL1>/manage_findResult" NAME="findResult"
+  <FRAME SRC="&dtml-URL1;/manage_findResult" NAME="findResult"
    MARGINWIDTH="2" MARGINHEIGHT="0" SCROLLING="auto">
 </FRAMESET>
 <NOFRAMES>

@@ -33,11 +33,11 @@ the original object.
     <select name="baseid" size="7">
   <dtml-in objectValues sort=title_or_id>
     <dtml-unless "meta_type in ('Version', 'Principia Draft', 'User Folder')">
-      <option value="<dtml-var id html_quote>">
+      <option value="&dtml-id;">
       <dtml-if title>
-	<dtml-var title size="25"> (<dtml-var id>)
+	<dtml-var title size="25" html_quote> (&dtml-id;)
       <dtml-else>
-	<dtml-var id>
+	&dtml-id;
       </dtml-if>
       </option>
     </dtml-unless>

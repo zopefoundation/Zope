@@ -6,7 +6,7 @@
 
 <dtml-if data_sources>
     
-<form action="manage_addZ<dtml-var database_type>Connection" method="post">
+<form action="manage_addZ&dtml-database_type;Connection" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="top">
@@ -46,9 +46,7 @@
     <div class="form-element">
     <select name="connection" size="5">
     <dtml-in data_sources>
-    <option value="<dtml-var sequence-key html_quote>"><dtml-var 
-     sequence-key><dtml-if sequence-item>, <dtml-var 
-     sequence-item></dtml-if></option>
+    <option value="&dtml-sequence-key;">&dtml-sequence-key;<dtml-if sequence-item>, &dtml-sequence-item;</dtml-if></option>
     </dtml-in>
     </select>
     </div>
@@ -80,8 +78,8 @@
 <dtml-else>
 
 <p class="form-help">
-Sorry, you cannot create any Zope <dtml-var database_type> Database 
-Connections because no <dtml-var database_type> databases exist, or 
+Sorry, you cannot create any Zope &dtml-database_type; Database 
+Connections because no &dtml-database_type; databases exist, or 
 all of the existing databases are in use. 
 </p>
 </dtml-if>

@@ -15,11 +15,11 @@
       <dtml-in "superValues('Vocabulary')">
         <dtml-if "getId()==vocabulary_id">
           <option value="&dtml-id;" selected>
-            &dtml-id; <dtml-var title fmt="(%s)" null>
+            &dtml-id; <dtml-var title fmt="(%s)" null html_quote>
           </option> 
         <dtml-else>
           <option value="&dtml-id;">
-            &dtml-id; <dtml-var title fmt="(%s)" null>
+            &dtml-id; <dtml-var title fmt="(%s)" null html_quote>
           </option> 
         </dtml-if>
       </dtml-in>

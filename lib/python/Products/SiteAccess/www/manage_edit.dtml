@@ -29,9 +29,8 @@ probably need to manage Zope using its raw IP address to fix things.
   or a set of hosts (<strong>*.host/path</strong>).
   <div style="width: 100%;">
   <textarea name="map_text:text" wrap="off" style="width: 100%;"<dtml-if 
-   dtpref_cols> cols="<dtml-var dtpref_cols>"<dtml-else
-   > cols="50"</dtml-if><dtml-if dtpref_rows> rows="<dtml-var 
-   dtpref_rows>"<dtml-else> rows="20"</dtml-if>><dtml-in 
+   dtpref_cols> cols="&dtml-dtpref_cols;"<dtml-else
+   > cols="50"</dtml-if><dtml-if dtpref_rows> rows="&dtml-dtpref_rows;"<dtml-else> rows="20"</dtml-if>><dtml-in 
    lines>&dtml-sequence-item;
 </dtml-in></textarea>
   </div>

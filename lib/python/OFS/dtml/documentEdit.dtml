@@ -19,7 +19,7 @@ the <em>browse</em> button to select a local file to upload.
   </td>
   <td align="left" valign="top">
   <input type="text" name="title" size="40" value="<dtml-if 
-   title><dtml-var title html_quote></dtml-if>">
+   title>&dtml-title;</dtml-if>">
   </td>
 </tr>
 
@@ -28,11 +28,11 @@ the <em>browse</em> button to select a local file to upload.
   <dtml-let cols="REQUEST.get('dtpref_cols', '100%')">
     <dtml-if expr="cols[-1]=='%'">
       <textarea name="data:text" wrap="off" style="width:&dtml-cols;"
-                rows="<dtml-var dtpref_rows missing="20">"
+                rows="<dtml-var dtpref_rows missing="20" html_quote>"
       ><dtml-var __str__></textarea>
     <dtml-else>
       <textarea name="data:text" wrap="off" cols="&dtml-cols;"
-                rows="<dtml-var dtpref_rows missing="20">"
+                rows="<dtml-var dtpref_rows missing="20" html_quote>"
       ><dtml-var __str__></textarea>      
     </dtml-if>
   </dtml-let>

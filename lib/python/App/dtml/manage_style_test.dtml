@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <title>System Stylesheet Test</title>
-<link rel="stylesheet" type="text/css" href="<dtml-var SCRIPT_NAME>/manage_style_css">
+<link rel="stylesheet" type="text/css" href="&dtml.url_quote-SCRIPT_NAME;/manage_style_css">
 </head>
 <body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#555555">
 
-<dtml-var HTTP_USER_AGENT>
+&dtml-HTTP_USER_AGENT;
 
 <h3>Text Styles</h3>
 

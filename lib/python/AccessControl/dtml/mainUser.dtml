@@ -16,16 +16,13 @@ user to edit that user.
 <tr class="row-hilite">
 </dtml-if>
   <td align="left" valign="top">
-  <input type="checkbox" name="names:list" value="<dtml-var 
-   sequence-item html_quote>" />
+  <input type="checkbox" name="names:list" value="&dtml-sequence-item;" />
   </td>
   <td align="left" valign="top">
   <div class="list-item">
-  <a href="manage_users?name=<dtml-var 
-   sequence-item fmt=url-quote>&submit=Edit"><img src="<dtml-var 
-   BASEPATH1>/p_/User_icon" alt="" border="0" /></a>
-  <a href="manage_users?name=<dtml-var sequence-item 
-   fmt=url-quote>&submit=Edit"><dtml-var sequence-item></a>
+  <a href="manage_users?name=&dtml.url_quote-sequence-item;&submit=Edit"><img src="&dtml-BASEPATH1;/p_/User_icon"
+   alt="" border="0" /></a>
+  <a href="manage_users?name=&dtml.url_quote-sequence-item;&submit=Edit">&dtml-sequence-item;</a>
   </div>
   </td>
 </tr>

@@ -26,7 +26,7 @@ td {
   <dtml-if expr="URLPATH1==BASEPATH1">
   Root Folder
   <dtml-else>
-  <dtml-var id>
+  &dtml-id;
   </dtml-if>
   </font>
   </a>
@@ -36,11 +36,11 @@ td {
 </table>
 <dtml-tree nowrap=1>
 <dtml-if icon>
-<a href="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" 
+<a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
  target="manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
  title="Click to open this item" alt="&dtml-meta_type;" /></a> 
 </dtml-if>
-<a href="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" 
+<a href="&dtml.url_quote-tree-item-url;/manage_workspace" 
  target="manage_main">&dtml-id;</a>
 </dtml-tree>
 <table cellspacing="0">
@@ -69,9 +69,8 @@ td {
 <tr>
 <td valign="top" align="center">
 <div class="form-element">
-<form action="<dtml-var BASEPATH1>/" method="POST" target="manage_main">
-<span class="std-text">Logged in as <strong><dtml-var 
- AUTHENTICATED_USER></strong></span> &nbsp;&nbsp;
+<form action="&dtml-BASEPATH1;/" method="POST" target="manage_main">
+<span class="std-text">Logged in as <strong>&dtml-AUTHENTICATED_USER;</strong></span> &nbsp;&nbsp;
 <br />
 <select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
 <option value="zope_quick_start">Zope Quick Start</option>

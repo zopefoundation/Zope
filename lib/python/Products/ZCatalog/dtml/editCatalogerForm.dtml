@@ -12,7 +12,7 @@ unindex itself to.
 <span class="form-label">
 Use Catalog: 
 </span>
-<input name="default" value="<dtml-var default_catalog html_quote>">
+<input name="default" value="&dtml-default_catalog;">
 <br>
 <div class="form-element">
 <input class="form-element" type="submit" value="Save Changes">

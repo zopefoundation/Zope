@@ -89,7 +89,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="cookiepath" SIZE="20"
-     value="<dtml-var getCookiePath html_quote>">
+     value="&dtml-getCookiePath;">
   </TD>
 </TR>
 <TR>
@@ -105,7 +105,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="cookiedomain" SIZE="20"
-     value="<dtml-var getCookieDomain html_quote>">
+     value="&dtml-getCookieDomain;">
   </TD>
 </TR>
 <TR>
@@ -120,7 +120,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="cookielifedays:int" SIZE="20"
-     value="<dtml-var getCookieLifeDays html_quote>">
+     value="&dtml-getCookieLifeDays;">
   </TD>
 </TR>
 <TR>

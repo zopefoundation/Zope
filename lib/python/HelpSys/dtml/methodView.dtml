@@ -1,14 +1,14 @@
 <a name="&dtml-name;"></a>
-<h2 class="method"><dtml-var name>(<dtml-in required><dtml-var sequence-item><dtml-if sequence-end>
+<h2 class="method">&dtml-name;(<dtml-in required>&dtml-sequence-item;<dtml-if sequence-end>
 <dtml-if optional>, </dtml-if>
 <dtml-else>,
 </dtml-if>
 </dtml-in>
 <dtml-in optional>
-<dtml-var sequence-key>=<dtml-var sequence-item><dtml-unless sequence-end>, </dtml-unless>
+&dtml-sequence-key;=&dtml-sequence-item;<dtml-unless sequence-end>, </dtml-unless>
 </dtml-in>
-<dtml-if varargs>, *<dtml-var varargs></dtml-if>
-<dtml-if kwargs>, **<dtml-var kwargs></dtml-if>):
+<dtml-if varargs>, *&dtml-varargs;</dtml-if>
+<dtml-if kwargs>, **&dtml-kwargs;</dtml-if>):
 </h2>
 
 <dl><dd>

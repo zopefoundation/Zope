@@ -4,11 +4,11 @@
 <dtml-if nonempty>
 <p class="form-help">
 To save work done in version 
-<dtml-var id><dtml-if Zope-Version><dtml-if "_vars['Zope-Version'] != cookie">
+&dtml-id;<dtml-if Zope-Version><dtml-if "_vars['Zope-Version'] != cookie">
  <strong>to version 
-<em><dtml-var Zope-Version></em></strong></dtml-if></dtml-if>,
+<em>&dtml-Zope-Version;</em></strong></dtml-if></dtml-if>,
 click on the &quot;Save&quot; button. To discard work done in
-version <dtml-var id>, click on the &quot;Discard&quot; button.
+version &dtml-id;, click on the &quot;Discard&quot; button.
 In either case, enter a comment to document the reason for 
 saving or discarding the version.
 </p>

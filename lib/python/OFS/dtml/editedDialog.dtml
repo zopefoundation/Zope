@@ -13,7 +13,7 @@
   <div class="std-text">
   <BR><BR>
   <CENTER>
-  <dtml-var title_and_id> has been successfully edited.
+  &dtml-title_and_id; has been successfully edited.
   </CENTER>
   </div>
   </TD>

@@ -11,7 +11,7 @@
     </td>
     <td align="left" valign="top">
     <div class="form-text">
-    <dtml-var id>
+    &dtml-id;
     </div>
     </td>
   </tr>
@@ -23,7 +23,7 @@
     </td>
     <td align="left" valign="top">
     <input type="text" name="title" size="40" 
-     value="<dtml-var title html_quote>" />
+     value="&dtml-title;" />
     </td>
   </tr>
   <tr>
@@ -43,10 +43,8 @@
     <div class="form-element">
     <select name="connection_string" size="5">
     <dtml-in data_sources>
-    <option value="<dtml-var sequence-key html_quote>"<dtml-if 
-     "_['sequence-key']==connection_string"> selected</dtml-if>><dtml-var 
-     sequence-key><dtml-if sequence-item>, <dtml-var 
-     sequence-item></dtml-if></option>
+    <option value="&dtml-sequence-key;"<dtml-if 
+     "_['sequence-key']==connection_string"> selected</dtml-if>>&dtml-sequence-key;<dtml-if sequence-item>, &dtml-sequence-item;</dtml-if></option>
     </dtml-in>
     </select>
     </div>

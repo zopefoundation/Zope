@@ -53,7 +53,7 @@ statement which the SQL Method will execute.
     <select name="connection_id">
               <dtml-in SQLConnectionIDs>
                 <option value="&dtml-sequence-item;">
-                <dtml-var sequence-key></option>
+                &dtml-sequence-key;</option>
               </dtml-in>
     </select>
     </div>

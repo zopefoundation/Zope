@@ -3,6 +3,6 @@
 
 <h3>Import Traceback</h3>
 
-<pre><dtml-var import_error_></pre>
+<pre>&dtml-import_error_;</pre>
 
 <dtml-var manage_page_footer>

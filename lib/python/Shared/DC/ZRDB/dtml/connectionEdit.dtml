@@ -9,7 +9,7 @@
     Id
     </div>
     </td>
-	  <td align="LEFT" valign="TOP"><dtml-var id></td>
+	  <td align="LEFT" valign="TOP">&dtml-id;</td>
 	</tr>
 
 	<tr>
@@ -20,7 +20,7 @@
     </td>
 	  <td align="LEFT" valign="TOP">
 	    <input type="TEXT" name="title" size="40"
-                   value="<dtml-var title html_quote>">
+                   value="&dtml-title;">
 	  </td>
 	</tr>
 
@@ -32,7 +32,7 @@
     </td>
 	  <td align="LEFT" valign="TOP">
 	    <input type="TEXT" name="connection_string" size="40"
-                   value="<dtml-var connection_string html_quote>">
+                   value="&dtml-connection_string;">
 	  </td>
 	</tr>
 	<tr>

@@ -1,7 +1,7 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<form action="<dtml-var URL1>" method="post">
+<form action="&dtml-URL1;" method="post">
 <table cellspacing="0" cellpadding="2" border="0">
 <dtml-in items sort>
 <dtml-with "_(REQUEST=REQUEST, item=_['sequence-item'].aq_base)" only>
@@ -9,7 +9,7 @@
 <dtml-if id>
 <tr>
   <td align="left" valign="top">
-  <a href="&dtml-id;">&dtml-id; (<dtml-var xml_namespace>)</a>
+  <a href="&dtml-id;">&dtml-id; (&dtml-xml_namespace;)</a>
   <dtml-if locked_in_session>
     <dtml-if modified_in_session>
       <img src="&dtml-BASEPATH1;/p_/locked"

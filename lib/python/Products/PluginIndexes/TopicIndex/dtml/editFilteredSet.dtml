@@ -5,7 +5,7 @@
 <dtml-with "filteredSets[filteredSet]">
 
 <form action="manage_saveFilteredSet" method="post" enctype="multipart/form-data">
-<input type="hidden" name="filterId" value="<dtml-var getId url_quote>" >
+<input type="hidden" name="filterId" value="&dtml-getId;" >
 
 <table cellspacing="0" cellpadding="2" border="1" width="90%" align="center">
 
@@ -17,19 +17,19 @@
   <tr>
     <th>FilteredSet Id</th>
     <td> 
-      <dtml-var getId>
+      &dtml-getId;
     </td>
   </tr>
 
   <tr>
     <th>FilteredSet Type</th>
-    <td><dtml-var getType></td>
+    <td>&dtml-getType;</td>
   </tr>
 
   <tr>
     <th>FilteredSet Expression</th>
     <td>
-     <textarea name="expr" cols="60" rows="5"><dtml-var getExpression></textarea>
+     <textarea name="expr" cols="60" rows="5">&dtml-getExpression;</textarea>
     </td>
   </tr>
 

@@ -3,17 +3,17 @@
 
 <p class="form-help">
   Name of attribute indexed: 
-  <em><dtml-var getFieldName></em>
+  <em>&dtml-getFieldName;</em>
 </p>
 <p class="form-help">
   Index type: 
-  <em><dtml-var getIndexType></em>
+  <em>&dtml-getIndexType;</em>
 </p>
 <p class="form-help">
   ZCTextIndex Lexicon used: 
   <dtml-if getLexiconURL>
-    <a href="<dtml-var getLexiconURL>/manage_main"
-    ><dtml-var getLexiconURL></a>
+    <a href="&dtml.url_quote-getLexiconURL;/manage_main"
+    >&dtml-getLexiconURL;</a>
   <dtml-else>
     <em>(Lexicon Not Found)</em>
   </dtml-if>
