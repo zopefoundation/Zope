@@ -1,7 +1,7 @@
 Zope Logging
 
  Zope2 now comes with a Logging facility called ZLogger.  ZLogger is
- an extensible logging system.  Currently, ZLogger will log either to a 
+ an extensible logging system.  Currently, ZLogger will log either to a
  file or to syslog.  (Syslog logging works even on windows, because
  it talks directly to the syslog server using UDP, instead of the
  POSIX syslog calls).
@@ -24,7 +24,7 @@ Zope Logging
   ZSYSLOG="/dev/log"
 
    Setting this environment variable will cause Zope to try and write
-   to the named UNIX domain socket (usually '/dev/log').  This will only 
+   to the named UNIX domain socket (usually '/dev/log').  This will only
    work on UNIX.
 
    (In versions up to Zope 2.6, this also caused the access log
@@ -42,7 +42,7 @@ Zope Logging
 
    Setting this environment variable tells Zope to connect a UDP
    socket to machine.name (which can be a name or IP address) and
-   'port' which must be an integer.  The default syslogd port is '514' 
+   'port' which must be an integer.  The default syslogd port is '514'
    but Zope does not pick a sane default, you must specify a port.
    This may change, so check back here in future Zope releases.
 
@@ -70,11 +70,11 @@ Calling the logger in your code
                   default, the zLOG module defines the following
                   severities:
 
-		    BLATHER=-100
-		    INFO=0      
-		    PROBLEM=WARNING=100             
-		    ERROR=200   
-		    PANIC=300
+                    BLATHER=-100
+                    INFO=0
+                    PROBLEM=WARNING=100
+                    ERROR=200
+                    PANIC=300
 
       summary -- A short summary of the event.
 
@@ -86,11 +86,11 @@ Calling the logger in your code
 
       reraise -- If provided with a true value, then the error given by
                  error is reraised.
-  
+
 
 Creating your own Logger
 
- Creating your own Zope logger is easy.  Simply define a logger class 
+ Creating your own Zope logger is easy.  Simply define a logger class
  with the following interface::
 
   class LumberJack:
@@ -100,21 +100,15 @@ Creating your own Logger
       """
 
       def __init__(self):
-	  pass
+          pass
 
       def __call__(self, sub, sev, sum, det, err):
-	  print ' %s, %s, %s, %s, %s, %s' % (self, sub, sev, sum, det, err)
+          print ' %s, %s, %s, %s, %s, %s' % (self, sub, sev, sum, det, err)
 
 
 Then you must edit lib/python/Zope/ZLogger/ZLogger.py and instantiate
 one of your Loggers in the 'logger' tuple::
 
- loggers = (stupidFileLogger.stupidFileLogger(), 
+ loggers = (stupidFileLogger.stupidFileLogger(),
             syslogLogger.syslogLogger(),
             LumberJack.LumberJack(),)
-
-
-
-
-
-
