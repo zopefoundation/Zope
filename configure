@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.10 2003/06/20 01:12:11 chrism Exp $
-# $Revision: 1.10 $
+# $Id: configure,v 1.11 2003/06/21 13:46:38 chrism Exp $
+# $Revision: 1.11 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -40,6 +40,7 @@ usage()
     echo
     echo "configure [--help] [--quiet] [--with-python=path] [--prefix=path] "
     echo "          [--build-base=path] [--ignore-largefile] [--ignore-zlib]"
+    echo "          [--optimize]"
     echo
     echo " Creates a Makefile suitable for building and installing Zope"
     echo
@@ -51,6 +52,7 @@ usage()
     echo "  --build-base        specify a temporary path for build files"
     echo "  --ignore-largefile  ignore large file support warnings"
     echo "  --ignore-zlib       ignore warnings about zlib"
+    echo "  --optimize          optimize compiled Python bytecode"
     echo
     echo " Given no options, configure will search your PATH for a suitable"
     echo " Python interpreter and will use '/opt/Zope-$ZOPE_VERS' as a prefix."
