@@ -5,6 +5,11 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+    
+      - Collector #550: Exceptions in XML-RPC requests no longer envoke
+        standard_error_message. Plain text error messages are instead added to
+        the fault string. In debug mode, a full traceback is also included
+        since access to the error log is not a given for XML-RPC developers.
 
       - Collector #512,541: Fixed broken WebDAV compatiblity
         with Cadaver 0.20.X due to a missing Lock-Token header.

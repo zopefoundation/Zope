@@ -82,9 +82,11 @@ class Response:
     It's probably possible to improve the 'exception' method quite a bit.
     The current implementation, however, should suffice for now.
     """
+    
+    _error_format = 'text/plain' # No html in error values
 
     # Because we can't predict what kind of thing we're customizing,
-    # we have to use delegation, rather than inheritence to do the
+    # we have to use delegation, rather than inheritance to do the
     # customization.
 
     def __init__(self, real): self.__dict__['_real']=real
@@ -132,20 +134,17 @@ class Response:
         Fault=xmlrpclib.Fault
         f=None
         try:
-            # Strip HTML tags and format the error value
+            # Strip HTML tags from the error value
             v = str(v)
-            v = re.sub(r"<br\s*/?>", "\n", v)
             remove = [r"<[^<>]*>", r"&[A-Za-z]+;"]
             for pat in remove:
                 v = re.sub(pat, " ", v)
-            v = re.sub(r"\n(?:\s*\n)+", "\n\n", v)
-                
             from Globals import DevelopmentMode
             if DevelopmentMode:
                 from traceback import format_exception
-                value = ''.join(format_exception(t, v, tb))
+                value = '\n' + ''.join(format_exception(t, v, tb))
             else:
-                value = '%s\n\n%s' % (t, v)
+                value = '%s - %s' % (t, v)
                 
             if isinstance(v, Fault):
                 f=v
