@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.28 2002/10/03 13:42:22 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.29 2002/11/28 13:03:11 beacon Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -23,6 +23,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IISet, intersection, union
 from OFS.SimpleItem import SimpleItem
+from zLOG import LOG, ERROR
 from types import StringType, ListType, TupleType
 import re, warnings
 
@@ -141,21 +142,30 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         """ hook for (Z)Catalog """
 
         if not self._unindex.has_key(documentId):
+            LOG(self.__class__.__name__, ERROR,
+                'Attempt to unindex nonexistent document'
+                ' with id %s' % documentId)
             return
-
+        
         path = self._unindex[documentId]
         comps = path.split('/')
 
         for level in range(len(comps[1:])):
             comp = comps[level+1]
 
-            self._index[comp][level].remove(documentId)
+            try:
+                self._index[comp][level].remove(documentId)
 
-            if len(self._index[comp][level])==0:
-                del self._index[comp][level]
+                if len(self._index[comp][level])==0:
+                    del self._index[comp][level]
 
-            if len(self._index[comp])==0:
-                del self._index[comp]
+                if len(self._index[comp])==0:
+                    del self._index[comp]
+            except KeyError:
+                LOG(self.__class__.__name__, ERROR,
+                    'Attempt to unindex document'
+                    ' with id %s failed' % documentId)
+
 
         del self._unindex[documentId]
 
@@ -209,14 +219,13 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
             results = []
             for i in range(len(comps)):
-
                 comp = comps[i]
 
                 if not self._index.has_key(comp): return IISet()
                 if not self._index[comp].has_key(level+i): return IISet()
 
                 results.append( self._index[comp][level+i] )
-
+            
             res = results[0]
 
             for i in range(1,len(results)):
