@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 import OFS, Acquisition, Globals
 from AccessControl import getSecurityManager, ClassSecurityInfo
@@ -168,7 +168,7 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
                 for token, lock in ob.wl_lockItems():
                     addlockinfo({'owner':lock.getCreatorPath(),
                                  'token':token})
-                addresult(p, li)
+                addresult((p, li))
                 dflag = 0
             if hasattr(bs, 'objectItems'):
                 self._findapply(ob, result, p)

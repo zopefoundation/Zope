@@ -27,6 +27,10 @@ Zope Changes
         - Collector #2423: Searching a FieldIndexes for documents
           with a blank string has been broken.
 
+        - WebDAV Lockmanager was not working due to a Python 2.1 
+          incompatibility.
+
+
     Zope 2.4 beta 2
 
       Bugs fixed
