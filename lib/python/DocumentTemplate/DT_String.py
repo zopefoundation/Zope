@@ -8,10 +8,13 @@ from DT_Util import *
 class String:
     __doc__=DT_Doc.String__doc__
     isDocTemp=1
+
+    def errQuote(self, s): return s
       
     def parse_error(self, mess, tag, text, start):
-	raise ParseError, "%s, for tag %s, on line %s of %s" % (
-	    mess, tag, len(split(text[:start],'\n')), self.__name__)
+	raise ParseError, "%s, for tag %s, on line %s of %s<p>" % (
+	    mess, self.errQuote(tag), len(split(text[:start],'\n')),
+	    self.errQuote(self.__name__))
 
     commands={
 	'var': DT_Var.Var,
@@ -97,7 +100,7 @@ class String:
 			result.append(command(args, self.varExtra(tagre)))
 		    else:
 			result.append(command(args))
-		except ParseError, m: self.parse_error(m,tag,text,l)
+		except ParseError, m: self.parse_error(m[0],tag,text,l)
 
 	    l=tagre.search(text,start)
 
@@ -151,7 +154,7 @@ class String:
 		    sstart=start
 		else:
 		    try: result.append(scommand(blocks))
-		    except ParseError, m: self.parse_error(m,stag,text,l)
+		    except ParseError, m: self.parse_error(m[0],stag,text,l)
 
 		    return start
     
@@ -173,59 +176,22 @@ class String:
 
     shared_globals={}
 
-    def __init__(self,source_string='',mapping=None, __name__='<string>',
-		 __names__=None, __validator__=None, **vars):
+    def __init__(self, source_string='', mapping=None, __name__='<string>',
+		 **vars):
 	"""\
 	Create a document template from a string.
 
 	The optional parameter, 'mapping', may be used to provide a
 	mapping object containing defaults for values to be inserted.
-	The optional parameter, '__names__', may be used to provide a
-	mapping object whose keys are the names of attributes that the
-	String user can access, and whose values are short descriptions
-	of the attributes.
-	The optional parameter, '__validator__', may be used to provide a
-	function that is used to validate accesses.
-	Default values may also be provided via keyword arguments.
 	"""
        	self.raw=source_string
-	self.init_validation(__names__, __validator__)
 	self.initvars(mapping, vars)
 	self.setName(__name__)
-
-    def init_validation(self, __names__, __validator__):
-	if __names__ is None: self._names = {}
-	else: self._names = __names__
-	self._validator = __validator__
 
     def name(self): return self.__name__
     id=name
 
     def setName(self,v): self.__dict__['__name__']=v
-
-    def names(self, names=None):
-	"""\
-	Replace the object\'s valid name, mapping.
-	"""
-	if names is not None:
-	    oldnames = self._names
-	    self._names = names
-	    return oldnames
-	else:
-	    return self._names
-
-    def validator(self, func=None):
-	"""\
-	Replace the object\'s validator function.
-
-	If a function is given, the value of the old value is returned.
-	"""
-	if func is not None:
-	    oldfunc = self._validator
-	    self._validator = func
-	    return oldfunc
-	else:
-	    return self._validator
 
     def default(self,name=None,**kw):
 	"""\
@@ -346,9 +312,8 @@ class String:
 	# print '============================================================'
 
 	if mapping is None: mapping = {}
-	
-	try: cooked=self.cooked
-	except:
+
+	if not hasattr(self,'cooked'):
 	    try: changed=self.__changed__()
 	    except: changed=1
 	    cooked=self.cook()
@@ -369,19 +334,24 @@ class String:
 		push(self.globals)
 		pushed=pushed+1
 	else:
-	    md=TemplateDict(
-		# self._names,self._validator
-		)
-	    old_validation=None
+	    md=TemplateDict()
 	    push=md.push
 	    shared_globals=self.shared_globals
 	    if shared_globals: push(shared_globals)
 	    if globals: push(globals)
-	    if mapping: push(mapping)
+	    if mapping:
+		push(mapping)
+		if hasattr(mapping,'AUTHENTICATED_USER'):
+		    md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
 	    pushed=0
 
+	level=md.level
+	if level > 200: raise SystemError, (
+	    'infinite recursion in document template')
+	md.level=level+1
+
 	if client is not None:
-	    push(InstanceDict(client,md)) # Circ. Ref. 8-|
+	    push(InstanceDict(client,md,self.validate)) # Circ. Ref. 8-|
 	    pushed=pushed+1
 
 	if self._vars: 
@@ -396,7 +366,9 @@ class String:
 	    return render_blocks(self,md)
 	finally:
 	    if pushed: md.pop(pushed) # Get rid of circular reference!
+	    md.level=level # Restore previous level
 
+    validate=None
 
     def __str__(self):
 	return self.read()
@@ -406,27 +378,18 @@ class FileMixin:
     edited_source=''
     __state_names__=(
 	String.__state_names__ +
-	('edited_source', '_names', '_validator'))
+	('edited_source',))
     
-    def __init__(self,file_name='',mapping=None,__names__=None,
-		 __validator__=None,**vars):
+    def __init__(self, file_name='', mapping=None, **vars):
 	"""\
 	Create a document template based on a named file.
 
 	The optional parameter, 'mapping', may be used to provide a
 	mapping object containing defaults for values to be inserted.
-	The optional parameter, '__names__', may be used to provide a
-	mapping object whose keys are the names of attributes that the
-	File user can access, and whose values are short descriptions
-	of the attributes.
-	The optional parameter, '__validator__', may be used to provide a
-	function that is used to validate accesses.
-	Default values may also be provided via keyword arguments.
 	"""
        	self.raw=file_name
 	self.initvars(mapping, vars)
 	self.setName(file_name)
-	self.init_validation(__names__, __validator__)
 
     def read_raw(self):
 	if self.edited_source: return self.edited_source
