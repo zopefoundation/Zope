@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.2 1996/07/01 11:51:54 jfulton Exp $'''
+$Id: Response.py,v 1.3 1996/07/03 18:25:50 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.2 1996/07/01 11:51:54 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.3  1996/07/03 18:25:50  jfulton
+# Added support for file upload via newcgi module.
+#
 # Revision 1.2  1996/07/01 11:51:54  jfulton
 # Updated code to:
 #
@@ -69,9 +72,27 @@ $Id: Response.py,v 1.2 1996/07/01 11:51:54 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, types, sys, regex
+
+status_reasons={
+    200: 'OK',
+    201: 'Created',
+    202: 'Accepted',
+    204: 'No Content',
+    301: 'Moved Permanently',
+    302: 'Moved Temporarily',
+    304: 'Not Modified',
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    403: 'Forbidden',
+    404: 'Not Found',
+    500: 'Internal Error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    }
 
 status_codes={
     'ok': 200,
@@ -146,7 +167,7 @@ class Response:
 	self.stdout=stdout
 	self.stderr=stderr
     
-    def setStatus(self,status):
+    def setStatus(self, status, reason=None):
 	'''\
 	Sets the HTTP status code of the response; the argument may
 	either be an integer or a string from { OK, Created, Accepted,
@@ -160,7 +181,10 @@ class Response:
 	try: status=status_codes[status]
 	except: status=500
 	self.status=status
-	self.setHeader('status',status)
+	if reason is None:
+	    try: reason=status_reasons[status]
+	    except: reason='Unknown'
+	self.setHeader('Status', "%d %s" % (status,str(reason)))
 
     def setHeader(self, name, value):
 	'''\
@@ -323,10 +347,13 @@ class Response:
 	    if not headers.has_key('content-length'):
 		self.setHeader('content-length',len(body))
 
+	if not headers.has_key('content-type') and self.status == 200:
+	    self.setStatus('nocontent')
+
 	headersl=map(lambda k,d=headers: "%s: %s" % (k,d[k]), headers.keys())
 	if self.cookies:
 	    headersl=headersl+self._cookie_list()
-	if body: headersl[len(headersl):]=['',body]
+	headersl[len(headersl):]=['',body]
 
 	return string.joinfields(headersl,'\n')
 
@@ -335,6 +362,8 @@ class Response:
 	if end_of_header_re.search(self.body) >= 0:
 	    try: del self.headers['content-length']
 	    except: pass
+	    if not self.headers.has_key('content-type'):
+		self.setHeader('content-type', 'text/html')
 	    self.insertBase()
 	    body=self.body
 	    self.body=''

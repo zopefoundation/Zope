@@ -49,13 +49,14 @@ class ModulePublisher:
 	return response
 
     def validate(self,object,module,response):
+	if type(object) is types.ModuleType: self.forbiddenError()
 	if hasattr(object,'__allow_groups__'):
 	    groups=object.__allow_groups__
 	    try: realm=module.__realm__
 	    except: self.forbiddenError()
 	    try:
 		user=realm.user(self.env("HTTP_AUTHORIZATION"))
-		if type(groups) is type({}):
+		if type(groups) is types.DictType:
 		    groups=map(lambda k,d=groups: d[k], groups.keys())
 		for g in groups:
 		    if g.has_key(user): return None
@@ -114,7 +115,7 @@ class ModulePublisher:
 			else:
 			    self.notFoundError()
 		function=f
-		if not (p=='__doc__' or function.__doc__):
+		if not (p=='__doc__' or function.__doc__) or p[0]=='_':
 		    raise 'Forbidden',function
 		self.validate(function,theModule,response)
     
@@ -135,45 +136,79 @@ class ModulePublisher:
 	else:
 	    return response.setBody(function)
     
-	query=self.get_data()
+	query=self.request
 	query['RESPONSE']=response
 
-	last_name=len(names) - (len(defaults or []))
-	for name in names[:last_name]:
-	    if not query.has_key(name):
-		self.badRequestError(name)
+	args=[]
+	nrequired=len(names) - (len(defaults or []))
+	for name_index in range(len(names)):
+	    name=names[name_index]
+	    try:
+		v=query[name]
+		args.append(v)
+	    except:
+		if name_index < nrequired:
+		    self.badRequestError(name)
 
-	args={}
-	for name in names:
-	    if query.has_key(name):
-		q=query[name]
-		if type(q) is type([]) and len(q) == 1: q=q[0]
-		args[name]=q
     
-	if args: result=apply(function,(),args)
+	if args: result=apply(function,tuple(args))
 	else:    result=function()
 
 	if result and result is not response: response.setBody(result)
 
 	return response
 
+def str_field(v):
+    if type(v) is types.InstanceType and v.__class__ is newcgi.MiniFieldStorage:
+        v=v.value
+    return v
 
 
+class Request:
 
-class CGIModulePublisher(ModulePublisher):
-
-    def __init__(self,
-		 stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-		 environ=os.environ):
+    def __init__(self,environ,form):
 	self.environ=environ
-	self.stdin=stdin
-	self.stdout=stdout
-	self.stderr=stderr
-	b=string.strip(self.environ['SCRIPT_NAME'])
-	if b[-1]=='/': b=b[:-1]
-	p = string.rfind(b,'/')
-	if p >= 0: self.base=b[:p+1]
-	else: self.base=''
+	self.form=form
+	self.other={}
+
+    def __setitem__(self,key,value): self.other[key]=value
+
+    def __getitem__(self,key):
+	try:
+	    v= self.environ[key]
+	    if self.special_names.has_key(key) or key[:5] == 'HTTP_':
+		return v
+	except: pass
+
+	try: return self.other[key]
+	except: pass
+
+	if key=='REQUEST': return self
+
+	try:
+	    v=self.form[key]
+	    if type(v) is types.ListType:
+		v=map(str_field, v)
+		if len(v) == 1: v=v[0]
+	    else: v=str_field(v)
+	    return v
+	except: pass
+
+	if not self.__dict__.has_key('cookies'):
+	    cookies=self.cookies={}
+	    if self.environ.has_key('HTTP_COOKIE'):
+		for cookie in string.split(self.environ['HTTP_COOKIE'],';'):
+		    try:
+			[k,v]=map(string.strip,string.split(cookie,'='))
+			cookies[k]=v
+		    except: pass
+	
+	if key=='cookies': return self.cookies
+
+	try: return self.cookies[key]
+	except: raise AttributeError, key
+
+    __getattr__=__getitem__
 
     special_names = {
 	'SERVER_SOFTWARE' : 1, 
@@ -194,22 +229,29 @@ class CGIModulePublisher(ModulePublisher):
 	'CONTENT_TYPE' : 1, 
 	'CONTENT_LENGTH' : 1, 
 	}
+		
 
-    def get_data(self):
-	query=newcgi.parse(fp=self.stdin, environ=self.environ) or {}
-	environ=self.environ
-	for key in environ.keys():
-	    if self.special_names.has_key(key) or key[:5] == 'HTTP_':
-		query[key]=[environ[key]]
+class CGIModulePublisher(ModulePublisher):
 
-	for cookie in string.split(self.env('HTTP_COOKIE'),';'):
-	    try:
-		[key,value]=map(string.strip, string.split(cookie,'='))
-		if key and not query.has_key(key): query[key]=value
-	    except: pass
+    def __init__(self,
+		 stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+		 environ=os.environ):
+	self.environ=environ
+	fp=None
+	try:
+	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
+	except: pass
+	form=newcgi.FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+        self.request=Request(environ,form)
+	self.stdin=stdin
+	self.stdout=stdout
+	self.stderr=stderr
+	b=string.strip(self.environ['SCRIPT_NAME'])
+	if b[-1]=='/': b=b[:-1]
+	p = string.rfind(b,'/')
+	if p >= 0: self.base=b[:p+1]
+	else: self.base=''
 
-	return query
-    
 def publish_module(module_name, published='web_objects',
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
 		   environ=os.environ):
