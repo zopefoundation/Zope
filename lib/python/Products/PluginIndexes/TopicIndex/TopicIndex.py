@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.8 2002/04/25 12:44:02 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.9 2002/08/14 22:19:34 mj Exp $'
 
-from Products.PluginIndexes import PluggableIndex 
+from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 
 from Globals import Persistent, DTMLFile
@@ -28,7 +28,7 @@ _marker = []
 class TopicIndex(Persistent, Implicit, SimpleItem):
 
     """ A TopicIndex maintains a set of FilteredSet objects.
-    Every FilteredSet object consists of an expression and 
+    Every FilteredSet object consists of an expression and
     and IISet with all Ids of indexed objects that eval with
     this expression to 1.
     """
@@ -36,9 +36,9 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
 
     meta_type="TopicIndex"
-    
+
     manage_options= (
-        {'label': 'FilteredSets',     
+        {'label': 'FilteredSets',
          'action': 'manage_workspace',
          'help': ('TopicIndex','TopicIndex_searchResults.stx')},
     )
@@ -51,17 +51,17 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
         self.id             = id
         self.filteredSets   = OOBTree()
         # experimental code for specifing the operator
-        self.operators       = ('or','and') 
+        self.operators       = ('or','and')
         self.defaultOperator = 'or'
 
 
     def getId(self): return self.id
-        
+
     def clear(self):
         """ clear everything """
         self.filteredSets = OOBTree()
 
-            
+
     def index_object(self, documentId, obj ,threshold=100):
         """ hook for (Z)Catalog """
 
@@ -92,8 +92,8 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
 
 
     def keys(self):   pass
-    def values(self): pass  
-    def items(self):  pass   
+    def values(self): pass
+    def items(self):  pass
 
 
     def search(self,filterId):
@@ -102,7 +102,7 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
             return self.filteredSets[filterId].getIds()
 
 
-    def _apply_index(self, request, cid=''): 
+    def _apply_index(self, request, cid=''):
         """ hook for (Z)Catalog
         request   mapping type (usually {"topic": "..." }
         cid      ???
@@ -126,10 +126,10 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
 
         if res:
             return res, (self.id,)
-        else: 
+        else:
             return IISet(), (self.id,)
 
-    
+
     def uniqueValues(self,name=None,withLength=0):
         """ needed to be consistent with the interface """
 
@@ -147,26 +147,26 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
 
         if self.filteredSets.has_key(filterId):
             raise KeyError,\
-                'A FilteredSet with this name already exists: %s' % filterId        
+                'A FilteredSet with this name already exists: %s' % filterId
 
         self.filteredSets[filterId] = \
             FilteredSet.factory(filterId, typeFilteredSet, expr)
 
 
     def delFilteredSet(self,filterId):
-        
+
         if not self.filteredSets.has_key(filterId):
             raise KeyError,\
-                'no such FilteredSet:  %s' % filterId        
+                'no such FilteredSet:  %s' % filterId
 
         del self.filteredSets[filterId]
 
 
     def clearFilteredSet(self,filterId):
-        
+
         if not self.filteredSets.has_key(filterId):
             raise KeyError,\
-                'no such FilteredSet:  %s' % filterId        
+                'no such FilteredSet:  %s' % filterId
 
         self.filteredSets[filterId].clear()
 

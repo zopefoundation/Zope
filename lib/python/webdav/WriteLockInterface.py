@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Interface
 
@@ -138,7 +138,7 @@ class LockItemInterface(Interface.Base):
     def asXML():
         """ Render a full XML representation of a lock for WebDAV,
         used when returning the value of a newly created lock. """
-        
+
 class WriteLockInterface(Interface.Base):
     """\
     This represents the basic protocol needed to support the write lock
@@ -173,7 +173,7 @@ class WriteLockInterface(Interface.Base):
 
     """
 
-    
+
     def wl_lockItems(killinvalids=0):
         """ Returns (key, value) pairs of locktoken, lock.
 
@@ -207,8 +207,7 @@ class WriteLockInterface(Interface.Base):
 
     def wl_delLock(locktoken):
         """ Deletes the locktoken identified by the locktokenuri """
-        
+
     def wl_clearLocks():
         """ Deletes ALL DAV locks on the object - should only be called
         by lock management machinery. """
-        

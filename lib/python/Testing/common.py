@@ -38,7 +38,7 @@ class Dummy:
 
     def __str__( self ):
         return 'Dummy(%s)' % `self.__dict__`
-    
+
     __repr__ = __str__
 
 def catch_log_errors():

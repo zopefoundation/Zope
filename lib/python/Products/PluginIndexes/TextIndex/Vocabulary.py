@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """ZCatalog product"""
 
@@ -50,7 +50,7 @@ class Vocabulary(Item, Persistent, Implicit,
     meta_type = "Vocabulary"
     _isAVocabulary = 1
 
-    
+
     manage_options=(
         (
         {'label': 'Vocabulary', 'action': 'manage_main',
@@ -65,15 +65,15 @@ class Vocabulary(Item, Persistent, Implicit,
     __ac_permissions__=(
 
         ('Manage Vocabulary',
-         ['manage_main', 'manage_vocab', 'manage_query'], 
+         ['manage_main', 'manage_vocab', 'manage_query'],
          ['Manager']),
 
         ('Query Vocabulary',
          ['query',],
-         ['Anonymous', 'Manager']), 
+         ['Anonymous', 'Manager']),
         )
 
-    
+
 
     manage_main = DTMLFile('dtml/manage_vocab', globals())
     manage_query = DTMLFile('dtml/vocab_query', globals())
@@ -84,7 +84,7 @@ class Vocabulary(Item, Persistent, Implicit,
         self.title = title
         self.globbing = not not globbing
 
-        self.useSplitter = Splitter.splitterNames[0]    
+        self.useSplitter = Splitter.splitterNames[0]
         if splitter:
             self.useSplitter = splitter
 
@@ -114,7 +114,7 @@ class Vocabulary(Item, Persistent, Implicit,
                 result.append(pattern)
 
         return str(result)
-            
+
 
     def manage_insert(self, word='', URL1=None, RESPONSE=None):
         """ doc string """
@@ -131,4 +131,3 @@ class Vocabulary(Item, Persistent, Implicit,
 
     def words(self):
         return self.lexicon._lexicon.items()
-

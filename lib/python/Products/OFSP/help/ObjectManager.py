@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 class ObjectManager:
@@ -39,7 +39,7 @@ class ObjectManager:
         """
         This method returns a list of the ids of the contained
         objects.
-        
+
         Optionally, you can pass an argument specifying what object
         meta_type(es) to restrict the results to. This argument can be
         a string specifying one meta_type, or it can be a list of
@@ -62,7 +62,7 @@ class ObjectManager:
     def objectValues(type=None):
         """
         This method returns a sequence of contained objects.
-        
+
         Like objectItems and objectIds, it accepts one argument,
         either a string or a list to restrict the results to objects
         of a given meta_type or set of meta_types.
@@ -76,16 +76,16 @@ class ObjectManager:
             There are no Folders.
           </dtml-in>
 
-        The results were restricted to Folders by passing a 
+        The results were restricted to Folders by passing a
         meta_type to 'objectValues' method.
-        
+
         Permission -- 'Access contents information'
         """
 
     def objectItems(type=None):
         """
         This method returns a sequence of (id, object) tuples.
-        
+
         Like objectValues and objectIds, it accepts one argument,
         either a string or a list to restrict the results to objects
         of a given meta_type or set of meta_types.
@@ -93,7 +93,7 @@ class ObjectManager:
         Each tuple's first element is the id of an object contained in
         the Object Manager, and the second element is the object
         itself.
-        
+
         Example::
 
           <dtml-in objectItems>
@@ -102,7 +102,7 @@ class ObjectManager:
           <dtml-else>
             There are no sub-objects.
           </dtml-in>
-          
+
         Permission -- 'Access contents information'
         """
 
@@ -111,11 +111,11 @@ class ObjectManager:
         This method returns a list of objects of a given meta_type(es)
         contained in the Object Manager and all its parent Object
         Managers.
-        
+
         The type argument specifies the meta_type(es). It can be a string
         specifying one meta_type, or it can be a list of strings to
         specify many.
-        
+
         Permission -- Python only
         """
 
@@ -131,7 +131,7 @@ class ObjectManager:
     def __getitem__(id):
         """
         Returns a child object given a child id. If there is no child
-        with the given id, a KeyError is raised. This method makes it easy 
+        with the given id, a KeyError is raised. This method makes it easy
         to refer to children that have id with file extensions. For
         example::
 
@@ -148,22 +148,22 @@ class ObjectManager:
 
         Permission -- 'Access contents information'
         """
-        
+
     def setBrowserDefaultId(id='', acquire=0):
         """
         Sets the id of the object or method used as the default method when
         the object manager is published. If acquire is set then the default
         method id will be acquired from the parent container.
-        
+
         Permission -- 'Manage folderish settings'
         """
-        
+
     def getBrowserDefaultId(acquire=0):
         """
         Returns the id of the object or method used as the default when the
         object manager is published. By default, this setting is acquired. If
-        the acquire argument is true, then the return value will be acquired 
-        from the parent if it is not set locally. Otherwise, None is returned 
+        the acquire argument is true, then the return value will be acquired
+        from the parent if it is not set locally. Otherwise, None is returned
         if the default id is not set on this object manager.
 
         Permission -- 'View'

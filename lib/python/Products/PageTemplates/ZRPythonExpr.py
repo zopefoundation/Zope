@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Zope-specific Python Expression Handler
@@ -16,7 +16,7 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
@@ -39,12 +39,12 @@ class PythonExpr(PythonExpr):
                                   '\n'.join(err) )
         self._f_varnames = use.keys()
         self._code = code
-        
+
     def __call__(self, econtext):
         __traceback_info__ = self.expr
         code = self._code
         g = self._bind_used_names(econtext)
-        g.update(self._globals)        
+        g.update(self._globals)
         return eval(code, g, {})
 
 class _SecureModuleImporter:

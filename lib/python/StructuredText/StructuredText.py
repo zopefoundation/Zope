@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """ Alias module for StructuredTextClassic compatibility which makes
@@ -46,7 +46,7 @@ def html_with_references(text, level=1, header=1):
         r'([\000- ,])\[(?P<ref>[0-9_%s-]+)\]([\000- ,.:])'   % letters,
         r'\1<a href="#\2">[\2]</a>\3',
         text)
-    
+
     text = re.sub(
         r'([\000- ,])\[([^]]+)\.html\]([\000- ,.:])',
         r'\1<a href="\2.html">[\2]</a>\3',
@@ -61,10 +61,10 @@ def html_quote(v,
                        (re.compile(">"), '&gt;' ),
                        (re.compile('"'), '&quot;')
                        )): #"
-        text=str(v)
-        for re,name in character_entities:
-            text=re.sub(name,text)
-        return text
+    text=str(v)
+    for re,name in character_entities:
+        text=re.sub(name,text)
+    return text
 
 
 if __name__=='__main__':
@@ -78,4 +78,3 @@ if __name__=='__main__':
 
     for f in args:
         print HTML(open(f).read())
-

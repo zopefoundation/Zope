@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 def manage_addImage(id, file, title='', precondition='', content_type=''):
@@ -54,7 +54,7 @@ class Image:
     method. For example::
 
       <dtml-var "ImageObject.tag(border='5', align='left')">
-    
+
     """
 
     __constructor__=manage_addImage
@@ -66,13 +66,13 @@ class Image:
         """
         This method returns a string which contains an HTML IMG tag
         reference to the image.
-        
+
         Optionally, the 'height', 'width', 'alt', 'scale', 'xscale'
         and 'yscale' arguments can be provided which are turned into
         HTML IMG tag attributes. Note, 'height' and 'width' are
         provided by default, and 'alt' comes from the 'title_or_id'
         method.
-        
+
         Keyword arguments may be provided to support other or future IMG
         tag attributes.  The one exception to this is the HTML Cascading
         Style Sheet tag 'class'.  Because the word 'class' is a reserved
@@ -82,10 +82,3 @@ class Image:
 
         Permission -- 'View'
         """
-
-
-
-
-
-
-

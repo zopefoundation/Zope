@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.15 2002/08/14 16:45:53 rdmurray Exp $'''
-__version__ = '$Revision: 1.15 $'[11:-2]
+$Id: BaseResponse.py,v 1.16 2002/08/14 22:09:40 mj Exp $'''
+__version__ = '$Revision: 1.16 $'[11:-2]
 
 import  types, sys
 from urllib import quote_plus
@@ -28,10 +28,10 @@ class BaseResponse:
     debug_mode = None
     _auth = None
     _error_format = 'text/plain'
-    
+
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__ = 1
-        
+
     def __init__(self, stdout, stderr,
                  body='', headers=None, status=None, cookies=None):
         self.stdout = stdout
@@ -44,7 +44,7 @@ class BaseResponse:
         if cookies is None:
             cookies = {}
         self.cookies = cookies
-    
+
     def setStatus(self, status, reason=None):
         self.status = status
 
@@ -90,13 +90,13 @@ class BaseResponse:
         self.setBody(self.getBody() + body)
 
     def getHeader(self, name):
-         '''\
-         Get a header value
-         
-         Returns the value associated with a HTTP return header, or
-         "None" if no such header has been set in the response
-         yet. '''
-         return self.headers.get(name, None)
+        '''\
+        Get a header value
+
+        Returns the value associated with a HTTP return header, or
+        "None" if no such header has been set in the response
+        yet. '''
+        return self.headers.get(name, None)
 
     def __getitem__(self, name):
         'Get the value of an output header'
@@ -127,7 +127,7 @@ class BaseResponse:
         cookies on the response object.
 
         Note that published objects must not generate any errors
-        after beginning stream-oriented output. 
+        after beginning stream-oriented output.
 
         """
         self.body = self.body+data

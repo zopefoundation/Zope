@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Provide an apply-like facility that works with any mapping object
 """
@@ -21,7 +21,7 @@ def default_missing_name(name, context):
     raise TypeError, 'argument %s was ommitted' % name
 
 def default_handle_class(klass, context):
-    if hasattr(klass,'__init__'): 
+    if hasattr(klass,'__init__'):
         f=klass.__init__.im_func
         c=f.func_code
         names=c.co_varnames[1:c.co_argcount]
@@ -50,7 +50,7 @@ def mapply(object, positional=(), keyword={},
                     im=1
                 elif not hasattr(f,'func_defaults') and maybe: return object
             elif maybe: return object
-    
+
         if im:
             f=f.im_func
             c=f.func_code

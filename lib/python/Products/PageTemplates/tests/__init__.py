@@ -19,7 +19,7 @@ class harness1:
             'Harness method name "%s" called, "%s" expected.' %
             (name, cs[0][0]) )
         return self._method_
-        
+
     def _method_(self, *args, **kwargs):
         name, aargs, akwargs = self.__callstack.pop(0)
         assert aargs == args, "Harness method arguments"
@@ -34,4 +34,3 @@ class harness2(harness1):
         assert aargs == args, "Harness method arguments"
         assert akwargs == kwargs, "Harness method keyword args"
         return result
-    

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.9 2002/03/15 21:47:38 evan Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Batch.py,v 1.10 2002/08/14 22:10:12 mj Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from ExtensionClass import Base
 
@@ -43,7 +43,7 @@ class Batch(Base):
     previous = LazyPrevBatch()
     next = LazyNextBatch()
     sequence_length = LazySequenceLength()
-    
+
     def __init__(self, sequence, size, start=0, end=0,
                  orphan=0, overlap=0):
         '''Encapsulate "sequence" in batches of "size".
@@ -78,13 +78,13 @@ class Batch(Base):
         self.length = self.end - self.first
         if self.first == 0:
             self.previous = None
-        
-        
+
+
     def __getitem__(self, index):
         if index < 0:
             if index + self.end < self.first: raise IndexError, index
             return self._sequence[index + self.end]
-        
+
         if index >= self.length: raise IndexError, index
         return self._sequence[index+self.first]
 

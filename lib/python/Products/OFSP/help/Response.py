@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -22,7 +22,7 @@ class Response:
 
     def setStatus(status, reason=None):
         '''
-        
+
         Sets the HTTP status code of the response; the argument may
         either be an integer or one of the following strings:
 
@@ -41,7 +41,7 @@ class Response:
             NotImplemented,
             BadGateway,
             ServiceUnavailable
-        
+
         that will be converted to the correct integer value.
 
         Permission -- Always available
@@ -50,7 +50,7 @@ class Response:
 
     def setHeader(name, value):
         '''
-        
+
         Sets an HTTP return header "name" with value "value", clearing
         the previous value set for the header, if one exists. If the
         literal flag is true, the case of the header name is
@@ -63,12 +63,12 @@ class Response:
 
     def addHeader(name, value):
         '''
-        
+
         Set a new HTTP return header with the given value, while
         retaining any previously set headers with the same name.
 
         Permission -- Always available
-        
+
         '''
 
     def setBase(base):
@@ -77,27 +77,27 @@ class Response:
         Set the base URL for the returned document.
 
         Permission -- Always available
-        
+
         """
 
     def appendCookie(name, value):
         '''
-        
+
         Returns an HTTP header that sets a cookie on cookie-enabled
         browsers with a key "name" and value "value". If a value for the
         cookie has previously been set in the response object, the new
         value is appended to the old one separated by a colon.
 
         Permission -- Always available
-        
+
         '''
 
 
     def expireCookie(name, **kw):
         '''
-        
+
         Cause an HTTP cookie to be removed from the browser
-        
+
         The response will include an HTTP header that will remove the cookie
         corresponding to "name" on the client, if one exists. This is
         accomplished by sending a new cookie with an expiration date
@@ -107,12 +107,12 @@ class Response:
         argument.
 
         Permission -- Always available
-        
+
         '''
 
     def setCookie(name,value,**kw):
         '''
-        
+
         Set an HTTP cookie on the browser
 
         The response will include an HTTP header that sets a cookie on
@@ -126,20 +126,20 @@ class Response:
         the browser and stored in REQUEST.cookies.
 
         Permission -- Always available
-        
+
         '''
 
     def appendHeader(name, value, delimiter=","):
         '''
-        
+
         Append a value to a header.
-        
+
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header.
 
         Permission -- Always available
-        
+
         '''
 
     def redirect(location, lock=0):
@@ -152,7 +152,7 @@ class Response:
         been called).
 
         Permission -- Always available
-        
+
         """
 
     def write(data):
@@ -167,9 +167,8 @@ class Response:
         cookies on the response object.
 
         Note that published objects must not generate any errors
-        after beginning stream-oriented output. 
+        after beginning stream-oriented output.
 
         Permission -- Always available
 
         """
-        

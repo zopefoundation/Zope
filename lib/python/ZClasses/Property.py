@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Provide management of common instance property sheets
 """
@@ -25,13 +25,13 @@ class ClassCaretaker:
         setattr(klass, name, v)
         if not getattr(klass,'_p_changed',None):
             get_transaction().register(klass)
-            klass._p_changed=1        
+            klass._p_changed=1
     def __delattr__(self, name):
         klass=self._k
         delattr(klass, name)
         if not getattr(klass,'_p_changed',None):
             get_transaction().register(klass)
-            klass._p_changed=1 
+            klass._p_changed=1
 
 
 class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
@@ -49,7 +49,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     __ac_permissions__=(
         ('Manage Z Classes', ('', 'manage')),
         )
-    
+
     def __init__(self, id, title):
         self.id=id
         self.title=title
@@ -82,7 +82,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         """
         if ps_view_type == 'Edit':
             return self.manage_createEditor(id, title, REQUEST)
-            
+
         r=['<dtml-var standard_html_header>',
            '<table>']
         a=r.append
@@ -116,29 +116,29 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
                 <dtml-if %s>CHECKED</dtml-if>>'''
                     % (id, id)
                     )
-                    
+
         if t=='tokens':
             return ('''
             <input type="text" name="%s:tokens" size="35"
                value="<dtml-in %s><dtml-var sequence-item> </dtml-in>">'''
                     % (id, id)
                     )
-                    
+
         if t=='text':
             return ('''
             <textarea name="%s:text" rows="6" cols="35"><dtml-var %s
             ></textarea>'''
                     % (id, id)
                     )
-                    
+
         if t=='lines':
             return ('''
             <textarea name="%s:lines" rows="6" cols="35"><dtml-in %s
             ><dtml-var sequence-item>\n</dtml-in></textarea>'''
-                    % (id, id) 
+                    % (id, id)
                     )
 
-                    
+
         if t=='selection':
             return ('''
             <dtml-if "_.has_key('%(id)s')">
@@ -152,7 +152,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
             </select>
             <dtml-else>
               No value for %(id)s
-            </dtml-if>'''            
+            </dtml-if>'''
                     % p
                     )
 
@@ -196,7 +196,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     def manage_getPermissionMapping(self):
         ips=self.getClassAttr('propertysheets')
         ips=getattr(ips, self.id)
-        
+
         # ugh
         perms={}
         for p in self.classDefinedAndInheritedPermissions():
@@ -211,7 +211,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
                  })
 
         return r
-    
+
     def manage_setPermissionMapping(self, permission_names=[],
                                     class_permissions=[],
                                     REQUEST=None):
@@ -233,7 +233,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
         if REQUEST is not None:
             return self.manage_security(
-                self, REQUEST, 
+                self, REQUEST,
                 manage_tabs_message='The permission mapping has been updated')
 
 Globals.default__class_init__(ZCommonSheet)
@@ -263,12 +263,12 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                                          'propertyMap', ''),
          ),
         )
-    
+
     def v_self(self):
         return self.aq_inner.aq_parent.aq_parent
 
 Globals.default__class_init__(ZInstanceSheet)
-    
+
 def rclass(klass):
     if not getattr(klass, '_p_changed', 0):
         get_transaction().register(klass)
@@ -294,7 +294,7 @@ class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
         setattr(pc,id,ZInstanceSheet(id,value))
         pc.__propset_attrs__=tuple(map(lambda o: o['id'], self._objects))
         rclass(pc)
-        
+
 
     def _delOb(self, id):
         delattr(self, id)
@@ -336,7 +336,7 @@ def klass_sequence(klass,attr,result=None):
 
 class ZInstanceSheets(OFS.PropertySheets.PropertySheets, Globals.Persistent):
     " "
-    __propset_attrs__=()    
+    __propset_attrs__=()
     _implements_the_notional_subclassable_propertysheet_class_interface=1
 
     def __propsets__(self):
@@ -346,5 +346,5 @@ class ZInstanceSheets(OFS.PropertySheets.PropertySheets, Globals.Persistent):
             r.append(getattr(self, id))
         return propsets+tuple(r)
 
-  
+
 Globals.default__class_init__(ZInstanceSheets)

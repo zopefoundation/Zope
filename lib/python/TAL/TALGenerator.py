@@ -2,14 +2,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Code generator for TALInterpreter intermediate code.
@@ -25,7 +25,7 @@ class TALGenerator:
     inMacroUse = 0
     inMacroDef = 0
     source_file = None
-    
+
     def __init__(self, expressionCompiler=None, xml=1, source_file=None):
         if not expressionCompiler:
             from DummyEngine import DummyEngine
@@ -214,7 +214,7 @@ class TALGenerator:
         if cexpr:
             cexpr = self.compileExpression(optTag[0])
         self.emit("optTag", name, cexpr, optTag[1], isend, start, program)
-        
+
     def emitRawText(self, text):
         self.emit("rawtext", text)
 

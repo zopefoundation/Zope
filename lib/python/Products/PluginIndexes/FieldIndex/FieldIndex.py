@@ -1,5 +1,5 @@
 #############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -8,15 +8,15 @@
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Simple column indices
 
-$Id: FieldIndex.py,v 1.9 2002/06/20 20:00:34 jeremy Exp $
+$Id: FieldIndex.py,v 1.10 2002/08/14 22:19:29 mj Exp $
 """
 
-from Products.PluginIndexes import PluggableIndex 
+from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
 
 from Globals import DTMLFile
@@ -29,7 +29,7 @@ class FieldIndex(UnIndex):
     meta_type="FieldIndex"
 
     manage_options= (
-        {'label': 'Settings',     
+        {'label': 'Settings',
          'action': 'manage_main',
          'help': ('FieldIndex','FieldIndex_Settings.stx')},
     )
@@ -47,4 +47,3 @@ def manage_addFieldIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a field index"""
     return self.manage_addIndex(id, 'FieldIndex', extra=None, \
              REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)
-

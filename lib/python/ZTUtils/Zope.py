@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.9 2002/04/19 14:16:08 andreasjung Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Zope.py,v 1.10 2002/08/14 22:10:12 mj Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -44,9 +44,9 @@ class LazyFilter(Lazy):
         self._data=[]
         self._eindex=-1
         self._test=test
-        if not (skip is None or str(skip) == skip): 
+        if not (skip is None or str(skip) == skip):
             raise TypeError, 'Skip must be None or a string'
-        self._skip = skip 
+        self._skip = skip
 
     def __getitem__(self,index):
         data=self._data
@@ -148,7 +148,7 @@ class Batch(Batch):
 # These functions are meant to be used together in templates that use
 # trees or batches.  For example, given a batch with a 'bstart' query
 # argument, you would use "url_query(request, omit='bstart')" to get
-# the base for the batching links, then append 
+# the base for the batching links, then append
 # "make_query(bstart=batch.previous.first)" to one and
 # "make_query(bstart=batch.end)" to the other.
 
@@ -177,8 +177,8 @@ def make_query(*args, **kwargs):
         k, m, v = qlist[i]
         qlist[i] = '%s%s=%s' % (uq(k), m, uq(str(v)))
 
-    return '&'.join(qlist) 
-                
+    return '&'.join(qlist)
+
 def make_hidden_input(*args, **kwargs):
     '''Construct a set of hidden input elements, with marshalling markup.
 
@@ -205,7 +205,7 @@ def make_hidden_input(*args, **kwargs):
                     % (hq(k), m, hq(str(v))))
 
     return '\n'.join(qlist)
-                
+
 def complex_marshal(pairs):
     '''Add request marshalling information to a list of name-value pairs.
 
@@ -266,12 +266,12 @@ def url_query(request, req_name="URL", omit=None):
     req_name: the name, such as "URL1" or "BASEPATH1", to get from request
     omit: sequence of name of query arguments to omit.  If a name
     contains a colon, it is treated literally.  Otherwise, it will
-    match each argument name that starts with the name and a period or colon. 
+    match each argument name that starts with the name and a period or colon.
     '''
 
     base = request[req_name]
     qs = request.get('QUERY_STRING', '')
-    
+
     if qs and omit:
         qsparts = qs.split('&')
 
@@ -294,7 +294,7 @@ def url_query(request, req_name="URL", omit=None):
             name = name.split('.', 1)[0]
             if omitted(name):
                 qsparts[i] = ''
-            
+
         qs = '&'.join(filter(None, qsparts))
 
     # We alway append '?' since arguments will be appended to the URL

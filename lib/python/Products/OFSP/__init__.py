@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Object system core
-$Id: __init__.py,v 1.36 2001/11/28 15:51:00 matt Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: __init__.py,v 1.37 2002/08/14 22:16:04 mj Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, OFS.PropertySheets
@@ -80,7 +80,7 @@ def initialize(context):
         icon='images/File_icon.gif',
         legacy=(OFS.Image.manage_addFile,),
         )
-    
+
     context.registerClass(
         OFS.Folder.Folder,
         constructors=(OFS.Folder.manage_addFolderForm,
@@ -88,7 +88,7 @@ def initialize(context):
         icon='images/Folder_icon.gif',
         legacy=(OFS.Folder.manage_addFolder,),
         )
-    
+
 
     context.registerClass(
         AccessControl.User.UserFolder,

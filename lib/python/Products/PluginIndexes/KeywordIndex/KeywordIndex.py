@@ -1,23 +1,23 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 from zLOG import LOG, ERROR
 from BTrees.OOBTree import OOSet, difference
 
 from Globals import DTMLFile
-from Products.PluginIndexes import PluggableIndex 
+from Products.PluginIndexes import PluggableIndex
 
-from Products.PluginIndexes.common.UnIndex import UnIndex 
+from Products.PluginIndexes.common.UnIndex import UnIndex
 
 class KeywordIndex(UnIndex):
 
@@ -26,16 +26,16 @@ class KeywordIndex(UnIndex):
     meta_type="KeywordIndex"
 
     manage_options= (
-        {'label': 'Settings',     
+        {'label': 'Settings',
          'action': 'manage_main',
          'help': ('KeywordIndex','KeywordIndex_Settings.stx')},
     )
 
     query_options = ["query","operator"]
 
-    
+
     """Like an UnIndex only it indexes sequences of items
-    
+
     Searches match any keyword.
 
     This should have an _apply_index that returns a relevance score
@@ -91,7 +91,7 @@ class KeywordIndex(UnIndex):
         if hasattr(newKeywords,'capitalize'): # is it string-like ?
             newKeywords = (newKeywords, )
         return newKeywords
-            
+
     def unindex_objectKeywords(self, documentId, keywords):
         """ carefully unindex the object with integer id 'documentId'"""
 
@@ -122,4 +122,3 @@ def manage_addKeywordIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a keyword index"""
     return self.manage_addIndex(id, 'KeywordIndex', extra=None, \
               REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)
-

@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
@@ -61,7 +61,7 @@ class PythonExpr:
     def __call__(self, econtext):
         __traceback_info__ = self.expr
         f = self._f
-        f.func_globals.update(self._bind_used_names(econtext))        
+        f.func_globals.update(self._bind_used_names(econtext))
         return f()
 
     def __str__(self):
@@ -78,4 +78,3 @@ class ExprTypeProxy:
     def __call__(self, text):
         return self._handler(self._name, text,
                              self._econtext._engine)(self._econtext)
-

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Basic Item class and class manager
 """
@@ -40,11 +40,11 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
                                   OFS.Image.Image('ziconImage','',file))
             else:
                 image.manage_upload(file)
-                        
+
             if (not icon) and REQUEST:
                 icon=(REQUEST['URL3'][len(REQUEST['BASE1'])+1:]
                       +'/ziconImage')
-            
+
         self.setClassAttr('icon', icon)
 
         if title is not None:
@@ -60,7 +60,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
 
 
     def classMetaType(self): return self.getClassAttr('meta_type','')
-    
+
     def classIcon(self): return self.getClassAttr('icon','')
 
     def show_class_id(self): return Globals.DatabaseVersion=='3'
@@ -102,7 +102,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
             message='The changes were saved.'
         else:
             message='No changes were required.'
-        
+
         if REQUEST is not None:
             return self.manage(
                 self, REQUEST, manage_tabs_message=message)
@@ -119,7 +119,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
             message='Views deleted'
         else:
             message='No views were selected for deletion'
-        
+
         if REQUEST is not None:
             return self.manage(
                 self, REQUEST, manage_tabs_message=message)
@@ -149,7 +149,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
         else:
             t=({'label': label, 'action': action},)
         self.setClassAttr('manage_options', tuple(options) + t)
-        
+
         if REQUEST is not None:
             return self.manage(
                 self, REQUEST,
@@ -178,13 +178,13 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
 
         if REQUEST is not None:
             return self.manage(
-                self, REQUEST, manage_tabs_message=message)        
-        
+                self, REQUEST, manage_tabs_message=message)
+
 
 class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
                              OFS.PropertySheets.View):
     "Manage class permissions"
-        
+
     manage=Globals.DTMLFile('dtml/classPermissions', globals())
 
     def possible_permissions(self):
@@ -204,11 +204,9 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
             self.aq_acquire('_getProductRegistryData')('ac_permissions')):
             if p[0] in selected:
                 r.append(p)
-            
+
         self.setClassAttr('__ac_permissions__', tuple(r))
 
         if REQUEST is not None:
             return self.manage(self, REQUEST,
                            manage_tabs_message="Permissions updated")
-
-    

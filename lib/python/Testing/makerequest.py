@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Facilitates unit tests which requires an acquirable REQUEST from
@@ -19,7 +19,7 @@ Usage:
     import makerequest
     app = makerequest.makerequest(Zope.app())
 
-$Id: makerequest.py,v 1.4 2001/11/28 15:51:17 matt Exp $
+$Id: makerequest.py,v 1.5 2002/08/14 22:01:39 mj Exp $
 
 """
 

@@ -14,4 +14,3 @@ dbl_quoted_punc = punc_func("\"")
 strongem_punc = punc_func('*')
 under_punc = punc_func('_<>')
 phrase_delimiters = r'\s\.\,\?\/\!\&\(\)'
-

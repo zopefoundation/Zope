@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -54,37 +54,35 @@ class File:
     Also see ObjectManager for details on the 'objectValues'
     method.
     """
-    
+
     __constructor__=manage_addFile
 
     __extends__=(
         'OFSP.ObjectManagerItem.ObjectManagerItem',
         'OFSP.PropertyManager.PropertyManager',
         )
-    
+
     def update_data(data, content_type=None, size=None):
         """
         Updates the contents of the File with 'data'.
-        
+
         The 'data' argument must be a string. If 'content_type' is not
         provided, then a content type will not be set. If size is not
         provided, the size of the file will be computed from 'data'.
-        
+
         Permission -- Python only
         """
 
     def getSize():
         """
         Returns the size of the file in bytes.
-        
+
         Permission -- 'View'
         """
 
     def getContentType():
         """
         Returns the content type of the file.
-        
+
         Permission -- 'View'
         """
-
-

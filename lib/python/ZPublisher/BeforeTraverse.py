@@ -1,16 +1,16 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
 
@@ -73,7 +73,7 @@ def rewriteBeforeTraverse(container, btr):
         bpth = bpth._prior
     bpth = MultiHook(hookname, bpth, dic)
     setattr(container, hookname, bpth)
-    
+
     keys = btr.keys()
     keys.sort()
     for key in keys:

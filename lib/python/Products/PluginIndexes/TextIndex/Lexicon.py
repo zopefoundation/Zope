@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 __doc__=""" Module breaks out Zope specific methods and behavior.  In
@@ -48,7 +48,7 @@ class Lexicon(Persistent, Implicit):
             self.stop_syn = {}
         else:
             self.stop_syn = stop_syn
-    
+
         self.useSplitter = Splitter.splitterNames[0]
         if useSplitter: self.useSplitter=useSplitter
         self.splitterParams = extra
@@ -58,7 +58,7 @@ class Lexicon(Persistent, Implicit):
     def clear(self):
         self._lexicon = OIBTree()
         self._inverseLex = IOBTree()
-        
+
     def _convertBTrees(self, threshold=200):
         if (type(self._lexicon) is OIBTree and
             type(getattr(self, '_inverseLex', None)) is IOBTree):
@@ -81,7 +81,7 @@ class Lexicon(Persistent, Implicit):
 
         self._inverseLex._p_jar=self._p_jar
         convert(inverseLex, self._inverseLex, threshold)
-                
+
     def set_stop_syn(self, stop_syn):
         """ pass in a mapping of stopwords and synonyms.  Format is:
 
@@ -92,22 +92,22 @@ class Lexicon(Persistent, Implicit):
 
         """
         self.stop_syn = stop_syn
-        
+
 
     def getWordId(self, word):
         """ return the word id of 'word' """
 
         wid=self._lexicon.get(word, None)
-        if wid is None: 
+        if wid is None:
             wid=self.assignWordId(word)
         return wid
-        
+
     set = getWordId
 
     def getWord(self, wid):
         """ post-2.3.1b2 method, will not work with unconverted lexicons """
         return self._inverseLex.get(wid, None)
-        
+
     def assignWordId(self, word):
         """Assigns a new word id to the provided word and returns it."""
         # First make sure it's not already in there
@@ -126,11 +126,11 @@ class Lexicon(Persistent, Implicit):
         while not inverse.insert(wid, word):
             wid=randid()
 
-        if isinstance(word,StringType):        
+        if isinstance(word,StringType):
             self._lexicon[intern(word)] = wid
         else:
             self._lexicon[word] = wid
-            
+
 
         return wid
 
@@ -156,8 +156,8 @@ class Lexicon(Persistent, Implicit):
 
         try:
             return self.SplitterFunc(
-                    astring, 
-                    words, 
+                    astring,
+                    words,
                     encoding=encoding,
                     singlechar=self.splitterParams.splitterSingleChars,
                     indexnumbers=self.splitterParams.splitterIndexNumbers,
@@ -218,4 +218,3 @@ stop_words=(
     )
 stop_word_dict={}
 for word in stop_words: stop_word_dict[word]=None
-

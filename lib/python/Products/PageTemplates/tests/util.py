@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 ######################################################################
@@ -28,15 +28,15 @@ class Bruce(Base):
     def items(self): return [('bruce',self)]*7
     def __len__(self): return 7
     def __getitem__(self,index):
-        if (type(index) is type(1) and 
+        if (type(index) is type(1) and
             (index < 0 or index > 6)): raise IndexError, index
         return self
     isDocTemp=0
     def __getattr__(self,name):
         if name[:1]=='_': raise AttributeError, name
         return self
-   
-bruce=Bruce()    
+
+bruce=Bruce()
 
 class arg(Base):
     __allow_access_to_unprotected_subobjects__=1

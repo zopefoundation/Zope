@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Simple column indices"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -43,7 +43,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
         UnIndexes are indexes that contain two index components, the
         forward index (like plain index objects) and an inverted
-        index.  The inverted index is so that objects can be unindexed 
+        index.  The inverted index is so that objects can be unindexed
         even when the old value of the object is not known.
 
         e.g.
@@ -64,7 +64,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
           to ignore exceptions raised while indexing instead of
           propagating them.
 
-          'call_methods' -- should be set to true if you want the index 
+          'call_methods' -- should be set to true if you want the index
           to call the attribute 'id' (note: 'id' should be callable!)
           You will also need to pass in an object in the index and
           uninded methods for this to work.
@@ -76,14 +76,14 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         self.call_methods=call_methods
 
         # experimental code for specifing the operator
-        self.operators = ['or','and'] 
+        self.operators = ['or','and']
         self.useOperator = 'or'
 
         self.__len__=BTrees.Length.Length() # see __len__ method docstring
         self.clear()
 
     def getId(self): return self.id
-        
+
     def clear(self):
         # inplace opportunistic conversion from old-style to new style BTrees
         try: self.__len__.set(0)
@@ -98,7 +98,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
         _index=self._index
         self._index=OOBTree()
-        
+
         def convertSet(s,
                        IITreeSet=IITreeSet, IntType=type(0),
                        type=type, len=len,
@@ -111,7 +111,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                 except: pass # This is just an optimization.
 
             return IITreeSet(s)
-    
+
         convert(_index, self._index, threshold, convertSet)
 
         _unindex=self._unindex
@@ -160,8 +160,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
             return self._unindex.get(documentId)
         else:
             return self._unindex.get(documentId, default)
-            
-        
+
+
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId
         in its entry in the index."""
@@ -178,7 +178,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                 # index row is an int
                 del self._index[entry]
                 try: self.__len__.change(-1)
-                except AttributeError: pass # pre-BTrees-module instance   
+                except AttributeError: pass # pre-BTrees-module instance
             except:
                 LOG(self.__class__.__name__, ERROR,
                     ('unindex_object could not remove '
@@ -192,7 +192,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                  'from index %s but couldn\'t.  This '
                  'should not happen.' % (repr(entry), str(self.id))))
 
-        
+
     def insertForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and put it in the correct place
         in the forward index.
@@ -200,7 +200,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         This will also deal with creating the entire row if necessary."""
         global _marker
         indexRow = self._index.get(entry, _marker)
-        
+
         # Make sure there's actually a row there already.  If not, create
         # an IntSet and stuff it in first.
         if indexRow is _marker:
@@ -271,14 +271,14 @@ class UnIndex(Persistent, Implicit, SimpleItem):
             return None
 
         self.removeForwardIndexEntry(unindexRecord, documentId)
-        
+
         try:
             del self._unindex[documentId]
         except:
             LOG('UnIndex', ERROR, 'Attempt to unindex nonexistent document'
                 ' with id %s' % documentId)
 
-    def _apply_index(self, request, cid='', type=type, None=None): 
+    def _apply_index(self, request, cid='', type=type, None=None):
         """Apply the index to query parameters given in the request arg.
 
         The request argument should be a mapping object.
@@ -302,7 +302,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         column + '_usage', it is sniffed for information on how to
         handle applying the index.
 
-        If the request contains a parameter with the name of the 
+        If the request contains a parameter with the name of the
         column = '_operator' this overrides the default method
         ('or') to combine search results. Valid values are "or"
         and "and".
@@ -331,7 +331,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         # experimental code for specifing the operator
         operator = record.get('operator',self.useOperator)
         if not operator in self.operators :
-           raise RuntimeError,"operator not valid: %s" % escape(operator)
+            raise RuntimeError,"operator not valid: %s" % escape(operator)
 
         # depending on the operator we use intersection or union
         if operator=="or":  set_func = union
@@ -404,7 +404,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
         if not withLengths:
             return tuple(self._index.keys())
-        else: 
+        else:
             rl=[]
             for i in self._index.keys():
                 set = self._index[i]
@@ -425,4 +425,3 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                 v = IISet((v,))
             items.append((k, v))
         return items
-

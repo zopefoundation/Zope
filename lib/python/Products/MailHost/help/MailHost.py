@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 def manage_addMailHost(id, title='', smtp_host=None,
@@ -31,15 +31,15 @@ class MailHost:
     """
 
     __constructor__=manage_addMailHost
-    
+
     def send(messageText, mto=None, mfrom=None, subject=None,
              encode=None):
         """
         Sends an email message.
         The arguments are:
 
-          messageText -- The mail message. It can either be a rfc822 
-          formed text with header fields, or just a body without any 
+          messageText -- The mail message. It can either be a rfc822
+          formed text with header fields, or just a body without any
           header fields. The other arguments given will override the
           header fields in the message, if they exist.
 
@@ -54,6 +54,3 @@ class MailHost:
           are 'base64', 'quoted-printable' and 'uuencode'.
 
         """
-
-
-    

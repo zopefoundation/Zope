@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Zope Classes
 """
@@ -70,14 +70,14 @@ def createZClassForBase( base_class, pack, nice_name=None, meta_type=None ):
 
     base_module = base_class.__module__
     base_name   = base_class.__name__
-        
+
     key         = "%s/%s" % (base_module, base_name)
 
     if base_module[:9] == 'Products.':
         base_module = base_module.split('.' )[1]
     else:
         base_module = base_module.split('.' )[0]
-        
+
     info="%s: %s" % ( base_module, base_name )
 
     Products.meta_class_info[key] = info # meta_type
@@ -150,8 +150,8 @@ def manage_addZClass(self, id, title='', baseclasses=[],
 
     if CreateAFactory and meta_type:
         self.manage_addDTMLMethod(
-            id+'_addForm', 
-            id+' constructor input form', 
+            id+'_addForm',
+            id+' constructor input form',
             addFormDefault % {'id': id, 'meta_type': meta_type},
             )
         constScript = PythonScript(id+'_add')
@@ -160,14 +160,14 @@ def manage_addZClass(self, id, title='', baseclasses=[],
         self.manage_addPermission(
             id+'_add_permission',
             id+' constructor permission',
-            'Add %ss' % meta_type 
+            'Add %ss' % meta_type
             )
         self.manage_addPrincipiaFactory(
             id+'_factory',
             id+' factory',
             meta_type,
             id+'_addForm',
-            'Add %ss' % meta_type 
+            'Add %ss' % meta_type
             )
 
         Z=self._getOb(id)
@@ -176,7 +176,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
         Z.manage_setPermissionMapping(
             permission_names=['Create class instances'],
             class_permissions=['Add %ss' % meta_type]
-        ) 
+        )
     if REQUEST is not None:
         return self.manage_main(self,REQUEST, update_menu=1)
 
@@ -187,13 +187,13 @@ class Template:
 
 def PersistentClassDict(doc=None, meta_type=None):
         # Build new class dict
-        dict={}
-        dict.update(Template.__dict__)
-        if meta_type is not None:
-            dict['meta_type']=dict['__doc__']=meta_type
-        if doc is not None:
-            dict['__doc__']=doc
-        return dict
+    dict={}
+    dict.update(Template.__dict__)
+    if meta_type is not None:
+        dict['meta_type']=dict['__doc__']=meta_type
+    if doc is not None:
+        dict['__doc__']=doc
+    return dict
 
 _marker=[]
 class ZClass( Base
@@ -208,7 +208,7 @@ class ZClass( Base
     instance__icon=''
     __propsets__=()
     isPrincipiaFolderish=1
- 
+
     __ac_permissions__=(
         ('Create class instances',
          ('', '__call__', 'index_html', 'createInObjectManager')),
@@ -222,7 +222,7 @@ class ZClass( Base
         """
         self.id=id
         self.title=title
-        
+
         # Set up base classes for new class, the meta class prop
         # sheet and the class(/instance) prop sheet.
         base_classes=[PersistentClass]
@@ -246,7 +246,7 @@ class ZClass( Base
 
         if zope_object:
             base_classes.append(OFS.SimpleItem.SimpleItem)
-            
+
         zsheets_base_classes.append(ZClassSheets)
         isheets_base_classes.append(Property.ZInstanceSheets)
 
@@ -272,17 +272,17 @@ class ZClass( Base
                 copy.update(option)
                 options.append(copy)
             c.manage_options=tuple(options)
-        
+
         # Create the class(/instance) prop sheet *class*
         isheets_class=type(PersistentClass)(
             id+'_PropertySheetsClass',
             tuple(isheets_base_classes),
-            PersistentClassDict(id+' Property Sheets'))        
+            PersistentClassDict(id+' Property Sheets'))
 
         # Record the class property sheet class in the meta-class so
         # that we can manage it:
         self._zclass_propertysheets_class=isheets_class
-        
+
         # Finally create the new classes propertysheets by instantiating the
         # propertysheets class.
         c.propertysheets=isheets_class()
@@ -410,7 +410,7 @@ class ZClass( Base
     def manage_afterClone(self, item):
         self.setClassAttr('__module__', None)
         self.propertysheets.methods.manage_afterClone(item)
-        
+
     def manage_afterAdd(self, item, container):
         if not dbVersionEquals('3'):
             return
@@ -430,7 +430,7 @@ class ZClass( Base
         d={}
         have=d.has_key
         for z in self._zbases:
-            for o in z.manage_options:                
+            for o in z.manage_options:
                 label=o['label']
                 if have(label): continue
                 d[label]=1
@@ -469,7 +469,7 @@ class ZClass( Base
             # An object is not guarenteed to have the id we passed in.
             id = i.getId()
             return folder._getOb(id)
-        
+
     index_html=createInObjectManager
 
     def fromRequest(self, id=None, REQUEST={}):
@@ -477,7 +477,7 @@ class ZClass( Base
         if id is not None and (not hasattr(i, 'id') or not i.id): i.id=id
 
         return i
-        
+
     def __call__(self, *args, **kw):
         return apply(self._zclass_, args, kw)
 
@@ -578,7 +578,7 @@ class ZClass( Base
         files=self.__dict__.items()
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
-             files.insert(0,('..',self.aq_parent))
+            files.insert(0,('..',self.aq_parent))
         for k,v in files:
             try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
             except:
@@ -609,7 +609,7 @@ class ZClass( Base
                 if not self.propertysheets.meta_type in filter:
                     values.remove( value )
         return values
-            
+
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"
 
@@ -637,7 +637,7 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
         files=self.__dict__.items()
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
-             files.insert(0,('..',self.aq_parent))
+            files.insert(0,('..',self.aq_parent))
         for k,v in files:
             try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
             except:
@@ -666,21 +666,21 @@ class ZObject:
 
     manage_options=(
         {'label': 'Methods', 'action' :'propertysheets/methods/manage',
-         'help':('OFSP','ZClass_Methods.stx')},        
+         'help':('OFSP','ZClass_Methods.stx')},
         {'label': 'Basic', 'action' :'propertysheets/basic/manage',
-         'help':('OFSP','ZClass_Basic.stx')},          
+         'help':('OFSP','ZClass_Basic.stx')},
         {'label': 'Views', 'action' :'propertysheets/views/manage',
-         'help':('OFSP','ZClass_Views.stx')},          
+         'help':('OFSP','ZClass_Views.stx')},
         {'label': 'Property Sheets', 'action' :'propertysheets/common/manage',
-         'help':('OFSP','ZClass_Property-Sheets.stx')},        
+         'help':('OFSP','ZClass_Property-Sheets.stx')},
         {'label': 'Permissions',
          'action' :'propertysheets/permissions/manage',
-         'help':('OFSP','ZClass_Permissions.stx')},     
-        {'label': 'Define Permissions', 'action' :'manage_access',  
-         'help':('OFSP','Security_Define-Permissions.stx')},        
+         'help':('OFSP','ZClass_Permissions.stx')},
+        {'label': 'Define Permissions', 'action' :'manage_access',
+         'help':('OFSP','Security_Define-Permissions.stx')},
         )
 
-    
+
 ZStandardSheets=ZObject
 
 def findActions(klass, found):
@@ -691,17 +691,17 @@ def findActions(klass, found):
             findActions(b, found)
         except: pass
 
-addFormDefault="""<HTML> 
-<HEAD><TITLE>Add %(meta_type)s</TITLE></HEAD> 
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555"> 
-<H2>Add %(meta_type)s</H2> 
-<form action="%(id)s_add"><table> 
-<tr><th>Id</th> 
-    <td><input type=text name=id></td> 
-</tr> 
-<tr><td></td><td><input type=submit value=" Add "></td></tr> 
-</table></form> 
-</body></html> 
+addFormDefault="""<HTML>
+<HEAD><TITLE>Add %(meta_type)s</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>Add %(meta_type)s</H2>
+<form action="%(id)s_add"><table>
+<tr><th>Id</th>
+    <td><input type=text name=id></td>
+</tr>
+<tr><td></td><td><input type=submit value=" Add "></td></tr>
+</table></form>
+</body></html>
 """
 
 addDefault="""## Script (Python) "%(id)s_add"

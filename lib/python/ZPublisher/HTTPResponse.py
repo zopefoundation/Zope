@@ -1,19 +1,19 @@
 #############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.67 2002/08/14 16:45:53 rdmurray Exp $'''
-__version__ = '$Revision: 1.67 $'[11:-2]
+$Id: HTTPResponse.py,v 1.68 2002/08/14 22:09:40 mj Exp $'''
+__version__ = '$Revision: 1.68 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -123,7 +123,7 @@ if otherTypes:
 class HTTPResponse(BaseResponse):
     """\
     An object representation of an HTTP response.
-    
+
     The Response type encapsulates all possible responses to HTTP
     requests.  Responses are normally created by the object publisher.
     A published object may recieve the response abject as an argument
@@ -151,7 +151,7 @@ class HTTPResponse(BaseResponse):
     # 0 - no compression
     # 1 - compress if accept-encoding ok
     # 2 - ignore accept-encoding (i.e. force)
-    use_HTTP_content_compression = 0    
+    use_HTTP_content_compression = 0
 
     def __init__(self,body='',status=200,headers=None,
                  stdout=sys.stdout, stderr=sys.stderr,):
@@ -167,7 +167,7 @@ class HTTPResponse(BaseResponse):
         if status == 200:
             self.status = 200
             self.errmsg = 'OK'
-            headers['status'] = "200 OK"      
+            headers['status'] = "200 OK"
         else:
             self.setStatus(status)
         self.base = ''
@@ -180,11 +180,11 @@ class HTTPResponse(BaseResponse):
     def retry(self):
         """Return a response object to be used in a retry attempt
         """
-        
+
         # This implementation is a bit lame, because it assumes that
         # only stdout stderr were passed to the constructor. OTOH, I
         # think that that's all that is ever passed.
-        
+
         return self.__class__(stdout=self.stdout, stderr=self.stderr)
 
     _shutdown_flag = None
@@ -211,7 +211,7 @@ class HTTPResponse(BaseResponse):
             # Don't change the response status.
             # It has already been determined.
             return
-                
+
         if type(status) is types.StringType:
             status = status.lower()
         if status_codes.has_key(status):
@@ -260,7 +260,7 @@ class HTTPResponse(BaseResponse):
                 ):
         '''\
         Set the body of the response
-        
+
         Sets the return body equal to the (string) argument "body". Also
         updates the "content-length" return header.
 
@@ -269,13 +269,13 @@ class HTTPResponse(BaseResponse):
 
         If the body is a 2-element tuple, then it will be treated
         as (title,body)
-        
+
         If is_error is true then the HTML will be formatted as a Zope error
         message instead of a generic HTML page.
         '''
         if not body:
             return self
-        
+
         if type(body) is types.TupleType and len(body) == 2:
             title,body = body
 
@@ -294,7 +294,7 @@ class HTTPResponse(BaseResponse):
                 body = _encode_unicode(unicode(body))
 
         l = len(body)
-        if ((l < 200) and body[:1] == '<' and body.find('>') == l-1 and 
+        if ((l < 200) and body[:1] == '<' and body.find('>') == l-1 and
             bogus_str_search(body) is not None):
             self.notFoundError(body[1:-1])
         else:
@@ -329,7 +329,7 @@ class HTTPResponse(BaseResponse):
         self.insertBase()
         if self.use_HTTP_content_compression and \
             not self.headers.get('content-encoding',None):
-            # use HTTP content encoding to compress body contents unless 
+            # use HTTP content encoding to compress body contents unless
             # this response already has another type of content encoding
             if content_type.split('/')[0] not in uncompressableMimeMajorTypes:
                 # only compress if not listed as uncompressable
@@ -348,10 +348,10 @@ class HTTPResponse(BaseResponse):
                     self.setHeader('content-encoding','gzip')
                     if self.use_HTTP_content_compression == 1:
                         # use_HTTP_content_compression == 1 if force was
-                        # NOT used in enableHTTPCompression(). 
+                        # NOT used in enableHTTPCompression().
                         # If we forced it, then Accept-Encoding
                         # was ignored anyway, so cache should not
-                        # vary on it. Otherwise if not forced, cache should 
+                        # vary on it. Otherwise if not forced, cache should
                         # respect Accept-Encoding client header
                         self.appendHeader('Vary','Accept-Encoding')
         return self
@@ -406,7 +406,7 @@ class HTTPResponse(BaseResponse):
                 self.use_HTTP_content_compression = 2
             else:
                 self.use_HTTP_content_compression = 1
-            
+
         return self.use_HTTP_content_compression
 
     def _encode_unicode(self,body,
@@ -470,7 +470,7 @@ class HTTPResponse(BaseResponse):
     def expireCookie(self, name, **kw):
         '''\
         Cause an HTTP cookie to be removed from the browser
-        
+
         The response will include an HTTP header that will remove the cookie
         corresponding to "name" on the client, if one exists. This is
         accomplished by sending a new cookie with an expiration date
@@ -509,7 +509,7 @@ class HTTPResponse(BaseResponse):
     def appendHeader(self, name, value, delimiter=","):
         '''\
         Append a value to a header.
-        
+
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header. '''
@@ -539,7 +539,7 @@ class HTTPResponse(BaseResponse):
                 text = subs[ent].join(text.split(ent))
 
         return text
-         
+
 
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
@@ -580,7 +580,7 @@ class HTTPResponse(BaseResponse):
   </P>""" + \
   """
   <P><STRONG>%s</STRONG></P>
-  
+
   %s""" %(title,body) + \
   """
   <HR NOSHADE>
@@ -631,7 +631,7 @@ class HTTPResponse(BaseResponse):
         raise 'BadRequest',self._error_html(
             "Invalid request",
             "The parameter, <em>%s</em>, " % name +
-            "was omitted from the request.<p>" + 
+            "was omitted from the request.<p>" +
             "Make sure to specify all required parameters, " +
             "and try the request again."
             )
@@ -777,7 +777,7 @@ class HTTPResponse(BaseResponse):
             cookie_list.append(cookie)
 
         # Should really check size of cookies here!
-        
+
         return cookie_list
 
     def __str__(self,
@@ -829,7 +829,7 @@ class HTTPResponse(BaseResponse):
         cookies on the response object.
 
         Note that published objects must not generate any errors
-        after beginning stream-oriented output. 
+        after beginning stream-oriented output.
 
         """
         if not self._wrote:
@@ -838,5 +838,3 @@ class HTTPResponse(BaseResponse):
             self.stdout.flush()
 
         self.stdout.write(data)
-
-

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Simple Tree classes
 
-$Id: SimpleTree.py,v 1.2 2001/11/28 15:51:22 matt Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: SimpleTree.py,v 1.3 2002/08/14 22:10:12 mj Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Tree import TreeMaker, TreeNode, b2a
 
@@ -38,7 +38,7 @@ class SimpleTreeNode(TreeNode):
         return {'link': '?%s-setstate=%s,%s,%s#%s' % (pre, setst[0],
                                                       exnum, obid, obid),
         'img': '<img src="%s/p_/%s" alt="%s" border="0">' % (base, img, setst)}
-        
+
 
 class SimpleTreeMaker(TreeMaker):
     '''Generate Simple Trees'''

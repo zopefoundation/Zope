@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Pluggable Index Base Class """
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Interface
 
@@ -43,7 +43,7 @@ class PluggableIndexInterface(Interface.Base):
         If 'withLengths' is true, returns a sequence of tuples of
         (value, length).
         """
-        
+
     def _apply_index(request, cid=''):
         """Apply the index to query parameters given in 'request'.
 
@@ -67,4 +67,3 @@ class PluggableIndexInterface(Interface.Base):
         records.  The second object is a tuple containing the names of
         all data fields used.
         """
-

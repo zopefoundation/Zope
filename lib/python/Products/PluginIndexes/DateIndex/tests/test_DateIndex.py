@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import Zope
@@ -71,7 +71,7 @@ class DI_Tests(unittest.TestCase):
         if hasattr(result, 'keys'):
             result = result.keys()
         self.failUnlessEqual(used, ('date',))
-        self.failUnlessEqual(len(result), len(expectedValues), 
+        self.failUnlessEqual(len(result), len(expectedValues),
             '%s | %s' % (map(None, result), expectedValues))
         for k, v in expectedValues:
             self.failUnless(k in result)
@@ -88,7 +88,7 @@ class DI_Tests(unittest.TestCase):
 
         self.failUnlessEqual(len(empty), 0)
         self.failUnlessEqual(len(empty.referencedObjects()), 0)
-        
+
         self.failUnless(empty.getEntryForObject(1234) is None)
         marker = []
         self.failUnless(empty.getEntryForObject(1234, marker) is marker)
@@ -118,7 +118,7 @@ class DI_Tests(unittest.TestCase):
         marker = []
         self.failUnless(index.getEntryForObject(1234, marker) is marker)
         index.unindex_object(1234) # shouldn't throw
-        
+
         for k, v in values:
             if v.date():
                 self.failUnlessEqual(self._index.getEntryForObject(k),

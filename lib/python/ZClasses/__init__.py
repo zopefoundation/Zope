@@ -1,21 +1,21 @@
-############################################################################## 
+##############################################################################
 #
-#     Copyright 
+#     Copyright
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 #
-############################################################################## 
+##############################################################################
 __doc__='''Sample product initialization module
 
 The job of this module is to provide any run-time initialization
-needed by a product and to define product meta data. 
+needed by a product and to define product meta data.
 
 This sample product publishes a folder-ish and a simple object.
 
-$Id: __init__.py,v 1.6 2000/11/01 22:59:34 tseaver Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: __init__.py,v 1.7 2002/08/14 22:03:39 mj Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import ZClass
 import ZClassOwner
@@ -34,7 +34,7 @@ methods={
     'manage_addZClassForm': ZClass.manage_addZClassForm,
     'manage_addZClass': ZClass.manage_addZClass,
     'manage_subclassableClassNames': ZClassOwner.manage_subclassableClassNames,
-    
+
     }
 
 # Permission to be added to folders:

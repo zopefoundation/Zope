@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Page Template Expression Engine
@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -196,7 +196,7 @@ class PathExpr:
     def __repr__(self):
         return '%s:%s' % (self._name, `self._s`)
 
-            
+
 _interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
 
 class StringExpr:
@@ -223,7 +223,7 @@ class StringExpr:
                 parts.append(exp)
             expr = ''.join(parts)
         self._expr = expr
-        
+
     def __call__(self, econtext):
         vvals = []
         for var in self._vars:
@@ -244,7 +244,7 @@ class NotExpr:
     def __init__(self, name, expr, compiler):
         self._s = expr = expr.lstrip()
         self._c = compiler.compile(expr)
-        
+
     def __call__(self, econtext):
         return not econtext.evaluateBoolean(self._c)
 
@@ -266,7 +266,7 @@ class DeferExpr:
     def __init__(self, name, expr, compiler):
         self._s = expr = expr.lstrip()
         self._c = compiler.compile(expr)
-        
+
     def __call__(self, econtext):
         return DeferWrapper(self._c, econtext)
 
@@ -286,7 +286,7 @@ def restrictedTraverse(self, path, securityManager,
         if not securityManager.validateValue(self):
             raise Unauthorized, name
         path.pop(0)
-        
+
     path.reverse()
     validate = securityManager.validate
     object = self
@@ -313,7 +313,7 @@ def restrictedTraverse(self, path, securityManager,
         t=get(object, '__bobo_traverse__', N)
         if t is not N:
             o=t(REQUEST, name)
-                    
+
             container = None
             if has(o, 'im_self'):
                 container = o.im_self

@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """An exception formatter that shows traceback supplements and traceback info,
 optionally in HTML.
 
-$Id: ExceptionFormatter.py,v 1.3 2002/04/08 12:41:52 htrd Exp $
+$Id: ExceptionFormatter.py,v 1.4 2002/08/14 22:12:06 mj Exp $
 """
 
 import sys
@@ -113,7 +113,7 @@ class TextExceptionFormatter:
             extra = getInfo()
             if extra:
                 return extra
-        return None        
+        return None
 
     def formatTracebackInfo(self, tbi):
         return self.formatSupplementLine('__traceback_info__: %s' % (tbi,))
@@ -231,7 +231,7 @@ class HTMLExceptionFormatter (TextExceptionFormatter):
             extra = getInfo(1)
             if extra:
                 return extra
-        return None        
+        return None
 
 
 
@@ -250,4 +250,3 @@ def format_exception(t, v, tb, limit=None, as_html=0):
     else:
         fmt = text_formatter
     return fmt.formatException(t, v, tb, limit=limit)
-

@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -79,12 +79,12 @@ class Version(Persistent,Implicit,RoleManager,Item):
         r=Version.inheritedAttribute('title_and_id')(self)
         try: db=self._p_jar.db()
         except:
-            # BoboPOS 2        
+            # BoboPOS 2
             if Globals.VersionBase[self.cookie].nonempty(): return '%s *' % r
         else:
             # ZODB 3
             if not db.versionEmpty(self.cookie): return '%s *' % r
-        
+
         return r
 
     def manage_edit(self, title, REQUEST=None):
@@ -111,7 +111,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                          % self.id)
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
-        
+
     def leave(self, REQUEST, RESPONSE):
         """Temporarily stop working in a version"""
         RESPONSE.setCookie(
@@ -129,7 +129,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                          % self.id)
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
-                
+
     def leave_another(self, REQUEST, RESPONSE):
         """Leave a version that may not be the current version"""
         return self.leave(REQUEST, RESPONSE)
@@ -150,7 +150,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
-    
+
     def discard(self, remark='', REQUEST=None):
         'Discard changes made during the version'
         try: db=self._p_jar.db()
@@ -164,7 +164,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
-        
+
     def nonempty(self):
         try: db=self._p_jar.db()
         except:
@@ -175,7 +175,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
             return not db.versionEmpty(self.cookie)
 
     # Prevent copy/move/rename of versions. It's better that way, really.
-    
+
     def _canCopy(self, op=0):
         return 0
 
@@ -187,18 +187,18 @@ class Version(Persistent,Implicit,RoleManager,Item):
             # Physical path
             self.cookie='/'.join(self.getPhysicalPath())
 
-    def manage_beforeDelete(self, item, container):        
+    def manage_beforeDelete(self, item, container):
         if self.nonempty():
             raise VersionException(
                 'Attempt to %sdelete a non-empty version.<br />' %
                 ((self is not item) and 'indirectly ' or ''))
-        
+
         try: REQUEST=self.REQUEST
         except: pass
         else:
             v=self.cookie
             if REQUEST.get(Globals.VersionNameName, '') == v:
-                raise VersionException(               
+                raise VersionException(
                     'An attempt was made to delete a version, %s, or an\n'
                     'object containing %s while\n working in the\n'
                     'version %s.  This would lead to a &quot;version\n'
@@ -208,4 +208,3 @@ class Version(Persistent,Implicit,RoleManager,Item):
                     'version, because the version would no longer\n'
                     'be accessable.<p>\n'
                     % (v,v,v))
-

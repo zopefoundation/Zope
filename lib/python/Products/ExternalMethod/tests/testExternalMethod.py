@@ -2,19 +2,19 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE.
-# 
+#
 ##############################################################################
 """
 
 Revision information:
-$Id: testExternalMethod.py,v 1.4 2002/04/24 00:20:15 jim Exp $
+$Id: testExternalMethod.py,v 1.5 2002/08/14 22:14:11 mj Exp $
 """
 
 import math, os
@@ -49,15 +49,15 @@ class Test(TestCase):
 
     def test_mapply(self):
         from ZPublisher.mapply import mapply
-        
+
         em1 = ExternalMethod('em', 'test method', 'Test', 'testf')
         self.assertEqual(mapply(em1, (), {'arg1': 4}), math.sqrt(4))
         state = em1.__getstate__()
         em2 = ExternalMethod.__basicnew__()
         em2.__setstate__(state)
         self.assertEqual(mapply(em1, (), {'arg1': 9}), math.sqrt(9))
-        
-        
+
+
 
 def test_suite():
     return TestSuite((

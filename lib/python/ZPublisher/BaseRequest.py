@@ -1,16 +1,16 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 from urllib import quote
 
@@ -25,7 +25,7 @@ try:
 
         def manage_property_types(self):
             return type_converters.keys()
-            
+
 except:
     class RequestContainer:
         __roles__=None
@@ -35,7 +35,7 @@ except:
 _marker=[]
 class BaseRequest:
     """Provide basic ZPublisher request management
-    
+
     This object provides access to request data. Request data may
     vary depending on the protocol used.
 
@@ -60,7 +60,7 @@ class BaseRequest:
 
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__=1
-        
+
     def __init__(self, other=None, **kw):
         """The constructor is not allowed to raise errors
         """
@@ -95,8 +95,8 @@ class BaseRequest:
         Return a value for the required variable name.
         The value will be looked up from one of the request data
         categories. The search order is environment variables,
-        other variables, form data, and then cookies. 
-        
+        other variables, form data, and then cookies.
+
         """
         if key=='REQUEST': return self
 
@@ -117,7 +117,7 @@ class BaseRequest:
             v=self._file
             self.other[key]=v
             return v
-        
+
         return default
 
     def __getitem__(self, key, default=_marker):
@@ -185,17 +185,17 @@ class BaseRequest:
             # Make sure that certain things that dont make sense
             # cannot be traversed.
             if item in ('REQUEST', 'aq_self', 'aq_base'):
-                return response.notFoundError(path) 
+                return response.notFoundError(path)
             if not item or item=='.':
                 continue
             elif item == '..':
                 del clean[-1]
             else: clean.append(item)
         path=clean
-    
+
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method=req_method=request_get('REQUEST_METHOD', 'GET').upper()
-        
+
         if method=='GET' or method=='POST':
             # Probably a browser
             no_acquire_flag=0
@@ -208,26 +208,26 @@ class BaseRequest:
         else:
             no_acquire_flag=0
 
-        URL=request['URL']        
+        URL=request['URL']
         parents=request['PARENTS']
         object=parents[-1]
         del parents[:]
 
         roles = getattr(object, '__roles__', UNSPECIFIED_ROLES)
-        
+
         # if the top object has a __bobo_traverse__ method, then use it
         # to possibly traverse to an alternate top-level object.
         if hasattr(object,'__bobo_traverse__'):
             try:
                 object=object.__bobo_traverse__(request)
                 roles =getattr(object, '__roles__', UNSPECIFIED_ROLES)
-            except: pass            
+            except: pass
 
         if not path and not method:
             return response.forbiddenError(self['URL'])
 
         # Traverse the URL to find the object:
-        if hasattr(object, '__of__'): 
+        if hasattr(object, '__of__'):
             # Try to bind the top-level object to the request
             # This is how you get 'self.REQUEST'
             object=object.__of__(RequestContainer(REQUEST=request))
@@ -292,7 +292,7 @@ class BaseRequest:
                         return response.debugError(
                           "Object name begins with an underscore at: %s" % URL)
                     else: return response.forbiddenError(entry_name)
-    
+
                 if hasattr(object,'__bobo_traverse__'):
                     subobject=object.__bobo_traverse__(request,entry_name)
                     if type(subobject) is type(()) and len(subobject) > 1:
@@ -311,7 +311,7 @@ class BaseRequest:
                         # an object 'test' existed above it in the
                         # heirarchy -- you'd always get the
                         # existing object :(
-                        
+
                         if (no_acquire_flag and len(path) == 0 and
                             hasattr(object, 'aq_base')):
                             if hasattr(object.aq_base, entry_name):
@@ -325,7 +325,7 @@ class BaseRequest:
                                 TypeError, AttributeError):
                             if debug_mode:
                                 return response.debugError(
-                                    "Cannot locate object at: %s" % URL) 
+                                    "Cannot locate object at: %s" % URL)
                             else:
                                 return response.notFoundError(URL)
 
@@ -409,7 +409,7 @@ class BaseRequest:
                 while user is None and i < last_parent_index:
                     parent=parents[i]
                     i=i+1
-                    if hasattr(parent, '__allow_groups__'): 
+                    if hasattr(parent, '__allow_groups__'):
                         groups=parent.__allow_groups__
                     else: continue
                     if hasattr(groups,'validate'): v=groups.validate
@@ -429,7 +429,7 @@ class BaseRequest:
 
         # Remove http request method from the URL.
         request['URL']=URL
-    
+
         return object
 
     retry_count=0
@@ -488,4 +488,3 @@ def old_validation(groups, request, auth,
             """<strong>You are not authorized to access this resource""")
 
     return None
-

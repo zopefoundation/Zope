@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.156 2002/04/15 20:58:28 Brian Exp $"""
-__version__='$Revision: 1.156 $'[11:-2]
+$Id: Publish.py,v 1.157 2002/08/14 22:09:40 mj Exp $"""
+__version__='$Revision: 1.157 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -64,47 +64,47 @@ def publish(request, module_name, after_list, debug=0,
 
         request_get=request.get
         response=request.response
-    
+
         # First check for "cancel" redirect:
         cancel=''
         if request_get('SUBMIT','').strip().lower()=='cancel':
             cancel=request_get('CANCEL_ACTION','')
             if cancel: raise 'Redirect', cancel
-    
+
         after_list[0]=bobo_after
         if debug_mode: response.debug_mode=debug_mode
         if realm and not request.get('REMOTE_USER',None):
             response.realm=realm
-    
+
         if bobo_before is not None:
             bobo_before()
-    
+
         # Get a nice clean path list:
         path=request_get('PATH_INFO').strip()
-    
+
         request['PARENTS']=parents=[object]
-        
+
         if transactions_manager: transactions_manager.begin()
-    
+
         object=request.traverse(path, validated_hook=validated_hook)
-    
+
         if transactions_manager:
             transactions_manager.recordMetaData(object, request)
-    
+
         result=mapply(object, request.args, request,
                       call_object,1,
-                      missing_name, 
+                      missing_name,
                       dont_publish_class,
                       request, bind=1)
-    
+
         if result is not response: response.setBody(result)
-    
+
         if transactions_manager: transactions_manager.commit()
 
         return response
     except:
         if transactions_manager: transactions_manager.abort()
-        
+
         if err_hook is not None:
             if parents: parents=parents[0]
             try:
@@ -127,7 +127,7 @@ def publish(request, module_name, after_list, debug=0,
                     return publish(newrequest, module_name, after_list, debug)
                 finally:
                     newrequest.close()
-                    
+
         else: raise
 
 
@@ -226,7 +226,7 @@ def get_module_info(module_name, modules={},
 
                 z1 = os.environ.get('Z_DEBUG_MODE','')
                 z2 = os.environ.get('BOBO_DEBUG_MODE','')
-            
+
                 if z1.lower() in ('yes','y') or z1.isdigit():
                     debug_mode = 1
                 elif z2.lower() in ('yes','y') or z2.isdigit():
@@ -264,7 +264,7 @@ def get_module_info(module_name, modules={},
                    error_hook, validated_hook, transactions_manager)
 
             modules[module_name]=modules[module_name+'.cgi']=info
-            
+
             return info
         except:
             t,v,tb=sys.exc_info()
@@ -287,7 +287,7 @@ class DefaultTransactionsManager:
         auth_user=request_get('AUTHENTICATED_USER',None)
         if auth_user is not None:
             T.setUser(auth_user, request_get('AUTHENTICATION_PATH'))
-        
+
 
 # ZPublisher profiler support
 # ---------------------------
@@ -301,17 +301,17 @@ if os.environ.get('PROFILE_PUBLISHER', None):
     _pfunc=publish_module
     _pstat=None
 
-    def pm(module_name, stdin, stdout, stderr, 
+    def pm(module_name, stdin, stdout, stderr,
            environ, debug, request, response):
         try:
-            r=_pfunc(module_name, stdin=stdin, stdout=stdout, 
-                     stderr=stderr, environ=environ, debug=debug, 
+            r=_pfunc(module_name, stdin=stdin, stdout=stdout,
+                     stderr=stderr, environ=environ, debug=debug,
                      request=request, response=response)
         except: r=None
         sys._pr_=r
 
-    def publish_module(module_name, stdin=sys.stdin, stdout=sys.stdout, 
-                       stderr=sys.stderr, environ=os.environ, debug=0, 
+    def publish_module(module_name, stdin=sys.stdin, stdout=sys.stdout,
+                       stderr=sys.stderr, environ=os.environ, debug=0,
                        request=None, response=None):
         global _pstat
         _plock.acquire()
@@ -320,11 +320,11 @@ if os.environ.get('PROFILE_PUBLISHER', None):
                 path_info=request.get('PATH_INFO')
             else: path_info=environ.get('PATH_INFO')
             if path_info[-14:]=='manage_profile':
-                return _pfunc(module_name, stdin=stdin, stdout=stdout, 
-                              stderr=stderr, environ=environ, debug=debug, 
+                return _pfunc(module_name, stdin=stdin, stdout=stdout,
+                              stderr=stderr, environ=environ, debug=debug,
                               request=request, response=response)
             pobj=profile.Profile()
-            pobj.runcall(pm, module_name, stdin, stdout, stderr, 
+            pobj.runcall(pm, module_name, stdin, stdout, stderr,
                          environ, debug, request, response)
             result=sys._pr_
             pobj.create_stats()
@@ -351,6 +351,3 @@ if os.environ.get('PROFILE_PUBLISHER', None):
             except: pass
             raise error[0], error[1], error[2]
         return result
-
-
-

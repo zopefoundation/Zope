@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Provide a thread-safe interface to regex
 """
@@ -16,7 +16,7 @@ import regex, regsub #, Sync
 from regex import *
 from regsub import split, sub, gsub, splitx, capwords
 
-try: 
+try:
     import thread
 except:
     class allocate_lock:
@@ -71,7 +71,7 @@ class compile:
         self.__a()
         try: return self._r.search(string, pos)
         finally: self.__r()
-        
+
     def search_group(self, str, group, pos=0):
         """Search a string for a pattern.
 
@@ -136,8 +136,3 @@ class symcomp(compile):
         self._r=r=apply(regex.symcomp,args)
         self._init(r)
         self.groupindex=r.groupindex
-
-
-
-
-        

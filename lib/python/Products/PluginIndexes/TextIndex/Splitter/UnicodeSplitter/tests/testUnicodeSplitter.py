@@ -18,7 +18,7 @@ class UnicodeSplitterTests(unittest.TestCase):
 
 
     def testSimpleSplit(self):
-        """ testing splitter functionality """ 
+        """ testing splitter functionality """
 
         for t,expected in self.testdata:
             fields = list(UnicodeSplitter(t))
@@ -38,7 +38,7 @@ class UnicodeSplitterTests(unittest.TestCase):
         fields = list(splitter)
         self.assertEquals(fields, expected)
         self.assertEquals(splitter.indexes('jumps'), [3])
-        
+
 
 def test_suite():
     return unittest.makeSuite(UnicodeSplitterTests)
@@ -54,7 +54,7 @@ def main():
     unittest.TextTestRunner().run( test_suite() )
 
 if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
+    if len(sys.argv) > 1:
+        globals()[sys.argv[1]]()
+    else:
+        main()

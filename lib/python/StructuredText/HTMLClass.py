@@ -43,7 +43,7 @@ class HTMLClass:
 
     def dispatch(self, doc, level, output):
         getattr(self, self.element_types[doc.getNodeName()])(doc, level, output)
-        
+
     def __call__(self, doc, level=1, header=1):
         r=[]
         self.header = header
@@ -75,7 +75,7 @@ class HTMLClass:
         children=doc.getChildNodes()
         for c in children:
             getattr(self, self.element_types[c.getNodeName()])(c, level+1, output)
-        
+
     def sectionTitle(self, doc, level, output):
         output('<h%d>' % (level))
         for c in doc.getChildNodes():
@@ -84,20 +84,20 @@ class HTMLClass:
 
     def description(self, doc, level, output):
         p=doc.getPreviousSibling()
-        if p is None or  p.getNodeName() is not doc.getNodeName():            
+        if p is None or  p.getNodeName() is not doc.getNodeName():
             output('<dl>\n')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         n=doc.getNextSibling()
-        if n is None or n.getNodeName() is not doc.getNodeName():            
+        if n is None or n.getNodeName() is not doc.getNodeName():
             output('</dl>\n')
-        
+
     def descriptionTitle(self, doc, level, output):
         output('<dt>')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output('</dt>\n')
-        
+
     def descriptionBody(self, doc, level, output):
         output('<dd>')
         for c in doc.getChildNodes():
@@ -113,12 +113,12 @@ class HTMLClass:
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         n=doc.getNextSibling()
         output('</li>\n')
-        if n is None or n.getNodeName() is not doc.getNodeName():            
+        if n is None or n.getNodeName() is not doc.getNodeName():
             output('\n</ul>\n')
 
     def numbered(self, doc, level, output):
         p=doc.getPreviousSibling()
-        if p is None or p.getNodeName() is not doc.getNodeName():            
+        if p is None or p.getNodeName() is not doc.getNodeName():
             output('\n<ol>\n')
         output('<li>')
         for c in doc.getChildNodes():
@@ -174,13 +174,13 @@ class HTMLClass:
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output('</strong>')
-     
+
     def underline(self, doc, level, output):
         output("<u>")
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output("</u>")
-          
+
     def innerLink(self, doc, level, output):
         output('<a href="#ref');
         for c in doc.getChildNodes():
@@ -189,7 +189,7 @@ class HTMLClass:
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output(']</a>')
-    
+
     def namedLink(self, doc, level, output):
         output('<a name="ref')
         for c in doc.getChildNodes():
@@ -198,7 +198,7 @@ class HTMLClass:
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output(']</a>')
-    
+
     def sgml(self,doc,level,output):
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
@@ -206,7 +206,7 @@ class HTMLClass:
     def xref(self, doc, level, output):
         val = doc.getNodeValue()
         output('<a href="#ref%s">[%s]</a>' % (val, val) )
-    
+
     def table(self,doc,level,output):
         """
         A StructuredTextTable holds StructuredTextRow(s) which

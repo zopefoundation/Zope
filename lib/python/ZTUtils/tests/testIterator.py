@@ -79,7 +79,7 @@ class IteratorTests(unittest.TestCase):
                         last = it.item
                         lastlast = it.last()
                     assert lastlast, "Last element not last()"
-                    
+
     if do_piter_test:
         def testIterOfIter(self):
             for i in range(4):

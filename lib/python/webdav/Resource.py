@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import sys, os,  mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -92,7 +92,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         ifhdr = request.get_header('If', None)
         if Lockable.wl_isLocked(self) and (not ifhdr):
             raise "Locked", "Resource is locked."
-        
+
         if not ifhdr: return None
         if not Lockable.wl_isLocked(self): return None
 
@@ -101,7 +101,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         # header, we're only going to worry about if the paths compare
         if url is None: url = urlfix(request['URL'], method)
         url = urlbase(url)              # Gets just the path information
-        
+
         # if 'col' is passed in, an operation is happening on a submember
         # of a collection, while the Lock may be on the parent.  Lob off
         # the final part of the URL  (ie '/a/b/foo.html' becomes '/a/b/')
@@ -111,7 +111,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         found = 0; resourcetagged = 0
         taglist = IfParser(ifhdr)
         for tag in taglist:
-            
+
             if not tag.resource:
                 # There's no resource (url) with this tag
                 tag_list = map(tokenFinder, tag.list)
@@ -146,7 +146,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
-        
+
         content_type=None
         if hasattr(self, 'content_type'):
             content_type=absattr(self.content_type)
@@ -172,7 +172,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         return RESPONSE
 
     def PUT(self, REQUEST, RESPONSE):
-        """Replace the GET response entity of an existing resource.        
+        """Replace the GET response entity of an existing resource.
         Because this is often object-dependent, objects which handle
         PUT should override the default PUT implementation with an
         object-specific implementation. By default, PUT requests
@@ -233,7 +233,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if parent.manage_delObjects([name],REQUEST=None)  is None:
             RESPONSE.setStatus(204)
         else:
-            
+
             RESPONSE.setStatus(403)
 
         return RESPONSE
@@ -270,7 +270,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         return RESPONSE
 
     def MKCOL(self, REQUEST, RESPONSE):
-        """Create a new collection resource. If called on an existing 
+        """Create a new collection resource. If called on an existing
         resource, MKCOL must fail with 405 (Method Not Allowed)."""
         self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'The resource already exists.'
@@ -280,7 +280,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         """Create a duplicate of the source resource whose state
         and behavior match that of the source resource as closely
         as possible. Though we may later try to make a copy appear
-        seamless across namespaces (e.g. from Zope to Apache), COPY 
+        seamless across namespaces (e.g. from Zope to Apache), COPY
         is currently only supported within the Zope namespace."""
         self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'cb_isCopyable') or \
@@ -457,7 +457,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if existing:
             object=getattr(parent, name)
             self.dav__validate(object, 'DELETE', REQUEST)
-            parent._delObject(name)            
+            parent._delObject(name)
         parent._setObject(name, ob)
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
@@ -523,7 +523,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 if found: break
             if not found:
                 RESPONSE.setStatus(412) # Precondition failed
-                    
+
         return RESPONSE
 
     def UNLOCK(self, REQUEST, RESPONSE):
@@ -537,7 +537,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
         cmd = davcmds.Unlock()
         result = cmd.apply(self, token, url)
-        
+
         if result:
             RESPONSE.setStatus(207)
             RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')

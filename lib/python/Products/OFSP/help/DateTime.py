@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -21,9 +21,9 @@ class DateTime:
 
     DateTime objects represent instants in time and provide
     interfaces for controlling its representation without
-    affecting the absolute value of the object. 
+    affecting the absolute value of the object.
 
-    DateTime objects may be created from a wide variety of string 
+    DateTime objects may be created from a wide variety of string
     or numeric data, or may be computed from other DateTime objects.
     DateTimes support the ability to convert their representations
     to many major timezones, as well as the ability to create a
@@ -49,7 +49,7 @@ class DateTime:
         object.
 
     DateTime objects may be converted to integer, long, or float
-    numbers of days since January 1, 1901, using the standard int, 
+    numbers of days since January 1, 1901, using the standard int,
     long, and float functions (Compatibility Note: int, long and
     float return the number of days since 1901 in GMT rather than
     local machine timezone). DateTime objects also provide access
@@ -61,7 +61,7 @@ class DateTime:
     and numeric operations return a new DateTime object rather than
     modify the current object.
 
-    A DateTime object always maintains its value as an absolute 
+    A DateTime object always maintains its value as an absolute
     UTC time, and is represented in the context of some timezone
     based on the arguments used to create the object. A DateTime
     object's methods return values based on the timezone context.
@@ -72,8 +72,8 @@ class DateTime:
     DateTimes may be created with from zero to
     seven arguments.
 
-      - If the function is called with no arguments, then the 
-        current date/time is returned, represented in the 
+      - If the function is called with no arguments, then the
+        current date/time is returned, represented in the
         timezone of the local machine.
 
       - If the function is invoked with a single string argument
@@ -85,7 +85,7 @@ class DateTime:
         representing a valid date/time, an object representing
         that date/time will be returned.
 
-        As a general rule, any date-time representation that is 
+        As a general rule, any date-time representation that is
         recognized and unambiguous to a resident of North America is
         acceptable.(The reason for this qualification is that
         in North America, a date like: 2/1/1994 is interpreted
@@ -139,11 +139,11 @@ class DateTime:
         case a 12-hour clock is assumed.
 
       - If the DateTime function is invoked with a single
-        Numeric argument, the number is assumed to be 
-        a floating point value such as that returned by 
+        Numeric argument, the number is assumed to be
+        a floating point value such as that returned by
         time.time().
 
-        A DateTime object is returned that represents 
+        A DateTime object is returned that represents
         the gmt value of the time.time() float represented in
         the local machine's timezone.
 
@@ -152,7 +152,7 @@ class DateTime:
         second argument is taken to be an offset in days from
         the beginning of the year, in the context of the local
         machine timezone.
-        The date-time value returned is the given offset number of 
+        The date-time value returned is the given offset number of
         days from the beginning of the given year, represented in
         the timezone of the local machine. The offset may be positive
         or negative.
@@ -161,7 +161,7 @@ class DateTime:
 
       - If the function is invoked with two arguments, the first
         a float representing a number of seconds past the epoch
-        in gmt (such as those returned by time.time()) and the 
+        in gmt (such as those returned by time.time()) and the
         second a string naming a recognized timezone, a DateTime
         with a value of that gmt time will be returned, represented
         in the given timezone.::
@@ -197,10 +197,10 @@ class DateTime:
 
     If a string argument passed to the DateTime constructor cannot be
     parsed, it will raise DateTime.SyntaxError. Invalid date, time, or
-    timezone components will raise a DateTime.DateTimeError. 
+    timezone components will raise a DateTime.DateTimeError.
 
-    The module function Timezones() will return a list of the 
-    timezones recognized by the DateTime module. Recognition of 
+    The module function Timezones() will return a list of the
+    timezones recognized by the DateTime module. Recognition of
     timezone names is case-insensitive.
 
     """
@@ -470,7 +470,7 @@ class DateTime:
         """
 
 
-    def Day(): 
+    def Day():
         """
         Return the full name of the day of the week
 
@@ -603,7 +603,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def TimeMinutes(): 
+    def TimeMinutes():
         """
         Return the time string for an object not showing seconds.
 
@@ -739,18 +739,3 @@ class DateTime:
 
         Permission -- Always available
         """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

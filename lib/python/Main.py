@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Provide a Main application for the Zope framework
 
@@ -40,11 +40,11 @@ OFS.Application.import_products()
 revision=read_only=None
 if os.environ.has_key('ZOPE_READ_ONLY'):
     read_only=1
-    try: 
+    try:
         from DateTime import DateTime
         revision=DateTime(os.environ['ZOPE_READ_ONLY']).timeTime()
     except: pass
-        
+
 Bobobase=Globals.Bobobase=BoboPOS.PickleDictionary(
     Globals.BobobaseName, read_only=read_only, revision=revision)
 Globals.opened.append(Bobobase)

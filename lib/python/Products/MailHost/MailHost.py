@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.73 2002/08/12 21:50:31 jens Exp $"""
-__version__ = "$Revision: 1.73 $"[11:-2]
+$Id: MailHost.py,v 1.74 2002/08/14 22:14:51 mj Exp $"""
+__version__ = "$Revision: 1.74 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -54,7 +54,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     manage_options=(
         (
         {'icon':'', 'label':'Edit',
-         'action':'manage_main', 
+         'action':'manage_main',
          'help':('MailHost','Mail-Host_Edit.stx')},
         )
         +RoleManager.manage_options
@@ -93,10 +93,10 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                                    , REQUEST
                                    , manage_tabs_message=msg
                                    )
-    
+
 
     security.declareProtected( use_mailhost_services, 'sendTemplate' )
-    def sendTemplate(trueself, self, messageTemplate, 
+    def sendTemplate(trueself, self, messageTemplate,
                      statusTemplate=None, mto=None, mfrom=None,
                      encode=None, REQUEST=None):
         'render a mail template, then send it...'
@@ -124,7 +124,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self._send(mfrom, mto, messageText)
 
 
-    # This is here for backwards compatibility only. Possibly it could 
+    # This is here for backwards compatibility only. Possibly it could
     # be used to send messages at a scheduled future time, or via a mail queue?
     security.declareProtected( use_mailhost_services, 'scheduledSend' )
     scheduledSend = send
@@ -144,7 +144,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         smtpserver.sendmail( mfrom, mto, messageText )
         smtpserver.quit()
 
-        
+
 InitializeClass( MailBase )
 
 class MailHost(Persistent, MailBase):
@@ -155,7 +155,7 @@ def _encode(body, encode=None):
         return body
     mfile=StringIO(body)
     mo=mimetools.Message(mfile)
-    if mo.getencoding() != '7bit': 
+    if mo.getencoding() != '7bit':
         raise MailHostError, 'Message already encoded'
     newmfile=StringIO()
     newmfile.write(''.join(mo.headers))

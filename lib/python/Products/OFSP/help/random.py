@@ -14,5 +14,3 @@ random: Python 'random' module
     module":http://www.python.org/doc/current/lib/module-random.html
     documentation at Python.org
 """
-
-

@@ -10,4 +10,3 @@ def makeDB():
 def cleanDB():
     for fn in glob('fs_tmp__*'):
         os.remove(fn)
-    

@@ -2,7 +2,7 @@
 ZTUtils: Page Template Utilities
 
   The classes in this module are available from Page Templates.
-  
+
 """
 
 class Batch:
@@ -23,7 +23,7 @@ class Batch:
       4
       >>> b[10]
       IndexError: list index out of range
-      
+
     Batches have these public attributes:
 
     start -- The first element number (counting from 1).
@@ -64,7 +64,7 @@ class Batch:
         start -- The index of the start of the batch (counting from 0).
 
         end -- The index of the end of the batch (counting from  0).
-    
+
         orphan -- The desired minimum batch size. This controls how
         sequences are split into batches. If a batch smaller than the
         orphan size would occur, then no split is performed, and a

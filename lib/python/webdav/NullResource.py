@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import sys, os,  mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -68,7 +68,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         if name and name.endswith('.pt'):
             from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
             ob = ZopePageTemplate(name, body, content_type=typ)
-        elif typ in ('text/html', 'text/xml', 'text/plain'):      
+        elif typ in ('text/html', 'text/xml', 'text/plain'):
             from OFS.DTMLDocument import DTMLDocument
             ob = DTMLDocument( '', __name__=name )
         elif typ[:6]=='image/':
@@ -179,7 +179,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         elif ifhdr:
             # There was an If header, but the parent is not locked.
             raise 'Precondition Failed'
-        
+
         # The logic involved in locking a null resource is simpler than
         # a regular resource, since we know we're not already locked,
         # and the lock isn't being refreshed.
@@ -241,7 +241,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # now.
         parent = Acquisition.aq_parent(self)
         if parent: parent._delObject(self.id)
-                       
+
     def __init__(self, name):
         self.id = self.__name__ = name
         self.title = "LockNull Resource '%s'" % name
@@ -288,7 +288,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
                 RESPONSE.setStatus(412) # Precondition failed
 
         return RESPONSE
-        
+
 
     def UNLOCK(self, REQUEST, RESPONSE):
         """ Unlocking a Null Resource removes it from its parent """
@@ -424,6 +424,6 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
-    
-        
+
+
 Globals.default__class_init__(LockNullResource)

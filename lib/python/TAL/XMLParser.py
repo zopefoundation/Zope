@@ -2,14 +2,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
 Generic expat-based XML parser base class.
@@ -50,7 +50,7 @@ class XMLParser:
             try:
                 self.parser.ordered_attributes = self.ordered_attributes
             except AttributeError:
-                zLOG.LOG("TAL.XMLParser", zLOG.INFO, 
+                zLOG.LOG("TAL.XMLParser", zLOG.INFO,
                          "Can't set ordered_attributes")
                 self.ordered_attributes = 0
         for name in self.handler_names:

@@ -1,5 +1,5 @@
 ##############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -8,7 +8,7 @@
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 #############################################################################
 
 from Lexicon import Lexicon
@@ -25,7 +25,7 @@ from BTrees.OOBTree import OOBTree
 from Products.PluginIndexes.TextIndex.TextIndex import Or,Op
 from Products.PluginIndexes.common.randid import randid
 
-from types import UnicodeType 
+from types import UnicodeType
 
 class GlobbingLexicon(Lexicon):
     """Lexicon which supports basic globbing function ('*' and '?').
@@ -80,11 +80,11 @@ class GlobbingLexicon(Lexicon):
 
     def createDigrams(self, word):
         """Returns a list with the set of digrams in the word."""
-        
+
         word = '$'+word+'$'
         return [ word[i:i+2] for i in range(len(word)-1)]
 
-    
+
     def getWordId(self, word):
         """Provided 'word', return the matching integer word id."""
 
@@ -112,7 +112,7 @@ class GlobbingLexicon(Lexicon):
         try: insert=inverse.insert
         except AttributeError:
             # we have an "old" BTree object
-            if inverse:            
+            if inverse:
                 wid=inverse.keys()[-1]+1
             else:
                 self._inverseLex=IOBTree()
@@ -135,7 +135,7 @@ class GlobbingLexicon(Lexicon):
 
         return wid
 
-    
+
     def get(self, pattern):
         """ Query the lexicon for words matching a pattern."""
 
@@ -170,7 +170,7 @@ class GlobbingLexicon(Lexicon):
             if result is None:
                 return ()
             return (result, )
-        
+
         ## now get all of the intsets that contain the result digrams
         result = None
         for digram in digrams:
@@ -194,7 +194,7 @@ class GlobbingLexicon(Lexicon):
                     hits.insert(x)
             return hits
 
-                
+
     def __getitem__(self, word):
         """ """
         return self.get(word)
@@ -235,8 +235,8 @@ class GlobbingLexicon(Lexicon):
 
         try:
             return self.SplitterFunc(
-                    astring, 
-                    words, 
+                    astring,
+                    words,
                     encoding=encoding,
                     singlechar=self.splitterParams.splitterSingleChars,
                     indexnumbers=self.splitterParams.splitterIndexNumbers,
@@ -269,5 +269,4 @@ class GlobbingLexicon(Lexicon):
         # Next, we need to deal with single-character globbing
         result = result.replace( '?', '.')
 
-        return "%s$" % result 
-
+        return "%s$" % result

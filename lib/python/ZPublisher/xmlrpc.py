@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """XML-RPC support module
 
@@ -28,9 +28,9 @@ def parse_input(data):
 
     The data is a string.
     """
-    # 
+    #
     # For example, with the input:
-    #     
+    #
     #   <?xml version="1.0"?>
     #   <methodCall>
     #      <methodName>examples.getStateName</methodName>
@@ -40,9 +40,9 @@ def parse_input(data):
     #            </param>
     #         </params>
     #      </methodCall>
-    # 
+    #
     # the function should return:
-    # 
+    #
     #     ('examples.getStateName', (41,))
     params, method = xmlrpclib.loads(data)
     # Translate '.' to '/' in meth to represent object traversal.
@@ -53,7 +53,7 @@ def parse_input(data):
 #
 # def response(anHTTPResponse):
 #     """Return a valid ZPublisher response object
-# 
+#
 #     Use data already gathered by the existing response.
 #     The new response will replace the existing response.
 #     """
@@ -62,8 +62,8 @@ def parse_input(data):
 #     r=Response()
 #     r.__dict__.update(anHTTPResponse.__dict__)
 #     return r
-    
-    
+
+
 
 ########################################################################
 # Possible implementation helpers:
@@ -91,7 +91,7 @@ class Response:
     def __getattr__(self, name): return getattr(self._real, name)
     def __setattr__(self, name, v): return setattr(self._real, name, v)
     def __delattr__(self, name): return delattr(self._real, name)
-    
+
     def setBody(self, body, title='', is_error=0, bogus_str_search=None):
         if isinstance(body, xmlrpclib.Fault):
             # Convert Fault object to XML-RPC response.

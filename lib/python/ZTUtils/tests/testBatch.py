@@ -27,7 +27,7 @@ class BatchTests(TestCase):
             for i in seq:
                 assert b[i] == i, (b[i], i)
                 neg = -1 - i
-                assert b[neg] == (bsize + neg), (b[neg], (bsize + neg)) 
+                assert b[neg] == (bsize + neg), (b[neg], (bsize + neg))
 
     def testOrphan(self):
         '''Test orphan collection'''

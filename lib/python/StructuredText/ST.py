@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import re, STDOM
@@ -18,10 +18,10 @@ import re, STDOM
 #####################################################################
 
 def indention(str,front = re.compile("^\s+").match):
-    """ 
+    """
     Find the number of leading spaces. If none, return 0.
     """
-    
+
     result = front(str)
     if result is not None:
         start, end = result.span()
@@ -48,7 +48,7 @@ def insert(struct, top, level):
         i = i + 1
     #print "parent for level ", level, " was => ", run.getColorizableTexts()
     return run.getSubparagraphs()
-        
+
 def display(struct):
     """
     runs through the structure and prints out
@@ -56,27 +56,27 @@ def display(struct):
     correctly, display's results should mimic
     the orignal paragraphs.
     """
-    
+
     if struct.getColorizableTexts():
         print join(struct.getColorizableTexts()),"\n"
     if struct.getSubparagraphs():
         for x in struct.getSubparagraphs():
             display(x)
-    
+
 def display2(struct):
     """
     runs through the structure and prints out
     the paragraphs. If the insertion works
     correctly, display's results should mimic
-    the orignal paragraphs.    
+    the orignal paragraphs.
     """
-    
+
     if struct.getNodeValue():
         print struct.getNodeValue(),"\n"
     if struct.getSubparagraphs():
         for x in struct.getSubparagraphs():
             display(x)
-            
+
 def findlevel(levels,indent):
     """
     remove all level information of levels
@@ -84,7 +84,7 @@ def findlevel(levels,indent):
     Then return which level should insert this
     paragraph
     """
-    
+
     keys = levels.keys()
     for key in keys:
         if levels[key] > indent:
@@ -109,7 +109,7 @@ para_delim = r'(\n\s*\n|\r\n\s*\r\n)' # UNIX or DOS line endings, respectively
 # Golly, the capitalization of this function always makes me think it's a class
 def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
     """
-    StructuredText accepts paragraphs, which is a list of 
+    StructuredText accepts paragraphs, which is a list of
     lines to be parsed. StructuredText creates a structure
     which mimics the structure of the paragraphs.
     Structure => [paragraph,[sub-paragraphs]]
@@ -125,21 +125,21 @@ def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
     paragraphs = paragraphs.expandtabs()
     paragraphs = '%s%s%s' % ('\n\n', paragraphs, '\n\n')
     paragraphs = delimiter.split(paragraphs)
-    paragraphs = [ x for x in  paragraphs if x.strip() ] 
+    paragraphs = [ x for x in  paragraphs if x.strip() ]
 
     if not paragraphs: return StructuredTextDocument()
-    
+
     ind = []     # structure based on indention levels
     for paragraph in paragraphs:
         ind.append([indention(paragraph), paragraph])
-    
+
     currentindent = indention(paragraphs[0])
     levels[0]        = currentindent
-    
+
     #############################################################
     #                                  updated                  #
     #############################################################
-    
+
     for indent,paragraph in ind :
         if indent == 0:
             level          = level + 1
@@ -170,7 +170,7 @@ def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
                 run = struct
                 currentindent = indent
             run.append(StructuredTextParagraph(paragraph, indent=indent, level=currentlevel))
-    
+
     return StructuredTextDocument(struct)
 
 Basic = StructuredText
@@ -183,7 +183,7 @@ class StructuredTextParagraph(STDOM.Element):
         if subs is None: subs=[]
         self._src=src
         self._subs=list(subs)
-        
+
         self._attributes=kw.keys()
         for k, v in kw.items(): setattr(self, k, v)
 
@@ -194,7 +194,7 @@ class StructuredTextParagraph(STDOM.Element):
 
     def getAttribute(self, name):
         return getattr(self, name, None)
-        
+
     def getAttributeNode(self, name):
         if hasattr(self, name):
             return STDOM.Attr(name, getattr(self, name))
@@ -233,10 +233,10 @@ class StructuredTextParagraph(STDOM.Element):
 
     def _get_Children(self, type=type, lt=type([])):
         return self.getChildren(type,lt)
-        
+
     def _get_Attribute(self, name):
         return self.getAttribute(name)
-        
+
     def _get_AttributeNode(self, name):
         return self.getAttributeNode(name)
 
@@ -261,7 +261,7 @@ class StructuredTextDocument(StructuredTextParagraph):
     as its subparagraphs.
     """
     _attributes=()
-    
+
     def __init__(self, subs=None, **kw):
         apply(StructuredTextParagraph.__init__,
                 (self, '', subs),
@@ -269,10 +269,10 @@ class StructuredTextDocument(StructuredTextParagraph):
 
     def getChildren(self):
         return self._subs
-        
+
     def getColorizableTexts(self):
         return ()
-        
+
     def setColorizableTexts(self, src):
         pass
 
@@ -282,16 +282,16 @@ class StructuredTextDocument(StructuredTextParagraph):
         for p in self._subs: a(`p`+',')
         a('])')
         return '\n'.join(r)
-    
+
     """
     create aliases for all above functions in the pythony way.
     """
-    
+
     def _get_Children(self):
         return self.getChildren()
-        
+
     def _get_ColorizableTexts(self):
         return self.getColorizableTexts()
-        
+
     def _set_ColorizableTexts(self, src):
         return self.setColorizableTexts(src)

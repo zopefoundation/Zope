@@ -1,21 +1,21 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Page Template module
 
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys
 
@@ -31,7 +31,7 @@ from ComputedAttribute import ComputedAttribute
 
 class PageTemplate(Base):
     "Page Templates using TAL, TALES, and METAL"
-     
+
     content_type = 'text/html'
     expand = 0
     _v_errors = ()
@@ -70,7 +70,7 @@ class PageTemplate(Base):
                 parent = getattr(self, 'aq_parent', None)
             c['root'] = self
         return c
-    
+
     def pt_render(self, source=0, extra_context={}):
         """Render this Page Template"""
         if not self._v_cooked:
@@ -106,7 +106,7 @@ class PageTemplate(Base):
             self.pt_render(source=1)
         except:
             return ('Macro expansion failed', '%s: %s' % sys.exc_info()[:2])
-        
+
     def pt_warnings(self):
         if not self._v_cooked:
             self._cook()
@@ -145,7 +145,7 @@ class PageTemplate(Base):
                 return ('%s\n Macro expansion failed\n %s\n-->\n%s' %
                         (self._error_start, "%s: %s" % sys.exc_info()[:2],
                          self._text) )
-                                  
+
         return ('%s\n %s\n-->\n%s' % (self._error_start,
                                       '\n '.join(self._v_errors),
                                       self._text))
@@ -203,4 +203,3 @@ class PageTemplateTracebackSupplement:
         if e:
             w = list(w) + list(e)
         self.warnings = w
-

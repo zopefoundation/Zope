@@ -1,16 +1,16 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
@@ -20,7 +20,7 @@ def field2string(v):
     if hasattr(v,'read'): return v.read()
     elif isinstance(v,UnicodeType) :
         return v.encode('latin1')
-    else:  
+    else:
         return str(v)
 
 def field2text(v, nl=re.compile('\r\n|\n\r').search):
@@ -38,7 +38,7 @@ def field2text(v, nl=re.compile('\r\n|\n\r').search):
         else:          l=mo.start(0)
 
     r.append(v[s:])
-        
+
     return '\n'.join(r)
 
 def field2required(v):
@@ -66,7 +66,7 @@ def field2float(v):
         try: return float(v)
         except ValueError:
             raise ValueError, (
-                "A floating-point number was expected in the value '%s'" % 
+                "A floating-point number was expected in the value '%s'" %
                 escape(v)
                 )
     raise ValueError, (

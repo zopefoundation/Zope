@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import Globals, AccessControl.User
 from Globals import Persistent
@@ -43,7 +43,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         self._version="%s/%s" % (version, id)
         self.users__draft__=uf=AccessControl.User.UserFolder()
         self.__allow_groups__=uf
-    
+
     def icon(self):
         try: return getattr(self.aq_parent.aq_base,self._refid).icon
         except: return 'p_/broken'
@@ -75,7 +75,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     def __bobo_traverse__(self, REQUEST, name):
         if name[-9:]=='__draft__': return getattr(self, name)
 
-        
+
         try: db=self._p_jar.db()
         except:
             # BoboPOS 2
@@ -86,15 +86,15 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             cleanup=Cleanup()
             cleanup.__del__=jar.close
             REQUEST[Cleanup]=cleanup
-            
-            
+
+
         dself=getdraft(self, jar)
-        
+
         ref=getattr(dself.aq_parent.aq_base,dself._refid).aq_base.__of__(dself)
         if hasattr(ref, name): return dself, ref, getattr(ref, name)
         return getattr(self, name)
-    
-    def nonempty(self):        
+
+    def nonempty(self):
         try: db=self._p_jar.db()
         except:
             # BoboPOS 2
@@ -117,7 +117,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             d=self._p_jar.getVersion()
             if d==s: d=''
             db.commitVersion(s, d)
-            
+
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
@@ -141,7 +141,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         if not self._version:
             self._version=self.absolute_url(1)
 
-    def manage_beforeDelete(self, item, container):        
+    def manage_beforeDelete(self, item, container):
         if self.nonempty():
             raise 'Version Error', (
                 'Attempt to %sdelete a non-empty version.<p>'

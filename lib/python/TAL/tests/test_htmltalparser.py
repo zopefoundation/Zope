@@ -319,7 +319,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_content_1(self):
         self._run_check("<p tal:content='string:foo'>bar</p>", [
              ('setPosition', (1, 0)),
-             ('beginScope', {'tal:content': 'string:foo'}), 
+             ('beginScope', {'tal:content': 'string:foo'}),
              ('startTag', ('p', [('tal:content', 'string:foo', 3)])),
              ('insertText', ('$string:foo$', [rawtext('bar')])),
              ('endScope', ()),
@@ -491,7 +491,7 @@ class TALGeneratorTestCases(TestCaseBase):
                            2*"<p metal:fill-slot='y' />" + "</html>", exc)
         self._should_error("<p metal:foobar='x' />", exc)
         self._should_error("<p metal:define-macro='x'>", exc)
-        
+
 
 def test_suite():
     suite = unittest.TestSuite()

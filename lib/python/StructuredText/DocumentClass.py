@@ -1,7 +1,7 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
@@ -19,11 +19,11 @@ StringType=type('')
 ListType=type([])
 
 def flatten(obj, append):
-   if obj.getNodeType()==STDOM.TEXT_NODE:
-      append(obj.getNodeValue())
-   else:
-      for child in obj.getChildNodes():
-         flatten(child, append)
+    if obj.getNodeType()==STDOM.TEXT_NODE:
+        append(obj.getNodeValue())
+    else:
+        for child in obj.getChildNodes():
+            flatten(child, append)
 
 
 class StructuredTextExample(ST.StructuredTextParagraph):
@@ -55,17 +55,17 @@ class StructuredTextDescriptionBody(ST.StructuredTextParagraph):
 
 class StructuredTextDescription(ST.StructuredTextParagraph):
     """Represents a section of a document with a title and a body"""
-    
+
     def __init__(self, title, src, subs, **kw):
-       apply(ST.StructuredTextParagraph.__init__, (self, src, subs), kw)
-       self._title=title
+        apply(ST.StructuredTextParagraph.__init__, (self, src, subs), kw)
+        self._title=title
 
     def getColorizableTexts(self): return self._title, self._src
     def setColorizableTexts(self, src): self._title, self._src = src
 
     def getChildren(self):
-       return (StructuredTextDescriptionTitle(self._title),
-               StructuredTextDescriptionBody(self._src, self._subs))
+        return (StructuredTextDescriptionTitle(self._title),
+                StructuredTextDescriptionBody(self._src, self._subs))
 
 class StructuredTextSectionTitle(ST.StructuredTextParagraph):
     """Represents a section of a document with a title and a body"""
@@ -73,16 +73,16 @@ class StructuredTextSectionTitle(ST.StructuredTextParagraph):
 class StructuredTextSection(ST.StructuredTextParagraph):
     """Represents a section of a document with a title and a body"""
     def __init__(self, src, subs=None, **kw):
-       apply(ST.StructuredTextParagraph.__init__,
-             (self, StructuredTextSectionTitle(src), subs),
-             kw)
-    
+        apply(ST.StructuredTextParagraph.__init__,
+              (self, StructuredTextSectionTitle(src), subs),
+              kw)
+
     def getColorizableTexts(self):
         return self._src.getColorizableTexts()
-    
+
     def setColorizableTexts(self,src):
         self._src.setColorizableTexts(src)
-        
+
 # a StructuredTextTable holds StructuredTextRows
 class StructuredTextTable(ST.StructuredTextParagraph):
     """
@@ -91,49 +91,49 @@ class StructuredTextTable(ST.StructuredTextParagraph):
     EX
     rows = [[('row 1:column1',1)],[('row2:column1',1)]]
     """
-    
+
     def __init__(self, rows, src, subs, **kw):
         apply(ST.StructuredTextParagraph.__init__,(self,subs),kw)
         self._rows = []
         for row in rows:
             if row:
                 self._rows.append(StructuredTextRow(row,kw))
-    
+
     def getRows(self):
         return [self._rows]
-    
+
     def _getRows(self):
         return self.getRows()
-    
+
     def getColumns(self):
         result = []
         for row in self._rows:
             result.append(row.getColumns())
         return result
-        
+
     def _getColumns(self):
         return self.getColumns()
-    
+
     def setColumns(self,columns):
         for index in range(len(self._rows)):
             self._rows[index].setColumns(columns[index])
-            
+
     def _setColumns(self,columns):
         return self.setColumns(columns)
-             
+
     def getColorizableTexts(self):
         """
         return a tuple where each item is a column/cell's
         contents. The tuple, result, will be of this format.
         ("r1 col1", "r1=col2", "r2 col1", "r2 col2")
         """
-        
+
         result = []
         for row in self._rows:
             for column in row.getColumns()[0]:
                 result.append(column.getColorizableTexts()[0])
         return result
-    
+
     def setColorizableTexts(self,texts):
         """
         texts is going to a tuple where each item is the
@@ -145,27 +145,27 @@ class StructuredTextTable(ST.StructuredTextParagraph):
             for column_index in range(len(self._rows[row_index]._columns)):
                 self._rows[row_index]._columns[column_index].setColorizableTexts((texts[0],))
                 texts = texts[1:]
-        
+
     def _getColorizableTexts(self):
         return self.getColorizableTexts()
-    
+
     def _setColorizableTexts(self):
         return self.setColorizableTexts()
-    
+
 # StructuredTextRow holds StructuredTextColumns
 class StructuredTextRow(ST.StructuredTextParagraph):
-    
+
     def __init__(self,row,kw):
         """
         row is a list of tuples, where each tuple is
         the raw text for a cell/column and the span
-        of that cell/column. 
-        EX 
+        of that cell/column.
+        EX
         [('this is column one',1), ('this is column two',1)]
         """
-        
+
         apply(ST.StructuredTextParagraph.__init__,(self,[]),kw)
-        
+
         self._columns = []
         for column in row:
             self._columns.append(StructuredTextColumn(column[0],
@@ -174,19 +174,19 @@ class StructuredTextRow(ST.StructuredTextParagraph):
                                                       column[3],
                                                       column[4],
                                                       kw))
-    
+
     def getColumns(self):
         return [self._columns]
-    
+
     def _getColumns(self):
         return [self._columns]
-    
+
     def setColumns(self,columns):
         self._columns = columns
-    
+
     def _setColumns(self,columns):
         return self.setColumns(columns)
-    
+
 # this holds the text of a table cell
 class StructuredTextColumn(ST.StructuredTextParagraph):
     """
@@ -195,64 +195,64 @@ class StructuredTextColumn(ST.StructuredTextParagraph):
     is either classified as a StructuredTextTableHeader
     or StructuredTextTableData.
     """
-    
+
     def __init__(self,text,span,align,valign,typ,kw):
         apply(ST.StructuredTextParagraph.__init__,(self,text,[]),kw)
         self._span = span
         self._align = align
         self._valign = valign
         self._type = typ
-    
+
     def getSpan(self):
         return self._span
-    
+
     def _getSpan(self):
         return self._span
-    
+
     def getAlign(self):
         return self._align
-    
+
     def _getAlign(self):
         return self.getAlign()
-    
+
     def getValign(self):
         return self._valign
-    
+
     def _getValign(self):
         return self.getValign()
-    
+
     def getType(self):
         return self._type
-    
+
     def _getType(self):
         return self.getType()
-    
+
 class StructuredTextTableHeader(ST.StructuredTextParagraph): pass
 
 class StructuredTextTableData(ST.StructuredTextParagraph): pass
 
 class StructuredTextMarkup(STDOM.Element):
-    
+
     def __init__(self, v, **kw):
-       self._value=v
-       self._attributes=kw.keys()
-       for k, v in kw.items(): setattr(self, k, v)
-    
+        self._value=v
+        self._attributes=kw.keys()
+        for k, v in kw.items(): setattr(self, k, v)
+
     def getChildren(self, type=type, lt=type([])):
-       v=self._value
-       if type(v) is not lt: v=[v]
-       return v
-    
+        v=self._value
+        if type(v) is not lt: v=[v]
+        return v
+
     def getColorizableTexts(self): return self._value,
     def setColorizableTexts(self, v): self._value=v[0]
-    
+
     def __repr__(self):
-       return '%s(%s)' % (self.__class__.__name__, `self._value`)
-    
+        return '%s(%s)' % (self.__class__.__name__, `self._value`)
+
 class StructuredTextLiteral(StructuredTextMarkup):
     def getColorizableTexts(self): return ()
     def setColorizableTexts(self, v): pass
-    
+
 class StructuredTextEmphasis(StructuredTextMarkup): pass
 
 class StructuredTextStrong(StructuredTextMarkup): pass
@@ -281,7 +281,7 @@ class DocumentClass:
     instance. '-underline **this**' would be stored as an underline
     instance with a strong instance stored in its string
     """
-    
+
     paragraph_types  = [
         'doc_bullet',
         'doc_numbered',
@@ -289,13 +289,13 @@ class DocumentClass:
         'doc_header',
         'doc_table',
         ]
-    
+
     #'doc_inner_link',
     #'doc_named_link',
     #'doc_underline'
     text_types = [
         'doc_literal',
-        'doc_sgml', 
+        'doc_sgml',
         'doc_inner_link',
         'doc_named_link',
         'doc_href1',
@@ -306,179 +306,179 @@ class DocumentClass:
         'doc_sgml',
         'doc_xref',
         ]
-    
+
     def __call__(self, doc):
         if type(doc) is type(''):
-           doc=ST.StructuredText(doc)
-           doc.setSubparagraphs(self.color_paragraphs(
-              doc.getSubparagraphs()))
+            doc=ST.StructuredText(doc)
+            doc.setSubparagraphs(self.color_paragraphs(
+               doc.getSubparagraphs()))
         else:
-           doc=ST.StructuredTextDocument(self.color_paragraphs(
-              doc.getSubparagraphs()))
+            doc=ST.StructuredTextDocument(self.color_paragraphs(
+               doc.getSubparagraphs()))
         return doc
-    
+
     def parse(self, raw_string, text_type,
               type=type, st=type(''), lt=type([])):
-        
-       """
-       Parse accepts a raw_string, an expr to test the raw_string,
-       and the raw_string's subparagraphs.
-       
-       Parse will continue to search through raw_string until 
-       all instances of expr in raw_string are found. 
-       
-       If no instances of expr are found, raw_string is returned.
-       Otherwise a list of substrings and instances is returned
-       """
 
-       tmp = []    # the list to be returned if raw_string is split
-       append=tmp.append
+        """
+        Parse accepts a raw_string, an expr to test the raw_string,
+        and the raw_string's subparagraphs.
 
-       if type(text_type) is st: text_type=getattr(self, text_type)
+        Parse will continue to search through raw_string until
+        all instances of expr in raw_string are found.
 
-       while 1:
-          t = text_type(raw_string)
-          if not t: break
-          #an instance of expr was found
-          t, start, end    = t
+        If no instances of expr are found, raw_string is returned.
+        Otherwise a list of substrings and instances is returned
+        """
 
-          if start: append(raw_string[0:start])
+        tmp = []    # the list to be returned if raw_string is split
+        append=tmp.append
 
-          tt=type(t)
-          if tt is st:
-             # if we get a string back, add it to text to be parsed
-             raw_string = t+raw_string[end:len(raw_string)]
-          else:
-             if tt is lt:
+        if type(text_type) is st: text_type=getattr(self, text_type)
+
+        while 1:
+            t = text_type(raw_string)
+            if not t: break
+            #an instance of expr was found
+            t, start, end    = t
+
+            if start: append(raw_string[0:start])
+
+            tt=type(t)
+            if tt is st:
+                # if we get a string back, add it to text to be parsed
+                raw_string = t+raw_string[end:len(raw_string)]
+            else:
+                if tt is lt:
                 # is we get a list, append it's elements
-                tmp[len(tmp):]=t
-             else:
-                # normal case, an object
-                append(t)
-             raw_string = raw_string[end:len(raw_string)]
+                    tmp[len(tmp):]=t
+                else:
+                    # normal case, an object
+                    append(t)
+                raw_string = raw_string[end:len(raw_string)]
 
-       if not tmp: return raw_string # nothing found
-       
-       if raw_string: append(raw_string)
-       elif len(tmp)==1: return tmp[0]
-       
-       return tmp
+        if not tmp: return raw_string # nothing found
+
+        if raw_string: append(raw_string)
+        elif len(tmp)==1: return tmp[0]
+
+        return tmp
 
 
     def color_text(self, str, types=None):
-       """Search the paragraph for each special structure
-       """
-       if types is None: types=self.text_types
+        """Search the paragraph for each special structure
+        """
+        if types is None: types=self.text_types
 
-       for text_type in types:
+        for text_type in types:
 
-          if type(str) is StringType:
-             str = self.parse(str, text_type)
-          elif type(str) is ListType:
-             r=[]; a=r.append
-             for s in str:
-                if type(s) is StringType:
-                    s=self.parse(s, text_type)
-                    if type(s) is ListType: r[len(r):]=s
-                    else: a(s)
-                else:
-                    s.setColorizableTexts(
-                       map(self.color_text,
-                           s.getColorizableTexts()
-                           ))
+            if type(str) is StringType:
+                str = self.parse(str, text_type)
+            elif type(str) is ListType:
+                r=[]; a=r.append
+                for s in str:
+                    if type(s) is StringType:
+                        s=self.parse(s, text_type)
+                        if type(s) is ListType: r[len(r):]=s
+                        else: a(s)
+                    else:
+                        s.setColorizableTexts(
+                           map(self.color_text,
+                               s.getColorizableTexts()
+                               ))
+                        a(s)
+                str=r
+            else:
+                r=[]; a=r.append; color=self.color_text
+                for s in str.getColorizableTexts():
+                    color(s, (text_type,))
                     a(s)
-             str=r
-          else:
-             r=[]; a=r.append; color=self.color_text
-             for s in str.getColorizableTexts():
-                color(s, (text_type,))
-                a(s)
-                
-             str.setColorizableTexts(r)
 
-       return str
+                str.setColorizableTexts(r)
+
+        return str
 
     def color_paragraphs(self, raw_paragraphs,
                            type=type, sequence_types=(type([]), type(())),
                            st=type('')):
-       result=[]
-       for paragraph in raw_paragraphs:
-          if paragraph.getNodeName() != 'StructuredTextParagraph':
-             result.append(paragraph)
-             continue
-          
-          for pt in self.paragraph_types:
-             if type(pt) is st:
-                # grab the corresponding function
-                pt=getattr(self, pt)
-             # evaluate the paragraph
-             r=pt(paragraph)
-             if r:
-                if type(r) not in sequence_types:
-                    r=r,
-                new_paragraphs=r
-                for paragraph in new_paragraphs:
-                    subs = self.color_paragraphs(paragraph.getSubparagraphs())
-                    paragraph.setSubparagraphs(subs)
-                break
-          else:
-             # copy, retain attributes
-             kw = {}
-             atts = getattr(paragraph, '_attributes', [])
-             for att in atts: kw[att] = getattr(paragraph, att)
-             subs = self.color_paragraphs(paragraph.getSubparagraphs())
-             new_paragraphs=apply(ST.StructuredTextParagraph,
-                (paragraph.getColorizableTexts()[0], subs), kw),
-        
-          # color the inline StructuredText types
-          # for each StructuredTextParagraph
-          for paragraph in new_paragraphs:
-             
-             if paragraph.getNodeName() is "StructuredTextTable":
-#                cells = paragraph.getColumns()
-                text = paragraph.getColorizableTexts()
-                text = map(ST.StructuredText,text)
-                text = map(self.__call__,text)
-                for t in range(len(text)):
-                    text[t] = text[t].getSubparagraphs()
-                paragraph.setColorizableTexts(text)
-                
-             paragraph.setColorizableTexts(
-                map(self.color_text,
-                    paragraph.getColorizableTexts()
-                    ))
-             result.append(paragraph)
+        result=[]
+        for paragraph in raw_paragraphs:
+            if paragraph.getNodeName() != 'StructuredTextParagraph':
+                result.append(paragraph)
+                continue
 
-       return result
+            for pt in self.paragraph_types:
+                if type(pt) is st:
+                    # grab the corresponding function
+                    pt=getattr(self, pt)
+                # evaluate the paragraph
+                r=pt(paragraph)
+                if r:
+                    if type(r) not in sequence_types:
+                        r=r,
+                    new_paragraphs=r
+                    for paragraph in new_paragraphs:
+                        subs = self.color_paragraphs(paragraph.getSubparagraphs())
+                        paragraph.setSubparagraphs(subs)
+                    break
+            else:
+                # copy, retain attributes
+                kw = {}
+                atts = getattr(paragraph, '_attributes', [])
+                for att in atts: kw[att] = getattr(paragraph, att)
+                subs = self.color_paragraphs(paragraph.getSubparagraphs())
+                new_paragraphs=apply(ST.StructuredTextParagraph,
+                   (paragraph.getColorizableTexts()[0], subs), kw),
+
+            # color the inline StructuredText types
+            # for each StructuredTextParagraph
+            for paragraph in new_paragraphs:
+
+                if paragraph.getNodeName() is "StructuredTextTable":
+#                cells = paragraph.getColumns()
+                    text = paragraph.getColorizableTexts()
+                    text = map(ST.StructuredText,text)
+                    text = map(self.__call__,text)
+                    for t in range(len(text)):
+                        text[t] = text[t].getSubparagraphs()
+                    paragraph.setColorizableTexts(text)
+
+                paragraph.setColorizableTexts(
+                   map(self.color_text,
+                       paragraph.getColorizableTexts()
+                       ))
+                result.append(paragraph)
+
+        return result
 
     def doc_table(self, paragraph, expr = re.compile(r'\s*\|[-]+\|').match):
         text    = paragraph.getColorizableTexts()[0]
         m       = expr(text)
-        
+
         subs = paragraph.getSubparagraphs()
-        
+
         if not (m):
             return None
         rows = []
-                
+
         spans   = []
         ROWS    = []
         COLS    = []
         indexes = []
         ignore  = []
-        
+
         TDdivider   = re.compile("[\-]+").match
         THdivider   = re.compile("[\=]+").match
         col         = re.compile('\|').search
         innertable  = re.compile('\|([-]+|[=]+)\|').search
-        
+
         text = text.strip()
         rows = text.split('\n')
         foo  = ""
-        
+
         for row in range(len(rows)):
             rows[row] = rows[row].strip()
-        
+
         # have indexes store if a row is a divider
         # or a cell part
         for index in range(len(rows)):
@@ -539,20 +539,20 @@ class DocumentClass:
             foo = ""
             ROWS.append(COLS)
             COLS = []
-        
+
         spans.sort()
         ROWS = ROWS[1:len(ROWS)]
 
         # find each column span
         cols    = []
         tmp     = []
-        
+
         for row in ROWS:
             for c in row:
                 tmp.append(c[1])
             cols.append(tmp)
             tmp = []
-        
+
         cur = 1
         tmp = []
         C   = []
@@ -565,12 +565,12 @@ class DocumentClass:
                     cur = 1
             C.append(tmp)
             tmp = []
-        
+
         for index in range(len(C)):
             for i in range(len(C[index])):
                 ROWS[index][i] = (ROWS[index][i][0],C[index][i])
         rows = ROWS
-        
+
         # label things as either TableData or
         # Table header
         TD  = []
@@ -588,11 +588,11 @@ class DocumentClass:
         #print "TD  => ", TD
         #print "TH  => ", TH
         #print "all => ", all, "\n"
-        
+
         for div in dividers:
             if div in TD:
                 index = all.index(div)
-                for rowindex in range(all[index-1],all[index]):                    
+                for rowindex in range(all[index-1],all[index]):
                     for i in range(len(rows[rowindex])):
                         rows[rowindex][i] = (rows[rowindex][i][0],
                                              rows[rowindex][i][1],
@@ -604,7 +604,7 @@ class DocumentClass:
                         rows[rowindex][i] = (rows[rowindex][i][0],
                                              rows[rowindex][i][1],
                                              "th")
-        
+
         # now munge the multi-line cells together
         # as paragraphs
         ROWS    = []
@@ -622,7 +622,7 @@ class DocumentClass:
                     COLS[index][0] = COLS[index][0] + (row[index][0]) + "\n"
                     COLS[index][1] = row[index][1]
                     COLS[index][2] = row[index][2]
-        
+
         # now that each cell has been munged together,
         # determine the cell's alignment.
         # Default is to center. Also determine the cell's
@@ -637,7 +637,7 @@ class DocumentClass:
                 leftindent      = 0
                 rightindent     = 0
                 left            = []
-                right           = []                                    
+                right           = []
                 text            = row[index][0]
                 text            = text.split('\n')
                 text            = text[:len(text)-1]
@@ -698,23 +698,23 @@ class DocumentClass:
                     align="center"
                 else:
                     align="left"
-                
+
                 cols.append((row[index][0],row[index][1],align,valign,row[index][2]))
             rows.append(cols)
             cols = []
         return StructuredTextTable(rows,text,subs,indent=paragraph.indent)
-            
+
     def doc_bullet(self, paragraph, expr = re.compile(r'\s*[-*o]\s+').match):
         top=paragraph.getColorizableTexts()[0]
         m=expr(top)
 
         if not m:
             return None
-            
+
         subs=paragraph.getSubparagraphs()
         if top[-2:]=='::':
-           subs=[StructuredTextExample(subs)]
-           top=top[:-1]
+            subs=[StructuredTextExample(subs)]
+            top=top[:-1]
         return StructuredTextBullet(top[m.span()[1]:], subs,
                                      indent=paragraph.indent,
                                      bullet=top[:m.span()[1]]
@@ -723,23 +723,23 @@ class DocumentClass:
     def doc_numbered(
         self, paragraph,
         expr = re.compile(r'(\s*[%s]\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)' % letters).match):
-        
+
         # This is the old expression. It had a nasty habit
         # of grabbing paragraphs that began with a single
         # letter word even if there was no following period.
-        
+
         #expr = re.compile('\s*'
         #                   '(([a-zA-Z]|[0-9]+|[ivxlcdmIVXLCDM]+)\.)*'
         #                   '([a-zA-Z]|[0-9]+|[ivxlcdmIVXLCDM]+)\.?'
         #                   '\s+').match):
-        
+
         top=paragraph.getColorizableTexts()[0]
         m=expr(top)
         if not m: return None
         subs=paragraph.getSubparagraphs()
         if top[-2:]=='::':
-           subs=[StructuredTextExample(subs)]
-           top=top[:-1]
+            subs=[StructuredTextExample(subs)]
+            top=top[:-1]
         return StructuredTextNumbered(top[m.span()[1]:], subs,
                                         indent=paragraph.indent,
                                         number=top[:m.span()[1]])
@@ -762,8 +762,8 @@ class DocumentClass:
 
         subs=paragraph.getSubparagraphs()
         if top[-2:]=='::':
-           subs=[StructuredTextExample(subs)]
-           top=top[:-1]
+            subs=[StructuredTextExample(subs)]
+            top=top[:-1]
 
         return StructuredTextDescription(
            title, top, subs,
@@ -776,13 +776,13 @@ class DocumentClass:
         top=paragraph.getColorizableTexts()[0]
         if not top.strip(): return None
         if top[-2:]=='::':
-           subs=StructuredTextExample(subs)
-           if top.strip()=='::': return subs
-           # copy attrs when returning a paragraph
-           kw = {}
-           atts = getattr(paragraph, '_attributes', [])
-           for att in atts: kw[att] = getattr(paragraph, att)
-           return apply(ST.StructuredTextParagraph, (top[:-1], [subs]), kw)
+            subs=StructuredTextExample(subs)
+            if top.strip()=='::': return subs
+            # copy attrs when returning a paragraph
+            kw = {}
+            atts = getattr(paragraph, '_attributes', [])
+            for att in atts: kw[att] = getattr(paragraph, att)
+            return apply(ST.StructuredTextParagraph, (top[:-1], [subs]), kw)
 
         if top.find('\n') >= 0: return None
         return StructuredTextSection(top, subs, indent=paragraph.indent)
@@ -797,13 +797,13 @@ class DocumentClass:
         #          r"([^ \t\n\r\f\v']|[^ \t\n\r\f\v'][^\n\r']*[^ \t\n\r\f\v'])" # contents
         #          r"'(?:\s|[,.;:!?]|$)"  # close
         #          ).search):
-        
+
         r=expr(s) #or expr2(s)
         if r:
-           start, end = r.span(2)
-           return (StructuredTextLiteral(s[start:end]), start-1, end+1)
+            start, end = r.span(2)
+            return (StructuredTextLiteral(s[start:end]), start-1, end+1)
         else:
-           return None
+            return None
 
     def doc_emphasize(
         self, s,
@@ -813,16 +813,16 @@ class DocumentClass:
 
         r=expr(s)
         if r:
-           start, end = r.span(1)
-           return (StructuredTextEmphasis(s[start:end]), start-1, end+1)
+            start, end = r.span(1)
+            return (StructuredTextEmphasis(s[start:end]), start-1, end+1)
         else:
-           return None
-    
+            return None
+
     def doc_inner_link(self,
                        s,
                        expr1 = re.compile(r"\.\.\s*").search,
                        expr2 = re.compile(r"\[[%s%s]+\]" % (letters, digits) ).search):
-        
+
         # make sure we dont grab a named link
         if expr2(s) and expr1(s):
             start1,end1 = expr1(s).span()
@@ -838,11 +838,11 @@ class DocumentClass:
             start,end = expr2(s).span()
             return (StructuredTextInnerLink(s[start+1:end-1]),start,end)
         return None
-    
+
     def doc_named_link(self,
                        s,
                        expr=re.compile(r"(\.\.\s)(\[[%s0-9]+\])" % letters).search):
-        
+
         result = expr(s)
         if result:
             start,end   = result.span(2)
@@ -850,7 +850,7 @@ class DocumentClass:
             st,en       = result.span()
             return (StructuredTextNamedLink(str),st,en)
         return None
-    
+
     def doc_underline(self,
                       s,
                       expr=re.compile(r'_([%s%s%s\s]+)_([\s%s]|$)' % (letters, digits, under_punc,phrase_delimiters)).search):
@@ -858,13 +858,13 @@ class DocumentClass:
         result = expr(s)
         if result:
             if result.group(1)[:1] == '_':
-               return None # no double unders
+                return None # no double unders
             start,end = result.span(1)
             st,e = result.span()
             return (StructuredTextUnderline(s[start:end]),st,e-len(result.group(2)))
         else:
             return None
-    
+
     def doc_strong(self,
                    s,
                    expr = re.compile(r'\*\*([%s%s%s\s]+?)\*\*' % (letters, digits, strongem_punc)).search
@@ -873,10 +873,10 @@ class DocumentClass:
 
         r=expr(s)
         if r:
-           start, end = r.span(1)
-           return (StructuredTextStrong(s[start:end]), start-2, end+2)
+            start, end = r.span(1)
+            return (StructuredTextStrong(s[start:end]), start-2, end+2)
         else:
-           return None
+            return None
 
     ## Some constants to make the doc_href() regex easier to read.
     _DQUOTEDTEXT = r'("[ %s0-9\n\r%s]+")' % (letters,dbl_quoted_punc) ## double quoted text
@@ -894,7 +894,7 @@ class DocumentClass:
     def doc_href2(self, s,
                   expr=re.compile(_DQUOTEDTEXT + r'(\,\s+)' + _ABSOLUTE_URL + _SPACES).search
                    ):
-         return self.doc_href(s, expr)
+        return self.doc_href(s, expr)
 
 
     def doc_href(self, s, expr, punctuation=re.compile(r"[\,\.\?\!\;]+").match):
@@ -904,7 +904,7 @@ class DocumentClass:
         if r:
             # need to grab the href part and the
             # beginning part
-                        
+
             start,e = r.span(1)
             name    = s[start:e]
             name    = name.replace('"','',2)
@@ -913,18 +913,18 @@ class DocumentClass:
             if punctuation(s[end-1:end]):
                 end = end -1
             link    = s[st:end]
-            #end     = end - 1                        
-            
+            #end     = end - 1
+
             # name is the href title, link is the target
             # of the href
             return (StructuredTextLink(name, href=link),
                     start, end)
-            
+
             #return (StructuredTextLink(s[start:end], href=s[start:end]),
             #        start, end)
         else:
             return None
-    
+
     def doc_sgml(self,s,expr=re.compile(r"\<[%s0-9\.\=\'\"\:\/\-\#\+\s\*]+\>" % letters).search):
         """
         SGML text is ignored and outputed as-is
@@ -945,4 +945,3 @@ class DocumentClass:
             return (StructuredTextXref(s[start:end]), start-1, end+1)
         else:
             return None
-

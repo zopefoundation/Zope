@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.52 2002/05/21 14:41:41 andreasjung Exp $'
-__version__='$Revision: 1.52 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.53 2002/08/14 22:02:25 mj Exp $'
+__version__='$Revision: 1.53 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -35,7 +35,7 @@ class Tree:
 
     def __init__(self, blocks):
         tname, args, section = blocks[0]
-        args=parse_params(args, name=None, expr=None, nowrap=1, 
+        args=parse_params(args, name=None, expr=None, nowrap=1,
                           expand=None, leaves=None,
                           header=None, footer=None,
                           branches=None, branches_expr=None,
@@ -71,11 +71,11 @@ class Tree:
         if prefix and not simple_name(prefix):
             raise ParseError, _tm(
                 'prefix is not a simple name', 'tree')
-        
+
         self.__name__ = name
         self.section=section.blocks
         self.args=args
-            
+
 
     def render(self,md):
         args=self.args
@@ -104,7 +104,7 @@ def tpRender(self, md, section, args,
       ['eagle'], ['jeep', [1983, 1985]]  # eagle, jeep, 1983 jeep and 1985 jeep
 
     where the items are object ids. The state will be converted to a
-    compressed and base64ed string that gets unencoded, uncompressed, 
+    compressed and base64ed string that gets unencoded, uncompressed,
     and evaluated on the other side.
 
     Note that ids used in state need not be connected to urls, since
@@ -119,7 +119,7 @@ def tpRender(self, md, section, args,
     idattr=args['id']
     if hasattr(self, idattr):
         id=getattr(self, idattr)
-        if not simple_type(type(id)): id=id()            
+        if not simple_type(type(id)): id=id()
     elif hasattr(self, '_p_oid'): id=oid(self)
     else: id=pyid(self)
 
@@ -130,7 +130,7 @@ def tpRender(self, md, section, args,
         state=md['tree-state']
         diff=md['tree-diff']
         substate=md['-tree-substate-']
-        colspan=md['tree-colspan']      
+        colspan=md['tree-colspan']
         level=md['tree-level']
 
     except KeyError:
@@ -189,7 +189,7 @@ def tpRender(self, md, section, args,
     if prefix:
         for k, v in treeData.items():
             treeData[prefix + k[4:].replace('-', '_')] = v
-    
+
     md._push(InstanceDict(self, md))
     md._push(treeData)
 
@@ -217,7 +217,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
         urlattr=args['url']
         if urlattr and hasattr(self, urlattr):
             tpUrl=getattr(self, urlattr)
-            if not simple_type(type(tpUrl)): tpUrl=tpUrl()            
+            if not simple_type(type(tpUrl)): tpUrl=tpUrl()
             url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
             root_url = root_url or tpUrl
 
@@ -357,8 +357,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             elif level > 0: output(_td_single  * level)
             output(_td_single)
             output('\n')
-            
-    
+
+
         # add item text
         dataspan=colspan-level
         output('<td%s%s valign="top" align="left">' %
@@ -392,7 +392,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                             or ''))),
                     standard_html_footer='</td></tr>',
                     ))
-            
+
         if items==1:
             # leaves
             if have_arg('leaves'):
@@ -526,7 +526,7 @@ def encode_seq(state):
 
     l=state.find('=')
     if l >= 0: state=state[:l]
-    
+
     state=translate(state, tplus)
     return state
 
@@ -543,7 +543,7 @@ def encode_str(state):
 
     l=state.find('=')
     if l >= 0: state=state[:l]
-        
+
     state=translate(state, tplus)
     return state
 
@@ -577,7 +577,7 @@ def decode_seq(state):
     if state.find('*') >= 0: raise 'Illegal State', state
     try: return list(eval(state,{'__builtins__':{}}))
     except: return []
-    
+
 
 def tpStateLevel(state, level=0):
     for sub in state:
@@ -604,7 +604,7 @@ def tpValuesIds(self, get_items, args,
 
                     if hasattr(item, idattr):
                         id=getattr(item, idattr)
-                        if not simple_type(type(id)): id=id()            
+                        if not simple_type(type(id)): id=id()
                     elif hasattr(item, '_p_oid'): id=oid(item)
                     else: id=pyid(item)
 
@@ -619,7 +619,7 @@ def tpValuesIds(self, get_items, args,
 
 def oid(self):
     return b2a_base64(str(self._p_oid))[:-1]
-    
+
 
 #icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
 #icoPlus ='<IMG SRC="Plus_icon" BORDER="0">'

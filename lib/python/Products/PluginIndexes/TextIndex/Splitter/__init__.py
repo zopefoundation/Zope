@@ -1,5 +1,5 @@
 ##############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -8,7 +8,7 @@
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 #############################################################################
 
 import os,sys,exceptions
@@ -26,11 +26,8 @@ def getSplitter(name=None):
     if not name in splitterNames and name:
         raise exceptions.RuntimeError, "No such splitter '%s'" % name
 
-    if not name: name = splitterNames[0] 
+    if not name: name = splitterNames[0]
     if not vars().has_key(name):
         exec( "from %s.%s import %s" % (name,name,name))
 
     return vars()[name]
-    
-
-

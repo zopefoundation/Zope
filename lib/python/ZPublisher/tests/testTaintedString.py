@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import unittest
@@ -34,7 +34,7 @@ class TestTaintedString(unittest.TestCase):
         self.assertEquals(cmp(self.tainted, 'a'), -1)
         self.assertEquals(cmp(self.tainted, '.'), 1)
 
-    def testHash(self): 
+    def testHash(self):
         hash = {}
         hash[self.tainted] = self.quoted
         hash[self.unquoted] = self.unquoted
@@ -125,7 +125,7 @@ class TestTaintedString(unittest.TestCase):
             self.assert_(isinstance(part, self._getClass()))
         for part in tainted.split():
             self.failIf(isinstance(part, self._getClass()))
-        
+
         multiline = 'test\n<tainted>'
         lines = self._getClass()(multiline).split()
         self.assertEquals(lines, multiline.split())
@@ -158,10 +158,9 @@ def debug():
 def pdebug():
     import pdb
     pdb.run('debug()')
-   
+
 if __name__=='__main__':
     if len(sys.argv) > 1:
         globals()[sys.argv[1]]()
     else:
         main()
-

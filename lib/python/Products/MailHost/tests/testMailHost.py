@@ -5,7 +5,7 @@ import ZODB, Acquisition
 from Products.MailHost.MailHost import MailHostError, _mungeHeaders
 
 class TestMailHost( unittest.TestCase ):
- 
+
     def testAllHeaders( self ):
         msg = """To: recipient@domain.com
 From: sender@domain.com
@@ -57,4 +57,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -7,7 +7,7 @@ def set_read_multi():
         """Internal: read a part that is itself multipart."""
         ib = self.innerboundary
         if not valid_boundary(ib):
-            raise ValueError, ('Invalid boundary in multipart form: %s' 
+            raise ValueError, ('Invalid boundary in multipart form: %s'
                                % `ib`)
         self.list = []
         klass = self.FieldStorageClass or self.__class__

@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -29,22 +29,22 @@ if not hasattr(cgi, 'valid_boundary'):
     import cgi_hotfix
 
 isCGI_NAME = {
-        'SERVER_SOFTWARE' : 1, 
-        'SERVER_NAME' : 1, 
-        'GATEWAY_INTERFACE' : 1, 
-        'SERVER_PROTOCOL' : 1, 
-        'SERVER_PORT' : 1, 
-        'REQUEST_METHOD' : 1, 
-        'PATH_INFO' : 1, 
-        'PATH_TRANSLATED' : 1, 
-        'SCRIPT_NAME' : 1, 
-        'QUERY_STRING' : 1, 
-        'REMOTE_HOST' : 1, 
-        'REMOTE_ADDR' : 1, 
-        'AUTH_TYPE' : 1, 
-        'REMOTE_USER' : 1, 
-        'REMOTE_IDENT' : 1, 
-        'CONTENT_TYPE' : 1, 
+        'SERVER_SOFTWARE' : 1,
+        'SERVER_NAME' : 1,
+        'GATEWAY_INTERFACE' : 1,
+        'SERVER_PROTOCOL' : 1,
+        'SERVER_PORT' : 1,
+        'REQUEST_METHOD' : 1,
+        'PATH_INFO' : 1,
+        'PATH_TRANSLATED' : 1,
+        'SCRIPT_NAME' : 1,
+        'QUERY_STRING' : 1,
+        'REMOTE_HOST' : 1,
+        'REMOTE_ADDR' : 1,
+        'AUTH_TYPE' : 1,
+        'REMOTE_USER' : 1,
+        'REMOTE_IDENT' : 1,
+        'CONTENT_TYPE' : 1,
         'CONTENT_LENGTH' : 1,
         'SERVER_URL': 1,
         }.has_key
@@ -62,7 +62,7 @@ _marker=[]
 class HTTPRequest(BaseRequest):
     """\
     Model HTTP request data.
-    
+
     This object provides access to request data.  This includes, the
     input headers, form data, server data, and cookies.
 
@@ -150,7 +150,7 @@ class HTTPRequest(BaseRequest):
         if protocol is None: protocol = oldprotocol
         if hostname is None: hostname = oldhostname
         if port is None: port = oldport
-        
+
         if (port is None or default_port[protocol] == port):
             host = hostname
         else:
@@ -258,7 +258,7 @@ class HTTPRequest(BaseRequest):
 
         # _script and the other _names are meant for URL construction
         self._script = map(quote, filter(None, script.split( '/')))
-        
+
         while b and b[-1]=='/': b=b[:-1]
         p = b.rfind('/')
         if p >= 0: b=b[:p+1]
@@ -272,7 +272,7 @@ class HTTPRequest(BaseRequest):
             if have_env('HTTPS') and (
                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
                 protocol = 'https'
-            elif (have_env('SERVER_PORT_SECURE') and 
+            elif (have_env('SERVER_PORT_SECURE') and
                 environ['SERVER_PORT_SECURE'] == "1"):
                 protocol = 'https'
             else: protocol = 'http'
@@ -297,9 +297,9 @@ class HTTPRequest(BaseRequest):
                 port = environ['SERVER_PORT']
             self.setServerURL(protocol=protocol, hostname=hostname, port=port)
             server_url = other['SERVER_URL']
-             
+
         if server_url[-1:]=='/': server_url=server_url[:-1]
-                        
+
         if b: self.base="%s/%s" % (server_url,b)
         else: self.base=server_url
         while script[:1]=='/': script=script[1:]
@@ -328,7 +328,7 @@ class HTTPRequest(BaseRequest):
                     taintedcookies[k] = v
         self.cookies=cookies
         self.taintedcookies = taintedcookies
-    
+
     def processInputs(
         self,
         # "static" variables that we want to be local for speed
@@ -352,7 +352,7 @@ class HTTPRequest(BaseRequest):
         response=self.response
         environ=self.environ
         method=environ.get('REQUEST_METHOD','GET')
-        
+
         if method != 'GET': fp=self.stdin
         else:               fp=None
 
@@ -385,9 +385,9 @@ class HTTPRequest(BaseRequest):
             defaults={}
             tainteddefaults={}
             converter=seqf=None
-            
+
             for item in fslist:
-                
+
                 isFileUpload = 0
                 key=item.name
                 if (hasattr(item,'file') and hasattr(item,'filename')
@@ -415,7 +415,7 @@ class HTTPRequest(BaseRequest):
                 # We'll do the search in two steps.  First, we'll
                 # do a string search, and then we'll check it with
                 # a re search.
-                
+
 
                 l=key.rfind(':')
                 if l >= 0:
@@ -427,8 +427,8 @@ class HTTPRequest(BaseRequest):
                         type_name=key[l+1:]
                         key=key[:l]
                         c=get_converter(type_name, None)
-                        
-                        if c is not None: 
+
+                        if c is not None:
                             converter=c
                             converter_type = type_name
                             flags=flags|CONVERTED
@@ -457,7 +457,7 @@ class HTTPRequest(BaseRequest):
                             if not item: flags=flags|EMPTY
                         elif has_codec(type_name):
                             character_encoding = type_name
-    
+
                         l=key.rfind(':')
                         if l < 0: break
                         mo=search_type(key,l)
@@ -465,7 +465,7 @@ class HTTPRequest(BaseRequest):
                         else:  l = -1
 
 
-             
+
                 # Filter out special names from form:
                 if CGI_name(key) or key[:5]=='HTTP_': continue
 
@@ -476,7 +476,7 @@ class HTTPRequest(BaseRequest):
 
                 if flags:
 
-                    # skip over empty fields    
+                    # skip over empty fields
                     if flags&EMPTY: continue
 
                     #Split the key and its attribute
@@ -494,7 +494,7 @@ class HTTPRequest(BaseRequest):
                             raise ValueError(
                                 "%s is not a valid record attribute name" %
                                 escape(attr))
-                       
+
                     # defer conversion
                     if flags&CONVERTED:
                         try:
@@ -525,7 +525,7 @@ class HTTPRequest(BaseRequest):
                                         tainted[i] = TaintedString(tainted[i])
                                 if not is_tainted:
                                     tainted = None
-                                
+
                         except:
                             if (not item and not (flags&DEFAULT) and
                                 defaults.has_key(key)):
@@ -541,8 +541,8 @@ class HTTPRequest(BaseRequest):
                                     if flags&RECORDS:
                                         tainted = getattr(tainted[-1], attr)
                             else:
-                                raise                            
-                         
+                                raise
+
                     elif not isFileUpload and '<' in item:
                         # Flag potentially unsafe values
                         tainted = TaintedString(item)
@@ -607,7 +607,7 @@ class HTTPRequest(BaseRequest):
                                         newrec = record()
                                         setattr(newrec, attr, copyitem)
                                         treclist.append(newrec)
-                            
+
                             if not hasattr(x,attr):
                                 #If the attribute does not
                                 #exist, setit
@@ -642,7 +642,7 @@ class HTTPRequest(BaseRequest):
                             else:
                                 # it is not a sequence so
                                 # set the attribute
-                                setattr(b,attr,item)        
+                                setattr(b,attr,item)
 
                             # Store a tainted copy as well if necessary
                             if tainted:
@@ -682,7 +682,7 @@ class HTTPRequest(BaseRequest):
                                     else:
                                         tainted_mapping[tainted_key] = [copied]
                                 tainted_mapping[tainted_key].append(tainted)
-                            
+
                             elif tainted_mapping.has_key(tainted_key):
                                 # We may already have encountered a tainted
                                 # value for this key, and the tainted_mapping
@@ -741,7 +741,7 @@ class HTTPRequest(BaseRequest):
                 else:
                     # This branch is for case when no type was specified.
                     mapping_object = form
-    
+
                     if not isFileUpload and '<' in item:
                         tainted = TaintedString(item)
                     elif '<' in key:
@@ -761,7 +761,7 @@ class HTTPRequest(BaseRequest):
                                 else:
                                     taintedform[tainted_key] = [copied]
                             taintedform[tainted_key].append(tainted)
-                        
+
                         elif taintedform.has_key(tainted_key):
                             # We may already have encountered a tainted value
                             # for this key, and the taintedform needs to hold
@@ -787,7 +787,7 @@ class HTTPRequest(BaseRequest):
                 for key, value in defaults.items():
                     tainted_key = key
                     if '<' in key: tainted_key = TaintedString(key)
-                    
+
                     if not form.has_key(key):
                         # if the form does not have the key,
                         # set the default
@@ -795,7 +795,7 @@ class HTTPRequest(BaseRequest):
 
                         if tainteddefaults.has_key(tainted_key):
                             taintedform[tainted_key] = \
-                                tainteddefaults[tainted_key] 
+                                tainteddefaults[tainted_key]
                     else:
                         #The form has the key
                         tdefault = tainteddefaults.get(tainted_key, value)
@@ -833,8 +833,8 @@ class HTTPRequest(BaseRequest):
                                     # if the form dictionary doesn't have
                                     # the attribute, set it to the default
                                     setattr(r,k,v)
-                            form[key] = r    
-                                
+                            form[key] = r
+
                         elif isinstance(value, lt):
                             # the default value is a list
                             l = form[key]
@@ -892,20 +892,20 @@ class HTTPRequest(BaseRequest):
                                 if isinstance(x, record):
                                     # if the x is a record
                                     for k, v in x.__dict__.items():
-                                        
+
                                         # loop through each
                                         # attribute and value in
                                         # the record
-                                        
+
                                         for y in l:
-                                            
+
                                             # loop through each
                                             # record in the form
                                             # list if it doesn't
                                             # have the attributes
                                             # in the default
                                             # dictionary, set them
-                                            
+
                                             if not hasattr(y, k):
                                                 setattr(y, k, v)
                                 else:
@@ -917,7 +917,7 @@ class HTTPRequest(BaseRequest):
                             # The form has the key, the key is not mapped
                             # to a record or sequence so do nothing
                             pass
-                                
+
             # Convert to tuples
             if tuple_items:
                 for key in tuple_items.keys():
@@ -951,7 +951,7 @@ class HTTPRequest(BaseRequest):
                                     # If the record has the attribute
                                     # convert it to a tuple and set it
                                     value=tuple(getattr(x,attr))
-                                    setattr(x,attr,value)          
+                                    setattr(x,attr,value)
 
                         # Do the same for the tainted counterpart
                         if taintedform.has_key(tainted_split_key):
@@ -966,20 +966,20 @@ class HTTPRequest(BaseRequest):
                                         seq = tuple(seq)
                                         setattr(trec, attr, seq)
                     else:
-                        # the form does not have the split key 
+                        # the form does not have the split key
                         tainted_key = key
                         if '<' in key: tainted_key = TaintedString(key)
                         if form.has_key(key):
                             # if it has the original key, get the item
                             # convert it to a tuple
-                            item=form[key]  
+                            item=form[key]
                             item=tuple(form[key])
                             form[key]=item
 
                         if taintedform.has_key(tainted_key):
                             tainted = tuple(taintedform[tainted_key])
                             taintedform[tainted_key] = tainted
-                     
+
         if meth:
             if environ.has_key('PATH_INFO'):
                 path=environ['PATH_INFO']
@@ -1007,7 +1007,7 @@ class HTTPRequest(BaseRequest):
         rsp=req.response
         req['PATH_INFO']=path
         object=None
-        
+
         # Try to traverse to get an object. Note that we call
         # the exception method on the response, but we don't
         # want to actually abort the current transaction
@@ -1036,10 +1036,10 @@ class HTTPRequest(BaseRequest):
 
         req.close()
         return object
-        
+
 
     def clone(self):
-        # Return a clone of the current request object 
+        # Return a clone of the current request object
         # that may be used to perform object traversal.
         environ=self.environ.copy()
         environ['REQUEST_METHOD']='GET'
@@ -1073,8 +1073,8 @@ class HTTPRequest(BaseRequest):
         Return a value for the required variable name.
         The value will be looked up from one of the request data
         categories. The search order is environment variables,
-        other variables, form data, and then cookies. 
-        
+        other variables, form data, and then cookies.
+
         """ #"
         other=self.other
         if other.has_key(key):
@@ -1246,14 +1246,14 @@ class HTTPRequest(BaseRequest):
         for k,v in self.other.items():
             if k in ('PARENTS','RESPONSE'): continue
             result=result + row % (escape(k), escape(repr(v)))
-    
+
         for n in "0123456789":
             key = "URL%s"%n
-            try: result=result + row % (key, escape(self[key])) 
+            try: result=result + row % (key, escape(self[key]))
             except KeyError: pass
         for n in "0123456789":
             key = "BASE%s"%n
-            try: result=result + row % (key, escape(self[key])) 
+            try: result=result + row % (key, escape(self[key]))
             except KeyError: pass
 
         result=result+"</table><h3>environ</h3><table>"
@@ -1280,14 +1280,14 @@ class HTTPRequest(BaseRequest):
         for k,v in self.other.items():
             if k in ('PARENTS','RESPONSE'): continue
             result=result + row % (k, repr(v))
-    
+
         for n in "0123456789":
             key = "URL%s"%n
-            try: result=result + row % (key, self[key]) 
+            try: result=result + row % (key, self[key])
             except KeyError: pass
         for n in "0123456789":
             key = "BASE%s"%n
-            try: result=result + row % (key, self[key]) 
+            try: result=result + row % (key, self[key])
             except KeyError: pass
 
         result=result+"\nENVIRON\n\n"
@@ -1408,9 +1408,9 @@ class FileUpload:
         # self.headers so that managed code can access them.
         try:    self.headers.__allow_access_to_unprotected_subobjects__ = 1
         except: pass
-        
+
     def __nonzero__(self):
-        """FileUpload objects are considered false if their 
+        """FileUpload objects are considered false if their
            filename is empty.
         """
         return not not self.filename
@@ -1453,8 +1453,8 @@ def parse_cookie(text,
                 name  = mo_p.group(2)
                 value = mo_p.group(3)
 
-            else: 
-                return result 
+            else:
+                return result
 
     finally: release()
 
@@ -1475,11 +1475,11 @@ class record:
 
     def __getitem__(self, key):
         return self.__dict__[key]
-            
+
     def __str__(self):
         L1 = self.__dict__.items()
         L1.sort()
-        return ", ".join(map(lambda item: "%s: %s" % item, L1)) 
+        return ", ".join(map(lambda item: "%s: %s" % item, L1))
 
     def __repr__(self):
         #return repr( self.__dict__ )
@@ -1502,4 +1502,3 @@ RECORDS=8
 REC=RECORD|RECORDS
 EMPTY=16
 CONVERTED=32
-

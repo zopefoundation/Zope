@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.3 2002/03/11 14:53:05 andreasjung Exp $'
+__version__ = '$Id: FilteredSet.py,v 1.4 2002/08/14 22:19:34 mj Exp $'
 
 from BTrees.IIBTree import IISet
 from Persistence import Persistent
@@ -27,7 +27,7 @@ class FilteredSetBase(Persistent):
         self.expr = expr
         self.clear()
 
-    
+
     def clear(self):
         self.ids  = IISet()
 
@@ -47,10 +47,10 @@ class FilteredSetBase(Persistent):
     def getType(self):          return self.meta_type
 
     def setExpression(self, expr): self.expr = expr
-    
+
     def __repr__(self):
         return '%s: (%s) %s' % (self.id,self.expr,map(None,self.ids))
-        
+
     __str__ = __repr__
 
 
@@ -63,7 +63,7 @@ class PythonFilteredSet(FilteredSetBase):
 
         try:
             if eval(self.expr): self.ids.insert(documentId)
-        except: 
+        except:
             LOG('FilteredSet',WARNING,'eval() failed',\
                 'Object: %s, expr: %s' % (o.getId(),self.expr),\
                 sys.exc_info())

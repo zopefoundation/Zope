@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import sys
@@ -22,7 +22,7 @@ class TestRangeHeaderParse(unittest.TestCase):
     def expectNone(self, header):
         result = parseRange(header)
         self.failUnless(result is None, 'Expected None, got %s' % `result`)
-    
+
     def expectSets(self, header, sets):
         result = parseRange(header)
         self.failUnless(result == sets,
@@ -62,12 +62,12 @@ class TestRangeHeaderParse(unittest.TestCase):
 
     def testOpenEnded(self):
         self.expectSets('bytes=100-', [(100, None)])
-       
+
     def testStartEqualsEnd(self):
         self.expectSets('bytes=100-100', [(100, 101)])
-       
+
     def testMultiple(self):
-        self.expectSets('bytes=-100,,1-2,20-', 
+        self.expectSets('bytes=-100,,1-2,20-',
             [(-100, None), (1, 3), (20, None)])
 
     def testFirstByte(self):
@@ -97,7 +97,7 @@ class TestOptimizeRanges(unittest.TestCase):
     def testNoOverlapOutOfOrder(self):
         self.expectSets([(1000, 2000), (3000, None), (1, 5)], 5000,
             [(1, 5), (1000, 2000), (3000, 5000)])
-       
+
     def testOverlapInOrder(self):
         self.expectSets([(1, 10), (8, 20), (25, None)], 5000,
             [(1, 20), (25, 5000)])
@@ -136,10 +136,9 @@ def debug():
 def pdebug():
     import pdb
     pdb.run('debug()')
-   
+
 if __name__=='__main__':
     if len(sys.argv) > 1:
         globals()[sys.argv[1]]()
     else:
         main()
-

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import os,sys
@@ -29,7 +29,7 @@ class TestCase( unittest.TestCase ):
         (  'öfters   Österreichische   herüber   Überfall   daß   Ärger   verärgert',
           ['öfters','österreichische','herüber','überfall','daß','ärger','verärgert'])
         )
-        
+
 
         pass
 
@@ -37,22 +37,22 @@ class TestCase( unittest.TestCase ):
         """
         """
 
-           
+
     def testAvailableSplitters( self ):
         "Test available splitters"
 
-        assert len(Splitter.availableSplitters) >0 
-        assert len(Splitter.splitterNames)>0 
+        assert len(Splitter.availableSplitters) >0
+        assert len(Splitter.splitterNames)>0
         assert len(Splitter.availableSplitters)==len(Splitter.splitterNames)
 
 
 
     def _test(self,sp_name,text,splitted):
-    
+
         splitter = Splitter.getSplitter(sp_name)
         result = list(splitter(text))
 
-        assert result==splitted, "%s: %s vs %s" % (sp_name,result,splitted) 
+        assert result==splitted, "%s: %s vs %s" % (sp_name,result,splitted)
 
 
 #    def testZopeSplitter(self):
@@ -60,7 +60,7 @@ class TestCase( unittest.TestCase ):
 #
 #        for text,splitted in self.testdata:
 #            self._test("ZopeSplitter",text,splitted)
-    
+
     def testISOSplitter(self):
         """test ISOSplitter"""
         for text,splitted in self.testdata:
@@ -82,7 +82,7 @@ def main():
     unittest.TextTestRunner().run( test_suite() )
 
 if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
+    if len(sys.argv) > 1:
+        globals()[sys.argv[1]]()
+    else:
+        main()

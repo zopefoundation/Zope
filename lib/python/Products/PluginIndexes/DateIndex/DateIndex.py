@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.6 2002/07/30 16:25:46 shane Exp $
+"""$Id: DateIndex.py,v 1.7 2002/08/14 22:19:27 mj Exp $
 """
 
 from DateTime.DateTime import DateTime
@@ -99,12 +99,12 @@ class DateIndex(UnIndex):
         index = self._index
         r = None
         opr = None
-                                
+
         #experimental code for specifing the operator
         operator = record.get( 'operator', self.useOperator )
         if not operator in self.operators :
             raise RuntimeError, "operator not valid: %s" % operator
-                                                                          
+
         # depending on the operator we use intersection or union
         if operator=="or":
             set_func = union
@@ -145,7 +145,7 @@ class DateIndex(UnIndex):
             #for k, set in setlist:
                 #if type(set) is IntType:
                     #set = IISet((set,))
-                #r = set_func(r, set) 
+                #r = set_func(r, set)
             # XXX: Use multiunion!
             r = multiunion(setlist)
 
@@ -201,4 +201,3 @@ def manage_addDateIndex( self, id, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a Date index"""
     return self.manage_addIndex(id, 'DateIndex', extra=None, \
                     REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)
-    

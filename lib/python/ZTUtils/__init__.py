@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Package of template utility classes and functions.
 
-$Id: __init__.py,v 1.5 2001/11/28 15:51:22 matt Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 2002/08/14 22:10:12 mj Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Batch import Batch
 from Iterator import Iterator
@@ -28,4 +28,3 @@ if sys.modules.has_key('Zope'):
 
     from Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
     from Zope import url_query, make_query, make_hidden_input
-

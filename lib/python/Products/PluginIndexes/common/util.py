@@ -1,5 +1,5 @@
 ##############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -8,10 +8,10 @@
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.9 2002/03/29 15:33:03 andreasjung Exp $'
+__version__ = '$Id: util.py,v 1.10 2002/08/14 22:19:34 mj Exp $'
 
 
 import re
@@ -32,10 +32,10 @@ class parseIndexRequest:
       Additional parameters for an index could be passed as index+"_usage" ...
 
 
-    - dictionary-style parameters specify a query for an index as 
-      an entry in the request dictionary where the key corresponds to the 
+    - dictionary-style parameters specify a query for an index as
+      an entry in the request dictionary where the key corresponds to the
       name of the index and the key is a dictionary with the parameters
-      passed to the index. 
+      passed to the index.
 
       Allowed keys of the parameter dictionary:
 
@@ -50,7 +50,7 @@ class parseIndexRequest:
      All restrictions of the dictionary-style parameters apply to the record-style
      parameters
 
-    """    
+    """
 
 
     ParserException = 'IndexRequestParseError'
@@ -61,7 +61,7 @@ class parseIndexRequest:
 
           request -- the request dictionary send from the ZPublisher
           iid     -- Id of index
-          options -- a list of options the index is interested in 
+          options -- a list of options the index is interested in
         """
 
         self.id = iid
@@ -101,19 +101,19 @@ class parseIndexRequest:
 
         elif t is DictType:
             """ query is a dictionary containing all parameters """
-    
+
             query = param.get("query", ())
             if type(query) in SequenceTypes:
                 keys = query
             else:
                 keys = [ query ]
 
-            for op in options:         
+            for op in options:
                 if op == "query": continue
 
                 if param.has_key(op):
                     setattr(self, op, param[op])
- 
+
         else:
             """ query is tuple, list, string, number, or something else """
 
@@ -134,7 +134,7 @@ class parseIndexRequest:
 
 
     def get(self,k,default_v=None):
-        
+
         if hasattr(self,k):
             v = getattr(self,k)
             if v: return v

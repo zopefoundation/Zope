@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Initialize the Zope Package and provide a published module
 """
@@ -43,7 +43,7 @@ else:
     else:
         DB=m.Storage
         DB=ZODB.DB(DB)
-        
+
     Globals.BobobaseName = DB.getName()
     sys.modules['Zope.custom_zodb']=m
 
@@ -97,7 +97,7 @@ def debug(*args, **kw):
     return apply(ZPublisher.test,('Zope',)+args, kw)
 
 class RequestContainer(ExtensionClass.Base):
-        def __init__(self,r): self.REQUEST=r
+    def __init__(self,r): self.REQUEST=r
 
 def zpublisher_exception_hook(
     published, REQUEST, t, v, traceback,
@@ -161,7 +161,7 @@ def zpublisher_exception_hook(
 
 
         f(client, REQUEST, t, v, traceback)
-        
+
     finally: traceback=None
 
 
@@ -194,12 +194,12 @@ class TransactionsManager:
             # Try hard to get the physical path of the object,
             # but there are many circumstances where that's not possible.
             to_append = ()
-            
+
             if hasattr(object, 'im_self') and hasattr(object, '__name__'):
                 # object is a Python method.
                 to_append = (object.__name__,)
                 object = object.im_self
-                
+
             while object is not None and \
                   not hasattr(object, 'getPhysicalPath'):
                 if not hasattr(object, '__name__'):
@@ -233,9 +233,9 @@ class TransactionsManager:
                 auth_path = request_get('AUTHENTICATION_PATH')
             else:
                 auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
-                
+
             T.setUser(auth_user, auth_path)
-        
+
 
 zpublisher_transactions_manager = TransactionsManager()
 

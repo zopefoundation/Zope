@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -121,10 +121,10 @@ class Request:
         This name and value is stored in the 'Other' category.
 
         Permission -- Always available
-        
+
         """
 
-        
+
     def get_header(name, default=None):
         """
 
@@ -136,7 +136,7 @@ class Request:
         if available.
 
         Permission -- Always available
-        
+
         """
 
 
@@ -147,7 +147,7 @@ class Request:
         returns a false value otherwise.
 
         Permission -- Always available
-        
+
         """
 
 
@@ -157,7 +157,7 @@ class Request:
         Returns a sorted sequence of all keys in the REQUEST object.
 
         Permission -- Always available
-        
+
         """
 
     def items():
@@ -167,7 +167,7 @@ class Request:
         the REQUEST object.
 
         Permission -- Always available
-        
+
         """
 
     def values():
@@ -177,7 +177,7 @@ class Request:
         object.
 
         Permission -- Always available
-        
+
         """
 
     def setServerURL(protocol=None, hostname=None, port=None):
@@ -214,5 +214,3 @@ class Request:
 
         Permissions -- Always available
         """
-
-

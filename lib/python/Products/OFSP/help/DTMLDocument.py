@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -23,12 +23,12 @@ class DTMLDocument:
     A DTML Document is a Zope object that contains and executes DTML
     code. It is useful to represent web pages.
     """
-    
+
     __extends__=(
         'OFSP.ObjectManagerItem.ObjectManagerItem',
         'OFSP.PropertyManager.PropertyManager',
         )
-    
+
     def __call__(client=None, REQUEST={}, RESPONSE=None, **kw):
         """
 
@@ -101,7 +101,7 @@ class DTMLDocument:
           When the URL of a DTML Document is fetched from Zope, the
           DTML Document is called by the publisher.  The REQUEST
           object is passed as the second argument to the Document.
-          
+
         Permission -- 'View'
 
         """
@@ -111,19 +111,19 @@ class DTMLDocument:
         Change the DTML Document, replacing its contents with 'data'
         and
         changing its title.
-        
+
         The data argument may be a file object or a string.
-        
+
         Permission -- 'Change DTML Documents'
         """
-        
+
     def document_src():
         """
         Returns the unrendered source text of the DTML Document.
-        
+
         Permission -- 'View management screens'
         """
-        
+
     def get_size():
         """
         Returns the size of the unrendered source text of the DTML
@@ -133,5 +133,3 @@ class DTMLDocument:
         """
 
     __constructor__=manage_addDocument
-
-

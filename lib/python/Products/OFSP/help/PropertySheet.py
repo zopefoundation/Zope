@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 class PropertySheet:
@@ -16,8 +16,8 @@ class PropertySheet:
 
     A PropertySheet is an abstraction for organizing and working
     with a set of related properties. Conceptually it acts like a
-    container for a set of related properties and meta-data describing 
-    those properties. A PropertySheet may or may not provide a web 
+    container for a set of related properties and meta-data describing
+    those properties. A PropertySheet may or may not provide a web
     interface for managing its properties.
 
     """
@@ -26,7 +26,7 @@ class PropertySheet:
         """
 
         Return a namespace string usable as an xml namespace
-        for this property set. This may be an empty string if 
+        for this property set. This may be an empty string if
         there is no default namespace for a given property sheet
         (especially property sheets added in ZClass definitions).
 
@@ -37,27 +37,27 @@ class PropertySheet:
     def getProperty(id, d=None):
         """
 
-        Get the property 'id', returning the optional second 
+        Get the property 'id', returning the optional second
         argument or None if no such property is found.
 
         Permission -- Python only
-        
+
         """
 
     def getPropertyType(id):
         """
-        
+
         Get the type of property 'id'. Returns None if no such
         property exists.
 
         Permission -- Python only
-        
+
         """
 
     def hasProperty(id):
         """
 
-        Returns true if 'self' has a property with the given 'id', 
+        Returns true if 'self' has a property with the given 'id',
         false otherwise.
 
         Permission -- 'Access contents information'
@@ -90,7 +90,7 @@ class PropertySheet:
         Permission -- 'Access contents information'
 
         """
-        
+
     def propertyMap():
         """
 
@@ -117,26 +117,26 @@ class PropertySheet:
         These are the
         property types:
 
-          'boolean' -- 1 or 0. 
+          'boolean' -- 1 or 0.
 
           'date' -- A 'DateTime' value, for example '12/31/1999 15:42:52 PST'.
 
-          'float' -- A decimal number, for example '12.4'. 
+          'float' -- A decimal number, for example '12.4'.
 
-          'int' -- An integer number, for example, '12'. 
+          'int' -- An integer number, for example, '12'.
 
-          'lines' -- A list of strings, one per line. 
+          'lines' -- A list of strings, one per line.
 
-          'long' -- A long integer, for example '12232322322323232323423'. 
+          'long' -- A long integer, for example '12232322322323232323423'.
 
-          'string' -- A string of characters, for example 'This is a string'. 
+          'string' -- A string of characters, for example 'This is a string'.
 
-          'text' -- A multi-line string, for example a paragraph. 
+          'text' -- A multi-line string, for example a paragraph.
 
           'tokens' -- A list of strings separated by white space, for example
-          'one two three'. 
+          'one two three'.
 
-          'selection' -- A string selected by a pop-up menu. 
+          'selection' -- A string selected by a pop-up menu.
 
           'multiple selection' -- A list of strings selected by a selection list.
 
@@ -166,17 +166,17 @@ class PropertySheet:
     def manage_changeProperties(REQUEST=None, **kw):
         """
 
-        Change existing object properties by passing either a mapping 
-        object as 'REQUEST' containing name:value pairs or by passing 
+        Change existing object properties by passing either a mapping
+        object as 'REQUEST' containing name:value pairs or by passing
         name=value keyword arguments.
 
-        Some objects have "special" properties defined by product 
-        authors that cannot be changed. If you try to change one of 
+        Some objects have "special" properties defined by product
+        authors that cannot be changed. If you try to change one of
         these properties through this method, an error will be raised.
 
-        Note that no type checking or conversion happens when this 
-        method is called, so it is the caller's responsibility to 
-        ensure that the updated values are of the correct type. 
+        Note that no type checking or conversion happens when this
+        method is called, so it is the caller's responsibility to
+        ensure that the updated values are of the correct type.
         *This should probably change*.
 
         If a value is provided for 'REQUEST' (as it will be when
@@ -195,11 +195,11 @@ class PropertySheet:
     def manage_delProperties(ids=None, REQUEST=None):
         """
 
-        Delete one or more properties with the given 'ids'. The 'ids' 
-        argument should be a sequence (tuple or list) containing the 
-        ids of the properties to be deleted. If 'ids' is empty no 
-        action will be taken. If any of the properties named in 'ids' 
-        does not exist, an error will be raised. 
+        Delete one or more properties with the given 'ids'. The 'ids'
+        argument should be a sequence (tuple or list) containing the
+        ids of the properties to be deleted. If 'ids' is empty no
+        action will be taken. If any of the properties named in 'ids'
+        does not exist, an error will be raised.
 
         Some objects have "special" properties defined by product
         authors that cannot be deleted. If one of these properties is
@@ -216,10 +216,3 @@ class PropertySheet:
         Permission -- 'Manage Properties'
 
         """
-
-
-
-
-
-
-

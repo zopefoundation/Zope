@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 from StructuredText import ST
@@ -112,7 +112,7 @@ class StructuredTextTests(unittest.TestCase):
                 IO = cStringIO.StringIO()
 
                 oldStdout = sys.stdout
-                sys.stdout = IO                
+                sys.stdout = IO
 
                 try:
                     open('_tmpout','w').write(html)
@@ -120,7 +120,7 @@ class StructuredTextTests(unittest.TestCase):
                                    '_tmpout')
                     os.unlink('_tmpout')
                 finally:
-                    sys.stdout = oldStdout 
+                    sys.stdout = oldStdout
 
                 raise AssertionError, \
                     'HTML regression test failed on %s\nDiff:\n%s\n' % (f,
@@ -137,7 +137,7 @@ class BasicTests(unittest.TestCase):
             print "Converted:",res
             print "Expected: ",expected
             raise AssertionError,"basic test failed for '%s'" % stxtxt
-            
+
 
     def testUnderline(self):
         self._test("xx _this is html_ xx",
@@ -146,7 +146,7 @@ class BasicTests(unittest.TestCase):
     def testUnderline1(self):
         self._test("xx _this is html_",
                    "<u>this is html</u>")
-        
+
     def testEmphasis(self):
         self._test("xx *this is html* xx",
                    "xx <em>this is html</em> xx")
@@ -154,12 +154,12 @@ class BasicTests(unittest.TestCase):
     def testStrong(self):
         self._test("xx **this is html** xx",
                    "xx <strong>this is html</strong> xx")
-        
+
     def testUnderlineThroughoutTags(self):
-        self._test('<a href="index_html">index_html</a>', 
+        self._test('<a href="index_html">index_html</a>',
                    '<a href="index_html">index_html</a>')
 
-    
+
     def testUnderscoresInLiteral1(self):
 
         self._test("def __init__(self)",
@@ -189,7 +189,7 @@ class BasicTests(unittest.TestCase):
 
     def testLinkInLiteral(self):
         self._test("this is a '\"literal\":http://www.zope.org/.' eh",
-        '<code>"literal":http://www.zope.org/.</code>') 
+        '<code>"literal":http://www.zope.org/.</code>')
 
 
 def test_suite():

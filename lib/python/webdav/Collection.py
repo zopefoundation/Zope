@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, os,  Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date
@@ -25,7 +25,7 @@ from WriteLockInterface import WriteLockInterface
 
 class Collection(Resource):
     """The Collection class provides basic WebDAV support for
-    collection objects. It provides default implementations 
+    collection objects. It provides default implementations
     for all supported WebDAV HTTP methods. The behaviors of some
     WebDAV HTTP methods for collections are slightly different
     than those for non-collection resources."""
@@ -119,12 +119,12 @@ class Collection(Resource):
         else:
             # There were no conflicts, so we can go ahead and delete
             # ajung: additional check if we really could delete the collection
-            # (Collector #2196) 
+            # (Collector #2196)
             if parent.manage_delObjects([name],REQUEST=None)  is None:
                 RESPONSE.setStatus(204)
             else:
                 RESPONSE.setStatus(403)
-            
+
         return RESPONSE
 
 

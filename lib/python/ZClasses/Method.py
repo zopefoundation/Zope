@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Basic Item class and class manager
 """
@@ -42,7 +42,7 @@ class ZClassMethodsSheet(
     # Hijinks to let us create factories and classes within classes.
 
     #meta_types=App.Product.Product.meta_types
-    
+
     meta_types=(
         {'name': 'Z Class',
          'action':'manage_addZClassForm'},
@@ -53,7 +53,7 @@ class ZClassMethodsSheet(
          'action': 'manage_addPropertyInterfaceForm'
          },
         )
-    
+
     def manage_addPrincipiaFactory(
         self, id, title, object_type, initial, permission=None, REQUEST=None):
         ' '
@@ -67,7 +67,7 @@ class ZClassMethodsSheet(
 
     def _getProductRegistryMetaTypes(self):
         return self.getClassAttr('_zclass_method_meta_types',())
-    
+
     def _setProductRegistryMetaTypes(self, v):
         return self.setClassAttr('_zclass_method_meta_types', v)
 
@@ -166,9 +166,9 @@ class ZClassMethodsSheet(
         if hasattr(self, 'aq_base'):
             b=self.aq_base
             if hasattr(b,name): return getattr(self, name)
-        
+
         try: return self[name]
-        except: return getattr(self, name) 
+        except: return getattr(self, name)
 
     def possible_permissions(self):
         return self.classDefinedAndInheritedPermissions()
@@ -213,7 +213,7 @@ methodattr='_ZClassMethodPermissionMapperMethod_'
 class MW(ExtensionClass.Base):
 
     def __init__(self, meth): self.__dict__[methodattr]=meth
-            
+
     def __of__(self, parent):
         m=getattr(self, methodattr)
         m=self.__dict__[methodattr]
@@ -230,7 +230,7 @@ class MWp(Globals.Persistent):
     def __getstate__(self):
         getattr(self, methodattr)
         return self.__dict__[methodattr]
-                
+
     def __of__(self, parent):
         m=getattr(self, methodattr)
         m=self.__dict__[methodattr]
@@ -239,13 +239,13 @@ class MWp(Globals.Persistent):
         if hasattr(m,'__of__'): return aqwrap(m, wrapper, parent)
         return m
 
-    
+
 
 # Backward compat. Waaaaa
 class W(Globals.Persistent, MW):
 
     _View_Permission='_View_Permission'
-        
+
     def __getattr__(self, name):
         # We want to make sure that any non-explicitly set methods are
         # private!
@@ -253,16 +253,16 @@ class W(Globals.Persistent, MW):
             # Oh this sucks
             return W.inheritedAttribute('__getattr__')(self, name)
         except: pass
-            
+
         if name[:1]=='_' and name[-11:]=="_Permission": return ''
         raise AttributeError, name
-            
+
     def __of__(self, parent):
         m=getattr(self, methodattr)
         m=self.__dict__[methodattr]
         if hasattr(m,'__of__'): return aqwrap(m, self, parent)
         return m
-    
+
 
 def findMethodIds(klass, methodTypes=(MWp, MW, W)):
     r=[]

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 class ObjectManagerItem:
@@ -19,21 +19,21 @@ class ObjectManagerItem:
 
     ObjectMangerItems have these instance
     attributes:
-         
+
       'title' -- The title of the object.
-      
+
         This is an optional one-line string description of the object.
 
       'meta_type' --  A short name for the type of the object.
-      
+
         This is the name that shows up in product add list for the
         object and is used when filtering objects by type.
-        
+
         This attribute is provided by the object's class and should
         not be changed directly.
 
       'REQUEST' -- The current web request.
-      
+
         This object is acquired and should not be set.
     """
 
@@ -49,12 +49,12 @@ class ObjectManagerItem:
 
         Permission -- Always available
         """
-    
+
     def title_or_id():
         """
         If the title is not blank, return it, otherwise
         return the id.
-        
+
         Permission -- Always available
         """
 
@@ -75,11 +75,11 @@ class ObjectManagerItem:
 
         Permission -- 'View management screens'
         """
-  
+
     def this():
         """
         Return the object.
-        
+
         This turns out to be handy in two situations. First, it
         provides a way to refer to an object in DTML expressions.
 
@@ -100,14 +100,14 @@ class ObjectManagerItem:
         the URL returned is relative to the site object. Note, if
         virtual hosts are being used, then the path returned is a
         logical, rather than a physical path.
-        
+
         Permission -- Always available
         """
 
     def getPhysicalRoot():
         """
         Returns the top-level Zope Application object.
-        
+
         Permission -- Python only
         """
 
@@ -136,9 +136,9 @@ class ObjectManagerItem:
     def restrictedTraverse(path, default=None):
         """
         Return the object obtained by traversing the given path from
-        the object on which the method was called, performing security 
+        the object on which the method was called, performing security
         checks along the way.
-        
+
         If an object is not found then the 'default' argument will be
         returned.
 

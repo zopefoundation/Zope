@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Iterator class
 
@@ -18,8 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id: Iterator.py,v 1.6 2002/04/19 14:16:08 andreasjung Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Iterator.py,v 1.7 2002/08/14 22:10:12 mj Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 class Iterator:
     '''Simple Iterator class'''
@@ -57,7 +57,7 @@ class Iterator:
         del self.end
         self._advance = self._inner.advance
         self.start = 1
-            
+
     def number(self): return self.nextIndex
 
     def even(self): return not self.index % 2
@@ -121,7 +121,7 @@ class InnerBase:
         del it._next
         del it.end
         it.start = 0
-            
+
     def no_next(self, it):
         return 0
 

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, os
 from common import absattr, aq_base, urlfix, urlbase
@@ -54,7 +54,7 @@ class PropFind:
         self.propname=0
         self.propnames=[]
         self.parse(request)
-        
+
     def parse(self, request, dav='DAV:'):
         self.depth=request.get_header('Depth', 'infinity')
         if not (self.depth in ('0','1','infinity')):
@@ -107,7 +107,7 @@ class PropFind:
                 if hasattr(aq_base(ps), 'dav__allprop'):
                     stats.append(ps.dav__allprop())
             stats=''.join(stats) or '<d:status>200 OK</d:status>\n'
-            result.write(stats)            
+            result.write(stats)
         elif self.propname:
             stats=[]
             for ps in propsets:
@@ -139,7 +139,7 @@ class PropFind:
                              '</d:propstat>\n' % key
                              )
         else: raise 'Bad Request', 'Invalid request'
-        result.write('</d:response>\n')        
+        result.write('</d:response>\n')
         if depth in ('1', 'infinity') and iscol:
             for ob in obj.objectValues():
                 if hasattr(ob,"meta_type"):
@@ -155,7 +155,7 @@ class PropFind:
                     if dflag: ob._p_deactivate()
         if not top: return result
         result.write('</d:multistatus>')
-        
+
         return result.getvalue()
 
 
@@ -243,7 +243,7 @@ class PropPatch:
                 propset=propsets.get(ns, None)
                 if propset is None or not propset.hasProperty(name):
                     # removing a non-existing property is not an error!
-                    # according to RFC 2518                    
+                    # according to RFC 2518
                     status='200 OK'
                 else:
                     try: propset._delProperty(name)
@@ -333,7 +333,7 @@ class Lock:
             lock = LockItem(creator, self.owner, depth, self.timeout,
                             self.type, self.scope, token)
             if token is None: token = lock.getLockToken()
-            
+
         except ValueError, valerrors:
             errmsg = "412 Precondition Failed"
         except:
@@ -361,7 +361,7 @@ class Lock:
                     errmsg = "403 Forbidden"
         except:
             errmsg = "403 Forbidden"
-            
+
         if errmsg:
             if top and ((depth in (0, '0')) or (not iscol)):
                 # We don't need to raise multistatus errors
@@ -388,7 +388,7 @@ class Lock:
             result.write('</d:multistatus>')
             get_transaction().abort() # This *SHOULD* clear all succesful locks
         return token, result.getvalue()
-    
+
 
 class Unlock:
     """ Model an Unlock request """
@@ -408,7 +408,7 @@ class Unlock:
             method = getattr(obj, 'wl_delLock')
             vld = getSecurityManager().validate(None,obj,'wl_delLock',method)
             if vld: obj.wl_delLock(token)
-            else: 
+            else:
                 errmsg = "403 Forbidden"
         elif not islockable:
             # Only set an error message if the command is being applied
@@ -444,7 +444,7 @@ class Unlock:
             result.write('</d:multistatus>')
             get_transaction().abort()
         return result.getvalue()
-    
+
 
 class DeleteCollection:
     """ With WriteLocks in the picture, deleting a collection involves
@@ -497,4 +497,3 @@ class DeleteCollection:
             # element
             result.write('</d:multistatus>\n')
         return result.getvalue()
-    

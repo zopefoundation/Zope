@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 
 import time, Interface, re
@@ -93,8 +93,8 @@ class EtagSupport:
         for match in matchlist:
             if match == '*': r.insert(0, match)
             elif (match[0] + match[-1] == '""') and (len(match) > 2):
-                    r.append(match[1:-1])
-            
+                r.append(match[1:-1])
+
         return tuple(r)
 
     def http__processMatchHeaders(self, REQUEST=None):
@@ -134,5 +134,3 @@ class EtagSupport:
             raise "Precondition Failed"
         elif self.http__etag() not in nonelist:
             return 1
-        
-

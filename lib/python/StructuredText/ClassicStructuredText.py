@@ -2,22 +2,22 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Structured Text Manipulation
 
-Parse a structured text string into a form that can be used with 
+Parse a structured text string into a form that can be used with
 structured formats, like html.
 
 Structured text is text that uses indentation and simple
-symbology to indicate the structure of a document.  
+symbology to indicate the structure of a document.
 
 A structured string consists of a sequence of paragraphs separated by
 one or more blank lines.  Each paragraph has a level which is defined
@@ -60,7 +60,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or punctuation to the right of the second '**')
   is made strong.
 
-- Text surrounded by '_' underscore characters (with whitespace to the left 
+- Text surrounded by '_' underscore characters (with whitespace to the left
   and whitespace or punctuation to the right) is made underlined.
 
 - Text encloded by double quotes followed by a colon, a URL, and concluded
@@ -74,16 +74,16 @@ Special symbology is used to indicate special constructs:
 
 - Text enclosed by double quotes followed by a comma, one or more spaces,
   an absolute URL and concluded by punctuation plus white space, or just
-  white space, is treated as a hyper link. For example: 
+  white space, is treated as a hyper link. For example:
 
     "mail me", mailto:amos@digicool.com.
 
-  Is interpreted as '<a href="mailto:amos@digicool.com">mail me</a>.' 
+  Is interpreted as '<a href="mailto:amos@digicool.com">mail me</a>.'
 
 - Text enclosed in brackets which consists only of letters, digits,
   underscores and dashes is treated as hyper links within the document.
   For example:
-    
+
     As demonstrated by Smith [12] this technique is quite effective.
 
   Is interpreted as '... by Smith <a href="#12">[12]</a> this ...'. Together
@@ -92,11 +92,11 @@ Special symbology is used to indicate special constructs:
 - Text enclosed in brackets which is preceded by the start of a line, two
   periods and a space is treated as a named link. For example:
 
-    .. [12] "Effective Techniques" Smith, Joe ... 
+    .. [12] "Effective Techniques" Smith, Joe ...
 
   Is interpreted as '<a name="12">[12]</a> "Effective Techniques" ...'.
   Together with the previous rule this allows easy coding of references or
-  end notes. 
+  end notes.
 
 
 - A paragraph that has blocks of text enclosed in '||' is treated as a
@@ -295,15 +295,15 @@ class StructuredText:
 
         pat = ' \"([%s0-9-_,./?=@~&]*)\":' % string.letters+ \
               '([-:%s0-9_,./?=@#~&]*?)' % string.letters + \
-              '([.:?;] )' 
+              '([.:?;] )'
 
         p_reg = re.compile(pat,re.M)
-                
+
         aStructuredString = p_reg.sub(r'<a href="\2">\1</a>\3 ' , aStructuredString)
 
         pat = ' \"([%s0-9-_,./?=@~&]*)\", ' % string.letters+ \
               '([-:%s0-9_,./?=@#~&]*?)' % string.letters + \
-              '([.:?;] )' 
+              '([.:?;] )'
 
         p_reg = re.compile(pat,re.M)
 
@@ -327,10 +327,10 @@ class StructuredText:
         return str(self.structure)
 
 
-ctag_prefix=r'([\x00- \\(]|^)' 
-ctag_suffix=r'([\x00- ,.:;!?\\)]|$)'         
-ctag_middle=r'[%s]([^\x00- %s][^%s]*[^\x00- %s]|[^%s])[%s]' 
-ctag_middl2=r'[%s][%s]([^\x00- %s][^%s]*[^\x00- %s]|[^%s])[%s][%s]'    
+ctag_prefix=r'([\x00- \\(]|^)'
+ctag_suffix=r'([\x00- ,.:;!?\\)]|$)'
+ctag_middle=r'[%s]([^\x00- %s][^%s]*[^\x00- %s]|[^%s])[%s]'
+ctag_middl2=r'[%s][%s]([^\x00- %s][^%s]*[^\x00- %s]|[^%s])[%s][%s]'
 
 def ctag(s,
          em=re.compile(
@@ -347,7 +347,7 @@ def ctag(s,
     s=under.sub( r'\1<u>\2</u>\3',s)
     s=code.sub(  r'\1<code>\2</code>\3',s)
     s=em.sub(    r'\1<em>\2</em>\3',s)
-    return s    
+    return s
 
 class HTML(StructuredText):
 
@@ -388,7 +388,7 @@ class HTML(StructuredText):
         if level > 0 and level < 6:
             return ('%s<h%d>%s</h%d>\n%s\n'
                     % (before,level,ctag(t).strip(),level,d))
-            
+
         t="<p><strong>%s</strong></p>" % ctag(t).strip()
         return ('%s<dl><dt>%s\n</dt><dd>%s\n</dd></dl>\n'
                 % (before,t,d))
@@ -406,10 +406,10 @@ class HTML(StructuredText):
             r="%s%s\n\n%s" % (r,html_quote(s[0]),self.pre(s[1],1))
         if not tagged: r=r+'</PRE>\n'
         return r
-    
+
     def table(self,before,table,after):
         return '%s<p>%s</p>\n%s\n' % (before,ctag(table),after)
-    
+
     def _str(self,structure,level,
              # Static
              bullet=ts_regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)'
@@ -476,7 +476,7 @@ class HTML(StructuredText):
                 else:
                     r=self.normal(r,s[0],self._str(s[1],level))
         return r
-        
+
 
 def html_quote(v,
                character_entities=(
@@ -485,10 +485,10 @@ def html_quote(v,
                        (re.compile(">"), '&gt;' ),
                        (re.compile('"'), '&quot;')
                        )): #"
-        text=str(v)
-        for re,name in character_entities:
-            text=re.sub(name,text)
-        return text
+    text=str(v)
+    for re,name in character_entities:
+        text=re.sub(name,text)
+    return text
 
 def html_with_references(text, level=1):
     text = re.sub(
@@ -500,14 +500,14 @@ def html_with_references(text, level=1):
         r'([\x00- ,])\[(?P<ref>[0-9_%s-]+)\]([\x00- ,.:])'   % string.letters,
         r'\1<a href="#\2">[\2]</a>\3',
         text)
-    
+
     text = re.sub(
         r'([\0- ,])\[([^]]+)\.html\]([\0- ,.:])',
         r'\1<a href="\2.html">[\2]</a>\3',
         text)
 
     return HTML(text,level=level)
-    
+
 
 def main():
     import sys, getopt
@@ -535,7 +535,7 @@ def main():
         mo = re.compile('([\0-\n]*\n)').match(s)
         if mo is not None:
             s = s[len(mo.group(0)) :]
-            
+
         s=str(html_with_references(s))
         if s[:4]=='<h1>':
             t=s[4: s.find('</h1>')]

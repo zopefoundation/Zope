@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import os, sys, unittest, zLOG
 
@@ -21,10 +21,10 @@ class Dummy:
 
     def foo( self ):
         return self._foo
-    
+
     def __str__( self ):
         return '<Dummy: %s>' % self._foo
-    
+
     __repr__ = __str__
 
 class TestCase( unittest.TestCase ):
@@ -45,7 +45,7 @@ class TestCase( unittest.TestCase ):
                        , ( 4, Dummy( ['a', 'b', 'c', 'd'] ) )
                        , ( 5, Dummy( ['a', 'b', 'c', 'e'] ) )
                        , ( 6, Dummy( ['a', 'b', 'c', 'e', 'f'] ))
-                       , ( 7, Dummy( [0] ) ) 
+                       , ( 7, Dummy( [0] ) )
                        ]
         self._noop_req  = { 'bar': 123 }
         self._all_req = { 'foo': ['a'] }
@@ -102,7 +102,7 @@ class TestCase( unittest.TestCase ):
             self._index.index_object(999, None)
         finally:
             self._ignore_log_errors()
-    
+
     def testEmpty( self ):
         assert len( self._index ) == 0
         assert len( self._index.referencedObjects() ) == 0
@@ -121,7 +121,7 @@ class TestCase( unittest.TestCase ):
         self._checkApply( self._some_req, [] )
         self._checkApply( self._overlap_req, [] )
         self._checkApply( self._string_req, [] )
-        
+
     def testPopulated( self ):
         self._populateIndex()
         values = self._values
@@ -166,7 +166,7 @@ class TestCase( unittest.TestCase ):
             )
         result = result.keys()
         assert 6 not in result
-        
+
     def testReindexNoChange(self):
         self._populateIndex()
         expected = Dummy(['foo', 'bar'])

@@ -6,19 +6,19 @@ exec python $0 ${1+"$@"}
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Bobo call interface
 
-This module provides tools for accessing web objects as if they were 
-functions or objects with methods.  It also provides a simple call function 
+This module provides tools for accessing web objects as if they were
+functions or objects with methods.  It also provides a simple call function
 that allows one to simply make a single web request.
 
   Function -- Function-like objects that return both header and body
@@ -31,7 +31,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import sys, re, socket, mimetools
 from httplib import HTTP
@@ -62,7 +62,7 @@ class Function:
         self.func_name=url[url.rfind('/')+1:]
         self.__dict__['__name__']=self.func_name
         self.func_defaults=()
-        
+
         self.args=arguments
 
         if method is not None: self.method=method
@@ -107,7 +107,7 @@ class Function:
             if not method or method=='POST':
                 for v in kw.values():
                     if hasattr(v,'read'): return self._mp_call(kw)
-                
+
         can_marshal=type2marshal.has_key
         for k,v in kw.items():
             t=type(v)
@@ -134,9 +134,9 @@ class Function:
             headers['Authorization']=(
                 "Basic %s" %
                 encodestring('%s:%s' % (self.username,self.password)).replace(
-				     '\012','')
+                                     '\012','')
                 )
-	    
+
         try:
             h=HTTP()
             h.connect(self.host, self.port)
@@ -168,9 +168,9 @@ class Function:
             elif ec == 503:              t=NotAvailable
             else:                        t=ServerError
         raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
-        
 
-    
+
+
 
     def _mp_call(self,kw,
                 type2suffix={
@@ -200,7 +200,7 @@ class Function:
             c=encodestring('%s:%s' % (self.username,self.password)).replace('\012','')
             rq.append('Authorization: Basic %s' % c)
         rq.append(MultiPart(d).render())
-        rq='\r\n'.join(rq)   
+        rq='\r\n'.join(rq)
 
         try:
             sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -222,11 +222,11 @@ class Function:
             headers=mimetools.Message(reply,0)
             response=reply.read()
         finally:
-          if 0:
-            raise NotAvailable, (
-                RemoteException(NotAvailable,sys.exc_info()[1],
-                                self.url,'<MultiPart Form>'))
-                
+            if 0:
+                raise NotAvailable, (
+                    RemoteException(NotAvailable,sys.exc_info()[1],
+                                    self.url,'<MultiPart Form>'))
+
         if ec==200: return (headers,response)
         self.handleError('', ec, em, headers, response)
 
@@ -270,7 +270,7 @@ class Object:
         return f
 
 def call(url,username=None, password=None, **kw):
-    
+
     return apply(Function(url,username=username, password=password), (), kw)
 
 ##############################################################################
@@ -295,12 +295,12 @@ def marshal_list(n,l,tname='list', lt=type([]), tt=type(())):
         if t is lt or t is tt:
             raise TypeError, 'Invalid recursion in data to be marshaled.'
         r.append(marshal_whatever("%s:%s" % (n,tname) ,v))
-    
+
     return '&'.join(r)
 
 def marshal_tuple(n,l):
     return marshal_list(n,l,'tuple')
-    
+
 type2marshal={
     type(1.0):                  marshal_float,
     type(1):                    marshal_int,
@@ -549,7 +549,7 @@ def main():
     except:
         print usage
         sys.exit(1)
-        
+
     # The "main" program for this module
     f=Function(url)
     if user: f.username, f.password = user, pw

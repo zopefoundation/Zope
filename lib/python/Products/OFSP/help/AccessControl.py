@@ -23,17 +23,17 @@ class SecurityManager:
         Validate access.
 
         Arguments:
-        
+
         accessed -- the object that was being accessed
-        
+
         container -- the object the value was found in
-        
+
         name -- The name used to access the value
-        
+
         value -- The value retrieved though the access.
 
         roles -- The roles of the object if already known.
-        
+
         The arguments may be provided as keyword arguments. Some of
         these arguments may be omitted, however, the policy may
         reject access in some cases when arguments are omitted.  It

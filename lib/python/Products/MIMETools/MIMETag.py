@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.9 2002/03/11 15:54:38 andreasjung Exp $'
-__version__='$Revision: 1.9 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.10 2002/08/14 22:14:27 mj Exp $'
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -56,7 +56,7 @@ class MIMETag:
 
             has_key=args.has_key
 
-            if has_key('type'): 
+            if has_key('type'):
                 type = args['type']
             else:
                 type = 'application/octet-stream'
@@ -120,7 +120,7 @@ class MIMETag:
 
             if has_key('skip_expr') and a['skip_expr'].eval(md):
                 continue
-                
+
             inner = mw.nextpart()
 
             if has_key('type_expr'): t=a['type_expr'].eval(md)
@@ -134,7 +134,7 @@ class MIMETag:
 
             if has_key('name_expr'): n=a['name_expr'].eval(md)
             else: n=a['name']
-            
+
             if has_key('filename_expr'): f=a['filename_expr'].eval(md)
             else: f=a['filename']
 
@@ -175,8 +175,3 @@ class MIMETag:
 
 
 String.commands['mime'] = MIMETag
-
-
-
-
-

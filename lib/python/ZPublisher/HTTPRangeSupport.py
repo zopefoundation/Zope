@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """HTTP Range support utilities.
 
@@ -19,7 +19,7 @@ flag-interface and some support functions for implementing this functionality.
 For an implementation example, see the File class in OFS/Image.py.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import re, sys
 import Interface
@@ -122,7 +122,7 @@ def optimizeRanges(ranges, size):
     optimized = []
     add = optimized.append
     start, end = ranges.pop()
-    
+
     while ranges:
         nextstart, nextend = ranges.pop()
         # If the next range overlaps
@@ -130,7 +130,7 @@ def optimizeRanges(ranges, size):
             # If it falls within the current range, discard
             if nextend <= end:
                 continue
-            
+
             # Overlap, adjust end
             end = nextend
         else:
@@ -139,7 +139,7 @@ def optimizeRanges(ranges, size):
 
     # Add the remaining optimized range
     add((start, end))
-    
+
     return optimized
 
 class HTTPRangeInterface(Interface.Base):

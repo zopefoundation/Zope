@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """WebDAV XML parsing tools. Note that this module does just
@@ -17,7 +17,7 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os
 import Shared.DC.xml.xmllib
@@ -49,7 +49,7 @@ class Node(Implicit):
     def value(self): return self.__value__
     def nodes(self): return self.__nodes__
     def nskey(self): return self.__nskey__
-    
+
     def addNode(self, node):
         self.__nodes__.append(node.__of__(self))
 
@@ -72,7 +72,7 @@ class Node(Implicit):
                ((ns is None) or (node.namespace()==ns)):
                 nodes.append(node)
         return nodes
-    
+
     def __getitem__(self, n):
         return self.__nodes__[n]
 
@@ -95,7 +95,7 @@ class Document(Node):
         self.encoding=encoding
         self.stdalone=stdalone
         self.document=self
-        
+
     def toxml(self):
         result=['<?xml version="1.0" encoding="%s"?>' % self.encoding]
         for node in self.__nodes__:
@@ -105,10 +105,10 @@ class Document(Node):
     #def __del__(self):
     #    self.document=None
     #    print 'bye!'
-        
+
 class Element(Node):
     __type__=type_element
-    
+
     def __init__(self, name, attrs={}):
         self.__name__ =name
         self.__attrs__=[]
@@ -123,7 +123,7 @@ class Element(Node):
         if len(parts) > 1:
             self.__nskey__=parts[0]
             self.__name__=':'.join(parts[1:])
-            
+
     def ns_parse(self):
         nsdef=self.__nsdef__={}
         for attr in self.attrs():
@@ -136,7 +136,7 @@ class Element(Node):
 
     def fixup(self):
         self.__attrs__=map(lambda n, s=self: n.__of__(s), self.__attrs__)
-        
+
     def get_attr(self, name, ns=None, default=None):
         for attr in self.__attrs__:
             if attr.name()==name and (ns is None) or (ns==attr.namespace()):
@@ -234,7 +234,7 @@ class Attribute(Node):
         ns=self.__nskey__
         if ns: ns='%s:' % ns
         return ' %s%s="%s"' % (ns, self.__name__, self.__value__)
-        
+
 class Text(Node):
     __name__='#text'
     __type__=type_text
@@ -255,7 +255,7 @@ class EntityRef(Node):
     __name__='#entityref'
     __type__=type_entityref
     def __init__(self, val):
-        self.__value__=val        
+        self.__value__=val
     def toxml(self):
         return '&%s;' % self.__value__
 
@@ -292,12 +292,12 @@ class XmlParser(Shared.DC.xml.xmllib.XMLParser):
         Shared.DC.xml.xmllib.XMLParser.__init__(self)
         self.root=None
         self.node=None
-        
+
     def parse(self, data):
         self.feed(data)
         self.close()
         return self.root
-    
+
     def add(self, node):
         self.node.addNode(node)
 

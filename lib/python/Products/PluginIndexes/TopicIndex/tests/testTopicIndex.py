@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 
@@ -19,12 +19,12 @@ from Products.ZCatalog.ZCatalog import ZCatalog
 
 
 class Obj:
-    
+
     def __init__(self,id,meta_type=''):
         self.id        = id
         self.meta_type = meta_type
-    
-    def getId(self): return self.id 
+
+    def getId(self): return self.id
     def getPhysicalPath(self):  return self.id
 
 
@@ -48,7 +48,7 @@ class TestBase(unittest.TestCase):
         self.assertEqual(rows,expected,query)
 
         return rows
-        
+
 
 class TestTopicIndex(TestBase):
 
@@ -56,7 +56,7 @@ class TestTopicIndex(TestBase):
         self.TI = TopicIndex("topic")
         self.TI.addFilteredSet("doc1","PythonFilteredSet","o.meta_type=='doc1'")
         self.TI.addFilteredSet("doc2","PythonFilteredSet","o.meta_type=='doc2'")
-        
+
         self.TI.index_object(0 , Obj('0',))
         self.TI.index_object(1 , Obj('1','doc1'))
         self.TI.index_object(2 , Obj('2','doc1'))
@@ -88,7 +88,7 @@ class ZCatalogTopicTests(TestBase):
 
 
     def setUp(self):
-        
+
         self.cat = ZCatalog('catalog')
         self.cat.addColumn('id')
         self.cat.addIndex('topic','TopicIndex')
@@ -96,7 +96,7 @@ class ZCatalogTopicTests(TestBase):
 
         self.TI.addFilteredSet("doc1","PythonFilteredSet","o.meta_type=='doc1'")
         self.TI.addFilteredSet("doc2","PythonFilteredSet","o.meta_type=='doc2'")
-        
+
         self.cat.catalog_object(Obj('0'))
         self.cat.catalog_object(Obj('1','doc1'))
         self.cat.catalog_object(Obj('2','doc1'))
@@ -120,7 +120,7 @@ class ZCatalogTopicTests(TestBase):
     def _search(self,query,operator,expected):
 
         res = self.cat.searchResults({'topic':{'query':query,'operator':operator}})
-        
+
         rows = [int(x.id)  for x in res ]
         rows.sort()
         expected.sort()
@@ -143,4 +143,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    

@@ -13,8 +13,3 @@ string: Python 'string' module
     module":http://www.python.org/doc/current/lib/module-string.html
     documentation at Python.org
 """
-
-
-
-
-

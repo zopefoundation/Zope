@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Object-manager mix-in for ZClasses
 """
@@ -20,7 +20,7 @@ class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
     """Provide management view for selecting sub-objects.
     """
     manage=Globals.DTMLFile('dtml/subobjects', globals())
-    
+
     def possible_meta_types(self):
         return self.aq_acquire('_product_meta_types')+Products.meta_types
 

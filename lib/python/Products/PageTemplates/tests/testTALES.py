@@ -94,7 +94,7 @@ class TALESTests(unittest.TestCase):
         ctxt.setLocal('v2', 2)
 
         assert c['v1'] == 1, 'Variable "v1"'
-        
+
         ctxt.beginScope()
         ctxt.setLocal('v1', 3)
         ctxt.setGlobal('g', 1)
@@ -109,7 +109,7 @@ class TALESTests(unittest.TestCase):
         assert c['g'] == 1, "Global from inner scope"
 
         ctxt.endScope()
-        
+
 def test_suite():
     return unittest.makeSuite(TALESTests)
 

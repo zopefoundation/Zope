@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__ = "$Revision: 1.6 $"[11:-2]
+__version__ = "$Revision: 1.7 $"[11:-2]
 
 from Globals import Persistent
 from WriteLockInterface import LockItemInterface
@@ -52,7 +52,7 @@ class LockItem(Persistent):
                               'setTimeout', 'refresh')
     security.declareProtected('Access contents information',
                               'getCreator', 'getCreatorPath')
-    
+
     def __init__(self, creator, owner='', depth=0, timeout='Infinite',
                  locktype='write', lockscope='exclusive', token=None):
         errors = []
@@ -76,7 +76,7 @@ class LockItem(Persistent):
         # AccessControl.Owned.ownerInfo returns the id of the creator
         # and the path to the UserFolder they're defined in
         self._creator = ownerInfo(creator)
-        
+
         self._owner = owner
         self._depth = depth
         self._timeout = timeout
@@ -175,4 +175,3 @@ class LockItem(Persistent):
  </d:lockdiscovery>
 </d:prop>""" % self.asLockDiscoveryProperty(ns="d")
         return s
-    

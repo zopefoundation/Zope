@@ -1,21 +1,21 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Zope Page Template module
 
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -48,7 +48,7 @@ except ImportError:
 class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable, PropertyManager):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
-     
+
     if SUPPORTS_WEBDAV_LOCKS:
         __implements__ = (WriteLockInterface,)
 
@@ -117,7 +117,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         REQUEST.set('text', self.read()) # May not equal 'text'!
         message = "Saved changes."
         if getattr(self, '_v_warnings', None):
-            message = ("<strong>Warning:</strong> <i>%s</i>" 
+            message = ("<strong>Warning:</strong> <i>%s</i>"
                        % '<br>'.join(self._v_warnings))
         return self.pt_editForm(manage_tabs_message=message)
 
@@ -132,7 +132,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if type(file) is not StringType:
             if not file: raise ValueError, 'File not specified'
             file = file.read()
-            
+
         self.write(file)
         message = 'Saved changes.'
         return self.pt_editForm(manage_tabs_message=message)
@@ -142,7 +142,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Change editing preferences."""
         szchh = {'Taller': 1, 'Shorter': -1, None: 0}
         szchw = {'Wider': 5, 'Narrower': -5, None: 0}
-        
+
         # The <textarea> can have dimensions expressed in percentages
         if type(width) is StringType and width.endswith('%'):
             cols = int(width[:-1])
@@ -157,7 +157,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         else: # Absolute width
             try: cols = int(width)
             except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
-            
+
         try: rows = int(height)
         except: rows = max(1, int(dtpref_rows) + szchh.get(height, 0))
         e = (DateTime('GMT') + 365).rfc822()
@@ -244,7 +244,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         self.write(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
-        return RESPONSE        
+        return RESPONSE
 
     manage_FTPput = PUT
 
@@ -309,7 +309,7 @@ class Src(Acquisition.Explicit):
     def __before_publishing_traverse__(self, ob, request):
         if getattr(request, '_hacked_path', 0):
             request._hacked_path = 0
-    
+
     def __call__(self, REQUEST, RESPONSE):
         " "
         return self.document_src(REQUEST)
@@ -342,7 +342,7 @@ def manage_addPageTemplate(self, id, title=None, text=None,
             zpt = ZopePageTemplate(id)
         else:
             zpt = ZopePageTemplate(id, file, headers.get('content_type'))
-            
+
         self._setObject(id, zpt)
 
         try:
@@ -368,4 +368,3 @@ def initialize(context):
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
-

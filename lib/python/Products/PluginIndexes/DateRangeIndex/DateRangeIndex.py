@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-"""$Id: DateRangeIndex.py,v 1.3 2002/06/26 13:37:19 caseman Exp $
+"""$Id: DateRangeIndex.py,v 1.4 2002/08/14 22:19:28 mj Exp $
 """
 
 from Products.PluginIndexes import PluggableIndex
@@ -39,7 +39,7 @@ class DateRangeIndex(UnIndex):
         start or the end date:  for the start date, this should be
         the logical equivalent of "since the beginning of time";  for the
         end date, "until the end of time".
-        
+
         Therefore, divide the space of indexed objects into four containers:
 
         - Objects which always match ( i.e., they returned None for both );
@@ -125,7 +125,7 @@ class DateRangeIndex(UnIndex):
         """
             Start over fresh.
         """
-        self._always        = IITreeSet()   
+        self._always        = IITreeSet()
         self._since_only    = IOBTree()
         self._until_only    = IOBTree()
         self._since         = IOBTree()
@@ -137,11 +137,11 @@ class DateRangeIndex(UnIndex):
     #
     def getEntryForObject( self, documentId, default=None ):
         """
-            Get all information contained for the specific object 
+            Get all information contained for the specific object
             identified by 'documentId'.  Return 'default' if not found.
         """
         return self._unindex.get( documentId, default )
-       
+
     def index_object( self, documentId, obj, threshold=None ):
         """
             Index an object:
@@ -288,7 +288,7 @@ class DateRangeIndex(UnIndex):
         #map( since.update, self._since.values( None, term ) )
         # XXX use multi-union
         since = multiunion( self._since.values( None, term ) )
-        
+
         bounded     = intersection( until, since )
 
         #   Merge from smallest to largest.
@@ -381,14 +381,14 @@ class DateRangeIndex(UnIndex):
             set = self._since.get( since, None )
             if set is not None:
                 set.remove( documentId )
-                
+
                 if not set:
                     del self._since[ since ]
 
             set = self._until.get( until, None )
             if set is not None:
                 set.remove( documentId )
-                
+
                 if not set:
                     del self._until[ until ]
 

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import re
@@ -17,7 +17,7 @@ from DocumentClass import *
 class StructuredTextImage(StructuredTextMarkup):
     "A simple embedded image"
 
-class DocumentWithImages(DocumentClass):   
+class DocumentWithImages(DocumentClass):
     """
 
     """
@@ -44,17 +44,17 @@ class DocumentWithImages(DocumentClass):
 
             if not r.group(2) in ['http','file','ftp']:
 
-                 startt, endt = r.span(1)
-                 startk, endk = r.span(2)
-                 starth, endh = r.span(3)
-                 start, end = r.span()
-    
-                 key = s[startk:endk]
-            
-                 return (StructuredTextImage(s[startt:endt], href=s[starth:endh], key=s[startk:endk]), 
-                      start, end)
+                startt, endt = r.span(1)
+                startk, endk = r.span(2)
+                starth, endh = r.span(3)
+                start, end = r.span()
 
-            
+                key = s[startk:endk]
+
+                return (StructuredTextImage(s[startt:endt], href=s[starth:endh], key=s[startk:endk]),
+                     start, end)
+
+
         r=expr1(s)
         if r:
             startt, endt = r.span(1)
@@ -64,4 +64,3 @@ class DocumentWithImages(DocumentClass):
                     start, end)
 
         return None
-

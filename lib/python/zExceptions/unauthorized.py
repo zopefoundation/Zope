@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """
-$Id: unauthorized.py,v 1.4 2001/11/28 15:51:23 matt Exp $
+$Id: unauthorized.py,v 1.5 2002/08/14 22:12:06 mj Exp $
 """
 
 from types import StringType
@@ -28,7 +28,7 @@ class Unauthorized(Exception):
         Unauthorized(name, value)
         Unauthorized(name, value, needed)
         Unauthorized(message, value, needed, name)
-        
+
         Where needed is a mapping objects with items represnting requirements
         (e.g. {'permission': 'add spam'}). Any extra keyword arguments
         provides are added to needed.
@@ -38,7 +38,7 @@ class Unauthorized(Exception):
             # First arg is a name, not a message
             name=message
             message=None
-            
+
         self.name=name
         self.message=message
         self.value=value
@@ -46,7 +46,7 @@ class Unauthorized(Exception):
         if kw:
             if needed: needed.update(kw)
             else: needed=kw
-            
+
         self.needed=needed
 
     def __str__(self):
@@ -57,8 +57,8 @@ class Unauthorized(Exception):
         elif self.value is not None:
             return ("You are not allowed to access %s in this context"
                     % self.getValueName(self.value))
-                
-                            
+
+
     def getValueName(self):
         v=self.value
         vname=getattr(v, '__name__', None)
@@ -66,4 +66,3 @@ class Unauthorized(Exception):
         c = getattr(v, '__class__', type(v))
         c = getattr(c, '__name__', 'object')
         return "a particular %s" % c
-    

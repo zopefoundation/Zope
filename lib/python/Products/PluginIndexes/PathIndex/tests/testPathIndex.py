@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import os, sys, unittest
@@ -25,10 +25,10 @@ class Dummy:
     def getPhysicalPath(self):
         return self.path.split('/')
 
-    
+
     def __str__( self ):
         return '<Dummy: %s>' % self.path
-    
+
     __repr__ = __str__
 
 class TestCase( unittest.TestCase ):
@@ -78,11 +78,11 @@ class TestCase( unittest.TestCase ):
         assert len(self._index._index)==0
         assert len(self._index._unindex)==0
 
-    
+
     def testSimpleTests(self):
 
         self._populateIndex()
-        
+
         tests = [
             ("aa",0, [1,2,3,4,5,6,7,8,9]),
             ("aa",1, [1,2,3,10,11,12] ),
@@ -109,11 +109,11 @@ class TestCase( unittest.TestCase ):
                                     {"path":{'query':( (path,level),)}})
                 lst = list(res[0].keys())
                 self.assertEqual(lst,results)
-                
+
     def testComplexOrTests(self):
 
         self._populateIndex()
-        
+
         tests = [
             (['aa','bb'],1,[1,2,3,4,5,6,10,11,12,13,14,15]),
             (['aa','bb','xx'],1,[1,2,3,4,5,6,10,11,12,13,14,15]),
@@ -130,7 +130,7 @@ class TestCase( unittest.TestCase ):
     def testComplexANDTests(self):
 
         self._populateIndex()
-        
+
         tests = [
             (['aa','bb'],1,[]),
             ([('aa',0),('bb',1)],0,[4,5,6]),

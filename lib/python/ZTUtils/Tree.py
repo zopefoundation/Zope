@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.5 2002/04/19 14:16:08 andreasjung Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Tree.py,v 1.6 2002/08/14 22:10:12 mj Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -51,8 +51,8 @@ class TreeNode(Explicit):
     def __len__(self):
         return len(self._child_list)
 
-_marker = [] 
-        
+_marker = []
+
 class TreeMaker:
     '''Class for mapping a hierachy of objects into a tree of nodes.'''
 
@@ -81,7 +81,7 @@ class TreeMaker:
                 self._values_filter = filter
         else:
             self._values_function = function
-    
+
     def tree(self, root, expanded=None, subtree=0):
         '''Create a tree from root, with specified nodes expanded.
 
@@ -115,7 +115,7 @@ class TreeMaker:
         node.object = object
         node.id = b2a(self.getId(object))
         return node
-    
+
     def getId(self, object):
         id_attr = self._id
         if hasattr(object, id_attr):
@@ -196,7 +196,7 @@ def encodeExpansion(nodes):
         node.expansion_number = n
         n = n + 1
     return ':'.join(steps)
-        
+
 def decodeExpansion(s, nth=None):
     '''Decode an expanded node map from a string.
 
@@ -236,4 +236,3 @@ def decodeExpansion(s, nth=None):
     if nth_pair is not None:
         return map, nth_pair
     return map
-

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """External Method Product
@@ -16,7 +16,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 import AccessControl.Role, sys, os, stat, traceback
@@ -30,7 +30,7 @@ manage_addExternalMethodForm=DTMLFile('dtml/methodAdd', globals())
 
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder
-  
+
     Un addition to the standard object-creation arguments,
     'id' and title, the following arguments are defined:
 
@@ -55,7 +55,7 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     title=str(title)
     module=str(module)
     function=str(function)
-    
+
     i=ExternalMethod(id,title,module,function)
     self._setObject(id,i)
     if REQUEST is not None:
@@ -124,7 +124,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         title=str(title)
         module=str(module)
         function=str(function)
-    
+
         self.title=title
         if module[-3:]=='.py': module=module[:-3]
         elif module[-4:]=='.pyc': module=module[:-4]
@@ -143,7 +143,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
         self._v_func_defaults  = ff.func_defaults
         self._v_func_code = FuncCode(ff,f is not ff)
- 
+
         self._v_f=f
 
         return f
@@ -151,13 +151,13 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
     def reloadIfChanged(self):
         # If the file has been modified since last loaded, force a reload.
         ts=os.stat(self.filepath())[stat.ST_MTIME]
-        if (not hasattr(self, '_v_last_read') or 
+        if (not hasattr(self, '_v_last_read') or
             (ts != self._v_last_read)):
             self._v_f=self.getFunction(1)
             self._v_last_read=ts
 
     if DevelopmentMode:
-        # In development mode we do an automatic reload 
+        # In development mode we do an automatic reload
         # if the module code changed
         def getFuncDefaults(self):
             self.reloadIfChanged()
@@ -210,7 +210,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
             raise RuntimeError,\
                 "external method could not be called " \
                 "because the file does not exist"
-            
+
         if DevelopmentMode:
             self.reloadIfChanged()
 
@@ -229,10 +229,10 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
                      len(self._v_func_defaults or ()) - 1 == len(args))
                     and self._v_func_code.co_varnames[0]=='self'):
                     return apply(f,(self.aq_parent.this(),)+args,kw)
-                
+
                 raise TypeError, v, tb
             finally: tb=None
-                
+
 
     def function(self): return self._function
     def module(self): return self._module

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 from BTrees.IIBTree import IIBucket
@@ -16,13 +16,13 @@ from BTrees.IIBTree import weightedIntersection, weightedUnion, difference
 from BTrees.OOBTree import OOSet, union
 
 class ResultList:
-  
+
     def __init__(self, d, words, index, TupleType=type(())):
         self._index = index
 
         if type(words) is not OOSet: words=OOSet(words)
         self._words = words
-        
+
         if (type(d) is TupleType):
             d = IIBucket((d,))
         elif type(d) is not IIBucket:
@@ -43,7 +43,7 @@ class ResultList:
 
     def has_key(self, key): return self._dict.has_key(key)
 
-    def items(self): return self._dict.items()  
+    def items(self): return self._dict.items()
 
     def __and__(self, x):
         return self.__class__(
@@ -58,7 +58,7 @@ class ResultList:
             self._words,
             self._index,
             )
-  
+
     def __or__(self, x):
         return self.__class__(
             weightedUnion(self._dict, x._dict)[1],
@@ -89,7 +89,6 @@ class ResultList:
             if d==lp: score = min(score,xdict[id]) # synonyms
             else: score = (score+xdict[id])/d
             result[id] = score
-    
+
         return self.__class__(
             result, union(self._words, x._words), self._index)
-

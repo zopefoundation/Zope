@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Text Index
 
 """
-__version__ = '$Revision: 1.33 $'[11:-2]
+__version__ = '$Revision: 1.34 $'[11:-2]
 
 
 import  re
@@ -23,7 +23,7 @@ from Globals import Persistent,DTMLFile
 from zLOG import LOG, ERROR
 from Acquisition import Implicit
 from Products.PluginIndexes.common.ResultList import ResultList
-from Products.PluginIndexes import PluggableIndex       
+from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 
 from OFS.SimpleItem import SimpleItem
@@ -77,13 +77,13 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     meta_type='TextIndex'
 
     manage_options= (
-        {'label': 'Settings',     
+        {'label': 'Settings',
          'action': 'manage_main',
          'help': ('TextIndex','TextIndex_Settings.stx')},
     )
 
     query_options = ["query","operator"]
- 
+
     def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,
                  caller=None, extra=None):
         """Create an index
@@ -143,9 +143,9 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
                 if self.catalog is None:
                     self.catalog = self.aq_inner.aq_parent.aq_base
-                
+
                 self._lexicon = getattr(self.catalog,self.vocabulary_id).getLexicon()
-            except:                
+            except:
                 self._lexicon = Lexicon()
                 self.vocabulary_id = '__intern__'
 
@@ -155,7 +155,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
     def __nonzero__(self):
         return not not self._unindex
-    
+
 
     def clear(self):
         """Reinitialize the text index."""
@@ -168,7 +168,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     def _convertBTrees(self, threshold=200):
 
         if type(self._lexicon) is type(''):
-            # Turn the name reference into a hard reference. 
+            # Turn the name reference into a hard reference.
             self._lexicon=self.getLexicon()
 
         if type(self._index) is IOBTree: return
@@ -184,7 +184,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             if type(scores) is not TupleType and type(scores) is not IIBTree():
                 scores=IIBTree(scores)
             return scores
-                
+
 
         convert(_index, self._index, threshold, convertScores)
 
@@ -217,8 +217,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         else:
             return tuple(map(self.getLexicon().getWord,
                              results))
-        
-            
+
+
     def insertForwardIndexEntry(self, entry, documentId, score=1):
         """Uses the information provided to update the indexes.
 
@@ -254,12 +254,12 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             else:
                 if indexRow.get(documentId, -1) != score:
                     # score changed (or new entry)
-                    
+
                     if type(indexRow) is DictType:
                         indexRow[documentId] = score
                         if len(indexRow) > 3:
                             # Big enough to give it's own database record
-                            indexRow=IIBTree(indexRow) 
+                            indexRow=IIBTree(indexRow)
                         index[entry] = indexRow
                     else:
                         indexRow[documentId] = score
@@ -271,7 +271,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
     def index_object(self, documentId, obj, threshold=None):
         """ Index an object:
         'documentId' is the integer id of the document
-        
+
         'obj' is the object to be indexed
 
         'threshold' is the number of words to process between
@@ -292,7 +292,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             return 0
 
         # sniff the object for 'id'+'_encoding'
-        
+
         try:
             encoding = getattr(obj, self.id+'_encoding')
             if callable(encoding ):
@@ -302,14 +302,14 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         except (AttributeError, TypeError):
             encoding = 'latin1'
 
-        
+
         lexicon = self.getLexicon()
 
         splitter = lexicon.Splitter
 
         wordScores = OIBTree()
         last = None
-        
+
         # Run through the words and score them
 
         for word in list(splitter(source,encoding=encoding)):
@@ -332,7 +332,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         # Get rid of document words that are no longer indexed
         self.unindex_objectWids(documentId, difference(currentWids, widScores))
-        
+
         # Now index the words. Note that the new xIBTrees are clever
         # enough to do nothing when there isn't a change. Woo hoo.
         insert=self.insertForwardIndexEntry
@@ -358,10 +358,10 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         return last
 
-    def unindex_object(self, i): 
+    def unindex_object(self, i):
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
-        
+
         index = self._index
         unindex = self._unindex
         wids = unindex.get(i, None)
@@ -369,7 +369,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             self.unindex_objectWids(i, wids)
             del unindex[i]
 
-    def unindex_objectWids(self, i, wids): 
+    def unindex_objectWids(self, i, wids):
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
 
@@ -406,7 +406,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         Note that this differentiates between being passed an Integer
         and a String.  Strings are looked up in the lexicon, whereas
         Integers are assumed to be resolved word ids. """
-        
+
         if type(word) is IntType:
             # We have a word ID
             result = self._index.get(word, {})
@@ -417,7 +417,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
             if not splitSource:
                 return ResultList({}, (word,), self)
-        
+
             if len(splitSource) == 1:
                 splitSource = splitSource[0]
                 if splitSource[:1] == '"' and splitSource[-1:] == '"':
@@ -444,7 +444,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             return r
 
 
-    def _apply_index(self, request, cid=''): 
+    def _apply_index(self, request, cid=''):
         """ Apply the index to query parameters given in the argument,
         request
 
@@ -452,11 +452,11 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         If the request does not contain the needed parameters, then
         None is returned.
- 
+
         Otherwise two objects are returned.  The first object is a
         ResultSet containing the record numbers of the matching
         records.  The second object is a tuple containing the names of
-        all data fields used.  
+        all data fields used.
         """
 
         record = parseIndexRequest(request,self.id,self.query_options)
@@ -496,7 +496,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         if r is not None:
             return r, (self.id,)
-        
+
         return (IIBucket(), (self.id,))
 
 
@@ -534,7 +534,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
     def query(self, s, default_operator=Or):
         """ Evaluate a query string.
-        
+
         Convert the query string into a data structure of nested lists
         and strings, based on the grouping of whitespace-separated
         strings by parentheses and quotes.  The 'Near' operator is
@@ -578,7 +578,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         if operandType is IntType:
             left = self[left]
         elif isinstance(left,StringType) or isinstance(left,UnicodeType):
-            left = self[left]        
+            left = self[left]
         elif operandType is ListType:
             left = self.evaluate(left)
 
@@ -586,7 +586,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         if operandType is IntType:
             right = self[right]
         elif isinstance(right,StringType) or isinstance(right,UnicodeType):
-            right = self[right]       
+            right = self[right]
         elif operandType is ListType:
             right = self.evaluate(right)
 
@@ -713,12 +713,12 @@ def parens(s, parens_re=re.compile('[()]').search):
     mo = parens_re(s)
     if mo is None:
         return
-    
+
     open_index = mo.start(0) + 1
     paren_count = 0
     while mo is not None:
         index = mo.start(0)
-    
+
         if s[index] == '(':
             paren_count = paren_count + 1
         else:
@@ -730,23 +730,23 @@ def parens(s, parens_re=re.compile('[()]').search):
                 break
         mo = parens_re(s, index + 1)
 
-    raise QueryError, "Mismatched parentheses"      
+    raise QueryError, "Mismatched parentheses"
 
 
 def quotes(s):
 
     if '"' not in s:
         return s.split()
-    
+
     # split up quoted regions
     splitted = re.split('\s*\"\s*', s)
 
     if (len(splitted) % 2) == 0: raise QueryError, "Mismatched quotes"
-    
+
     for i in range(1,len(splitted),2):
         # split the quoted region into words
         words = splitted[i] = splitted[i].split()
-        
+
         # put the Proxmity operator in between quoted words
         j = len(words) - 1
         while j > 0:
@@ -767,4 +767,3 @@ manage_addTextIndexForm = DTMLFile('dtml/addTextIndex', globals())
 def manage_addTextIndex(self, id, extra=None, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a text index"""
     return self.manage_addIndex(id, 'TextIndex', extra, REQUEST, RESPONSE, URL3)
-

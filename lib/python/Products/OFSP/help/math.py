@@ -13,7 +13,3 @@ math: Python 'math' module
     module":http://www.python.org/doc/current/lib/module-math.html
     documentation at Python.org
 """
-
-
-
-

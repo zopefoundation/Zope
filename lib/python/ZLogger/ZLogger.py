@@ -1,4 +1,3 @@
-
 import stupidFileLogger
 import syslogLogger
 

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 def manage_addDTMLMethod(id, title):
@@ -26,11 +26,11 @@ class DTMLMethod:
     The DTML Method's id is available via the 'document_id'
     variable and the title is available via the 'document_title'
     variable.
-    
+
     """
 
     __extends__=('OFSP.ObjectManagerItem.ObjectManagerItem',)
-    
+
     def __call__(client=None, REQUEST={}, **kw):
         """
 
@@ -101,7 +101,7 @@ class DTMLMethod:
           When the URL of a DTML Method is fetched from Zope, the DTML
           Method is called by the publisher.  The REQUEST object is
           passed as the second argument to the Method.
-          
+
         Permission -- 'View'
         """
 
@@ -109,19 +109,19 @@ class DTMLMethod:
         """
         Change the DTML Method, replacing its contents with 'data' and
         changing its title.
-        
+
         The data argument may be a file object or a string.
-        
+
         Permission -- 'Change DTML Methods'
         """
-        
+
     def document_src():
         """
         Returns the unrendered source text of the DTML Method.
-        
+
         Permission -- 'View management screens'
         """
-        
+
     def get_size():
         """
         Returns the size of the unrendered source text of the DTML
@@ -129,5 +129,5 @@ class DTMLMethod:
 
         Permission -- 'View'
         """
-        
+
     __constructor__ = manage_addDTMLMethod

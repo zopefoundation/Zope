@@ -1,17 +1,17 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 from WriteLockInterface import WriteLockInterface, LockItemInterface
 from EtagSupport import EtagSupport
@@ -133,7 +133,7 @@ class LockableItem(EtagSupport):
         # with the state of empty locks.
         if hasattr(Acquisition.aq_base(self), '__no_valid_write_locks__'):
             self.__no_valid_write_locks__()
-    
+
 
 import Globals
 Globals.default__class_init__(LockableItem)

@@ -12,9 +12,9 @@ def sort(seq, sort):
     that describe the sort order.
 
     key -- Attribute of the object to be sorted.
- 
+
     func -- Defines the compare function (optional).  Allowed values:
-     
+
       "cmp" -- Standard Python comparison function
 
       "nocase" -- Case-insensitive comparison
@@ -23,7 +23,7 @@ def sort(seq, sort):
 
       "strcoll_nocase" or "locale_nocase" -- Locale-aware
       case-insensitive string comparison
-        
+
       other -- A specified, user-defined comparison function, should
       return 1, 0, -1.
 
@@ -31,7 +31,7 @@ def sort(seq, sort):
       (allowed values: "asc", "desc")
 
     DTML Examples
- 
+
       Sort child object (using the 'objectValues' method) by id (using
       the 'getId' method), ignoring case::
 
@@ -64,7 +64,7 @@ def sort(seq, sort):
           <tr tal:repeat="item sorted_objects">
             <td tal:content="item/title">title</td>
             <td tal:content="item/bobobase_modification_time">
-              modification date</td>  
+              modification date</td>
           </tr>
         </table>
 
@@ -75,9 +75,5 @@ def sort(seq, sort):
     See Also
 
       "Python cmp function":http://www.python.org/doc/lib/built-in-funcs.html
-      
+
     """
-
-
-
-

@@ -29,7 +29,7 @@ class ProcessInputsTests(unittest.TestCase):
         for key, val in inputs:
             add("%s=%s" % (quote_plus(key), quote_plus(val)))
         query_string = '&'.join(query_string)
-        
+
         env = {'SERVER_NAME': 'testingharnas', 'SERVER_PORT': '80'}
         env['QUERY_STRING'] = query_string
         req = self._getHTTPRequest(env)
@@ -76,11 +76,11 @@ class ProcessInputsTests(unittest.TestCase):
 
     def _noFormValuesInOther(self, req):
         for key in req.taintedform.keys():
-            self.failIf(req.other.has_key(key), 
+            self.failIf(req.other.has_key(key),
                 'REQUEST.other should not hold tainted values at first!')
-            
+
         for key in req.form.keys():
-            self.failIf(req.other.has_key(key), 
+            self.failIf(req.other.has_key(key),
                 'REQUEST.other should not hold form values at first!')
 
     def _onlyTaintedformHoldsTaintedStrings(self, req):
@@ -126,7 +126,7 @@ class ProcessInputsTests(unittest.TestCase):
 
     def testSimpleMarshalling(self):
         from DateTime import DateTime
-    
+
         inputs = (
             ('num:int', '42'), ('fract:float', '4.2'), ('bign:long', '45'),
             ('words:string', 'Some words'), ('2tokens:tokens', 'one two'),
@@ -159,7 +159,7 @@ class ProcessInputsTests(unittest.TestCase):
                   ('utext:utext:utf8', 'test\xc2\xae\ntest\xc2\xae\n'),
                   ('utokens:utokens:utf8', 'test\xc2\xae test\xc2\xae'),
                   ('ulines:ulines:utf8', 'test\xc2\xae\ntest\xc2\xae'),
-                  
+
                   ('nouconverter:string:utf8', 'test\xc2\xae'))
         req = self._processInputs(inputs)
 
@@ -194,7 +194,7 @@ class ProcessInputsTests(unittest.TestCase):
         formkeys.sort()
         self.assertEquals(formkeys, ['alist', 'atuple', 'oneitem',
             'oneitemtuple', 'onerec', 'setrec'])
-        
+
         self.assertEquals(req['oneitem'], ['one'])
         self.assertEquals(req['oneitemtuple'], ('one',))
         self.assertEquals(req['alist'], ['one', 'two'])
@@ -271,7 +271,7 @@ class ProcessInputsTests(unittest.TestCase):
 
     def testDefaults(self):
         inputs = (
-            ('foo:default:int', '5'), 
+            ('foo:default:int', '5'),
 
             ('alist:int:default', '3'),
             ('alist:int:default', '4'),
@@ -356,10 +356,10 @@ class ProcessInputsTests(unittest.TestCase):
 
                   ('tinitutokens:utokens:utf8', '<test\xc2\xae> test\xc2\xae'),
                   ('tinitulines:ulines:utf8', '<test\xc2\xae>\ntest\xc2\xae'),
-                  
+
                   ('tdeferutokens:utokens:utf8', 'test\xc2\xae <test\xc2\xae>'),
                   ('tdeferulines:ulines:utf8', 'test\xc2\xae\n<test\xc2\xae>'),
-                  
+
                   ('tnouconverter:string:utf8', '<test\xc2\xae>'))
         req = self._processInputs(inputs)
 
@@ -375,7 +375,7 @@ class ProcessInputsTests(unittest.TestCase):
     def testSimpleContainersWithTaints(self):
         from types import ListType, TupleType
         from ZPublisher.HTTPRequest import record
-        
+
         inputs = (
             ('toneitem:list', '<one>'),
             ('<tkeyoneitem>:list', 'one'),
@@ -472,8 +472,8 @@ class ProcessInputsTests(unittest.TestCase):
 
     def testDefaultsWithTaints(self):
         inputs = (
-            ('tfoo:default', '<5>'), 
-            
+            ('tfoo:default', '<5>'),
+
             ('doesnnotapply:default', '<4>'),
             ('doesnnotapply', '4'),
 
@@ -535,7 +535,7 @@ class ProcessInputsTests(unittest.TestCase):
         for type, convert in type_converters.items():
             try:
                 convert('<html garbage>')
-            except Exception, e: 
+            except Exception, e:
                 self.failIf('<' in e.args,
                     '%s converter does not quote unsafe value!' % type)
             except DateTime.SyntaxError, e:
@@ -556,7 +556,7 @@ class ProcessInputsTests(unittest.TestCase):
 
         self._noTaintedValues(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
-            
+
 
 def test_suite():
     suite = unittest.TestSuite()

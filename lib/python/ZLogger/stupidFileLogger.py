@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import time, sys,  os, thread
 
@@ -62,7 +62,7 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
         envvar = eget('EVENT_LOG_SEVERITY') or eget('STUPID_LOG_SEVERITY')
         try: _stupid_severity=int(envvar)
         except: _stupid_severity=0
-        
+
     if severity < _stupid_severity: return
 
     if _stupid_format is not None:
@@ -109,9 +109,3 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
         except:
             _stupid_dest.write("%s: %s\n" % error[:2])
     _stupid_dest.flush()
-
-
-
-
-
-

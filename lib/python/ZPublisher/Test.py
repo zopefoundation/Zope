@@ -7,14 +7,14 @@ exec python $0 ${1+"$@"}
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 __doc__='''Command-line Bobo
@@ -25,7 +25,7 @@ Usage
 
    where:
 
-   module_path -- is a full path to a published module 
+   module_path -- is a full path to a published module
 
    path_info -- Is the information after the module name that would
          normally be specified in a GET URL, including a query string.
@@ -33,22 +33,22 @@ Usage
 Description
 
    The command-line interface to Bobo provides a handy way to test,
-   debug, and profile Bobo without a web server.  
+   debug, and profile Bobo without a web server.
 
 Options
 
    -u username:password        -- Supply HTTP authorization information
 
    -e name=value               -- Supply environment variables.  Use a
-                                  seperate -e option for each variable 
+                                  seperate -e option for each variable
                                   specified.
 
    -p profiler_data_file       -- Run under profiler control,
-                                  generating the profiler 
+                                  generating the profiler
                                   data file, profiler_data_file.
 
    -t                          -- Compute the time required to
-                                  complete a request, in 
+                                  complete a request, in
                                   milliseconds.
 
    -r n                        -- Specify a repeat count for timing or
@@ -90,9 +90,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.39 2002/01/02 15:56:04 andreasjung Exp $
+$Id: Test.py,v 1.40 2002/08/14 22:09:40 mj Exp $
 '''
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, traceback, profile, os, getopt
 from time import clock
@@ -134,7 +134,7 @@ def main():
             env[val[:opt]]=val[opt+1:]
 
     if (debug or 0)+(timeit or 0)+(profile and 1 or 0) > 1:
-        raise 'Invalid options', 'only one of -p, -t, and -d are allowed' 
+        raise 'Invalid options', 'only one of -p, -t, and -d are allowed'
 
     module=args[0]
 
@@ -342,7 +342,7 @@ def publish(script=None,path_info='/',
             if isinstance(b, TupleType):
                 apply(db.set_break,b)
             else:
-                fbreak(db,b)    
+                fbreak(db,b)
 
         db.prompt='pdb> '
         # db.set_continue()
@@ -368,9 +368,9 @@ def publish(script=None,path_info='/',
         publish_module_pm(file, environ=env, stdout=stdout, extra=extra)
         print '\n%s\n' % ('_'*60)
     else:
-        if silent: 
+        if silent:
             stdout=open('/dev/null','w')
-        else: 
+        else:
             if fp and hasattr(fp,'write'):
                 stdout = fp
             else:
