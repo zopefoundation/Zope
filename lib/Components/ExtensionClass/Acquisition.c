@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.19 1998/03/24 16:23:19 jim Exp $
+  $Id: Acquisition.c,v 1.20 1998/04/08 14:50:51 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -423,11 +423,7 @@ Wrapper_getattro_(Wrapper *self, PyObject *oname, int sob, int sco)
     }
   if(self->obj) PyErr_Clear();
 
-  if((*name != '_'
-#ifdef IMPLICIT_ACQUIRE___ROLES__
-      || strcmp(name,"__roles__")==0
-#endif
-      )
+  if((*name != '_')
      && self->container && sco)
     {
       if(self->container->ob_type == self->ob_type &&
@@ -475,9 +471,6 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
   if(*name=='_')
     {
       if(strcmp(name,"__init__")==0) return Py_FindAttr(OBJECT(self),oname);
-#ifdef IMPLICIT_ACQUIRE___ROLES__
-      if(strcmp(name,"__roles__")==0) return Wrapper_getattro_(self,oname,1,1);
-#endif
     }  
 
   if(*name=='a')
@@ -858,7 +851,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.19 $";
+  char *rev="$Revision: 1.20 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -877,7 +870,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.19 1998/03/24 16:23:19 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.20 1998/04/08 14:50:51 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -900,6 +893,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.20  1998/04/08 14:50:51  jim
+  No longer acquire __roles__ explicitly.
+
   Revision 1.19  1998/03/24 16:23:19  jim
   Added parens to make gcc SHUT UP!
 
