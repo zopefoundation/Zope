@@ -81,12 +81,10 @@ class TestCaseBase(unittest.TestCase):
     def _run_check(self, source, events, collector=EventCollector):
         parser = collector()
         parser.feed(self.prologue)
-        if isinstance(source, type([])):
-            for s in source:
-                parser.feed(s)
-        else:
-            parser.feed(source)
-        parser.feed(self.epilogue)
+        for s in source:
+            parser.feed(s)
+        for c in self.epilogue:
+            parser.feed(c)
         parser.close()
         self.assert_(parser.get_events() ==
                      self.initial_events + events + self.final_events,
@@ -243,7 +241,6 @@ text
 
     def check_cdata_content(self):
         s = """<script> <!-- not a comment --> &not-an-entity-ref; </script>"""
-        s = list(s)
         self._run_check(s, [
             ("starttag", "script", []),
             ("data", " <!-- not a comment --> &not-an-entity-ref; "),
