@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.112 $'[11:-2]
+__version__='$Revision: 1.113 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -216,7 +216,7 @@ class File(Persistent,Implicit,PropertyManager,
                     last_mod = long(0)
                 if last_mod > 0 and last_mod <= mod_since:
                     RESPONSE.setStatus(304)
-                    return RESPONSE
+                    return ''
 
         if self.precondition and hasattr(self,self.precondition):
             # Grab whatever precondition was defined and then 
