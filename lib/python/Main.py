@@ -32,7 +32,7 @@ import Scheduler.Scheduler
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
-SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
+SessionBase=Globals.SessionBase=TJar.TM(Bobobase, 1)
 
 
 SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
@@ -43,6 +43,9 @@ bobo_application=app=Bobobase['Application']
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.13  1997/11/19 19:59:31  brian
+# Added create flag to force creation of .trans file when transaction manager is created.
+#
 # Revision 1.12  1997/11/11 22:56:33  jim
 # Added logic to that causes transaction commits to notify LRT managers.
 #
