@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import regex
 from string import atoi, atol, atof, join, split, strip
@@ -138,7 +138,10 @@ def field2long(v):
         return map(field2long, v)
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    # we can remove the check for an empty string when we go to python 1.4
+
+    # handle trailing 'L' if present.
+    if v[-1:] in ('L', 'l'):
+        v = v[:-1]
     if v: return atol(v)
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
