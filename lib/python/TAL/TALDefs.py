@@ -86,7 +86,7 @@
 Common definitions used by TAL and METAL compilation an transformation.
 """
 
-TAL_VERSION = "1.2"
+TAL_VERSION = "1.3"
 
 XML_NS = "http://www.w3.org/XML/1998/namespace" # URI for XML namespace
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
