@@ -77,7 +77,7 @@ class trigger (asyncore.dispatcher):
 			msg = str(id(thunk))
 		else:
 			msg = 'Bang!'
-			self.trigger.sendto (msg, self.addr)
+		self.trigger.sendto (msg, self.addr)
 
 	def handle_read (self):
 		what, where = self.recvfrom (128)
