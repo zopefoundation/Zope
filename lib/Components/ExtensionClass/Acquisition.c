@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.22 1998/05/20 17:17:17 jim Exp $
+  $Id: Acquisition.c,v 1.23 1998/11/17 19:47:59 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -677,7 +677,7 @@ Wrapper_ass_item(Wrapper *self, int  i, PyObject *v)
   else
     {
       UNLESS(v=CallMethodO(OBJECT(self),py__delitem__,
-			   Build("(iO)", i),NULL))
+			   Build("(i)", i),NULL))
 	return -1;
     }
   Py_DECREF(v);
@@ -906,7 +906,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.22 $";
+  char *rev="$Revision: 1.23 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -925,7 +925,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.22 1998/05/20 17:17:17 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.23 1998/11/17 19:47:59 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -948,6 +948,10 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.23  1998/11/17 19:47:59  jim
+  A typo probably caused __delitem__
+  calls on wrapped mapping objects to fail.
+
   Revision 1.22  1998/05/20 17:17:17  jim
   Fixed a bug in aq_acquire machinery.  If aq_self was a wrapper,
   then aq_acquire needed to be called on it, but that wasn't hapenning.
