@@ -49,13 +49,10 @@ initMethodObject(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("MethodObject", methods,
 		     "Method-object mix-in class module\n\n"
-		     "$Id: MethodObject.c,v 1.8 2002/06/10 22:48:46 jeremy Exp $\n",
+		     "$Id: MethodObject.c,v 1.9 2002/11/13 17:45:53 jeremy Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"Method",MethodType);
-
-  /* Check for errors */
-  CHECK_FOR_ERRORS("can't initialize module MethodObject");
 }
 

@@ -74,8 +74,6 @@ MultiMapping = Extension(name = 'MultiMapping',
 
 Record = Extension(name = 'Record', sources = ['src/Record.c'])
 
-Sync = Extension(name = 'Sync', sources = ['src/Sync.c'])
-
 ThreadLock = Extension(name = 'ThreadLock',
                        sources = ['src/ThreadLock.c'])
 
@@ -87,7 +85,7 @@ setup(name = "ExtensionClass",
       url = "http://www.zope.com",
 
       ext_modules = [ExtensionClass, Acquisition, ComputedAttribute,
-                     MethodObject, Missing, MultiMapping, Sync,
+                     MethodObject, Missing, MultiMapping, 
                      ThreadLock, Record],
       headers = ["src/ExtensionClass.h"],
 

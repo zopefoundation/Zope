@@ -1515,7 +1515,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.59 2002/06/10 22:48:46 jeremy Exp $\n",
+	   "$Id: Acquisition.c,v 1.60 2002/11/13 17:45:53 jeremy Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -1542,6 +1542,4 @@ initAcquisition(void)
   api = PyCObject_FromVoidPtr(&AcquisitionCAPI, NULL);
   PyDict_SetItemString(d, "AcquisitionCAPI", api);
   Py_DECREF(api);
-
-  CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }

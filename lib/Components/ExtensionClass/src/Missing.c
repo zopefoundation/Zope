@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.14 2002/11/12 20:06:00 jeremy Exp $"
+"\n$Id: Missing.c,v 1.15 2002/11/13 17:45:53 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -292,16 +292,16 @@ initMissing(void)
   PyDict_SetItemString(d, "Value", theValue);
   PyDict_SetItemString(d, "V", theValue); 
   PyDict_SetItemString(d, "MV", theValue); 
-	
-  /* Check for errors */
-  if (PyErr_Occurred())
-    Py_FatalError("can't initialize module Missing");
 }
 
 /*****************************************************************************
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.15  2002/11/13 17:45:53  jeremy
+  Remove unused Sync module.
+  Remove unnecessary Py_FatalError() calls on failed module import.
+
   Revision 1.14  2002/11/12 20:06:00  jeremy
   Remove bogus include.
 

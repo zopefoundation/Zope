@@ -14,7 +14,7 @@
 
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.17 2002/06/10 22:48:46 jeremy Exp $"
+"\n$Id: Record.c,v 1.18 2002/11/13 17:45:53 jeremy Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -548,7 +548,4 @@ initRecord(void)
   d = PyModule_GetDict(m);
 
   PyExtensionClass_Export(d,"Record",RecordType);
-
-  /* Check for errors */
-  if (PyErr_Occurred()) Py_FatalError("can't initialize module Record");
 }

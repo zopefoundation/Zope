@@ -112,10 +112,9 @@ initComputedAttribute(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: ComputedAttribute.c,v 1.7 2002/06/10 22:48:46 jeremy Exp $\n",
+	   "$Id: ComputedAttribute.c,v 1.8 2002/11/13 17:45:53 jeremy Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"ComputedAttribute",ComputedAttributeType);
-  CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }
