@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.63 1998/05/08 14:55:18 jim Exp $'''
-__version__='$Revision: 1.63 $'[11:-2]
+$Id: Application.py,v 1.64 1998/05/11 14:55:32 jim Exp $'''
+__version__='$Revision: 1.64 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -258,9 +258,12 @@ def install_products():
 	    continue
 
 	permissions={}
-	for permission, names in pgetattr(product, '__ac_permissions__', ()):
-	    for name in names: permissions[name]=permission
 	new_permissions={}
+	for permission, names in pgetattr(product, '__ac_permissions__', ()):
+	    if names:
+		for name in names: permissions[name]=permission
+	    elif not folder_permissions.has_key(permission):
+		new_permissions[permission]=()
 
 	for meta_type in pgetattr(product, 'meta_types', ()):
 	    if product_name=='OFSP': meta_types.insert(0,meta_type)
@@ -392,6 +395,10 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.64  1998/05/11 14:55:32  jim
+# Added logic to recognize empty permissions so that folders can control
+# sub-object permissions.
+#
 # Revision 1.63  1998/05/08 14:55:18  jim
 # Rearranged permission user interface machinery, alot.
 #
