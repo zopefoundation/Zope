@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -148,14 +148,14 @@ class PropFind:
             obsheets={}
         if self.allprop:
             stats=[]
-            for ps in propsheets.values():
+            for ps in propsets:
                 if hasattr(aq_base(ps), 'dav__allprop'):
                     stats.append(ps.dav__allprop())
             stats=string.join(stats, '') or '<d:status>200 OK</d:status>\n'
             result.write(stats)            
         elif not self.propnames:
             stats=[]
-            for ps in propsheets.values():
+            for ps in propsets:
                 if hasattr(aq_base(ps), 'dav__propnames'):
                     stats.append(ps.dav__propnames())
             stats=string.join(stats, '') or '<d:status>200 OK</d:status>\n'
