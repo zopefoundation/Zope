@@ -676,47 +676,4 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     __call__ = searchResults
 
 
-    def checkConsistency(self):
-        """ perform some consistency checks on the catalog """
-        from types import IntType
-        from BTrees.IIBTree import IISet,difference,intersection
-
-        l_data  = list(self.data.keys())
-        l_data.sort()
-        l_uids  = list(self.uids.values())
-        l_uids.sort()
-        l_paths = list(self.data.keys())
-        l_paths.sort()
-
-        assert l_data == l_uids
-        assert l_data == l_paths
-
-        for id,idx in self.indexes.items():
-
-            if idx.meta_type == 'FieldIndex':
-
-                RIDS = IISet() 
-                for key, rids in idx._index.items():
-                    if isinstance(rids,IntType): 
-                        RIDS.insert(  rids  )
-                    else:
-                        map(RIDS.insert , rids.keys())
-
-                diff = difference(RIDS, IISet(self.data.keys()))
-                assert len(diff)==0,'Index %s: problem with forward entries' % id
-        
-
-                RIDS = IISet() 
-                for key, rids in idx._index.items():
-                    if isinstance(rids,IntType): 
-                        RIDS.insert(  rids  )
-                    else:
-                        map(RIDS.insert , rids.keys())
-
-                diff = difference(RIDS, IISet(self.data.keys()))
-                assert len(diff)==0,'Index %s: problems with backward entries' % id
-
-        
-
-
 class CatalogError(Exception): pass
