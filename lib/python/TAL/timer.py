@@ -84,7 +84,7 @@
 # 
 ##############################################################################
 """
-Helper program to time METAL and TAL transformations and other DOM operations.
+Helper program to time compilation and interpretation
 """
 
 import sys
@@ -93,9 +93,7 @@ import getopt
 from cPickle import dumps, loads
 from cStringIO import StringIO
 
-from driver import parsefile, copytree, talizetree, printtree, FILE
-from driver import compiletree, interpretit, compilefile
-from TALDefs import macroIndexer
+from driver import FILE, compilefile, interpretit
 
 def main():
     count = 10
@@ -107,22 +105,13 @@ def main():
     for o, a in opts:
         if o == "-n":
             count = int(a)
-    if args:
-        file = args[0]
-    else:
-        file = FILE
-    dummyfile = StringIO()
-    doc = timefunc(count, parsefile, file)
-    doc = timefunc(count, copytree, doc)
-    doc2 = timefunc(count, talizetree, doc)
-    timefunc(count, printtree, doc, dummyfile)
-    timefunc(count, macroIndexer, doc)
-    it = timefunc(count, compiletree, doc)
-    it = timefunc(count, compilefile, file)
-    timefunc(count, interpretit, it, None, dummyfile)
-    s = timefunc(count, pickletree, doc)
-    timefunc(count, unpickletree, s)
-    print "pickle length : %6d" % len(s)
+    if not args:
+        args = [FILE]
+    for file in args:
+        print file
+        dummyfile = StringIO()
+        it = timefunc(count, compilefile, file)
+        timefunc(count, interpretit, it, None, dummyfile)
 
 def timefunc(count, func, *args):
     sys.stderr.write("%-14s: " % func.__name__)
@@ -134,12 +123,6 @@ def timefunc(count, func, *args):
     sys.stderr.write("%6.3f secs for %d calls, i.e. %4.0f msecs per call\n"
                      % ((t1-t0), count, 1000*(t1-t0)/count))
     return result
-
-def pickletree(doc):
-    return dumps(doc)
-
-def unpickletree(s):
-    return loads(s)
 
 if __name__ == "__main__":
     main()
