@@ -13,11 +13,13 @@
 """Try to do all of the installation steps.
 
 This must be run from the top-level directory of the installation.
-(Yes, this is cheezy.  We'll fix this when we have a chance.
+Yes, this is cheesy.
 
 """
 
 import sys, os
+if not (sys.version >= "2.2" and sys.version_info >= (2, 2, 2)):
+    raise RuntimeError, "Python 2.2.2 or later is required"
 
 def setup(me):
     home=os.path.split(me)[0]
