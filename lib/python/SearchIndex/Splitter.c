@@ -396,7 +396,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.8 1998/02/12 20:57:28 jim Exp $\n"
+"$Id: Splitter.c,v 1.9 1998/04/08 13:38:04 jim Exp $\n"
 ;
 
 
@@ -404,7 +404,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
@@ -416,7 +416,7 @@ initSplitter()
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
-  #include "dcprotect.h"
+#include "dcprotect.h"
 
   if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter");
 }
