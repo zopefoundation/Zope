@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.11 2003/12/25 07:24:47 jace Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.12 2003/12/30 06:23:52 jace Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -41,6 +41,7 @@ class MIMETag:
                                    , name=None, name_expr=None
                                    , filename=None, filename_expr=None
                                    , cid=None, cid_expr=None
+                                   , charset=None, charset_expr=None
                                    , skip_expr=None
                                    , multipart=None
                                    )
@@ -53,6 +54,7 @@ class MIMETag:
                                    , name=None, name_expr=None
                                    , filename=None, filename_expr=None
                                    , cid=None, cid_expr=None
+                                   , charset=None, charset_expr=None
                                    , skip_expr=None
                                    )
 
@@ -105,6 +107,13 @@ class MIMETag:
             elif not has_key('cid'):
                 args['cid']=''
 
+            if has_key('charset_expr'):
+                if has_key('charset'):
+                    raise ParseError, _tm('charset and charset_expr given', 'mime')
+                args['charset_expr']=Eval(args['charset_expr'])
+            elif not has_key('charset'):
+                args['charset']=''
+
             if has_key('skip_expr'):
                 args['skip_expr']=Eval(args['skip_expr'])
 
@@ -150,6 +159,9 @@ class MIMETag:
             if has_key('cid_expr'): cid=a['cid_expr'].eval(md)
             else: cid=a['cid']
 
+            if has_key('charset_expr'): charset=a['charset_expr'].eval(md)
+            else: charset=a['charset']
+
             if d:
                 if f:
                     inner.addheader('Content-Disposition', '%s;\n filename="%s"' % (d, f))
@@ -165,6 +177,9 @@ class MIMETag:
                 plist = [('name', n)]
             else:
                 plist = []
+
+            if t.startswith('text/'):
+                plist.append(('charset', charset or 'us-ascii'))
 
             innerfile = inner.startbody(t, plist, 1)
 
