@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.46 1998/02/06 00:25:28 jim Exp $'''
-__version__='$Revision: 1.46 $'[11:-2]
+$Id: Application.py,v 1.47 1998/02/10 18:25:42 jim Exp $'''
+__version__='$Revision: 1.47 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -196,7 +196,7 @@ def install_products():
     from Folder import Folder
     folder_permissions={}
     for permission, names in Folder.__ac_permissions__:
-	folder_permissions[permission]=list(names)
+	folder_permissions[permission]=names
 
     meta_types=list(Folder.dynamic_meta_types)
 
@@ -216,8 +216,9 @@ def install_products():
 	    continue
 
 	permissions={}
-	for permission, names in pgetattr(product, 'permissions', ()):
+	for permission, names in pgetattr(product, '__ac_permissions__', ()):
 	    for name in names: permissions[name]=permission
+	new_permissions={}
 
 	for meta_type in pgetattr(product, 'meta_types', ()):
 	    if product_name=='OFSP': meta_types.insert(0,meta_type)
@@ -262,31 +263,27 @@ def install_products():
 	    if not hasattr(Folder, name):
 		setattr(Folder, name, method)
 		if name[-9:]=='__roles__': continue # Just setting roles
-		if name[:6]=='manage' and not hasattr(Folder,name+'__roles__'):
-		    Folder.__dict__[name+'__roles__']='Manager',
-		if permissions.has_key(name):
+		if (permissions.has_key(name) and
+		    not folder_permissions.has_key(permissions[name])):
 		    permission=permissions[name]
-		    if folder_permissions.has_key(permission):
-			folder_permissions[permission].append(name)
+		    if new_permissions.has_key(permission):
+			new_permissions[permission].append(name)
 		    else:
-			folder_permissions[permission]=[name]
-		elif name[:10]=='manage_add':
-		    folder_permissions['Add objects'].append(name)
-		    
+			new_permissions[permission]=[name]
+	
+	if new_permissions:
+	    new_permissions=new_permissions.items()
+	    for permission, names in new_permissions:
+		folder_permissions[permission]=names
+	    new_permissions.sort()
+	    Folder.__dict__['__ac_permissions__']=tuple(
+		list(Folder.__ac_permissions__)+new_permissions)
 	
 	misc_=pgetattr(product, 'misc_', {})
 	if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
 	Application.misc_.__dict__[product_name]=misc_
 
-    permissions=[]
-    for permission, name in Folder.__ac_permissions__:
-	permissions.append((permission,folder_permissions[permission]))
-	del folder_permissions[permission]
-    folder_permissions=folder_permissions.items()
-    folder_permissions.sort()
-    Folder.__dict__['__ac_permissions__']=tuple(permissions+folder_permissions)
     Folder.dynamic_meta_types=tuple(meta_types)
-
 
     Globals.default__class_init__(Folder)
 
@@ -378,6 +375,10 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.47  1998/02/10 18:25:42  jim
+# Re-did the way permissions are handled in install_products, once
+# again.
+#
 # Revision 1.46  1998/02/06 00:25:28  jim
 # Fixed bug in handling product permissions.
 #
