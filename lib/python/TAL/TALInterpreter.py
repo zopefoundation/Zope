@@ -133,6 +133,8 @@ class TALInterpreter:
         else:
             self.endsep = "/>"
         self.interpret(self.program)
+        if self.col > 0:
+            self.stream_write("\n")
 
     col = 0
 
