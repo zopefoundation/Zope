@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 """
-Compile a DOM tree for efficient TAL expansion.
+Compile a DOM tree for efficient METAL and TAL expansion.
 
 XXX TO DO:
-- get macro use/define substitution right (currently ignores prefix)
+- get macro define->use substitution in output right (currently ignores prefix)
 """
 
 import string
@@ -100,7 +100,7 @@ from TALVisitor import macroIndexer, slotIndexer
 from TALVisitor import splitParts, parseAttributeReplacements
 from TALVisitor import parseSubstitution
 
-class TALCompiler(DOMVisitor):
+class METALCompiler(DOMVisitor):
 
     def __init__(self, document):
         DOMVisitor.__init__(self, document)
@@ -151,7 +151,7 @@ class TALCompiler(DOMVisitor):
             if attr.namespaceURI:
                 if self.newNS(attr.prefix, attr.namespaceURI):
                     list.append(("xmlns:" + attr.prefix, attr.namespaceURI))
-        list.extend(getAttributeList(node))
+        list.extend(self.getAttributeList(node))
         return list
 
     def emit(self, *instruction):
@@ -214,6 +214,49 @@ class TALCompiler(DOMVisitor):
             return
         self.compileElement(node)
 
+    def compileElement(self, node):
+        self.emitElement(node)
+
+    def emitElement(self, node):
+            if not node.hasChildNodes():
+                self.emitStartEndTag(node)
+            else:
+                self.emitStartTag(node)
+                self.visitAllChildren(node)
+                self.emitEndTag(node)
+
+    def visitText(self, node):
+        self.emit("text", node.nodeValue)
+
+    def visitComment(self, node):
+        self.emit("comment", node.nodeValue)
+
+    def getAttributeList(self, node):
+        if not node.hasAttributes():
+            return []
+        attrList = []
+        for attrNode in node.attributes.values():
+            attrList.append((attrNode.nodeName, attrNode.nodeValue))
+        return attrList
+
+class TALCompiler(METALCompiler):
+
+    # Overriding METAL method to add attribute replacements
+    def getAttributeList(self, node):
+        attrList = METALCompiler.getAttributeList(self, node);
+        attrDict = getAttributeReplacements(node)
+        if not attrDict:
+            return attrList
+        list = []
+        for key, value in attrList:
+            if attrDict.has_key(key):
+                list.append((key, value, attrDict[key]))
+                del attrDict[key]
+            else:
+                list.append((key, value))
+        return list
+
+    # Overriding METAL method to compile TAL statements
     def compileElement(self, node):
         defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
         repeat = node.getAttributeNS(ZOPE_TAL_NS, "repeat")
@@ -309,38 +352,6 @@ class TALCompiler(DOMVisitor):
         block = self.popProgram()
         self.emit("loop", name, expr, block)
         return 1
-
-    def emitElement(self, node):
-            if not node.hasChildNodes():
-                self.emitStartEndTag(node)
-            else:
-                self.emitStartTag(node)
-                self.visitAllChildren(node)
-                self.emitEndTag(node)
-
-    def visitText(self, node):
-        self.emit("text", node.nodeValue)
-
-    def visitComment(self, node):
-        self.emit("comment", node.nodeValue)
-
-def getAttributeList(node):
-    if not node.hasAttributes():
-        return []
-    attrList = []
-    for attrNode in node.attributes.values():
-        attrList.append((attrNode.nodeName, attrNode.nodeValue))
-    attrDict = getAttributeReplacements(node)
-    if not attrDict:
-        return attrList
-    list = []
-    for key, value in attrList:
-        if attrDict.has_key(key):
-            list.append((key, value, attrDict[key]))
-            del attrDict[key]
-        else:
-            list.append((key, value))
-    return list
 
 def getAttributeReplacements(node):
     attributes = node.getAttributeNS(ZOPE_TAL_NS, "attributes")
