@@ -24,7 +24,8 @@ from bsddb3 import db
 # are overridden here, some of which are not.
 from ZODB.BaseStorage import BaseStorage
 
-__version__ ='$Revision: 1.1 $'[11:-2]
+# $Revision: 1.2 $
+__version__ = '0.1'
 
 
 
@@ -77,6 +78,15 @@ class BerkeleyBase(BaseStorage):
         # Initialize the object id counter.
         self._init_oid()
 
+    def _closelog(self):
+        if self._commitlog:
+            self._commitlog.finish()
+            # JF: unlinking might be too inefficient.  JH: might use mmap
+            # files.  BAW: maybe just truncate the file, or write a length
+            # into the headers and just zero out the length.
+            self._commitlog.close(unlink=1)
+            self._commitlog = None
+        
     def _setupDB(self, name, flags=0):
         """Open an individual database with the given flags.
 
