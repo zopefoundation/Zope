@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.2 2001/04/27 20:27:40 shane Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.3 2001/04/28 07:05:44 chrism Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os
 import unittest
@@ -272,6 +272,12 @@ class DTMLTests (unittest.TestCase):
         res = html(date=DateTime.DateTime("1995-12-25"),
                    name='christmas_day')
         expected = 'Christmas day is 1995/12/25'
+        assert res == expected, res
+
+    def checkSimpleString(self):
+        dt = String('%(name)s')
+        res = dt(name='Chris')
+        expected = 'Chris'
         assert res == expected, res
 
     def checkStringDateFormatting(self):
