@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: ftp_server.py,v 1.12 2000/06/02 14:22:48 brian Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.13 2000/07/05 14:22:13 brian Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -670,8 +670,7 @@ class ftp_channel (asynchat.async_chat):
 		'give help information'
 		# find all the methods that match 'cmd_xxxx',
 		# use their docstrings for the help response.
-		import newdir
-		attrs = newdir.dir(self.__class__)
+		attrs = dir(self.__class__)
 		help_lines = []
 		for attr in attrs:
 			if attr[:4] == 'cmd_':
