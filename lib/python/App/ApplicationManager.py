@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -7,6 +7,8 @@ from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
 from OFS import SimpleItem
+from App.Dialogs import MessageDialog
+
 
 class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     """System management"""
@@ -98,9 +100,17 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 
     def revert_points(self): return ()
 
-    def manage_addProduct(self, product):
-	"""Register a product
+    createProductEncyclopedia__roles__=()
+    def createProductEncyclopedia(self, product):
+	"""Create product encyclopedia files
+
+	In StructuredText, HTML, and MML formats.
 	"""
-	products=Globals.Bobobase['products']
-	if product not in products:
-	    Globals.Bobobase['products']=tuple(products)+(product,)
+	if type(product) is not type([]): product=(product,)
+	import PrincipiaHelp.product_encyclopedia
+	for p in product:
+	    PrincipiaHelp.product_encyclopedia.doc(p)
+	return MessageDialog(message='Documented: %s' % product)
+
+	
+		
