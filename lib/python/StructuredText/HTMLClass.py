@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-from string import join, split, find
+from string import join, split, find, strip
 from cgi import escape
 import re, sys, ST
 
@@ -124,7 +124,7 @@ class HTMLClass:
         return join(r,'')
 
     def _text(self, doc, level, output):
-        output(doc.getNodeValue())
+        output(strip(doc.getNodeValue()))
 
     def document(self, doc, level, output):
         children=doc.getChildNodes()
