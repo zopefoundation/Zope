@@ -286,6 +286,20 @@ Structured Text
         HTML quoted when interpolated with a <dtml-var> or &dtml-;
         construct.
 
+reStructuredText
+
+    REST_INPUT_ENCODING
+
+        Specifies the encoding of the reST document (e.g. 'utf-8',
+        'iso-8859' or any other valid encoding recognized by Python).
+        The default is Pythons default encoding.
+
+    REST_OUTPUT_ENCODING
+
+        Specifies the encoding of rendered reST documents.
+        The default is Pythons default encoding.
+
+
 DateTime
 
     DATETIME_FORMAT 
