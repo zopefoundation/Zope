@@ -16,13 +16,20 @@ saving or discarding the version.
 <form action="&dtml-URL1;" method="post">
 <textarea name=remark rows=10 cols=50></textarea>
 <br />
-<div class="form-element">
-<input class="form-element" type="submit" name="save:method" 
- value="Save" />
-<input class="form-element" type="submit" name="discard:method" 
- value="Discard" />
+<table border="0">
+<tr>
+  <td align="left">
+    <input class="form-element" type="submit" name="save:method" 
+           value="Save" />
+  </td>
+  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td align="right">
+    <input class="form-element" type="submit" name="discard:method" 
+           value="Discard" />
+  </td>
+</tr>
+</table>
 </form>
-</div>
 <dtml-else>
 <p class="form-help">
 No unsaved work has been done in this version.

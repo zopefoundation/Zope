@@ -27,6 +27,7 @@ discard changes made in the versions.
     <td align="left" valign="top">
     <div class="form-element">
     <input type="submit" name="manage_saveVersions:method" value=" Save ">
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <input type="submit" name="manage_discardVersions:method" value="Discard">
     </div>
     </td>
