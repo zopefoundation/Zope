@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.35 1999/07/21 13:33:08 jim Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: Aqueduct.py,v 1.36 1999/07/21 19:43:39 michel Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -419,7 +419,7 @@ def decapitate(html, RESPONSE=None,
     ts_results = header_re.match_group(html, (1,3))
     if not ts_results: return html
 
-    headers, html = ts_reulsts[1]
+    headers, html = ts_results[1]
 
     headers=string.split(headers,'\n')
 
@@ -429,7 +429,7 @@ def decapitate(html, RESPONSE=None,
             del headers[i]
         else:
             ts_results = space_re.match_group(headers[i], (1,))
-            if ts_reults:
+            if ts_results:
                 headers[i-1]="%s %s" % (headers[i-1],
                                         headers[i][len(ts_reults[1]):])
                 del headers[i]
