@@ -290,9 +290,9 @@ class PermissionMapperManager(Acquisition.Implicit):
         
         r=[]
         a=r.append
-        for name, who_cares in method.ac_inherited_permissions(1):
-            p=perms.get(getPermissionMapping(name, wrapper), '')
-            a({'permission_name': name, 'class_permission': p})
+        for ac_perms in method.ac_inherited_permissions(1):
+            p=perms.get(getPermissionMapping(ac_perms[0], wrapper), '')
+            a({'permission_name': ac_perms[0], 'class_permission': p})
         return r
 
     def manage_setPermissionMapping(trueself, self,
