@@ -4,8 +4,8 @@
   <head>dadada</head>
 
   <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
-
-    <h1 z:insert="str:This Is The Replaced Title">Title</h1>
+<h1 z:condition="python:0">This title is not displayed</h1>
+    <h1 z:condition="python:1" z:insert="str:This Is The Replaced Title">Title</h1>
 
   <!-- examples adapted from TemplateAttributeLanguageSyntax -->
 
