@@ -58,17 +58,16 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.4 1997/12/18 16:45:29 jeffrey Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: CacheManager.py,v 1.5 1998/02/05 15:20:21 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
-import Globals
-import time
+import Globals, time, sys
 
 class CacheManager:
     """Cache management mix-in
     """
     _cache_age=60
-    _cache_size=2000
+    _cache_size=400
 
     manage_cacheForm=Globals.HTMLFile('cache', globals())
 
@@ -126,16 +125,41 @@ class CacheManager:
     def cache_detail(self):
 	detail={}
 	for oid, ob in Globals.Bobobase._jar.cache.items():
-	    c=ob.__class__.__name__
+	    c="%s.%s" % (ob.__class__.__module__, ob.__class__.__name__)
 	    if detail.has_key(c): detail[c]=detail[c]+1
 	    else: detail[c]=1
 	detail=detail.items()
 	detail.sort()
 	return detail
 
+    def cache_extreme_detail(self):
+	detail=[]
+	rc=sys.getrefcount
+	db=Globals.Bobobase._jar.db
+	for oid, ob in Globals.Bobobase._jar.cache.items():
+	    id=oid
+	    if hasattr(ob,'__dict__'):
+		d=ob.__dict__
+		if d.has_key('id'):
+		    id="%s (%s)" % (oid, d['id'])
+		elif d.has_key('__name__'):
+		    id="%s (%s)" % (oid, d['__name__'])
+
+	    detail.append({
+		'oid': id,
+		'klass': "%s.%s" % (ob.__class__.__module__,
+				    ob.__class__.__name__),
+		'rc': rc(ob)-4,
+		'references': db.objectReferencesIn(oid),
+		})
+	return detail
+
 ############################################################################## 
 #
 # $Log: CacheManager.py,v $
+# Revision 1.5  1998/02/05 15:20:21  jim
+# Lowered cache size.
+#
 # Revision 1.4  1997/12/18 16:45:29  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #
