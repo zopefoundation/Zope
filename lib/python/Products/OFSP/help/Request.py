@@ -41,7 +41,8 @@ class Request:
 
       - Cookies
 
-          These are the cookie data, if present.
+          These are the cookie data, if present.  Cookie values
+          are unquoted using url_unquote_plus.
 
       - Lazy Data
 
