@@ -152,7 +152,7 @@ class TestTransientObject(TestCase):
         assert t.items() == data.items()
         for k in data.keys():
             assert t.get(k) == data.get(k)
-        self.assertRaises(KeyError, self._genKeyError, t)
+        assert t.get('foobie') is None
         self.assertRaises(AttributeError, self._genLenError, t)
         assert t.get('foobie',None) is None
         assert t.has_key('a') 
@@ -167,7 +167,7 @@ class TestTransientObject(TestCase):
         assert t.get('foo') == 'bar'
         t.set('foobie', 'blech')
         t.delete('foobie')
-        self.assertRaises(KeyError, self._genKeyError, t)
+        assert t.get('foobie') is None 
 
 
 def test_suite():
