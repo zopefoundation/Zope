@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -111,6 +111,7 @@ class Fake:
 class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Database management"""
     manage=manage_main=DTMLFile('dtml/dbMain', globals())
+    manage_main._setName('manage_main')
     id        ='DatabaseManagement'
     name=title='Database Management'
     meta_type ='Database Management'
@@ -138,6 +139,7 @@ Globals.default__class_init__(DatabaseManager)
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Version management"""
     manage=manage_main=DTMLFile('dtml/versionManager', globals())
+    manage_main._setName('manage_main')
     id        ='Versions'
     name=title='Version Management'
     meta_type ='Version Management'
@@ -162,6 +164,7 @@ _v_rst=None
 class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Debug and profiling information"""
     manage=manage_main=DTMLFile('dtml/debug', globals())
+    manage_main._setName('manage_main')
     id        ='DebugInfo'
     name=title='Debug Information'
     meta_type = name
@@ -270,6 +273,7 @@ class ApplicationManager(Folder,CacheManager):
     DavLocks = DavLockManager()
 
     manage=manage_main=DTMLFile('dtml/cpContents', globals())
+    manage_main._setName('manage_main')
 
     def version_txt(self):
         if not hasattr(self, '_v_version_txt'):

@@ -388,6 +388,7 @@ class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
     manage=Globals.DTMLFile('OFS/dtml/main',
                             management_view='Property Sheets')
     manage_main = manage
+    manage_main._setName('manage_main')
     manage_addCommonSheetForm=Globals.DTMLFile('dtml/addCommonSheet',
                                                globals())
 

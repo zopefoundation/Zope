@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -183,6 +183,7 @@ class PythonScript(Script, Historical, Cacheable):
 
     ZPythonScriptHTML_editForm = DTMLFile('www/pyScriptEdit', globals())
     manage = manage_main = ZPythonScriptHTML_editForm
+    ZPythonScriptHTML_editForm._setName('ZPythonScriptHTML_editForm')
 
     security.declareProtected('Change Python Scripts',
       'ZPythonScriptHTML_editAction',

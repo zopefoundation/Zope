@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.129 $'[11:-2]
+__version__='$Revision: 1.130 $'[11:-2]
 
 import Globals, string, struct
 from OFS.content_types import guess_content_type
@@ -146,7 +146,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     manage_editForm  =DTMLFile('dtml/fileEdit',globals(),
                                Kind='File',kind='file')
-
+    manage_editForm._setName('manage_editForm')
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
     
@@ -736,7 +736,7 @@ class Image(File):
     manage_editForm  =DTMLFile('dtml/imageEdit',globals(),
                                Kind='Image',kind='image')
     view_image_or_file =DTMLFile('dtml/imageView',globals())
-
+    manage_editForm._setName('manage_editForm')
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
     

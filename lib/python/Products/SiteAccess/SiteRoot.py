@@ -77,6 +77,7 @@ class SiteRoot(Traverser, Implicit):
     manage_options=({'label':'Edit', 'action':'manage_main', 'help': ('SiteAccess', 'SiteRoot_Edit.stx')},)
 
     manage = manage_main = DTMLFile('www/SiteRootEdit', globals())
+    manage_main._setName('manage_main')
 
     def __init__(self, title, base, path):
         '''Title'''

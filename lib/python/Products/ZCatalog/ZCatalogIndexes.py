@@ -203,6 +203,7 @@ class OldCatalogWrapperObject(SimpleItem, Implicit):
     )
  
     manage_main = DTMLFile('dtml/manageOldindex',globals())
+    manage_main._setName('manage_main')
     manage_workspace = manage_main
 
     def __init__(self, o):

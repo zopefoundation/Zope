@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.60 2001/01/11 15:03:52 chrism Exp $"""
-__version__ = "$Revision: 1.60 $"[11:-2]
+$Id: MailHost.py,v 1.61 2001/06/07 22:18:44 shane Exp $"""
+__version__ = "$Revision: 1.61 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -128,6 +128,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     'a mailhost...?'
     meta_type='Mail Host'
     manage=manage_main=DTMLFile('dtml/manageMailHost', globals())
+    manage_main._setName('manage_main')
     index_html=None
     icon='misc_/MailHost/MHIcon'
 

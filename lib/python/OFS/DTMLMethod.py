@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -265,6 +265,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         return full_read_guard(ob)
 
     manage_editForm=DTMLFile('dtml/documentEdit', globals())
+    manage_editForm._setName('manage_editForm')
 
     # deprecated!
     manage_uploadForm=manage_editForm

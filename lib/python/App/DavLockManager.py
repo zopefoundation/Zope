@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
 import OFS, Acquisition, Globals
 from AccessControl import getSecurityManager, ClassSecurityInfo
@@ -103,6 +103,7 @@ class DavLockManager(OFS.SimpleItem.Item, Acquisition.Implicit):
 
     manage_davlocks=manage_main=manage=Globals.DTMLFile(
         'dtml/davLockManager', globals())
+    manage_davlocks._setName('manage_davlocks')
 
     manage_options = (
         {'label': 'Write Locks', 'action': 'manage_main',

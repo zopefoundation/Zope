@@ -98,8 +98,24 @@ def default__class_init__(self):
     dict_items=dict.items()
 
     for name, v in dict_items:
-        if hasattr(v,'_need__name__') and v._need__name__:
-            v.__dict__['__name__']=name
+        if getattr(v, '_need__name__', 0):
+            d = v.__dict__
+            oldname = d.get('__name__', '')
+            if d.get('_implicit__name__', 0):
+                # Already supplied a name.
+                if name != oldname:
+                    # Tried to implicitly assign a different name!
+                    try: classname = '%s.%s' % (
+                        self.__module__, self.__name__)
+                    except AttributeError: classname = `self`
+                    from zLOG import LOG, WARNING
+                    LOG('Init', WARNING, 'Ambiguous name for method of %s: '
+                        '"%s" != "%s"' % (classname, d['__name__'], name))
+            else:
+                # Supply a name implicitly so that the method can
+                # find the security assertions on its container.
+                d['_implicit__name__'] = 1
+                d['__name__']=name
             if name=='manage' or name[:7]=='manage_':
                 name=name+'__roles__'
                 if not have(name): dict[name]=('Manager',)

@@ -121,6 +121,10 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
             self.cook()
             if not changed: self.__changed__(0)
 
+    def _setName(self, name):
+        self.__name__ = name
+        self._need__name__ = 0
+
     def __call__(self, *args, **kw):
         self._cook_check()
         return apply(HTMLFile.inheritedAttribute('__call__'),

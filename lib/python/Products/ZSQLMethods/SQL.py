@@ -85,8 +85,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.18 2001/03/07 15:13:57 brian Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: SQL.py,v 1.19 2001/06/07 22:18:45 shane Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import DTMLFile
@@ -193,6 +193,7 @@ class SQL(Shared.DC.ZRDB.DA.DA):
     meta_type='Z SQL Method'
                 
     manage=manage_main=DTMLFile('dtml/edit', globals())
+    manage_main._setName('manage_main')
 
     __ac_permissions__=(
         ('Change Database Methods', ('manage', 'manage_main')),

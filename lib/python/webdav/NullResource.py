@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -299,6 +299,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
 
     manage = manage_main = DTMLFile('dtml/locknullmain', globals())
     manage_workspace = manage
+    manage_main._setName('manage_main')  # explicit
 
     def __no_valid_write_locks__(self):
         # A special hook (for better or worse) called when there are no

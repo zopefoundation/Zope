@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.150 $'[11:-2]
+__version__='$Revision: 1.151 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -746,6 +746,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     _editUser=DTMLFile('dtml/editUser', globals(),
                        remote_user_mode__=_remote_user_mode)
     manage=manage_main=_mainUser
+    manage_main._setName('manage_main')
 
     def domainSpecValidate(self, spec):
         for ob in spec:
