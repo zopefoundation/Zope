@@ -145,8 +145,12 @@ class Image:
         provided by default, and 'alt' comes from the 'title_or_id'
         method.
         
-        Keyword arguments may be provided to support other or future
-        IMG tag attributes.
+        Keyword arguments may be provided to support other or future IMG
+        tag attributes.  The one exception to this is the HTML Cascading
+        Style Sheet tag 'class'.  Because the word 'class' is a reserved
+        keyword in Python, you must instead use the keyword argument
+        'css_class'.  This will be turned into a 'class' HTML tag attribute
+        on the rendered 'img' tag.
 
         Permission -- 'View'
         """
