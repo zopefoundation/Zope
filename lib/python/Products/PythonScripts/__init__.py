@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.11 2002/02/15 16:29:17 evan Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: __init__.py,v 1.12 2002/06/20 14:48:38 Brian Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import PythonScript
 try:
@@ -42,6 +42,7 @@ def initialize(context):
     context.registerHelpTitle('Script (Python)')
     global _m
     _m['recompile'] = recompile
+    _m['recompile__roles__'] = ('Manager',)
     
 # utility stuff
 
