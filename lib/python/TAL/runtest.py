@@ -92,6 +92,7 @@ import os
 import string
 from cStringIO import StringIO
 import glob
+import traceback
 
 import driver
 
@@ -116,6 +117,10 @@ def nicerange(lo, hi):
 def main():
     opts = []
     args = sys.argv[1:]
+    quiet = 0
+    if args and args[0] == "-q":
+        quiet = 1
+        del args[0]
     while args and args[0][:1] == '-':
         opts.append(args[0])
         del args[0]
@@ -128,11 +133,18 @@ def main():
         sys.stdout.flush()
         save = sys.stdout, sys.argv
         try:
-            sys.stdout = stdout = StringIO()
-            sys.argv = [""] + opts + [arg]
-            driver.main()
-        finally:
-            sys.stdout, sys.argv = save
+            try:
+                sys.stdout = stdout = StringIO()
+                sys.argv = [""] + opts + [arg]
+                driver.main()
+            finally:
+                sys.stdout, sys.argv = save
+        except:
+            print sys.exc_type
+            errors = 1
+            if not quiet:
+                traceback.print_exc()
+            continue
         head, tail = os.path.split(arg)
         outfile = os.path.join(
             head,
@@ -155,7 +167,7 @@ def main():
         else:
             print "not OK"
             errors = 1
-            if expected is not None:
+            if not quiet and expected is not None:
                 showdiff(expected, actual)
     if errors:
         sys.exit(1)
