@@ -89,7 +89,6 @@ import Globals
 from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
 from DateTime import DateTime
-from SearchIndex import Query
 import string, urlparse, urllib, os, sys, time
 import Products
 from Acquisition import Implicit
