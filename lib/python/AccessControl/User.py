@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -96,7 +96,7 @@ from base64 import decodestring
 from App.ImageFile import ImageFile
 from Role import RoleManager
 from string import split, join
-from PermissionRole import _what_not_even_god_should_do
+from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 
 ListType=type([])
 
@@ -231,6 +231,11 @@ class BasicUser(Implicit):
                 return 1
         return 0
 
+    def has_permission(self, permission, object):
+        """Check to see if a user has a given permission on an object."""
+        roles=rolesForPermissionOn(permission, object)
+        return self.has_role(roles, object)
+
     def __len__(self): return 1
     def __str__(self): return self.getUserName()
     __repr__=__str__
@@ -273,6 +278,8 @@ class Super(User):
     hasRole=allowed
 
     def has_role(self, roles): return 1
+
+    def has_permission(self, permission, object): return 1
 
 _remote_user_mode=0
 try:
