@@ -13,7 +13,7 @@
 ##############################################################################
 """ZODB Mounted database support, simplified for DBTab.
 
-$Id: Mount.py,v 1.2 2003/08/02 17:13:59 shane Exp $"""
+$Id: Mount.py,v 1.3 2004/03/02 15:36:28 jeremy Exp $"""
 
 import time, sys
 
@@ -192,7 +192,7 @@ class ConnectionPatches:
                     am = f()
                     if am is not None:
                         am.closedConnection(conn)
-                conn._incrgc() # This is a good time to do some GC
+                conn.cacheGC() # This is a good time to do some GC
                 # XXX maybe we ought to call the close callbacks.
                 conn._storage = conn._tmp = conn.new_oid = conn._opened = None
                 conn._debug_info = ()
