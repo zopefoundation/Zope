@@ -17,7 +17,7 @@ def _ii(klass, items):
         if k[:1]=='_' and not (k[:2]=='__' and k[-2:]=='__'):
             continue
         items[k]=v
-    for b in klass.__bases__: _ii(b)
+    for b in klass.__bases__: _ii(b, items)
     return items
     
 def implementedBy(object):        
