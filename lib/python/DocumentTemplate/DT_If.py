@@ -110,8 +110,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.1 1997/08/27 18:55:42 jim Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.2 1997/09/08 15:35:40 jim Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DT_Util import *
 
@@ -127,7 +127,7 @@ class If:
 	self.__name__ = name
 	self.sections=[(name, section)]
 	if blocks[-1][0]=='else':
-	    tname, args, section = blocks[0]
+	    tname, args, section = blocks[-1]
 	    blocks=blocks[:-1]
 	    args=parse_params(args, name='')
 	    if args:
@@ -175,6 +175,9 @@ class Else:
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.2  1997/09/08 15:35:40  jim
+# Fixed bug that caused else blocks to render if blocks.
+#
 # Revision 1.1  1997/08/27 18:55:42  jim
 # initial
 #
