@@ -121,6 +121,7 @@ class CommitLog:
 
         # BAW: is our filename unique enough?  Are we opening it up with too
         # much or too little security?
+        self._unlink = 1
         if file is None:
             # Create the file from scratch.  We know the file has to be in the
             # init state, so just go ahead and write the appropriate header.
@@ -161,6 +162,7 @@ class CommitLog:
             # log.  Read the file's header and initialize our state from it.
             self._fp = file
             self._readhead()
+            self._unlink = 0
 
     def get_filename(self):
         return self._fp.name
@@ -266,14 +268,16 @@ class CommitLog:
     def next(self):
         raise NotImplementedError
 
-    def close(self, unlink=0):
+    def close(self, unlink=1):
         """Close the file.
 
         If unlink is true, delete the underlying file object too.
         """
-        self._fp.close()
-        if unlink:
-            os.unlink(self._fp.name)
+        if self._fp:
+            self._fp.close()
+            if unlink or self._unlink:
+                os.unlink(self._fp.name)
+                self._fp = None
 
     def __del__(self):
         # Unsafe, and file preserving close
