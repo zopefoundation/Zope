@@ -13,6 +13,9 @@ Zope changes
           release. Change information for older versions is now in 
           the file HISTORY.txt.
 
+        - Added support for mountable databases. A separate product
+          will still be required to make use of this ability.
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
@@ -48,4 +51,5 @@ Zope changes
         - A problem that caused the query template for an SQL method to
           be rendered twice when used from the "test" tab has been fixed.
 
-
+        - Corrected DateTime.py to recognize years specified as 00 through
+          69 as 2000 through 2069.
