@@ -23,6 +23,16 @@ Zope Changes
           The compiled-in paths have been changed to be relative to the
           Zope installation directory.
 
+	- Fixed a bug in ZPublisher's special handling the "cancel"
+	  submit buttons. The test for the cancel button was case
+	  sensitive.  I changed it so it would accept any case, as
+	  well as extra spaces.
+
+          Cancel buttons should probably be handled using the new
+          :method form type, but this would require the presense of an
+          appropriate redirect method.  Perhaps there should be
+          a :redirect form type.
+
     Zope 1.9.0
 
       New Features
