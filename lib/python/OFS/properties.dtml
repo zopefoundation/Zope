@@ -68,7 +68,7 @@ property below and click &quot;Add&quot;.
   <STRONG>Value</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="value" SIZE="50">
+  <INPUT TYPE="TEXT" NAME="value" SIZE="40">
   </TD>
 </TR>
 <TR>

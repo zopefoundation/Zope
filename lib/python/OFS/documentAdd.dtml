@@ -17,7 +17,7 @@
   <STRONG>Id</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="id" SIZE="50">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="40">
   </TD>
 </TR>
 <TR>
@@ -25,7 +25,7 @@
   <EM><STRONG>Title</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="50">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40">
   </TD>
 </TR>
 <TR>
@@ -33,7 +33,7 @@
   <EM><STRONG>File</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="file" NAME="file:string" SIZE="30" VALUE="">
+  <INPUT TYPE="file" NAME="file:string" SIZE="25" VALUE="">
   </TD>
 </TR>
 <!--#var smallRolesWidget-->

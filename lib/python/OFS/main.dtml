@@ -6,8 +6,7 @@
 <!--#if parentObject-->
   <!--#in parentObject-->
      <A HREF="<!--#var URL2-->/manage" target="_top">
-     <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0>
-     </A>
+     <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0></A>
      Return to <!--#var title_or_id-->
      <BR>
   <!--#/in parentObject-->
