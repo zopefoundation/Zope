@@ -8,7 +8,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """
@@ -17,17 +17,17 @@ Interpreter for a pre-compiled TAL program.
 
 import sys
 import getopt
-
+import re
+from types import ListType
 from cgi import escape
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+# Do not use cStringIO here!  It's not unicode aware. :(
+from StringIO import StringIO
+from DocumentTemplate.DT_Util import ustr
 
 from TALDefs import quote, TAL_VERSION, TALError, METALError
 from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
+from TranslationContext import TranslationContext
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
@@ -40,13 +40,12 @@ BOOLEAN_HTML_ATTRS = [
     "defer"
 ]
 
-EMPTY_HTML_TAGS = [
-    # List of HTML tags with an empty content model; these are
-    # rendered in minimized form, e.g. <img />.
-    # From http://www.w3.org/TR/xhtml1/#dtds
-    "base", "meta", "link", "hr", "br", "param", "img", "area",
-    "input", "col", "basefont", "isindex", "frame",
-]
+def normalize(text):
+    # Now we need to normalize the whitespace in implicit message ids and
+    # implicit $name substitution values by stripping leading and trailing
+    # whitespace, and folding all internal whitespace to a single space.
+    return ' '.join(text.split())
+
 
 class AltTALGenerator(TALGenerator):
 
@@ -62,14 +61,16 @@ class AltTALGenerator(TALGenerator):
         if self.enabled:
             apply(TALGenerator.emit, (self,) + args)
 
-    def emitStartElement(self, name, attrlist, taldict, metaldict,
+    def emitStartElement(self, name, attrlist, taldict, metaldict, i18ndict,
                          position=(None, None), isend=0):
         metaldict = {}
         taldict = {}
+        i18ndict = {}
         if self.enabled and self.repldict:
             taldict["attributes"] = "x x"
         TALGenerator.emitStartElement(self, name, attrlist,
-                                      taldict, metaldict, position, isend)
+                                      taldict, metaldict, i18ndict,
+                                      position, isend)
 
     def replaceAttrs(self, attrlist, repldict):
         if self.enabled and self.repldict:
@@ -82,10 +83,10 @@ class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
                  debug=0, wrap=60, metal=1, tal=1, showtal=-1,
-                 strictinsert=1, stackLimit=100):
+                 strictinsert=1, stackLimit=100, i18nInterpolate=1):
         self.program = program
         self.macros = macros
-        self.engine = engine
+        self.engine = engine # Execution engine (aka context)
         self.Default = engine.getDefault()
         self.stream = stream or sys.stdout
         self._stream_write = self.stream.write
@@ -107,12 +108,14 @@ class TALInterpreter:
         self.endsep = "/>"
         self.endlen = len(self.endsep)
         self.macroStack = []
-        self.popMacro = self.macroStack.pop
         self.position = None, None  # (lineno, offset)
         self.col = 0
         self.level = 0
         self.scopeLevel = 0
         self.sourceFile = None
+        self.i18nStack = []
+        self.i18nInterpolate = i18nInterpolate
+        self.i18nContext = TranslationContext()
 
     def StringIO(self):
         # Third-party products wishing to provide a full Unicode-aware
@@ -121,19 +124,20 @@ class TALInterpreter:
 
     def saveState(self):
         return (self.position, self.col, self.stream,
-                self.scopeLevel, self.level)
+                self.scopeLevel, self.level, self.i18nContext)
 
     def restoreState(self, state):
-        (self.position, self.col, self.stream, scopeLevel, level) = state
+        (self.position, self.col, self.stream, scopeLevel, level, i18n) = state
         self._stream_write = self.stream.write
         assert self.level == level
         while self.scopeLevel > scopeLevel:
             self.engine.endScope()
             self.scopeLevel = self.scopeLevel - 1
         self.engine.setPosition(self.position)
+        self.i18nContext = i18n
 
     def restoreOutputState(self, state):
-        (dummy, self.col, self.stream, scopeLevel, level) = state
+        (dummy, self.col, self.stream, scopeLevel, level, i18n) = state
         self._stream_write = self.stream.write
         assert self.level == level
         assert self.scopeLevel == scopeLevel
@@ -142,7 +146,12 @@ class TALInterpreter:
         if len(self.macroStack) >= self.stackLimit:
             raise METALError("macro nesting limit (%d) exceeded "
                              "by %s" % (self.stackLimit, `macroName`))
-        self.macroStack.append([macroName, slots, entering])
+        self.macroStack.append([macroName, slots, entering, self.i18nContext])
+
+    def popMacro(self):
+        stuff = self.macroStack.pop()
+        self.i18nContext = stuff[3]
+        return stuff
 
     def macroContext(self, what):
         macroStack = self.macroStack
@@ -156,9 +165,11 @@ class TALInterpreter:
     def __call__(self):
         assert self.level == 0
         assert self.scopeLevel == 0
+        assert self.i18nContext.parent is None
         self.interpret(self.program)
         assert self.level == 0
         assert self.scopeLevel == 0
+        assert self.i18nContext.parent is None
         if self.col > 0:
             self._stream_write("\n")
             self.col = 0
@@ -174,15 +185,20 @@ class TALInterpreter:
 
     bytecode_handlers = {}
 
-    def interpret(self, program, None=None):
+    def interpret(self, program, tmpstream=None):
         oldlevel = self.level
         self.level = oldlevel + 1
         handlers = self.dispatch
+        if tmpstream:
+            ostream = self.stream
+            owrite = self._stream_write
+            self.stream = tmpstream
+            self._stream_write = tmpstream.write
         try:
             if self.debug:
                 for (opcode, args) in program:
-                    s = "%sdo_%s%s\n" % ("    "*self.level, opcode,
-                                      repr(args))
+                    s = "%sdo_%s(%s)\n" % ("    "*self.level, opcode,
+                                           repr(args))
                     if len(s) > 80:
                         s = s[:76] + "...\n"
                     sys.stderr.write(s)
@@ -192,6 +208,9 @@ class TALInterpreter:
                     handlers[opcode](self, args)
         finally:
             self.level = oldlevel
+            if tmpstream:
+                self.stream = ostream
+                self._stream_write = owrite
 
     def do_version(self, version):
         assert version == TAL_VERSION
@@ -229,8 +248,7 @@ class TALInterpreter:
         # for that case.
         _stream_write = self._stream_write
         _stream_write("<" + name)
-        namelen = _len(name)
-        col = self.col + namelen + 1
+        col = self.col + _len(name) + 1
         wrap = self.wrap
         align = col + 1
         if align >= wrap/2:
@@ -262,10 +280,11 @@ class TALInterpreter:
 
     def attrAction(self, item):
         name, value, action = item[:3]
-        if action == 1 or (action > 1 and not self.showtal):
+        if action == 'insert' or (action in ('metal', 'tal', 'xmlns', 'i18n')
+                                  and not self.showtal):
             return 0, name, value
         macs = self.macroStack
-        if action == 2 and self.metal and macs:
+        if action == 'metal' and self.metal and macs:
             if len(macs) > 1 or not macs[-1][2]:
                 # Drop all METAL attributes at a use-depth above one.
                 return 0, name, value
@@ -293,32 +312,42 @@ class TALInterpreter:
 
     def attrAction_tal(self, item):
         name, value, action = item[:3]
-        if action > 1:
+        if action in ('metal', 'tal', 'xmlns', 'i18n'):
             return self.attrAction(item)
         ok = 1
+        expr, msgid = item[3:]
         if self.html and name.lower() in BOOLEAN_HTML_ATTRS:
             evalue = self.engine.evaluateBoolean(item[3])
             if evalue is self.Default:
-                if action == 1: # Cancelled insert
+                if action == 'insert': # Cancelled insert
                     ok = 0
             elif evalue:
                 value = None
             else:
                 ok = 0
         else:
-            evalue = self.engine.evaluateText(item[3])
-            if evalue is self.Default:
-                if action == 1: # Cancelled insert
-                    ok = 0
-            else:
-                if evalue is None:
-                    ok = 0
-                value = evalue
+            if expr is not None:
+                evalue = self.engine.evaluateText(item[3])
+                if evalue is self.Default:
+                    if action == 'insert': # Cancelled insert
+                        ok = 0
+                else:
+                    if evalue is None:
+                        ok = 0
+                    value = evalue
         if ok:
+            if msgid:
+                value = self.i18n_attribute(value)
             if value is None:
                 value = name
             value = "%s=%s" % (name, quote(value))
         return ok, name, value
+
+    def i18n_attribute(self, s):
+        # s is the value of an attribute before translation
+        # it may have been computed
+        return self.translate(s, {})
+
 
     bytecode_handlers["<attrAction>"] = attrAction
 
@@ -334,7 +363,7 @@ class TALInterpreter:
                   omit=0):
         if tag_ns and not self.showtal:
             return self.no_tag(start, program)
-
+            
         self.interpret(start)
         if not isend:
             self.interpret(program)
@@ -354,7 +383,7 @@ class TALInterpreter:
     def dumpMacroStack(self, prefix, suffix, value):
         sys.stderr.write("+---- %s%s = %s\n" % (prefix, suffix, value))
         for i in range(len(self.macroStack)):
-            what, macroName, slots = self.macroStack[i]
+            what, macroName, slots = self.macroStack[i][:3]
             sys.stderr.write("| %2d. %-12s %-12s %s\n" %
                              (i, what, macroName, slots and slots.keys()))
         sys.stderr.write("+--------------------------------------\n")
@@ -412,6 +441,19 @@ class TALInterpreter:
         self.engine.setGlobal(name, self.engine.evaluateValue(expr))
     bytecode_handlers["setGlobal"] = do_setLocal
 
+    def do_beginI18nContext(self, settings):
+        get = settings.get
+        self.i18nContext = TranslationContext(self.i18nContext,
+                                              domain=get("domain"),
+                                              source=get("source"),
+                                              target=get("target"))
+    bytecode_handlers["beginI18nContext"] = do_beginI18nContext
+
+    def do_endI18nContext(self, notused=None):
+        self.i18nContext = self.i18nContext.parent
+        assert self.i18nContext is not None
+    bytecode_handlers["endI18nContext"] = do_endI18nContext
+
     def do_insertText(self, stuff):
         self.interpret(stuff[1])
 
@@ -431,6 +473,72 @@ class TALInterpreter:
             self.col = len(s) - (i + 1)
     bytecode_handlers["insertText"] = do_insertText
 
+    def do_i18nVariable(self, stuff):
+        varname, program, expression = stuff
+        if expression is None:
+            # The value is implicitly the contents of this tag, so we have to
+            # evaluate the mini-program to get the value of the variable.
+            state = self.saveState()
+            try:
+                tmpstream = self.StringIO()
+                self.interpret(program, tmpstream)
+                value = normalize(tmpstream.getvalue())
+            finally:
+                self.restoreState(state)
+        else:
+            # Evaluate the value to be associated with the variable in the
+            # i18n interpolation dictionary.
+            value = self.engine.evaluate(expression)
+        # Either the i18n:name tag is nested inside an i18n:translate in which
+        # case the last item on the stack has the i18n dictionary and string
+        # representation, or the i18n:name and i18n:translate attributes are
+        # in the same tag, in which case the i18nStack will be empty.  In that
+        # case we can just output the ${name} to the stream
+        i18ndict, srepr = self.i18nStack[-1]
+        i18ndict[varname] = value
+        placeholder = '${%s}' % varname
+        srepr.append(placeholder)
+        self._stream_write(placeholder)
+    bytecode_handlers['i18nVariable'] = do_i18nVariable
+
+    def do_insertTranslation(self, stuff):
+        i18ndict = {}
+        srepr = []
+        obj = None
+        self.i18nStack.append((i18ndict, srepr))
+        msgid = stuff[0]
+        # We need to evaluate the content of the tag because that will give us
+        # several useful pieces of information.  First, the contents will
+        # include an implicit message id, if no explicit one was given.
+        # Second, it will evaluate any i18nVariable definitions in the body of
+        # the translation (necessary for $varname substitutions).
+        #
+        # Use a temporary stream to capture the interpretation of the
+        # subnodes, which should /not/ go to the output stream.
+        tmpstream = self.StringIO()
+        self.interpret(stuff[1], tmpstream)
+        # We only care about the evaluated contents if we need an implicit
+        # message id.  All other useful information will be in the i18ndict on
+        # the top of the i18nStack.
+        if msgid == '':
+            msgid = normalize(tmpstream.getvalue())
+        self.i18nStack.pop()
+        # See if there is was an i18n:data for msgid
+        if len(stuff) > 2:
+            obj = self.engine.evaluate(stuff[2])
+        xlated_msgid = self.translate(msgid, i18ndict, obj)
+        # XXX I can't decide whether we want to cgi escape the translated
+        # string or not.  OT1H not doing this could introduce a cross-site
+        # scripting vector by allowing translators to sneak JavaScript into
+        # translations.  OTOH, for implicit interpolation values, we don't
+        # want to escape stuff like ${name} <= "<b>Timmy</b>".
+        #s = escape(xlated_msgid)
+        s = xlated_msgid
+        # If there are i18n variables to interpolate into this string, better
+        # do it now.
+        self._stream_write(s)
+    bytecode_handlers['insertTranslation'] = do_insertTranslation
+
     def do_insertStructure(self, stuff):
         self.interpret(stuff[2])
 
@@ -441,7 +549,7 @@ class TALInterpreter:
         if structure is self.Default:
             self.interpret(block)
             return
-        text = str(structure)
+        text = ustr(structure)
         if not (repldict or self.strictinsert):
             # Take a shortcut, no error checking
             self.stream_write(text)
@@ -482,6 +590,24 @@ class TALInterpreter:
             self.interpret(block)
     bytecode_handlers["loop"] = do_loop
 
+    def translate(self, msgid, i18ndict=None, obj=None):
+        # XXX is this right?
+        if i18ndict is None:
+            i18ndict = {}
+        if obj:
+            i18ndict.update(obj)
+        # XXX need to fill this in with TranslationService calls.  For now,
+        # we'll just do simple interpolation based on a $-strings to %-strings
+        # algorithm in Mailman.
+        if not self.i18nInterpolate:
+            return msgid
+        # XXX Mmmh, it seems that sometimes the msgid is None; is that really
+        # possible?
+        if msgid is None:
+            return None
+        # XXX We need to pass in one of context or target_language
+        return self.engine.translate(self.i18nContext.domain, msgid, i18ndict)
+
     def do_rawtextColumn(self, (s, col)):
         self._stream_write(s)
         self.col = col
@@ -504,6 +630,7 @@ class TALInterpreter:
             if not entering:
                 macs.append(None)
                 self.interpret(macro)
+                assert macs[-1] is None
                 macs.pop()
                 return
         self.interpret(macro)
@@ -526,12 +653,11 @@ class TALInterpreter:
                 raise METALError("macro %s has incompatible mode %s" %
                                  (`macroName`, `mode`), self.position)
         self.pushMacro(macroName, compiledSlots)
-        saved_source = self.sourceFile
-        saved_position = self.position  # Used by Boa Constructor
+        prev_source = self.sourceFile
         self.interpret(macro)
-        if self.sourceFile != saved_source:
-            self.engine.setSourceFile(saved_source)
-            self.sourceFile = saved_source
+        if self.sourceFile != prev_source:
+            self.engine.setSourceFile(prev_source)
+            self.sourceFile = prev_source
         self.popMacro()
     bytecode_handlers["useMacro"] = do_useMacro
 
@@ -547,21 +673,18 @@ class TALInterpreter:
             return
         macs = self.macroStack
         if macs and macs[-1] is not None:
-            saved_source = self.sourceFile
-            saved_position = self.position  # Used by Boa Constructor
             macroName, slots = self.popMacro()[:2]
             slot = slots.get(slotName)
             if slot is not None:
+                prev_source = self.sourceFile
                 self.interpret(slot)
-                if self.sourceFile != saved_source:
-                    self.engine.setSourceFile(saved_source)
-                    self.sourceFile = saved_source
+                if self.sourceFile != prev_source:
+                    self.engine.setSourceFile(prev_source)
+                    self.sourceFile = prev_source
                 self.pushMacro(macroName, slots, entering=0)
                 return
             self.pushMacro(macroName, slots)
-            if len(macs) == 1:
-                self.interpret(block)
-                return
+            # Falling out of the 'if' allows the macro to be interpreted.
         self.interpret(block)
     bytecode_handlers["defineSlot"] = do_defineSlot
 

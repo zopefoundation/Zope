@@ -8,7 +8,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """
@@ -18,7 +18,16 @@ Code generator for TALInterpreter intermediate code.
 import re
 import cgi
 
-from TALDefs import *
+import TALDefs
+
+from TALDefs import NAME_RE, TAL_VERSION
+from TALDefs import I18NError, METALError, TALError
+from TALDefs import parseSubstitution
+from TranslationContext import TranslationContext, DEFAULT_DOMAIN
+
+I18N_REPLACE = 1
+I18N_CONTENT = 2
+I18N_EXPRESSION = 3
 
 class TALGenerator:
 
@@ -32,8 +41,15 @@ class TALGenerator:
             expressionCompiler = DummyEngine()
         self.expressionCompiler = expressionCompiler
         self.CompilerError = expressionCompiler.getCompilerError()
+        # This holds the emitted opcodes representing the input
         self.program = []
+        # The program stack for when we need to do some sub-evaluation for an
+        # intermediate result.  E.g. in an i18n:name tag for which the
+        # contents describe the ${name} value.
         self.stack = []
+        # Another stack of postponed actions.  Elements on this stack are a
+        # dictionary; key/values contain useful information that
+        # emitEndElement needs to finish its calculations
         self.todoStack = []
         self.macros = {}
         self.slots = {}
@@ -44,6 +60,7 @@ class TALGenerator:
         if source_file is not None:
             self.source_file = source_file
             self.emit("setSourceFile", source_file)
+        self.i18nContext = TranslationContext()
 
     def getCode(self):
         assert not self.stack
@@ -82,6 +99,12 @@ class TALGenerator:
                 # instructions to be joined together.
                 output.append(self.optimizeArgsList(item))
                 continue
+            if opcode == 'noop':
+                # This is a spacer for end tags in the face of i18n:name
+                # attributes.  We can't let the optimizer collect immediately
+                # following end tags into the same rawtextOffset.
+                opcode = None
+                pass
             text = "".join(collect)
             if text:
                 i = text.rfind("\n")
@@ -102,9 +125,28 @@ class TALGenerator:
         else:
             return item[0], tuple(item[1:])
 
-    actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4,
-                   0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    # These codes are used to indicate what sort of special actions
+    # are needed for each special attribute.  (Simple attributes don't
+    # get action codes.)
+    #
+    # The special actions (which are modal) are handled by
+    # TALInterpreter.attrAction() and .attrAction_tal().
+    #
+    # Each attribute is represented by a tuple:
+    #
+    # (name, value)                 -- a simple name/value pair, with
+    #                                  no special processing
+    #
+    # (name, value, action, *extra) -- attribute with special
+    #                                  processing needs, action is a
+    #                                  code that indicates which
+    #                                  branch to take, and *extra
+    #                                  contains additional,
+    #                                  action-specific information
+    #                                  needed by the processing
+    #
     def optimizeStartTag(self, collect, name, attrlist, end):
+        # return true if the tag can be converted to plain text
         if not attrlist:
             collect.append("<%s%s" % (name, end))
             return 1
@@ -115,18 +157,15 @@ class TALGenerator:
             if len(item) > 2:
                 opt = 0
                 name, value, action = item[:3]
-                action = self.actionIndex[action]
                 attrlist[i] = (name, value, action) + item[3:]
             else:
                 if item[1] is None:
                     s = item[0]
                 else:
-                    s = "%s=%s" % (item[0], quote(item[1]))
+                    s = "%s=%s" % (item[0], TALDefs.quote(item[1]))
                 attrlist[i] = item[0], s
-            if item[1] is None:
-                new.append(" " + item[0])
-            else:
-                new.append(" %s=%s" % (item[0], quote(item[1])))
+                new.append(" " + s)
+        # if no non-optimizable attributes were found, convert to plain text
         if opt:
             new.append(end)
             collect.extend(new)
@@ -222,7 +261,7 @@ class TALGenerator:
         self.emitRawText(cgi.escape(text))
 
     def emitDefines(self, defines):
-        for part in splitParts(defines):
+        for part in TALDefs.splitParts(defines):
             m = re.match(
                 r"(?s)\s*(?:(global|local)\s+)?(%s)\s+(.*)\Z" % NAME_RE, part)
             if not m:
@@ -273,6 +312,49 @@ class TALGenerator:
         else:
             assert key == "structure"
             self.emit("insertStructure", cexpr, attrDict, program)
+
+    def emitI18nVariable(self, varname, action, expression):
+        # Used for i18n:name attributes.  arg is extra information describing
+        # how the contents of the variable should get filled in, and it will
+        # either be a 1-tuple or a 2-tuple.  If arg[0] is None, then the
+        # i18n:name value is taken implicitly from the contents of the tag,
+        # e.g. "I live in <span i18n:name="country">the USA</span>".  In this
+        # case, arg[1] is the opcode sub-program describing the contents of
+        # the tag.
+        #
+        # When arg[0] is not None, it contains the tal expression used to
+        # calculate the contents of the variable, e.g.
+        # "I live in <span i18n:name="country"
+        #                  tal:replace="here/countryOfOrigin" />"
+        key = cexpr = None
+        program = self.popProgram()
+        if action == I18N_REPLACE:
+            # This is a tag with an i18n:name and a tal:replace (implicit or
+            # explicit).  Get rid of the first and last elements of the
+            # program, which are the start and end tag opcodes of the tag.
+            program = program[1:-1]
+        elif action == I18N_CONTENT:
+            # This is a tag with an i18n:name and a tal:content
+            # (explicit-only).  Keep the first and last elements of the
+            # program, so we keep the start and end tag output.
+            pass
+        else:
+            assert action == I18N_EXPRESSION
+            key, expr = parseSubstitution(expression)
+            cexpr = self.compileExpression(expr)
+        # XXX Would key be anything but 'text' or None?
+        assert key in ('text', None)
+        self.emit('i18nVariable', varname, program, cexpr)
+
+    def emitTranslation(self, msgid, i18ndata):
+        program = self.popProgram()
+        if i18ndata is None:
+            self.emit('insertTranslation', msgid, program)
+        else:
+            key, expr = parseSubstitution(i18ndata)
+            cexpr = self.compileExpression(expr)
+            assert key == 'text'
+            self.emit('insertTranslation', msgid, program, cexpr)
 
     def emitDefineMacro(self, macroName):
         program = self.popProgram()
@@ -361,23 +443,30 @@ class TALGenerator:
         return None
 
     def replaceAttrs(self, attrlist, repldict):
+        # Each entry in attrlist starts like (name, value).
+        # Result is (name, value, action, expr, xlat) if there is a
+        # tal:attributes entry for that attribute.  Additional attrs
+        # defined only by tal:attributes are added here.
+        #
+        # (name, value, action, expr, xlat)
         if not repldict:
             return attrlist
         newlist = []
         for item in attrlist:
             key = item[0]
             if repldict.has_key(key):
-                item = item[:2] + ("replace", repldict[key])
+                expr, xlat = repldict[key]
+                item = item[:2] + ("replace", expr, xlat)
                 del repldict[key]
             newlist.append(item)
-        for key, value in repldict.items(): # Add dynamic-only attributes
-            item = (key, None, "insert", value)
-            newlist.append(item)
+        # Add dynamic-only attributes
+        for key, (expr, xlat) in repldict.items():
+            newlist.append((key, None, "insert", expr, xlat))
         return newlist
 
-    def emitStartElement(self, name, attrlist, taldict, metaldict,
+    def emitStartElement(self, name, attrlist, taldict, metaldict, i18ndict,
                          position=(None, None), isend=0):
-        if not taldict and not metaldict:
+        if not taldict and not metaldict and not i18ndict:
             # Handle the simple, common case
             self.emitStartTag(name, attrlist, isend)
             self.todoPush({})
@@ -387,18 +476,24 @@ class TALGenerator:
 
         self.position = position
         for key, value in taldict.items():
-            if key not in KNOWN_TAL_ATTRIBUTES:
+            if key not in TALDefs.KNOWN_TAL_ATTRIBUTES:
                 raise TALError("bad TAL attribute: " + `key`, position)
             if not (value or key == 'omit-tag'):
                 raise TALError("missing value for TAL attribute: " +
                                `key`, position)
         for key, value in metaldict.items():
-            if key not in KNOWN_METAL_ATTRIBUTES:
+            if key not in TALDefs.KNOWN_METAL_ATTRIBUTES:
                 raise METALError("bad METAL attribute: " + `key`,
-                position)
+                                 position)
             if not value:
                 raise TALError("missing value for METAL attribute: " +
                                `key`, position)
+        for key, value in i18ndict.items():
+            if key not in TALDefs.KNOWN_I18N_ATTRIBUTES:
+                raise I18NError("bad i18n attribute: " + `key`, position)
+            if not value and key in ("attributes", "data", "id"):
+                raise I18NError("missing value for i18n attribute: " +
+                                `key`, position)
         todo = {}
         defineMacro = metaldict.get("define-macro")
         useMacro = metaldict.get("use-macro")
@@ -413,13 +508,31 @@ class TALGenerator:
         onError = taldict.get("on-error")
         omitTag = taldict.get("omit-tag")
         TALtag = taldict.get("tal tag")
+        i18nattrs = i18ndict.get("attributes")
+        # Preserve empty string if implicit msgids are used.  We'll generate
+        # code with the msgid='' and calculate the right implicit msgid during
+        # interpretation phase.
+        msgid = i18ndict.get("translate")
+        varname = i18ndict.get('name')
+        i18ndata = i18ndict.get('data')
+
+        if i18ndata and not msgid:
+            raise I18NError("i18n:data must be accompanied by i18n:translate",
+                            position)
+
         if len(metaldict) > 1 and (defineMacro or useMacro):
             raise METALError("define-macro and use-macro cannot be used "
                              "together or with define-slot or fill-slot",
                              position)
-        if content and replace:
-            raise TALError("content and replace are mutually exclusive",
-                           position)
+        if replace:
+            if content:
+                raise TALError(
+                    "tal:content and tal:replace are mutually exclusive",
+                    position)
+            if msgid is not None:
+                raise I18NError(
+                    "i18n:translate and tal:replace are mutually exclusive",
+                    position)
 
         repeatWhitespace = None
         if repeat:
@@ -437,8 +550,8 @@ class TALGenerator:
                 self.inMacroUse = 0
         else:
             if fillSlot:
-                raise METALError, ("fill-slot must be within a use-macro",
-                                   position)
+                raise METALError("fill-slot must be within a use-macro",
+                                 position)
         if not self.inMacroUse:
             if defineMacro:
                 self.pushProgram()
@@ -455,13 +568,29 @@ class TALGenerator:
                 self.inMacroUse = 1
             if defineSlot:
                 if not self.inMacroDef:
-                    raise METALError, (
+                    raise METALError(
                         "define-slot must be within a define-macro",
                         position)
                 self.pushProgram()
                 todo["defineSlot"] = defineSlot
 
-        if taldict:
+        if defineSlot or i18ndict:
+            
+            domain = i18ndict.get("domain") or self.i18nContext.domain
+            source = i18ndict.get("source") or self.i18nContext.source
+            target = i18ndict.get("target") or self.i18nContext.target
+            if (  domain != DEFAULT_DOMAIN
+                  or source is not None
+                  or target is not None):
+                self.i18nContext = TranslationContext(self.i18nContext,
+                                                      domain=domain,
+                                                      source=source,
+                                                      target=target)
+                self.emit("beginI18nContext",
+                          {"domain": domain, "source": source,
+                           "target": target})
+                todo["i18ncontext"] = 1
+        if taldict or i18ndict:
             dict = {}
             for item in attrlist:
                 key, value = item[:2]
@@ -487,16 +616,43 @@ class TALGenerator:
         if content:
             todo["content"] = content
         if replace:
-            todo["replace"] = replace
+            # tal:replace w/ i18n:name has slightly different semantics.  What
+            # we're actually replacing then is the contents of the ${name}
+            # placeholder.
+            if varname:
+                todo['i18nvar'] = (varname, replace)
+            else:
+                todo["replace"] = replace
             self.pushProgram()
+        # i18n:name w/o tal:replace uses the content as the interpolation
+        # dictionary values
+        elif varname:
+            todo['i18nvar'] = (varname, None)
+            self.pushProgram()
+        if msgid is not None:
+            todo['msgid'] = msgid
+        if i18ndata:
+            todo['i18ndata'] = i18ndata
         optTag = omitTag is not None or TALtag
         if optTag:
             todo["optional tag"] = omitTag, TALtag
             self.pushProgram()
-        if attrsubst:
-            repldict = parseAttributeReplacements(attrsubst)
+        if attrsubst or i18nattrs:
+            if attrsubst:
+                repldict = TALDefs.parseAttributeReplacements(attrsubst)
+            else:
+                repldict = {}
+            if i18nattrs:
+                i18nattrs = i18nattrs.split()
+            else:
+                i18nattrs = ()
+            # Convert repldict's name-->expr mapping to a
+            # name-->(compiled_expr, translate) mapping
             for key, value in repldict.items():
-                repldict[key] = self.compileExpression(value)
+                repldict[key] = self.compileExpression(value), key in i18nattrs
+            for key in i18nattrs:
+                if not repldict.has_key(key):
+                    repldict[key] = None, 1
         else:
             repldict = {}
         if replace:
@@ -506,6 +662,8 @@ class TALGenerator:
         if optTag:
             self.pushProgram()
         if content:
+            self.pushProgram()
+        if msgid is not None:
             self.pushProgram()
         if todo and position != (None, None):
             todo["position"] = position
@@ -535,6 +693,10 @@ class TALGenerator:
         repldict = todo.get("repldict", {})
         scope = todo.get("scope")
         optTag = todo.get("optional tag")
+        msgid = todo.get('msgid')
+        i18ncontext = todo.get("i18ncontext")
+        varname = todo.get('i18nvar')
+        i18ndata = todo.get('i18ndata')
 
         if implied > 0:
             if defineMacro or useMacro or defineSlot or fillSlot:
@@ -546,14 +708,51 @@ class TALGenerator:
             raise exc("%s attributes on <%s> require explicit </%s>" %
                       (what, name, name), position)
 
+        # If there's no tal:content or tal:replace in the tag with the
+        # i18n:name, tal:replace is the default.
+        i18nNameAction = I18N_REPLACE
         if content:
+            if varname:
+                i18nNameAction = I18N_CONTENT
             self.emitSubstitution(content, {})
+        # If we're looking at an implicit msgid, emit the insertTranslation
+        # opcode now, so that the end tag doesn't become part of the implicit
+        # msgid.  If we're looking at an explicit msgid, it's better to emit
+        # the opcode after the i18nVariable opcode so we can better handle
+        # tags with both of them in them (and in the latter case, the contents
+        # would be thrown away for msgid purposes).
+        if msgid is not None and not varname:
+            self.emitTranslation(msgid, i18ndata)
         if optTag:
             self.emitOptTag(name, optTag, isend)
         elif not isend:
+            # If we're processing the end tag for a tag that contained
+            # i18n:name, we need to make sure that optimize() won't collect
+            # immediately following end tags into the same rawtextOffset, so
+            # put a spacer here that the optimizer will recognize.
+            if varname:
+                self.emit('noop')
             self.emitEndTag(name)
+        # If i18n:name appeared in the same tag as tal:replace then we're
+        # going to do the substitution a little bit differently.  The results
+        # of the expression go into the i18n substitution dictionary.
         if replace:
             self.emitSubstitution(replace, repldict)
+        elif varname:
+            if varname[1] is not None:
+                i18nNameAction = I18N_EXPRESSION
+            # o varname[0] is the variable name
+            # o i18nNameAction is either
+            #   - I18N_REPLACE for implicit tal:replace
+            #   - I18N_CONTENT for tal:content
+            #   - I18N_EXPRESSION for explicit tal:replace
+            # o varname[1] will be None for the first two actions and the
+            #   replacement tal expression for the third action.
+            self.emitI18nVariable(varname[0], i18nNameAction, varname[1])
+        # Do not test for "msgid is not None", i.e. we only want to test for
+        # explicit msgids here.  See comment above.
+        if msgid is not None and varname:
+            self.emitTranslation(msgid, i18ndata)
         if repeat:
             self.emitRepeat(repeat)
         if condition:
@@ -562,6 +761,10 @@ class TALGenerator:
             self.emitOnError(name, onError)
         if scope:
             self.emit("endScope")
+        if i18ncontext:
+            self.emit("endI18nContext")
+            assert self.i18nContext.parent is not None
+            self.i18nContext = self.i18nContext.parent
         if defineSlot:
             self.emitDefineSlot(defineSlot)
         if fillSlot:

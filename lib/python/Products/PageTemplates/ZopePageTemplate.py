@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -369,3 +369,4 @@ def initialize(context):
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
+

@@ -50,7 +50,7 @@ class XMLParser:
             try:
                 self.parser.ordered_attributes = self.ordered_attributes
             except AttributeError:
-                zLOG.LOG("TAL.XMLParser", zLOG.INFO,
+                zLOG.LOG("TAL.XMLParser", zLOG.INFO, 
                          "Can't set ordered_attributes")
                 self.ordered_attributes = 0
         for name in self.handler_names:

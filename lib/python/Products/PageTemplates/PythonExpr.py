@@ -14,7 +14,7 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
@@ -78,3 +78,4 @@ class ExprTypeProxy:
     def __call__(self, text):
         return self._handler(self._name, text,
                              self._econtext._engine)(self._econtext)
+

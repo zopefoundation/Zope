@@ -8,7 +8,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """
@@ -18,8 +18,9 @@ Parse HTML and compile to TALInterpreter intermediate code.
 import sys
 
 from TALGenerator import TALGenerator
-from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS, METALError, TALError
 from HTMLParser import HTMLParser, HTMLParseError
+from TALDefs import \
+     ZOPE_METAL_NS, ZOPE_TAL_NS, ZOPE_I18N_NS, METALError, TALError, I18NError
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that may be given in
@@ -106,13 +107,20 @@ class HTMLTALParser(HTMLParser):
         self.gen = gen
         self.tagstack = []
         self.nsstack = []
-        self.nsdict = {'tal': ZOPE_TAL_NS, 'metal': ZOPE_METAL_NS}
+        self.nsdict = {'tal': ZOPE_TAL_NS,
+                       'metal': ZOPE_METAL_NS,
+                       'i18n': ZOPE_I18N_NS,
+                       }
 
     def parseFile(self, file):
         f = open(file)
         data = f.read()
         f.close()
-        self.parseString(data)
+        try:
+            self.parseString(data)
+        except TALError, e:
+            e.setFile(file)
+            raise
 
     def parseString(self, data):
         self.feed(data)
@@ -132,9 +140,10 @@ class HTMLTALParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         self.close_para_tags(tag)
         self.scan_xmlns(attrs)
-        tag, attrlist, taldict, metaldict = self.process_ns(tag, attrs)
+        tag, attrlist, taldict, metaldict, i18ndict \
+             = self.process_ns(tag, attrs)
         self.tagstack.append(tag)
-        self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
+        self.gen.emitStartElement(tag, attrlist, taldict, metaldict, i18ndict,
                                   self.getpos())
         if tag in EMPTY_HTML_TAGS:
             self.implied_endtag(tag, -1)
@@ -142,14 +151,15 @@ class HTMLTALParser(HTMLParser):
     def handle_startendtag(self, tag, attrs):
         self.close_para_tags(tag)
         self.scan_xmlns(attrs)
-        tag, attrlist, taldict, metaldict = self.process_ns(tag, attrs)
+        tag, attrlist, taldict, metaldict, i18ndict \
+             = self.process_ns(tag, attrs)
         if taldict.get("content"):
             self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
-                                      self.getpos())
+                                      i18ndict, self.getpos())
             self.gen.emitEndElement(tag, implied=-1)
         else:
             self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
-                                      self.getpos(), isend=1)
+                                      i18ndict, self.getpos(), isend=1)
         self.pop_xmlns()
 
     def handle_endtag(self, tag):
@@ -252,7 +262,7 @@ class HTMLTALParser(HTMLParser):
             prefix, suffix = name.split(':', 1)
             if prefix == 'xmlns':
                 nsuri = self.nsdict.get(suffix)
-                if nsuri in (ZOPE_TAL_NS, ZOPE_METAL_NS):
+                if nsuri in (ZOPE_TAL_NS, ZOPE_METAL_NS, ZOPE_I18N_NS):
                     return name, name, prefix
             else:
                 nsuri = self.nsdict.get(prefix)
@@ -260,20 +270,20 @@ class HTMLTALParser(HTMLParser):
                     return name, suffix, 'tal'
                 elif nsuri == ZOPE_METAL_NS:
                     return name, suffix,  'metal'
+                elif nsuri == ZOPE_I18N_NS:
+                    return name, suffix, 'i18n'
         return name, name, 0
 
     def process_ns(self, name, attrs):
         attrlist = []
         taldict = {}
         metaldict = {}
+        i18ndict = {}
         name, namebase, namens = self.fixname(name)
         for item in attrs:
             key, value = item
             key, keybase, keyns = self.fixname(key)
-            if ':' in key and not keyns:
-                ns = 0
-            else:
-                ns = keyns or namens # default to tag namespace
+            ns = keyns or namens # default to tag namespace
             if ns and ns != 'unknown':
                 item = (key, value, ns)
             if ns == 'tal':
@@ -286,7 +296,12 @@ class HTMLTALParser(HTMLParser):
                     raise METALError("duplicate METAL attribute " +
                                      `keybase`, self.getpos())
                 metaldict[keybase] = value
+            elif ns == 'i18n':
+                if i18ndict.has_key(keybase):
+                    raise I18NError("duplicate i18n attribute " +
+                                    `keybase`, self.getpos())
+                i18ndict[keybase] = value
             attrlist.append(item)
         if namens in ('metal', 'tal'):
             taldict['tal tag'] = namens
-        return name, attrlist, taldict, metaldict
+        return name, attrlist, taldict, metaldict, i18ndict

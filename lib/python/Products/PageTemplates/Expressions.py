@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -246,7 +246,10 @@ class NotExpr:
         self._c = compiler.compile(expr)
 
     def __call__(self, econtext):
-        return not econtext.evaluateBoolean(self._c)
+        # We use the (not x) and 1 or 0 formulation to avoid changing
+        # the representation of the result in Python 2.3, where the
+        # result of "not" becomes an instance of bool.
+        return (not econtext.evaluateBoolean(self._c)) and 1 or 0
 
     def __repr__(self):
         return 'not:%s' % `self._s`

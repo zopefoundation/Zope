@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys
 
@@ -24,7 +24,8 @@ from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALGenerator import TALGenerator
 from TAL.TALInterpreter import TALInterpreter
 from Expressions import getEngine
-from cStringIO import StringIO
+# Do not use cStringIO here!  It's not unicode aware. :(
+from StringIO import StringIO
 from ExtensionClass import Base
 from ComputedAttribute import ComputedAttribute
 
@@ -208,3 +209,4 @@ class PageTemplateTracebackSupplement:
         if e:
             w = list(w) + list(e)
         self.warnings = w
+

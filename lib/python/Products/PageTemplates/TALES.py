@@ -15,10 +15,12 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
+from DocumentTemplate.DT_Util import ustr
+from GlobalTranslationService import getGlobalTranslationService
 
 StringType = type('')
 
@@ -222,11 +224,11 @@ class Context:
     def evaluateBoolean(self, expr):
         return not not self.evaluate(expr)
 
-    def evaluateText(self, expr, None=None):
+    def evaluateText(self, expr):
         text = self.evaluate(expr)
         if text is Default or text is None:
             return text
-        return str(text)
+        return ustr(text)
 
     def evaluateStructure(self, expr):
         return self.evaluate(expr)
@@ -249,6 +251,11 @@ class Context:
     def setPosition(self, position):
         self.position = position
 
+    def translate(self, domain, msgid, mapping=None,
+                  context=None, target_language=None):
+        return getGlobalTranslationService().translate(
+            domain, msgid, mapping=mapping,
+            context=context, target_language=target_language)
 
 
 class TALESTracebackSupplement:
@@ -282,3 +289,4 @@ class SimpleExpr:
         return self._name, self._expr
     def __repr__(self):
         return '<SimpleExpr %s %s>' % (self._name, `self._expr`)
+

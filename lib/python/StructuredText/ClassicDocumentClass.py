@@ -14,8 +14,8 @@
 import re, ST, STDOM
 from STletters import letters
 
-StringType=type('')
-ListType=type([])
+from types import StringType, UnicodeType, ListType
+StringTypes = (StringType, UnicodeType)
 
 class StructuredTextExample(ST.StructuredTextParagraph):
     """Represents a section of document with literal text, as for examples"""
@@ -235,7 +235,7 @@ class DocumentClass:
         ]
 
     def __call__(self, doc):
-        if type(doc) is type(''):
+        if type(doc) in StringTypes:
             doc=ST.StructuredText(doc)
             doc.setSubparagraphs(self.color_paragraphs(
                doc.getSubparagraphs()))
@@ -245,7 +245,7 @@ class DocumentClass:
         return doc
 
     def parse(self, raw_string, text_type,
-              type=type, st=type(''), lt=type([])):
+              type=type, sts=StringTypes, lt=type([])):
 
         """
         Parse accepts a raw_string, an expr to test the raw_string,
@@ -261,7 +261,7 @@ class DocumentClass:
         tmp = []    # the list to be returned if raw_string is split
         append=tmp.append
 
-        if type(text_type) is st: text_type=getattr(self, text_type)
+        if type(text_type) in sts: text_type=getattr(self, text_type)
 
         while 1:
             t = text_type(raw_string)
@@ -272,7 +272,7 @@ class DocumentClass:
             if start: append(raw_string[0:start])
 
             tt=type(t)
-            if tt is st:
+            if tt in sts:
                 # if we get a string back, add it to text to be parsed
                 raw_string = t+raw_string[end:len(raw_string)]
             else:
@@ -299,12 +299,12 @@ class DocumentClass:
 
         for text_type in types:
 
-            if type(str) is StringType:
+            if type(str) in StringTypes:
                 str = self.parse(str, text_type)
             elif type(str) is ListType:
                 r=[]; a=r.append
                 for s in str:
-                    if type(s) is StringType:
+                    if type(s) in StringTypes:
                         s=self.parse(s, text_type)
                         if type(s) is ListType: r[len(r):]=s
                         else: a(s)
@@ -327,7 +327,7 @@ class DocumentClass:
 
     def color_paragraphs(self, raw_paragraphs,
                            type=type, sequence_types=(type([]), type(())),
-                           st=type('')):
+                           sts=StringTypes):
         result=[]
         for paragraph in raw_paragraphs:
 
@@ -336,7 +336,7 @@ class DocumentClass:
                 continue
 
             for pt in self.paragraph_types:
-                if type(pt) is st:
+                if type(pt) in sts:
                     # grab the corresponding function
                     pt=getattr(self, pt)
                 # evaluate the paragraph

@@ -16,6 +16,9 @@ DOM implementation in StructuredText : Read-Only methods
 All standard Zope objects support DOM to a limited extent.
 """
 
+from types import StringType, UnicodeType
+StringTypes = (StringType, UnicodeType)
+
 # Node type codes
 # ---------------
 
@@ -81,7 +84,7 @@ class ParentNode:
     the child access methods of the DOM.
     """
 
-    def getChildNodes(self, type=type, st=type('')):
+    def getChildNodes(self, type=type, sts=StringTypes):
         """
         Returns a NodeList that contains all children of this node.
         If there are no children, this is a empty NodeList
@@ -89,12 +92,12 @@ class ParentNode:
 
         r=[]
         for n in self.getChildren():
-            if type(n) is st: n=TextNode(n)
+            if type(n) in sts: n=TextNode(n)
             r.append(n.__of__(self))
 
         return  NodeList(r)
 
-    def getFirstChild(self, type=type, st=type('')):
+    def getFirstChild(self, type=type, sts=StringTypes):
         """
         The first child of this node. If there is no such node
         this returns None
@@ -106,12 +109,12 @@ class ParentNode:
 
         n=children[0]
 
-        if type(n) is st:
+        if type(n) in sts:
             n=TextNode(n)
 
         return n.__of__(self)
 
-    def getLastChild(self, type=type, st=type('')):
+    def getLastChild(self, type=type, sts=StringTypes):
         """
         The last child of this node.  If there is no such node
         this returns None.
@@ -119,21 +122,21 @@ class ParentNode:
         children = self.getChildren()
         if not children: return None
         n=chidren[-1]
-        if type(n) is st: n=TextNode(n)
+        if type(n) in sts: n=TextNode(n)
         return n.__of__(self)
 
     """
     create aliases for all above functions in the pythony way.
     """
 
-    def _get_ChildNodes(self, type=type, st=type('')):
-        return self.getChildNodes(type,st)
+    def _get_ChildNodes(self, type=type, sts=StringTypes):
+        return self.getChildNodes(type,sts)
 
-    def _get_FirstChild(self, type=type, st=type('')):
-        return self.getFirstChild(type,st)
+    def _get_FirstChild(self, type=type, sts=StringTypes):
+        return self.getFirstChild(type,sts)
 
-    def _get_LastChild(self, type=type, st=type('')):
-        return self.getLastChild(type,st)
+    def _get_LastChild(self, type=type, sts=StringTypes):
+        return self.getLastChild(type,sts)
 
 class NodeWrapper(ParentNode):
     """
@@ -167,7 +170,7 @@ class NodeWrapper(ParentNode):
 
     def getPreviousSibling(self,
                            type=type,
-                           st=type(''),
+                           sts=StringTypes,
                            getattr=getattr,
                            None=None):
 
@@ -190,13 +193,13 @@ class NodeWrapper(ParentNode):
         try: n=children[index]
         except IndexError: return None
         else:
-            if type(n) is st:
+            if type(n) in sts:
                 n=TextNode(n)
             n._DOMIndex=index
             return n.__of__(self)
 
 
-    def getNextSibling(self, type=type, st=type('')):
+    def getNextSibling(self, type=type, sts=StringTypes):
         """
         The node immediately preceding this node.  If
         there is no such node, this returns None.
@@ -216,7 +219,7 @@ class NodeWrapper(ParentNode):
         except IndexError:
             return None
         else:
-            if type(n) is st:
+            if type(n) in sts:
                 n=TextNode(n)
             n._DOMIndex=index
             return n.__of__(self)
@@ -239,14 +242,14 @@ class NodeWrapper(ParentNode):
 
     def _get_PreviousSibling(self,
                            type=type,
-                           st=type(''),
+                           sts=StringTypes,
                            getattr=getattr,
                            None=None):
 
-        return self.getPreviousSibling(type,st,getattr,None)
+        return self.getPreviousSibling(type,sts,getattr,None)
 
-    def _get_NextSibling(self, type=type, st=type('')):
-        return self.getNextSibling(type,st)
+    def _get_NextSibling(self, type=type, sts=StringTypes):
+        return self.getNextSibling(type,sts)
 
     def _get_OwnerDocument(self):
         return self.getOwnerDocument()
@@ -288,7 +291,7 @@ class Node(ParentNode):
 
     def getPreviousSibling(self,
                            type=type,
-                           st=type(''),
+                           sts=StringTypes,
                            getattr=getattr,
                            None=None):
         """
@@ -296,7 +299,7 @@ class Node(ParentNode):
         there is no such node, this returns None.
         """
 
-    def getNextSibling(self, type=type, st=type('')):
+    def getNextSibling(self, type=type, sts=StringTypes):
         """
         The node immediately preceding this node.  If
         there is no such node, this returns None.
@@ -342,13 +345,13 @@ class Node(ParentNode):
 
     def _get_PreviousSibling(self,
                            type=type,
-                           st=type(''),
+                           sts=StringTypes,
                            getattr=getattr,
                            None=None):
 
-        return self.getPreviousSibling(type,st,getattr,None)
+        return self.getPreviousSibling(type,sts,getattr,None)
 
-    def _get_NextSibling(self, type=type, st=type('')):
+    def _get_NextSibling(self, type=type, sts=StringTypes):
         return self.getNextSibling()
 
     def _get_Attributes(self):
@@ -407,10 +410,10 @@ class Element(Node):
         """A code representing the type of the node."""
         return ELEMENT_NODE
 
-    def getNodeValue(self, type=type, st=type('')):
+    def getNodeValue(self, type=type, sts=StringTypes):
         r=[]
         for c in self.getChildren():
-            if type(c) is not st:
+            if type(c) not in sts:
                 c=c.getNodeValue()
             r.append(c)
         return ''.join(r)
@@ -480,8 +483,8 @@ class Element(Node):
     def _get_NodeType(self):
         return self.getNodeType()
 
-    def _get_NodeValue(self, type=type, st=type('')):
-        return self.getNodeValue(type,st)
+    def _get_NodeValue(self, type=type, sts=StringTypes):
+        return self.getNodeValue(type,sts)
 
     def _get_ParentNode(self):
         return self.getParentNode()
@@ -517,7 +520,7 @@ class NodeList:
     def __init__(self,list=None):
         self._data = list or []
 
-    def __getitem__(self, index, type=type, st=type('')):
+    def __getitem__(self, index, type=type, sts=StringTypes):
         return self._data[index]
 
     def __getslice__(self, i, j):

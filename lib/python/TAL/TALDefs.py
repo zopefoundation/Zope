@@ -8,7 +8,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """
@@ -17,13 +17,16 @@ Common definitions used by TAL and METAL compilation an transformation.
 
 from types import ListType, TupleType
 
-TAL_VERSION = "1.3.2"
+from ITALES import ITALESErrorInfo
+
+TAL_VERSION = "1.4"
 
 XML_NS = "http://www.w3.org/XML/1998/namespace" # URI for XML namespace
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
 
 ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
 ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
+ZOPE_I18N_NS = "http://xml.zope.org/namespaces/i18n"
 
 NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
 
@@ -32,7 +35,6 @@ KNOWN_METAL_ATTRIBUTES = [
     "use-macro",
     "define-slot",
     "fill-slot",
-    "slot",
     ]
 
 KNOWN_TAL_ATTRIBUTES = [
@@ -47,6 +49,16 @@ KNOWN_TAL_ATTRIBUTES = [
     "tal tag",
     ]
 
+KNOWN_I18N_ATTRIBUTES = [
+    "translate",
+    "domain",
+    "target",
+    "source",
+    "attributes",
+    "data",
+    "name",
+    ]
+
 class TALError(Exception):
 
     def __init__(self, msg, position=(None, None)):
@@ -54,6 +66,10 @@ class TALError(Exception):
         self.msg = msg
         self.lineno = position[0]
         self.offset = position[1]
+        self.filename = None
+
+    def setFile(self, filename):
+        self.filename = filename
 
     def __str__(self):
         result = self.msg
@@ -61,6 +77,8 @@ class TALError(Exception):
             result = result + ", at line %d" % self.lineno
         if self.offset is not None:
             result = result + ", column %d" % (self.offset + 1)
+        if self.filename is not None:
+            result = result + ', in file %s' % self.filename
         return result
 
 class METALError(TALError):
@@ -69,8 +87,13 @@ class METALError(TALError):
 class TALESError(TALError):
     pass
 
+class I18NError(TALError):
+    pass
+
 
 class ErrorInfo:
+
+    __implements__ = ITALESErrorInfo
 
     def __init__(self, err, position=(None, None)):
         if isinstance(err, Exception):

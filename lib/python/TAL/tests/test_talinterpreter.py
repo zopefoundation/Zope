@@ -68,6 +68,24 @@ class OutputPresentationTestCase(TestCaseBase):
         interp()
         self.assertEqual(sio.getvalue(), EXPECTED)
 
+    def check_unicode_content(self):
+        INPUT = """<p tal:content="python:u'déjà-vu'">para</p>"""
+        EXPECTED = u"""<p>déjà-vu</p>""" "\n"
+        program, macros = self._compile(INPUT)
+        sio = StringIO()
+        interp = TALInterpreter(program, {}, DummyEngine(), sio, wrap=60)
+        interp()
+        self.assertEqual(sio.getvalue(), EXPECTED)
+
+    def check_unicode_structure(self):
+        INPUT = """<p tal:replace="structure python:u'déjà-vu'">para</p>"""
+        EXPECTED = u"""déjà-vu""" "\n"
+        program, macros = self._compile(INPUT)
+        sio = StringIO()
+        interp = TALInterpreter(program, {}, DummyEngine(), sio, wrap=60)
+        interp()
+        self.assertEqual(sio.getvalue(), EXPECTED)
+
 
 def test_suite():
     suite = unittest.TestSuite()

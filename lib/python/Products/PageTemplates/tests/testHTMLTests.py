@@ -15,8 +15,9 @@ import os, sys, unittest
 
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
-import ZODB
-from AccessControl import User, SecurityManager
+from Products.PageTemplates.GlobalTranslationService import \
+     setGlobalTranslationService
+from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 
 from Acquisition import Implicit
@@ -25,6 +26,10 @@ class AqPageTemplate(Implicit, PageTemplate):
 
 class Folder(util.Base):
     pass
+
+class TestTranslationService:
+    def translate(self, domain, msgid, *args, **kw):
+        return "[%s](%s)" % (domain, msgid)
 
 
 class UnitTestSecurityPolicy:
@@ -66,6 +71,14 @@ class HTMLTests(unittest.TestCase):
         t.write(util.read_input(fname))
         assert not t._v_errors, 'Template errors: %s' % t._v_errors
         expect = util.read_output(fname)
+        out = apply(t, args, kwargs)
+        util.check_html(expect, out)
+
+    def assert_expected_unicode(self, t, fname, *args, **kwargs):
+        t.write(util.read_input(fname))
+        assert not t._v_errors, 'Template errors: %s' % t._v_errors
+        expect = util.read_output(fname)
+        expect = unicode(expect, 'utf8')
         out = apply(t, args, kwargs)
         util.check_html(expect, out)
 
@@ -126,8 +139,20 @@ class HTMLTests(unittest.TestCase):
     def checkBatchIteration(self):
         self.assert_expected(self.folder.t, 'CheckBatchIteration.html')
 
+    def checkUnicodeInserts(self):
+        self.assert_expected_unicode(self.folder.t, 'CheckUnicodeInserts.html')
+
+    def checkI18nTranslate(self):
+        self.assert_expected(self.folder.t, 'CheckI18nTranslate.html')
+
+    def checkI18nTranslateHooked(self):
+        old_ts = setGlobalTranslationService(TestTranslationService())
+        self.assert_expected(self.folder.t, 'CheckI18nTranslateHooked.html')
+        setGlobalTranslationService(old_ts)
+
 def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
 
 if __name__=='__main__':
-    unittest.main(defaultTest='test_suite')
+   main()
+

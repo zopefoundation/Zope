@@ -8,7 +8,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 """
@@ -18,13 +18,20 @@ Dummy TALES engine so that I can test out the TAL implementation.
 import re
 import sys
 
-import driver
-
 from TALDefs import NAME_RE, TALESError, ErrorInfo
+from ITALES import ITALESCompiler, ITALESEngine
+from DocumentTemplate.DT_Util import ustr
+try:
+    from Zope.I18n.ITranslationService import ITranslationService
+    from Zope.I18n.IDomain import IDomain
+except ImportError:
+    # Before 2.7
+    class ITranslationService: pass
+    class IDomain: pass
 
-class Default:
+class _Default:
     pass
-Default = Default()
+Default = _Default()
 
 name_match = re.compile(r"(?s)(%s):(.*)\Z" % NAME_RE).match
 
@@ -36,6 +43,8 @@ class DummyEngine:
     position = None
     source_file = None
 
+    __implements__ = ITALESCompiler, ITALESEngine
+
     def __init__(self, macros=None):
         if macros is None:
             macros = {}
@@ -43,6 +52,7 @@ class DummyEngine:
         dict = {'nothing': None, 'default': Default}
         self.locals = self.globals = dict
         self.stack = [dict]
+        self.translationService = DummyTranslationService()
 
     def getCompilerError(self):
         return CompilerError
@@ -90,13 +100,7 @@ class DummyEngine:
         if type in ("string", "str"):
             return expr
         if type in ("path", "var", "global", "local"):
-            expr = expr.strip()
-            if self.locals.has_key(expr):
-                return self.locals[expr]
-            elif self.globals.has_key(expr):
-                return self.globals[expr]
-            else:
-                raise TALESError("unknown variable: %s" % `expr`)
+            return self.evaluatePathOrVar(expr)
         if type == "not":
             return not self.evaluate(expr)
         if type == "exists":
@@ -116,6 +120,15 @@ class DummyEngine:
             return '%s (%s,%s)' % (self.source_file, lineno, offset)
         raise TALESError("unrecognized expression: " + `expression`)
 
+    def evaluatePathOrVar(self, expr):
+        expr = expr.strip()
+        if self.locals.has_key(expr):
+            return self.locals[expr]
+        elif self.globals.has_key(expr):
+            return self.globals[expr]
+        else:
+            raise TALESError("unknown variable: %s" % `expr`)
+
     def evaluateValue(self, expr):
         return self.evaluate(expr)
 
@@ -125,7 +138,7 @@ class DummyEngine:
     def evaluateText(self, expr):
         text = self.evaluate(expr)
         if text is not None and text is not Default:
-            text = str(text)
+            text = ustr(text)
         return text
 
     def evaluateStructure(self, expr):
@@ -146,6 +159,7 @@ class DummyEngine:
             macro = self.macros[localName]
         else:
             # External macro
+            import driver
             program, macros = driver.compilefile(file)
             macro = macros.get(localName)
             if not macro:
@@ -157,6 +171,7 @@ class DummyEngine:
         file, localName = self.findMacroFile(macroName)
         if not file:
             return file, localName
+        import driver
         doc = driver.parsefile(file)
         return doc, localName
 
@@ -183,6 +198,10 @@ class DummyEngine:
     def getDefault(self):
         return Default
 
+    def translate(self, domain, msgid, mapping):
+        return self.translationService.translate(domain, msgid, mapping)
+    
+
 class Iterator:
 
     def __init__(self, name, seq, engine):
@@ -200,3 +219,31 @@ class Iterator:
         self.nextIndex = i+1
         self.engine.setLocal(self.name, item)
         return 1
+
+class DummyDomain:
+    __implements__ = IDomain
+
+    def translate(self, msgid, mapping=None, context=None,
+                  target_language=None):
+        # This is a fake translation service which simply uppercases non
+        # ${name} placeholder text in the message id.
+        #
+        # First, transform a string with ${name} placeholders into a list of
+        # substrings.  Then upcase everything but the placeholders, then glue
+        # things back together.
+        def repl(m, mapping=mapping):
+            return mapping[m.group(m.lastindex).lower()]
+        cre = re.compile(r'\$(?:([_A-Z]\w*)|\{([_A-Z]\w*)\})')
+        return cre.sub(repl, msgid.upper())
+
+class DummyTranslationService:
+    __implements__ = ITranslationService
+
+    def translate(self, domain, msgid, mapping=None, context=None,
+                  target_language=None):
+        # Ignore domain
+        return self.getDomain(domain).translate(msgid, mapping, context,
+                                                target_language)
+
+    def getDomain(self, domain):
+        return DummyDomain()

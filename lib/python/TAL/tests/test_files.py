@@ -17,6 +17,10 @@ class FileTestCase(unittest.TestCase):
         self.__dir = dir
         unittest.TestCase.__init__(self)
 
+    def shortDescription(self):
+        return os.path.join("...", "TAL", "tests", "input",
+                            os.path.basename(self.__file))
+
     def runTest(self):
         basename = os.path.basename(self.__file)
         #sys.stdout.write(basename + " ")

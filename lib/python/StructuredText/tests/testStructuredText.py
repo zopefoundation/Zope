@@ -18,6 +18,7 @@ from StructuredText import StructuredText
 from StructuredText import HTMLClass
 from StructuredText.StructuredText import HTML
 import sys, os, unittest, cStringIO
+from types import UnicodeType
 from OFS import ndiff
 
 """
@@ -52,6 +53,8 @@ class StructuredTextTests(unittest.TestCase):
             raw_text = readFile(regressions,f)
             assert StructuredText.StructuredText(raw_text),\
                 'StructuredText failed on %s' % f
+            assert StructuredText.StructuredText(unicode(raw_text)),\
+                'StructuredText failed on Unicode %s' % f
 
     def testStructuredTextNG(self):
         """ testing StructuredTextNG """
@@ -60,6 +63,8 @@ class StructuredTextTests(unittest.TestCase):
             raw_text = readFile(regressions,f)
             assert ST.StructuredText(raw_text),\
                 'StructuredText failed on %s' % f
+            assert ST.StructuredText(unicode(raw_text)),\
+                'StructuredText failed on Unicode %s' % f
 
 
     def testDocumentClass(self):
@@ -131,12 +136,25 @@ class BasicTests(unittest.TestCase):
 
     def _test(self,stxtxt , expected):
 
-        res = HTML(stxtxt,level=1,header=0)
+        if not isinstance(stxtxt, UnicodeType):
+            res = HTML(stxtxt,level=1,header=0)
+            if res.find(expected)==-1:
+                print "Text:     ",stxtxt
+                print "Converted:",res
+                print "Expected: ",expected
+                raise AssertionError,"basic test failed for '%s'" % stxtxt
+
+        if isinstance(stxtxt, UnicodeType):
+            ustxtxt = stxtxt
+        else:
+            ustxtxt = unicode(stxtxt)
+        res = HTML(ustxtxt,level=1,header=0)
         if res.find(expected)==-1:
-            print "Text:     ",stxtxt
-            print "Converted:",res
-            print "Expected: ",expected
-            raise AssertionError,"basic test failed for '%s'" % stxtxt
+            print "Text:     ",stxtxt.encode('latin-1')
+            print "Converted:",res.encode('latin-1')
+            print "Expected: ",expected.encode('latin-1')
+            raise AssertionError, ("basic test failed for Unicode '%s'"
+                                   % stxtxt)
 
 
     def testUnderline(self):
@@ -190,6 +208,14 @@ class BasicTests(unittest.TestCase):
     def testLinkInLiteral(self):
         self._test("this is a '\"literal\":http://www.zope.org/.' eh",
         '<code>"literal":http://www.zope.org/.</code>')
+
+
+    def XXXtestUnicodeContent(self):
+        # This fails because ST uses the default locale to get "letters"
+        # whereas it should use \w+ and re.U if the string is Unicode.
+        #self._test(u"h\xe9 **y\xe9** xx",
+        #           u"h\xe9 <strong>y\xe9</strong> xx")
+        pass
 
 
 def test_suite():
