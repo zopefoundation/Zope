@@ -64,6 +64,12 @@ Zope Changes
 
     Zope xxx
 
+      Features Added
+
+        - Added Oleg Broytmann's patches to utilities/load_site.py 
+          that provide automatic parsing of title and property 
+          information and inclusion of std headers and footers.
+
       Bugs Fixed
 
         - Some problems with the product distribution machinery that
