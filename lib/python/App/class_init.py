@@ -87,6 +87,8 @@ from AccessControl.PermissionRole import PermissionRole
 
 class ApplicationDefaultPermissions:
     _View_Permission='Manager', 'Anonymous'
+    _Access_contents_information_Permission='Manager', 'Anonymous'
+
     
 def default__class_init__(self):
     dict=self.__dict__
