@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.136 2001/01/18 20:40:45 brian Exp $'''
-__version__='$Revision: 1.136 $'[11:-2]
+$Id: Application.py,v 1.137 2001/01/18 21:45:03 shane Exp $'''
+__version__='$Revision: 1.137 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -322,7 +322,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         jar.root()['ZGlobals']=BTree.BTree()
         products=self.Control_Panel.Products
         for product in products.objectValues():
-            LOG('Zope', INFO, 'Checking product: %s' % product.id)
+            LOG('Zope', INFO, 'Searching in product: %s' % product.id)
             items=list(product.objectItems())
             finished=[]
             idx=0
@@ -333,9 +333,27 @@ class Application(Globals.ApplicationDefaultPermissions,
                     idx=idx+1
                     continue
                 finished.append(base)
-        LOG('Zope', WARNING, 'Successfully rebuilt global product registry')
+                try:
+                    # Try to re-register ZClasses.
+                    if hasattr(ob, '_register') and hasattr(ob, '_zclass_'):
+                        ob._register()
+                    # Include subobjects.
+                    if hasattr(ob, 'objectItems'):
+                        m = list(ob.objectItems())
+                        items.extend(m)
+                    # Try to find ZClasses-in-ZClasses.
+                    if hasattr(ob, 'propertysheets'):
+                        ps = ob.propertysheets
+                        if (hasattr(ps, 'methods') and
+                            hasattr(ps.methods, 'objectItems')):
+                            m = list(ps.methods.objectItems())
+                            items.extend(m)
+                except:
+                    LOG('Zope', WARNING,
+                        'Broken objects exist in product %s.' % product.id)
+                idx = idx + 1
+        LOG('Zope', INFO, 'Successfully rebuilt global product registry')
         return 1
-                              
 
 
 class Expired(Globals.Persistent):
@@ -426,7 +444,7 @@ def initialize(app):
             get_transaction().commit()
     except:
          LOG('Zope', ERROR,
-             'A problem was found in the global product registry but ' \
+             'A problem was found in the global product registry but '
              'the attempt to rebuild the registry failed.',
              error=sys.exc_info())
          get_transaction().abort()
