@@ -86,7 +86,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -537,7 +537,6 @@ if __name__ == '__main__':
             if opt=='--top': top=int(val)
             if opt=='--help': print detailedusage(); sys.exit(0)
             if opt=='--verbose':
-                global verbose
                 verbose = 1
             if opt=='--today':
                 now = time.gmtime(time.time())
