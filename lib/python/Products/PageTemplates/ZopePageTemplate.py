@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -241,7 +241,7 @@ class ZopePageTemplate(PageTemplate, Script, Historical, Cacheable,
         security=getSecurityManager()
         security.addContext(self)
         try:
-            return pt_render(extra_context=bound_names)
+            return self.pt_render(extra_context=bound_names)
         finally:
             security.removeContext(self)
 
