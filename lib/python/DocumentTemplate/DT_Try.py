@@ -83,7 +83,8 @@
 # 
 ##############################################################################
 
-import string, sys
+import string, sys, traceback
+from cStringIO import StringIO
 from DT_Util import parse_params, render_blocks, namespace, InstanceDict
 
 class Try:
@@ -106,7 +107,16 @@ class Try:
     no name then it matches all raised errors.
     
     The try tag understands class-based exceptions, as well as string-based
-    exceptions. Note the raise tag raises string-based exceptions.
+    exceptions. Note: the 'raise' tag raises string-based exceptions.
+    
+    Inside the except blocks information about the error is available via
+    three variables.
+    
+      'error_type' -- This variable is the name of the exception caught.
+    
+      'error_value' -- This is the caught exception's value.
+    
+      'error_tb' -- This is a traceback for the caught exception.
     
     Original version by Jordan B. Baker.
     """
@@ -149,7 +159,11 @@ class Try:
 
             # found the handler block, now render it
             try:
-                ns = namespace(self, error_type=errname, error_message=einfo[1])[0]
+                f=StringIO()
+                traceback.print_exc(100,f)
+                error_tb=f.getvalue()
+                ns = namespace(self, error_type=errname, error_value=einfo[1],
+                    error_tb=error_tb)[0]
                 md._push(InstanceDict(ns,md))
                 return render_blocks(handler, md)
             finally:
