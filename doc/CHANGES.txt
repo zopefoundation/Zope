@@ -31,6 +31,8 @@ Zope Changes
        Zope server. Additionally the SiteErrorLog is covered by unit tests
        now.
 
+     - Unit tests added for the SiteErrorLog.
+
      - UI improvement for the ZCatalog. The "catalog contents" allow
        you to filter the cataloged objects by path now.
 
