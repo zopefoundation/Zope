@@ -143,3 +143,4 @@ if os.environ.has_key('ZOPE_DATABASE_QUOTA'):
 
 SingleThreadedTransaction.Transaction.commit=VersionBase.committer()
 
+__bobo_debug_mode__=Globals.DevelopmentMode
