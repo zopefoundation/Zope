@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.15 2000/05/16 17:13:57 jim Exp $
+  $Id: ExtensionClass.h,v 1.16 2000/12/26 15:17:59 jim Exp $
 
   Extension Class Definitions
 
@@ -424,7 +424,7 @@ typedef struct {
   PyTypeObject *type;
   PyObject     *self;
   PyObject     *meth;
-} PyECMethodObject;
+} PyECMethodObject; /* AKA PMethod */
 
 /* The following is to avoid whining from 1.5 :-) */
 #define PyCObject_Import PyCObject_Import14
