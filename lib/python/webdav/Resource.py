@@ -13,7 +13,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 import sys, os,  mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -552,7 +552,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
 
     def manage_DAVget(self):
-        return self.manage_FTPget(self)
+        """Gets the document source"""
+        # The default implementation calls manage_FTPget
+        return self.manage_FTPget()
 
     def listDAVObjects(self):
         return []

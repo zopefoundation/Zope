@@ -39,7 +39,7 @@ class WebDAVSrcHandler(zhttp_handler):
             path_info = env['PATH_INFO']
             if os.sep != '/':
                 path_info =  path_info.replace(os.sep, '/')
-            path_info = posixpath.join(path_info, 'manage_FTPget')
+            path_info = posixpath.join(path_info, 'manage_DAVget')
             path_info = posixpath.normpath(path_info)
             env['PATH_INFO'] = path_info
 
