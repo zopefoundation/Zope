@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.2 1997/09/02 19:02:51 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.3 1997/10/27 17:42:07 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import regex, string
 
@@ -80,7 +80,7 @@ isFunctionType=isFunctionType.has_key
 
 class InstanceDict:
 
-    def __init__(self,o,namespace):
+    def __init__(self,o,namespace,validate=None):
 	self.self=o
 	self.cache={}
 	self.namespace=namespace
@@ -95,30 +95,23 @@ class InstanceDict:
 
     def __getitem__(self,key):
 
-	# sys.stderr.write("Inst %s\n" % str((key,self)))
-	try:
-	    r=self.cache[key]
-	except:
-	    if key[:1]=='_':
-		if key != '__str__':
-		    raise KeyError, key # Don't divuldge private data
-		r=str(self.self)
-	    else:
-		try: r=getattr(self.self,key)
-		except AttributeError: raise KeyError, key
-		if isFunctionType(type(r)):
-		    r=r()
-		try: isDocTemp=r.isDocTemp
-		except: isDocTemp=0
-		if isDocTemp:
-		    # There's no point in passing self, since we're
-		    # already in the name space
-		    #r=r(self.self,self.namespace)
-		    r=r(None,self.namespace)
-		    # We won't cache results of rendering 
-		else:
-		    self.cache[key]=r
-	# sys.stderr.write("RI %s\n" % str((key,r)))
+	cache=self.cache
+	if cache.has_key(key): return cache[key]
+	
+	inst=self.self
+
+	if key[:1]=='_':
+	    if key != '__str__':
+		raise KeyError, key # Don't divuldge private data
+		r=str(inst)
+	else:
+	    try: r=getattr(inst,key)
+	    except AttributeError: raise KeyError, key
+
+	v=self.validate
+	if v is not None: v(self.namespace,inst,key,r)
+
+	self.cache[key]=r
 	return r
 
 class MultiMapping:
@@ -143,6 +136,8 @@ class MultiMapping:
 
 class TemplateDict:
 
+    level=0
+
     def __init__(self):
 	m=self.dicts=MultiMapping()
 	self.pop=m.pop
@@ -150,49 +145,18 @@ class TemplateDict:
 	try: self.keys=m.keys
 	except: pass
 
-	# if names is None: self._names = {}
-	# else: self._names = names
-	# self._validator = validator
-	# self._do_validation=names or validator
+    def __getitem__(self,key,call=1):
 
-    def setValidation(self,names,validator):
-	r=self._names, self._validator
-	if names is None: self._names = {}
-	else: self._names = names
-	self._validator = validator
-	self._do_validation=names or validator
-	return r
-
-    def __getitem__(self,key):
-	# sys.stderr.write("MD %s\n" % str((key,self)))
-
-	# do_validation=self._do_validation
         v=self.dicts[key]
-        # validate before calling?
-        # if do_validation: self.validate(key, v)
-        # if isFunctionType(type(v)):
 	try: isDocTemp=v.isDocTemp
 	except: isDocTemp=None
 	if isDocTemp: v=v(None,self)
-	else:
+	elif call:
 	    try: v=v()
 	    except (AttributeError,TypeError): pass
         return v
 
-    _namepat = regex.compile('[^a-z0-9_]', regex.casefold)
-    def validate(self, key, value=None):
-	"Check key/value for access - raise KeyError if invalid access."
-
-	# names containing other than normal identifier chars are okay
-	# names in the programmer-provided list of names are okay
-	# key/value pairs the validator function approves are okay
-	if (self._namepat.search(key) != -1 or
-	    self._names.has_key(key) or
-	    (type(self._validator) == FunctionType and
-	     self._validator(key, value))): return
-
-	# everything else is verboten...
-	raise KeyError, key
+    get=__getitem__
 
 def render_blocks(self, md):
     rendered = []
@@ -207,6 +171,14 @@ def render_blocks(self, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.3  1997/10/27 17:42:07  jim
+# Removed old validation machinery.
+#
+# Made some changes to synchonize with cDocumentTemplate.
+#
+# Added a get method on TemplateDicts to do lookup without
+# (non-DocumentTemplate) method calls.
+#
 # Revision 1.2  1997/09/02 19:02:51  jim
 # *** empty log message ***
 #
