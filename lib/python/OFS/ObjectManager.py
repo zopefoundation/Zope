@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.50 1999/01/29 15:41:39 brian Exp $"""
+$Id: ObjectManager.py,v 1.51 1999/02/22 20:41:40 jim Exp $"""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher
@@ -182,9 +182,12 @@ class ObjectManager(
         except: pass
         return ()
 
+    def _setOb(self, id, object): setattr(self, id, object)
+    def _delOb(self, id): delattr(self, id)
+
     def _setObject(self,id,object,roles=None,user=None):
         self._checkId(id)
-        setattr(self,id,object)
+        self._setOb(id,object)
         try:    t=object.meta_type
         except: t=None
         self._objects=self._objects+({'id':id,'meta_type':t},)
@@ -200,7 +203,7 @@ class ObjectManager(
 
 
     def _delObject(self,id):
-        delattr(self,id)
+        self._delOb(id)
         if id=='acl_users':
             # Yikes - acl_users is referred to by two names and
             # must be treated as a special case!

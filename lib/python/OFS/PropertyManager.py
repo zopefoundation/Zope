@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -180,11 +180,14 @@ class PropertyManager:
                 return md.get('type', 'string')
         return None
 
+    def _setPropValue(self, id, value): setattr(self,id,value)
+    def _delPropValue(self, id): delattr(self,id)
+
     def _setProperty(self, id, value, type='string'):
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
         self._properties=self._properties+({'id':id,'type':type},)
-        setattr(self,id,value)
+        self._setPropValue(id, value)
 
     def _updateProperty(self, id, value):
         # Update the value of an existing property. If value
@@ -196,7 +199,7 @@ class PropertyManager:
             proptype=self.getPropertyType(id) or 'string'
             if type_converters.has_key(proptype):
                 value=type_converters[proptype](value)
-        setattr(self, id, value)
+        self._setPropValue(id, value)
 
     def hasProperty(self, id):
         """Return true if object has a property 'id'"""
@@ -255,7 +258,7 @@ class PropertyManager:
         """Edit object properties via the web."""
         for p in self._properties:
             n=p['id']
-            setattr(self, n, REQUEST.get(n, ''))
+            self._setPropValue(n, REQUEST.get(n, ''))
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
@@ -281,7 +284,7 @@ class PropertyManager:
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
                     raise 'BadRequest', '%s cannot be changed' % name
-                setattr(self, name, value)
+                self._setPropValue(name, value)
     
         if REQUEST is not None:
             return MessageDialog(
