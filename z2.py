@@ -516,6 +516,11 @@ if Zpid and not READ_ONLY:
 import zLOG
 import ZLogger
 
+if READ_ONLY:
+    zLOG._stupid_dest=sys.stderr
+else:
+    zLOG.log_write = ZLogger.ZLogger.log_write
+
 if DETAILED_LOG_FILE:
     from ZServer import DebugLogger
     logfile=os.path.join(INSTANCE_HOME, 'var', DETAILED_LOG_FILE)
@@ -523,11 +528,6 @@ if DETAILED_LOG_FILE:
     
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
 exec "import "+MODULE in {}
-
-if READ_ONLY:
-    zLOG._stupid_dest=sys.stderr
-else:
-    zLOG.log_write = ZLogger.ZLogger.log_write
 
 
 # Location of the ZServer log file. This file logs all ZServer activity.
