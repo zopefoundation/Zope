@@ -1,15 +1,16 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.5 1997/09/08 23:37:22 brian Exp $"""
+$Id: Management.py,v 1.6 1997/09/23 00:07:28 jim Exp $"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys,Globals
 from Dialogs import MessageDialog
 from Globals import HTMLFile
+import Undo
 
-class Management:
+class Management(Undo.UndoSupport):
     """A mix-in class for basic management interface support.
 
     Management provides the basic frames-based management interface for an 
