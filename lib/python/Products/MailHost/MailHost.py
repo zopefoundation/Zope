@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.61 2001/06/07 22:18:44 shane Exp $"""
-__version__ = "$Revision: 1.61 $"[11:-2]
+$Id: MailHost.py,v 1.62 2001/06/08 11:29:07 andreas Exp $"""
+__version__ = "$Revision: 1.62 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -203,6 +203,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):
         headers = extractheaders(messageText)
+
+        messageText = messageText.lstrip()
 
         if not headers['subject']:
             messageText="subject: %s\n\n%s" % (subject or '[No Subject]',
