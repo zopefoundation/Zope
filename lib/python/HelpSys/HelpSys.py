@@ -179,9 +179,11 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
                 'height=500,menubar=yes,toolbar=yes,scrollbars=yes,' \
                 'resizable=yes\').focus(); return false;' % help_url
 
-        h_link='<a href="" onClick="%s" onMouseOver="window.status=' \
+        h_link='<a href="%s" onClick="%s" onMouseOver="window.status=' \
                '\'Open online help\'; return true;" onMouseOut="' \
-               'window.status=\'\'; return true;">Help!</a>' % script
+               'window.status=\'\'; return true;">Help!</a>' % (
+               help_url, script
+               )
 
         return h_link
 
