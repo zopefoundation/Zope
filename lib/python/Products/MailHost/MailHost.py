@@ -9,8 +9,8 @@ import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.27 1998/04/13 19:28:24 brian Exp $ 
-__version__ = "$Revision: 1.27 $"[11:-2]
+#$Id: MailHost.py,v 1.28 1998/04/22 20:43:03 jeffrey Exp $ 
+__version__ = "$Revision: 1.28 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -112,7 +112,10 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     def send(self, messageText, mto=None, mfrom=None, subject=None):
 	if subject: messageText="subject: %s\n%s" % (subject, messageText)
         headers, message = newDecapitate(messageText)
-        if mto: headers['to'] = mto
+        if mto:
+	    if type(mto) is type('s'):
+		mto=map(string.strip, string.split(mto,','))
+	    headers['to'] = mto
         if mfrom: headers['from'] = mfrom
         for requiredHeader in ('to', 'from', 'subject'):
             if not headers.has_key(requiredHeader):
@@ -254,6 +257,11 @@ __init__.need_license=1
 ####################################################################
 #
 #$Log: MailHost.py,v $
+#Revision 1.28  1998/04/22 20:43:03  jeffrey
+#comma-delimeted strings can now be sent to the .send() method for the
+#'mto' parameter.  MailHost appropriately breaks them into multiple
+#recipiants now.
+#
 #Revision 1.27  1998/04/13 19:28:24  brian
 #*** empty log message ***
 #
