@@ -1,4 +1,5 @@
 # Default test runner
+import unittest
 TestRunner = unittest.TextTestRunner
 
 def framework():
@@ -49,6 +50,11 @@ def catch_log_errors():
 
     def log_write(subsystem, severity, summary, detail, error,
                   PROBLEM=zLOG.PROBLEM):
+        # we are logging an exception - lets assume that the last exception
+        # raised was the one we're interested in, so re-raise it rather
+        # than the less-than-useful assert below
+        if error is not None:
+            raise
         if severity > PROBLEM:
             assert 0, "%s(%s): %s" % (subsystem, severity, summary)
 
