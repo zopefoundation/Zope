@@ -48,7 +48,6 @@ class TestSetOps(TestCase):
                         self.assertEqual(x[key] * factor, result[key])
 
     def testPairs(self):
-        # Construct a pair with one key in common.
         t1 = IIBTree([(1, 10), (3, 30), (7, 70)])
         t2 = IIBTree([(3, 30), (5, 50), (7, 7), (9, 90)])
         allkeys = [1, 3, 5, 7, 9]
@@ -75,7 +74,7 @@ class TestSetOps(TestCase):
                     expected = []
                     for key in allkeys:
                         if x.has_key(key) and y.has_key(key):
-                            result = x.get(key, 0) * w1 + y.get(key, 0) * w2
+                            result = x[key] * w1 + y[key] * w2
                             expected.append((key, result))
                     expected.sort()
                     got = mass_weightedIntersection([(x, w1), (y, w2)])
