@@ -6,6 +6,8 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add Version</H2>
 
+<dtml-var "HelpSys.HelpButton('Version_Add.dtml')">
+
 <P>A Version allows you to make changes to Zope
 in a private session. After you review the changes
 you can make them live.
