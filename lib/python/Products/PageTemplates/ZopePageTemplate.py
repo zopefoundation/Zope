@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -375,6 +375,7 @@ def initialize(context):
     ZopePageTemplate.manage = _editForm
     ZopePageTemplate.manage_main = _editForm
     ZopePageTemplate.pt_editForm = _editForm
+    _editForm._owner = None
     context.registerClass(
         ZopePageTemplate,
         permission='Add Page Templates',

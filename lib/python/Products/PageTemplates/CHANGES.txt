@@ -9,3 +9,9 @@ Page Template changes
       Bugs Fixed
 
         - Tracebacks were often truncated.
+
+        - __bobo_traverse__ objects, such as the root, triggered
+          security incorrectly when traversed.
+
+        - If a PageTemplate was owned by a missing user, or one with
+          insufficient permissions, the editing form broke.
