@@ -2,6 +2,8 @@
 intSet intSet.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 WordSequence WordSequence.c
 
+Trie Trie.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
+
 BTree BTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 IIBTree IIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 IOBTree IOBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
