@@ -23,6 +23,9 @@ Zope Changes
        directly, this speeding the use of the slot.
 
     Features added
+
+     - Traversal now supports a "post traversal hook" that get's run
+       after traversal finished and the security context is established.
     
      - Using "_usage" parameters in a ZCatalog query is deprecated and
        logged as DeprecationWarning.
