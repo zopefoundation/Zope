@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -207,7 +207,7 @@ class UnTextIndex(Persistent):
 
         ## The Splitter should now be european compliant at least.
         ## Someone should test this.
-        src = Splitter(k, self._syn)
+        src = self._lexicon.Splitter(k, self._syn)
         ## This returns a tuple of stemmed words.  Stopwords have been 
         ## stripped.
         
@@ -291,7 +291,7 @@ class UnTextIndex(Persistent):
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
         """
-        src = tuple(Splitter(word, self._syn))
+        src = tuple(self._lexicon.Splitter(word, self._syn))
         if not src:
             return ResultList({}, (word,), self)
 
@@ -387,13 +387,13 @@ class UnTextIndex(Persistent):
 
         r = []
         for word in words:
-            r = r+Splitter(doc, self._syn).indexes(word)
+            r = r+self._lexicon.Splitter(doc, self._syn).indexes(word)
         return r
 
 
     def _subindex(self, isrc, d, old, last):
 
-        src = Splitter(isrc, self._syn)  
+        src = self._lexicon.Splitter(isrc, self._syn)  
 
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
