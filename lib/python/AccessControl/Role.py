@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -98,18 +98,37 @@ ListType=type([])
 class RoleManager:
     """An obect that has configurable permissions"""
 
-    __ac_permissions__=(('View management screens', []),
-                        ('Change permissions', []),
-                        ('Add objects', []),
-                        ('Delete objects', []),
-                        ('Add properties', []),
-                        ('Change properties', []),
-                        ('Delete properties', []),
-                       )
+    __ac_permissions__=(
+        ('Change permissions',
+         ('permission_settings',
+          'manage_roleForm', 'manage_role',
+          'manage_acquiredForm', 'manage_acquiredPermissions',
+          'manage_permissionForm', 'manage_permission',
+          'manage_changePermissions', 'permissionsOfRole',
+          'rolesOfPermission', 'acquiredRolesAreUsedBy',
+          'manage_defined_roles',
+          )),
+        ('View management screens', ('manage_access',)),
+        )
    
     __ac_roles__=('Manager', 'Anonymous')
 
     #------------------------------------------------------------
+
+    def ac_inherited_permissions(self, all=0):
+        # Get all permissions not defined in ourself that are inherited
+        # This will be a sequence of tuples with a name as the first item and
+        # an empty tuple as the second.
+        d={}
+        perms=self.__ac_permissions__
+        for p in perms: d[p[0]]=None
+            
+        r=gather_permissions(self.__class__, [], d)
+        if all:
+            r=list(perms)+r
+            r.sort()
+            
+        return tuple(r)
 
     def permission_settings(self):
         """Return user-role permission settings
@@ -118,7 +137,7 @@ class RoleManager:
         valid=self.valid_roles()
         indexes=range(len(valid))
         ip=0
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
             roles=p.getRoles()
@@ -141,7 +160,7 @@ class RoleManager:
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         "Change the permissions given to the given role"
         self._isBeingUsedAsAMethod(REQUEST, 0)
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
             p.setRole(role_to_manage, name in permissions)
@@ -152,7 +171,7 @@ class RoleManager:
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         "Change the permissions that acquire"
         self._isBeingUsedAsAMethod(REQUEST, 0)
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
             roles=p.getRoles()
@@ -168,7 +187,7 @@ class RoleManager:
                           roles=[], acquire=0, REQUEST=None):
         "Change the settings for the given permission"
         self._isBeingUsedAsAMethod(REQUEST, 0)
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission_to_manage:
                 p=Permission(name,value,self)
@@ -199,7 +218,7 @@ class RoleManager:
         valid_roles=self.valid_roles()
         indexes=range(len(valid_roles))
         have=REQUEST.has_key
-        permissions=self.__ac_permissions__
+        permissions=self.ac_inherited_permissions(1)
         for ip in range(len(permissions)):
             roles=[]
             for ir in indexes:
@@ -218,7 +237,7 @@ class RoleManager:
     def permissionsOfRole(self, role):
         "used by management screen"
         r=[]
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
             roles=p.getRoles()
@@ -230,7 +249,7 @@ class RoleManager:
     def rolesOfPermission(self, permission):
         "used by management screen"
         valid_roles=self.valid_roles()
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission:
                 p=Permission(name,value,self)
@@ -247,7 +266,7 @@ class RoleManager:
 
     def acquiredRolesAreUsedBy(self, permission):
         "used by management screen"
-        for p in self.__ac_permissions__:
+        for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             if name==permission:
                 p=Permission(name,value,self)
@@ -415,3 +434,14 @@ def class_attrs(inst, _class=None, data=None):
     for base in _class.__bases__:
         data=class_attrs(inst, base, data)
     return data
+
+def gather_permissions(klass, result, seen):
+    for base in klass.__bases__:
+        if base.__dict__.has_key('__ac_permissions__'):
+            for p in base.__ac_permissions__:
+                name=p[0]
+                if seen.has_key(name): continue
+                result.append((name, ()))
+                seen[name]=None
+        gather_permissions(base, result, seen)
+    return result
