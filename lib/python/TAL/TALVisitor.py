@@ -90,8 +90,10 @@ import string
 import re
 from xml.dom import Node
 from CopyingDOMVisitor import CopyingDOMVisitor
+from DOMVisitor import DOMVisitor
 
 ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
+ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
 
 NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
 
@@ -107,7 +109,9 @@ class TALVisitor(CopyingDOMVisitor):
 
     def __init__(self, document, documentFactory, engine):
         CopyingDOMVisitor.__init__(self, document, documentFactory)
+        self.document = document
         self.engine = engine
+        self.currentMacro = None
 
     def visitElement(self, node):
         self.engine.beginScope()
@@ -127,6 +131,7 @@ class TALVisitor(CopyingDOMVisitor):
         modOps = []
         attrOps = []
         omit = 0
+        macroNode = 0
         for attr in attrs.values():
             if attr.namespaceURI == ZOPE_TAL_NS:
                 name = attr.localName
@@ -144,10 +149,27 @@ class TALVisitor(CopyingDOMVisitor):
                     print "Unrecognized ZOPE/TAL attribute:",
                     print "%s=%s" % (attr.nodeName, `attr.nodeValue`)
                     # This doesn't stop us from doing the rest!
+            elif attr.namespaceURI == ZOPE_METAL_NS:
+                name = attr.localName
+                if name == "define-macro":
+                    pass
+                elif name == "define-slot":
+                    pass
+                elif name == "use-macro":
+                    macroNode = self.findMacro(attr.nodeValue)
+                elif name == "use-slot":
+                    pass
+                else:
+                    print "Unrecognized ZOPE/METAL attribute:",
+                    print "%s=%s" % (attr.nodeName, `attr.nodeValue`)
         # If any of these assertions fail, the DOM is broken
         assert len(setOps) <= 1
         assert len(ifOps) <= 1
         assert len(attrOps) <= 1
+        # Macro expansion overrides anything else:
+        if macroNode:
+            self.expandMacro(macroNode)
+            return 1
         # Execute TAL attributes in proper order:
         # 0. omit, 1. define, 2. condition, 3. insert/replace, 4. attributes
         if omit:
@@ -173,14 +195,37 @@ class TALVisitor(CopyingDOMVisitor):
             return self.doModify(
                 node, attr.localName, attr.nodeValue, attrDict)
         if attrDict:
-            ##saveNode = self.curNode
             self.copyElement(node)
             self.copyAttributes(node, attrDict)
             self.visitAllChildren(node)
             self.endVisitElement(node)
-            ##self.curNode = saveNode
             return 1
         return 0
+
+    def findMacro(self, macroName):
+        # XXX This is not written for speed :-)
+        doc, localName = self.engine.findMacroDocument(macroName)
+        if not doc:
+            doc = self.document
+        macroDict = MacroIndexer(doc)()
+        if macroDict.has_key(localName):
+            return macroDict[localName]
+        else:
+            print "No macro found:", macroName
+            return None
+
+    def expandMacro(self, node):
+        assert node.nodeType == Node.ELEMENT_NODE
+        saveCurrentMacro = self.currentMacro
+        self.currentMacro = node
+        self.engine.beginScope()
+        if not self.checkTAL(node):
+            self.copyElement(node)
+            self.copyAttributes(node, {})
+            self.visitAllChildren(node)
+            self.endVisitElement(node)
+        self.engine.endScope()
+        self.currentMacro = saveCurrentMacro
 
     def doDefine(self, node, arg):
         for part in self.splitParts(arg):
@@ -260,7 +305,7 @@ class TALVisitor(CopyingDOMVisitor):
             attrDone = inserting or not attrDict
             for newChild in data:
                 self.curNode.appendChild(newChild)
-                if not attrDone and newChild.nodeType == ELEMENT_NODE:
+                if not attrDone and newChild.nodeType == Node.ELEMENT_NODE:
                     self.changeAttributes(newChild, attrDict)
                     attrDone = 1
             if not attrDone:
@@ -281,6 +326,11 @@ class TALVisitor(CopyingDOMVisitor):
                 if attrValue is None:
                     continue
             if namespaceURI:
+                # When expanding a macro, change its define-macro to use-macro
+                if (self.currentMacro and
+                    namespaceURI == ZOPE_METAL_NS and
+                    attr.localName == "define-macro"):
+                    attrName = attr.prefix + ":use-macro"
                 self.curNode.setAttributeNS(namespaceURI, attrName, attrValue)
             else:
                 self.curNode.setAttribute(attrName, attrValue)
@@ -309,3 +359,29 @@ class TALVisitor(CopyingDOMVisitor):
                 break
             parts[i-1:i+2] = ["%s;%s" % (parts[i-1], parts[i+1])]
         return parts
+
+
+class MacroIndexer(DOMVisitor):
+
+    """
+    Helper class to create an index of all macros in a DOM tree.
+    """
+
+    def __call__(self):
+        self.macroIndex = {}
+        DOMVisitor.__call__(self)
+        return self.macroIndex
+
+    def visitElement(self, node):
+        macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
+        if macroName:
+            self.defineMacro(macroName, node)
+        # No need to call visitAllAttributes() or endVisitElement()
+        self.visitAllChildren(node)
+
+    def defineMacro(self, macroName, node):
+        if self.macroIndex.has_key(macroName):
+            print ("Duplicate macro definition: %s in <%s>" %
+                   (macroName, node.nodeName))
+        else:
+            self.macroIndex[macroName] = node
