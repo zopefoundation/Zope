@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+     - added utilities/reindex_catalog.py to perform ZCatalog maintenance
+       operations from the command line (through zopectl)
+
      - RESPONSE.setBody and RESPONSE.setStatus now accept lock
        parameters in the same way as RESPONSE.redirect. These prevent
        further calls to the methods from overwriting the previous value.
