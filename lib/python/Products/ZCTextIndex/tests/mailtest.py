@@ -4,14 +4,19 @@ usage: python mailtest.py [options] <data.fs>
 
 options:
     -v     -- verbose
-    -n NNN -- max number of messages to read from mailbox
-    -q query
+
+    Index Generation
     -i mailbox
+    -n NNN -- max number of messages to read from mailbox
+    -t NNN -- commit a transaction every NNN messages (default: 1)
     -p NNN -- pack <data.fs> every NNN messages (default: 500), and at end
     -p 0   -- don't pack at all
-    -b NNN -- return the NNN best matches (default: 10)
     -x     -- exclude the message text from the data.fs
-    -t NNN -- commit a transaction every NNN messages (default: 1)
+
+    Queries
+    -q query
+    -b NNN -- return the NNN best matches (default: 10)
+    -c NNN -- context; if -v, show the first NNN lines of results (default: 5)
 
 The script either indexes or queries depending on whether -q or -i is
 passed as an option.
@@ -149,8 +154,6 @@ def query(rt, query_str):
         print "docid %4d score %2d" % (docid, score)
         if VERBOSE:
             msg = docs[docid]
-            # print 3 lines of context
-            CONTEXT = 5
             ctx = msg.text.split("\n", CONTEXT)
             del ctx[-1]
             print "-" * 60
@@ -179,18 +182,19 @@ if __name__ == "__main__":
     import getopt
 
     NUM = 0
-    BEST = 10
     VERBOSE = 0
     PACK_INTERVAL = 500
     EXCLUDE_TEXT = 0
     CACHE_SIZE = 10000
     TXN_SIZE = 1
+    BEST = 10
+    CONTEXT = 5
     query_str = None
     mbox_path = None
     profile = None
     old_profile = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vn:p:i:q:b:xt:',
+        opts, args = getopt.getopt(sys.argv[1:], 'vn:p:i:q:b:c:xt:',
                                    ['profile=', 'old-profile='])
     except getopt.error, msg:
         usage(msg)
@@ -213,6 +217,8 @@ if __name__ == "__main__":
             EXCLUDE_TEXT = 1
         elif o == '-t':
             TXN_SIZE = int(v)
+        elif o == '-c':
+           CONTEXT = int(v)
         elif o == '--profile':
             profile = v
         elif o == '--old-profile':
