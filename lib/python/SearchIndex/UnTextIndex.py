@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.44 $'[11:-2]
+__version__ = '$Revision: 1.45 $'[11:-2]
 
 import string, regex, regsub, ts_regex
 import operator
@@ -590,7 +590,7 @@ class UnTextIndex(Persistent, Implicit):
         elif operandType is StringType:
             left = self[left]        
         elif operandType is ListType:
-            left = evaluate(left, self)
+            left = self.evaluate(left)
 
         operandType = type(right)
         if operandType is IntType:
@@ -598,7 +598,7 @@ class UnTextIndex(Persistent, Implicit):
         elif operandType is StringType:
             right = self[right]       
         elif operandType is ListType:
-            right = evaluate(right, self)
+            right = self.evaluate(right)
 
         return (left, right)
 
