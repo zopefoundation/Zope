@@ -410,8 +410,9 @@ class ElementWithTitle(Element):
     def getAttributes(self):
         """Returns a NamedNodeMap containing the attributes
         of this node (if it is an element) or None otherwise."""
-        if self.getAttribute('title'):
-            return NamedNodeMap({'title' : self.title})
+        title = self.getAttributeNode('title')
+        if title is not None:
+            return NamedNodeMap({'title':title})
         return NamedNodeMap()
         
     def getAttribute(self, name):
