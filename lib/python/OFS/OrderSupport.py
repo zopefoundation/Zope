@@ -20,6 +20,7 @@ from types import StringType
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import manage_properties
+from Acquisition import aq_base
 from DocumentTemplate.sequence import sort
 from Globals import InitializeClass
 
@@ -67,7 +68,7 @@ class OrderSupport:
         else:
             message = 'Error: No items were specified!'
         return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message)
+                                manage_tabs_message=message, update_menu=1)
 
     security.declareProtected(manage_properties, 'manage_move_objects_down')
     def manage_move_objects_down(self, REQUEST, ids=None, delta=1):
@@ -83,7 +84,7 @@ class OrderSupport:
         else:
             message = 'Error: No items were specified!'
         return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message)
+                                manage_tabs_message=message, update_menu=1)
 
     security.declareProtected(manage_properties, 'manage_move_objects_to_top')
     def manage_move_objects_to_top(self, REQUEST, ids=None):
@@ -99,7 +100,7 @@ class OrderSupport:
         else:
             message = 'Error: No items were specified!'
         return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message)
+                                manage_tabs_message=message, update_menu=1)
 
     security.declareProtected(manage_properties, 'manage_move_objects_to_bottom')
     def manage_move_objects_to_bottom(self, REQUEST, ids=None):
@@ -115,14 +116,14 @@ class OrderSupport:
         else:
             message = 'Error: No items were specified!'
         return self.manage_main(self, REQUEST, skey='position',
-                                manage_tabs_message=message)
+                                manage_tabs_message=message, update_menu=1)
 
     security.declareProtected(manage_properties, 'manage_set_default_sorting')
     def manage_set_default_sorting(self, REQUEST, key, reverse):
         """ Set default sorting key and direction.
         """
         self.setDefaultSorting(key, reverse)
-        return self.manage_main(self, REQUEST)
+        return self.manage_main(self, REQUEST, update_menu=1)
 
 
     #
@@ -255,5 +256,27 @@ class OrderSupport:
         result = self._old_manage_renameObject(id, new_id, REQUEST)
         self.moveObjectToPosition(new_id, old_position)
         return result
+
+    def tpValues(self):
+        # Return a list of subobjects, used by tree tag.
+        r=[]
+        if hasattr(aq_base(self), 'tree_ids'):
+            tree_ids=self.tree_ids
+            try:   tree_ids=list(tree_ids)
+            except TypeError:
+                pass
+            if hasattr(tree_ids, 'sort'):
+                tree_ids.sort()
+            for id in tree_ids:
+                if hasattr(self, id):
+                    r.append(self._getOb(id))
+        else:
+            # this part is different from the ObjectManager code
+            r = [ obj for obj in self.objectValues()
+                  if getattr(obj, 'isPrincipiaFolderish', False) ]
+            r = sort( r, ( (self._default_sort_key, 'cmp', 'asc'), ) )
+            if self._default_sort_reverse:
+                r.reverse()
+        return r
 
 InitializeClass(OrderSupport)

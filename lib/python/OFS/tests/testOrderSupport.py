@@ -146,6 +146,19 @@ class TestOrderSupport(TestCase):
               )
             )
 
+    def test_tpValues(self):
+        f = self._makeOne()
+        f.o2.isPrincipiaFolderish = True
+        f.o3.isPrincipiaFolderish = True
+        f.o4.isPrincipiaFolderish = True
+        self.failUnlessEqual( f.tpValues(), [f.o2, f.o3, f.o4] )
+
+        f.setDefaultSorting('meta_type', False)
+        self.failUnlessEqual( f.tpValues(), [f.o3, f.o2, f.o4] )
+
+        f.setDefaultSorting('position', True)
+        self.failUnlessEqual( f.tpValues(), [f.o4, f.o3, f.o2] )
+
     def test_interface(self):
         from OFS.IOrderSupport import IOrderedContainer
 
