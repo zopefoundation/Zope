@@ -35,7 +35,7 @@ PRE {
 <dtml-var tutorialNavigation>
 
 <p class="feedback">Comments on this lesson?
-<a href="mailto:docs@digicool.com?subject=<dtml-var title>">Email feedback</a>.
+<a href="mailto:zdp@zope.org?subject=<dtml-var title>">Email feedback</a>.
 </p>
 
 <dtml-var standard_html_footer>
