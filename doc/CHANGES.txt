@@ -62,7 +62,7 @@ Zope Changes
 
   Releases
 
-    Zope 2.x
+    Zope 2.1
 
       Features Added
 
@@ -165,9 +165,6 @@ Zope Changes
         - Fixed a bug that caused External Methods to be reloaded every
           time they were used in development mode.
 
-        - A bug that prevented setting permissions on External Methods
-          in ZClasses was fixed.
-
         - Fixed a permission typo in ZCatalog and a sort_on bug.
 
         - Fix for missing REQUEST in a method signature in the 
@@ -182,13 +179,6 @@ Zope Changes
           object deactivation that prevented deactivation of BTrees
           was fixed.
 
-        - The permissions for Find support methods were not being properly
-          initialized.
-
-        - Fixed bug that allowed users with local roles gain priviledges on
-          acquired objects.  getRolesInContext did not used the correct 
-          context, as defined by the inner-most object wrapping.
-
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
@@ -198,7 +188,21 @@ Zope Changes
         - A bug that caused installation of through-the-web product
           distributions to fail.
 
-        
+      Security Issues Resolved
+
+        - Fixed bug that allowed users with local roles gain priviledges on
+          acquired objects.  getRolesInContext did not used the correct 
+          context, as defined by the inner-most object wrapping.
+
+        - The permissions for Find support methods were not being properly
+          initialized.
+
+        - Viewing existing user no long displays current password,
+          only space for putting in the new password. This will be
+          more critical as we move toward fully encrypted passwords.
+
+        - A bug that prevented setting permissions on External Methods
+          in ZClasses was fixed.
 
 
     Zope 2.0.1
