@@ -85,7 +85,8 @@
 
 import string, sys, traceback
 from cStringIO import StringIO
-from DT_Util import parse_params, render_blocks, namespace, InstanceDict
+from DT_Util import ParseError, parse_params, render_blocks
+from DT_Util import namespace, InstanceDict
 from DT_Return import DTReturn
 
 class Try:
@@ -97,10 +98,16 @@ class Try:
     <!--#except SomeError AnotherError-->
     <!--#except YetAnotherError-->
     <!--#except-->
+    <!--#else-->
+    <!--#/try-->
+      
+    or:
+      
+    <!--#try-->
+    <!--#finally-->
     <!--#/try-->
     
-    The DTML try tag functions quite like Python's try command. The main
-    difference is that DTML does not have a finally or an else construct.
+    The DTML try tag functions quite like Python's try command.
     
     The contents of the try tag are rendered. If an exception is raised,
     then control switches to the except blocks. The first except block to
@@ -118,32 +125,100 @@ class Try:
       'error_value' -- This is the caught exception's value.
     
       'error_tb' -- This is a traceback for the caught exception.
-    
+      
+    The optional else block is rendered when no exception occurs in the
+    try block. Exceptions in the else block are not handled by the preceding
+    except blocks.
+
+    The try..finally form specifies a `cleanup` block, to be rendered even
+    when an exception occurs. Note that any rendered result is discarded if
+    an exception occurs in either the try or finally blocks. The finally block
+    is only of any use if you need to clean up something that will not be
+    cleaned up by the transaction abort code.
+
+    The finally block will always be called, wether there was an exception in
+    the try block or not, or wether or not you used a return tag in the try
+    block. Note that any output of the finally block is discarded if you use a
+    return tag in the try block.
+
+    If an exception occurs in the try block, and an exception occurs in the
+    finally block, or you use the return tag in that block, any information
+    about that first exception is lost. No information about the first
+    exception is available in the finally block. Also, if you use a return tag
+    in the try block, and an exception occurs in the finally block or you use
+    a return tag there as well, the result returned in the try block will be
+    lost.
+
     Original version by Jordan B. Baker.
+    
+    Try..finally and try..else implementation by Martijn Pieters.
     """
     
     name = 'try'
-    blockContinuations = 'except',
+    blockContinuations = 'except', 'else', 'finally'
+    finallyBlock=None
+    elseBlock=None
 
     def __init__(self, blocks):
         tname, args, section = blocks[0]
 
         self.args = parse_params(args)
         self.section = section.blocks
-        
-        # store handlers as tuples (name,block)
-        self.handlers = []
 
-        for tname,nargs,nsection in blocks[1:]:
-            for errname in string.split(nargs):
-                self.handlers.append((errname,nsection.blocks))
-            if string.strip(nargs)=='':
-                self.handlers.append(('',nsection.blocks))
-        
+
+        # Find out if this is a try..finally type
+        if len(blocks) == 2 and blocks[1][0] == 'finally':
+            self.finallyBlock = blocks[1][2].blocks
+
+        # This is a try [except]* [else] block.
+        else:
+            # store handlers as tuples (name,block)
+            self.handlers = []
+            defaultHandlerFound = 0
+
+            for tname,nargs,nsection in blocks[1:]:
+                if tname == 'else':
+                    if not self.elseBlock is None:
+                        raise ParseError, (
+                            'No more than one else block is allowed',
+                            self.name)
+                    self.elseBlock = nsection.blocks
+
+                elif tname == 'finally':
+                    raise ParseError, (
+                        'A try..finally combination cannot contain '
+                        'any other else, except or finally blocks',
+                        self.name)
+
+                else:
+                    if not self.elseBlock is None:
+                        raise ParseError, (
+                            'The else block should be the last block '
+                            'in a try tag', self.name)
+
+                    for errname in string.split(nargs):
+                        self.handlers.append((errname,nsection.blocks))
+                    if string.strip(nargs)=='':
+                        if defaultHandlerFound:
+                            raise ParseError, (
+                                'Only one default exception handler '
+                                'is allowed', self.name)
+                        else:
+                            defaultHandlerFound = 1
+                            self.handlers.append(('',nsection.blocks))
+
     def render(self, md):
+        if (self.finallyBlock is None):
+            return self.render_try_except(md)
+        else:
+            return self.render_try_finally(md)
+
+    def render_try_except(self, md):
+        result = ''
+
         # first we try to render the first block
         try:
-            return render_blocks(self.section, md)
+            result = render_blocks(self.section, md)
         except DTReturn:
             raise
         except:
@@ -171,7 +246,24 @@ class Try:
                 return render_blocks(handler, md)
             finally:
                 md._pop(1)
-             
+
+        else:
+            # No errors have occured, render the optional else block
+            if (self.elseBlock is None):
+                return result
+            else:
+                return result + render_blocks(self.elseBlock, md)
+               
+    def render_try_finally(self, md):
+        result = ''
+        # first try to render the first block
+        try:
+            result = render_blocks(self.section, md)
+        # Then handle finally block
+        finally:
+            result = result + render_blocks(self.finallyBlock, md)
+        return result
+
     def find_handler(self,exception):
         "recursively search for a handler for a given exception"
         if type(exception)==type(''):
