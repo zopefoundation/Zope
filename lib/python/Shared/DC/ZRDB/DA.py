@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.9 1997/09/25 18:41:20 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: DA.py,v 1.10 1997/09/25 18:47:53 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -149,6 +149,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	return apply(report,(self,REQUEST),{self.id:result})
 
     def index_html(self, PARENT_URL):
+	" "
 	raise 'Redirect', ("%s/manage_testForm" % PARENT_URL)
 
     def _searchable_arguments(self): return self._arg
@@ -213,6 +214,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.10  1997/09/25 18:47:53  jim
+# made index_html public
+#
 # Revision 1.9  1997/09/25 18:41:20  jim
 # new interfaces
 #
