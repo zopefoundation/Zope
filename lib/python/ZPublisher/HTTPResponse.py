@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.1 1999/02/18 17:17:56 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: HTTPResponse.py,v 1.2 1999/03/01 18:31:22 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -455,7 +455,7 @@ class HTTPResponse(BaseResponse):
                 "Internal Error",
                 "Sorry, an internal error occurred in this resource.")
 
-        raise 'BadRequest',self.html(
+        raise 'BadRequest',self._html(
             "Invalid request",
             "The parameter, <em>%s</em>, was omitted from the request."
             "<!--%s-->"

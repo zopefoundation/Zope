@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.124 1999/02/22 20:48:35 jim Exp $"""
-__version__='$Revision: 1.124 $'[11:-2]
+$Id: Publish.py,v 1.125 1999/03/01 18:29:48 jim Exp $"""
+__version__='$Revision: 1.125 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -100,7 +100,7 @@ def call_object(object, args, request):
 
 def missing_name(name, request):
     if name=='self': return request['PARENTS'][0]
-    request.response.self.badRequestError(name)
+    request.response.badRequestError(name)
 
 def dont_publish_class(klass, request):
     request.response.forbiddenError("class %s" % klass.__name__)
