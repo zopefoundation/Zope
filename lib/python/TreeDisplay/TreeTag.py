@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.22 1998/04/08 17:45:32 jim Exp $'
-__version__='$Revision: 1.22 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.23 1998/04/10 15:58:50 brian Exp $'
+__version__='$Revision: 1.23 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -263,17 +263,19 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	    s=translate(s, tplus)
 	    ####################################
 
-
 	    if exp:
 		treeData['tree-item-expanded']=1
-		output('<A HREF="%s?tree-c=%s">'
+		output('<A NAME="%s">'
+		       '<A HREF="%s?tree-c=%s#%s">'
 		       '<IMG SRC="%s/p_/mi" BORDER=0></A>' %
-		       (root_url,s, script))
+		       (id, root_url, s, id, script))
 	    else:
-		output('<A HREF="%s?tree-e=%s">'
+		output('<A NAME="%s">'
+		       '<A HREF="%s?tree-e=%s#%s">'
 		       '<IMG SRC="%s/p_/pl" BORDER=0></A>' %
-		       (root_url,s, script))
+		       (id, root_url, s, id, script))
 	    output('</TD>\n')
+
 	else:
 	    if level > 2: output('<TD COLSPAN="%s"></TD>' % level)
 	    elif level > 0: output('<TD></TD>' * level)
