@@ -14,7 +14,7 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
@@ -23,7 +23,7 @@ class getSecurityManager:
     '''Null security manager'''
     def validate(self, *args, **kwargs):
         return 1
-    addContext = removeContext = validateValue = validate
+    addContext = removeContext = validate
 
 class PythonExpr:
     def __init__(self, name, expr, engine):

@@ -42,13 +42,6 @@ class SecurityManager:
         permission -- Always available
         """
 
-    def validateValue(self, value, roles=None):
-        """
-        Convenience for common case of simple value validation.
-
-        permission -- Always available
-        """
-
     def checkPermission(self, permission, object):
         """
         Check whether the security context allows the given permission
