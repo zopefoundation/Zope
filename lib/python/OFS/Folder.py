@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.77 1999/04/06 19:16:11 brian Exp $"""
+$Id: Folder.py,v 1.78 1999/04/06 20:52:03 brian Exp $"""
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 import Globals, SimpleItem
 from ObjectManager import ObjectManager
@@ -97,6 +97,7 @@ from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.Collection import Collection
 from FindSupport import FindSupport
+from Globals import HTMLFile
 
 
 
