@@ -5,6 +5,9 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+    
+      - Collector #446: Fixed management security assertions on
+        ZCatalogIndexes class.
 
       - The BTree module functions weightedIntersection() and
         weightedUnion() now treat negative weights as documented.  It's
@@ -36,6 +39,12 @@ Zope Changes
         sense.  difference(None, X) continues to return None.
 
     Features Added
+    
+      - ZCatalog index management ui is now integrated into ZCatalog rather
+        than being a subobject managment screen with different tabs.
+        
+      - ZCTextIndexes can now be instantiated without constructing a silly 
+        "extra" record object if desired.        
     
       - SimpleItem class now passes a new argument "error_log_url" to
         the standard_error_message template on error. If the site contains

@@ -11,7 +11,7 @@
 </p>
 <p class="form-help">
   ZCTextIndex Lexicon used: 
-  <em><dtml-var expr="lexicon.getId()"></em>
+  <em><dtml-var getLexiconId></em>
 </p>
 <p class="form-help">
   <em>Note:</em> You cannot change the lexicon assigned to a ZCTextIndex.

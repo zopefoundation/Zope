@@ -12,7 +12,7 @@
 ##############################################################################
 """Constant definitions for built-in Zope permissions"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 access_contents_information='Access contents information'
@@ -48,6 +48,7 @@ join_leave_versions='Join/leave Versions'
 manage_vocabulary='Manage Vocabulary'
 manage_zclasses='Manage Z Classes'
 manage_zcatalog_entries='Manage ZCatalog Entries'
+manage_zcatalog_indexes='Manage ZCatalogIndex Entries'
 manage_properties='Manage properties'
 manage_users='Manage users'
 open_close_database_connection='Open/Close Database Connection'

@@ -11,8 +11,12 @@
 # 
 ##############################################################################
 
+"""$Id: ZCatalogIndexes.py,v 1.7 2002/06/28 17:25:23 caseman Exp $
+"""
+
 from  Globals import DTMLFile, InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.Permissions import delete_objects, manage_zcatalog_indexes
 import Globals
 from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
@@ -25,7 +29,6 @@ import os, sys, time
 from Acquisition import Implicit
 from Persistence import Persistent
 from zLOG import LOG, ERROR
-
 from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 
 _marker = []
@@ -37,39 +40,22 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
     # The interfaces we want to show up in our object manager
     _product_interfaces = (PluggableIndexInterface, )
 
-    meta_type="ZCatalogIndex"
-#    icon="misc_/ZCatalog/www/index.gif"
-
-    manage_options = (
-        ObjectManager.manage_options +
-        Historical.manage_options +
-        SimpleItem.manage_options
-    )
+    meta_type = "ZCatalogIndex"
+    manage_options = ()
     
     security = ClassSecurityInfo()
-    security.declareObjectProtected('Manage ZCatalogIndex Entries')
-
-    manage_main = DTMLFile('dtml/manageIndex',globals())
+    
+    security.declareObjectProtected(manage_zcatalog_indexes)
+    security.setPermissionDefault(manage_zcatalog_indexes, ('Manager',))
+    security.declareProtected(manage_zcatalog_indexes, 'addIndexForm')
     addIndexForm= DTMLFile('dtml/addIndexForm',globals())
-
-    __ac_permissions__ = (
-
-        ('Manage ZCatalogIndex Entries',
-            ['manage_foobar',],
-
-            ['Manager']
-        ),
-
-        ('Search ZCatalogIndex',
-            ['searchResults', '__call__', 'all_meta_types',
-             'valid_roles', 'getobject'],
-
-            ['Anonymous', 'Manager']
-        ),
+    
+    # You no longer manage the Indexes here, they are managed from ZCatalog
+    def manage_main(self, REQUEST, RESPONSE):
+        """Redirect to the parent where the management screen now lives"""
+        RESPONSE.redirect('../manage_catalogIndexes')
         
-        ('Manage ZCatalogIndex Entries', ('',)),
-    )
-
+    manage_workspace = manage_main
 
     #
     # Object Manager methods
@@ -92,7 +78,8 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
         indexes = self.aq_parent._catalog.indexes
         if default is _marker:  return indexes.get(id)
         return indexes.get(id, default)
-
+        
+    security.declareProtected(manage_zcatalog_indexes, 'objectIds')
     def objectIds(self, spec=None):
         
         indexes = self.aq_parent._catalog.indexes

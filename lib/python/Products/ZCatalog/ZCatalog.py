@@ -85,7 +85,7 @@ class ZCatalog(Folder, Persistent, Implicit):
          'action': 'manage_propertiesForm',
          'help': ('OFSP','Properties.stx')},
         {'label': 'Indexes',            # TAB: Indexes
-         'action': 'Indexes/manage_workspace',
+         'action': 'manage_catalogIndexes',
          'help': ('ZCatalog','ZCatalog_Indexes.stx')},
         {'label': 'Metadata',           # TAB: Metadata
          'action': 'manage_catalogSchema', 
@@ -347,7 +347,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self.addIndex(name, type,extra)
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Added')
+            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
         
 
     def manage_deleteIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -371,7 +371,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
-                action = "./manage_main",)
+                action = "./manage_catalogIndexes",)
 
         if isinstance(ids, types.StringType):
             ids = (ids,)
@@ -380,7 +380,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.delIndex(name)
         
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Deleted')
+            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
 
     def manage_clearIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -389,7 +389,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
-                action = "./manage_main",)
+                action = "./manage_catalogIndexes",)
 
         if isinstance(ids, types.StringType):
             ids = (ids,)
@@ -398,7 +398,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.clearIndex(name)
         
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Cleared')
+            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
 
 
     def reindexIndex(self,name,REQUEST):
@@ -418,7 +418,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
-                action = "./manage_main",)
+                action = "./manage_catalogIndexes",)
                 
         if isinstance(ids, types.StringType):
             ids = (ids,)
@@ -427,7 +427,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.reindexIndex(name, REQUEST)
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Reindexing%20Performed')
+            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Reindexing%20Performed')
 
 
     def availableSplitters(self):

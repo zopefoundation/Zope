@@ -21,6 +21,7 @@ from OFS.SimpleItem import SimpleItem
 
 from Globals import DTMLFile, InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl.Permissions import manage_zcatalog_indexes, search_zcatalog
 
 from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
@@ -37,9 +38,6 @@ from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 index_types = {'Okapi BM25 Rank':OkapiIndex,
                'Cosine Measure':CosineIndex}
-               
-IndexMgmtPerm = 'Manage ZCatalogIndex Entries'
-IndexSearchPerm = 'Search ZCatalogIndex'
 
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     """Persistent TextIndex"""
@@ -57,21 +55,27 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     query_options = ['query']
     
     security = ClassSecurityInfo()
-    security.declareObjectProtected(IndexMgmtPerm)
+    security.declareObjectProtected(manage_zcatalog_indexes)
 
     ## Constructor ##
 
-    def __init__(self, id, extra, caller, index_factory=None):
+    def __init__(self, id, extra=None, caller=None, index_factory=None,
+                 field_name=None, lexicon_id=None):
         self.id = id
-        self._fieldname = extra.doc_attr
-        lexicon = getattr(caller, extra.lexicon_id, None)
+        
+        # Arguments can be passed directly to the constructor or
+        # via the silly "extra" record.
+        self._fieldname = field_name or getattr(extra, 'doc_attr', '') or id
+        
+        lexicon_id = lexicon_id or extra.lexicon_id
+        lexicon = getattr(caller, lexicon_id, None)
 
         if lexicon is None:
             raise LookupError, 'Lexicon "%s" not found' % extra.lexicon_id
 
         if not ILexicon.isImplementedBy(lexicon):
             raise ValueError, \
-                'Object "%s" does not implement lexicon interface' \
+                'Object "%s" does not implement ZCTextIndex Lexicon interface' \
                 % lexicon.getId()
 
         self.lexicon = lexicon
@@ -88,7 +92,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     ## External methods not in the Pluggable Index API ##
 
-    security.declareProtected('query', IndexSearchPerm)
+    security.declareProtected('query', search_zcatalog)
     
     def query(self, query, nbest=10):
         """Return pair (mapping from docids to scores, num results).
@@ -174,6 +178,10 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def getFieldName(self):
         """Return indexed attribute name"""
         return self._fieldname
+        
+    def getLexiconId(self):
+        """Return the id of the lexicon used by the index"""
+        return self.lexicon.getId()
 
 InitializeClass(ZCTextIndex)
 
