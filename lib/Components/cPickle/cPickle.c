@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.40 1997/06/19 18:57:36 jim Exp $
+     $Id: cPickle.c,v 1.41 1997/06/20 19:45:10 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.40 1997/06/19 18:57:36 jim Exp $\n"
+"$Id: cPickle.c,v 1.41 1997/06/20 19:45:10 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -667,14 +667,18 @@ whichmodule(PyObject *global, PyObject *global_name) {
        that used __main__ if no module is found.  I don't actually
        like this rule. jlf
      */
-    j=1;
-    name=__main___str;
+    if(!j) {
+        j=1;
+        name=__main___str;
+    }
     
+    /*
     if (!j) {
         PyErr_Format(PicklingError, "Could not find module for %s.", 
             "O", global_name);
         return NULL;
     }
+    */
 
     PyDict_SetItem(class_map, global, name);
 
@@ -3873,7 +3877,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.40 $";
+    char *rev="$Revision: 1.41 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3908,6 +3912,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.41  1997/06/20 19:45:10  jim
+ Fixed dumb bug in __main__ fix. :-(
+
  Revision 1.40  1997/06/19 18:57:36  jim
  Added ident string.
 
