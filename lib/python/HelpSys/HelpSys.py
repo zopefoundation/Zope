@@ -161,6 +161,65 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     helpURL=HTMLFile('helpURL',globals())
 
 
+    def tpValues(self):
+        """
+        Tree protocol - returns child nodes
+
+        Aggregates Product Helps with the same title.
+        """
+        helps={}
+        for help in self.helpValues():
+            if helps.has_key(help.title):
+                helps[help.title].append(help)
+            else:
+                helps[help.title]=[help]
+        cols=[]
+        for k,v in helps.items():
+            cols.append(TreeCollection(k,v,0))
+        return cols
+
+
+class TreeCollection:
+    """
+    A temporary wrapper for a collection of objects
+    objects, used for help topic browsing to make a collection
+    of objects appear as a single object.
+    """
+
+    def __init__(self, id, objs, simple=1):
+        self.id=self.title=id
+        self.objs=objs
+        self.simple=simple
+        
+    def tpValues(self):
+        values=[]
+        if self.simple:
+            values=self.objs
+        else:
+            for obj in self.objs:
+                values=values + list(obj.tpValues())
+        # resolve overlap
+        ids={}
+        for value in values:
+            if ids.has_key(value.id):
+                ids[value.id].append(value)
+            else:
+                ids[value.id]=[value]
+        results=[]
+        for k,v in ids.items():
+            if len(v)==1:
+                results.append(v[0])
+            else:
+                values=[]
+                for topic in v:
+                    values=values + list(topic.tpValues())
+                results.append(TreeCollection(k, values)) 
+        results.sort(lambda x, y: cmp(x.id, y.id))
+        return results
+
+    def tpId(self):
+        return self.id
+
 
 class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
@@ -232,6 +291,21 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         return filter(
             lambda ht, u=REQUEST.AUTHENTICATED_USER: ht.authorized(u), topics)
 
+    def tpValues(self):
+        """
+        Tree protocol - child nodes
+        """
+        topics=[]
+        apitopics=[]
+        for topic in self.objectValues('Help Topic'):
+            if hasattr(topic,'isAPIHelpTopic') and topic.isAPIHelpTopic:
+                apitopics.append(topic)
+            else:
+                topics.append(topic)
+        if apitopics:
+            topics = topics + [TreeCollection('API Documentation', apitopics)]
+        return topics
+        
     def all_meta_types(self):
         f=lambda x: x['name'] in ('Image', 'File')
         return filter(f, Products.meta_types) + self.meta_types

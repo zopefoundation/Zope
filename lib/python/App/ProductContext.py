@@ -276,6 +276,12 @@ class ProductContext:
         """
         self.getProductHelp()._setObject(id, topic)
 
+    def registerHelpTitle(self, title):
+        """
+        Sets the title of the Product's Product Help
+        """
+        self.getProductHelp().title=title
+
     def registerHelp(self, directory='help', clear=1):
         """
         Registers Help Topics for all objects in a directory.

@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Object system core
-$Id: __init__.py,v 1.33 1999/12/09 23:43:18 amos Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: __init__.py,v 1.34 2000/06/09 01:22:13 amos Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, ZClasses.ObjectManager
@@ -179,3 +179,4 @@ def initialize(context):
     context.registerZClass(ZClasses.ObjectManager.ZObjectManager)
 
     context.registerHelp()
+    context.registerHelpTitle('Zope Help')

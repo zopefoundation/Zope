@@ -85,8 +85,8 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.15 2000/01/10 23:03:45 amos Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: __init__.py,v 1.16 2000/06/09 01:22:14 amos Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 import Shared.DC.ZRDB.RDB
 import Shared.DC.ZRDB.sqlvar, Shared.DC.ZRDB.sqlgroup, Shared.DC.ZRDB.sqltest
@@ -111,6 +111,7 @@ def initialize(context):
         )
 
     context.registerHelp()
+    context.registerHelpTitle('Zope Help')
 
 methods={
     # We still need this one, at least for now, for both editing and

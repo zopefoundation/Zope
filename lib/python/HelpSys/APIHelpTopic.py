@@ -95,6 +95,8 @@ class APIHelpTopic(HelpTopic.HelpTopic):
     """
     Provides API documentation.
     """
+
+    isAPIHelpTopic=1
     
     def __init__(self, id, title, file):
         self.id=id

@@ -2,11 +2,13 @@
 <dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
 <dtml-var manage_tabs>
 <h2>Contents</h2>
-<dtml-tree branches_expr="helpValues(REQUEST)">
-<dtml-if "meta_type=='Product Help'">
-<dtml-var title_or_id>
+
+<dtml-tree>
+<dtml-if "meta_type =='Help Topic'">
+  <a href="<dtml-var absolute_url>" target="help_main"><dtml-var title_and_id></a>
 <dtml-else>
-<a href="<dtml-var absolute_url>" target="help_main"><dtml-var title_or_id></a>
+  <dtml-var title>
 </dtml-if>
 </dtml-tree>
+
 <dtml-var standard_html_footer>

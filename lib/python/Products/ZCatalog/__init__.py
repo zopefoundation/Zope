@@ -110,5 +110,5 @@ def initialize(context):
     context.registerBaseClass(CatalogAwareness.CatalogAware)
 
     context.registerHelp()
-
+    context.registerHelpTitle('Zope Help')
 

@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.12 1999/12/13 23:26:41 amos Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: __init__.py,v 1.13 2000/06/09 01:22:13 amos Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import ExternalMethod
 
@@ -100,3 +100,4 @@ def initialize(context):
         )
 
     context.registerHelp()
+    context.registerHelpTitle('Zope Help')
