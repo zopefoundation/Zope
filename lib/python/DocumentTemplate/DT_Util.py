@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.88 2002/08/14 22:29:52 mj Exp $'''
-__version__='$Revision: 1.88 $'[11:-2]
+'''$Id: DT_Util.py,v 1.89 2003/02/27 17:31:27 fdrake Exp $'''
+__version__='$Revision: 1.89 $'[11:-2]
 
 import re, os
 from html_quote import html_quote, ustr # for import by other modules, dont remove!
@@ -150,7 +150,7 @@ def namespace(self, **kw):
         incorrect "self" argument.  It could be caused by a product which
         is not yet compatible with this version of Zope.  The traceback
         information may contain more details.)'''
-    return apply(self, (), kw)
+    return self(**kw)
 
 d['namespace']=namespace
 
@@ -399,14 +399,14 @@ def parse_params(text,
                 'Invalid attribute name, "%s"' % name, tag)
         else:
             result['']=name
-        return apply(parse_params,(text[l:],result),parms)
+        return parse_params(text[l:],result,**parms)
     elif mo_unq:
         name=mo_unq.group(2)
         l=len(mo_unq.group(1))
         if result: raise ParseError, (
             'Invalid attribute name, "%s"' % name, tag)
         else: result['']=name
-        return apply(parse_params,(text[l:],result),parms)
+        return parse_params(text[l:],result,**parms)
     else:
         if not text or not text.strip(): return result
         raise ParseError, ('invalid parameter: "%s"' % text, tag)
@@ -424,5 +424,5 @@ def parse_params(text,
     result[name]=value
 
     text=text[l:].strip()
-    if text: return apply(parse_params,(text,result),parms)
+    if text: return parse_params(text,result,**parms)
     else: return result

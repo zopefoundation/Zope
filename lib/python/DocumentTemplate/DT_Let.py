@@ -106,5 +106,5 @@ def parse_let_params(text,
     result.append((name,value))
 
     text=text[l:].strip()
-    if text: return apply(parse_let_params,(text,result,tag),parms)
+    if text: return parse_let_params(text,result,tag,**parms)
     else: return result
