@@ -17,7 +17,7 @@ from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
 from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 
-import whrandom,string, unittest
+import whrandom,string, unittest, random
 
 
 def createDatabase():
@@ -166,6 +166,16 @@ class TestZCatalog(unittest.TestCase):
         self.assertEqual(len(sr), 3)
 
 class TestCatalogObject(unittest.TestCase):
+    
+    upper = 1000
+    
+    nums = range(upper)
+    for i in range(upper):
+        j = random.randint(0, upper-1)
+        tmp = nums[i]
+        nums[i] = nums[j]
+        nums[j] = tmp
+        
     def setUp(self):
         self._vocabulary = Vocabulary.Vocabulary('Vocabulary','Vocabulary',
                                                  globbing=1)
@@ -196,7 +206,6 @@ class TestCatalogObject(unittest.TestCase):
         self._catalog.addColumn('att3')
         self._catalog.addColumn('num')
 
-        self.upper = 1000
         class dummy(ExtensionClass.Base):
             att1 = 'att1'
             att2 = 'att2'
@@ -213,9 +222,9 @@ class TestCatalogObject(unittest.TestCase):
             def col3(self):
                 return ['col3']
 
-
+        
         for x in range(0, self.upper):
-            self._catalog.catalogObject(dummy(x), `x`)
+            self._catalog.catalogObject(dummy(self.nums[x]), `x`)
         self._catalog.aq_parent = dummy('foo') # fake out acquisition
 
     def tearDown(self):
@@ -353,11 +362,33 @@ class TestCatalogObject(unittest.TestCase):
         # set is much larger than the sort index.
         a = self._catalog(sort_on='att1')
         self.assertEqual(len(a), self.upper)
+        
+    def testBadSortLimits(self):
+        self.assertRaises(
+            AssertionError, self._catalog, sort_on='num', sort_limit=0)
+        self.assertRaises(
+            AssertionError, self._catalog, sort_on='num', sort_limit=-10)
     
     def testSortLimit(self):
+        full = self._catalog(sort_on='num')
         a = self._catalog(sort_on='num', sort_limit=10)
-        self.assertEqual(a[0].num, self.upper - 1)
+        self.assertEqual([r.num for r in a], [r.num for r in full[:10]])
         self.assertEqual(a.actual_result_count, self.upper)
+        a = self._catalog(sort_on='num', sort_limit=10, sort_order='reverse')
+        rev = [r.num for r in full[-10:]]
+        rev.reverse()
+        self.assertEqual([r.num for r in a], rev)
+        self.assertEqual(a.actual_result_count, self.upper)
+        
+    def testBigSortLimit(self):
+        a = self._catalog(sort_on='num', sort_limit=self.upper*3)
+        self.assertEqual(a.actual_result_count, self.upper)
+        self.assertEqual(a[0].num, 0)
+        a = self._catalog(
+            sort_on='num', sort_limit=self.upper*3, sort_order='reverse')
+        self.assertEqual(a.actual_result_count, self.upper)
+        self.assertEqual(a[0].num, self.upper - 1)
+        
 
 class objRS(ExtensionClass.Base):
 

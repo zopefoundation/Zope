@@ -22,6 +22,7 @@ from zLOG import LOG, ERROR
 
 from Lazy import LazyMap, LazyFilter, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
+from sorters import buildSortableResults
 
 from BTrees.IIBTree import intersection, weightedIntersection, IISet
 from BTrees.OIBTree import OIBTree
@@ -524,24 +525,29 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def sortResults(self, rs, sort_index, reverse=0, limit=None, merge=1):
         # Sort a result set using a sort index. Return a lazy
         # result set in sorted order if merge is true otherwise
-        # returns a list of (sortkey, results) tuples
+        # returns a list of (sortkey, uid, getter_function) tuples
         #
         # The two 'for' loops in here contribute a significant
         # proportion of the time to perform an indexed search.
         # Try to avoid all non-local attribute lookup inside
         # those loops.
+        assert limit is None or limit > 0, 'Limit value must be 1 or greater'
         _lazymap = LazyMap
         _intersection = intersection
         _self__getitem__ = self.__getitem__
         index_key_map = sort_index.documentToKeyMap()
         _None = None
+        _keyerror = KeyError
         result = []
         append = result.append
+        if hasattr(rs, 'keys'):
+            rs = rs.keys()
+        rlen = len(rs)
         
-        if (len(rs) > (len(sort_index) * 4)):
+        if limit is None and (rlen > (len(sort_index) * (rlen / 100 + 1))):
             # The result set is much larger than the sorted index,
             # so iterate over the sorted index for speed.
-            # This is almost never exercised in practice...
+            # This is rarely exercised in practice...
             
             length = 0
 
@@ -550,8 +556,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             except TypeError:
                 # rs is not an object in the IIBTree family.
                 # Try to turn rs into an IISet.
-                if hasattr(rs, 'keys'):
-                    rs = rs.keys()
                 rs = IISet(rs)
 
             for k, intset in sort_index.items():
@@ -575,64 +579,87 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 result = LazyCat(LazyValues(result), length)
             else:
                 return result            
-        else:
+        elif limit is None or (limit * 4 > rlen):
             # Iterate over the result set getting sort keys from the index
-            if hasattr(rs, 'keys'):
-                rs = rs.keys()
-            _keyerror = KeyError
-            if limit is None:
-                for did in rs:
-                    try:
-                        key = index_key_map[did]
-                    except _keyerror:
-                        # This document is not in the sort key index.
-                        # skip it.
-                        pass
-                    else:
-                        append((key, did, _self__getitem__))
-                        # The reference back to __getitem__ is used in case
-                        # we do not merge now and need to intermingle the
-                        # results with those of other catalogs while avoiding
-                        # the cost of instantiating a LazyMap per result
-
-                if merge:
-                    result.sort()
-                    if reverse:
-                        result.reverse()
-                    result = LazyValues(result)
+            for did in rs:
+                try:
+                    key = index_key_map[did]
+                except _keyerror:
+                    # This document is not in the sort key index, skip it.
+                    pass
                 else:
-                    return result
-            else: 
-                # Limit/sort results using N-Best algorithm
-                # This is faster for large sets then a full sort
-                # And uses far less memory
-                keys = []
-                n = 0
-                for did in rs:
-                    try:
-                        key = index_key_map[did]
-                    except _keyerror:
-                        # This document is not in the sort key index.
-                        # skip it.
-                        pass
-                    else:
-                        if n >= limit and key <= keys[0]:
-                            continue
-                        i = bisect(keys, key)
-                        keys.insert(i, key)
-                        result.insert(i, (key, did, _self__getitem__))
-                        if n == limit:
-                            del keys[0], result[0]
-                        else:
-                            n += 1
-                result.reverse()
-                if merge:
-                    result = LazyValues(result) 
+                    append((key, did, _self__getitem__))
+                    # The reference back to __getitem__ is used in case
+                    # we do not merge now and need to intermingle the
+                    # results with those of other catalogs while avoiding
+                    # the cost of instantiating a LazyMap per result
+            if merge:
+                result.sort()
+                if reverse:
+                    result.reverse()
+                if limit is not None:
+                    result = result[:limit]                    
+                result = LazyValues(result)
+            else:
+                return result
+        elif reverse: 
+            # Limit/sort results using N-Best algorithm
+            # This is faster for large sets then a full sort
+            # And uses far less memory
+            keys = []
+            n = 0
+            worst = None
+            for did in rs:
+                try:
+                    key = index_key_map[did]
+                except _keyerror:
+                    # This document is not in the sort key index, skip it.
+                    pass
                 else:
-                    return result
+                    if n >= limit and key <= worst:
+                        continue
+                    i = bisect(keys, key)
+                    keys.insert(i, key)
+                    result.insert(i, (key, did, _self__getitem__))
+                    if n == limit:
+                        del keys[0], result[0]
+                    else:
+                        n += 1
+                    worst = keys[0]
+            result.reverse()
+            if merge:
+                result = LazyValues(result) 
+            else:
+                return result
+        elif not reverse:
+            # Limit/sort results using N-Best algorithm in reverse (N-Worst?)
+            keys = []
+            n = 0
+            best = None
+            for did in rs:
+                try:
+                    key = index_key_map[did]
+                except _keyerror:
+                    # This document is not in the sort key index, skip it.
+                    pass
+                else:
+                    if n >= limit and key >= best:
+                        continue
+                    i = bisect(keys, key)
+                    keys.insert(i, key)
+                    result.insert(i, (key, did, _self__getitem__))
+                    if n == limit:
+                        del keys[-1], result[-1]
+                    else:
+                        n += 1
+                    best = keys[-1]
+            if merge:
+                result = LazyValues(result) 
+            else:
+                return result
         
         result = LazyMap(self.__getitem__, result, len(result))
-        result.actual_result_count = len(rs)
+        result.actual_result_count = rlen
         return result
 
     def _get_sort_attr(self, attr, kw):
@@ -743,9 +770,14 @@ def mergeResults(results, has_sort_keys, reverse):
         # Concatenate the catalog results into one list and sort it
         # Each result record consists of a list of tuples with three values:
         # (sortkey, docid, catalog__getitem__)
-        all = []
-        for r in results:
-            all.extend(r)
+        if len(results) > 1:
+            all = []
+            for r in results:
+                all.extend(r)
+        elif len(results) == 1:
+            all = results[0]
+        else:
+            return []
         all.sort()
         if reverse:
             all.reverse()
