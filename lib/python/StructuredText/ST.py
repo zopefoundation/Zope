@@ -115,6 +115,9 @@ def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
     which mimics the structure of the paragraphs.
     Structure => [paragraph,[sub-paragraphs]]
     """
+    if type(paragraphs) == type(''):
+        paragraphs = unicode(paragraphs, 'utf-8')
+
 
     currentlevel    = 0
     currentindent  = 0
