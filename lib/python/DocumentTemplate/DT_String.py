@@ -26,6 +26,7 @@ class String:
 
     commands={
 	'var': DT_Var.Var,
+	'call': DT_Var.Call,
 	'in': DT_In.In,
 	'if': DT_If.If,
 	'unless': DT_If.Unless,

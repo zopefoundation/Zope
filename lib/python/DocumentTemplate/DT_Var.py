@@ -106,7 +106,7 @@ __doc__='''Variable insertion parameters
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.10 1998/03/10 20:32:32 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.11 1998/03/24 20:21:39 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -160,7 +160,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.10 1998/03/10 20:32:32 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from DT_Util import *
 
@@ -250,6 +250,23 @@ class Var:
 		val=val+l
 
 	return val
+
+    __call__=render
+
+class Call: 
+    name='call'
+    expr=None
+
+    def __init__(self, args):
+	args = parse_params(args, name='', expr='')
+	self.__name__, self.expr = name_param(args,'call',1)
+
+    def render(self, md):
+	name=self.__name__
+	val=self.expr
+	if val is None: md[name]
+	else: val.eval(md)
+	return ''
 
     __call__=render
 
@@ -343,6 +360,9 @@ modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.11  1998/03/24 20:21:39  jim
+# Added 'call' tag.
+#
 # Revision 1.10  1998/03/10 20:32:32  jim
 # Fixed miss-spelling of newline_to_br
 #
