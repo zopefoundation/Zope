@@ -53,7 +53,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.3 1997/09/17 22:49:35 jim Exp $"
+"\n$Id: Missing.c,v 1.4 1997/09/18 21:01:33 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -217,14 +217,19 @@ Missing_getattr(PyObject *self, PyObject *name)
 
   if(!(c=PyString_AsString(name))) return NULL;
 
-  if(*c=='_' && strcmp(c,"__reduce__")==0)
+  if(*c=='_')
     {
-      if(self==theValue)
+      if(strcmp(c,"__reduce__")==0)
 	{
-	  Py_INCREF(reduce);
-	  return reduce;
+	  if(self==theValue)
+	    {
+	      Py_INCREF(reduce);
+	      return reduce;
+	    }
+	  return PyCFunction_New(reduce_ml, self);
 	}
-      return PyCFunction_New(reduce_ml, self);
+      PyErr_SetObject(PyExc_AttributeError, name);
+      return NULL;
     }
 
   Py_INCREF(self);
@@ -284,7 +289,7 @@ void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -319,6 +324,11 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.4  1997/09/18 21:01:33  jim
+  Added check to getattr to fail on methods that begin with underscore.
+  Note that Missing really defeats testing from protocols by testing for
+  attributes.
+
   Revision 1.3  1997/09/17 22:49:35  jim
   Fixed refcount bug.
   Added logic so:  Missing.Value.spam() returns Missing.Value.
