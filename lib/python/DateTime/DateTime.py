@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -383,11 +383,8 @@ class DateTime:
 
 	d=t=s=None
 	ac=len(args)
-	dcomp=1L
 
-	# Fast unpickling support
 	if ac and args[0]==None: return
-
 	elif ac==10:
 	    # Internal format called only by DateTime
 	    yr,mo,dy,hr,mn,sc,tz,t,d,s=args
@@ -397,7 +394,7 @@ class DateTime:
 	    t,tz=time(),self._localzone
 	    yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
 	    s=(hr/24.0+mn/1440.0+sc/86400.0)
-	    d=(self._julianday(yr,mo,dy)-jd1901)+s+1
+	    d=(self._julianday(yr,mo,dy)-jd1901)+s
             yr,mo,dy,hr,mn,sc=localtime(t)[:6]
             sc=sc+(t-int(t))
 	    
@@ -408,7 +405,7 @@ class DateTime:
 	        t,tz=time(),self._tzinfo._zmap[lower(arg)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
+	        d=(self._julianday(yr,mo,dy)-jd1901)+s
 		_d=d+(self._tzinfo[tz].info(t)[0]/86400.0)
 		yr,mo,dy=self._calendarday(_d+jd1901)
 	        _s=(_d-int(_d))*86400.0
@@ -436,22 +433,20 @@ class DateTime:
 		if not self._validTime(hr,mn,int(sc)):
 		    raise self.DateTimeError, 'Invalid time: %s' % arg
 		s=(hr/24.0+mn/1440.0+sc/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
+	        d=(self._julianday(yr,mo,dy)-jd1901)+s
 		t=(d*86400.0)-EPOCH+86400.0
                 tza=self._tzinfo[tz].info(t)[0]
 		d,t=d-(tza/86400.0),t-tza
-		dcomp=2L
-
 
 	    elif (arg > 0) and (int(arg)/365+1901 > 2030):
 		# Seconds from epoch, gmt
-		# Working;
 	        t,tz=arg,self._localzone
 	        yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
+	        d=(self._julianday(yr,mo,dy)-jd1901)+s
                 yr,mo,dy,hr,mn,sc=localtime(t)[:6]
                 sc=sc+(t-int(t))
+
 	    else:
 		# Float days since Jan 1, 1901 machine tz
 	        _j,tz=arg*86400.0,self._localzone
@@ -475,7 +470,6 @@ class DateTime:
 		tza=self._tzinfo[tz].info(t)[0]
 		d,t=arg-(tza/86400.0),t-tza
 		s=d-int(d)
-		dcomp=2L
 
 	elif ac==2:
 	    if type(args[1])==StringType:
@@ -484,7 +478,7 @@ class DateTime:
 		tz=self._tzinfo._zmap[lower(tz)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
+	        d=(self._julianday(yr,mo,dy)-jd1901)+s
 		_d=d+(self._tzinfo[tz].info(t)[0]/86400.0)
 		yr,mo,dy=self._calendarday(_d+jd1901)
 	        _s=(_d-int(_d))*86400.0
@@ -502,13 +496,12 @@ class DateTime:
 		    if sc<0:
 		        if (sc-int(sc)>=0.999): sc=round(sc)
 		        sc=59+sc
-
 	    else:
 		# Year, julean expressed in local zone
                 tz=self._localzone
 		yr,jul=args
 		if not yr>100: yr=yr+CENTURY
-	        d=(self._julianday(yr,1,1)-jd1901)+jul
+	        d=(self._julianday(yr,1,0)-jd1901)+jul
 		yr,mo,dy=self._calendarday(d+jd1901)
 	        _s=(d-int(d))*86400.0
 	        hr=int(_s/3600)
@@ -528,7 +521,6 @@ class DateTime:
 		d=d-(self._tzinfo[tz].info(t)[0]/86400.0)
 		s=d-int(d)
 		t=(d*86400.0)-EPOCH
-		dcomp=2L
 
 	else:
 	    # Explicit format
@@ -554,11 +546,10 @@ class DateTime:
 	    else:      tz=self._tzinfo._zmap[lower(tz)]
 	    leap=yr%4==0 and (yr%100!=0 or yr%400==0)
 	    s=(hr/24.0+mn/1440.0+sc/86400.0)
-	    d=(self._julianday(yr,mo,dy)-jd1901)+s+1
+	    d=(self._julianday(yr,mo,dy)-jd1901)+s
 	    t=(d*86400.0)-EPOCH+86400.0
 	    tza=self._tzinfo[tz].info(t)[0]
 	    d,t=d-(tza/86400.0),t-tza
-	    dcomp=2L
 
 	if hr>12:
 	    self._pmhour=hr-12
@@ -566,13 +557,7 @@ class DateTime:
 	else:
 	    self._pmhour=hr or 12
 	    self._pm= (hr==12) and 'pm' or 'am'
-#        self._dayoffset=dx=(int(d)+1)%7
-#        ddd=int(d)+jd1901+2L
-#	ans=ddd%7
-#	print `ddd,ans`
-#d=      int(d-(self._tzinfo[tz].info(t)[0]/86400.0))
-        self._dayoffset=dx= \
-	   int((int(d-(self._tzinfo[tz].info(t)[0]/86400.0))+jd1901+dcomp)%7)
+        self._dayoffset=dx=int((self._julianday(yr,mo,dy)+2L)%7)
 	self._fmon,self._amon,self._pmon= \
 	    self._months[mo],self._months_a[mo],self._months_p[mo]
         self._fday,self._aday,self._pday= \
@@ -773,9 +758,11 @@ class DateTime:
 	    m=-m
 	    y=y-m/12L-1L
 	    m=12L-m%12L
-        yr_correct=(y > 0) and 0L or 3L
+        if y > 0L: yr_correct=0L
+	else:      yr_correct=3L
         if m < 3L: y, m=y-1L,m+12L
-        b=((y*10000L+m*100L+d) > 15821014L) and (2L-y/100L+y/400L) or 0L
+        if y*10000L+m*100L+d > 15821014L: b=2L-y/100L+y/400L
+	else: b=0L
         return (1461L*y-yr_correct)/4L+306001L*(m+1L)/10000L+d+1720994L+b
 
     def _calendarday(self,j):
@@ -815,11 +802,10 @@ class DateTime:
 	if (t>0 and ((t/86400.0) < 24837)): return t
 	raise self.DateTimeError,'No time module compatible time to return'
 
-
     def toZone(self, z):
 	"""Return a DateTime with the value as the current
            object, represented in the indicated timezone."""
-        t,tz=self._t,self._tzinfo._zmap[z]
+        t,tz=self._t,self._tzinfo._zmap[lower(z)]
 	if (t>0 and ((t/86400.0) < 24837)):
 	    # Try to cheat and use time module for speed...
 	    yr,mo,dy,hr,mn,sc=gmtime(t+self._tzinfo[tz].info(t)[0])[:6]
@@ -907,7 +893,11 @@ class DateTime:
            timezone) is a leap year"""
         return self._year%4==0 and (self._year%100!=0 or self._year%400==0)
 
-
+    def dayOfYear(self):
+	"""Return the day of the year, in context of
+           the timezone representation of the object"""
+	d=int(self._d+(self._tzinfo[self._tz].info(self._t)[0]/86400.0))
+	return int((d+jd1901)-self._julianday(self._year,1,0))
 
     # Component access
     def parts(self):
@@ -1114,22 +1104,6 @@ class DateTime:
 def Timezones():
     """Return the list of recognized timezone names"""
     return _cache._zlst
-
-
-
-
-
-
-
-
-
-
-#$Log: DateTime.py,v $
-#Revision 1.2  1997/03/13 00:51:56  brian
-#*** empty log message ***
-#
-
-
 
 
 
