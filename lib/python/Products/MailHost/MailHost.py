@@ -93,8 +93,8 @@ import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.45 1999/11/03 14:42:15 brian Exp $ 
-__version__ = "$Revision: 1.45 $"[11:-2]
+#$Id: MailHost.py,v 1.46 2000/01/10 23:48:36 amos Exp $ 
+__version__ = "$Revision: 1.46 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -121,9 +121,11 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     timeout=1.0
 
     manage_options=({'icon':'', 'label':'Edit',
-                     'action':'manage_main', 'target':'manage_main'},
+                     'action':'manage_main', 'target':'manage_main',
+                     'help':('MailHost','Mail-Host_Edit.dtml')}, 
                     {'icon':'', 'label':'Security',
-                     'action':'manage_access', 'target':'manage_main'},
+                     'action':'manage_access', 'target':'manage_main',
+                     'help':('MailHost','Mail-Host_Security.dtml')},
                    )
 
     __ac_permissions__=(
@@ -338,7 +340,7 @@ def decapitate(message):
     hd['to']=[]
     for header in (mo.getaddrlist('to'),
                    mo.getaddrlist('cc'),
-		   mo.getaddrlist('bcc')):
+                   mo.getaddrlist('bcc')):
         if not header: continue
         for name, addr in header:
             hd['to'].append(addr)
