@@ -85,14 +85,14 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.94 2001/01/08 22:47:06 brian Exp $'''
-__version__='$Revision: 1.94 $'[11:-2]
+$Id: DA.py,v 1.95 2001/01/12 16:47:25 chrism Exp $'''
+__version__='$Revision: 1.95 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
 from Aqueduct import decodestring, parse
 from Aqueduct import custom_default_report, default_input_form
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split, rstrip
@@ -178,7 +178,7 @@ class DA(
         self.id=str(id)
         self.manage_edit(title, connection_id, arguments, template)
     
-    manage_advancedForm=HTMLFile('dtml/advanced', globals())
+    manage_advancedForm=DTMLFile('dtml/advanced', globals())
 
     test_url___roles__=None
     def test_url_(self):

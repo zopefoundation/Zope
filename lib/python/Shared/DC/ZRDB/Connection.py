@@ -84,13 +84,13 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.32 2001/01/08 22:47:06 brian Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: Connection.py,v 1.33 2001/01/12 16:46:50 chrism Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
-from Globals import HTMLFile
+from Globals import DTMLFile
 from string import find, join, split
 from Aqueduct import custom_default_report
 from cStringIO import StringIO
@@ -160,7 +160,7 @@ class Connection(
         self.connection_string=connection_string
         if check: self.connect(connection_string)
     
-    manage_properties=HTMLFile('dtml/connectionEdit', globals())
+    manage_properties=DTMLFile('dtml/connectionEdit', globals())
     def manage_edit(self, title, connection_string, check=None, REQUEST=None):
         """Change connection
         """
@@ -172,7 +172,7 @@ class Connection(
                 action ='./manage_main',
                 )
 
-    manage_testForm=HTMLFile('dtml/connectionTestForm', globals())
+    manage_testForm=DTMLFile('dtml/connectionTestForm', globals())
     def manage_test(self, query, REQUEST=None):
         "Executes the SQL in parameter 'query' and returns results"
         dbc=self()      #get our connection
@@ -206,7 +206,7 @@ class Connection(
         return report
                 
 
-    manage_main=HTMLFile('dtml/connectionStatus', globals())
+    manage_main=DTMLFile('dtml/connectionStatus', globals())
 
     def manage_close_connection(self, REQUEST):
         " "
