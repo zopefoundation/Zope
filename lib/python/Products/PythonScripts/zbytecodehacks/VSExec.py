@@ -62,7 +62,9 @@ class Munge_window:
         rcode = map(apply, rcode[0], rcode[1])
         if at is None:
             at = opn
-        self.code[at:at]=rcode
+        self.code[at + 1:at + 1] = [self.code[at]]
+        self.code[at + 1:at + 1] = rcode
+        del self.code[at]
         self.opn = opn + len(rcode)
         return rcode
 
