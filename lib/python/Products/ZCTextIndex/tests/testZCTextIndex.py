@@ -174,6 +174,8 @@ class ZCIndexTestsBase:
                 unique.setdefault(versionlist[0], []).append(w)
             elif len(versionlist) == N:
                 common.append(w)
+        self.assert_(len(common) > 0)
+        self.assert_(len(unique) > 0)
 
         for version, i in zip(text, range(N)):
             doc = Indexable(version)
