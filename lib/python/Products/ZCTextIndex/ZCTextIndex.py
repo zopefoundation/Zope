@@ -150,7 +150,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         get_word = self.lexicon.get_word
         return [get_word(wid) for wid in word_ids]
 
-    def uniqueValues(self):
+    def uniqueValues(self, name=None, withLengths=0):
         raise NotImplementedError
 
     ## The ZCatalog Index management screen uses these methods ##
