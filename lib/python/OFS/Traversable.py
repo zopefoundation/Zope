@@ -84,8 +84,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.5 2000/09/05 20:52:47 brian Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Traversable.py,v 1.6 2001/01/16 16:52:52 brian Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 import Acquisition
@@ -168,6 +168,9 @@ class Traversable:
 
                 if name[0] == '_':
                     # Never allowed in a URL.
+                    raise 'NotFound', name
+
+                if name in ('aq_self', 'aq_base'):
                     raise 'NotFound', name
 
                 if name=='..':
