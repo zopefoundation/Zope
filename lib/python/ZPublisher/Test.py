@@ -130,11 +130,12 @@ Examples
             s
 
 
-$Id: Test.py,v 1.22 1998/09/21 23:50:01 jim Exp $
+$Id: Test.py,v 1.23 1998/09/21 23:53:13 jim Exp $
 '''
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
-import sys, traceback, profile, os, getopt, string, time
+import sys, traceback, profile, os, getopt, string
+from time import clock
 repeat_count=100
 
 def main():
@@ -181,10 +182,10 @@ def main():
 def time(function,*args,**kwargs):
     repeat_range=range(repeat_count)
     apply(function,args,kwargs)
-    t=time.clock()
+    t=clock()
     for i in repeat_range:
         apply(function,args,kwargs)
-    t=(time.clock()-t)/1000.0
+    t=(clock()-t)/1000.0
 
     return float(t)/len(repeat_range)
 
