@@ -41,7 +41,7 @@ class CatalogAware:
     def reindex_all(self, obj=None):
         """
 
-        This method will cause this object to get reindexed.  Of this
+        This method will cause this object to get reindexed.  If this
         object is a container, then all child objects will try to be
         recursivly reindexed.  'obj' can be passed as an alternative
         object to try and reindex.
