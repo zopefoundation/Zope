@@ -86,6 +86,7 @@
 import string, sys, traceback
 from cStringIO import StringIO
 from DT_Util import parse_params, render_blocks, namespace, InstanceDict
+from DT_Return import DTReturn
 
 class Try:
     """Zope DTML Exception handling
@@ -143,15 +144,17 @@ class Try:
         # first we try to render the first block
         try:
             return render_blocks(self.section, md)
+        except DTReturn:
+            raise # pass through returns
         except:
             # but an error occurs.. save the info.
-            einfo = sys.exc_info()
-            if type(einfo[0])==type(''):
-                errname = einfo[0]
+            t,v = sys.exc_info()[:2]
+            if type(t)==type(''):
+                errname = t
             else:
-                errname = einfo[0].__name__
+                errname = t.__name__
 
-            handler = self.find_handler(einfo[0])
+            handler = self.find_handler(t)
                                     
             if handler is None:
                 # we didn't find a handler, so reraise the error
@@ -162,7 +165,7 @@ class Try:
                 f=StringIO()
                 traceback.print_exc(100,f)
                 error_tb=f.getvalue()
-                ns = namespace(self, error_type=errname, error_value=einfo[1],
+                ns = namespace(self, error_type=errname, error_value=v,
                     error_tb=error_tb)[0]
                 md._push(InstanceDict(ns,md))
                 return render_blocks(handler, md)
