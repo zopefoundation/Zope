@@ -86,6 +86,10 @@ Zope Changes
         dtml-in, to inhibit automatically pushing sequence-item
         onto the namespace stack.
 
+      - STXNG: Structured Text now supports images by default
+        by using the HTMLWithImages class (has been disabled prior 
+        to Zope 2.6)
+
     Bugs:
     
       - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
