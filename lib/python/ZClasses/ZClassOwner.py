@@ -86,6 +86,17 @@
 """
 import ExtensionClass, Globals, ZClass, Products
 
+def manage_subclassableClassNames(self):
+    r={}
+    r.update(Products.meta_class_info)
+
+    for data in self.aq_acquire('_getProductRegistryData')('zclasses'):
+        r['%(product)s/%(id)s' % data] = '%(product)s: %(id)s' % data
+                
+    r=r.items()
+    r.sort()
+    return r
+
 class ZClassOwner(ExtensionClass.Base):
 
     manage_addZClassForm=Globals.HTMLFile(
@@ -101,21 +112,7 @@ class ZClassOwner(ExtensionClass.Base):
             self, id, title, baseclasses, meta_type, CreateAFactory,
             REQUEST, zope_object=zope_object)
 
-    def manage_subclassableClassNames(self):
-        r={}
-        r.update(Products.meta_class_info)
-
-        while 1:
-            if not hasattr(self, 'objectItems'): break
-            for k, v in self.objectItems():
-                if hasattr(v,'_zclass_') and not r.has_key(k):
-                    r[k]=v.title_and_id()
-            if not hasattr(self, 'aq_parent'): break
-            self=self.aq_parent
-
-        r=r.items()
-        r.sort()
-        return r
+    manage_subclassableClassNames=manage_subclassableClassNames
 
 
 Globals.default__class_init__(ZClassOwner)
