@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -140,6 +140,12 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     def pt_changePrefs(self, REQUEST, height=None, width=None,
                        dtpref_cols='50', dtpref_rows='20'):
         """Change editing preferences."""
+        # The <textarea> can have dimensions expressed in percentages;
+        # strip the percent sign so int() below won't fail
+        if dtpref_cols[-1:] == "%":
+            dtpref_cols = dtpref_cols[:-1] or '50'
+        if dtpref_rows[-1:] == "%":
+            dtpref_rows = dtpref_rows[:-1] or '20'
         szchh = {'Taller': 1, 'Shorter': -1, None: 0}
         szchw = {'Wider': 5, 'Narrower': -5, None: 0}
         try: rows = int(height)
