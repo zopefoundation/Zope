@@ -1,9 +1,9 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
-import sys, os
+import sys, os, DateTime
 from string import atof, rfind
 
 try:
@@ -58,6 +58,36 @@ def default__class_init__(self):
 
 Persistent.__dict__['__class_init__']=default__class_init__
 
+class PersistentUtil:
+
+    def bobobase_modification_time(self):
+	try:
+	    t=self._p_mtime
+	    if t is None: return DateTime()
+	except: t=0
+	return DateTime(t)
+
+    def locked_in_session(self):
+	oid=self._p_oid
+	return (oid and SessionBase.locks.has_key(oid)
+		and SessionBase.verify_lock(oid))
+
+    def modified_in_session(self):
+	jar=self._p_jar
+	if jar is None:
+	    if hasattr(self,'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
+		jar=self.aq_parent._p_jar
+	    if jar is None: return 0
+	if not jar.name: return 0
+	try: jar.db[self._p_oid]
+	except: return 0
+	return 1
+
+for k, v in PersistentUtil.__dict__.items(): Persistent.__dict__[k]=v
+    
+
+
+
 class HTML(DocumentTemplate.HTML,Persistent,):
     "Persistent HTML Document Templates"
 
@@ -108,6 +138,10 @@ else:
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.14  1998/05/22 22:25:42  jim
+# Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
+# right into Persistent here.
+#
 # Revision 1.13  1998/05/08 14:52:20  jim
 # Modified default class init to work with new permission machinery.
 #
