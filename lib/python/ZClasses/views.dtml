@@ -6,6 +6,10 @@
 <form action=".">
 <table>
 
+<tr>
+  <th colspan="2">Name</th><th>Method</th><th>Help Topic</th>
+</tr>  
+
 <dtml-in data mapping>
   <tr>
      <td valign=center>
@@ -20,9 +24,19 @@
               </dtml-if>><dtml-var sequence-item></option>
          </dtml-in>
        </select></td>
+	 <td align="left" valign="center">
+	   <select name="helps:list">
+	     <option></option>
+	     <dtml-in "Help.helpValues()">
+		 <option
+		   <dtml-if "_.has_key('help') and _.getitem('sequence-item').id() == help[1]">SELECTED
+		   </dtml-if>><dtml-var id></option>
+		 </dtml-in>
+	   </select>
+	 </td>
   </tr>
 </dtml-in>
-<tr><td colspan=3 align=center>
+<tr><td></td><td colspan=3 align=left>
     <input type=submit value=" Change " name="manage_edit:method">
     <input type=submit value=" Delete " name="manage_delete:method">
     <input type=submit value=" First " name="manage_first:method">
@@ -31,15 +45,28 @@
 
 <form action=manage_add><table>
 <tr>
-  <th align=left valign=top>New: <input type=text name="label" size=20></th>
+  <th colspan="2">Name</th><th>Method</th><th>Help Topic</th>
+</tr>  
+<tr>
+  <th>New:</th>
+  <th align=left valign=top><input type=text name="label" size=20></th>
   <td align=left valign=top>
-    <select name=action>
+    <select name=action> 
       <dtml-in zclass_candidate_view_actions>
 	   <option><dtml-var sequence-item></option>
       </dtml-in>
     </select></td>
+	
+  <td align="left" valign="top">
+  <select name="help">
+  <option></option>
+  <dtml-in "Help.helpValues()">
+  <option><dtml-var id></option>
+  </dtml-in>
+  </select>
+  </td>
 </tr>
-<tr><td colspan=2 align=center>
+<tr><td></td><td colspan=2 align=left>
     <input type=submit value=" Add ">
 </td></tr>
 </table></form>

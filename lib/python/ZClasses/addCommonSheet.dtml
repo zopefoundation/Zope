@@ -6,6 +6,8 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add Common Instance Property Sheet</H2>
 
+<dtml-var "HelpSys.HelpButton('Common-Instance-Property-Sheet_Add.dtml')">
+
 <FORM ACTION="manage_addCommonSheet" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>

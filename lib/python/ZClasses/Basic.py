@@ -152,7 +152,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
         return self.getClassAttr('manage_options',(),1)
 
     manage=Globals.HTMLFile('views', globals())
-    def manage_edit(self, actions=[], REQUEST=None):
+    def manage_edit(self, actions=[], helps=[], REQUEST=None):
         "Change view actions"
         options=self.data()
         changed=0
@@ -163,7 +163,12 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
             if options[i]['action'] != actions[i]:
                 options[i]['action'] = actions[i]
                 changed=1
-                
+            if (options[i].has_key('help') and options[i]['help'] != helps[i]) or \
+               (not options[i].has_key('help') and helps[i]):
+                if helps[i]:
+                    options[i]['help'] = (self.zclass_productid(), helps[i])
+                else:
+                    del options[i]['help']
         if changed:
             self.setClassAttr('manage_options', options)
             message='The changes were saved.'
@@ -191,7 +196,18 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
             return self.manage(
                 self, REQUEST, manage_tabs_message=message)
 
-    def manage_add(self, label, action, REQUEST=None):
+    def zclass_productid(self):
+        # find the name of the enclosing Product
+        obj=self
+        while hasattr(obj, 'aq_parent'):
+            obj=obj.aq_parent
+            try:
+                if obj.meta_type=='Product':
+                    return obj.id
+            except:
+                pass
+
+    def manage_add(self, label, action, help, REQUEST=None):
         "Add a view"
         options=self.data()
         for option in options:
@@ -199,8 +215,12 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
                 raise 'Bad Request', (
                     'Please provide a <strong>new</strong> label.'
                     )
-        self.setClassAttr('manage_options',
-                          tuple(options)+({'label': label, 'action': action},))
+        if help:
+            t=({'label': label, 'action': action,
+                'help': (self.zclass_productid(), help)},)
+        else:
+            t=({'label': label, 'action': action},)
+        self.setClassAttr('manage_options', tuple(options) + t)
         
         if REQUEST is not None:
             return self.manage(

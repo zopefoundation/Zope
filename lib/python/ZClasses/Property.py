@@ -112,8 +112,10 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     _properties=()
 
     manage_options=(
-        {'label':'Properties', 'action':'manage'},
-        {'label':'Define Permissions', 'action':'manage_security'},
+        {'label':'Properties', 'action':'manage',
+         'help':('OFSP','Common-Instance-Property-Sheet_Properties.dtml')},
+        {'label':'Define Permissions', 'action':'manage_security',
+         'help':('OFSP','Common-Instance-Property-Sheet_Define-Permissions.dtml')},
         )
 
     __ac_permissions__=(

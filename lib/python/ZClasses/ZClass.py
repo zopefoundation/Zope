@@ -210,9 +210,9 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     isPrincipiaFolderish=1
  
     __ac_permissions__=(
-	('Create class instances',
+        ('Create class instances',
          ('', '__call__', 'index_html', 'createInObjectManager')),
-	)
+        )
 
     def __init__(self, id, title, bases, zope_object=1):
         """Build a Zope class
@@ -583,13 +583,19 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
 class ZObject:
 
     manage_options=(
-        {'label': 'Methods', 'action' :'propertysheets/methods/manage'},
-        {'label': 'Basic', 'action' :'propertysheets/basic/manage'},
-        {'label': 'Views', 'action' :'propertysheets/views/manage'},
-        {'label': 'Property Sheets', 'action' :'propertysheets/common/manage'},
+        {'label': 'Methods', 'action' :'propertysheets/methods/manage',
+         'help':('OFSP','ZClass_Methods.dtml')},        
+        {'label': 'Basic', 'action' :'propertysheets/basic/manage',
+         'help':('OFSP','ZClass_Basic.dtml')},          
+        {'label': 'Views', 'action' :'propertysheets/views/manage',
+         'help':('OFSP','ZClass_Views.dtml')},          
+        {'label': 'Property Sheets', 'action' :'propertysheets/common/manage',
+         'help':('OFSP','ZClass_Property-Sheets.dtml')},        
         {'label': 'Permissions',
-         'action' :'propertysheets/permissions/manage'},
-        {'label': 'Security', 'action' :'manage_access'},        
+         'action' :'propertysheets/permissions/manage',
+         'help':('OFSP','ZClass_Permissions.dtml')},     
+        {'label': 'Security', 'action' :'manage_access',  
+         'help':('OFSP','ZClass_Define-Permissions.dtml')},        
         )
     
 ZStandardSheets=ZObject
