@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -70,7 +70,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         + SimpleItem.manage_options \
         + Cacheable.manage_options
 
-    _properties=({'id':'title', 'type': 'string', 'mode': 'w'},
+    _properties=({'id':'title', 'type': 'string', 'mode': 'wd'},
                  {'id':'content_type', 'type':'string', 'mode': 'w'},
                  {'id':'expand', 'type':'boolean', 'mode': 'w'},
                  )
