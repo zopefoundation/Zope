@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #538: Hybrid path expressions no longer attempt to call
+        a value returned by the final, non-path alternate.
+
       - Collector #573: ZTUtils Iterator didn't catch AttributeError.
 
       - Deprecated hasRole alias in User.py failed to return result.

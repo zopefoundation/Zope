@@ -43,6 +43,15 @@ class ExpressionTests(unittest.TestCase):
         assert ec.evaluate('d/ | nothing') == 'blank'
         assert ec.evaluate('d/?blank') == 'blank'
 
+    def testHybrid(self):
+        '''Test hybrid path expressions'''
+        ec = self.ec
+        assert ec.evaluate('x | python:1+1') == 2
+        assert ec.evaluate('x | python:int') == int
+        assert ec.evaluate('x | string:x') == 'x'
+        assert ec.evaluate('x | string:$one') == '1'
+        assert ec.evaluate('x | not:exists:x')
+
 def test_suite():
     return unittest.makeSuite(ExpressionTests)
 
