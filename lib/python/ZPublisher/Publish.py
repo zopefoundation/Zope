@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.58 1997/10/22 14:49:06 jim Exp $"""
+$Id: Publish.py,v 1.59 1997/10/22 22:49:20 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.58 1997/10/22 14:49:06 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 
 def main():
@@ -748,14 +748,14 @@ class ModulePublisher:
     
 		try:
 		    try: doc=subobject.__doc__
-		    except: doc=getattr(subobject, entry_name+'__doc__')
+		    except: doc=getattr(object, entry_name+'__doc__')
 		    if not doc: raise AttributeError, entry_name
 		except: self.notFoundError("%s" % (entry_name))
 		
 		try: roles=subobject.__roles__
 		except:
 		    if not got:
-			try: roles=getattr(object,entry_name+'__roles__')
+			try: roles=getattr(object, entry_name+'__roles__')
 			except:
 			    if (entry_name=='manage' or
 				entry_name[:7]=='manage_'):
@@ -1347,6 +1347,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.59  1997/10/22 22:49:20  jim
+# Fixed bug in handling of container.spam__doc__.
+#
 # Revision 1.58  1997/10/22 14:49:06  jim
 # Changed str method to use repr on dictionary keys.
 #
