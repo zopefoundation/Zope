@@ -85,15 +85,16 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.7 1999/03/10 00:15:29 klm Exp $''' % database_type
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: DA.py,v 1.8 1999/07/22 16:10:04 jim Exp $''' % database_type
+__version__='$Revision: 1.8 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
-import Shared.DC.ZRDB.Connection
+import Shared.DC.ZRDB.Connection, ThreadLock
 _Connection=Shared.DC.ZRDB.Connection.Connection
 
 _connections={}
+_connections_lock=ThreadLock.allocate_lock()
 
 data_sources=manage_DataSources
 
@@ -140,23 +141,27 @@ class Connection(DABase.Connection):
         return s
 
     def connect(self,s):
-        c=_connections
-        if c.has_key(s):
-            c=self._v_database_connection=c[s]
-            if not c.opened: c.open()
-            return self
-
+        _connections_lock.acquire()
         try:
+            c=_connections
+            if c.has_key(s):
+                c=self._v_database_connection=c[s]
+                if not c.opened: c.open()
+                return self
+    
             try:
-                self._v_database_connection=c[s]=DB(s)
-            except:
-                t, v, tb = sys.exc_info()
-                raise 'BadRequest', (
-                    '<strong>Invalid connection string: </strong>'
-                    '<CODE>%s</CODE><br>\n'
-                    '<!--\n%s\n%s\n-->\n'
-                    % (s,t,v)), tb
-        finally: tb=None
-
-        return self
+                try:
+                    self._v_database_connection=c[s]=DB(s)
+                except:
+                    t, v, tb = sys.exc_info()
+                    raise 'BadRequest', (
+                        '<strong>Invalid connection string: </strong>'
+                        '<CODE>%s</CODE><br>\n'
+                        '<!--\n%s\n%s\n-->\n'
+                        % (s,t,v)), tb
+            finally: tb=None
+    
+            return self
+        finally:
+            _connections_lock.release()
 
