@@ -124,7 +124,7 @@ class ZSQLMethod:
     """
 
 
-    def __call__(self, REQUEST=None, __ick__=None, src__=0, test__=0, **kw):
+    def __call__(self, REQUEST=None, **kw):
         """
 
         Call the ZSQLMethod.
