@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var title--></TITLE>
+</HEAD> 
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2">Undo Changes</FONT>
+<P>
+<FORM ACTION="<!--#var PARENT_URL-->/manage_undo" METHOD="POST">
+<TABLE CELLPADDING="4">
+<TR>
+  <TD COLSPAN="2">
+  This application's trasactional features allow you to easily undo changes
+  made to the application's settings or data. You can revert the application
+  to a &quot;snapshot&quot; of it's state at a previous point in time.
+  </TD>
+</TR>
+<TR>
+  <!--#if revert_points-->
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Revert database to date/time:</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="start_time" SIZE="5">
+  <!--#in revert_points-->
+    <OPTION><!--#var sequence-item--></OPTION>
+  <!--#/in revert_points-->
+  </SELECT><BR>
+  <INPUT TYPE="SUBMIT" VALUE=" Revert Database ">
+  </TD>
+  <!--#else revert_points-->
+  <TD COLSPAN="2">
+  <I>No old revisions currently exist in the database.</I>
+  </TD>
+  <!--#/if revert_points-->
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var title--></TITLE>
+</HEAD> 
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2"><!--#var title--></FONT>
+<P>
+The application manager allows you to view application status information,
+and allows you to perform maintenance tasks such as process control,
+database packing, and &quot;undoing&quot; previous changes to your
+application's configuration or data.
+
+<P>
+<TABLE CELLPADDING="4">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>Process Id:</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><!--#var process_id--></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>Process Uptime:</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><!--#var process_time--></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>Database Size:</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><!--#var db_size--></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<BR>Click &quot;Shutdown&quot; to shutdown the application..
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<FORM ACTION="<!--#var PARENT_URL-->/manage_shutdown"
+ METHOD="POST" TARGET="_top">
+<BR><INPUT TYPE="SUBMIT" VALUE=" Shutdown ">
+</FORM>
+</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var name--></TITLE>
+</HEAD>
+<FRAMESET FRAMEBORDER="NO" BORDER="0" FRAMESPACING="0" COLS="140,*">
+  <FRAME SRC="<!--#var PARENT_URL-->/manage_menu" NAME="manage_menu"
+         MARGINWIDTH="6" MARGINHEIGHT="6" SCROLLING="auto">
+  <FRAME SRC="<!--#var PARENT_URL-->/manage_main" NAME="manage_main"
+         MARGINWIDTH="0" MARGINHEIGHT="0" SCROLLING="auto">
+</FRAMESET>
+<NOFRAMES>
+Management interfaces require the use of a <B>frames-capable</B> web browser, such as:
+<UL>
+<LI> <B><A HREF="http://www.netscape.com">Netscape Navigator 3.0</A></B>
+<LI> <B><A HREF="http://www.microsoft.com">Microsoft Internet Explorer 3.0</A></B>
+</UL>
+</NOFRAMES>
+</HTML>
+
