@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import HTMLFile, MessageDialog
 from AccessControl.Role import RoleManager
@@ -95,7 +95,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     def __str__(self): return self.data
     def __len__(self): return 1
 
-
+    def size(self): return len(self.data) 
 
 
 class Image(File):
