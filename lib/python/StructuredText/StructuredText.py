@@ -170,7 +170,41 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.23 1999/08/03 20:49:05 jim Exp $'''
+
+- A paragraph that has blocks of text enclosed in '||' is treated as a
+  table. The text blocks correspond to table cells and table rows are
+  denoted by newlines. By default the cells are center aligned. A cell
+  can span more than one column by preceding a block of text with an
+  equivalent number of cell separators '||'. Newlines and '|' cannot
+  be a part of the cell text. For example:
+
+      |||| **Ingredients** ||
+      || *Name* || *Amount* ||
+      ||Spam||10||
+      ||Eggs||3||
+
+  is interpreted as::
+
+    <TABLE BORDER=1 CELLPADDING=2>
+     <TR>
+      <TD ALIGN=CENTER COLSPAN=2> <strong>Ingredients</strong> </TD>
+     </TR>
+     <TR>
+      <TD ALIGN=CENTER COLSPAN=1> <em>Name</em> </TD>
+      <TD ALIGN=CENTER COLSPAN=1> <em>Amount</em> </TD>
+     </TR>
+     <TR>
+      <TD ALIGN=CENTER COLSPAN=1>Spam</TD>
+      <TD ALIGN=CENTER COLSPAN=1>10</TD>
+     </TR>
+     <TR>
+      <TD ALIGN=CENTER COLSPAN=1>Eggs</TD>
+      <TD ALIGN=CENTER COLSPAN=1>3</TD>
+     </TR>
+    </TABLE>
+
+    
+$Id: StructuredText.py,v 1.24 1999/12/13 16:32:48 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +256,26 @@ $Id: StructuredText.py,v 1.23 1999/08/03 20:49:05 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.24  1999/12/13 16:32:48  klm
+# Incorporated pavlos christoforou's mods to handle simple tables.  From
+# his web page at http://www.zope.org/Members/gaaros/StructuredText:
+#
+#   Structured Text module with table support
+#
+#   A paragraph that has blocks of text enclosed in '||' is treated as a
+#   table. The text blocks correspond to table cells and table rows are
+#   denoted by newlines. By default the cells are center aligned. You can
+#   change the defaults by modifying the CELL,ROW and TABLE class
+#   attributes in class Table. A cell can span more than one column by
+#   preceding a block of text with an equivalent number of cell separators
+#   '||'. Newlines and '|' cannot be a part of the cell text. If you need
+#   newlines use <BR>. For example:
+#
+#        |||| **Ingredients** ||
+#        || *Name* || *Amount* ||
+#        ||Spam||10||
+#        ||Eggs||3||
+#
 # Revision 1.23  1999/08/03 20:49:05  jim
 # Fixed to allow list elements to introduce examples.
 #
@@ -349,7 +403,8 @@ $Id: StructuredText.py,v 1.23 1999/08/03 20:49:05 jim Exp $'''
 # *** empty log message ***
 #
 #
-# 
+#
+
 import ts_regex, regex
 from ts_regex import gsub
 from string import split, join, strip, find
@@ -445,10 +500,48 @@ def structure(list):
     return r
 
 
+class Table:
+    CELL='  <TD ALIGN=CENTER COLSPAN=%i>%s</TD>\n'
+    ROW=' <TR>\n%s </TR>\n'
+    TABLE='\n<TABLE BORDER=1 CELLPADDING=2>\n%s</TABLE>'
+    
+    def create(self,aPar,td=ts_regex.compile(
+        '[ \t\n]*||\([^\0|]*\)').match_group):
+        '''parses a table and returns nested list representing the
+        table'''
+        self.table=[]
+        text=filter(None,split(aPar,'\n'))
+        for line in text:
+            row=[]
+            while 1:
+                pos=td(line,(1,))
+                if not pos:return 0
+                row.append(pos[1])
+                if pos[0]==len(line):break
+                line=line[pos[0]:]
+            self.table.append(row)
+        return 1
+
+    def html(self):
+        '''Creates an HTML representation of table'''
+        htmltable=[]
+        for row in self.table:
+            htmlrow=[]
+            colspan=1
+            for cell in row:
+                if cell=='':
+                    colspan=colspan+1
+                    continue
+                else:
+                    htmlrow.append(self.CELL%(colspan,cell))
+                    colspan=1
+            htmltable.append(self.ROW%join(htmlrow,''))
+        return self.TABLE%join(htmltable,'')
 
 optional_trailing_punctuation = '\(,\|\([.:?;]\)\)?'
 trailing_space = '\([\0- ]\)'
 not_punctuation_or_whitespace = "[^-,.?:\0- ]"
+table=Table()
 
 class StructuredText:
 
@@ -585,7 +678,10 @@ class HTML(StructuredText):
             r="%s%s\n\n%s" % (r,html_quote(s[0]),self.pre(s[1],1))
         if not tagged: r=r+'</PRE>\n'
         return r
-
+    
+    def table(self,before,table,after):
+        return '%s<p>%s</p>\n%s\n' % (before,ctag(table),after)
+    
     def _str(self,structure,level,
              # Static
              bullet=ts_regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)'
@@ -603,7 +699,7 @@ class HTML(StructuredText):
              ):
         r=''
         for s in structure:
-            
+
             ts_results = bullet(s[0], (1,))
             if ts_results:
                 p = ts_results[1]
@@ -637,6 +733,10 @@ class HTML(StructuredText):
             if s[0][-2:]=='::' and s[1]:
                 # Introduce an example, using pre tags:
                 r=self.normal(r,s[0][:-1],self.pre(s[1]))
+            if table.create(s[0]):
+                ## table support.
+                r=self.table(r,table.html(),self._str(s[1],level))
+                continue
             else:
 
                 if nl(s[0]) < 0 and s[1] and s[0][-1:] != ':':
@@ -692,7 +792,6 @@ def main():
         s=sys.stdin.read()
 
     if opts:
-
 
         if filter(lambda o: o[0]=='-w', opts):
             print 'Content-Type: text/html\n'
