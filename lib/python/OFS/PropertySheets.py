@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -607,8 +607,9 @@ class PropertySheets(Implicit, App.Management.Tabs):
                 result.append(propset)
         self.parent.__propsets__=tuple(result)
 
-    def __del__(self):
-        self.parent=None
+    # Why?
+    #def __del__(self):
+    #    self.parent=None
         
     def __len__(self):
         return len(self.__propsets__())

@@ -89,7 +89,7 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os, string, xmllib
 from Acquisition import Implicit
@@ -174,9 +174,9 @@ class Document(Node):
             result.append(node.toxml())
         return string.join(result, '')
 
-    def __del__(self):
-        self.document=None
-        print 'bye!'
+    #def __del__(self):
+    #    self.document=None
+    #    print 'bye!'
         
 class Element(Node):
     __type__=type_element
