@@ -382,12 +382,12 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.39 2000/05/11 18:54:14 jim Exp $'
-__version__='$Revision: 1.39 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.40 2000/05/25 16:33:44 shane Exp $'
+__version__='$Revision: 1.40 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError
-from string import find, atoi, join
+from string import find, atoi, join, split
 import ts_regex
 from DT_InSV import sequence_variables, opt
 TupleType=type(())
@@ -702,12 +702,18 @@ class InClass:
 
     def sort_sequence(self, sequence):
 
+        # Modified with multiple sort fields by Ross Lazarus
+        # April 7 2000 rossl@med.usyd.edu.au
+        # eg <dtml in "foo" sort=akey,anotherkey>
+        
         sort=self.sort
+        sortfields = split(sort,',')   # multi sort = key1,key2 
+        multsort = len(sortfields) > 1 # flag: is multiple sort
         mapping=self.mapping
         isort=not sort
-        k=None
         s=[]
         for client in sequence:
+            k = None
             if type(client)==TupleType and len(client)==2:
                 if isort: k=client[0]
                 v=client[1]
@@ -716,21 +722,34 @@ class InClass:
                 v=client
 
             if sort:
-                if mapping: k=v[sort]
-                else: k=getattr(v, sort)
-                if not basic_type(k):           
-                    try: k=k()
-                    except: pass
+                 if multsort: # More than one sort key.
+                     k = []
+                     for sk in sortfields:
+                         try:
+                             if mapping: akey = v[sk]
+                             else: akey = getattr(v, sk)
+                         except AttributeError, KeyError: akey = None
+                         if not basic_type(akey):
+                             try: akey = akey()
+                             except: pass
+                         k.append(akey)
+                 else: # One sort key.
+                     try:
+                         if mapping: k = v[sort]
+                         else: k = getattr(v, sort)
+                     except AttributeError, KeyError: k = None
+                     if not basic_type(k):           
+                         try: k = k()
+                         except: pass
 
             s.append((k,client))
 
         s.sort()
 
         sequence=[]
-        for k, client in s: sequence.append(client)
-
+        for k, client in s:
+             sequence.append(client)
         return sequence
-
 
     def reverse_sequence(self, sequence):
         s=list(sequence)
@@ -738,8 +757,8 @@ class InClass:
         return s
 
 
-basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1
-            }.has_key
+basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1,
+            type(None) : 1 }.has_key
 
 def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
