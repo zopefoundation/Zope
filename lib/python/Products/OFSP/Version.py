@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -100,7 +100,8 @@ manage_addVersionForm=Globals.HTMLFile('versionAdd', globals())
 
 def manage_addVersion(self, id, title, REQUEST=None):
     """ """
-    self._setObject(id, Version(id,title,REQUEST))
+    
+    self._setObject(id, Version(id,title,self,REQUEST))
     return self.manage_main(self,REQUEST)
 
 
@@ -120,13 +121,12 @@ class Version(Persistent,Implicit,RoleManager,Item):
         ('Save/discard Version changes', ('save','discard')),
         )
 
-    def __init__(self, id, title, REQUEST):
+    def __init__(self, id, title, parent, REQUEST):
         self.id=id
         self.title=title
-        cookie=REQUEST['PATH_INFO']
-        l=rfind(cookie,'/')
-        if l >= 0: cookie=cookie[:l]
-        self.cookie="%s/%s" % (cookie, id)
+        try: parent=parent.Destination()
+        except: pass
+        self.cookie=self.__of__(parent).absolute_url(1)
 
     manage=manage_main=Globals.HTMLFile('version', globals())
     manage_editForm   =Globals.HTMLFile('versionEdit', globals())
@@ -193,7 +193,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     def save(self, remark, REQUEST=None):
         """Make version changes permanent"""
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             Globals.VersionBase[self.cookie].commit(remark)
@@ -202,13 +202,15 @@ class Version(Persistent,Implicit,RoleManager,Item):
             s=self.cookie
             d=self._p_jar.getVersion()
             if d==s: d=''
+            get_transaction().note(remark)
             db.commitVersion(s, d)
 
-        if REQUEST: return self.manage_main(self, REQUEST)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
     
     def discard(self, REQUEST=None):
         'Discard changes made during the version'
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             Globals.VersionBase[self.cookie].abort()
@@ -216,7 +218,8 @@ class Version(Persistent,Implicit,RoleManager,Item):
             # ZODB 3
             db.abortVersion(self.cookie)
 
-        if REQUEST: return self.manage_main(self, REQUEST)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
         
     def nonempty(self):
         try: db=self._p_jar.db()
@@ -233,3 +236,5 @@ class Version(Persistent,Implicit,RoleManager,Item):
                 "You cannot copy a %s object with <b>unsaved</b> changes.\n"
                 "You must <b>save</b> the changes first."
                 % self.meta_type)
+
+    
