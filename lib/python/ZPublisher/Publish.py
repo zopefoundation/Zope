@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.43 1997/05/14 15:07:22 jim Exp $"""
+$Id: Publish.py,v 1.44 1997/06/13 16:02:10 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.43 1997/05/14 15:07:22 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 
 def main():
@@ -825,16 +825,18 @@ class ModulePublisher:
 	    self.validate(groups,realm)
    
 	# Attempt to start a transaction:
-	try:
-	    transaction=get_transaction()
+	try: transaction=get_transaction()
+	except: transaction=None
+	if transaction is not None:
 	    info="\t" + self.env('PATH_INFO')
-	    u=self.request['AUTHENTICATED_USER']
-	    try: u="%s.%s" % (u, self.request['session__domain'])
-	    except: pass
-	    try: info=u+info
+	    try:
+		u=self.request['AUTHENTICATED_USER']
+		try: u="%s.%s" % (u, self.request['session__domain'])
+		except: pass
+		try: info=u+info
+		except: pass
 	    except: pass
 	    transaction.begin(info)
-	except: transaction=None
 
 	# Now get object meta-data to decide if and how it should be
 	# called:
@@ -1621,6 +1623,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.44  1997/06/13 16:02:10  jim
+# Fixed bug in computation of transaction info that made user
+# authentication required.
+#
 # Revision 1.43  1997/05/14 15:07:22  jim
 # Added session domain to user id, for generating session info.
 #
