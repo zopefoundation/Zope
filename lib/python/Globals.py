@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -19,7 +19,7 @@ try: home=os.environ['SOFTWARE_HOME']
 except:
     import Products
     home=package_home(Products.__dict__)
-    d,e=os.path.split(chome)
+    d,e=os.path.split(home)
     if d: home=d
 
 SOFTWARE_HOME=sys.modules['__builtin__'].SOFTWARE_HOME=home
