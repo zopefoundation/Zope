@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.19 1997/12/15 15:18:36 jim Exp $
+  $Id: ExtensionClass.c,v 1.20 1997/12/15 19:54:00 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.19 1997/12/15 15:18:36 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.20 1997/12/15 19:54:00 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -113,7 +113,8 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__getattr__, *py__setattr__, *py__delattr__,
   *py__del__, *py__repr__, *py__str__, *py__class__, *py__name__,
   *py__hash__, *py__cmp__, *py__var_size__, *py__init__, *py__getinitargs__,
-  *py__getstate__, *py__setstate__, *py__dict__, *pyclass_;
+  *py__getstate__, *py__setstate__, *py__dict__, *pyclass_,
+  *py__module__;
 
 static PyObject *concat_fmt=0;
 static PyObject *subclass_watcher=0;  /* Object that subclass events */
@@ -172,6 +173,7 @@ init_py_names()
   INIT_PY_NAME(__setstate__);
   INIT_PY_NAME(__dict__);
   INIT_PY_NAME(class_);
+  INIT_PY_NAME(__module__);
   
 #undef INIT_PY_NAME
 }
@@ -792,13 +794,27 @@ PMethod_getattro(PMethod *self, PyObject *oname)
       char *name;
 
       UNLESS(name=PyString_AsString(oname)) return NULL;
-        
-      if (name[0] != '_' && name[0] && name[1] != '_' &&
-	  PyEval_GetRestricted())
+
+      if(name[0]=='_' && name[1]=='_')
+	{
+	  if(strcmp(name+2,"name__")==0)
+	    return PyObject_GetAttrString(self->meth,"__name__");
+	  if(strcmp(name+2,"doc__")==0)
+	    return PyObject_GetAttrString(self->meth,"__doc__");
+	}        
+      else if (PyEval_GetRestricted())
 	{
 	  PyErr_SetString(PyExc_RuntimeError,
-	       	  "function attributes not accessible in restricted mode");
+	       "function attributes not accessible in restricted mode");
 	  return NULL;
+	}
+      else if(name[0]=='f' && name[1]=='u' && name[2]=='n' && name[3]=='c'
+	      && name[4]=='_')
+	{
+	  if(strcmp(name+5,"name")==0 )
+	    return PyObject_GetAttrString(self->meth,"__name__");
+	  if(strcmp(name+5,"doc")==0)
+	    return PyObject_GetAttrString(self->meth,"__doc__");
 	}
 
       if(*name++=='i' && *name++=='m' && *name++=='_')
@@ -3120,6 +3136,20 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   subclass_set(str,str);
   self->tp_doc=0;
 
+  /* Implement __module__=__name__ */
+  if (PyDict_GetItem(methods, py__module__) == NULL)
+    {
+      PyObject *globals = PyEval_GetGlobals();
+      if (globals != NULL)
+	{
+	  PyObject *modname = PyDict_GetItem(globals, py__name__);
+	  if (modname != NULL) {
+	    if (PyDict_SetItem(methods, py__module__, modname) < 0)
+	      return NULL;
+	  }
+	}
+    }
+
   /* Check for and use __class_init__ */
   if((class_init=PyObject_GetAttrString(AsPyObject(self),"__class_init__")))
     {
@@ -3197,6 +3227,19 @@ static int
 export_type(PyObject *dict, char *name, PyExtensionClass *typ)
 {
   initializeBaseExtensionClass(typ);
+
+  if(PyErr_Occurred()) return -1;
+
+  if (PyDict_GetItem(typ->class_dictionary, py__module__) == NULL)
+    {
+      PyObject *modname = PyDict_GetItem(dict, py__name__);
+      if (modname != NULL) {
+	if (PyDict_SetItem(typ->class_dictionary, py__module__, modname) < 0)
+	  return NULL;
+      }
+    }
+  PyErr_Clear();
+  
   return PyMapping_SetItemString(dict,name,(PyObject*)typ);
 }
 
@@ -3216,7 +3259,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.19 $";
+  char *rev="$Revision: 1.20 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3257,6 +3300,10 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.20  1997/12/15 19:54:00  jim
+  Fixed bug in method attribute handling.
+  Added support for sniffing out __module__ for classes.
+
   Revision 1.19  1997/12/15 15:18:36  jim
   Changed so that __basicnew__ is always available and calls regular
   constructor when EXTENSIONCLASS_BASICNEW_FLAG is not set.
