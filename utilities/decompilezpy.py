@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python2.2
+
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
