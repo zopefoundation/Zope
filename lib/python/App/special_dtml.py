@@ -83,7 +83,9 @@
 # 
 ##############################################################################
 
-import DocumentTemplate, Common, Persistence, MethodObject, Globals, os
+import DocumentTemplate, Common, Persistence, MethodObject, Globals, os, sys
+from types import InstanceType
+from zLOG import LOG,WARNING
 
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
     "Persistent HTML Document Templates"
@@ -164,6 +166,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     _Bindings_client = 'container'
 
     def __init__(self, name, _prefix=None, **kw):
+
         self.ZBindings_edit(defaultBindings)
         self._setFuncSignature()
         apply(DTMLFile.inheritedAttribute('__init__'),
@@ -240,6 +243,13 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             if value is _marker:
                 try: result = render_blocks(self._v_blocks, ns)
                 except DTReturn, v: result = v.v
+                except AttributeError: 
+                    if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
+                        LOG("ZPublisher",WARNING,"DTML file '%s' not found" % self.raw) 
+                        raise "DTML file error","Check logfile for details"
+                    else:
+                        raise
+
                 self.ZDocumentTemplate_afterRender(ns, result)
                 return result
             else:
