@@ -4,7 +4,7 @@
 <TITLE>Rename Items</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<dtml-if expr="_.hasattr(REQUEST, 'ids')">
+<dtml-if expr="REQUEST.has_key('ids')">
 
  <dtml-if "_.len( ids ) > 1">
   <H2>Rename Items</H2>
