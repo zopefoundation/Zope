@@ -87,7 +87,7 @@
 
 
 """
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -138,7 +138,7 @@ class UnTextIndex(Persistent):
         self._unindex = IOBTree()
 
 
-    def positions(self, docid, words):
+    def positions(self, docid, words, obj):
         """Return the positions in the document for the given document
         id of the word, word."""
         id = self.id
@@ -150,12 +150,10 @@ class UnTextIndex(Persistent):
             id = self._schema[id]
 
 
-        row = self._data[docid]
-
         if self.call_methods:
-            doc = str(f(row, id)())
+            doc = str(f(obj, id)())
         else:
-            doc = str(f(row, id))
+            doc = str(f(obj, id))
 
         r = []
         for word in words:
