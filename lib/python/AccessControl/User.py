@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.145 $'[11:-2]
+__version__='$Revision: 1.146 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -218,57 +218,81 @@ class BasicUser(Implicit):
                   parent=parent.aq_parent
               else: return r
 
+    def _check_context(self, object):
+        # Check that 'object' exists in the acquisition context of
+        # the parent of the acl_users object containing this user,
+        # to prevent "stealing" access through acquisition tricks.
+        # Return true if in context, false if not or if context
+        # cannot be determined (object is not wrapped).
+        parent  = getattr(self, 'aq_parent', None)
+        context = getattr(parent, 'aq_parent', None)
+        if context is not None:
+            if object is None:
+                return 1
+            if not hasattr(object, 'aq_inContextOf'):
+                if hasattr(object, 'im_self'):
+                    # This is a method.  Grab its self.
+                    object=object.im_self
+                if not hasattr(object, 'aq_inContextOf'):
+                    # Object is not wrapped, so return false.
+                    return 0
+            if object.aq_inContextOf(context, 1):
+                return 1
+        return 0
 
     def allowed(self, object, object_roles=None):
-        """Check whether the user has access to object, assuming that
-           object.__roles__ is the given roles."""
+        """Check whether the user has access to object. The user must
+           have one of the roles in object_roles to allow access."""
+
+        # Short-circuit the common case of anonymous access.
         if object_roles is None or 'Anonymous' in object_roles:
             return 1
-        usr_roles=self.getRolesInContext(object)
-        for role in object_roles:
-            if role in usr_roles:
-                # The user apparently has one of the necessary
-                # roles, but first make sure the object exists
-                # in the context of the parent of the acl_users
-                # folder.
-                ufolder = getattr(self, 'aq_parent', None)
-                ucontext = getattr(ufolder, 'aq_parent', None)
-                if ucontext is not None:
-                    if object is None:
-                        # This is a strange rule, though
-                        # it doesn't cause any security holes. SDH
-                        return 1
-                    if not hasattr(object, 'aq_inContextOf'):
-                        if hasattr(object, 'im_self'):
-                            # This is a method.  Grab its self.
-                            object=object.im_self
-                        if not hasattr(object, 'aq_inContextOf'):
-                            # object is not wrapped, therefore we
-                            # can't determine context.
-                            # Fail the access attempt.  Otherwise
-                            # this would be a security hole.
-                            return None
-                    if not object.aq_inContextOf(ucontext, 1):
-                        if 'Shared' in object_roles:
-                            # Damn, old role setting. Waaa
-                            object_roles=self._shared_roles(object)
-                            if 'Anonymous' in object_roles: return 1
-                        return None
 
-                # Note that if self were not wrapped, it would
-                # not be possible to determine the user's context
-                # and this method would return 1.
-                # However, as long as user folders always return
-                # wrapped user objects, this is safe.
+        # Check for ancient role data up front, convert if found.
+        # This should almost never happen, and should probably be
+        # deprecated at some point.
+        if 'Shared' in object_roles:
+            object_roles = self._shared_roles(object)
+            if object_roles is None or 'Anonymous' in object_roles:
                 return 1
 
-        if 'Shared' in object_roles:
-            # Damn, old role setting. Waaa
-            object_roles=self._shared_roles(object)
-            if object_roles is None or 'Anonymous' in object_roles: return 1
-            while 'Shared' in object_roles: object_roles.remove('Shared')
-            return self.allowed(object,object_roles)
+        # Check for a role match with the normal roles given to
+        # the user, then with local roles only if necessary. We
+        # want to avoid as much overhead as possible.
+        user_roles = self.getRoles()
+        for role in object_roles:
+            if role in user_roles:
+                if self._check_context(object):
+                    return 1
+                return None
 
+        # Still have not found a match, so check local roles. We do
+        # this manually rather than call getRolesInContext so that
+        # we can incur only the overhead required to find a match.
+        inner_obj = getattr(object, 'aq_inner', object)
+        user_name = self.getUserName()
+        while 1:
+            local_roles = getattr(inner_obj, '__ac_local_roles__', None)
+            if local_roles:
+                if callable(local_roles):
+                    local_roles = local_roles()
+                dict = local_roles or {}
+                local_roles = dict.get(user_name, [])
+                for role in object_roles:
+                    if role in local_roles:
+                        if self._check_context(object):
+                            return 1
+                        return 0
+            inner = getattr(inner_obj, 'aq_inner', inner_obj)
+            parent = getattr(inner, 'aq_parent', None)
+            if parent is not None:
+                inner_obj = parent
+                continue
+            if hasattr(inner_obj, 'im_self'):
+                inner_obj=inner_obj.im_self
+                inner_obj=getattr(inner_obj, 'aq_inner', inner_obj)
+                continue
+            break
         return None
 
     hasRole=allowed
