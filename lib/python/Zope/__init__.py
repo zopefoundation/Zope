@@ -47,6 +47,10 @@ else:
     Globals.BobobaseName = DB.getName()
     sys.modules['Zope.custom_zodb']=m
 
+if DB.getActivityMonitor() is None:
+    from ZODB.ActivityMonitor import ActivityMonitor
+    DB.setActivityMonitor(ActivityMonitor())
+
 Globals.DB=DB # Ick, this is temporary until we come up with some registry
 
 # Hook for providing multiple transaction object manager undo support:

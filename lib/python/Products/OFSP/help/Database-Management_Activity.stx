@@ -1,0 +1,62 @@
+Database Management - Activity
+  
+  Description
+
+    This view displays activity in the ZODB over a period of time.
+    It shows how many objects were loaded and stored.  You can use
+    this information to determine the optimal memory cache size for
+    your Zope application.  You can also use it to discover
+    applications that write to the database too often.
+
+  Information
+
+    'Keep History' -- Lets you define how many seconds of history
+    to keep for analysis.  3600 is one hour.  86400 is one day.
+    Note that in the current implementation, analysis data is
+    kept only in memory and is never stored to disk, so each time
+    you restart, you lose the historical information.
+
+    'Displayed Range' -- Tells you what period of time is displayed
+    by the chart.
+
+    'Show current chart' -- Redisplays the chart for the current
+    time.
+
+    The chart contains a bar graph.  The rightmost bar shows the
+    most recent activity.  The red portion indicates the number of
+    objects stored and the blue portion indicates the number of
+    objects loaded during that time period.  To the right of the
+    graph there is a total.
+
+    If you click on a bar, the chart will zoom in on the time
+    period for just that bar.  You will see the details of the
+    activity during that short time period.  Click the "Show current
+    chart" button to return to the chart for the current time.
+
+  How to use this information
+
+    Once Zope has loaded enough objects, the ZODB cache consistently
+    keeps in the cache the number of objects you specify under the
+    "Cache Parameters" tab.  Because the cache size is so consistent
+    and ZODB is so transparent to both the user and
+    application developer, Zope applications can invisibly develop a
+    performance problem by loading objects from ZODB on every request.
+
+    Also, if the cache size is set too high, Zope will consume more
+    RAM than it needs.  You need to find a good balance that fits
+    your site.  If the bar chart shows a large number of objects being
+    loaded all the time, increase the cache size, which will increase
+    memory usage but should also increase performance.  If the
+    chart shows little activity even though the site is visited
+    frequently, you can reduce the cache size so Zope will consume less
+    RAM.
+
+    As your site changes, its cache size requirements may change also,
+    so remember to make adjustments over time.
+
+    If the graph shows a lot of writes (a significant portion of red),
+    some application or product may be writing to the database too
+    frequently.  Check the "undo" log for clues.  Note that the activity
+    graph does not show activity in mounted databases, so objects loaded
+    and stored by the sessioning machinery are not counted in the graph.
+

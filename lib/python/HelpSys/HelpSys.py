@@ -105,7 +105,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
         script='window.open(\'%s\',\'zope_help\',\'width=600,' \
                 'height=500,menubar=yes,toolbar=yes,scrollbars=yes,' \
-                'resizable=yes\').focus(); return false;' % help_url
+                'resizable=yes\'); return false;' % help_url
 
         h_link='<a href="%s" onClick="%s" onMouseOver="window.status=' \
                '\'Open online help\'; return true;" onMouseOut="' \

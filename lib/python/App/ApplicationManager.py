@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 
 import sys,os,time,Globals, Acquisition, os, Undo
@@ -49,6 +49,8 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         (
         {'label':'Database', 'action':'manage_main',
          'help':('OFSP','Database-Management_Database.stx')},
+        {'label':'Activity', 'action':'manage_activity',
+         'help':('OFSP','Database-Management_Activity.stx')},
         {'label':'Cache Parameters', 'action':'manage_cacheParameters',
          'help':('OFSP','Database-Management_Cache-Parameters.stx')},
         {'label':'Flush Cache', 'action':'manage_cacheGC',
@@ -58,6 +60,7 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
     # These need to be here rather to make tabs work correctly. This
     # needs to be revisited.
+    manage_activity=Globals.DTMLFile('dtml/activity', globals())
     manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
     manage_cacheGC=Globals.DTMLFile('dtml/cacheGC', globals())
 

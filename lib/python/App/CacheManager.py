@@ -13,10 +13,11 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.24 2002/03/27 10:14:00 htrd Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: CacheManager.py,v 1.25 2002/06/10 20:20:43 shane Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import Globals, time, sys
+from DateTime import DateTime
 
 class CacheManager:
     """Cache management mix-in
@@ -25,9 +26,14 @@ class CacheManager:
     _cache_size=400
     _vcache_age=60
     _vcache_size=400
+    _history_length = 3600  # Seconds
 
     manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
     manage_cacheGC=Globals.DTMLFile('dtml/cacheGC', globals())
+
+    transparent_bar = Globals.ImageFile('www/transparent_bar.gif', globals())
+    store_bar = Globals.ImageFile('www/store_bar.gif', globals())
+    load_bar = Globals.ImageFile('www/load_bar.gif', globals())
 
     def cache_length(self):
         try: db=self._p_jar.db()
@@ -185,6 +191,9 @@ class CacheManager:
             db.setCacheDeactivateAfter(self._cache_age)
             db.setVersionCacheSize(self._vcache_size)
             db.setVersionCacheDeactivateAfter(self._vcache_age)
+            am = self._getActivityMonitor()
+            if am is not None:
+                am.setHistoryLength(self._history_length)
 
     def cache_detail(self, REQUEST=None):
         """
@@ -238,6 +247,119 @@ class CacheManager:
         else:
             # raw
             return detail
+
+    def _getActivityMonitor(self):
+        db = self._p_jar.db()
+        if not hasattr(db, 'getActivityMonitor'):
+            return None
+        am = db.getActivityMonitor()
+        if am is None:
+            return None
+        return am
+
+    def getHistoryLength(self):
+        am = self._getActivityMonitor()
+        if am is None:
+            return 0
+        return am.getHistoryLength()
+
+    def manage_setHistoryLength(self, length, REQUEST=None):
+        """Change the length of the activity monitor history.
+        """
+        am = self._getActivityMonitor()
+        length = int(length)
+        if length < 0:
+            raise ValueError, 'length can not be negative'
+        if am is not None:
+            am.setHistoryLength(length)
+        self._history_length = length  # Restore on startup
+
+        if REQUEST is not None:
+            response = REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1'] + '/manage_activity')
+
+    def getActivityChartData(self, segment_height, REQUEST=None):
+        """Returns information for generating an activity chart.
+        """
+        am = self._getActivityMonitor()
+        if am is None:
+            return None
+
+        if REQUEST is not None:
+            start = float(REQUEST.get('chart_start', 0))
+            end = float(REQUEST.get('chart_end', 0))
+            divisions = int(REQUEST.get('chart_divisions', 10))
+            analysis = am.getActivityAnalysis(start, end, divisions)
+        else:
+            analysis = am.getActivityAnalysis()
+
+        total_load_count = 0
+        total_store_count = 0
+        limit = 0
+        divs = []
+        for div in analysis:
+            total_store_count = total_store_count + div['stores']
+            total_load_count = total_load_count + div['loads']
+            sum = div['stores'] + div['loads']
+            if sum > limit:
+                limit = sum
+
+        if analysis:
+            segment_time = analysis[0]['end'] - analysis[0]['start']
+        else:
+            segment_time = 0
+
+        for div in analysis:
+            stores = div['stores']
+            if stores > 0:
+                store_len = max(int(segment_height * stores / limit), 1)
+            else:
+                store_len = 0
+            loads = div['loads']
+            if loads > 0:
+                load_len = max(int(segment_height * loads / limit), 1)
+            else:
+                load_len = 0
+            
+            t = div['end'] - analysis[-1]['end']  # Show negative numbers.
+            if segment_time >= 3600:
+                # Show hours.
+                time_offset = '%dh' % (t / 3600)
+            elif segment_time >= 60:
+                # Show minutes.
+                time_offset = '%dm' % (t / 60)
+            elif segment_time >= 1:
+                # Show seconds.
+                time_offset = '%ds' % t
+            else:
+                # Show fractions.
+                time_offset = '%.2fs' % t
+            divs.append({
+                'store_len': store_len,
+                'load_len': load_len,
+                'trans_len': max(segment_height - store_len - load_len, 0),
+                'store_count': div['stores'],
+                'load_count': div['loads'],
+                'start': div['start'],
+                'end': div['end'],
+                'time_offset': time_offset,
+                })
+
+        if analysis:
+            start_time = DateTime(divs[0]['start']).aCommonZ()
+            end_time = DateTime(divs[-1]['end']).aCommonZ()
+        else:
+            start_time = ''
+            end_time = ''
+
+        res = {'start_time': start_time,
+               'end_time': end_time,
+               'divs': divs,
+               'total_store_count': total_store_count,
+               'total_load_count': total_load_count,
+               }
+        return res
+
 
 Globals.default__class_init__(CacheManager)
 
