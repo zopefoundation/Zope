@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.36 1997/04/23 17:11:36 chris Exp $'''
+$Id: InvertedIndex.py,v 1.37 1997/04/23 17:17:34 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,11 @@ $Id: InvertedIndex.py,v 1.36 1997/04/23 17:11:36 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.37  1997/04/23 17:17:34  chris
+# added a setitem on the _index_object in Index.addentry
+# to be sure changes are registered when not saving persistent
+# objects.
+#
 # Revision 1.36  1997/04/23 17:11:36  chris
 # remove_document() now uses a WordSequence.
 #
@@ -203,7 +208,7 @@ $Id: InvertedIndex.py,v 1.36 1997/04/23 17:11:36 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 import regex, string, copy
@@ -572,6 +577,7 @@ class Index:
             rl = { rl[0] : rl[1:] }
   
         rl[key] = data
+        index[word] = rl
 
   
     def __getitem__(self, key):
