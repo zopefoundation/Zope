@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -269,6 +269,7 @@ class CopyContainer(ExtensionClass.Base):
                 REQUEST['RESPONSE'].setCookie('__cp', 'deleted',
                                     path='%s' % REQUEST['SCRIPT_NAME'],
                                     expires='Wed, 31-Dec-97 23:59:59 GMT')
+                REQUEST['__cp'] = None
                 return self.manage_main(self, REQUEST, update_menu=1,
                                         cb_dataValid=0)
         return ''
@@ -276,7 +277,7 @@ class CopyContainer(ExtensionClass.Base):
 
     manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())
 
-    def manage_renameObjects(self, ids, new_ids, REQUEST=None):
+    def manage_renameObjects(self, ids=[], new_ids=[], REQUEST=None):
         """Rename several sub-objects"""
         if len(ids) != len(new_ids):
             raise 'Bad Request','Please rename each listed object.'
