@@ -100,6 +100,16 @@ class Response:
             # Convert Fault object to XML-RPC response.
             body=xmlrpclib.dumps(body, methodresponse=1)
         else:
+            if type(body) == InstanceType:
+                # Avoid disclosing private members. Private members are
+                # by convention named with a leading underscore char.
+                orig = body.__dict__
+                dict = {}
+                for key in orig.keys():
+                    if key[:1] != '_':
+                        dict[key] = orig[key]
+                body = dict
+
             # Marshall our body as an XML-RPC response. Strings will be sent
             # strings, integers as integers, etc. We do *not* convert
             # everything to a string first.

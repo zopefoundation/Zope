@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.78 2003/12/26 23:48:18 jeremy Exp $'''
-__version__ = '$Revision: 1.78 $'[11:-2]
+$Id: HTTPResponse.py,v 1.79 2004/01/15 23:02:08 tseaver Exp $'''
+__version__ = '$Revision: 1.79 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -461,7 +461,8 @@ class HTTPResponse(BaseResponse):
                     ibase = base_re_search(body)
                     if ibase is None:
                         self.body = ('%s\n<base href="%s" />\n%s' %
-                                   (body[:index], self.base, body[index:]))
+                                   (body[:index], self.quoteHTML(self.base),
+                                    body[index:]))
                         self.setHeader('content-length', len(self.body))
 
     def appendCookie(self, name, value):
