@@ -4,11 +4,10 @@
 # install Management.py
 # install Undo.py
 # install appMain.dtml
-# install manage.dtml
-# install menu.dtml
-# install pack.dtml
-# install undo.dtml
 # install cache.dtml
 # install copyright.dtml
+# install manage.dtml
 # install manage_tabs.dtml
-# install www www/%(package)s
+# install menu.dtml
+# install undo.dtml
+# install www

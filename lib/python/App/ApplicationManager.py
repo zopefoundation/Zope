@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -13,9 +13,7 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     __roles__=['Manager']
 
     manage=manage_main=HTMLFile('appMain', globals())
-    manage_packForm=HTMLFile('pack', globals())
     manage_undoForm=HTMLFile('undo', globals())
-    manage=manage_main
 
     manage_options=(
     {'icon':'OFS/ControlPanel_icon.gif', 'label':'System',
@@ -24,8 +22,6 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
      'action':'manage_cacheForm','target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
-#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-#     'action':'manage_main',   'target':'_new'},
     )
 
     id        ='Control_Panel'
