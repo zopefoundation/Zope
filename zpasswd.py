@@ -39,7 +39,7 @@ for all necessary information.  The available options are:
     information in (usually "inituser" or "access").
 """
 
-__version__='$Revision: 1.18 $ '[11:-2]
+__version__='$Revision: 1.19 $ '[11:-2]
 
 import sys,  sha, binascii, random, getopt, getpass, os
 
@@ -80,7 +80,7 @@ def write_generated_password(home, ac_path, username):
         pw = pw + random.choice(pw_choices)
     acfile.write('%s:%s' % (username, generate_passwd(pw, 'SHA')))
     acfile.close()
-    os.system('chmod 644 %s' % ac_path)
+    os.chmod(ac_path, 644)
     return pw
 
 def write_access(home, user='', group=''):

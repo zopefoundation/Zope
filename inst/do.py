@@ -48,8 +48,7 @@ def ch(path, user, group, mode=0600, quiet=0):
     if user:
         do("chown %s %s" % (user, path), 0, quiet)
 
-    do("chmod %s %s" % (oct(mode), path), 0, quiet)
-
+    os.chmod(path, mode)
 
 def make(*args):
     print
