@@ -13,8 +13,8 @@
 """User folder tests
 """
 
-__rcs_id__='$Id: testUserFolder.py,v 1.6 2002/10/16 21:14:41 chrism Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: testUserFolder.py,v 1.7 2003/01/21 02:58:58 chrism Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os, sys, unittest
 
@@ -34,6 +34,7 @@ class UserFolderTests(unittest.TestCase):
                 self.maxlistusers = size
                 self.users = []
                 self.acl_users = self
+                self.__allow_groups__ = self
                 for i in xrange(count):
                     self.users.append("Nobody")
 
