@@ -46,6 +46,8 @@ Zope Changes
 
     Bugs fixed
 
+      - zopectl: fixed handling of child processes (patch by Dieter Maurer)
+
       - Collector #1593: fixed dumb _get_id() implementation in
         OFS.CopySupport that produced copy_of_copy_of....files
 

@@ -284,9 +284,23 @@ def main(args=None):
         c.do_status()
         c.cmdloop()
 
+def _ignoreSIGCHLD(*unused):
+    while 1:
+        try: os.waitpid(-1, os.WNOHANG)
+        except OSError: break
+
+
 if __name__ == "__main__":
     # we don't care to be notified of our childrens' exit statuses.
     # this prevents zombie processes from cluttering up the process
     # table when zopectl start/stop is used interactively.
-    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    # DM 2004-11-26: from the Linux "execve(2)" manual page:
+    #     Any signals set to be caught by the calling process are reset
+    #     to their default behaviour.
+    #     The SIGCHLD signal (when set to SIG_IGN) may or may not be reset
+    #     to SIG_DFL. 
+    #   If it is not reset, 'os.wait[pid]' can non-deterministically fail.
+    #   Thus, use a way such that "SIGCHLD" is definitely reset in children.
+    #signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    signal.signal(signal.SIGCHLD, _ignoreSIGCHLD)
     main()
