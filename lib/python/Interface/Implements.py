@@ -14,7 +14,7 @@
 """Implemantation assertion facilities.
 
 Revision information:
-$Id: Implements.py,v 1.3 2002/08/14 21:35:32 mj Exp $
+$Id: Implements.py,v 1.4 2003/02/12 08:46:09 andreasjung Exp $
 """
 
 import Exceptions
@@ -95,7 +95,7 @@ def visitImplements(implements, object, visitor, getInterface=None):
         raise Exceptions.BadImplements(
             """__implements__ should be an interface or tuple,
             not a %s""" % type(implements).__name__)
-    return None
+    return 0
 
 
 def assertTypeImplements(type, interfaces):
