@@ -167,8 +167,11 @@ def zpublisher_exception_hook(
         if REQUEST.get('AUTHENTICATED_USER', None) is None:
             REQUEST['AUTHENTICATED_USER']=AccessControl.User.nobody
 
-
-        f(client, REQUEST, t, v, traceback)
+        try:
+            f(client, REQUEST, t, v, traceback, error_log_url=error_log_url)
+        except TypeError:
+            # Pre 2.6 call signature
+            f(client, REQUEST, t, v, traceback)
 
     finally: traceback=None
 

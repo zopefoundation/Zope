@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.104 2002/08/30 19:17:07 caseman Exp $'''
-__version__='$Revision: 1.104 $'[11:-2]
+$Id: SimpleItem.py,v 1.105 2002/08/30 20:21:29 caseman Exp $'''
+__version__='$Revision: 1.105 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -142,7 +142,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         self, client=None, REQUEST={},
         error_type=None, error_value=None, tb=None,
         error_tb=None, error_message='',
-        tagSearch=re.compile(r'[a-zA-Z]>').search):
+        tagSearch=re.compile(r'[a-zA-Z]>').search,
+        error_log_url=''):
 
         try:
             if error_type  is None: error_type =sys.exc_info()[0]
