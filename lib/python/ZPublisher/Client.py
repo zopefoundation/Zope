@@ -1,5 +1,5 @@
 """Bobo call interface"""
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys,regex
 from httplib import HTTP
@@ -145,7 +145,7 @@ class RemoteMethod:
 	    response     =h.getfile().read()
 	except:
 	    raise NotAvailable, \
-		  RemoteException(NotAvailable,sys.exc_value,self.rurl,query)
+		  RemoteException(NotAvailable,sys.exc_value,self.url,query)
 
 	if ec==200: return (headers,response)
 	else:
@@ -156,7 +156,7 @@ class RemoteMethod:
 		if   ec >= 400 and ec < 500: t=NotFound
 		elif ec >= 500 and ec < 600: t=ServerError
 		else:                        t=NotAvailable
-	    raise t, RemoteException(t,v,self.rurl,query,ec,em,response)
+	    raise t, RemoteException(t,v,self.url,query,ec,em,response)
 
 
 
@@ -245,6 +245,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.6  1997/04/18 16:41:36  jim
+# Machine name printed in NotFound
+#
 # Revision 1.5  1997/04/16 21:56:27  jim
 # repr now shows URL on Not Found.
 #
