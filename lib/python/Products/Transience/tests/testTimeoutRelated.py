@@ -58,6 +58,7 @@ class TestBase(TestCase):
     def setUp(self):
         Products.Transience.Transience.time = fauxtime
         Products.Transience.TransientObject.time = fauxtime
+        Products.Transience.Transience.setStrict(1)
         self.app = makerequest.makerequest(_getApp())
         timeout = self.timeout = 1
         sm=TransientObjectContainer(
@@ -72,6 +73,7 @@ class TestBase(TestCase):
         del self.app
         Products.Transience.Transience.time = oldtime
         Products.Transience.TransientObject.time = oldtime
+        Products.Transience.Transience.setStrict(0)
 
 class TestLastAccessed(TestBase):
     def testLastAccessed(self):
@@ -92,7 +94,7 @@ class TestLastAccessed(TestBase):
         # to get to the next Windows time.time() tick.
         fauxtime.sleep(WRITEGRANULARITY + 0.06 * 60)
         sdo = self.app.sm.get('TempObject')
-        assert sdo.getLastAccessed() > la1, (sdo.getLastAccessed(), la1)
+        self.assert_(sdo.getLastAccessed() > la1)
 
 class TestNotifications(TestBase):
     def testAddNotification(self):
@@ -100,8 +102,8 @@ class TestNotifications(TestBase):
         sdo = self.app.sm.new_or_existing('TempObject')
         now = fauxtime.time()
         k = sdo.get('starttime')
-        assert type(k) == type(now)
-        assert k <= now
+        self.assertEqual(type(k), type(now))
+        self.assert_(k <= now)
 
     def testDelNotification(self):
         self.app.sm.setDelNotificationTarget(delNotificationTarget)
@@ -110,12 +112,11 @@ class TestNotifications(TestBase):
         fauxtime.sleep(timeout + (timeout * .75))
         sdo1 = self.app.sm.get('TempObject')
         # force the sdm to do housekeeping
-        self.app.sm._housekeep(self.app.sm._deindex_next() -
-                                   self.app.sm._period)
+        self.app.sm._gc()
         now = fauxtime.time()
         k = sdo.get('endtime')
-        assert (type(k) == type(now)), type(k)
-        assert k <= now, (k, now)
+        self.assertEqual(type(k), type(now))
+        self.assert_(k <= now)
 
 def addNotificationTarget(item, context):
     item['starttime'] = fauxtime.time()

@@ -25,6 +25,7 @@ class TestTransientObject(TestCase):
     def setUp(self):
         Products.Transience.Transience.time = fauxtime
         Products.Transience.TransientObject.time = fauxtime
+        Products.Transience.Transience.setStrict(1)
         self.errmargin = .20
         self.timeout = 60
         self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60)
@@ -32,55 +33,56 @@ class TestTransientObject(TestCase):
     def tearDown(self):
         Products.Transience.Transience.time = oldtime
         Products.Transience.TransientObject.time = oldtime
+        Products.Transience.Transience.setStrict(0)
         self.t = None
         del self.t
 
     def test_id(self):
         t = self.t.new('xyzzy')
-        assert t.getId() != 'xyzzy'
-        assert t.getContainerKey() == 'xyzzy'
+        self.failIfEqual(t.getId(), 'xyzzy') # dont acquire
+        self.assertEqual(t.getContainerKey(), 'xyzzy')
 
     def test_validate(self):
         t = self.t.new('xyzzy')
-        assert t.isValid()
+        self.assert_(t.isValid())
         t.invalidate()
-        assert not t.isValid()
+        self.failIf(t.isValid())
 
     def test_getLastAccessed(self):
         t = self.t.new('xyzzy')
         ft = fauxtime.time()
-        assert t.getLastAccessed() <= ft
+        self.assert_(t.getLastAccessed() <= ft)
 
     def test_getCreated(self):
         t = self.t.new('xyzzy')
         ft = fauxtime.time()
-        assert t.getCreated() <= ft
+        self.assert_(t.getCreated() <= ft)
 
     def test_getLastModifiedUnset(self):
         t = self.t.new('xyzzy')
-        assert t.getLastModified() == None
+        self.assertEqual(t.getLastModified(), None)
 
     def test_getLastModifiedSet(self):
         t = self.t.new('xyzzy')
         t['a'] = 1
-        assert t.getLastModified() is not None
+        self.failIfEqual(t.getLastModified(), None)
 
     def testSetLastModified(self):
         t = self.t.new('xyzzy')
         ft = fauxtime.time()
         t.setLastModified()
-        assert t.getLastModified() is not None
+        self.failIfEqual(t.getLastModified(), None)
 
     def test_setLastAccessed(self):
         t = self.t.new('xyzzy')
         ft = fauxtime.time()
-        assert t.getLastAccessed() <= ft
+        self.assert_(t.getLastAccessed() <= ft)
         fauxtime.sleep(self.timeout)   # go to sleep past the granuarity
         ft2 = fauxtime.time()
         t.setLastAccessed()
         ft3 = fauxtime.time()
-        assert t.getLastAccessed() <= ft3
-        assert t.getLastAccessed() >= ft2
+        self.assert_(t.getLastAccessed() <= ft3)
+        self.assert_(t.getLastAccessed() >= ft2)
 
     def _genKeyError(self, t):
         return t.get('foobie')
@@ -91,27 +93,27 @@ class TestTransientObject(TestCase):
     def test_dictionaryLike(self):
         t = self.t.new('keytest')
         t.update(data)
-        assert t.keys() == data.keys()
-        assert t.values() == data.values()
-        assert t.items() == data.items()
+        self.assertEqual(t.keys(), data.keys())
+        self.assertEqual(t.values(), data.values())
+        self.assertEqual(t.items(), data.items())
         for k in data.keys():
-            assert t.get(k) == data.get(k)
-        assert t.get('foobie') is None
+            self.assertEqual(t.get(k), data.get(k))
+        self.assertEqual(t.get('foobie'), None)
         self.assertRaises(AttributeError, self._genLenError, t)
-        assert t.get('foobie',None) is None
-        assert t.has_key('a')
-        assert not t.has_key('foobie')
+        self.assertEqual(t.get('foobie',None), None)
+        self.assert_(t.has_key('a'))
+        self.failIf(t.has_key('foobie'))
         t.clear()
-        assert not len(t.keys())
+        self.assertEqual(len(t.keys()), 0)
 
     def test_TTWDictionary(self):
         t = self.t.new('mouthfultest')
         t.set('foo', 'bar')
-        assert t['foo'] == 'bar'
-        assert t.get('foo') == 'bar'
+        self.assertEqual(t['foo'], 'bar')
+        self.assertEqual(t.get('foo'), 'bar')
         t.set('foobie', 'blech')
         t.delete('foobie')
-        assert t.get('foobie') is None
+        self.assertEqual(t.get('foobie'), None)
 
 
 def test_suite():

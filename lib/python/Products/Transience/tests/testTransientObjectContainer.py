@@ -30,14 +30,17 @@ class TestBase(TestCase):
     def setUp(self):
         Products.Transience.Transience.time = fauxtime
         Products.Transience.TransientObject.time = fauxtime
+        Products.Transience.Transience.setStrict(1)
+                                          
         self.errmargin = .20
-        self.timeout = 60
+        self.timeout = 120
         self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60)
 
     def tearDown(self):
         self.t = None
         Products.Transience.Transience.time = oldtime
         Products.Transience.TransientObject.time = oldtime
+        Products.Transience.Transience.setStrict(0)
 
 class TestTransientObjectContainer(TestBase):
     def testGetItemFails(self):
@@ -47,30 +50,30 @@ class TestTransientObjectContainer(TestBase):
         return self.t[10]
 
     def testGetReturnsDefault(self):
-        assert self.t.get(10) == None
-        assert self.t.get(10, 'foo') == 'foo'
+        self.assertEqual(self.t.get(10), None)
+        self.assertEqual(self.t.get(10, 'foo'), 'foo')
 
     def testSetItemGetItemWorks(self):
         self.t[10] = 1
         a = self.t[10]
-        assert a == 1, `a`
+        self.assertEqual(a, 1)
 
     def testReplaceWorks(self):
         self.t[10] = 1
-        assert self.t[10] == 1
+        self.assertEqual(self.t[10], 1)
         self.t[10] = 2
-        assert self.t[10] == 2
+        self.assertEqual(self.t[10], 2)
 
     def testHasKeyWorks(self):
         self.t[10] = 1
-        assert self.t.has_key(10)
+        self.failUnless(self.t.has_key(10))
 
     def testValuesWorks(self):
         for x in range(10, 110):
             self.t[x] = x
         v = self.t.values()
         v.sort()
-        assert len(v) == 100
+        self.assertEqual(len(v), 100)
         i = 10
         for x in v:
             assert x == i
@@ -81,10 +84,10 @@ class TestTransientObjectContainer(TestBase):
             self.t[x] = x
         v = self.t.keys()
         v.sort()
-        assert len(v) == 100
+        self.assertEqual(len(v), 100)
         i = 10
         for x in v:
-            assert x == i
+            self.assertEqual(x, i)
             i = i + 1
 
     def testItemsWorks(self):
@@ -92,11 +95,11 @@ class TestTransientObjectContainer(TestBase):
             self.t[x] = x
         v = self.t.items()
         v.sort()
-        assert len(v) == 100
+        self.assertEquals(len(v), 100)
         i = 10
         for x in v:
-            assert x[0] == i
-            assert x[1] == i
+            self.assertEqual(x[0], i)
+            self.assertEqual(x[1], i)
             i = i + 1
 
     def testDeleteInvalidKeyRaisesKeyError(self):
@@ -104,63 +107,6 @@ class TestTransientObjectContainer(TestBase):
 
     def _deletefail(self):
         del self.t[10]
-
-    def donttestDeleteNoChildrenWorks(self):
-        self.t[5] = 6
-        self.t[2] = 10
-        self.t[6] = 12
-        self.t[1] = 100
-        self.t[3] = 200
-        self.t[10] = 500
-        self.t[4] = 99
-        del self.t[4]
-        assert lsubtract(self.t.keys(), [1,2,3,5,6,10]) == [], `self.t.keys()`
-
-    def donttestDeleteOneChildWorks(self):
-        self.t[5] = 6
-        self.t[2] = 10
-        self.t[6] = 12
-        self.t[1] = 100
-        self.t[3] = 200
-        self.t[10] = 500
-        self.t[4] = 99
-        del self.t[3]
-        assert lsubtract(self.t.keys(), [1,2,4,5,6,10]) == [], `self.t.keys()`
-
-    def donttestDeleteTwoChildrenNoInorderSuccessorWorks(self):
-        self.t[5] = 6
-        self.t[2] = 10
-        self.t[6] = 12
-        self.t[1] = 100
-        self.t[3] = 200
-        self.t[10] = 500
-        self.t[4] = 99
-        del self.t[2]
-        assert lsubtract(self.t.keys(),[1,3,4,5,6,10])==[], `self.t.keys()`
-
-    def donttestDeleteTwoChildrenInorderSuccessorWorks(self):
-        self.t[5] = 6
-        self.t[2] = 10
-        self.t[6] = 12
-        self.t[1] = 100
-        self.t[3] = 200
-        self.t[10] = 500
-        self.t[4] = 99
-        self.t[2.5] = 150
-        del self.t[2]
-        assert lsubtract(self.t.keys(),[1,2.5,3,4,5,6,10])==[], `self.t.keys()`
-
-    def donttestDeleteRootWorks(self):
-        self.t[5] = 6
-        self.t[2] = 10
-        self.t[6] = 12
-        self.t[1] = 100
-        self.t[3] = 200
-        self.t[10] = 500
-        self.t[4] = 99
-        self.t[2.5] = 150
-        del self.t[5]
-        assert lsubtract(self.t.keys(),[1,2,2.5,3,4,6,10])==[], `self.t.keys()`
 
     def testRandomNonOverlappingInserts(self):
         added = {}
@@ -172,7 +118,7 @@ class TestTransientObjectContainer(TestBase):
                 added[k] = 1
         addl = added.keys()
         addl.sort()
-        assert lsubtract(self.t.keys(),addl)==[], `self.t.keys()`
+        self.assertEqual(lsubtract(self.t.keys(),addl), [])
 
     def testRandomOverlappingInserts(self):
         added = {}
@@ -183,7 +129,7 @@ class TestTransientObjectContainer(TestBase):
             added[k] = 1
         addl = added.keys()
         addl.sort()
-        assert lsubtract(self.t.keys(), addl) ==[]
+        self.assertEqual(lsubtract(self.t.keys(), addl), [])
 
     def testRandomDeletes(self):
         r = range(10, 1010)
@@ -204,49 +150,48 @@ class TestTransientObjectContainer(TestBase):
         for x in deleted:
             if self.t.has_key(x):
                 badones.append(x)
-        assert badones == [], (badones, added, deleted)
+        self.assertEqual(badones, [])
 
     def testTargetedDeletes(self):
         r = range(10, 1010)
+        seen = {}
         for x in r:
             k = random.choice(r)
+            vals = seen.setdefault(k, [])
+            vals.append(x)
             self.t[k] = x
+        couldntdelete = {}
+        weird = []
+        results = {}
         for x in r:
             try:
-                del self.t[x]
-            except KeyError:
-                pass
-        assert self.t.keys() == [], `self.t.keys()`
+                ts, item = self.t.__delitem__(x)
+                results[x] = ts, item
+            except KeyError, v:
+                if v.args[0] != x:
+                    weird.append(x)
+                couldntdelete[x] = v.args[0]
+        self.assertEqual(self.t.keys(), [])
 
     def testPathologicalRightBranching(self):
         r = range(10, 1010)
-        # NOTE:  If the process running this test swaps out inside the loop,
-        # it can easily cause the test to fail, with a prefix of the expected
-        # keys missing (the keys added before the interruption expire by the
-        # time they're checked).  This can happen with interruptions of less
-        # than 1 wall-clock second, so can and does happen.
         for x in r:
             self.t[x] = 1
         assert list(self.t.keys()) == r, (self.t.keys(), r)
-        # NOTE:  The next line may fail even if the line above succeeds:  if
-        # the key age is such that keys *start* to expire right after
-        # list(self.t.keys()) completes, keys can vanish before __delitem__
-        # gets to them.
         map(self.t.__delitem__, r)
-        assert list(self.t.keys()) == [], self.t.keys()
+        self.assertEqual(list(self.t.keys()), [])
 
     def testPathologicalLeftBranching(self):
-        # See notes for testPathologicalRightBranching.
         r = range(10, 1010)
         revr = r[:]
         revr.reverse()
         for x in revr:
             self.t[x] = 1
-        assert list(self.t.keys()) == r, (self.t.keys(), r)
+        self.assertEqual(list(self.t.keys()), r)
         map(self.t.__delitem__, revr)
-        assert list(self.t.keys()) == [], self.t.keys()
+        self.assertEqual(list(self.t.keys()), [])
 
-    def donttestSuccessorChildParentRewriteExerciseCase(self):
+    def testSuccessorChildParentRewriteExerciseCase(self):
         add_order = [
             85, 73, 165, 273, 215, 142, 233, 67, 86, 166, 235, 225, 255,
             73, 175, 171, 285, 162, 108, 28, 283, 258, 232, 199, 260,
@@ -290,37 +235,7 @@ class TestTransientObjectContainer(TestBase):
         for x in delete_order:
             try: del self.t[x]
             except KeyError:
-                if self.t.has_key(x): assert 1==2,"failed to delete %s" % x
-
-    def testChangingTimeoutWorks(self):
-        # 1 minute
-        for x in range(10, 110):
-            self.t[x] = x
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        assert len(self.t.keys()) == 0, len(self.t.keys())
-
-        # 2 minutes
-        self.t._setTimeout(self.timeout/60*2)
-        self.t._reset()
-        for x in range(10, 110):
-            self.t[x] = x
-        fauxtime.sleep(self.timeout)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        assert len(self.t.keys()) == 0, len(self.t.keys())
-
-        # 3 minutes
-        self.t._setTimeout(self.timeout/60*3)
-        self.t._reset()
-        for x in range(10, 110):
-            self.t[x] = x
-        fauxtime.sleep(self.timeout)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxtime.sleep(self.timeout)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
-        assert len(self.t.keys()) == 0, len(self.t.keys())
-
+                self.failIf(self.t.has_key(x))
 
     def testItemsGetExpired(self):
         for x in range(10, 110):
@@ -329,10 +244,15 @@ class TestTransientObjectContainer(TestBase):
         fauxtime.sleep(self.timeout * (self.errmargin+1))
         for x in range(110, 210):
             self.t[x] = x
-        assert len(self.t.keys()) == 100, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 100)
+
+        # call _gc just to make sure __len__ gets changed after a gc
+        self.t._gc()
+        self.assertEqual(len(self.t), 100)
+
         # we should still have 100 - 199
         for x in range(110, 210):
-            assert self.t[x] == x
+            self.assertEqual(self.t[x], x)
         # but we shouldn't have 0 - 100
         for x in range(10, 110):
             try: self.t[x]
@@ -344,7 +264,7 @@ class TestTransientObjectContainer(TestBase):
         for x in range(10, 110):
             self.t[x] = x
         fauxtime.sleep(self.timeout * (self.errmargin+1))
-        assert len(self.t.keys()) == 0, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 0)
 
         # 2 minutes
         self.t._setTimeout(self.timeout/60*2)
@@ -352,9 +272,11 @@ class TestTransientObjectContainer(TestBase):
         for x in range(10, 110):
             self.t[x] = x
         fauxtime.sleep(self.timeout)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
+
+
+        self.assertEqual(len(self.t.keys()), 100)
         fauxtime.sleep(self.timeout * (self.errmargin+1))
-        assert len(self.t.keys()) == 0, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 0)
 
         # 3 minutes
         self.t._setTimeout(self.timeout/60*3)
@@ -362,11 +284,11 @@ class TestTransientObjectContainer(TestBase):
         for x in range(10, 110):
             self.t[x] = x
         fauxtime.sleep(self.timeout)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 100)
         fauxtime.sleep(self.timeout)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 100)
         fauxtime.sleep(self.timeout * (self.errmargin+1))
-        assert len(self.t.keys()) == 0, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 0)
 
     def testGetDelaysTimeout(self):
         for x in range(10, 110):
@@ -377,9 +299,9 @@ class TestTransientObjectContainer(TestBase):
         for x in range(10, 110):
             self.t.get(x)
         fauxtime.sleep(self.timeout/2)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
+        self.assertEqual(len(self.t.keys()), 100)
         for x in range(10, 110):
-            assert self.t[x] == x
+            self.assertEqual(self.t[x], x)
 
     def testSetItemDelaysTimeout(self):
         for x in range(10, 110):
@@ -405,19 +327,25 @@ class TestTransientObjectContainer(TestBase):
             added[k] = x
         self.assertEqual(len(self.t), len(added))
 
+        for k in added.keys():
+            del self.t[k]
+
+        self.assertEqual(len(self.t), 0)
+        
+
     def testResetWorks(self):
         self.t[10] = 1
         self.t._reset()
-        assert not self.t.get(10)
+        self.failIf(self.t.get(10))
 
     def testGetTimeoutMinutesWorks(self):
-        assert self.t.getTimeoutMinutes() == self.timeout / 60
+        self.assertEqual(self.t.getTimeoutMinutes(), self.timeout / 60)
         self.t._setTimeout(10)
-        assert self.t.getTimeoutMinutes() == 10
+        self.assertEqual(self.t.getTimeoutMinutes(), 10)
 
     def test_new(self):
         t = self.t.new('foobieblech')
-        assert issubclass(t.__class__, TransientObject)
+        self.failUnless(issubclass(t.__class__, TransientObject))
 
     def _dupNewItem(self):
         t = self.t.new('foobieblech')
@@ -430,18 +358,23 @@ class TestTransientObjectContainer(TestBase):
         t = self.t.new('foobieblech')
         t['hello'] = "Here I am!"
         t2 = self.t.new_or_existing('foobieblech')
-        assert t2['hello'] == "Here I am!"
+        self.assertEqual(t2['hello'], "Here I am!")
 
     def test_getId(self):
-        assert self.t.getId() == 'sdc'
+        self.assertEqual(self.t.getId(), 'sdc')
 
     def testSubobjectLimitWorks(self):
         self.t = TransientObjectContainer('a', timeout_mins=self.timeout/60,
                                           limit=10)
         self.assertRaises(MaxTransientObjectsExceeded, self._maxOut)
 
-    def testUnlimitedSubobjectLimitWorks(self):
-        self._maxOut()
+    def testZeroTimeoutMeansPersistForever(self):
+        self.t._setTimeout(0)
+        self.t._reset()
+        for x in range(10, 110):
+            self.t[x] = x
+        fauxtime.sleep(180)
+        self.assertEqual(len(self.t.keys()), 100)
 
     def _maxOut(self):
         for x in range(11):
@@ -457,7 +390,6 @@ def lsubtract(l1, l2):
 
 def test_suite():
     testsuite = makeSuite(TestTransientObjectContainer, 'test')
-    #testsuite = makeSuite(TestBase, 'test')
     alltests = TestSuite((testsuite,))
     return alltests
 

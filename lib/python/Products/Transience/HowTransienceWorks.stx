@@ -43,21 +43,8 @@ Data Structures Maintained by a Transient Object Container
     "current" bucket, which is the bucket that is contained within the
     _data structured with a key equal to the "current" timeslice.
 
-  - An "index" which is an OOBTree mapping transient object "key" to
-    "timeslice", letting us quickly figure out which element in the _data
-    mapping contains the transient object related to the key.  It is
-    stored as the attribute "_index" of the TOC.  When calling code
-    wants to obtain a Transient Object, its key is looked up in the
-    index, which returns a timeslice.  We ask the _data structure for the
-    bucket it has stored under that timeslice.  Then the bucket is asked
-    for the object stored under the key.  This returns the Transient Object.
-
-  - A "last timeslice" integer, which is equal to the "last" timeslice
-    under which TOC housekeeping operations were performed.
-
-  - A "next to deindex" integer, which is a timeslice
-    representing the next bucket which requires "deindexing"
-    (the removal of all the keys of the bucket from the index).
+  - A "max_timeslice" integer, which is equal to the "largest" timeslice
+    for which there exists a bucket in the _data structure.
 
   When a Transient Object is created via new_or_existing, it is added
   to the "current" bucket.  As time goes by, the bucket to which the
@@ -69,41 +56,35 @@ Data Structures Maintained by a Transient Object Container
   During the course of normal operations, a TransientObject will move
   from an "old" bucket to the "current" bucket many times, as long as
   it continues to be accessed.  It is possible for a TransientObject
-  to *never* expire, as long as it is called up out of its TOC often
+  to never expire, as long as it is called up out of its TOC often
   enough.
 
   If a TransientObject is not accessed in the period of time defined by
-  the TOC's "timeout", it is deindexed and eventually garbage collected.
+  the TOC's "timeout", it is eventually garbage collected.
 
 How the TransientObjectContainer Determines if a TransientObject is "Current"
 
-  A TO is current if it has an entry in the "index".  When a TO has an
-  entry in the index, it implies that the TO resides in a bucket that
-  is no "older" than the TOC timeout period, based on the bucket's
-  timeslice.
+  All "current" timeslice buckets (as specified by the timeout) are
+  searched for the transient object, most recent bucket first.
 
-Housekeeping: Finalization, Notification, Garbage Collection, and
-Bucket Replentishing
+Housekeeping: Notification, Garbage Collection, and Bucket
+Replentishing
 
-  The TOC performs "deindexing", "notification", "garbage
-  collection", and "bucket replentishing".  It performs these tasks
-  "in-band".  This means that the TOC does not maintain a separate
-  thread that wakes up every so often to do these housekeeping tasks.
-  Instead, during the course of normal operations, the TOC
-  opportunistically performs them.
-
-  Deindexing is defined as the act of making an "expired" TO
-  inaccessible (by deleting it from the "index").  After a TO is
-  deindexed, it may not be used by application code any longer,
-  although it may "stick around" in a bucket for a while until the
-  bucket is eventually garbage collected.
-
-  Notification is defined as optionally calling a function at TOC
-  finalization time.  The optional function call is user-defined, but
-  it is managed by the "notifyDestruct" method of the TOC.
+  The TOC performs "notification", "garbage collection", and "bucket
+  replentishing".  It performs these tasks "in-band".  This means that
+  the TOC does not maintain a separate thread that wakes up every so
+  often to do these housekeeping tasks.  Instead, during the course of
+  normal operations, the TOC opportunistically performs them.
 
   Garbage collection is defined as deleting "expired" buckets in the
   _data structure (the _data structure maps a timeslice to a bucket).
+  Typically this is done by throwing away one or more buckets in the
+  _data structure after they expire.
+
+  Notification is defined as optionally calling a function at TOC
+  finalization time against individual transient object contained
+  within a bucket.  The optional function call is user-defined, but it
+  is managed by the "notifyDel" method of the TOC.
 
   Bucket replentishing is defined as the action of (opportunistically)
   creating more buckets to insert into the the _data structure,
@@ -111,6 +92,9 @@ Bucket Replentishing
   of deleting a bucket does not necessarily imply that a new bucket
   will be immediately created thereafter.  We create new buckets in
   batches to reduce the possibility of conflicts.
+
+  Housekeeping is performed on a somewhat random basis to avoid
+  unnecessary conflicts.
 
 Goals
 
