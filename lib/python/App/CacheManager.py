@@ -58,8 +58,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.1 1997/09/19 15:55:52 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: CacheManager.py,v 1.2 1997/11/07 17:06:02 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals
 import time
@@ -79,12 +79,20 @@ class CacheManager:
     def cache_age(self): return self._cache_age
     def manage_cache_age(self,value,REQUEST):
 	"set cache age"
+	if self._p_jar.db is not Globals.Bobobase:
+	    raise 'Session Error', (
+		'''You may not change the database cache age
+		while working in a <em>session</em>''')
 	self._cache_age=Globals.Bobobase._jar.cache.cache_age=value
 	return self.manage_cacheForm(self,REQUEST)
 
     def cache_size(self): return self._cache_size
     def manage_cache_size(self,value,REQUEST):
 	"set cache size"
+	if self._p_jar.db is not Globals.Bobobase:
+	    raise 'Session Error', (
+		'''You may not change the database cache size
+		while working in a <em>session</em>''')
 	self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
 	return self.manage_cacheForm(self,REQUEST)
 
@@ -128,6 +136,9 @@ class CacheManager:
 ############################################################################## 
 #
 # $Log: CacheManager.py,v $
+# Revision 1.2  1997/11/07 17:06:02  jim
+# added session checks.
+#
 # Revision 1.1  1997/09/19 15:55:52  jim
 # *** empty log message ***
 #
