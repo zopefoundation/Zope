@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -317,9 +317,10 @@ class HTTPRequest(BaseRequest):
                 if (hasattr(item,'file') and hasattr(item,'filename')
                     and hasattr(item,'headers')):
                     if (item.file and
-                        (item.filename is not None or
-                         'content-type' in map(lower,
-                                               item.headers.keys()))):
+                        (item.filename is not None
+                         # RFC 1867 says that all fields get a content-type.
+                         # or 'content-type' in map(lower, item.headers.keys())
+                         )):
                         item=FileUpload(item)
                     else:
                         item=item.value
