@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 try:
     home=CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL
@@ -16,7 +16,6 @@ except:
 
 from SingleThreadedTransaction import PickleDictionary, Persistent
 from SingleThreadedTransaction import PersistentMapping
-from App.Dialogs import MessageDialog
 
 import DocumentTemplate
 
@@ -38,11 +37,16 @@ BobobaseName = '%s/Data.bbb' % data_dir
 
 HTML.shared_globals['SOFTWARE_URL']=SOFTWARE_URL
 
+from App.Dialogs import MessageDialog
+
 ##########################################################################
 #
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.6  1997/09/02 21:39:43  jim
+# Moved MessageDialog to end to deal with recursion in module imports.
+#
 # Revision 1.5  1997/08/28 19:32:36  jim
 # Jim told Paul to do it
 #
