@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -98,7 +98,7 @@ from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
 
-
+StringType=type('')
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file,title='',precondition='', content_type='',
@@ -111,14 +111,11 @@ def manage_addFile(self,id,file,title='',precondition='', content_type='',
 
     self=self.this()
 
-    # First, we create the image without data:
+    # First, we create the file without data:
     self._setObject(id, File(id,title,'',content_type, precondition))
 
-    # And commit to a sub-transaction:
-    if Globals.DatabaseVersion=='3': get_transaction().commit(1)
-
-    # Now we "upload" the data.  By commiting the add first, the
-    # object can use a database trick to make the upload more efficient.
+    # Now we "upload" the data.  By doing this in two steps, we
+    # can use a database trick to make the upload more efficient.
     self._getOb(id).manage_upload(file)
     
     if REQUEST is not None:
@@ -260,7 +257,7 @@ class File(Persistent,Implicit,PropertyManager,
         
         n=1<<16
         
-        if type(file) is type(''):
+        if type(file) is StringType:
             size=len(file)
             if size < n: return file, size
             return Pdata(file), size
@@ -270,11 +267,21 @@ class File(Persistent,Implicit,PropertyManager,
         
         seek(0,2)
         size=end=file.tell()
-        jar=self._p_jar
-        if size <= 2*n or jar is None or Globals.DatabaseVersion=='2':
+
+        if size <= 2*n:
             seek(0)
-            if size < n:
-                return read(size), size
+            if size < n: return read(size), size
+            return Pdata(read(size)), size
+
+        # Make sure we have an _p_jar, even if we are a new object, by
+        # doing a sub-transaction commit.
+        get_transaction().commit(1)
+        
+        jar=self._p_jar
+        
+        if jar is None:
+            # Ugh
+            seek(0)
             return Pdata(read(size)), size
 
         # Now we're going to build a linked list from back
@@ -363,9 +370,13 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
 
     self=self.this()
 
+    # First, we create the image without data:
     self._setObject(id, Image(id,title,'',content_type, precondition))
-    if Globals.DatabaseVersion=='3': get_transaction().commit(1)
+        
+    # Now we "upload" the data.  By doing this in two steps, we
+    # can use a database trick to make the upload more efficient.
     self._getOb(id).manage_upload(file)
+    
     if REQUEST is not None:
         try:    url=self.DestinationURL()
         except: url=REQUEST['URL1']
