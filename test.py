@@ -49,9 +49,11 @@ named .testinfo, it will not be searched for tests.  Really.)
 -c  
     Use pychecker
 
--C filename
 --config-file filename
     Configure Zope by loading the specified configuration file (zope.conf).
+
+-C filename
+    Shortcut for --config-file filename.
 
 -d
     Instead of the normal test harness, run a debug version which
