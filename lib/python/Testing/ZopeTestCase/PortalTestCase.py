@@ -135,18 +135,3 @@ class PortalTestCase(base.TestCase):
         '''Logs out.'''
         noSecurityManager()
 
-    # b/w compatibility methods
-
-    def _setRoles(self, roles, name=user_name):
-        self.setRoles(roles, name)
-    def _setPermissions(self, permissions, role='Member'):
-        self.setPermissions(permissions, role)
-    def _login(self, name=user_name):
-        self.login(name)
-    def _logout(self):
-        self.logout()
-
-
-# b/w compatibility names
-_portal_name = portal_name
-

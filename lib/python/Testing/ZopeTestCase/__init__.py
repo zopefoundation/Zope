@@ -30,18 +30,9 @@ from profiler import Profiled
 from sandbox import Sandboxed
 from functional import Functional
 
-from warnhook import WarningsHook
+from ZODB.tests.warnhook import WarningsHook
 from unittest import main
 
-# TODO
-#from doctest import ZopeDocFileSuite
-#from doctest import FunctionalDocFileSuite
-
-# b/w compatibility names
-_folder_name = folder_name
-_user_name = user_name
-_user_role = user_role
-_standard_permissions = standard_permissions
-_portal_name = portal_name
-from base import closeConnections
+from ztc_doctest import ZopeDocFileSuite
+from ztc_doctest import FunctionalDocFileSuite
 

@@ -1,3 +1,11 @@
+0.9.7 (Zope 2.8 edition)
+- Renamed 'doctest' sub-package to 'ztc_doctest' because of name-shadowing
+  issues uncovered during integration into Zope 2.8. This should not
+  affect existing tests as user code is not expected to import from sub-
+  packages anyway.
+- Removed warnhook.py, we now use the one from ZODB.tests.
+- Removed doctest.py, we now use the one from zope.testing.
+
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.
 - Moved interfaces from doc section to interfaces.py module.

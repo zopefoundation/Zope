@@ -100,17 +100,6 @@ class ZopeTestCase(base.TestCase):
         '''Logs out.'''
         noSecurityManager()
 
-    # b/w compatibility methods
-
-    def _setRoles(self, roles, name=user_name):
-        self.setRoles(roles, name)
-    def _setPermissions(self, permissions, role=user_role):
-        self.setPermissions(permissions, role)
-    def _login(self, name=user_name):
-        self.login(name)
-    def _logout(self):
-        self.logout()
-
 
 class FunctionalTestCase(functional.Functional, ZopeTestCase):
     '''Base class for functional Zope tests'''
@@ -119,11 +108,6 @@ class FunctionalTestCase(functional.Functional, ZopeTestCase):
                       ZopeTestCase.__implements__)
 
 
-# b/w compatibility names
-_folder_name = folder_name
-_user_name = user_name
-_user_role = user_role
-_standard_permissions = standard_permissions
 from base import app
 from base import close
 from base import closeConnections
