@@ -71,7 +71,13 @@ def setConfiguration(cfg):
 class DefaultConfiguration:
     def __init__(self):
         from App import FindHomes
+        from Zope.Startup.datatypes import getDefaultDatabaseFactory
         self.clienthome = FindHomes.CLIENT_HOME
         self.instancehome = FindHomes.INSTANCE_HOME
         self.softwarehome = FindHomes.SOFTWARE_HOME
         self.zopehome = FindHomes.ZOPE_HOME
+        self.db_mount_tab = {'/':'main'}
+        self.db_name_tab = {'main':getDefaultDatabaseFactory(self)}
+
+
+    

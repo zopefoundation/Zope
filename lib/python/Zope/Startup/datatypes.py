@@ -100,30 +100,7 @@ def root_config(section):
         section.lock_filename = os.path.join(section.clienthome, 'Z2.lock')
 
     if not section.databases:
-        # default to a filestorage named 'Data.fs' in clienthome
-        from ZODB.config import FileStorage
-        from ZODB.config import ZODBDatabase
-        class dummy:
-            def __init__(self, name):
-                self.name = name
-            def getSectionName(self):
-                return self.name
-                
-        path = os.path.join(section.clienthome, 'Data.fs')
-        ns = dummy('default filestorage at %s' % path)
-        ns.path = path
-        ns.create = None
-        ns.read_only = None
-        ns.quota = None
-        storage = FileStorage(ns)
-        ns2 = dummy('default zodb database using filestorage at %s' % path)
-        ns2.storage = storage
-        ns2.cache_size = 5000
-        ns2.pool_size = 7
-        ns2.version_pool_size=3
-        ns2.version_cache_size = 100
-        ns2.mount_points = ['/']
-        section.databases = [ZODBDatabase(ns2)]
+        section.databases = [getDefaultDatabaseFactory(section)]
 
     section.db_mount_tab = db_mount_tab = {}
     section.db_name_tab =  db_name_tab = {}
@@ -141,3 +118,30 @@ def root_config(section):
             db_mount_tab[point] = name
 
     return section
+
+def getDefaultDatabaseFactory(context):
+    # default to a filestorage named 'Data.fs' in clienthome
+    from ZODB.config import FileStorage
+    from ZODB.config import ZODBDatabase
+
+    class dummy:
+        def __init__(self, name):
+            self.name = name
+        def getSectionName(self):
+            return self.name
+
+    path = os.path.join(context.clienthome, 'Data.fs')
+    fs_ns = dummy('default filestorage at %s' % path)
+    fs_ns.path = path
+    fs_ns.create = None
+    fs_ns.read_only = None
+    fs_ns.quota = None
+    storage = FileStorage(fs_ns)
+    db_ns = dummy('default zodb database using filestorage at %s' % path)
+    db_ns.storage = storage
+    db_ns.cache_size = 5000
+    db_ns.pool_size = 7
+    db_ns.version_pool_size=3
+    db_ns.version_cache_size = 100
+    db_ns.mount_points = ['/']
+    return ZODBDatabase(db_ns)
