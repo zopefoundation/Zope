@@ -307,9 +307,7 @@ class Product(Folder, PermissionManager):
     manage_readme=Globals.HTMLFile('readme',globals())
     def manage_get_product_readme__(self):
         try:
-            return open(os.path.join(
-                SOFTWARE_HOME, 'Products', self.id,'README.txt'
-                )).read()
+            return open(os.path.join(self.home, 'README.txt')).read()
         except: return ''
 
     def permissionMappingPossibleValues(self):
@@ -437,6 +435,7 @@ def initializeProduct(productp, name, home, app):
     product.manage_options=Folder.manage_options
     product.icon='p_/InstalledProduct_icon'
     product.version=fver
+    product.home=home
     product._distribution=None
     product.manage_distribution=None
     product.thisIsAnInstalledProduct=1

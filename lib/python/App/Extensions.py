@@ -86,11 +86,12 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.12 1999/11/08 17:09:27 brian Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Extensions.py,v 1.13 2000/06/26 19:52:46 brian Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from string import find, split
 import os, zlib, rotor
+import Products
 path_split=os.path.split
 path_join=os.path.join
 exists=os.path.exists
@@ -149,16 +150,17 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
     if d: raise ValueError, (
         'The file name, %s, should be a simple file name' % name)
 
+    if checkProduct:
+       l = find(name, '.')
+       if l > 0:
+           p = name[:l]
+           n = name[l + 1:]
+           for product_dir in Products.__path__:
+               r = _getPath(product_dir, '%s/%s/' % (p, prefix), n, suffixes)
+               if r is not None: return r
+
     sw=path_split(path_split(SOFTWARE_HOME)[0])[0]
     for home in (INSTANCE_HOME, sw):
-        if checkProduct:
-            l=find(name, '.')
-            if l > 0:
-                p=name[:l]
-                n=name[l+1:]
-                r=_getPath(home, "lib/python/Products/%s/%s/" % (p,prefix),
-                           n, suffixes)
-                if r is not None: return r
         r=_getPath(home, prefix, name, suffixes)
         if r is not None: return r
 
