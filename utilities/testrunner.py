@@ -1,4 +1,5 @@
-#! /usr/bin/env python2.2
+#!/usr/bin/env python2.3
+
 """testrunner - a Zope test suite utility.
 
 The testrunner utility is used to execute PyUnit test suites. This utility

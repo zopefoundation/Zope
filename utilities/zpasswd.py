@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.3
+
 ##############################################################################
 #
 # Copyright (c) 2001,2002 Zope Corporation and Contributors.
@@ -39,7 +40,7 @@ for all necessary information.  The available options are:
     information in (usually "inituser" or "access").
 """
 
-__version__='$Revision: 1.4 $ '[11:-2]
+__version__='$Revision: 1.5 $ '[11:-2]
 
 import sys,  sha, binascii, random, getopt, getpass, os
 

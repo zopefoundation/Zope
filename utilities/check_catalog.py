@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.1
+#!/usr/bin/env python2.3
 
 ##############################################################################
 #
@@ -15,7 +15,7 @@
 
 """ script to consistency of a ZCatalog """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Zope
 import os,sys,re,getopt

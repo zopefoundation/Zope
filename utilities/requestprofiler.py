@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.3
 
 ##############################################################################
 #
@@ -15,7 +15,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, time, getopt, math, cPickle
 from types import StringType
