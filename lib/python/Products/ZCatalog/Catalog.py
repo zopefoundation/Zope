@@ -113,26 +113,28 @@ class Catalog(Item):
         self.title=title
         self._ztable=ZTablesCore.ZTable(id)
 
-        # create a static set of table contents and indexes to go with 
+
         # them
         
-        schema = [('id', 'FieldIndex', 's'),
-                  ('url', 'FieldIndex', 's'),
-                  ('title', 'TextIndex', 's'),
-                  ('meta_type', 'FieldIndex', 's'),
-                  ('last_modified', 'TextIndex', 'd'),
-                  ('subject', 'TextIndex', 's'),
-                  ('description', 'TextIndex', 's'),
-                  ('date', 'TextIndex', 'd'),
-                  ('reviewed', 'FieldIndex', 'i'),
+        schema = [('id', 'FieldIndex', 's', None),
+                  ('url', 'FieldIndex', 's', 1),
+                  ('title', 'TextIndex', 's', None),
+                  ('meta_type', 'FieldIndex', 's', None),
+                  ('last_modified', 'TextIndex', 'd', None),
+                  ('subject', 'TextIndex', 's', None),
+                  ('description', 'TextIndex', 's', None),
+                  ('date', 'TextIndex', 'd', None),
+                  ('reviewed', 'FieldIndex', 'i', None),
                   ]
 
         uindex = []
         utype = []
-        for name, index, type in schema:
+        call = []
+        for name, index, type, ci in schema:
             self._ztable.addColumn(name)
             uindex.append(index)
             utype.append(type)
+            call.append(ci)
 
         # create an orphan index for text_content.  A table row will
         # not get created but an index will.
@@ -140,7 +142,7 @@ class Catalog(Item):
         self._ztable._data.setOrphanIndex('text_content', 'TextIndex',
         call_methods=1)
 
-        self._ztable.update_database_schema(uindex, utype)
+        self._ztable.update_database_schema(uindex, utype, call)
 
     def searchResults(self, REQUEST=None, used=None,
                       query_map={
