@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.13 1997/10/09 15:10:37 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Aqueduct.py,v 1.14 1997/12/05 21:23:55 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -129,19 +129,20 @@ class Composite:
 	    {'id': k, 'selected': k in queries},
 	    self.aqueductQueryIds())
 
-def default_input_form(id,arguments,action='query'):
+def default_input_form(id,arguments,action='query',
+		       tabs=''):
     if arguments:
 	items=arguments.items()
 	items.sort()
 	return (
 	    "%s\n%s%s" % (
-		'<html><head><title>%s Input Data</title></head><body>\n'
+		'<html><head><title>%s Input Data</title></head><body>\n%s\n'
 		'<form action="<!--#var URL2-->/<!--#var id-->/%s" '
 		'method="get">\n'
 		'<h2>%s Input Data</h2>\n'
 		'Enter query parameters:<br>'
 		'<table>\n'
-		% (id,action,id),
+		% (id,tabs,action,id),
 		string.joinfields(
 		    map(
 			lambda a:
@@ -191,7 +192,7 @@ custom_default_report_src=DocumentTemplate.File(
     dtml_dir+'customDefaultReport.dtml')
 
 def custom_default_report(id, result, action=''):
-    columns=result._searchable_result_columns()
+    columns=result._searchable_result_columns() 
     heading=('<tr>\n%s</tr>' %
 		 string.joinfields(
 		     map(lambda c:
@@ -358,6 +359,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.14  1997/12/05 21:23:55  jim
+# Minor change to help out testing DAs.
+#
 # Revision 1.13  1997/10/09 15:10:37  jim
 # Added some attempts to provide backward compatibility with earlier
 # Principia version.
