@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -463,8 +463,10 @@ class Image(File):
         # and finally the 4-byte width, height
         elif (size >= 24) and (data[:8] == '\211PNG\r\n\032\n') \
            and (data[12:16] == 'IHDR'):
-           w, h = struct.unpack(">LL", data[16:24])
-
+            w, h = struct.unpack(">LL", data[16:24])
+            self.width=str(int(w))
+            self.height=str(int(h))
+            
         # But we had this before. I have no clue, so I'll keep both. :)
         # Maybe this is for an older PNG version.
         elif (size >= 16) and (data[:8] == '\x89PNG\r\n\x1a\n'):
