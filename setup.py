@@ -1218,29 +1218,6 @@ class MyDistribution(Distribution):
 
 # All Zope3 extension modules must be listed here.
 ext_modules = [
-##     Extension(name = 'persistent.cPersistence',
-##               include_dirs = ['persistent'],
-##               sources= ['persistent/cPersistence.c',
-##                         'persistent/ring.c'],
-##               depends = ['persistent/cPersistence.h',
-##                          'persistent/ring.h',
-##                          'persistent/ring.c']
-##               ),
-##     Extension(name = 'persistent.cPickleCache',
-##               include_dirs = ['persistent'],
-##               sources= ['persistent/cPickleCache.c',
-##                         'persistent/ring.c'],
-##                depends = ['persistent/cPersistence.h',
-##                          'persistent/ring.h',
-##                          'persistent/ring.c']
-##               ),
-##     Extension(name = 'persistent.TimeStamp',
-##               sources= ['persistent/TimeStamp.c']
-##               ),
-
-##    Extension("zope.i18nmessageid._zope_i18nmessageid_message",
-##              ["zope/i18nmessageid/_zope_i18nmessageid_message.c"],
-##              ),
 
     Extension("zope.proxy._zope_proxy_proxy",
               ["zope/proxy/_zope_proxy_proxy.c"],
@@ -1307,9 +1284,9 @@ setup(
     packages=['Products.Five'],
     data_files=[['Products/Five', ['Products/Five/*']],
                 ['Products/Five/demo', ['Products/Five/demo/*']],
-                ['Products/Five/doc', ['Products/ZReST/doc/*']],
-                ['Products/Five/skel', ['Products/ZReST/skel/*']],
-                ['Products/Five/tests', ['Products/ZReST/tests/*']],
+                ['Products/Five/doc', ['Products/Five/doc/*']],
+                ['Products/Five/skel', ['Products/Five/skel/*']],
+                ['Products/Five/tests', ['Products/Five/tests/*']],
                 ],
     )
 
