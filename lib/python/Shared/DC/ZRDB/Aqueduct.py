@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.1 1997/07/25 16:07:18 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Aqueduct.py,v 1.2 1997/07/28 21:27:17 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Globals import ManageHTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -101,7 +101,7 @@ def default_input_form(name,arguments,action='query'):
 	    "%s\n%s%s" % (
 		'<html><head><title>%s Input Data</title></head><body>\n'
 		'<form action="<!--#var URL2-->/<!--#var name-->/%s" '
-		'method="post">\n'
+		'method="get">\n'
 		'<h2>%s Input Data</h2>\n'
 		'Enter query parameters:<br>'
 		'<table>\n'
@@ -325,6 +325,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.2  1997/07/28 21:27:17  jim
+# Changed generated input forms to use post.
+#
 # Revision 1.1  1997/07/25 16:07:18  jim
 # initial
 #
