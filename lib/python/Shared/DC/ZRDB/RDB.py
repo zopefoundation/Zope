@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.6 1997/09/30 16:41:06 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: RDB.py,v 1.7 1997/10/09 15:11:12 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -26,6 +26,9 @@ Parsers={'n': atof,
 	 'l': atol,
 	 'd': DateTime.DateTime,
 	 }
+
+
+record_classes={}
 
 class File:
     """Class for reading RDB files
@@ -99,10 +102,16 @@ class File:
 	    i=i+1
 
 	# Create a record class to hold the records.
-	class r(Record): pass
-	r.__record_schema__=schema
-	for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
-	    setattr(r,k,getattr(Record,k))
+	names=tuple(names)
+	if record_classes.has_key(names):
+	    r=record_classes[names]
+	else:
+	    class r(Record): pass
+	    r.__record_schema__=schema
+	    for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
+		setattr(r,k,getattr(Record,k))
+		record_classes[names]=r
+
 	self._class=r
 
 	# OK, we've read meta data, now get line indexes
@@ -159,6 +168,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.7  1997/10/09 15:11:12  jim
+# Added optimization to cache result classes.
+#
 # Revision 1.6  1997/09/30 16:41:06  jim
 # Fixed bug in handling empty lines.
 #
