@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.109 $'[11:-2]
+__version__='$Revision: 1.110 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -743,8 +743,8 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
                    message='This object already contains a User Folder',
                    action ='%s/manage_main' % REQUEST['URL1'])
     self.__allow_groups__=f
-    
-    if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 
 def rolejoin(roles, other):
