@@ -1,6 +1,6 @@
 <component prefix="ZServer.datatypes">
 
-  <abstracttype name="server">
+  <abstracttype name="ZServer.server">
     <description>
       The "server" type is used to describe a single type of server
       instance.  The value for a server section is an object with the
@@ -10,7 +10,7 @@
 
   <sectiontype name="http-server"
                datatype=".HTTPServerFactory"
-               implements="server">
+               implements="ZServer.server">
      <key name="address" datatype="inet-address"/>
      <key name="force-connection-close" datatype="boolean" default="off"/>
      <key name="webdav-source-clients">
@@ -23,38 +23,38 @@
 
   <sectiontype name="webdav-source-server"
                datatype=".WebDAVSourceServerFactory"
-               implements="server">
+               implements="ZServer.server">
      <key name="address" datatype="inet-address"/>
      <key name="force-connection-close" datatype="boolean" default="off"/>
   </sectiontype>
 
   <sectiontype name="persistent-cgi"
                datatype=".PCGIServerFactory"
-               implements="server">
+               implements="ZServer.server">
     <key name="path" datatype="existing-file"/>
   </sectiontype>
 
   <sectiontype name="fast-cgi"
                datatype=".FCGIServerFactory"
-               implements="server">
+               implements="ZServer.server">
     <key name="address" datatype="socket-address"/>
   </sectiontype>
 
   <sectiontype name="ftp-server"
                datatype=".FTPServerFactory"
-               implements="server">
+               implements="ZServer.server">
      <key name="address" datatype="inet-address"/>
   </sectiontype>
 
   <sectiontype name="monitor-server"
                datatype=".MonitorServerFactory"
-               implements="server">
+               implements="ZServer.server">
      <key name="address" datatype="inet-address"/>
   </sectiontype>
 
   <sectiontype name="icp-server"
                datatype=".ICPServerFactory"
-               implements="server">
+               implements="ZServer.server">
      <key name="address" datatype="inet-address"/>
   </sectiontype>
 

@@ -34,7 +34,9 @@ class ZServerConfigurationTestCase(unittest.TestCase):
             sio = StringIO.StringIO("""
             <schema>
               <import package='ZServer'/>
-              <multisection name='*' type='server' attribute='servers'/>
+              <multisection name='*'
+                            type='ZServer.server'
+                            attribute='servers'/>
             </schema>
             """)
             schema = ZConfig.loadSchemaFile(sio)

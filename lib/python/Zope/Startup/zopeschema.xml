@@ -15,7 +15,7 @@
       provides the loghandler type used here.
     </description>
     <key name="level" datatype="zLOG.datatypes.logging_level" default="info"/>
-    <multisection type="loghandler" attribute="handlers" name="*"
+    <multisection type="zLOG.loghandler" attribute="handlers" name="*"
                   required="yes"/>
   </sectiontype>
 
@@ -253,7 +253,7 @@
 
   <section type="logger" name="trace"/>
 
-  <multisection type="server" name="*" attribute="servers"/>
+  <multisection type="ZServer.server" name="*" attribute="servers"/>
   <key name="port-base" datatype="integer" default="0">
     <description>
       Base port number that gets added to the specific port numbers
@@ -261,7 +261,7 @@
     </description>
   </key>
 
-  <multisection type="database" name="*" attribute="databases"/>
+  <multisection type="ZODB.database" name="*" attribute="databases"/>
 
   <section type="zoperunner" name="*" attribute="runner"/>
 
