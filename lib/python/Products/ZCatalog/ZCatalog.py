@@ -466,7 +466,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def _searchable_result_columns(self):
         r = []
-        for name in self._catalog.schema.keys():
+        for name in self._catalog.indexes.keys():
             i = {}
             i['name'] = name
             i['type'] = 's'
