@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree
@@ -314,7 +314,7 @@ class UnTextIndex(Persistent):
 
 #         self._unindex[i] = tuple(d.keys())
 
-        unindex[i] = ()
+        unindex[i] = []
         
         for word,score in d.items():
             r = get(word)
@@ -339,6 +339,8 @@ class UnTextIndex(Persistent):
             else:
                 index[word] = i, score
                 unindex[i].append(word)
+
+        unindex[i] = tuple(unindex[i])
 
         self._index = index
         self._unindex = unindex
