@@ -103,10 +103,7 @@ package_dir = os.path.split(ST.__file__)[0]
 regressions=os.path.join(package_dir, 'regressions')
 
 files = ['index.stx','Acquisition.stx','ExtensionClass.stx',
-        'MultiMapping.stx','examples.stx']
-
-reg_files = ['Links.stx']
-
+        'MultiMapping.stx','examples.stx','Links.stx']
 
 def readFile(dirname,fname):
 
@@ -170,7 +167,7 @@ class StructuredTextTests(unittest.TestCase):
     def testRegressionsTests(self):
         """ HTML regression test """
 
-        for f in reg_files:
+        for f in files:
             Doc  = DocumentClass.DocumentClass()
             HTML = HTMLClass.HTMLClass()
             raw_text = readFile(regressions,f)
