@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.18 1998/01/12 19:18:34 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Aqueduct.py,v 1.19 1998/01/12 19:19:48 jim Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -147,7 +147,8 @@ def default_input_form(id,arguments,action='query',
 		    map(
 			lambda a:
 			('<tr>\t<th>%s</th>\n'
-		         '\t<td><input name="%s" width=30 value="%s">'
+		         '\t<td><input name="%s"'
+			 '\n\t      width=30 value="%s">'
 			 '</td></tr>'
 			 % (nicify(a[0]),
 			    (
@@ -365,6 +366,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.19  1998/01/12 19:19:48  jim
+# *** empty log message ***
+#
 # Revision 1.18  1998/01/12 19:18:34  jim
 # *** empty log message ***
 #

@@ -10,8 +10,8 @@
 ########################################################################## 
 __doc__='''Aqueduct Search Interface Wizard
 
-$Id: Search.py,v 1.3 1998/01/09 13:58:15 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Search.py,v 1.4 1998/01/12 19:20:11 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify
@@ -128,7 +128,8 @@ def default_input_form(arguments,action='query',
 		    map(
 			lambda a:
 			('<tr>\t<th>%s</th>\n'
-		         '\t<td><input name="%s" width=30 value="%s">'
+		         '\t<td><input name="%s"\n'
+			 '\t     width=30 value="%s">'
 			 '</td></tr>'
 			 % (nicify(a[0]),
 			    (
@@ -173,6 +174,9 @@ def default_input_form(arguments,action='query',
 ############################################################################## 
 #
 # $Log: Search.py,v $
+# Revision 1.4  1998/01/12 19:20:11  jim
+# *** empty log message ***
+#
 # Revision 1.3  1998/01/09 13:58:15  jim
 # added option for tabular vs record reports
 #
