@@ -10,7 +10,7 @@
   <dtml-if icon>
   <A HREF="manage_workspace" TARGET="manage_main">
   <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" BORDER="0"
-   ALT="Click to open this item"></A> 
+   ALT="&dtml-meta_type;" TITLE="Click to open this item"></A> 
   </dtml-if>
   <STRONG>
   <A HREF="manage_workspace" TARGET="manage_main">
@@ -28,7 +28,7 @@
 <dtml-if icon>
 <A HREF="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" TARGET="manage_main">
 <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" BORDER="0"
- ALT="Click to open this item"></A> 
+ TITLE="Click to open this item" ALT="&dtml-meta_type;"></A> 
 </dtml-if>
 <A HREF="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" TARGET="manage_main">
 <dtml-var id>
@@ -40,7 +40,7 @@
   <TD VALIGN="TOP" NOWRAP>
   <STRONG>
   <A HREF="manage_copyright" TARGET="manage_main">
-  &copy Digital Creations
+  &copy; Digital Creations
   </A>
   </STRONG>
   </TD>
