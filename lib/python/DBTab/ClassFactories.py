@@ -13,7 +13,7 @@
 ##############################################################################
 """Available ZODB class factories.
 
-$Id: ClassFactories.py,v 1.2 2004/03/04 22:43:06 jim Exp $"""
+$Id: ClassFactories.py,v 1.3 2004/04/15 16:41:03 jeremy Exp $"""
 
 import OFS.Uninstalled
 
@@ -75,12 +75,16 @@ def autoClassFactory(jar, module, name):
     """
     # If not the root connection, use the class factory from
     # the root database, otherwise use the Zope class factory.
+
+    # The default Zope configuration installs this function as the DB
+    # class's classFactory() method.
+    
     root_conn = getattr(jar, '_root_connection', None)
-    root_db = getattr(root_conn, '_db', None)
-    if root_db is not None:
-        return root_db.classFactory(root_conn, module, name)
-    else:
-        return zopeClassFactory(jar, module, name)
+    if root_conn is not jar:
+        root_db = getattr(root_conn, '_db', None)
+        if root_db is not None:
+            return root_db.classFactory(root_conn, module, name)
+    return zopeClassFactory(jar, module, name)
 
 class_factories['auto'] = autoClassFactory
 

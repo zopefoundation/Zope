@@ -22,7 +22,9 @@ import ZODB
 from OFS.Application import Application
 from OFS.Folder import Folder
 import App.config
-from Products.ZODBMountPoint.MountedObject import manage_addMounts, getMountPoint
+from Products.ZODBMountPoint.MountedObject \
+     import manage_addMounts, getMountPoint
+from Products.ZODBMountPoint.Mount import MountConnection
 from DBTab.DBTab import DBTab
 
 try:
@@ -36,7 +38,7 @@ class TestDBConfig:
         self.mpoints = mpoints
         
     def getDB(self):
-        from ZODB.config import DemoStorage
+        from ZODB.config import MappingStorage
         from ZODB.Connection import Connection
         from Zope.Startup.datatypes import ZopeDatabase
         self.name = self.fname
@@ -50,9 +52,9 @@ class TestDBConfig:
         self.version_pool_size = 3
         self.version_cache_size = 100
         self.mount_points = self.mpoints
-        self.connection_class = Connection
+        self.connection_class = MountConnection
         self.class_factory = None
-        self.storage = DemoStorage(self)
+        self.storage = MappingStorage(self)
         self.container_class = None
         return ZopeDatabase(self)
 

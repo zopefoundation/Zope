@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.201 2004/01/15 22:47:23 tseaver Exp $'''
-__version__='$Revision: 1.201 $'[11:-2]
+$Id: Application.py,v 1.202 2004/04/15 16:41:04 jeremy Exp $'''
+__version__='$Revision: 1.202 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -324,10 +324,10 @@ class AppInitializer:
 
     def install_tempfolder_and_sdc(self):
         app = self.getApp()
-        from Products.ZODBMountPoint.MountedObject import manage_addMounts,\
-             MountedObject
-        from Products.ZODBMountPoint.MountedObject import getConfiguration as \
-             getDBTabConfiguration
+        from Products.ZODBMountPoint.MountedObject \
+             import manage_addMounts, MountedObject
+        from Products.ZODBMountPoint.MountedObject \
+             import getConfiguration as getDBTabConfiguration
 
         dbtab_config = getDBTabConfiguration()
 

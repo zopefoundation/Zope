@@ -13,20 +13,29 @@
 ##############################################################################
 """ZODB Mounted database support, simplified for DBTab.
 
-$Id: Mount.py,v 1.3 2004/03/02 15:36:28 jeremy Exp $"""
+$Id: Mount.py,v 1.4 2004/04/15 16:41:05 jeremy Exp $"""
 
-import time, sys
+import sys
+try:
+    from cStringIO import StringIO
+except:
+    from StringIO import StringIO
+import traceback
 
 import Persistence, Acquisition
 from Acquisition import aq_base
 from ZODB.POSException import MountedStorageError
 from zLOG import LOG, ERROR, INFO, WARNING
 
+from ZODB.DB import DB
+from ZODB.Connection import Connection
+
 
 class MountPoint(Persistence.Persistent, Acquisition.Implicit):
-    '''The base class for a Zope object which, when traversed,
-    accesses a different database.
-    '''
+    """An object that accesses a different database when traversed.
+
+    This class is intended to be used as a base class.
+    """
 
     # Default values for non-persistent variables.
     _v_data = None   # An object in an open connection
@@ -36,23 +45,19 @@ class MountPoint(Persistence.Persistent, Acquisition.Implicit):
         self.id = id
 
     def _getDB(self):
-        """Hook for getting the DB object for this mount point.
-        """
+        """Hook for getting the DB object for this mount point."""
         raise NotImplementedError
 
     def _getDBName(self):
-        """Hook for getting the name of the database for this mount point.
-        """
+        """Hook for getting the name of the database for this mount point."""
         raise NotImplementedError
 
     def _getRootDBName(self):
-        """Hook for getting the name of the root database.
-        """
+        """Hook for getting the name of the root database."""
         raise NotImplementedError
 
     def _traverseToMountedRoot(self, root, mount_parent):
-        """Hook for getting the object to be mounted.
-        """
+        """Hook for getting the object to be mounted."""
         raise NotImplementedError
 
     def __repr__(self):
@@ -115,20 +120,13 @@ class MountPoint(Persistence.Persistent, Acquisition.Implicit):
 
 
     def _test(self, parent):
-        '''Tests the database connection.
-        '''
+        """Tests the database connection."""
         self._getOrOpenObject(parent)
         return 1
 
 
     def _logConnectException(self):
-        '''Records info about the exception that just occurred.
-        '''
-        try:
-            from cStringIO import StringIO
-        except:
-            from StringIO import StringIO
-        import traceback
+        """Records info about the exception that just occurred."""
         exc = sys.exc_info()
         LOG('ZODB', ERROR, 'Failed to mount database. %s (%s)' % exc[:2],
             error=exc)
@@ -137,85 +135,73 @@ class MountPoint(Persistence.Persistent, Acquisition.Implicit):
         self._v_connect_error = (exc[0], exc[1], f.getvalue())
         exc = None
 
+class MountConnection(Connection):
+    """Subclass of Connection that supports mounts."""
 
+    # XXX perhaps the code in this subclass should be folded into
+    # ZODB proper.
 
-class ConnectionPatches:
-    # Changes to Connection.py that might fold into ZODB
-
-    _root_connection = None
-    _mounted_connections = None
-
+    def __init__(self, **kwargs):
+        Connection.__init__(self, **kwargs)
+        # The _root_connection of the actual root points to self.  All
+        # other connections will have _root_connection over-ridden in
+        # _addMountedConnection().
+        self._root_connection = self
+        self._mounted_connections = {}
+        
     def _getRootConnection(self):
-        root_conn = self._root_connection
-        if root_conn is None:
-            return self
-        else:
-            return root_conn
+        return self._root_connection
 
     def _getMountedConnection(self, name):
-        conns = self._getRootConnection()._mounted_connections
-        if conns is None:
-            return None
-        else:
-            return conns.get(name)
+        return self._root_connection._mounted_connections.get(name)
 
     def _addMountedConnection(self, name, conn):
-        if conn._root_connection is not None:
-            raise ValueError, 'Connection %s is already mounted' % repr(conn)
-        root_conn = self._getRootConnection()
-        conns = root_conn._mounted_connections
-        if conns is None:
-            conns = {}
-            root_conn._mounted_connections = conns
-        if conns.has_key(name):
-            raise KeyError, 'A connection named %s already exists' % repr(name)
-        conn._root_connection = root_conn
+        if conn._root_connection is not conn:
+            raise ValueError("Connection %s is already mounted" % repr(conn))
+        conns = self._root_connection._mounted_connections
+        if name in conns:
+            raise KeyError("A connection named %s already exists" % repr(name))
+        conn._root_connection = self._root_connection
         conns[name] = conn
 
-    def _setDB(self, odb):
-        self._real_setDB(odb)
-        conns = self._mounted_connections
-        if conns:
-            for conn in conns.values():
-                conn._setDB(conn._db)
+    def _setDB(self, odb, **kwargs):
+        Connection._setDB(self, odb, **kwargs)
+        for conn in self._mounted_connections.values():
+            conn._setDB(odb, **kwargs)
 
     def close(self):
-        if self._root_connection is not None:
+        if self._root_connection is not self:
             raise RuntimeError("Should not close mounted connections directly")
-        conns = self._mounted_connections
-        if conns:
-            for conn in conns.values():
-                # Notify the activity monitor
-                db = conn.db()
-                f = getattr(db, 'getActivityMonitor', None)
-                if f is not None:
-                    am = f()
-                    if am is not None:
-                        am.closedConnection(conn)
-                conn.cacheGC() # This is a good time to do some GC
-                # XXX maybe we ought to call the close callbacks.
-                conn._storage = conn._tmp = conn.new_oid = conn._opened = None
-                conn._debug_info = ()
-                # The mounted connection keeps a reference to
-                # its database, but nothing else.
-                # Note that mounted connections can not operate
-                # independently, so don't use _closeConnection() to
-                # return them to the pool.  Only the root connection
-                # should be returned.
+
+        # The code here duplicates much of the code in
+        # DB._closeConnection and Connection.close.  A mounted
+        # connection can't operate independently, so we don't call
+        # DB._closeConnection(), which would return it to the
+        # connection pool; only the root connection should be
+        # returned.
+        
+        for conn in self._mounted_connections.values():
+            # DB._closeConnection calls the activity monitor
+            am = conn._db.getActivityMonitor()
+            am.closedConnection(conn)
+            # Connection.close does GC
+            conn._cache.incrgc()
+            conn._storage = conn._tmp = conn.new_oid = conn._opened = None
+            conn._debug_info = ()
+            # The mounted connection keeps a reference to
+            # its database, but nothing else.
+            
         # Close this connection only after the mounted connections
         # have been closed.  Otherwise, this connection gets returned
         # to the pool too early and another thread might use this
         # connection before the mounted connections have all been
         # closed.
-        self._real_close()
+        Connection.close(self)
 
-if 1:
-    # patch Connection.py.
-    from ZODB.Connection import Connection
-    Connection._real_setDB = Connection._setDB
-    Connection._real_close = Connection.close
-
-    for k, v in ConnectionPatches.__dict__.items():
-        if not k.startswith('__'):
-            setattr(Connection, k, v)
-
+# Replace the default database Connection
+def install():
+    DB.klass = MountConnection
+    
+# XXX This shouldn't be done as a side-effect of import, but it's not
+# clear where in the Zope initialization code it should be done.
+install()
