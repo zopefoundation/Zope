@@ -1,0 +1,15 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Mail-Host.dtml">Mail Host</a>&gt;Add</h1>
+<p> This view allows you to create a new Mail Host.</p>
+<p> The <tt>Id</tt> field specifies the id of the mail host.
+		  The <tt>Title</tt> field allows you to specify the title of the mail
+		  host. The <tt>Local host</tt> field allows you to specify the name of
+		  the server on which Zope is running. The <tt>SMTP host</tt> field
+		  allows you to specify the name of the mail server. The <tt>SMTP
+		  port</tt> field allows you to specify the port on which the mail server
+		  accepts SMTP requests. The <tt>Max. timeout</tt> field allows you to
+		  specify how long Zope should wait (in seconds) for a response from the mail
+		  server before aborting a mail request. Click the <tt>Add</tt> button
+		  to create a new Mail Host.</p>
+<dtml-var standard_html_footer>
