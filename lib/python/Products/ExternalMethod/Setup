@@ -2,4 +2,4 @@
 # install __init__.py
 # install methodAdd.dtml
 # install methodEdit.dtml
-# install www www/%(package)s
+# install www
