@@ -490,6 +490,9 @@ Zope Changes
           systems due to an incorrect 'flush' call on the *input*
           file. 
 
+        - Factories that were also ZClass methods didn't get
+          unregistered properly when they were deleted.
+
     Zope 2.0 alpha 3
 
       Features added
