@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -45,7 +45,7 @@ class ApplicationManager(Acquirer,Management,CacheManager):
         d=d and ('%s day%s'  % (d,(d!=1 and 's' or ''))) or ''
         return '%s %02d:%02d' % (d,h,m)
 
-    def db_name(self): return self._p_jar.db.file_name
+    def db_name(self): return Globals.Bobobase._jar.db.file_name
 
     def db_size(self):
         s=os.stat(self.db_name())[6]
