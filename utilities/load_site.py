@@ -240,6 +240,12 @@ class HeadParser(SGMLParser):
       if data:
          self.accumulator = self.accumulator + data
 
+   def handle_charref(self, ref):
+       self.handle_data("&#%s;" % ref)
+
+   def handle_entityref(self, ref):
+       self.handle_data("&%s;" % ref)
+
    def handle_comment(self, data):
       if data:
          self.accumulator = self.accumulator + "<!--%s-->" % data
