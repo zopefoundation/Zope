@@ -100,6 +100,12 @@ Zope Changes
           parameter string broke the ZScriptHTML_tryParams function of
           PythonScripts.
 
+        - Restored performance of security checks in DTML and
+          Scripts (Python) by replacing read guards with function calls to
+          guarded_getattr() and guarded_getitem() of ZopeGuards.
+
+        - Restricted the target of PythonScript print statements.
+
     Zope 2.4 alpha 1
 
       Features Added
