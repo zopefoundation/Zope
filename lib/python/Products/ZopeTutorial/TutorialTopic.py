@@ -174,6 +174,13 @@ def addTutorial(self, id, REQUEST=None, RESPONSE=None):
     id=self._setObject(id, ob)
     folder=getattr(self, id)
 
+    # make sure that Gadfly is initialized
+    try:
+        from Products.ZGadflyDA.DA import data_sources
+        data_sources()
+    except:
+        raise 'Bad Request', 'The ZGadflyDA product must be installed!'
+
     # work around old Zope bug in importing
     try:
         folder.manage_importObject(tutorialExamplesFile)
