@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.163 2003/03/21 22:00:56 fdrake Exp $"""
-__version__='$Revision: 1.163 $'[11:-2]
+$Id: Publish.py,v 1.164 2003/04/18 13:51:21 andreasjung Exp $"""
+__version__='$Revision: 1.164 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -111,7 +111,7 @@ def publish(request, module_name, after_list, debug=0,
             sm = getattr(response, "setMessage", None)
 
         if sm is not None:
-            from ZServer.medusa.asyncore import compact_traceback
+            from asyncore import compact_traceback
             cl,val= sys.exc_info()[:2]
             sm('%s: %s %s' % (getattr(cl,'__name__',cl), val, debug_mode and compact_traceback()[-1] or ''))
          
