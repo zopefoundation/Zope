@@ -88,6 +88,7 @@ from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
 from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
+from FactoryDispatcher import FactoryDispatcher
 import string, os.path
 import stat
 from DateTime import DateTime
@@ -199,7 +200,14 @@ class ProductContext:
         if type(initial) is tt: name, initial = initial
         else: name=initial.__name__
 
-        if not hasattr(pack, '_m'): pack._m={}
+        fd=getattr(pack, '__FactoryDispatcher__', None)
+        if fd is None:
+            class __FactoryDispatcher__(FactoryDispatcher):
+                "Factory Dispatcher for a Specific Product"
+
+            fd = pack.__FactoryDispatcher__ = __FactoryDispatcher__
+
+        if not hasattr(pack, '_m'): pack._m=fd.__dict__
         m=pack._m
 
         Products.meta_types=Products.meta_types+(
