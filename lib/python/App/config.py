@@ -76,6 +76,7 @@ class DefaultConfiguration:
         self.instancehome = FindHomes.INSTANCE_HOME
         self.softwarehome = FindHomes.SOFTWARE_HOME
         self.zopehome = FindHomes.ZOPE_HOME
+        self.debug_mode = True
         self.db_mount_tab = {'/':'main'}
         self.db_name_tab = {'main':getDefaultDatabaseFactory(self)}
 
