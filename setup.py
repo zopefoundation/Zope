@@ -507,11 +507,13 @@ setup(
     author=AUTHOR,
 
     packages=['Testing', 'Testing.ZopeTestCase',
-              'Testing.ZopeTestCase.zopetest', 'Testing.ZopeTestCase.zopedoctest'],
+              'Testing.ZopeTestCase.zopetest',
+              'Testing.ZopeTestCase.zopedoctest'],
     data_files=[['Testing', ['Testing/README.txt']],
                 ['Testing/var', ['Testing/var/README.txt']],
                 ['Testing/ZopeTestCase/doc', ['Testing/ZopeTestCase/doc/*']],
-                ['Testing/ZopeTestCase/zopedoctest', ['Testing/ZopeTestCase/zopedoctest/*.txt']]],
+                ['Testing/ZopeTestCase/zopedoctest',
+                    ['Testing/ZopeTestCase/zopedoctest/*.txt']]],
     )
 
 # ThreadedAsync
@@ -552,7 +554,8 @@ setup(
               'transaction', 'transaction.tests',
               'ZODB', 'ZODB.FileStorage', 'ZODB.tests'],
     data_files=[['persistent/tests', ['persistent/tests/*.txt']],
-                ['ZODB', ['ZODB/*.xml']]],
+                ['ZODB', ['ZODB/*.xml']],
+                ['ZODB/tests', ['ZODB/tests/*.txt']]],
     ext_modules=[
         Extension(name='persistent.cPersistence',
                   include_dirs=['persistent'],
@@ -1093,11 +1096,20 @@ setup(
     name='Five',
     author='Martijn Faassen',
 
-    packages=['Products.Five', 'Products.Five.tests'],
+    packages=['Products.Five',
+              'Products.Five.tests',
+              'Products.Five.tests.products',
+              'Products.Five.tests.products.FiveTest'],
     data_files=[['Products/Five', ['Products/Five/*']],
                 ['Products/Five/doc', ['Products/Five/doc/*']],
                 ['Products/Five/skel', ['Products/Five/skel/*']],
                 ['Products/Five/tests', ['Products/Five/tests/*']],
+                ['Products/Five/tests/products/FiveTest',
+                    ['Products/Five/tests/products/FiveTest/*']],
+                ['Products/Five/tests/products/FiveTest/pages',
+                    ['Products/Five/tests/products/FiveTest/pages/*']],
+                ['Products/Five/tests/products/FiveTest/www',
+                    ['Products/Five/tests/products/FiveTest/www/*']],
                 ],
     )
 
