@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -126,7 +126,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     func_defaults = None
     func_code = FuncCode((), 0)
 
-    _default_bindings = {}
+    _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),
                                        'www', 'default.html')
 
