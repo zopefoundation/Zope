@@ -3,9 +3,9 @@
 # "python setup.py clean" doesn't work with a --inplace build, so use
 # this instead (copied from the Zope3 tree).
 
-files=`find -name \*.o -o -name \*.so -o -name \*.py[co] -o -name core\*`
-if [ ! -z "$files" ] ; then
-    rm $files
-fi
+# XXX Note! this won't work for filenames that have spaces in them!
+#     Unfortunately find -print0 and xargs -0 don't exist on
+#     some platforms (Solaris for instance) so we can't use them...
 
-
+find . -name '*.o' -o -name '*.so' -o -name '*.py[co]' \
+    -o -name 'core*' | xargs rm -f
