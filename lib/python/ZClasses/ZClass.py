@@ -272,12 +272,14 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             PersistentClassDict(title or id))
         c.__ac_permissions__=()
 
-        options=[]
-        for option in c.manage_options:
-            copy={}
-            copy.update(option)
-            options.append(copy)
-        c.manage_options=tuple(options)
+        # Copy manage options
+        if zope_object:
+            options=[]
+            for option in c.manage_options:
+                copy={}
+                copy.update(option)
+                options.append(copy)
+            c.manage_options=tuple(options)
         
         # Create the class(/instance) prop sheet *class*
         isheets_class=type(PersistentClass)(
