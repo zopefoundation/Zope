@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -92,6 +92,7 @@ from DocumentTemplate.DT_Util import html_quote
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
+from webdav.common import urlbase
 from ExtensionClass import Base
 from Globals import Persistent
 
@@ -620,9 +621,8 @@ class DAVProperties(Virtual, PropertySheet, View):
 
     def dav__source(self):
         vself=self.v_self()
-        if hasattr(vself, 'meta_type') and vself.meta_type in \
-           ('Document', 'DTML Document', 'DTML Method'):
-            url=vself.absolute_url()
+        if hasattr(vself, 'document_src'):
+            url=urlbase(vself.absolute_url())
             return '\n  <n:link>\n' \
                    '  <n:src>%s</n:src>\n' \
                    '  <n:dst>%s/document_src</n:dst>\n' \

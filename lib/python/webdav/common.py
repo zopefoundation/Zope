@@ -85,10 +85,9 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
-import string, time
-
+import string, time, urllib
 
 
 
@@ -129,4 +128,10 @@ def rfc1123_date(ts=None):
     return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[4],ts[3])
 
 
-
+def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
+    # Return a '/' based url such as '/foo/bar', removing
+    # type, host and port information if necessary.
+    if url[0]=='/': return url
+    type, uri=ftype(url)
+    host, uri=fhost(uri)
+    return uri

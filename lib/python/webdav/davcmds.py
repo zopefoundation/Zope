@@ -85,10 +85,10 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, string, regex
-from common import absattr, aq_base, urlfix
+from common import absattr, aq_base, urlfix, urlbase
 from OFS.PropertySheets import DAVProperties
 from xmltools import XmlParser
 from cStringIO import StringIO
@@ -150,7 +150,7 @@ class PropFind:
             result=StringIO()
             depth=self.depth
             url=urlfix(self.request['URL'], 'PROPFIND')
-            url=rel_url(url)
+            url=urlbase(url)
             result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
                          '<d:multistatus xmlns:d="DAV:">\n')
         iscol=hasattr(obj, '__dav_collection__')
@@ -220,7 +220,7 @@ class PropFind:
             result=StringIO()
             depth=self.depth
             url=urlfix(self.request['URL'], 'PROPFIND')
-            url=rel_url(url)
+            url=urlbase(url)
             result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
                          '<d:multistatus xmlns:d="DAV:">\n')
         iscol=hasattr(obj, '__dav_collection__')
@@ -414,9 +414,4 @@ class Lock:
 
 
 
-def rel_url(url, r=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)?',
-                                 regex.casefold)):
-    if r.match(url) >= 0:
-        host,port,uri=r.group(1,2,3)
-        return uri or '/'
-    else: raise ValueError, url
+
