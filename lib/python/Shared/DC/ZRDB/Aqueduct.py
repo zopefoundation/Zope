@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.48 2001/05/01 20:09:00 andreas Exp $'''
-__version__='$Revision: 1.48 $'[11:-2]
+$Id: Aqueduct.py,v 1.49 2001/05/16 15:13:00 shane Exp $'''
+__version__='$Revision: 1.49 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -370,7 +370,7 @@ def parse(text,
                 l=len(mo.group(2))
         else:
             mo = unparmre.match(text)
-            if ts_results:
+            if mo:
                 name=mo.group(2)
                 l=len(mo.group(1))
                 value={}
