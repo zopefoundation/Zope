@@ -442,18 +442,6 @@ class FCGIChannel(asynchat.async_chat):
         referer=self.get_header('referer')
         if not referer: referer=''  
        
-        auth=self.get_header('Authorization')
-        name='Anonymous'
-        if auth is not None:
-            if string.lower(auth[:6]) == 'basic ':
-                try: decoded=base64.decodestring(auth[6:])
-                except base64.binascii.Error: decoded=''
-                t = string.split(decoded, ':', 1) 
-                if len(t) < 2:
-                    name = 'Unknown (bad auth string)'
-                else:   
-                    name = t[0]
-        
         if self.env.has_key('PATH_INFO'):
             path=self.env['PATH_INFO']
         else:
