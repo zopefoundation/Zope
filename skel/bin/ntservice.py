@@ -86,9 +86,9 @@ from os.path import dirname as dn
 import sys
 
 # these are replacements from mkzopeinstance
-PYTHON = r'C:\PROGRA~1\PYTHON~1.3\python.exe'
-SOFTWARE_HOME=r'C:\Program Files\Zope-2.7.0-a1\lib\python'
-INSTANCE_HOME = r'c:\Zope-Instance2'
+PYTHON = r'<<PYTHON>>'
+SOFTWARE_HOME=r'<<SOFTWARE_HOME>>'
+INSTANCE_HOME = r'<<INSTANCE_HOME>>'
 ZOPE_RUN = '%s\Zope\Startup\run.py' % SOFTWARE_HOME
 CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
 
