@@ -163,7 +163,7 @@ class Node:
         return None
 
     def getLastChild(self):
-         """The last child of this node.  If ther is no such node
+        """The last child of this node.  If ther is no such node
         this returns None."""
         return None
 
