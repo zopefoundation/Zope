@@ -50,6 +50,8 @@ class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage,
                ConflictResolution.ConflictResolvingStorage,
                ConflictResolution.ConflictResolvingTransUndoStorage):
 
+    # BAW: This test fails, it should be fixed.
+    # DBNotFoundError: (-30990, 'DB_NOTFOUND: No matching key/data pair found')
     def checkVersionIterator(self):
         import sys
         print >> sys.stderr, \
