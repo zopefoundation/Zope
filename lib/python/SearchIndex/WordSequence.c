@@ -25,6 +25,7 @@ static WordSequence *
 newWordSequence(PyObject *text, PyObject *synstop, PyObject *wordletters)
 {
     WordSequence *self;
+    PyObject *t;
 
     UNLESS(self = PyObject_NEW(WordSequence, &WordSequenceType))
     {
@@ -44,11 +45,26 @@ newWordSequence(PyObject *text, PyObject *synstop, PyObject *wordletters)
         Py_INCREF(self->synstop);
     }
 
-
     if (wordletters == NULL) wordletters=default_wordletters;
     Py_INCREF(wordletters);
     self->wordletters = wordletters;
     self->cwordletters = PyString_AsString(self->wordletters);
+
+    UNLESS(t = PyTuple_New(1))
+    {
+        return NULL;
+    }
+
+    Py_INCREF(text);
+    PyTuple_SET_ITEM((PyTupleObject *)t, 0, text);
+
+    UNLESS_ASSIGN(text, PyObject_CallObject(string_lower, t))
+    {
+        Py_DECREF(t);
+        return NULL;
+    }
+
+    Py_DECREF(t);
 
     self->ctext = self->here = PyString_AsString(text);
 
