@@ -101,9 +101,6 @@ TALES Python expressions
       similar to those offered by 'dtml-tree'. See XXX for more
       information.
 
-      'ZTUtils.Zope' -- XXX what is this package? See XXX for more
-      information.
-
       'AccessControl.XXX' -- XXX what is available from this package?
 
   Examples
