@@ -37,7 +37,9 @@ class ZODBTestBase(BerkeleyTestBase):
             raise
 
     def _close(self):
-        self._db.close()
+        if self._db is not None:
+            self._db.close()
+            self._db = self._storage = self._conn = self._root = None
 
     def tearDown(self):
         # If the tests exited with any uncommitted objects, they'll blow up
