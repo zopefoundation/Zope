@@ -35,7 +35,7 @@ import Scheduler.Scheduler
 Bobobase=OFS.Application.open_bobobase()
     
 try: app=Bobobase['Application']
-except (AttributeError, KeyError):
+except KeyError:
     app=OFS.Application.Application()
     app._init()
     app.app=App.ApplicationManager.ApplicationManager()
@@ -49,6 +49,9 @@ bobo_application=app
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.8  1997/10/31 17:04:18  brian
+# *** empty log message ***
+#
 # Revision 1.7  1997/10/31 15:01:33  brian
 # Fixed bug that could cause startup failure: when the bobobase failed to
 # find 'Application' it would (on bsdi, anyway) raise AttributeError and
