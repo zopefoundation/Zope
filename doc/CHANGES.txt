@@ -94,6 +94,18 @@ Zope Changes
 	  property views, even though they did work in ZClass property
 	  sheets.
 
+        - The Win32 WISE installer did not create a default Zope.cgi
+          PCGI resource file.
+
+        - The Win32 WISE installer script is now included in the /inst
+          directory of win32 installations by popular demand.
+
+        - An import problem caused the name "BTree" to be incorrectly 
+          overwritten in TextIndex.py and UnTextIndex.py in the
+          SearchIndex package, which caused problems for some third-
+          party product authors.
+
+
     Zope 2.1.0
     
       Features Changed
