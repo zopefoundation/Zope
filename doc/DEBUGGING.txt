@@ -41,9 +41,9 @@ Using the Medusa Monitor
   'ZGadflyDA', 'ZSQLMethods', '_objects']
   >>> 
 
-  To see ODB changes resulting from access happening via other
-  connections (eg, via the web) since you got the app, you may have to
-  do a bit of magic:
+  To see ODB changes caused by access concurrent with your debug
+  session (eg, those web connections that can still be happening, or
+  other debug sessions!), you may have to do a bit of magic:
 
   >>> app._p_jar.sync()
 
