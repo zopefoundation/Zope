@@ -30,7 +30,7 @@ class HTMLWithImages(HTMLClass):
             children[0].getNodeName() == 'StructuredTextSection'):
            output('<head>\n<title>%s</title>\n</head>\n' %
                   children[0].getChildNodes()[0].getNodeValue())
-        output('<body bgcolor="#FFFFFF">\n')
+        output('<body>\n')
         for c in children:
            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output('</body>\n')
@@ -45,7 +45,7 @@ class HTMLWithImages(HTMLClass):
 
     def xref(self, doc, level, output):
         val = doc.getNodeValue()
-        output('<a href="#%s">Figure %s</a>' % (val, val) )
+        output('<a href="#ref%s">[%s]</a>' % (val, val) )
 
 
 
