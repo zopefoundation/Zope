@@ -84,12 +84,12 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
 from DocumentTemplate.DT_Util import html_quote
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
 from App.Common import rfc1123_date, iso8601_date
@@ -444,7 +444,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     # Web interface
     
-    manage=HTMLFile('dtml/properties', globals())
+    manage=DTMLFile('dtml/properties', globals())
     def manage_propertiesForm(self, URL1):
         " "
         raise 'Redirect', URL1+'/manage'
@@ -695,7 +695,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
     # Management interface:
 
-    manage=Globals.HTMLFile('dtml/propertysheets', globals())
+    manage=Globals.DTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance

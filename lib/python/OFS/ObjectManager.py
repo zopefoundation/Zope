@@ -84,14 +84,14 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.120 2001/01/09 23:54:03 evan Exp $"""
+$Id: ObjectManager.py,v 1.121 2001/01/11 21:29:41 chrism Exp $"""
 
-__version__='$Revision: 1.120 $'[11:-2]
+__version__='$Revision: 1.121 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
 from OFS.Traversable import Traversable
-from Globals import HTMLFile, Persistent, DTMLFile
+from Globals import DTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
 from webdav.Collection import Collection
@@ -520,7 +520,7 @@ class ObjectManager(
                     exported to <pre>%s</pre>." % (id, f),
                     action="manage_main")
 
-    manage_importExportForm=HTMLFile('dtml/importExport',globals())
+    manage_importExportForm=DTMLFile('dtml/importExport',globals())
 
     def manage_importObject(self, file, REQUEST=None, set_owner=1):
         """Import an object from a file"""

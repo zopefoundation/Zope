@@ -84,13 +84,13 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
 from PropertySheets import DefaultPropertySheets, vps
 from ZPublisher.Converters import type_converters
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 from string import find,join,lower,split
 from DocumentTemplate import html_quote
 from Acquisition import Implicit, aq_base
@@ -167,9 +167,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
          'help':('OFSP','Properties.stx')},         
         )
     
-    manage_propertiesForm=HTMLFile('dtml/properties', globals(),
+    manage_propertiesForm=DTMLFile('dtml/properties', globals(),
                                    property_extensible_schema__=1)
-    manage_propertyTypeForm=HTMLFile('dtml/propertyType', globals())
+    manage_propertyTypeForm=DTMLFile('dtml/propertyType', globals())
 
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
