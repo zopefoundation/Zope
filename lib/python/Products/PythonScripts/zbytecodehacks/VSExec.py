@@ -343,7 +343,7 @@ def PublicNames(cb, w, fc):
     '''
     protected = []
     for name in fc.co_names:
-        if name[:1]=='_' and len(name)>1:
+        if name[:1]=='_' and len(name)>1 and name != '__debug__':
             protected.append(name)
     if protected:
         raise SyntaxError, ('Names starting with "_" are not allowed (%s).'

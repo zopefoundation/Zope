@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -108,9 +108,9 @@ for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
 for name in ('range', 'pow', 'DateTime', 'test', 'namespace', 'render'):
     safebin[name] = getattr(safefuncs, name)
 
-for name in ('ArithmeticError', 'AttributeError', 'EOFError',
-             'EnvironmentError', 'FloatingPointError', 'IOError',
-             'ImportError', 'IndexError', 'KeyError',
+for name in ('ArithmeticError', 'AssertionError', 'AttributeError',
+             'EOFError', 'EnvironmentError', 'FloatingPointError',
+             'IOError', 'ImportError', 'IndexError', 'KeyError',
              'LookupError', 'NameError', 'OSError', 'OverflowError',
              'RuntimeError', 'StandardError', 'SyntaxError',
              'TypeError', 'ValueError', 'ZeroDivisionError',

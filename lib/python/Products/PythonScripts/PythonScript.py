@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile
@@ -270,7 +270,8 @@ class PythonScript(Script, Historical, Cacheable):
                                           join(self._v_errors, '\n') )
         return self._newfun(allowSideEffect, {'$guard': theGuard,
                                               '$write_guard': WriteGuard,
-                                              '$read_guard': ReadGuard},
+                                              '$read_guard': ReadGuard,
+                                              '__debug__': __debug__},
                             __builtins__=safebin)
 
     def _editedBindings(self):
