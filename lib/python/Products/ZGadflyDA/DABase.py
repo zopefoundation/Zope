@@ -84,13 +84,12 @@
 ##############################################################################
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.7 1999/03/10 00:15:29 klm Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: DABase.py,v 1.8 1999/04/29 19:21:32 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from db import manage_DataSources
 import Shared.DC.ZRDB.Connection, sys
 from Globals import HTMLFile
-from ImageFile import ImageFile
 from ExtensionClass import Base
 import Acquisition
 

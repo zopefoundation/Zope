@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.68 1999/04/22 15:55:39 brian Exp $"""
+$Id: ObjectManager.py,v 1.69 1999/04/29 19:21:30 jim Exp $"""
 
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -380,13 +380,13 @@ class ObjectManager(
         if id is None: o=self
         else: o=self._getOb(id)
         f=Globals.data_dir+'/export.bbe'
-        o._p_jar.export_file(o,f)
+        o._p_jar.exportFile(o._p_oid,f)
         return f
 
     def manage_importHack(self, REQUEST=None):
         "Imports a previously exported object from /var/export.bbe"
         f=Globals.data_dir+'/export.bbe'
-        o=self._p_jar.import_file(f)
+        o=self._p_jar.importFile(f)
         id=o.id
         if hasattr(id,'im_func'): id=id()
         self._setObject(id,o)
@@ -403,13 +403,14 @@ class ObjectManager(
         else: ob=self._getOb(id)
         if download:
             f=StringIO()
-            ob._p_jar.export_file(ob, f)
+            ob._p_jar.exportFile(ob._p_oid, f)
             RESPONSE.setHeader('Content-type','application/data')
             RESPONSE.setHeader('Content-Disposition',
                 'inline;filename=%s.bbe' % id)
             return f.getvalue()
         f=Globals.data_dir+'/%s.bbe' % id
-        ob._p_jar.export_file(ob, f)
+        ob._p_jar.exportFile(ob._p_oid, f)
+
         if RESPONSE is not None:
             return MessageDialog(
                     title="Object exported",
@@ -427,7 +428,7 @@ class ObjectManager(
         file=os.path.join(INSTANCE_HOME, 'import', file)
         if not os.path.exists(file):
             raise 'Bad Request', 'File does not exist: %s' % file
-        ob=self._p_jar.import_file(file)
+        ob=self._p_jar.importFile(file)
         if REQUEST: self._verifyObjectPaste(ob, REQUEST)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()

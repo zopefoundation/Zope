@@ -91,10 +91,9 @@ from ZPublisher.mapply import mapply
 from ExtensionClass import Base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
-from ImageFile import ImageFile
 from OFS.misc_ import p_
 
-p_.ZClass_Icon=ImageFile('class.gif', globals())
+p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
 
 class PersistentClass(Base):
     def __class_init__(self): pass

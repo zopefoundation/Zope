@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-from ImageFile import ImageFile
+from App.ImageFile import ImageFile
 
 
 class misc_:

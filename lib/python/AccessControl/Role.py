@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -92,7 +92,7 @@ from string import join, strip, split, find
 from Acquisition import Implicit
 import Globals, ExtensionClass
 from Permission import Permission
-from Common import aq_base
+from App.Common import aq_base
 
 ListType=type([])
 

@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 
-'''$Id: db.py,v 1.6 1999/03/10 00:15:29 klm Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+'''$Id: db.py,v 1.7 1999/04/29 19:21:32 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os
 from string import strip, split
@@ -206,6 +206,7 @@ class DB:
 
     class _p_jar:
         # This is place holder for new transaction machinery 2pc
+        # I don't think this is needed.
         def __init__(self, db=None): self.db=db
         def begin_commit(self, *args): pass
         def finish_commit(self, *args): pass
@@ -216,15 +217,25 @@ class DB:
     def _register(self):
         if not self._registered:
             try:
-                get_transaction().register(self)
+                get_transaction().register(Surrogate(self))
                 self._registered=1
             except: pass
 
-    def __inform_commit__(self, *ignored):
+    def tpc_begin(self, *ignored): pass
+
+    def tpc_commit(self, *ignored):
         self.db.commit()
         self._registered=0
 
-    def __inform_abort__(self, *ignored):
+    def tpc_abort(self, *ignored):
         self.db.rollback()
         self.db.checkpoint()
         self._registered=0
+
+class Surrogate:
+
+    def __init__(self, db):
+        self._p_jar=db
+        self.__inform_commit__=db.tpc_commit
+        self.__inform_abort__=db.tpc_abort
+    

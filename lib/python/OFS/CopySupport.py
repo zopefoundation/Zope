@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -383,9 +383,9 @@ class CopySource:
     def _getCopy(self, container):
         # Ask an object for a new copy of itself.
         f=tempfile.TemporaryFile()
-        self._p_jar.export_file(self,f)
+        self._p_jar.exportFile(self._p_oid,f)
         f.seek(0)
-        ob=container._p_jar.import_file(f)
+        ob=container._p_jar.importFile(f)
         f.close()
         return ob
 

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -93,7 +93,7 @@ from App.Management import Navigation, Tabs
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from base64 import decodestring
-from ImageFile import ImageFile
+from App.ImageFile import ImageFile
 from Role import RoleManager
 from string import split, join
 from PermissionRole import _what_not_even_god_should_do

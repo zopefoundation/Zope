@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.101 1999/04/27 23:49:46 amos Exp $'''
-__version__='$Revision: 1.101 $'[11:-2]
+$Id: Application.py,v 1.102 1999/04/29 19:21:29 jim Exp $'''
+__version__='$Revision: 1.102 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -205,7 +205,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     
     __allow_groups__=UserFolder()
 
-    def _init(self):
+    def __init__(self):
         # Initialize users
         self.__allow_groups__=UserFolder()
         self._setObject('acl_users', self.__allow_groups__)
@@ -248,15 +248,18 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     Redirect=ZopeRedirect=PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
-        if name is None and REQUEST.has_key(Globals.VersionNameName):
-            pd=Globals.VersionBase[REQUEST[Globals.VersionNameName]]
-            alternate_self=pd.jar[self._p_oid]
-            if hasattr(self, 'aq_parent'):
-                alternate_self=alternate_self.__of__(self.aq_parent)
-            return alternate_self
+        if hasattr(Globals,'VersionBase'):
+            # BoboPOS 2
+            if name is None and REQUEST.has_key(Globals.VersionNameName):
+                pd=Globals.VersionBase[REQUEST[Globals.VersionNameName]]
+                alternate_self=pd.jar[self._p_oid]
+                if hasattr(self, 'aq_parent'):
+                    alternate_self=alternate_self.__of__(self.aq_parent)
+                return alternate_self
 
-        try:    self._p_jar.cache.incrgc() # Perform incremental GC
-        except: pass
+            try:    self._p_jar.cache.incrgc() # Perform incremental GC
+            except: pass
+
         try: return getattr(self, name)
         except AttributeError: pass
         try: return self[name]
@@ -264,6 +267,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         method=REQUEST.get('REQUEST_METHOD', 'GET')
         if not method in ('GET', 'POST'):
             return NullResource(self, name, REQUEST).__of__(self)
+
         REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
 
     def PrincipiaTime(self, *args):
@@ -314,32 +318,10 @@ class Expired(Globals.Persistent):
 
     __inform_commit__=__save__
 
-def open_bobobase():
+def initialize(app):
     # Open the application database
 
-    import_products()
-
-    revision=read_only=None
-
-    if os.environ.has_key('ZOPE_READ_ONLY'):
-        read_only=1
-        try: revision=DateTime(os.environ['ZOPE_READ_ONLY']).timeTime()
-        except: pass
-        
-    Bobobase=Globals.Bobobase=Globals.PickleDictionary(
-        Globals.BobobaseName, read_only=read_only, revision=revision)
-
     product_dir=os.path.join(SOFTWARE_HOME,'Products')
-
-    __traceback_info__=sys.path
-    
-    try: app=Bobobase['Application']
-    except KeyError:
-        app=Application()
-        app._init()
-        Bobobase['Application']=app
-        get_transaction().note('created Application object')
-        get_transaction().commit()
 
     # The following items marked b/c are backward compatibility hacks
     # which make sure that expected system objects are added to the
@@ -375,8 +357,6 @@ def open_bobobase():
     install_products(app)
     get_transaction().note('Product installations')
     get_transaction().commit()
-
-    return Bobobase
 
 def import_products(_st=type('')):
     # Try to import each product, checking for and catching errors.

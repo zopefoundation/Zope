@@ -90,7 +90,7 @@
    and aquisition relationships via a simple interface.
 
 """
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 import Globals
@@ -103,7 +103,7 @@ class Moniker:
     
     def __init__(self, ob=None):
         if ob is None: return
-        self.jar=ob._p_jar.name
+        self.jar=ob._p_jar.getVersion()
         self.ids=[]
         while 1:
             if not hasattr(ob, '_p_oid'):
@@ -122,8 +122,15 @@ class Moniker:
 
     def bind(self):
         "Return the real object named by this moniker"
-        if self.jar is None: jar=Globals.Bobobase._jar
-        else: jar=Globals.VersionBase[self.jar].jar
+        if hasattr(Globals,'VersionBase'):
+            # BoboPOS 2
+            if not self.jar: jar=Globals.Bobobase._jar
+            else: jar=Globals.VersionBase[self.jar].jar
+        else:
+            # ZODB 3 Problem, we make have more than one database! Waaa
+            jar=Globals.DB.open(transaction=get_transaction(),
+                                version=self.jar or '', temporary=1)
+
         ob=None
         for n in self.ids:
             o=jar[n]

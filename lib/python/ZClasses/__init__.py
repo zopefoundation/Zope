@@ -14,10 +14,9 @@ needed by a product and to define product meta data.
 
 This sample product publishes a folder-ish and a simple object.
 
-$Id: __init__.py,v 1.3 1999/03/22 17:45:37 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 1999/04/29 19:21:34 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
-from ImageFile import ImageFile
 import ZClass
 
 # Names of objects added by this product:

@@ -148,24 +148,62 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     def __bobo_traverse__(self, REQUEST, name):
         if name[-9:]=='__draft__': return getattr(self, name)
 
-        dself=getdraft(self, self._version)
+        
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            jar=Globals.VersionBase[version].jar
+        else:
+            # ZODB 3
+            jar=db.open(self._version)
+            cleanup=Cleanup()
+            cleanup.__del__=jar.close
+            REQUEST[Cleanup]=cleanup
+            
+            
+        dself=getdraft(self, jar)
+        
         ref=getattr(dself.aq_parent.aq_base,dself._refid).aq_base.__of__(dself)
         if hasattr(ref, name): return dself, ref, getattr(ref, name)
         return getattr(self, name)
     
-    def nonempty(self): return Globals.VersionBase[self._version].nonempty()
+    def nonempty(self):        
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            return Globals.VersionBase[self._version].nonempty()
+        else:
+            # ZODB 3
+            return not db.versionEmpty(self._version)
 
     manage_approve__draft__=Globals.HTMLFile('draftApprove', globals())
 
     def manage_Save__draft__(self, remark, REQUEST=None):
         """Make version changes permanent"""
-        Globals.VersionBase[self._version].commit(remark)
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            Globals.VersionBase[self._version].commit(remark)
+        else:
+            # ZODB 3
+            s=self._version
+            d=self._p_jar.getVersion()
+            if d==s: d=''
+            db.commitVersion(s, d)
+            
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
     def manage_Discard__draft__(self, REQUEST=None):
         'Discard changes made during the version'
-        Globals.VersionBase[self._version].abort()
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            Globals.VersionBase[self._version].abort()
+        else:
+            # ZODB 3
+            db.abortVersion(self._version)
+
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
@@ -188,10 +226,14 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             raise 'Copy Error', (
                 "This object can only be copied through the web.<p>")
 
-def getdraft(ob, version):
+def getdraft(ob, jar):
+
     if hasattr(ob,'aq_parent'):
-        return getdraft(ob.aq_self, version).__of__(
-            getdraft(ob.aq_parent, version))
-    if hasattr(ob,'_p_oid'):
-        ob=Globals.VersionBase[version].jar[ob._p_oid]
+        return getdraft(ob.aq_self, jar).__of__(getdraft(ob.aq_parent, jar))
+
+    if hasattr(ob,'_p_oid'): ob=jar[ob._p_oid]
+
     return ob
+
+
+class Cleanup: pass

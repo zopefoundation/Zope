@@ -84,21 +84,21 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.9 1999/03/10 00:15:29 klm Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: __init__.py,v 1.10 1999/04/29 19:21:32 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
-import Globals, ImageFile, os
+import Globals, os
 
 classes=('DA.Connection',)
 database_type='Gadfly'
 
 misc_={'conn':
-       ImageFile.ImageFile('Shared/DC/ZRDB/www/DBAdapterFolder_icon.gif')}
+       Globals.ImageFile('Shared/DC/ZRDB/www/DBAdapterFolder_icon.gif')}
 
 for icon in ('table', 'view', 'stable', 'what',
              'field', 'text','bin','int','float',
              'date','time','datetime'):
-    misc_[icon]=ImageFile.ImageFile('icons/%s.gif' % icon, globals())
+    misc_[icon]=Globals.ImageFile('icons/%s.gif' % icon, globals())
 
 meta_types=(
     {'name':'Z %s Database Connection' % database_type,

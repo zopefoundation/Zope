@@ -82,26 +82,55 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-import sys, dcdb
+"""Provide a Main application for the Zope framework
 
-dcdb.debug() # Make it easy to set a breakpoint near here.
+The Job of this module is to:
 
-import os, string
+ - Configure and open the database
+
+ - Establish the top-level object for ZPublisher
+
+ - Perform very high-level configuration tasks
+
+"""
+
+# We import BoboPOS before importing any other application
+# modules.  This is needed to assure that the right
+# versions of Persistent etc get registered.
 from BoboPOS import SimpleDB, TJar, SingleThreadedTransaction
-import Globals
 
-import OFS.Application
-
-import TreeDisplay.TreeTag
-import Scheduler.Scheduler
+import sys, os, string, Globals, OFS.Application
+Globals.BobobaseName = '%s/Data.bbb' % Globals.data_dir
+Globals.VersionNameName='Zope-Version'
 
 # Setup support for broken objects:
 import OFS.Uninstalled, BoboPOS.PickleJar
 BoboPOS.PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
 
 # Open the application database
-Bobobase=OFS.Application.open_bobobase()
+OFS.Application.import_products()
+revision=read_only=None
+if os.environ.has_key('ZOPE_READ_ONLY'):
+    read_only=1
+    try: revision=DateTime(os.environ['ZOPE_READ_ONLY']).timeTime()
+    except: pass
+        
+Bobobase=Globals.Bobobase=BoboPOS.PickleDictionary(
+    Globals.BobobaseName, read_only=read_only, revision=revision)
+Globals.opened.append(Bobobase)
 VersionBase=Globals.VersionBase=TJar.TM(Bobobase)
+Globals.opened.append(VersionBase)
+
+try: app=Bobobase['Application']
+except KeyError:
+    app=OFS.Application.Application()
+    Bobobase['Application']=app
+    get_transaction().note('created Application object')
+    get_transaction().commit()
+
+bobo_application=app
+
+OFS.Application.initialize(app)
 
 if os.environ.has_key('ZOPE_DATABASE_QUOTA'):
     quota=string.atoi(os.environ['ZOPE_DATABASE_QUOTA'])
@@ -112,17 +141,5 @@ if os.environ.has_key('ZOPE_DATABASE_QUOTA'):
         lambda x, quota=quota, otherdb=Bobobase._jar.db:
         x + otherdb.pos > quota)
 
-
-
 SingleThreadedTransaction.Transaction.commit=VersionBase.committer()
-
-bobo_application=app=Bobobase['Application']
-
-for n in 'Z', 'BOBO':
-    if os.environ.has_key('%s_DEBUG_MODE' % n):
-        n=string.lower(os.environ['%s_DEBUG_MODE' % n])
-        if n=='no' or n=='off': continue
-        try: n=string.atoi(n)
-        except: pass
-        if n: Globals.DevelopmentMode=1
 

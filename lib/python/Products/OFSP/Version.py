@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -133,7 +133,14 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     def title_and_id(self):
         r=Version.inheritedAttribute('title_and_id')(self)
-        if Globals.VersionBase[self.cookie].nonempty(): return '%s *' % r
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2        
+            if Globals.VersionBase[self.cookie].nonempty(): return '%s *' % r
+        else:
+            # ZODB 3
+            if not db.versionEmpty(self._version): return '%s *' % r
+        
         return r
 
     def manage_edit(self, title, REQUEST=None):
@@ -186,15 +193,39 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     def save(self, remark, REQUEST=None):
         """Make version changes permanent"""
-        Globals.VersionBase[self.cookie].commit(remark)
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            Globals.VersionBase[self.cookie].commit(remark)
+        else:
+            # ZODB 3
+            s=self.cookie
+            d=self._p_jar.getVersion()
+            if d==s: d=''
+            db.commitVersion(s, d)
+
         if REQUEST: return self.manage_main(self, REQUEST)
     
     def discard(self, REQUEST=None):
         'Discard changes made during the version'
-        Globals.VersionBase[self.cookie].abort()
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            Globals.VersionBase[self.cookie].abort()
+        else:
+            # ZODB 3
+            db.abortVersion(self.cookie)
+
         if REQUEST: return self.manage_main(self, REQUEST)
         
-    def nonempty(self): return Globals.VersionBase[self.cookie].nonempty()
+    def nonempty(self):
+        try: db=self._jar.db()
+        except:
+            # BoboPOS 2
+            return Globals.VersionBase[self.cookie].nonempty()
+        else:
+            # ZODB 3
+            return not db.versionEmpty(self.cookie)
     
     def _notifyOfCopyTo(self, container, isMove=0):
         if isMove and self.nonempty():

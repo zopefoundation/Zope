@@ -91,12 +91,10 @@ from operator import truth
 import Acquisition, sys, ts_regex, string, types, mimetools
 import OFS.SimpleItem, re, quopri, rfc822
 import Globals
-from Scheduler.OneTimeEvent import OneTimeEvent
-from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.41 1999/03/25 15:50:30 jim Exp $ 
-__version__ = "$Revision: 1.41 $"[11:-2]
+#$Id: MailHost.py,v 1.42 1999/04/29 19:21:31 jim Exp $ 
+__version__ = "$Revision: 1.42 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -172,15 +170,11 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                       % requiredHeader
-        Globals.Scheduler.schedule(OneTimeEvent(
-            Send,
-            (trueself.smtpHost, trueself.smtpPort, 
+        Send(trueself.smtpHost, trueself.smtpPort, 
              trueself.localHost, trueself.timeout, 
              headers['from'], headers['to'],
              headers['subject'] or 'No Subject', messageText
-             ),
-            threadsafe=1
-            ))
+             )
 
         if not statusTemplate: return "SEND OK"
 
@@ -233,14 +227,10 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        Globals.Scheduler.schedule(OneTimeEvent(
-            Send,
-            (self.smtpHost, self.smtpPort, self.localHost, self.timeout,
+        Send(self.smtpHost, self.smtpPort, self.localHost, self.timeout,
              headers['from'], headers['to'],
              headers['subject'] or 'No Subject', messageText
-             ),
-            threadsafe=1
-            ))
+             )
 
     def simple_send(self, mto, mfrom, subject, body):
         body="subject: %s\n\n%s" % (subject, body)

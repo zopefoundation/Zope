@@ -84,13 +84,13 @@
 ##############################################################################
 """Help system implementation"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 import sys, os, string, Globals, Acquisition
 from HelpUtil import HelpBase
 from ObjectRef import ObjectRef
-from ImageFile import ImageFile
+from App.ImageFile import ImageFile
 from Globals import HTMLFile
 
 
