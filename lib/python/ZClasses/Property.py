@@ -343,7 +343,8 @@ def rclass(klass):
         get_transaction().register(klass)
         klass._p_changed=1
 
-class ZInstanceSheetsSheet(OFS.PropertySheets.View,
+class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
+                           OFS.PropertySheets.View,
                            OFS.ObjectManager.ObjectManager):
     "Manage common property sheets"
 

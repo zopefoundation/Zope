@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -554,7 +554,7 @@ class DAVProperties(Virtual, PropertySheet, View):
                '  </n:lockentry>\n  '
 
 
-class PropertySheets(Implicit, App.Management.Tabs):
+class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
     
