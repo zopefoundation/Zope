@@ -11,13 +11,14 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.15 1997/10/27 15:21:22 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Application.py,v 1.16 1997/11/05 15:06:56 paul Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 import Globals,Folder,regex
 from string import lower, find
 from AccessControl.User import UserFolder
+from DateTime import DateTime
 
 
 class Application(Folder.Folder):
@@ -63,13 +64,15 @@ class Application(Folder.Folder):
 
     def __class_init__(self): pass
 
-    def Redirect(self,destination,PARENT_URL):
+    def PrincipiaRedirect(self,destination,PARENT_URL):
 	"""Utility function to allow user-controlled redirects"""
 	if find(destination,'//') >= 0: raise 'Redirect', destination
 	raise 'Redirect', ("%s/%s" % (PARENT_URL, destination))
+    Redirect=PrincipiaRedirect
 
-
-	
+    def PrincipiaTime(self):
+	"""Utility function to return current date/time"""
+	return DateTime()
 
 def open_bobobase():
     # Open the application database
@@ -168,6 +171,10 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.16  1997/11/05 15:06:56  paul
+# Renamed Redirect to PrincipiaRedirect, leaving Redirect for
+# compatibility.  Added PrincipiaTime which returns a DateTime object.
+#
 # Revision 1.15  1997/10/27 15:21:22  jim
 # Fixed bug in assigning role names that caused roles record to be
 # rewritten on every start up.
