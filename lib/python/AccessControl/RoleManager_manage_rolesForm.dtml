@@ -12,6 +12,7 @@ the desired role names and click &quot;Change&quot;.
 <FORM ACTION="<!--#var PARENT_URL-->/manage_editRoles" METHOD="POST">
 <TABLE>
 <TR>
+<TD VALIGN=CENTER><STRONG>Access<BR>Control</STRONG></TD>
 <TD VALIGN="TOP">
 <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"<!--#var aclEChecked-->>
 Allow users with selected roles
@@ -28,10 +29,16 @@ Allow all users
 <!--#var sequence-item-->
 <!--#/in selectedRoles-->
 </SELECT>
-<BR>
-<INPUT TYPE="SUBMIT" VALUE="Change">
 </TD>
 </TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" VALUE="Change">
+  </TD>
+</TR>
+
 </TABLE>
 </FORM>
 
