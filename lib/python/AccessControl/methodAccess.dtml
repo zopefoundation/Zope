@@ -1,0 +1,34 @@
+<html><head><title>Security</title></head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#/if manage_tabs-->
+
+<p>The listing below shows the current permission mappings for this item.</p>
+<!--#with "_(valid=classDefinedPermissions())"-->
+<form action="manage_setPermissionMapping" method="POST">
+<table>
+  <tr><th align=left>Permission</th>
+      <th align=left>is mapped to</th></tr>
+  <!--#in manage_getPermissionMapping mapping-->
+    <tr>
+      <th align=left><!--#var permission_name--></th>
+      <td>
+         <input type=hidden name="permission_names:list" 
+	        value="<!--#var permission_name-->">
+         <select name="class_permissions:list">
+	    <option value="" <!--#unless class_permission
+                -->selected<!--#/unless-->>(disabled)</option>
+	    <!--#in valid-->
+            <option <!--#if "_['sequence-item']==class_permission"
+	        -->selected<!--#/if-->><!--#var sequence-item--></option>
+            <!--#/in-->
+         </select>
+      </td>
+    </tr>
+  <!--#/in-->
+  <tr><td colspan=2 align=center><input type=submit value=" Change "></td></tr>
+</table></form>
+<!--#/with-->
+
+</body></html>
