@@ -117,6 +117,8 @@ class p_:
     PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
 
     ZopeButton=ImageFile('App/www/zope_button.gif')
+    ZButton=ImageFile('App/www/z_button.jpg')
+
     Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
     Methods_icon=ImageFile('ZClasses/methods.gif')
     Propertysheets_icon=ImageFile('ZClasses/propertysheets.gif')
