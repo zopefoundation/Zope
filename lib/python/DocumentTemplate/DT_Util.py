@@ -51,11 +51,11 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.43 1998/09/04 20:45:58 jim Exp $''' 
-__version__='$Revision: 1.43 $'[11:-2]
+'''$Id: DT_Util.py,v 1.44 1998/09/08 16:06:53 jim Exp $''' 
+__version__='$Revision: 1.44 $'[11:-2]
 
 import regex, string, math, os
-from string import rfind, strip, join, atoi,lower,upper,capitalize,split,find
+from string import rfind, strip, join, atoi,lower,capitalize,split,find
 import VSEval
 
 str=__builtins__['str'] # Waaaaa, waaaaaaaa needed for pickling waaaaa
@@ -251,7 +251,8 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
                         tag)
                 return v, expr
             else: raise ParseError, (
-                'The "..." shorthand for expr was used in a tag that doesn\'t support expr attributes.',
+                'The "..." shorthand for expr was used in a tag '
+                'that doesn\'t support expr attributes.',
                 tag)
 
         else: # name shorthand            
