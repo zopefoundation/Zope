@@ -181,6 +181,9 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
     <LI>Sam Rushing worked with us at Digital Creations to make Medusa
     the publishing platform for ZServer and the concurrency of Zope2.</LI>
 
+    <LI>A subset of windows guru Mark Hammond's win32 extensions are
+    bundled with win32 binary distributions of Zope.
+
     <LI>Martijn Pieters and Brian Hooper contributed the DTML 'in' tag reverse
     attribute.</LI>
 
