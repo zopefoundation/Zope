@@ -92,6 +92,11 @@ Zope Changes
           attribute is used. Also, the null attribute had no effect
           when outputing missing values.
 
+	- It was impossible to map some permissions to themselves, or
+          to other inherited, but not registered permissions in
+          products and in class methods.  When this failed, a silly
+          error message ("Waaa" ;) was output.
+
     Zope 2.0 beta 6
 
       Features Added
