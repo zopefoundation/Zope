@@ -255,3 +255,6 @@ Lots of discussion!
 
  - Give 'mkzopeinstance', 'mkzeoinstance', and 'zconfig' Python scripts
    in software home a .py extension.
+
+ - Offer to install software home 'bin' scripts into a directory
+   separate from the software home 'bin' directory.
