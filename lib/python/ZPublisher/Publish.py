@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.66 1997/11/11 19:37:27 jim Exp $"""
+$Id: Publish.py,v 1.67 1997/11/20 20:39:50 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.66 1997/11/11 19:37:27 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 
 def main():
@@ -843,10 +843,10 @@ class ModulePublisher:
 			user=old_validation(groups, auth, roles)
 		    elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
 		    else: user=v(request, auth, roles)
-		    
-		if user is None: self.unauthorized(realm)
 
 		break
+		    
+	    if user is None: self.unauthorized(realm)
 
 	steps=join(steps[:-i],'/')
 	if user is not None:
@@ -1367,6 +1367,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.67  1997/11/20 20:39:50  jim
+# Changed to give unauthorized error if no user database.
+#
 # Revision 1.66  1997/11/11 19:37:27  jim
 # Minor change to speed form processing slightly.
 #
