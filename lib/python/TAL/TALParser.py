@@ -100,19 +100,12 @@ class TALParser(XMLParser):
         if gen is None:
             gen = TALGenerator()
         self.gen = gen
-        self.todoStack = []
         self.nsStack = []
         self.nsDict = {XML_NS: 'xml'}
         self.nsNew = []
 
     def getCode(self):
         return self.gen.program, self.gen.macros
-
-    def todoPush(self, todo):
-        self.todoStack.append(todo)
-
-    def todoPop(self):
-        return self.todoStack.pop()
 
     def StartNamespaceDeclHandler(self, prefix, uri):
         self.nsStack.append(self.nsDict.copy())
@@ -123,6 +116,7 @@ class TALParser(XMLParser):
         self.nsDict = self.nsStack.pop()
 
     def StartElementHandler(self, name, attrs):
+        name = self.fixname(name)
         if self.ordered_attributes:
             # attrs is a list of alternating names and values
             attrlist = []
@@ -135,74 +129,8 @@ class TALParser(XMLParser):
             attrlist = attrs.items()
             attrlist.sort() # For definiteness
         attrlist, taldict, metaldict = self.extractattrs(attrlist)
-        todo = {}
-        defineMacro = metaldict.get("define-macro")
-        useMacro = metaldict.get("use-macro")
-        defineSlot = metaldict.get("define-slot")
-        fillSlot = metaldict.get("fill-slot")
-        defines = taldict.get("define")
-        condition = taldict.get("condition")
-        insert = taldict.get("insert")
-        replace = taldict.get("replace")
-        repeat = taldict.get("repeat")
-        attrsubst = taldict.get("attributes")
-        n = 0
-        if defineMacro: n = n+1
-        if useMacro: n = n+1
-        if fillSlot: n = n+1
-        if defineSlot: n = n+1
-        if n > 1:
-            raise METALError("only one METAL attribute per element")
-        n = 0
-        if insert: n = n+1
-        if replace: n + n+1
-        if repeat: n = n+1
-        if n > 1:
-            raise TALError("can't use insert, replace, repeat together")
-        repeatWhitespace = None
-        if repeat:
-            # Hack to include preceding whitespace in the loop program
-            repeatWhitespace = self.gen.unEmitNewlineWhitespace()
-        if defineMacro:
-            self.gen.pushProgram()
-            todo["defineMacro"] = defineMacro
-        if useMacro:
-            self.gen.pushSlots()
-            self.gen.pushProgram()
-            todo["useMacro"] = useMacro
-        if defineSlot:
-            self.gen.pushProgram()
-            todo["defineSlot"] = defineSlot
-        if fillSlot:
-            self.gen.pushProgram()
-            todo["fillSlot"] = fillSlot
-        if defines:
-            self.gen.emit("beginScope")
-            self.gen.emitDefines(defines)
-            todo["define"] = defines
-        if condition:
-            self.gen.pushProgram()
-            todo["condition"] = condition
-        if insert:
-            todo["insert"] = insert
-        elif replace:
-            todo["replace"] = replace
-            self.gen.pushProgram()
-        elif repeat:
-            todo["repeat"] = repeat
-            self.gen.emit("beginScope")
-            self.gen.pushProgram()
-            if repeatWhitespace:
-                self.gen.emitText(repeatWhitespace)
-        if attrsubst:
-            repldict = parseAttributeReplacements(attrsubst)
-        else:
-            repldict = {}
-        self.gen.emitStartTag(self.fixname(name),
-                                  self.replattrs(attrlist, repldict))
-        if insert:
-            self.gen.pushProgram()
-        self.todoPush(todo)
+        attrlist = self.xmlnsattrs() + attrlist
+        self.gen.emitStartElement(name, attrlist, taldict, metaldict)
 
     def extractattrs(self, attrlist):
         talprefix = ZOPE_TAL_NS + " "
@@ -239,7 +167,7 @@ class TALParser(XMLParser):
                         (repr(key[len(ZOPE_TAL_NS)+1:]),
                          string.join(KNOWN_TAL_ATTRIBUTES)))
 
-    def replattrs(self, attrlist, repldict):
+    def xmlnsattrs(self):
         newlist = []
         for prefix, uri in self.nsNew:
             if prefix:
@@ -247,17 +175,6 @@ class TALParser(XMLParser):
             else:
                 newlist.append(("xmlns", uri))
         self.nsNew = []
-        if not repldict:
-            return newlist + attrlist
-        for item in attrlist:
-            key = item[0]
-            if repldict.has_key(key):
-                item = item[:2] + ("replace", repldict[key])
-                del repldict[key]
-            newlist.append(item)
-        for key, value in repldict.items(): # Add dynamic-only attributes
-            item = (key, "", "replace", value)
-            newlist.append(item)
         return newlist
 
     def fixname(self, name):
@@ -270,45 +187,7 @@ class TALParser(XMLParser):
 
     def EndElementHandler(self, name):
         name = self.fixname(name)
-        todo = self.todoPop()
-        if not todo:
-            # Shortcut
-            self.gen.emitEndTag(name)
-            return
-        insert = todo.get("insert")
-        if insert:
-            self.gen.emitSubstitution(insert)
-        self.gen.emitEndTag(name)
-        repeat = todo.get("repeat")
-        if repeat:
-            self.gen.emitRepeat(repeat)
-            self.gen.emit("endScope")
-        replace = todo.get("replace")
-        if replace:
-            self.gen.emitSubstitution(replace)
-        condition = todo.get("condition")
-        if condition:
-            self.gen.emitCondition(condition)
-        if todo.get("define"):
-            self.gen.emit("endScope")
-        defineMacro = todo.get("defineMacro")
-        useMacro = todo.get("useMacro")
-        defineSlot = todo.get("defineSlot")
-        fillSlot = todo.get("fillSlot")
-        if defineMacro:
-            self.gen.emitDefineMacro(defineMacro)
-        if useMacro:
-            self.gen.emitUseMacro(useMacro)
-        if defineSlot:
-            self.gen.emitDefineSlot(defineSlot)
-        if fillSlot:
-            self.gen.emitFillSlot(fillSlot)
-
-    def CommentHandler(self, text):
-        self.gen.emitRawText("<!--%s-->" % text)
-
-    def CharacterDataHandler(self, text):
-        self.gen.emitText(text)
+        self.gen.emitEndElement(name)
 
     def DefaultHandler(self, text):
         self.gen.emitRawText(text)
