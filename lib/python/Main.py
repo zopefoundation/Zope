@@ -9,7 +9,7 @@
 ############################################################################## 
 import ni, sys
 
-import SimpleDB, Sync, TJar
+import SimpleDB, Sync, TJar, SingleThreadedTransaction
 
 class SyncDB(SimpleDB.Default, Sync.Synchronized):
     pass
@@ -34,12 +34,18 @@ import Scheduler.Scheduler
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
 
+
+SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
+
 bobo_application=app=Bobobase['Application']
 
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.12  1997/11/11 22:56:33  jim
+# Added logic to that causes transaction commits to notify LRT managers.
+#
 # Revision 1.11  1997/11/07 18:29:06  jim
 # Added app alias.
 #
