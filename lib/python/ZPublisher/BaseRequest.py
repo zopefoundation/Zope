@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -233,30 +233,17 @@ class BaseRequest:
         if find(path, 'REQUEST') >= 0:
             return response.notFoundError(path)
 
-        # XXX rewrite this?
-        # Is it an absolute path? If not prepend a '/'
-        if path[:1] != '/': path='/'+path
-
-        # Does it end in a slash? If not, append one.
-        if path[-1:] != '/': path=path+'/'
-
-        # Map out relative references ('.' and '..')
-        if find(path,'/.') >= 0:
-            path=join(split(path,'/./'),'/')
-            l=find(path,'/../',1)
-            while l > 0:
-                p1=path[:l]
-                path=path[:rfind(p1,'/')+1]+path[l+4:]
-                l=find(path,'/../',1)
-
-        # Now rip off the leading and trailing slashes XXX
-        path=path[1:-1]
-
-        # Rip the path apart based on '/'
-        path=split(path,'/')
-
-        # Remove any empty leading elements
-        while path and not path[0]: path = path[1:]
+        # Cleanup the path list
+        if path[0]=='/':  path=path[1:]
+        if path[-1]=='/': path=path[:-1]
+        clean=[]
+        for item in split(path, '/'):
+            if not item or item=='.':
+                continue
+            elif item == '..':
+                del clean[-1]
+            else: clean.append(item)
+        path=clean
 
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method=req_method=upper(request_get('REQUEST_METHOD', 'GET'))
