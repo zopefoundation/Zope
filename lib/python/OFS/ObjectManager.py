@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.74 1999/06/24 19:27:16 jim Exp $"""
+$Id: ObjectManager.py,v 1.75 1999/06/30 15:56:46 amos Exp $"""
 
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -167,6 +167,19 @@ class ObjectManager(
             try: pmt=self.aq_acquire('_product_meta_types')
             except:  pass
         return self.meta_types+Products.meta_types+pmt
+
+    def filtered_meta_types(self, user):
+        "Those meta types for which a user has adequite permissions."
+        meta_types=[]
+        all=callable(self.all_meta_types) and self.all_meta_types() or \
+                self.all_meta_types 
+        for meta_type in all:
+            if meta_type.has_key('permission'):
+                if user.has_permission(meta_type['permission'],self):
+                    meta_types.append(meta_type)
+            else:
+                meta_types.append(meta_type)
+        return meta_types
 
     def _checkId(self, id, allow_dup=0):
         # If allow_dup is false, an error will be raised if an object

@@ -69,9 +69,9 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
 <!--#/if-->
 </FORM>
 
-<!--#if all_meta_types-->
+<!--#if "filtered_meta_types(AUTHENTICATED_USER)"-->
 
-<!--#if "_.len(all_meta_types) > 1"-->
+<!--#if "_.len(filtered_meta_types(AUTHENTICATED_USER)) > 1"-->
 <TABLE ALIGN="LEFT">
 <TR>
 <TD VALIGN="MIDDLE">
@@ -84,9 +84,9 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
   <FORM ACTION="<!--#var URL1-->/" METHOD="GET">
   <SELECT NAME=":method" ONCHANGE="location.href=this.options[this.selectedIndex].value">
     <OPTION value="manage_workspace" DISABLED>Available Objects
-  <!--#in all_meta_types mapping sort=name-->
+  <!--#in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name-->
     <OPTION value="<!--#var action-->"><!--#var name-->
-  <!--#/in all_meta_types-->
+  <!--#/in-->
   </SELECT>
   <NOSCRIPT><INPUT TYPE="SUBMIT" VALUE=" Add "></NOSCRIPT>
   </FORM>
@@ -96,10 +96,10 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
 <!--#else-->
   <FORM ACTION="<!--#var URL1-->/" METHOD="GET">
     To add a new item click &quot;Add&quot;.
-    <!--#in all_meta_types mapping sort=name-->
+    <!--#in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name-->
       <input type=hidden name=":method" value="<!--#var action-->">
       <INPUT TYPE="SUBMIT" VALUE=" Add ">
-    <!--#/in all_meta_types-->
+    <!--#/in-->
   </FORM>
 <!--#/if-->
 
