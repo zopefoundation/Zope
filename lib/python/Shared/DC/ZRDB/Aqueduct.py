@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.46 2001/04/28 06:10:27 chrism Exp $'''
-__version__='$Revision: 1.46 $'[11:-2]
+$Id: Aqueduct.py,v 1.47 2001/04/28 07:21:59 chrism Exp $'''
+__version__='$Revision: 1.47 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -409,10 +409,10 @@ def nicify(name):
 def decapitate(html, RESPONSE=None,
                header_re=re.compile(
                    r'(('
-                           '[^\000- <>:]+:[^\n]*\n'
-                       '|'
-                           '[ \011]+[^\000- ][^\n]*\n'
-                   ')+)[ \t]*\n([\000-\377]+)'
+                   r'[^\000- <>:]+:[^\n]*\n'
+                   r'|'
+                   r'[ \011]+[^\000- ][^\n]*\n'
+                   r')+)[ \t]*\n([\000-\377]+)'
                    ), # please kill me now
                space_re=re.compile(r'([ \t]+)'),
                name_re=re.compile(r'([^\000- <>:]+):([^\n]*)'),
