@@ -84,7 +84,7 @@
 ##############################################################################
 
 import sys,os
-sys.path.append("%s/ZServer/medusa/test" % os.environ['INST_HOME'])
+sys.path.append(os.path.join(__path__[0],"medusa/test"))
 
 import max_sockets
 
