@@ -554,6 +554,22 @@ class ProcessInputsTests(unittest.TestCase):
                 self.failIf('<' in e,
                     '%s converter does not quote unsafe value!' % type)
 
+    def testNameWithDotAsTuple(self):
+        # Collector #500
+        inputs = (
+            ('name.:tuple', 'name with dot as tuple'),)
+        req = self._processInputs(inputs)
+        self._noFormValuesInOther(req)
+
+        formkeys = list(req.form.keys())
+        formkeys.sort()
+        self.assertEquals(formkeys, ['name.'])
+
+        self.assertEquals(req['name.'], ('name with dot as tuple',))
+
+        self._noTaintedValues(req)
+        self._onlyTaintedformHoldsTaintedStrings(req)
+            
 
 def test_suite():
     suite = unittest.TestSuite()

@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -925,6 +925,7 @@ class HTTPRequest(BaseRequest):
                     k=key.split( ".")
                     k,attr='.'.join(k[:-1]), k[-1]
                     a = attr
+                    new = ''
                     # remove any type_names in the attr
                     while not a=='':
                         a=a.split( ":")
