@@ -7,7 +7,9 @@ from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser
+from Products.ZCTextIndex.StopDict import get_stopdict
 
+import re
 import unittest
 
 class Indexable:
@@ -33,6 +35,43 @@ def eq(scaled1, scaled2, epsilon=scaled_int(0.01)):
 # Subclasses should derive from one of testIndex.{CosineIndexTest,
 # OkapiIndexTest} too.
 
+# a series of text chunks to use for the re-index tests
+text = [
+    """Here's a knocking indeed! If a
+    man were porter of hell-gate, he should have
+    old turning the key.""",
+
+    """Knock,
+    knock, knock! Who's there, i' the name of
+    Beelzebub? Here's a farmer, that hanged
+    himself on the expectation of plenty: come in
+    time; have napkins enow about you; here
+    you'll sweat for't.""",
+
+    """Knock,
+    knock! Who's there, in the other devil's
+    name? Faith, here's an equivocator, that could
+    swear in both the scales against either scale;
+    who committed treason enough for God's sake,
+    yet could not equivocate to heaven: O, come
+    in, equivocator.""",
+
+    """Knock,
+    knock, knock! Who's there? Faith, here's an
+    English tailor come hither, for stealing out of
+    a French hose: come in, tailor; here you may
+    roast your goose.""",
+
+    """Knock,
+    knock; never at quiet! What are you? But
+    this place is too cold for hell. I'll devil-porter
+    it no further: I had thought to have let in
+    some of all professions that go the primrose
+    way to the everlasting bonfire."""
+]
+
+
+
 class ZCIndexTestsBase:
 
     def setUp(self):
@@ -57,6 +96,42 @@ class ZCIndexTestsBase:
                 self.assertEqual(wids, [])
         self.assertEqual(len(self.index._get_undoinfo(1)), 1)
 
+    def testDocUpdate(self):
+        docid = 1
+        stop = get_stopdict()
+        unique = {} # compute a set of unique words for each version
+        d = {} # find some common words
+        common = []
+        N = len(text)
+        for version, i in zip(text, range(N)):
+            # use a simple splitter rather than an official one
+            words = [w for w in re.split("\W+", version.lower())
+                     if len(w) > 1 and not stop.has_key(w)]
+            # count occurences of each word
+            for w in words:
+                l = d[w] = d.get(w, [])
+                l.append(i)
+        for k, v in d.items():
+            if len(v) == 1:
+                v = v[0]
+                l = unique[v] = unique.get(v, [])
+                l.append(k)
+            elif len(v) == N:
+                common.append(k)
+
+        for version, i in zip(text, range(N)):
+            doc = Indexable(version)
+            self.zc_index.index_object(docid, doc)
+            for w in common:
+                nbest, total = self.zc_index.query(w)
+                self.assertEqual(total, 1, "did not find %s" % w)
+            for k, v in unique.items():
+                if k == i:
+                    continue
+                for w in v:
+                    nbest, total = self.zc_index.query(w)
+                    self.assertEqual(total, 0, "did not expect to find %s" % w)
+            self.zc_index.unindex_object(docid)
 
 class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
 
