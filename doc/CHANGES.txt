@@ -27,6 +27,19 @@ Zope Changes
 
     Features Added
 
+      - TextIndex/Splitters: the constructor of all three splitters
+        has now three new optional parameters:
+
+        'maxlen'=(1-256) -  to specify the maximum length of 
+                            splitted words
+
+        'singlechar'=(1|0) - allows single characters to be indexed
+
+        'indexnumbers'=(1|0)- allows numbers to be indexed
+
+        The default values of all parameters reflect the standard
+        behaviour.
+
       - Enhancements to utilites/requestprofiler.py:
 
         Added readstats and writestats features which allow for saves and

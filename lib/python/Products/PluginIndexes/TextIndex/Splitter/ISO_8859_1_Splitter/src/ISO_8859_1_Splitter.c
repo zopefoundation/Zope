@@ -32,6 +32,9 @@ typedef struct
     PyObject *text, *synstop;
     char *here, *end;
     int index;
+    int allow_single_chars;
+    int index_numbers;
+    int max_len;
 }
 
 Splitter;
@@ -117,6 +120,32 @@ Splitter_length(Splitter *self)
     return self->index+1;
 }
 
+
+static PyObject *
+Splitter_split(Splitter*self)
+{
+    PyObject *list=NULL,*word=NULL;
+
+    UNLESS(list = PyList_New(0)) return NULL;
+
+    Splitter_reset(self);
+
+    while (1) {
+        Py_XDECREF(word);
+
+        UNLESS(word = next_word(self,NULL,NULL)) return NULL;
+
+        if (word == Py_None) {
+            return list;
+        }
+
+        PyList_Append(list,word);
+    }
+
+    return list;
+}
+
+
 static PyObject *
 Splitter_concat(Splitter *self, PyObject *other)
 {
@@ -155,7 +184,7 @@ check_synstop(Splitter *self, PyObject *word)
 
     len = PyString_Size(word);
 
-    if(len < 2)	/* Single-letter words are stop words! */
+    if(len < 2 && ! self->allow_single_chars)	/* Single-letter words are stop words! */
     {
         Py_INCREF(Py_None);
         return Py_None;
@@ -167,7 +196,7 @@ check_synstop(Splitter *self, PyObject *word)
     for (; --len >= 0 && ! isalpha((unsigned char)cword[len]); )
 
         ;
-    if (len < 0) {
+    if (len < 0 && ! self->index_numbers) {
         Py_INCREF(Py_None);
         return Py_None;
     }
@@ -197,12 +226,11 @@ check_synstop(Splitter *self, PyObject *word)
     return value;		/* Which must be None! */
 }
 
-#define MAX_WORD 64		/* Words longer than MAX_WORD are stemmed */
 
 static PyObject *
 next_word(Splitter *self, char **startpos, char **endpos)
 {
-    char wbuf[MAX_WORD];
+    char wbuf[256];
     char *end, *here, *b;
     int i = 0, c;
     PyObject *pyword, *res;
@@ -232,13 +260,13 @@ next_word(Splitter *self, char **startpos, char **endpos)
             if(startpos && i==0)
                 *startpos=here;
 
-            if(i++ < MAX_WORD)
+            if(i++ < self->max_len)
                 *b++ = c;
 
         } else if (i != 0) { /* We've found the end of a word */
 
-            if(i >= MAX_WORD)
-                i=MAX_WORD; /* "stem" the long word */
+            if(i >= self->max_len)
+                i=self->max_len; /* "stem" the long word */
 
             UNLESS(pyword = PyString_FromStringAndSize(wbuf, i)) {
                 self->here=here;
@@ -282,8 +310,8 @@ next_word(Splitter *self, char **startpos, char **endpos)
 
     /* We've reached the end of the string */
 
-    if(i >= MAX_WORD)
-        i=MAX_WORD; /* "stem" the long word */
+    if(i >= self->max_len)
+        i=self->max_len; /* "stem" the long word */
 
     if (i == 0) {
         /* No words */
@@ -416,6 +444,9 @@ err:
 
 static struct PyMethodDef Splitter_methods[] =
     {
+        { "split", (PyCFunction)Splitter_split, 0,
+            "split() -- Split the string in one run"
+        },
         { "pos", (PyCFunction)Splitter_pos, 0,
             "pos(index) -- Return the starting and ending position of a token"
         },
@@ -459,7 +490,7 @@ static PyTypeObject SplitterType = {
                                        SplitterType__doc__ /* Documentation string */
                                    };
 
-static char *splitter_args[]={"doc","synstop","encoding",NULL};
+static char *splitter_args[]={"doc","synstop","encoding","singlechar","indexnumbers","maxlen",NULL};
 
 static PyObject *
 get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
@@ -467,8 +498,29 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     Splitter *self;
     PyObject *doc, *synstop = NULL;
     char * encoding="latin1";
+    int single_char = 0;
+    int index_numbers = 0;
+    int max_len=64;
 
-    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Os",splitter_args,&doc,&synstop,&encoding)) return NULL;
+    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiii",splitter_args,&doc,&synstop,&encoding,&single_char,&index_numbers,&max_len)) return NULL;
+
+
+    if (index_numbers<0 || index_numbers>1) {
+        PyErr_SetString(PyExc_ValueError,"indexnumbers must be 0 or 1");
+        return NULL;
+    }
+
+    if (single_char<0 || single_char>1) {
+        PyErr_SetString(PyExc_ValueError,"singlechar must be 0 or 1");
+        return NULL;
+    }
+
+    if (max_len<1 || max_len>128) {
+        PyErr_SetString(PyExc_ValueError,"maxlen must be between 1 and 128");
+        return NULL;
+    }
+
+
 
     UNLESS(self = PyObject_NEW(Splitter, &SplitterType)) return NULL;
 
@@ -484,6 +536,9 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     UNLESS(self->here=PyString_AsString(self->text)) goto err;
 
     self->end = self->here + PyString_Size(self->text);
+    self->allow_single_chars    = single_char;
+    self->index_numbers         = index_numbers;
+    self->max_len               = max_len;
 
     self->index = -1;
 
@@ -498,7 +553,7 @@ err:
 static struct PyMethodDef Splitter_module_methods[] =
     {
         { "ISO_8859_1_Splitter", (PyCFunction)get_Splitter, METH_VARARGS|METH_KEYWORDS,
-            "ISO_8859_1_Splitter(doc[,synstop]) -- Return a word splitter"
+          "ISO_8859_1_Splitter(doc[,synstop][,encoding][,singlechar][,indexnumbers][,maxlen]) -- Return a word splitter"
         },
 
         { NULL, NULL }
@@ -509,7 +564,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ISO_8859_1_Splitter.c,v 1.5 2001/11/28 15:51:04 matt Exp $\n"
+    "$Id: ISO_8859_1_Splitter.c,v 1.6 2002/01/09 15:17:34 andreasjung Exp $\n"
     ;
 
 
@@ -518,7 +573,7 @@ void
 initISO_8859_1_Splitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.5 $";
+    char *rev="$Revision: 1.6 $";
 
     /* Create the module and add the functions */
     initSplitterTrtabs();

@@ -13,8 +13,6 @@
 
 #include "Python.h"
 
-#define MAX_WORD 64		/* Words longer than MAX_WORD are stemmed */
-
 #ifndef min
 #define min(a,b) ((a)<(b)?(a):(b))
 #endif
@@ -24,8 +22,12 @@ typedef struct
     PyObject_HEAD
     PyObject *list;
     PyObject *synstop;
+    int max_len;
+    int allow_single_chars;
+    int index_numbers;
 }
 Splitter;
+
 static
 PyUnicodeObject *prepareString(PyUnicodeObject *o);
 
@@ -33,6 +35,9 @@ static PyObject *checkSynword(Splitter *self, PyObject *word)
 {
     /* Always returns a borrowed reference */
     PyObject *value;
+
+    if (PyUnicode_GetSize(word)==1 && ! self->allow_single_chars)
+        return Py_None;
 
     if (self->synstop) {
         value = PyDict_GetItem(self->synstop,word);
@@ -80,6 +85,14 @@ Splitter_item(Splitter *self, int i)
   item = PyList_GetItem(self->list, i);
   Py_XINCREF(item);  /* Promote borrowed ref unless exception */
   return item;
+}
+
+static PyObject * 
+Splitter_split(Splitter *self) {
+
+    Py_INCREF(self->list);
+
+    return self->list;
 }
 
 
@@ -133,6 +146,8 @@ Splitter_pos(Splitter *self, PyObject *args)
 
 static struct PyMethodDef Splitter_methods[] =
     {
+        { "split", (PyCFunction) Splitter_split, 0,
+          "split() -- Split string in one run" },
         { "indexes", (PyCFunction)Splitter_indexes, METH_VARARGS,
           "indexes(word) -- Return a list of the indexes of word in the sequence",
         },
@@ -198,14 +213,19 @@ static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
         register Py_UNICODE ch;
 
         ch = *s;
-#ifdef DEBUG
-        printf("%d %c %d\n",i,ch,ch);
-        fflush(stdout);
-#endif
+
         if (!inside_word) {
-            if (Py_UNICODE_ISALPHA(ch)) {
-                inside_word=1;
-                start = i;
+            if (self->index_numbers) {
+                if (Py_UNICODE_ISALNUM(ch)) {
+                    inside_word=1;
+                    start = i;
+                }
+
+            } else {
+                if (Py_UNICODE_ISALPHA(ch)) {
+                    inside_word=1;
+                    start = i;
+                }
             }
         } else {
 
@@ -213,7 +233,7 @@ static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
                 inside_word = 0;
 
                 word = PySequence_GetSlice((PyObject *)doc1,start,
-                                           min(i, start + MAX_WORD));
+                                           min(i, start + self->max_len));
                 if (word==NULL)
                   goto err;
 
@@ -234,7 +254,7 @@ static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
 
     if (inside_word) {
         word = PySequence_GetSlice((PyObject *)doc1,start,
-                                   min(len, start + MAX_WORD));
+                                   min(len, start + self->max_len));
         if (word==NULL)
           goto err;
 
@@ -288,7 +308,7 @@ PyUnicodeObject *prepareString(PyUnicodeObject *o)
     return  u;
 }
 
-static char *splitter_args[]={"doc","synstop","encoding",NULL};
+static char *splitter_args[]={"doc","synstop","encoding","indexnumbers","singlechar","maxlen",NULL};
 
 
 static PyObject *
@@ -297,15 +317,32 @@ newSplitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     Splitter *self=NULL;
     PyObject *doc=NULL, *unicodedoc=NULL,*synstop=NULL;
     char *encoding = "latin1";
+    int index_numbers = 0;
+    int max_len=64;
+    int single_char = 0;
 
-    if (! (self = PyObject_NEW(Splitter, &SplitterType))) return NULL;
-    if (! (PyArg_ParseTupleAndKeywords(args,keywds,"O|Os",splitter_args,&doc,&synstop,&encoding))) return NULL;
+    if (! (PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiii",splitter_args,&doc,&synstop,&encoding,&index_numbers,&single_char,&max_len))) return NULL;
 
 #ifdef DEBUG
     puts("got text");
     PyObject_Print(doc,stdout,0);
     fflush(stdout);
 #endif
+
+    if (index_numbers<0 || index_numbers>1) {
+        PyErr_SetString(PyExc_ValueError,"indexnumbers must be 0 or 1");
+        return NULL;
+    }
+
+    if (single_char<0 || single_char>1) {
+        PyErr_SetString(PyExc_ValueError,"singlechar must be 0 or 1");
+        return NULL;
+    }
+
+    if (max_len<1 || max_len>128) {
+        PyErr_SetString(PyExc_ValueError,"maxlen must be between 1 and 128");
+        return NULL;
+    }
 
     if (PyString_Check(doc)) {
 
@@ -324,10 +361,16 @@ newSplitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
         return NULL;
     }
 
+    if (! (self = PyObject_NEW(Splitter, &SplitterType))) return NULL;
+
     if (synstop) {
         self->synstop = synstop;
         Py_INCREF(synstop);
     } else  self->synstop=NULL;
+
+    self->index_numbers      = index_numbers;
+    self->max_len            = max_len;
+    self->allow_single_chars = single_char;
 
     if ((splitUnicodeString(self,(PyUnicodeObject *)unicodedoc)) < 0)
       goto err;
@@ -344,11 +387,6 @@ err:
 
 static struct PyMethodDef Splitter_module_methods[] =
     {
-        { "pos", (PyCFunction) Splitter_pos, 0,
-          "pos(index) -- Return the starting and ending position of a token" },
-        { "indexes", (PyCFunction) Splitter_indexes, METH_VARARGS,
-          "indexes(word) -- Return a list of the indexes of word in sequence" },
-   
         { "UnicodeSplitter", (PyCFunction)newSplitter,
           METH_VARARGS|METH_KEYWORDS,
           "UnicodeSplitter(doc[,synstop][,encoding='latin1']) "
@@ -362,7 +400,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.12 2001/11/28 15:51:04 matt Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.13 2002/01/09 15:17:34 andreasjung Exp $\n"
     ;
 
 
@@ -370,7 +408,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.12 $";
+    char *rev="$Revision: 1.13 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
