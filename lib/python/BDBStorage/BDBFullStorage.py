@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.49 $'.split()[-2:][0]
+__version__ = '$Revision: 1.50 $'.split()[-2:][0]
 
 import sys
 import time
@@ -34,7 +34,6 @@ from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 import zLOG
-import ThreadLock
 
 # BerkeleyBase.BerkeleyBase class provides some common functionality for both
 # the Full and Minimal implementations.  It in turn inherits from
@@ -75,20 +74,6 @@ except NameError:
 
 
 class Full(BerkeleyBase, ConflictResolvingStorage):
-    #
-    # Overrides of base class methods
-    #
-    def __init__(self, name, env=None, prefix='zodb_', config=None):
-        """Initialize the Full database.
-
-        name, env, prefix, and config are passed straight through to the
-        BerkeleyBase base class constructor.
-        """
-        self._packlock = ThreadLock.allocate_lock()
-        BerkeleyBase.__init__(self, name, env, prefix, config)
-        # The autopack thread is started in _setupDBs() because we need
-        # information in one of the tables.
-
     def _setupDBs(self):
         # Data Type Assumptions:
         #
@@ -262,10 +247,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # Do recovery and consistency checks
         self._withlock(self._dorecovery)
         # Set up the autopacking thread
-        if self._config.frequency <= 0:
-            # No autopacking
-            self._autopacker = None
-        else:
+        if self._config.frequency > 0:
             config = self._config
             lastpacktime = U64(self._last_packtime())
             self._autopacker = _Autopack(
@@ -337,20 +319,6 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         self._packmark.close()
         self._oidqueue.close()
         BerkeleyBase.close(self)
-
-    def _withtxn(self, meth, *args, **kws):
-        txn = self._env.txn_begin()
-        try:
-            ret = meth(txn, *args, **kws)
-        except:
-            #import traceback ; traceback.print_exc()
-            txn.abort()
-            self._docheckpoint()
-            raise
-        else:
-            txn.commit()
-            self._docheckpoint()
-            return ret
 
     def _doabort(self, txn, tid):
         # First clean up the oid indexed (or oid+tid indexed) tables.
@@ -1507,7 +1475,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             return
         key = oid + lrevid
         refcount = U64(self._pickleRefcounts.get(key, ZERO)) - 1
-        if refcount <= 0:
+        assert refcount >= 0
+        if refcount == 0:
             # We can collect this pickle
             self._pickleRefcounts.delete(key, txn=txn)
             data = self._pickles[key]
@@ -1516,7 +1485,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             self._update(deltas, data, -1)
             self._decref(deltas, txn)
         else:
-            self._pickleRefcounts.put(p64(refcount), txn=txn)
+            self._pickleRefcounts.put(key, p64(refcount), txn=txn)
 
     def _decref(self, deltas, txn):
         for oid, delta in deltas.items():
