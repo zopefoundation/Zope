@@ -236,7 +236,9 @@ class zhttp_handler:
         try:
             dns_cache=request.channel.server.logger.resolver.cache
             if dns_cache.has_key(env['REMOTE_ADDR']):
-                env['REMOTE_HOST']=dns_cache[env['REMOTE_ADDR']][2]
+                remote_host=dns_cache[env['REMOTE_ADDR']][2]
+                if remote_host is not None:
+                    env['REMOTE_HOST']=remote_host
         except AttributeError:
             pass
         
