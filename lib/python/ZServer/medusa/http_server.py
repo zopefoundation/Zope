@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.36 2003/07/22 16:29:53 chrism Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.37 2003/09/14 16:35:58 andreasjung Exp $'
 
 # python modules
 import os
@@ -289,7 +289,7 @@ class http_request:
 
         self.channel.server.logger.log (
             self.channel.addr[0],
-            ' - %s [%s] "%s" %d %d "%s" "%s"\n' % (
+            '- %s [%s] "%s" %d %d "%s" "%s"\n' % (
                 name,
                 self.log_date_string (time.time()),
                 self.request,
