@@ -543,7 +543,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # Optimization: we check if there is some work for the index.
                 # 
                 if request.has_key(index.id) :
-                    if len(request[index.id])>0:
+                    if request[index.id] != '':
                         r=index._apply_index(request)
 
                 if r is not None:
