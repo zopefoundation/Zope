@@ -85,13 +85,22 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.24 1999/07/12 21:57:49 jim Exp $"
+"\n$Id: BTree.c,v 1.25 1999/07/30 21:00:13 jim Exp $"
 ;
 
 #define PERSISTENT
 
 #ifdef PERSISTENT
 #include "cPersistence.h"
+
+
+#ifdef INTKEY
+#ifdef INTVAL
+#include "intSet.h"
+#endif
+#endif
+
+
 #else
 #include "ExtensionClass.h"
 #define PER_USE_OR_RETURN(self, NULL)
@@ -138,6 +147,7 @@ static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
 #define ASSIGN_VALUE(k,e) ASSIGN(k,e)
 #endif
 
+
 typedef struct ItemStruct {
   KEY_TYPE key;
   VALUE_TYPE value;
@@ -166,6 +176,7 @@ typedef struct {
   BTreeItem *data;
   int count;
 } BTree;
+
 
 staticforward PyExtensionClass BucketType;
 
@@ -742,7 +753,7 @@ _bucket_set(Bucket *self, PyObject *key, PyObject *v)
       if((cmp=TEST_KEY(self->data[i].key)) < 0) min=i;
       else if(cmp==0)
 	{
-	  if(v)
+	  if(v)			/* Assign value to key */
 	    {
 #ifdef INTVAL
 	      self->data[i].value=iv;
@@ -754,7 +765,7 @@ _bucket_set(Bucket *self, PyObject *key, PyObject *v)
 	      PER_ALLOW_DEACTIVATION(self);
 	      return 0;
 	    }
-	  else
+	  else			/* There's no value so remove the item */
 	    {
 	      self->len--;
 	      d=self->data+i;
@@ -1464,6 +1475,233 @@ bucket_getm(Bucket *self, PyObject *args)
   return d;
 }
 
+
+#ifdef INTKEY
+#ifdef INTVAL
+
+static PyObject *
+_bucket_intset_operation(Bucket *self, intSet *other, 
+			 int cpysrc, int cpyboth, int cpyoth)
+{
+  Bucket *r=0, *o;
+  int i, l, io, lo, ir;
+  Item *d;
+  INTSET_DATA_TYPE *od;
+
+  Item v;
+  int vo;
+
+
+
+  PER_USE_OR_RETURN(self, NULL); 
+  PER_USE_OR_RETURN(other, NULL);
+
+  od=other->data;		
+  d=self->data;
+
+  UNLESS(r=BUCKET(PyObject_CallObject(OBJECT(self->ob_type), NULL)))
+    goto err;
+
+  for(i=0, l=self->len, io=0, lo=other->len; i < l && io < lo; )
+    {
+      v=d[i];
+      vo=od[io];
+      if(v.key < vo)
+	{
+	  if(cpysrc)
+	    {
+	      if(bucket_setitem(r, PyInt_FromLong(v.key), 
+				PyInt_FromLong(v.value))
+		 ) goto err;
+	    }
+	  i++;
+	}
+      else if(v.key==vo)
+	{
+	  if(cpyboth)
+	    {
+	      if(bucket_setitem(r, PyInt_FromLong(v.key), 
+				PyInt_FromLong(v.value+1))
+		 ) goto err;
+	    }
+	  i++;
+	  io++;
+	}
+      else
+	{
+	  if(cpyoth)
+	    {
+	      if(bucket_setitem(r, PyInt_FromLong(vo), 
+				PyInt_FromLong(1))
+		 ) goto err;
+	    }
+	  io++;
+	}
+    }
+  
+  
+  if(cpysrc && i < l)
+    {
+      for(;i<l;i++){
+	v=d[i];
+	if(bucket_setitem(r, PyInt_FromLong(v.key), 
+			  PyInt_FromLong(v.value))
+	   ) goto err;
+      }
+    }
+  else if(cpyoth && io < lo)
+    {
+      
+      for(;io<lo;io++){
+	vo=od[io];
+	
+	if(bucket_setitem(r, PyInt_FromLong(vo), 
+			  PyInt_FromLong(1))
+	   ) goto err;
+      }
+    }
+ 
+
+  return OBJECT(r);
+
+err:
+  PER_ALLOW_DEACTIVATION(self);
+  PER_ALLOW_DEACTIVATION(o);
+  Py_DECREF(r);
+  return NULL;
+}
+
+static PyObject *
+bucket_set_operation(Bucket *self, PyObject *other, 
+		     int cpysrc, int cpyboth, int cpyoth)
+{
+  Bucket *r=0, *o;
+  int i, l, io, lo, ir;
+  Item *d, *od;
+  Item v, vo;
+
+  if (intSetType == OBJECT(other->ob_type))
+    return _bucket_intset_operation(self, INTSET(other), 
+				    cpysrc, cpyboth, cpyoth); 
+  else if(other->ob_type != self->ob_type)
+    {
+      PyErr_SetString(PyExc_TypeError,
+		      "IIBTree set operations requires an object of type "
+		      "IIBTree or intSet");
+      return NULL;
+  }
+  else 
+    o=BUCKET(other);		
+
+
+  PER_USE_OR_RETURN(self, NULL); 
+  PER_USE_OR_RETURN(BUCKET(other), NULL);
+
+  od=o->data;		
+  d=self->data;
+
+  UNLESS(r=BUCKET(PyObject_CallObject(OBJECT(self->ob_type), NULL)))
+    goto err;
+
+  for(i=0, l=self->len, io=0, lo=o->len; i < l && io < lo; )
+    {
+      v=d[i];
+      vo=od[io];
+      if(v.key < vo.key)
+	{
+	  if(cpysrc)
+	    {
+	      if(bucket_setitem(r, PyInt_FromLong(v.key), 
+				PyInt_FromLong(v.value))
+		 ) goto err;
+	    }
+	  i++;
+	}
+      else if(v.key==vo.key)
+	{
+	  if(cpyboth)
+	    {
+	      if(bucket_setitem(r, PyInt_FromLong(v.key), 
+				PyInt_FromLong(v.value+vo.value))
+		 ) goto err;
+	    }
+	  i++;
+	  io++;
+	}
+      else
+	{
+	  if(cpyoth)
+	    {
+	      if(bucket_setitem(r, PyInt_FromLong(vo.key), 
+				PyInt_FromLong(vo.value))
+		 ) goto err;
+	    }
+	  io++;
+	}
+    }
+  
+  if(cpysrc && i < l)
+    {
+      for(;i<l;i++)
+	{
+	  v=d[i];
+	  if(bucket_setitem(r, PyInt_FromLong(v.key), 
+			    PyInt_FromLong(v.value))
+	     ) goto err;
+	}
+    }
+  else if(cpyoth && io < lo)
+    {
+      
+      for(;io<lo;io++)
+	{
+	  vo=od[io];
+	  
+	  if(bucket_setitem(r, PyInt_FromLong(vo.key), 
+			    PyInt_FromLong(vo.value))
+	     ) goto err;
+	}
+    }
+
+  return OBJECT(r);
+
+err:
+  PER_ALLOW_DEACTIVATION(self);
+  PER_ALLOW_DEACTIVATION(o);
+  Py_DECREF(r);
+  return NULL;
+}
+
+static PyObject *
+bucket_union(Bucket *self, PyObject *args)
+{
+  PyObject *other;
+
+  UNLESS(PyArg_ParseTuple(args,"O",&other)) return NULL;
+  return bucket_set_operation(self,other,1,1,1);
+}
+
+static PyObject *
+bucket_intersection(Bucket *self, PyObject *args)
+{
+  PyObject *other;
+
+  UNLESS(PyArg_ParseTuple(args,"O",&other)) return NULL;
+  return bucket_set_operation(self,other,0,1,0);
+}
+
+static PyObject *
+bucket_difference(Bucket *self, PyObject *args)
+{
+  PyObject *other;
+
+  UNLESS(PyArg_ParseTuple(args,"O",&other)) return NULL;
+  return bucket_set_operation(self,other,1,0,0);
+}
+#endif
+#endif
+
+
 static struct PyMethodDef Bucket_methods[] = {
   {"__getstate__", (PyCFunction)bucket_getstate,	METH_VARARGS,
    "__getstate__() -- Return the picklable state of the object"},
@@ -1491,6 +1729,19 @@ static struct PyMethodDef Bucket_methods[] = {
    "_p___reinit__() -- Reinitialize from a newly created copy"},
   {"_p_deactivate",	(PyCFunction)bucket__p___reinit__,	METH_VARARGS,
    "_p_deactivate() -- Reinitialize from a newly created copy"},
+#endif
+#ifdef INTKEY
+#ifdef INTVAL
+  {"union",	(PyCFunction)bucket_union, METH_VARARGS,
+   "union(other) -- "
+   "Return the union of the set with another set"},
+  {"intersection",	(PyCFunction)bucket_intersection, METH_VARARGS,
+   "intersection(other) -- "
+   "Return the intersection of the set with another set"},
+  {"difference",	(PyCFunction)bucket_difference, METH_VARARGS,
+   "difference(other) -- "
+   "Return the difference of the set with another set"},
+#endif
 #endif
   {NULL,		NULL}		/* sentinel */
 };
@@ -1847,7 +2098,9 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.24 $";
+  char *rev="$Revision: 1.25 $";
+
+
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;
@@ -1871,6 +2124,15 @@ initBTree()
 
   BTreeItemsType.ob_type=&PyType_Type;
 
+#ifdef INTKEY
+#ifdef INTVAL
+  UNLESS(d = PyImport_ImportModule("intSet")) return;
+  UNLESS(intSetType = PyObject_GetAttrString (d, "intSet")) return;
+  Py_DECREF (d); 
+#endif
+#endif
+ 
+
   /* Create the module and add the functions */
   m = Py_InitModule4(MODNAME, module_methods,
 		     BTree_module_documentation,
@@ -1885,7 +2147,7 @@ initBTree()
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
   
-
+ 
   /* Check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module BTree");
