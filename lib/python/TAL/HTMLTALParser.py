@@ -191,7 +191,8 @@ class HTMLTALParser(HTMLParser):
             for i in range(len(self.tagstack)):
                 t = self.tagstack[i]
                 if t in blocks_to_close:
-                    close_to = i
+                    if close_to == -1:
+                        close_to = i
                 elif t in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
             self.close_to_level(close_to)
