@@ -2,7 +2,9 @@ TALES Not expressions
 
   Syntax
 
-    XXX
+    Not expression syntax::
+
+      not_expression ::= 'not:' expression
 
   Description
 
@@ -28,3 +30,11 @@ TALES Not expressions
 
     Zope considers all objects not specifically listed above as
     *false* (including negative numbers) to be *true*.
+
+  Examples
+
+    Testing a sequence::
+
+      <p tal:condition="not:here/objectIds">
+        There are no contained objects.
+      </p>

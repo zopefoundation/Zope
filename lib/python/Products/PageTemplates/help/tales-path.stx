@@ -4,9 +4,9 @@ TALES Path expressions
 
     Path expression syntax::
 
-     PathExpr  ::= Path [ '|' Path ]*
-     Path      ::= variable [ '/' URL_Segment ]*
-     variable  ::= Name
+      PathExpr  ::= Path [ '|' Path ]*
+      Path      ::= variable [ '/' URL_Segment ]*
+      variable  ::= Name
 
   Description
 
@@ -55,7 +55,17 @@ TALES Path expressions
 
   Examples
 
-    XXX
+    Inserting a cookie variable or a property::
+
+      <span tal:replace="request/cookies/pref | here/pref">
+        preference
+      </span>
+
+    Inserting the user name::
+
+      <p tal:content="user/getUserName">
+        User name
+      </p>
 
 
 

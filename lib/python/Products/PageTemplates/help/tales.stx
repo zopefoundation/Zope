@@ -36,7 +36,9 @@ TALES Overview
 
     These are the TALES expression types supported by Zope:
 
-    * "no-call":tales-no-call.stx expression - don't call a value
+    * "exists":tales-exists.stx expressions - test existence of a value
+
+    * "no-call":tales-no-call.stx expressions - don't call a value
 
     * "not:tales-not.stx expressions - negate a value
   
@@ -49,41 +51,48 @@ TALES Overview
 
   Built-in Names
 
-   These are the names that are built-in the TALES in Zope:
+    These are the names that are built-in the TALES in Zope:
 
-   - *nothing* - special singleton value used by TAL to represent 
-      a *non-value* (e.g. void, None, Nil, NULL).
+    - *nothing* - special singleton value used by TAL to represent 
+       a *non-value* (e.g. void, None, Nil, NULL).
 
-   - *default* - special singleton value used by TAL to specify that
-     existing text should not be replaced.
+    - *default* - special singleton value used by TAL to specify that
+      existing text should not be replaced. See the documentation for
+      individual TAL statements for details on how they interpret
+      *default*.
 
-   - *options* - the *keyword* arguments passed to the template.
+    - *options* - the *keyword* arguments passed to the template. These
+      are generally available when a template is called from Python,
+      rather than from the web.
 
-   - *repeat* - the 'repeat' variables (see RepeatVariable).
+    - *repeat* - the 'repeat' variables see the
+      "tal:repeat":tal-repeat.stx documentation.
 
-   - *attrs* - a dictionary containing the initial values of the
-     attributes of the current statement tag.
+    - *attrs* - a dictionary containing the initial values of the
+      attributes of the current statement tag.
 
-   - *CONTEXTS* - the list of standard names (this list).  This can be
-     used to access a builtin variable that has been hidden by a local
-     or global variable with the same name.
+    - *CONTEXTS* - the list of standard names (this list).  This can be
+      used to access a builtin variable that has been hidden by a local
+      or global variable with the same name.
 
-   - *root* - the system's top-most object.
+    - *root* - the system's top-most object. In Zope this corresponds
+      to the root folder.
 
-   - *here* - the object to which the template is being applied.
+    - *here* - the object to which the template is being applied.
 
-   - *container* - the template's container object.
+    - *container* - the template's container object. In Zope this is
+      the folder in which the template is located.
 
-   - *template* - the template itself.
+    - *template* - the template itself.
 
-   - *request* - the publishing request object.
+    - *request* - the publishing request object.
 
-   - *user* - the authenticated user object.
+    - *user* - the authenticated user object.
 
-   - *modules* - a collection through which all Python modules and
-     packages can be accessed.  Some or many of these may not be
-     usable in TALES, however, depending on the security policies
-     of the template's implementation.
+    - *modules* - a collection through which all Python modules and
+      packages can be accessed.  Some or many of these may not be
+      usable in TALES, however, depending on the security policies
+      of the template's implementation.
 
     Note the names 'root', 'here', 'container', 'template', 'request',
     'user', and 'modules' are optional names supported by Zope, but
@@ -93,7 +102,9 @@ TALES Overview
 
     "TAL overview":tal.stx
 
-    "no-call":tales-no-call.stx expression
+    "exists":tales-exists.stx expressions
+
+    "no-call":tales-no-call.stx expressions
 
     "not:tales-not.stx expressions
   
