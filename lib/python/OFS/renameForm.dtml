@@ -27,7 +27,7 @@
   <STRONG>to:</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="new_id" SIZE="20">
+  <INPUT TYPE="TEXT" NAME="new_id" SIZE="20" value="&dtml-id;">
   </TD>
 </TR>
 <TR>
