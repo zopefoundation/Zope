@@ -164,7 +164,8 @@ class Results:
                 if hasattr(binit,'im_func'): binit=binit.im_func
                 def __init__(self, data, parent, binit=binit):
                     Record.__init__(self,data)
-                    binit(self.__of__(parent))
+                    if parent is not None: self=self.__of__(parent)
+                    binit(self)
 
                 r.__dict__['__init__']=__init__
                     

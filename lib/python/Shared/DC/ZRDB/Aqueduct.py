@@ -96,12 +96,12 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.27 1998/12/16 15:25:48 jim Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: Aqueduct.py,v 1.28 1998/12/17 18:50:33 jim Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
-import DocumentTemplate, DateTime, regex, regsub, string, rotor
+import DocumentTemplate, DateTime, regex, regsub, string
 import binascii, Acquisition
 DateTime.now=DateTime.DateTime
 from cStringIO import StringIO
@@ -115,7 +115,8 @@ dtml_dir=Globals.package_home(globals())
 
 InvalidParameter='Invalid Parameter'
 
-class BaseQuery(Persistent, SimpleItem.Item, Acquisition.Implicit, RoleManager):
+class BaseQuery(Persistent, SimpleItem.Item,
+                Acquisition.Implicit, RoleManager):
 
     def query_year(self): return self.query_date.year()
     def query_month(self): return self.query_date.month()
@@ -405,20 +406,6 @@ def quotedHTML(text,
 def nicify(name, under=regex.compile('_')):
     name=regsub.gsub(under,' ',string.strip(name))
     return string.upper(name[:1])+name[1:]
-
-class Rotor:
-
-    def __init__(self, key, numrotors=6):
-        self.a=key, numrotors
-        r=rotor.newrotor(key, numrotors)
-        self.encrypt=r.encrypt
-        self.decrypt=r.decrypt
-        self.decryptmore=r.decryptmore
-
-    def __getinitargs__(self): return self.a
-    def __getstate__(self,v={}): return v
-    
-
 
 def decapitate(html, RESPONSE=None,
                header_re=regex.compile(

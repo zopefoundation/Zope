@@ -10,9 +10,6 @@
         <td align='LEFT'><!--#var id--></td></tr>
 <tr>	<th align='LEFT'><em>Title</em></th>
         <td align='LEFT'><!--#var title--></td></tr>
-<tr>	<th align='LEFT'><em>Remote access encyption key</em></th>
-	<td align='LEFT'><input name="key" size="30"
-             value="<!--#var key-->"></td></tr>
 <tr>	<th align='LEFT'><em>Maximum number of rows retrieved</em></th>
 	<td align='LEFT'><input name="max_rows:int" size="10"
              value="<!--#var max_rows_-->"></td></tr>
@@ -22,6 +19,12 @@
 <tr>	<th align='LEFT'><em>Maximum time (seconds) to cache results</em></th>
 	<td align='LEFT'><input name="cache_time:int" size="10"
              value="<!--#var cache_time_-->"></td></tr>
+<!--#if da_has_single_argument-->
+<tr>	<th align='LEFT'>Allow direct traversal</th>
+	<td align='LEFT'><input name="direct" type=checkbox
+            <!--#if allow_simple_one_argument_traversal-->CHECKED
+            <!--#/if-->></td></tr>
+<!--#/if-->
 
 <tr><td> </td></tr>
 <tr><td colspan=2><br><br>

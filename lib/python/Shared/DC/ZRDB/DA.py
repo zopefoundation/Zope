@@ -97,12 +97,12 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.60 1998/12/16 15:25:48 jim Exp $'''
-__version__='$Revision: 1.60 $'[11:-2]
+$Id: DA.py,v 1.61 1998/12/17 18:50:33 jim Exp $'''
+__version__='$Revision: 1.61 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
-from Aqueduct import decodestring, parse, Rotor
+from Aqueduct import decodestring, parse
 from Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
@@ -142,9 +142,8 @@ class DA(
     max_rows_=1000
     cache_time_=0
     max_cache_=100
-    rotor=None
-    key=''
     class_name_=class_file_=''
+    allow_simple_one_argument_traversal=None
     
     manage_options=(
         {'label':'Edit', 'action':'manage_main'},
@@ -176,14 +175,6 @@ class DA(
     def test_url_(self):
         'Method for testing server connection information'
         return 'PING'
-
-    def _setKey(self, key):
-        if key:
-            self.key=key
-            self.rotor=Rotor(key)
-        elif self.__dict__.has_key('key'):
-            del self.key
-            del self.rotor
 
     _size_changes={
         'Bigger': (5,5),
@@ -240,17 +231,18 @@ class DA(
         self.template=t=SQL(template)
         t.cook()
         self._v_cache={}, Bucket()
-        if REQUEST: return self.manage_editedDialog(REQUEST)
+        if REQUEST:
+            if SUBMIT=='Change and Test':
+                return self.manage_testForm(REQUEST)
+            return self.manage_editedDialog(REQUEST)
+        return ''
 
-    def manage_advanced(self, key, max_rows, max_cache, cache_time,
-                        class_name, class_file,
-                        REQUEST):
+    def manage_advanced(self, max_rows, max_cache, cache_time,
+                        class_name, class_file, direct=None,
+                        REQUEST=None):
         """Change advanced properties
 
         The arguments are:
-
-        key -- The encryption key used for communication with Principia
-               network clients.
 
         max_rows -- The maximum number of rows to be returned from a query.
 
@@ -277,13 +269,14 @@ class DA(
         used.
   
         """
-        self._setKey(key)
         self.max_rows_ = max_rows
         self.max_cache_, self.cache_time_ = max_cache, cache_time
         self._v_cache={}, Bucket()
         self.class_name_, self.class_file_ = class_name, class_file
         self._v_brain=getBrain(self.class_file_, self.class_name_, 1)
-        if REQUEST: return self.manage_editedDialog(REQUEST)
+        self.allow_simple_one_argument_traversal=direct
+        if REQUEST is not None:
+            return self.manage_editedDialog(REQUEST)
     
     def manage_testForm(self, REQUEST):
         " "
@@ -411,66 +404,31 @@ class DA(
         if hasattr(self, '_v_brain'): brain=self._v_brain
         else:
             brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
+
         if type(result) is type(''):
             f=StringIO()
             f.write(result)
             f.seek(0)
-            result=RDB.File(f,brain,self)
+            result=RDB.File(f,brain,p)
         else:
-            result=Results(result, brain, self)
+            result=Results(result, brain, p)
         columns=result._searchable_result_columns()
         if columns != self._col: self._col=columns
         return result
-        
-    def query(self,REQUEST,RESPONSE):
-        ' '
-        try: dbc=getattr(self, self.connection_id)
-        except AttributeError:
-            raise AttributeError, (
-                "The database connection, <em>%s</em>, cannot be found.")
 
-        try: DB__=dbc()
-        except: raise 'Database Error', (
-            '%s is not connected to a database' % self.id)
-
-        try:
-            argdata=REQUEST['BODY']
-            argdata=decodestring(argdata)
-            argdata=self.rotor.decrypt(argdata)
-            digest,argdata=argdata[:16],argdata[16:]
-            if md5new(argdata).digest() != digest:
-                raise 'Bad Request', 'Corrupted Data'
-            argdata=marshal.loads(argdata)
-
-            if hasattr(self, 'aq_parent'): p=self.aq_parent
-            else: p=None
-
-            argdata['sql_delimiter']='\0'
-            argdata['sql_quote__']=dbc.sql_quote__
-            query=apply(self.template,(p,),argdata)
-
-            if self.cache_time_:
-                result=self._cached_result(DB__, query)
-            else:
-                result=DB__.query(query, self.max_rows_)
-
-            if type(result) is not type(''):
-                result=Results(result).asRDB()
-
-        except:
-            RESPONSE.setStatus(500)
-            result="%s:\n%s\n" % (sys.exc_type, sys.exc_value)
-
-        result=compress(result,1)
-        result=md5new(result).digest()+result
-        result=self.rotor.encrypt(result)
-        result=base64.encodestring(result)
-        #RESPONSE['content-type']='application/x-principia-network'
-        RESPONSE['content-type']='text/x-pydb'
-        RESPONSE['Content-Length']=len(result)
-        RESPONSE.setBody(result)
+    def da_has_single_argument(self): return len(self._arg)==1
 
     def __getitem__(self, key):
+        args=self._arg
+        if self.allow_simple_one_argument_traversal and len(args)==1:
+            results=self({args.keys()[0]: key})
+            if results:
+                if len(results) > 1: raise KeyError, key
+            else: raise KeyError, key
+            r=results[0]
+            # if hasattr(self, 'aq_parent'): r=r.__of__(self.aq_parent)
+            return r
+            
         self._arg[key] # raise KeyError if not an arg
         return Traverse(self,{},key)
 
@@ -518,7 +476,10 @@ class Traverse(ExtensionClass.Base):
                 try: return results[atoi(key)].__of__(da)
                 except: raise KeyError, key
         else: raise KeyError, key
-        r=self._r=results[0].__of__(da)
+        r=results[0]
+        # if hasattr(da, 'aq_parent'): r=r.__of__(da.aq_parent)
+        self._r=r
+
         if key is self: return r
 
         if hasattr(r,'__bobo_traverse__'):
