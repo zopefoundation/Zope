@@ -150,11 +150,14 @@ class HelpSystem(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
     button=HTMLFile('button', globals())
 
-    def HelpButton(self, topic, product='OFSP'):
+    def HelpButton(self, topic, product):
         """
         Insert a help button linked to a help topic.
         """
         return self.button(self, self.REQUEST, product=product, topic=topic)
+
+    helpURL=HTMLFile('helpURL',globals())
+    
 
         
 class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):

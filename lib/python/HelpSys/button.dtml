@@ -7,12 +7,9 @@
   } 
 </SCRIPT>
 <font face="Verdana, Arial, Helvetica" size="1">
-<form action="<dtml-var absolute_url>" target="zope_help" method="post"
-onSubmit="return openHelpWindow('<dtml-var absolute_url>?help_url=/Control_Panel/Products/&dtml-product;/Help/&dtml-topic;');">
-<dtml-if "_.getitem('product') and _.getitem('topic')">
-<input type="hidden" name="help_url" value="/Control_Panel/Products/&dtml-product;/Help/&dtml-topic;">
-</dtml-if>
-<input type="submit" value=" Help ">
-</form>
+<FORM ACTION="<dtml-var absolute_url>" METHOD="get" target="zope_help" onSubmit="return openHelpWindow('<dtml-var absolute_url>?help_url=<dtml-var helpURL>');">
+<input type="hidden" name="help_url" value="<dtml-var helpURL>">
+<input type="submit" name="submit" value=" Help ">
+</FORM>
 </font>
 </div>
