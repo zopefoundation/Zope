@@ -86,7 +86,7 @@
 Common definitions used by TAL and METAL compilation an transformation.
 """
 
-TAL_VERSION = "1.0.1"
+TAL_VERSION = "1.1"
 
 XML_NS = "http://www.w3.org/XML/1998/namespace" # URI for XML namespace
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
@@ -189,6 +189,27 @@ def splitParts(arg):
     if len(parts) > 1 and not string.strip(parts[-1]):
         del parts[-1] # It ended in a semicolon
     return parts
+
+def isCurrentVersion(program):
+    version = getProgramVersion(program)
+    return version == TAL_VERSION
+
+def getProgramMode(program):
+    version = getProgramVersion(program)
+    if (version == TAL_VERSION and isinstance(program[1], type(())) and
+        len(program[1]) == 2):
+        opcode, mode = program[1]
+        if opcode == "mode":
+            return mode
+    return None
+
+def getProgramVersion(program):
+    if (isinstance(program, type([])) and len(program) >= 2 and
+        isinstance(program[0], type(())) and len(program[0]) == 2):
+        opcode, version = program[0]
+        if opcode == "version":
+            return version
+    return None
 
 import cgi
 _cgi = cgi
