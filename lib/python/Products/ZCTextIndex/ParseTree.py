@@ -69,10 +69,19 @@ class AndNode(ParseTreeNode):
         Nots = []
         for subnode in self.getValue():
             if subnode.nodeType() == "NOT":
-                Nots.append((subnode.getValue().executeQuery(index), 1))
+                r = subnode.getValue().executeQuery(index)
+                # If None, technically it matches every doc, but we treat
+                # it as if it matched none (we want
+                #     real_word AND NOT stop_word
+                # to act like plain real_word).
+                if r is not None:
+                    Nots.append((r, 1))
             else:
-                L.append((subnode.executeQuery(index), 1))
-        assert L
+                r = subnode.executeQuery(index)
+                # If None, technically it matches every doc, so needn't be
+                # included.
+                if r is not None:
+                    L.append((r, 1))
         set = mass_weightedIntersection(L)
         if Nots:
             notset = mass_weightedUnion(Nots)
@@ -84,8 +93,15 @@ class OrNode(ParseTreeNode):
     _nodeType = "OR"
 
     def executeQuery(self, index):
-        weighted = [(node.executeQuery(index), 1)
-                    for node in self.getValue()]
+        weighted = []
+        for node in self.getValue():
+            r = node.executeQuery(index)
+            # If None, technically it matches every doc, but we treat
+            # it as if it matched none (we want
+            #     real_word OR stop_word
+            # to act like plain real_word).
+            if r is not None:
+                weighted.append((r, 1))
         return mass_weightedUnion(weighted)
 
 class AtomNode(ParseTreeNode):

@@ -127,13 +127,13 @@ class ZCIndexTestsBase:
         self.assertEqual(num, 1)
         self.assertEqual(r[0][0], 1)
 
-#        r, num = self.zc_index.query('question AND NOT to AND NOT be')
-#        self.assertEqual(num, 1)
-#        self.assertEqual(r[0][0], 1)
+        r, num = self.zc_index.query('question AND NOT to AND NOT be')
+        self.assertEqual(num, 1)
+        self.assertEqual(r[0][0], 1)
 
-#        r, num = self.zc_index.query('question OR to OR be')
-#        self.assertEqual(num, 1)
-#        self.assertEqual(r[0][0], 1)
+        r, num = self.zc_index.query('question OR to OR be')
+        self.assertEqual(num, 1)
+        self.assertEqual(r[0][0], 1)
 
         r, num = self.zc_index.query('question to be')
         self.assertEqual(num, 1)
@@ -145,8 +145,8 @@ class ZCIndexTestsBase:
         r, num = self.zc_index.query('to AND be')
         self.assertEqual(num, 0)
 
-#        r, num = self.zc_index.query('to OR be')
-#        self.assertEqual(num, 0)
+        r, num = self.zc_index.query('to OR be')
+        self.assertEqual(num, 0)
 
         r, num = self.zc_index.query('to AND NOT be')
         self.assertEqual(num, 0)
