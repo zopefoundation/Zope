@@ -69,6 +69,10 @@ Zope Changes
         a more verbose error message is issued, the same way it's done
         on attribute/item traversal.
 
+
+      - Collector #1523: replace the text field for importing .zexp/.xml 
+        files with a selection list
+
   Zope 2.8a1
 
 
