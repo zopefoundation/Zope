@@ -85,8 +85,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.4 1999/03/22 16:50:46 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: PermissionRole.py,v 1.5 1999/05/10 16:27:39 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys
 
@@ -115,9 +115,9 @@ class PermissionRole(Base):
 
     def __of__(self, parent):
         r=imPermissionRole()
-        n=r._p=self._p
-        if hasattr(parent, n): r._d=getattr(parent,n)
-        else: r._d=self._d
+        r._p=self._p
+        r._pa=parent
+        r._d=self._d
         return r
 
 
@@ -172,9 +172,23 @@ class imPermissionRole(Base):
             
     # The following methods are needed in the unlikely case that an unwrapped
     # object is accessed:
-    def __getitem__(self, i): return self._d[i]
-    def __len__(self): return len(self._d)
+    def __getitem__(self, i):
+        try:
+            v=self._v
+        except: 
+            v=self._v=self.__of__(self._pa)
+            del self._pa
+            
+        return v[i]
+        
+    def __len__(self):
+        try:
+            v=self._v
+        except: 
+            v=self._v=self.__of__(self._pa)
+            del self._pa
 
+        return len(v)
 
 ############################################################################## 
 # Test functions:
