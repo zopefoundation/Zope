@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.3 1996/10/07 20:51:38 chris Exp $
+  $Id: cStringIO.c,v 1.4 1996/10/11 21:02:15 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.4  1996/10/11 21:02:15  jim
+  *** empty log message ***
+
   Revision 1.3  1996/10/07 20:51:38  chris
   *** empty log message ***
 
@@ -145,7 +148,8 @@ O_reset(self, args)
 	Oobject *self;
 	PyObject *args;
 {
-  self->pos=0;
+  self->pos = 0;
+
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -192,6 +196,56 @@ O_seek(self, args)
 	       (position < 0 ? 0 : position));
 
   return PyInt_FromLong(self->pos);
+}
+
+static char O_read__doc__[] = 
+"read([s]) -- Read s characters, or the rest of the string"
+;
+
+
+static PyObject *
+O_read(self, args)
+	Oobject *self;
+	PyObject *args;
+{
+  int l, n = -1;
+  PyObject *s;
+
+  UNLESS(PyArg_ParseTuple(args, "|i", &n)) return NULL;
+
+  l = self->string_size - self->pos;  
+  if (n < 0 || n > l)
+  {
+    n = l;
+  }
+
+  s = PyString_FromStringAndSize(self->buf + self->pos, n);
+  self->pos += n;
+  return s;
+}
+
+
+static char O_readline__doc__[] = 
+"readline() -- Read one line"
+;
+
+static PyObject *
+O_readline(self, args)
+	Oobject *self;
+	PyObject *args;
+{
+  PyObject *r;
+  char *n, *s;
+  int l;
+
+  for (n = self->buf + self->pos, s = self->buf + self->string_size; 
+       n < s && *n != '\n'; n++);
+  if (n < s) n++;
+ 
+  s = PyString_FromStringAndSize(self->buf + self->pos, 
+      n - self->buf - self->pos);
+  self->pos = n - self->buf;
+  return s;
 }
 
 
@@ -353,6 +407,8 @@ O_writelines(self, args)
 }
 
 static struct PyMethodDef O_methods[] = {
+  {"read",       O_read,         1,      O_read__doc__},
+  {"readline",   O_readline,     0,      O_readline__doc__},
   {"write",	 O_write,        0,      O_write__doc__},
   {"reset",      O_reset,        0,      O_reset__doc__},
   {"seek",       O_seek,         1,      O_seek__doc__},
@@ -441,52 +497,6 @@ static PyTypeObject Otype = {
 /* End of code for StringO objects */
 /* -------------------------------------------------------- */
 
-static char I_read__doc__[] = 
-"read([s]) -- Read s characters, or the rest of the string"
-;
-
-static PyObject *
-I_read(self, args)
-	Iobject *self;
-	PyObject *args;
-{
-  int l, n=-1;
-  PyObject *s;
-
-  UNLESS(PyArg_ParseTuple(args, "|i", &n)) return NULL;
-  
-  l = self->string_size - self->pos;
-  if (n < 0 || n > l)
-  {
-    n = l;
-  }
-
-  s=PyString_FromStringAndSize(self->buf+self->pos, n);
-  self->pos+=n;
-  return s;
-}
-
-
-static char I_readline__doc__[] = 
-"readline() -- Read one line"
-;
-
-static PyObject *
-I_readline(self, args)
-	Iobject *self;
-	PyObject *args;
-{
-  PyObject *r;
-  char *n, *s;
-  int l;
-
-  for(n=self->buf+self->pos, s=self->buf+self->string_size; n < s && *n != '\n'; n++);
-  if(n < s) n++;
-  r=PyString_FromStringAndSize(self->buf+self->pos, n - self->buf - self->pos);
-  self->pos=n-self->buf;
-  return r;
-}
-
 static PyObject *
 I_close(self, args)
         Iobject *self;
@@ -502,8 +512,8 @@ I_close(self, args)
 }
 
 static struct PyMethodDef I_methods[] = {
-  {"read",	I_read,	1,	I_read__doc__},
-  {"readline",	I_readline,	0,	I_readline__doc__},
+  {"read",	O_read,         1,      O_read__doc__},
+  {"readline",	O_readline,	0,	O_readline__doc__},
   {"reset",	O_reset,	0,	O_reset__doc__},
   {"seek",      O_seek,         1,      O_seek__doc__},  
   {"tell",      O_tell,         0,      O_tell__doc__},
