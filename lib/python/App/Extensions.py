@@ -86,8 +86,8 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.15 2001/04/03 14:42:30 brian Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Extensions.py,v 1.16 2001/05/17 17:57:03 shane Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 from string import find, split
 import os, zlib, rotor, imp
@@ -224,7 +224,7 @@ def getObject(module, name, reload=0,
 
     if old:
         for k, v in m.items(): old[k]=v
-    else: modules[module]=m
+    modules[module]=m
 
     return r
 
