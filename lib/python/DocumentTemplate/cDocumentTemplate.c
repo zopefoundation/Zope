@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.45 2002/04/25 12:45:11 htrd Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.46 2002/05/09 13:19:17 htrd Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -663,7 +663,7 @@ static int
 render_blocks_(PyObject *blocks, PyObject *rendered,
 	       PyObject *md, PyObject *mda)
 {
-  PyObject *block, *t;
+  PyObject *block, *t, *args;
   int l, i, k=0, append;
 
   if ((l=PyList_Size(blocks)) < 0) return -1;
@@ -691,7 +691,12 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 
               if (! ( PyString_Check(t) || PyUnicode_Check(t) ) )
                 {
-                  ASSIGN(t, PyObject_CallFunction(ustr, "O", t));
+                  args = PyTuple_New(1);
+                  if(!args) return -1;
+                  PyTuple_SET_ITEM(args,0,t);
+                  t = PyObject_CallObject(ustr, args);
+                  Py_DECREF(args);
+                  args = NULL;
                   UNLESS(t) return -1;
                 }
 
