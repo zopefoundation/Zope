@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.64 1997/11/07 15:01:30 jim Exp $"""
+$Id: Publish.py,v 1.65 1997/11/11 19:31:18 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.64 1997/11/07 15:01:30 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 
 def main():
@@ -555,7 +555,8 @@ class ModulePublisher:
         request=self.request=Request(environ,other,stdin)
 	request.form=form
 	if cookies is not None: request.cookies=cookies
-	self.response=Response(stdout=stdout, stderr=stderr)
+	self.response=response=Response(stdout=stdout, stderr=stderr)
+	request['RESPONSE']=response
 	self.stdin=stdin
 	self.stdout=stdout
 	self.stderr=stderr
@@ -888,7 +889,6 @@ class ModulePublisher:
 	    except:
 		return response.setBody(object)
 
-	request['RESPONSE']=response
 	request['URL']=URL
 	request['PARENT_URL']=URL[:rfind(URL,'/')]
 	if parents:
@@ -1366,6 +1366,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.65  1997/11/11 19:31:18  jim
+# Moved setting of RESPONSE key in REQUEST to be ealier in the process.
+#
 # Revision 1.64  1997/11/07 15:01:30  jim
 # Updated bobo traverse machinery and fixed bug in setting return status
 # when exceptions occur.
