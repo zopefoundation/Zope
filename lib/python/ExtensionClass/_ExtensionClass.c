@@ -603,6 +603,7 @@ static PyTypeObject ExtensionClassType = {
         /* tp_as_buffer      */ 0,
         /* tp_flags          */ Py_TPFLAGS_DEFAULT
                                 | Py_TPFLAGS_HAVE_GC
+                                | Py_TPFLAGS_BASETYPE
                                 ,
 	/* tp_doc            */ "Meta-class for extension classes",
         /* tp_traverse       */ (traverseproc)0,
