@@ -9,8 +9,8 @@ import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.26 1998/04/08 15:34:52 jeffrey Exp $ 
-__version__ = "$Revision: 1.26 $"[11:-2]
+#$Id: MailHost.py,v 1.27 1998/04/13 19:28:24 brian Exp $ 
+__version__ = "$Revision: 1.27 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -247,12 +247,16 @@ def decapitate(message, **kw):
     return newDecapitate(message)
 
 
-
+import __init__
+__init__.need_license=1
 
 	
 ####################################################################
 #
 #$Log: MailHost.py,v $
+#Revision 1.27  1998/04/13 19:28:24  brian
+#*** empty log message ***
+#
 #Revision 1.26  1998/04/08 15:34:52  jeffrey
 #Added timeout attribute
 #
