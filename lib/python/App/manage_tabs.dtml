@@ -77,5 +77,5 @@
 </TR>
 </TABLE>
 <!--#if Zope-Version-->
-<P><EM>You are currently working in session <!--#var Zope-Version--></EM>
+<P><EM>You are currently working in version <!--#var Zope-Version--></EM>
 <!--#/if Zope-Version-->
