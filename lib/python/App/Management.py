@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.43 2001/01/15 16:16:57 shane Exp $"""
+$Id: Management.py,v 1.44 2001/01/15 21:12:41 brian Exp $"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -222,21 +222,32 @@ class Navigation(ExtensionClass.Base):
         varnames=('form_title', 'help_product', 'help_topic') )
     manage_form_title.__roles__ = None
 
+    zope_quick_start=DTMLFile('dtml/zope_quick_start', globals())
+    zope_quick_start__roles__=None
+
     manage_copyright=DTMLFile('dtml/copyright', globals())
     manage_copyright.__roles__ = None
 
-    manage_logout__roles__ = None
-    def manage_logout(self, REQUEST=None):
+    manage_zmi_logout__roles__ = None
+    def manage_zmi_logout(self, REQUEST, RESPONSE):
         """Logout current user"""
         p = getattr(REQUEST, '_logout_path', None)
         if p is not None:
             return apply(self.restrictedTraverse(p))
-        return """<html>
-<head><title>Not implmented</title></head>
+
+        realm=RESPONSE.realm
+        RESPONSE.setStatus(401)
+        RESPONSE.setHeader('WWW-Authenticate', 'basic realm="%s"' % realm, 1)
+        RESPONSE.setBody("""<html>
+<head><title>Logout</title></head>
 <body>
-Sorry, this is not yet implemented.
+<p>
+You have been logged out.
+</p>
 </body>
-</html>"""
+</html>""")
+        return
+
 
     manage_zmi_prefs=HTMLFile('dtml/manage_zmi_prefs', globals())
     manage_zmi_prefs.__roles__ = None
