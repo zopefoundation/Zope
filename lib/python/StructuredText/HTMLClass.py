@@ -11,7 +11,6 @@
 #
 ##############################################################################
 
-from string import join, split, find
 from cgi import escape
 import re, sys, ST
 
@@ -49,10 +48,10 @@ class HTMLClass:
         r=[]
         self.header = header
         self.dispatch(doc, level-1, r.append)
-        return join(r,'')
+        return ''.join(r)
 
     def _text(self, doc, level, output):
-        output((doc.getNodeValue()))
+        output(doc.getNodeValue().strip())
 
     def document(self, doc, level, output):
         children=doc.getChildNodes()
@@ -109,11 +108,11 @@ class HTMLClass:
         p=doc.getPreviousSibling()
         if p is None or p.getNodeName() is not doc.getNodeName():
             output('\n<ul>\n')
-        output('<li><p>')
+        output('<li>')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         n=doc.getNextSibling()
-        output('</p></li>\n')
+        output('</li>\n')
         if n is None or n.getNodeName() is not doc.getNodeName():            
             output('\n</ul>\n')
 
@@ -121,11 +120,11 @@ class HTMLClass:
         p=doc.getPreviousSibling()
         if p is None or p.getNodeName() is not doc.getNodeName():            
             output('\n<ol>\n')
-        output('<li><p>')
+        output('<li>')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         n=doc.getNextSibling()
-        output('</p></li>\n')
+        output('</li>\n')
         if n is None or n.getNodeName() is not doc.getNodeName():
             output('\n</ol>\n')
 
@@ -235,8 +234,3 @@ class HTMLClass:
                     output("</td>\n")
             output("</tr>\n")
         output("</table>\n")
-          
-
-
-
-
