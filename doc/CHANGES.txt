@@ -77,7 +77,7 @@ Zope Changes
           the level parameter inside a query overrides the optional 
           'level' parameter for a complete search request.
  
-           
+        - Fixed the API docs for user objects.
    
 
     Zope 2.4 beta 2
