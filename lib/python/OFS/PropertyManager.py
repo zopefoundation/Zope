@@ -84,9 +84,9 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
-import ExtensionClass
+import ExtensionClass, Globals
 from PropertySheets import DefaultPropertySheets, vps
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
@@ -334,3 +334,6 @@ class PropertyManager(ExtensionClass.Base):
             return self.manage_propertiesForm(self, REQUEST)
 
 
+
+
+Globals.default__class_init__(PropertyManager)
