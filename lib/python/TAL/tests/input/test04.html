@@ -11,15 +11,15 @@
 
     <span z:define="global count python:2; global message str:hello world"/>
 
-    <p m:use-macro="whoops">use-macro</p>
+    <p m:use-macro="whoops">use-macro
+      <span m:fill-slot="whoops">fill-slot</span>
+    </p>
 
     <span z:define="global message str:goodbye cruel world"/>
 
     <p m:use-macro="whoops">use-macro</p>
 
     <p m:define-slot="whoops">define-slot</p>
-
-    <p m:fill-slot="whoops">fill-slot</p>
 
   </body>
 
