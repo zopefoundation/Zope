@@ -85,7 +85,7 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string, time, urllib
 
@@ -134,4 +134,4 @@ def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
     if url[0]=='/': return url
     type, uri=ftype(url)
     host, uri=fhost(uri)
-    return uri
+    return uri or '/'
