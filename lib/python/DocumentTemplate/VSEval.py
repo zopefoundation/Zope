@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.8 1997/11/11 18:13:49 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.9 1997/11/21 16:47:11 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -11,10 +11,10 @@ __rcs_id__='$Id: VSEval.py,v 1.8 1997/11/11 18:13:49 jim Exp $'
 #       rights reserved.  
 #
 ############################################################################ 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from string import join
-import new, sys, gparse
+import sys, gparse
 
 def default_slicer(env, s, *ind):
     l=len(ind)
@@ -118,6 +118,9 @@ class Eval:
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.9  1997/11/21 16:47:11  jim
+# Got rid of non-needed and non-portable import of new.
+#
 # Revision 1.8  1997/11/11 18:13:49  jim
 # updated expr machinery to use parse-tree manipulation
 #
