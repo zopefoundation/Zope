@@ -261,10 +261,10 @@ class PCGIPublisher:
         env = {}
         for i in filter(None, split(join(buff,''),'\000')):
             e = split(i,'=')
-            if len(e) > 2:
+            if len(e) >= 2:
                 env[e[0]] = join(e[1:],'=')
             else:
-                env[e[0]] = e[1]
+                env[e[0]]=''
         size = atoi(conn.recv(10))
         if size > 1048576:
             ### write large upload data to a file ###
