@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.34 1997/02/07 18:42:34 jim Exp $"""
+$Id: Publish.py,v 1.35 1997/02/14 21:53:34 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.34 1997/02/07 18:42:34 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 def main():
@@ -587,6 +587,16 @@ from CGIResponse import Response
 from Realm import Realm, allow_group_composition
 
 from cgi import FieldStorage, MiniFieldStorage
+
+try:
+    from ExtensionClass import Base
+    class RequestContainer(Base):
+	def __init__(self,**kw):
+	    for k,v in kw.items(): self.__dict__[k]=v
+except:
+    class RequestContainer:
+	def __init__(self,**kw):
+	    for k,v in kw.items(): self.__dict__[k]=v
 
 
 class ModulePublisher:
@@ -763,8 +773,17 @@ class ModulePublisher:
 	except: setstate=None
 	if setstate: setstate(object)
 
+	topobject=object
+
 	while path:
-	    # sad_pathetic_persistence_hack(object)
+
+	    if object is not topobject and topobject is not None:
+		topobject=None
+		try:  # Try to bind the top-level object to the request
+		    object=object.__of__(RequestContainer(
+			REQUEST=self.request, RESPONSE=self.response))
+		except: pass
+
 	    entry_name,path=path[0], path[1:]
 	    URL="%s/%s" % (URL,entry_name)
 	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
@@ -1407,6 +1426,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.35  1997/02/14 21:53:34  jim
+# Added logic to make REQUEST and RESPONSE available for acquisition
+# by published objects.
+#
 # Revision 1.34  1997/02/07 18:42:34  jim
 # Changed to use standard cgi module. Yey!!!
 # This incorprates fixed binary data handling and get's rid of newcgi.
