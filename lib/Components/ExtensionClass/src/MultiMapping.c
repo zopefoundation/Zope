@@ -1,6 +1,6 @@
 /*
 
-  $Id: MultiMapping.c,v 1.2 1996/10/23 18:37:45 jim Exp $
+  $Id: MultiMapping.c,v 1.3 1997/02/17 16:34:09 jim Exp $
 
   Sample extension class program that implements multi-mapping objects. 
 
@@ -50,23 +50,13 @@
     If you have questions regarding this software,
     contact:
    
-      Jim Fulton, jim@digicool.com
-      Digital Creations L.C.  
+      Digital Creations L.L.C.  
+      info@digicool.com
    
       (540) 371-6909
 
 
-  Full description
-
-  $Log: MultiMapping.c,v $
-  Revision 1.2  1996/10/23 18:37:45  jim
-  Fixed misspelling in class name.
-
-  Revision 1.1  1996/10/22 22:27:42  jim
-  *** empty log message ***
-
-
-*/
+*****************************************************************************/
 #include "Python.h"
 #include "ExtensionClass.h"
 
@@ -85,7 +75,7 @@ MM_push(self, args)
 	PyObject *args;
 {
   PyObject *src;
-  UNLESS(PyArg_ParseTuple(args, "O", &src)) return NULL;
+  UNLESS(PyArg_Parse(args, "O", &src)) return NULL;
   UNLESS(-1 != PyList_Append(self->data,src)) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
@@ -96,16 +86,14 @@ MM_pop(self, args)
 	MMobject *self;
 	PyObject *args;
 {
-  long l;
+  int i=1, l;
   PyObject *r;
-  static PyObject *emptyList=0;
 
-  UNLESS(emptyList) UNLESS(emptyList=PyList_New(0)) return NULL;
-  UNLESS(PyArg_ParseTuple(args, "")) return NULL;
-  UNLESS(-1 != (l=PyList_Size(self->data))) return NULL;
-  l--;
-  UNLESS(r=PySequence_GetItem(self->data,l)) return NULL;
-  UNLESS(-1 != PyList_SetSlice(self->data,l,l+1,emptyList)) goto err;
+  if(args) UNLESS(PyArg_Parse(args, "i", &i)) return NULL;
+  if((l=PyList_Size(self->data)) < 0) return NULL;
+  i=l-i;
+  UNLESS(r=PySequence_GetItem(self->data,l-1)) return NULL;
+  if(PyList_SetSlice(self->data,i,l,NULL) < 0) goto err;
   return r;
 err:
   Py_DECREF(r);
@@ -117,21 +105,18 @@ MM__init__(self, args)
      MMobject *self;
      PyObject *args;
 {
-  UNLESS(PyArg_ParseTuple(args, "")) return NULL;
-  UNLESS(self->data=PyList_New(0)) goto err;
+  UNLESS(PyArg_Parse(args, "")) return NULL;
+  UNLESS(self->data=PyList_New(0)) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
-err:
-  Py_DECREF(self);
-  return NULL;
 }
 
 static struct PyMethodDef MM_methods[] = {
-  {"__init__", (PyCFunction)MM__init__, 1,
+  {"__init__", (PyCFunction)MM__init__, 0,
    "__init__() -- Create a new empty multi-mapping"},
-  {"push", (PyCFunction) MM_push, 1,
+  {"push", (PyCFunction) MM_push, 0,
    "push(mapping_object) -- Add a data source"},
-  {"pop",  (PyCFunction) MM_pop,  1,
+  {"pop",  (PyCFunction) MM_pop,  0,
    "pop() -- Remove and return the last data source added"}, 
   {NULL,		NULL}		/* sentinel */
 };
@@ -234,12 +219,30 @@ void
 initMultiMapping()
 {
   PyObject *m, *d;
+  char *rev="$Revision: 1.3 $";
 
   m = Py_InitModule4("MultiMapping", MultiMapping_methods,
 		     "MultiMapping -- Wrap multiple mapping objects for lookup",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);
+  PyDict_SetItemString(d,"__version__",
+		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   if (PyErr_Occurred()) Py_FatalError("can't initialize module MultiMapping");
 }
+
+
+/*****************************************************************************
+
+  $Log: MultiMapping.c,v $
+  Revision 1.3  1997/02/17 16:34:09  jim
+  Made changes to be more useful for DocumentTemplates.
+
+  Revision 1.2  1996/10/23 18:37:45  jim
+  Fixed misspelling in class name.
+
+  Revision 1.1  1996/10/22 22:27:42  jim
+  *** empty log message ***
+
+ *****************************************************************************/
