@@ -192,6 +192,15 @@ class TestRunner:
             sys.stderr.write( '*** Restoring directory to: %s\n' % working_dir )
         os.chdir(working_dir)
 
+def remove_stale_bytecode(arg, dirname, names):
+    names = map(os.path.normcase, names)
+    for name in names:
+        if name.endswith(".pyc") or name.endswith(".pyo"):
+            srcname = name[:-1]
+            if srcname not in names:
+                fullname = os.path.join(dirname, name)
+                print "Removing stale bytecode file", fullname
+                os.unlink(fullname)
 
 def main(args):
 
@@ -304,6 +313,8 @@ def main(args):
             sys.stderr = f
         else:
             err_exit(usage_msg)
+
+    os.path.walk(os.curdir, remove_stale_bytecode, None)
 
     testrunner = TestRunner( os.getcwd()
                            , verbosity=verbosity
