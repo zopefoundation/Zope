@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.76 2002/10/12 16:42:14 mj Exp $"""
-__version__ = "$Revision: 1.76 $"[11:-2]
+$Id: MailHost.py,v 1.77 2002/11/27 13:20:52 regebro Exp $"""
+__version__ = "$Revision: 1.77 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -141,7 +141,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security.declarePrivate( '_send' )
     def _send( self, mfrom, mto, messageText ):
         """ Send the message """
-        smtpserver = SMTP( self.smtp_host, self.smtp_port )
+        smtpserver = SMTP( self.smtp_host, int(self.smtp_port) )
         smtpserver.sendmail( mfrom, mto, messageText )
         smtpserver.quit()
 
@@ -184,7 +184,8 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
     if mto:
         if isinstance(mto, types.StringType):
             mto=map(lambda x:x.strip(), mto.split(','))
-        mo['To'] = ','.join(mto)
+        if not mo.getheader('To'):
+            mo['To'] = ','.join(mto)
     else:
         if not mo.getheader('To'):
             raise MailHostError,"Message missing SMTP Header 'To'"
