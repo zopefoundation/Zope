@@ -24,10 +24,12 @@ acquired permission settings may be augmented by selecting Roles for
 a permission in addition to selecting to acquire permissions.
 </P>
 
+<!--#if "_['id'] != 'acl_users'"-->
 <P>
 You can define new Roles by using the <EM>User defined roles</EM>
 form below.
 </P>
+<!--#/if-->
 
 <style type="text/css">
 <!--
@@ -107,7 +109,7 @@ td {
 </FORM>
 <!--#/with-->
 
-<!--#if expr="meta_type != 'User Folder'"-->
+<!--#if "_['id'] != 'acl_users'"-->
 <P> 
 <FORM ACTION="manage_defined_roles" METHOD="POST">
 <TABLE CELLPADDING="2">
