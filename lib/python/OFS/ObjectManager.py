@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.86 2000/04/04 22:12:17 amos Exp $"""
+$Id: ObjectManager.py,v 1.87 2000/04/05 01:40:27 amos Exp $"""
 
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -239,7 +239,8 @@ class ObjectManager(
         
         # Try to give user the local role "Owner", but only if
         # no local roles have been set on the object yet.
-        if hasattr(self, 'REQUEST') and hasattr(object, '__ac_local_roles__'):
+        if hasattr(self, 'REQUEST') and type(self.REQUEST) != type('') and \
+           hasattr(object, '__ac_local_roles__'):
             if object.__ac_local_roles__ is None:
                 user=self.REQUEST['AUTHENTICATED_USER']
                 name=user.getUserName()
