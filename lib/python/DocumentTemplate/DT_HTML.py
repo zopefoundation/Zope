@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.19 1999/06/10 20:45:10 jim Exp $"""
+$Id: DT_HTML.py,v 1.20 1999/06/14 21:45:33 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -97,14 +97,16 @@ class dtml_re_class:
                name_match=regex.compile('[\0- ]*[a-zA-Z]+[\0- ]*').match,
                end_match=regex.compile('[\0- ]*\(/\|end\)',
                                        regex.casefold).match,
+               start_search=regex.compile('[<&]').search,
+               ent_name=regex.compile('[-a-zA-Z0-9_.]+').match,
                find=find,
                strip=strip
                ):
 
         while 1:
-            s=find(text,'<', start)
+            s=start_search(text, start)
             if s < 0: return -1
-            if text[s+1:s+5] == '!--#':
+            if text[s:s+5] == '<!--#':
                 n=s+5
                 e=find(text,'-->',n)
                 if e < 0: return -1
@@ -116,7 +118,7 @@ class dtml_re_class:
                     n=n+l
                 else: end=''
 
-            elif text[s+1:s+6] == 'dtml.':
+            elif text[s:s+6] == '<dtml-':
                 e=n=s+6
                 while 1:
                     e=find(text,'>',e+1)
@@ -128,7 +130,7 @@ class dtml_re_class:
                 en=1
                 end=''
 
-            elif text[s+1:s+7] == '/dtml.':
+            elif text[s:s+7] == '</dtml-':
                 e=n=s+7
                 while 1:
                     e=find(text,'>',e+1)
@@ -141,6 +143,22 @@ class dtml_re_class:
                 end='/'
 
             else:
+                if text[s:s+6] == '&dtml-':
+                    n=s+6
+                    args=n+1
+                    while 1:
+                        e=find(text,';',args)
+                        if e > 0:
+                            args=text[n:e]
+                            if ent_name(text[n+1:e]) > 0:
+                                d=self.__dict__
+                                d=self.__dict__
+                                d[0]=text[s:e+1]
+                                d[1]=d['end']=''
+                                d[2]=d['name']='var'
+                                d[3]=d['args']=args
+                                return s
+
                 start=s+1
                 continue
 
@@ -155,12 +173,9 @@ class dtml_re_class:
 
         d=self.__dict__
         d[0]=text[s:e+en]
-        d[1]=end
-        d['end']= end
-        d[2]=name
-        d['name']=name
-        d[3]=args
-        d['args']=args
+        d[1]=d['end']=end
+        d[2]=d['name']=name
+        d[3]=d['args']=args
 
         return s
 
