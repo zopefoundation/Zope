@@ -16,7 +16,7 @@
 Each server type is represented by a ServerFactory instance.
 """
 
-import sys
+import os
 import socket
 import ZConfig
 
@@ -38,7 +38,7 @@ def get_default_host_info():
         ## AJ: We change 'localhost' to '' to force Medusa to use
         ## any network interface instead of using only 127.0.0.1. This is 
         ## a not totally clean solution :-/ See also Collector #1507.
-        if sys.platform != 'win32' and 'localhost' in hostname.lower(): 
+        if os.name == 'posix' and 'localhost' in hostname.lower(): 
             hostname = ''
         _default_host_info = hostname, ip
 
