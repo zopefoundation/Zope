@@ -18,7 +18,7 @@
 <strong>Local roles</strong> allow you to give particular users extra roles 
 in the context of this object, in addition to the roles they already have. 
 
-
+<dtml-if has_local_roles>
 <br>
 The following users have been given local roles. To modify the local roles 
 given to a particular user, click on the name of the user. To remove all 
