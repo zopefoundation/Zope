@@ -10,13 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Python implementations of document template some features
+"""Python implementations of document template some features
 
+$Id: pDocumentTemplate.py,v 1.38 2002/09/24 22:09:47 jeremy Exp $"""
+__version__='$Revision: 1.38 $'[11:-2]
 
-$Id: pDocumentTemplate.py,v 1.37 2002/09/24 22:07:31 jeremy Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
-
-import  sys, types
+import sys, types
 
 ClassTypes = [types.ClassType]
 
@@ -38,7 +37,6 @@ def safe_callable(ob):
             return type(ob) in ClassTypes
     else:
         return callable(ob)
-
 
 StringType=type('')
 UnicodeType=type(u'')
