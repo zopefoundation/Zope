@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.94 2000/05/24 20:53:34 shane Exp $"""
+$Id: ObjectManager.py,v 1.95 2000/05/26 16:14:00 shane Exp $"""
 
-__version__='$Revision: 1.94 $'[11:-2]
+__version__='$Revision: 1.95 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -240,6 +240,8 @@ class ObjectManager(
         try:    t=object.meta_type
         except: t=None
         self._objects=self._objects+({'id':id,'meta_type':t},)
+        # Prepare the _p_jar attribute immediately. _getCopy() may need it.
+        object._p_jar = self._p_jar
         self._setOb(id,object)
         object=self._getOb(id)
         object.manage_fixupOwnershipAfterAdd()
