@@ -234,6 +234,12 @@ class ZServerHTTPResponse(HTTPResponse):
         self.stdout.write(str(self))
         if self._bodyproducer:
             self.stdout.write(self._bodyproducer, 0)
+        # we assign None to self._bodyproducer below to ensure that even
+        # if self is part of a cycle which causes a leak that we
+        # don't leak the bodyproducer (which often holds a reference to
+        # an open file descriptor, and leaking file descriptors can have
+        # particularly bad ramifications for a long-running process)
+        self._bodyproducer = None
 
     def setBody(self, body, title='', is_error=0, **kw):
         """ Accept either a stream iterator or a string as the body """
