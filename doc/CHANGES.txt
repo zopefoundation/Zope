@@ -5,6 +5,9 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+
+      - Collector #160: Allow TemporaryStorages to participate
+        when a version is active.
     
       - Collector #446: Fixed management security assertions on
         ZCatalogIndexes class.
