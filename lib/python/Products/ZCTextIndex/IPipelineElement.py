@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-from Interface import Base as Interface
+from Interface import Interface
 
 class IPipelineElement(Interface):
 
