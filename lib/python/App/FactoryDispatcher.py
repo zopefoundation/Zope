@@ -110,9 +110,12 @@ class FactoryDispatcher(Acquisition.Implicit):
         self._product=product
         self._d=dest
         if REQUEST is not None:
-            v=REQUEST['URL']
-            v=v[:rfind(v,'/')]
-            self._u=v[:rfind(v,'/')]
+            try:
+                v=REQUEST['URL']
+            except KeyError: pass
+            else:
+                v=v[:rfind(v,'/')]
+                self._u=v[:rfind(v,'/')]
 
     def Destination(self):
         "Return the destination for factory output"
