@@ -615,10 +615,23 @@ class FTPServer(ftp_server):
     
     ftp_channel_class = zope_ftp_channel
     limiter=FTPLimiter(10,1)
+    shutup=0
 
     def __init__(self,module,*args,**kw):
+        self.shutup=1
         apply(ftp_server.__init__, (self, None) + args, kw)
+        self.shutup=0
         self.module=module
+        self.log_info('FTP server started at %s\n'
+                      '\tHostname: %s\n\tPort: %d' % (
+			time.ctime(time.time()),
+			self.hostname,
+			self.port
+			))
+
+    def log_info(self, message, type='info'):
+        if self.shutup: return
+        asyncore.dispatcher.log_info(self, message, type)
         
     def handle_accept (self):
         conn, addr = self.accept()

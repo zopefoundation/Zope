@@ -384,58 +384,22 @@ class zhttp_server(http_server):
     SERVER_IDENT='Zope/%s ZServer/%s' % (ZOPE_VERSION,ZSERVER_VERSION)
     
     channel_class = zhttp_channel
+    shutup=0
 
     def __init__ (self, ip, port, resolver=None, logger_object=None):
-        self.ip = ip
-        self.port = port
-        asyncore.dispatcher.__init__ (self)
-        self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
+        self.shutup=1
+        http_server.__init__(self, ip, port, resolver, logger_object)
+        self.shutup=0
+        self.log_info('HTTP server started at %s\n'
+                      '\tHostname: %s\n\tPort: %d' % (
+			time.ctime(time.time()),
+			self.server_name,
+			self.server_port
+			))
 
-        self.handlers = []
-
-        if not logger_object:
-            logger_object = logger.file_logger (sys.stdout)
-
-        self.set_reuse_addr()
-        self.bind ((ip, port))
-
-        # lower this to 5 if your OS complains
-        self.listen (1024)
-
-        host, port = self.socket.getsockname()
-        if not ip:
-            ip = socket.gethostbyname (socket.gethostname())
-        try:
-            self.server_name = socket.gethostbyaddr (ip)[0]
-        except socket.error:
-            self.log_info('Cannot do reverse lookup for server address', 'warning')
-            self.server_name = ip       # use the IP address as the "hostname"
-
-        self.server_port = port
-        self.total_clients = counter.counter()
-        self.total_requests = counter.counter()
-        self.exceptions = counter.counter()
-        self.bytes_out = counter.counter()
-        self.bytes_in  = counter.counter()
-
-        if not logger_object:
-            logger_object = logger.file_logger (sys.stdout)
-
-        if resolver:
-            self.logger = logger.resolving_logger (resolver, logger_object)
-        else:
-            self.logger = logger.unresolving_logger (logger_object)
-
-        self.log_info (
-            'HTTP server (V%s) started at %s\n'
-            '\tServer URL: http://%s:%s/\n' % (
-            VERSION_STRING,
-            time.ctime(time.time()),
-            self.server_name,
-            port,
-            )
-            )
-        
+    def log_info(self, message, type='info'):
+        if self.shutup: return
+        dispatcher.log_info(self, message, type)
 
     def readable(self):
         return self.accepting and \
