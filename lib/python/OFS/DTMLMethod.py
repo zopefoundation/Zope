@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -94,6 +94,7 @@ from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
+from DateTime.DateTime import DateTime
 from urllib import quote
 import regex, Globals, sys, Acquisition
 
@@ -240,7 +241,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         
         rows=max(1,atoi(dtpref_rows)+dr)
         cols=max(40,atoi(dtpref_cols)+dc)
-        e='Friday, 31-Dec-99 23:59:59 GMT'
+        e=(DateTime('GMT') + 365).rfc822()
         resp=REQUEST['RESPONSE']
         resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
         resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)

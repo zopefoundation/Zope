@@ -85,11 +85,11 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.65 1999/03/25 16:07:43 jim Exp $'''
-__version__='$Revision: 1.65 $'[11:-2]
+$Id: DA.py,v 1.66 1999/05/26 13:35:55 brian Exp $'''
+__version__='$Revision: 1.66 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
-import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
+import DocumentTemplate, marshal, md5, base64, Acquisition, os
 from Aqueduct import decodestring, parse
 from Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
@@ -99,12 +99,14 @@ from string import atoi, find, join, split
 import DocumentTemplate, sqlvar, sqltest, sqlgroup
 from time import time
 from zlib import compress, decompress
+from DateTime.DateTime import DateTime
 md5new=md5.new
 import ExtensionClass
 import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
+
 
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
@@ -177,7 +179,7 @@ class DA(
         
         rows=max(1,atoi(sql_pref__rows)+dr)
         cols=max(40,atoi(sql_pref__cols)+dc)
-        e='Friday, 31-Dec-99 23:59:59 GMT'
+        e=(DateTime('GMT') + 365).rfc822()
         resp=REQUEST['RESPONSE']
         resp.setCookie('sql_pref__rows',str(rows),path='/',expires=e)
         resp.setCookie('sql_pref__cols',str(cols),path='/',expires=e)
