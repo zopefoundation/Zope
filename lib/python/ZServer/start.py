@@ -17,11 +17,11 @@ import os
 ###
 
 # This should point to your Zope directory
-SOFTWARE_HOME = '/projects/users/zs_zope'
+SOFTWARE_HOME = '/usr/local/Zope'
 
 # This should point at the directory that contains your var directory.
 # Most of the time this is the same as SOFTWARE_HOME
-# INSTANCE_HOME = SOFTWARE_HOME
+INSTANCE_HOME = SOFTWARE_HOME
 
 ### ZServer configuration 
 ###
@@ -52,8 +52,11 @@ MODULE='Main'
 # Location of the ZServer log file. This file logs all ZServer activity.
 # You may wish to create different logs for different servers. See
 # medusa/logger.py for more information.
-
 LOG_FILE=os.path.join(INSTANCE_HOME, 'var', 'ZServer.log')
+
+# Location of the ZServer pid file. When ZServer starts up it will write
+# its PID to this file.
+PID_FILE=os.path.join(INSTANCE_HOME, 'var', 'ZServer.pid')
 
 ## FTP configuration
 ##
@@ -133,7 +136,7 @@ zftp = FTPServer(
 
 # if it hasn't failed at this point, create a .pid file.
 
-pf = open(os.path.join(INSTANCE_HOME, 'var', 'ZServer.pid'), 'w+')
+pf = open(PID_FILE), 'w+')
 pf.write(("%s" % os.getpid()))
 pf.close()
 
