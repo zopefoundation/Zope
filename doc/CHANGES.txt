@@ -79,6 +79,8 @@ Zope Changes
 
       Features added
 
+        - The source release install script now checks to make sure that
+          the Python used has thread support.
 
       Bugs fixed
 
@@ -129,6 +131,9 @@ Zope Changes
 	  recover by truncating the file with a log message.
 
         - The Zope version was not shown in the control panel.
+
+        - The binary release had the PCGI wrapper program in the wrong
+	  directory so PCGI installations were not successful.
 
     Zope 2.0 beta 3
     
