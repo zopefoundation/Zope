@@ -300,7 +300,7 @@ Zope authentication with existing web servers
       # Zope configuration maps /Zope/ to the Zope.cgi CGI script
       RewriteEngine on
       RewriteCond %{HTTP:Authorization}  ^(.*)
-      RewriteRule ^/Zope/(.*) /usr/local/apache/cgi-bin/Zope.cgi/$1 [e=HTTP_CGI_AUTHORIZATION:%1,t=application/x-httpd-cgi,l]
+      RewriteRule ^/Zope(.*) /usr/local/apache/cgi-bin/Zope.cgi/$1 [e=HTTP_CGI_AUTHORIZATION:%1,t=application/x-httpd-cgi,l]
 
     Note that the RewriteRule should be one long line, and that the last
     character is the letter l, not the number 1.
