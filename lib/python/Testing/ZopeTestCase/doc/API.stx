@@ -17,6 +17,8 @@ Module Testing.ZopeTestCase
 
         user_name
 
+        user_password
+
         user_role
 
         standard_permissions
@@ -38,6 +40,8 @@ Module Testing.ZopeTestCase
         _print(msg)
 
     Classes
+
+        TestCase
 
         ZopeTestCase
 
@@ -81,19 +85,9 @@ Module ZopeLite
 
 
 
-Module ZopeTestCase
+Module base
 
-    Default test case and fixture for Zope testing
-
-    Constants
-
-        folder_name
-
-        user_name
-
-        user_role
-
-        standard_permissions
+    Bare-bones base test case for Zope testing
 
     Functions
 
@@ -103,17 +97,14 @@ Module ZopeTestCase
 
     Classes
 
-        ZopeTestCase
-        
-        
+        TestCase
 
-Class ZopeTestCase
 
-    Base test case for Zope testing
 
-    Attributes
+Class TestCase
 
-        _setup_fixture = 1
+    Bare-bones base test case for Zope testing
+    (derived from unittest.TestCase)
 
     Methods
 
@@ -127,9 +118,44 @@ Class ZopeTestCase
 
         beforeClose()
 
+
+
+Module ZopeTestCase
+
+    Test case and fixture for Zope testing
+
+    Constants
+
+        folder_name
+
+        user_name
+
+        user_password
+
+        user_role
+
+        standard_permissions
+
+    Classes
+
+        ZopeTestCase
+        
+        
+
+Class ZopeTestCase
+
+    Base test case for Zope testing
+    (derived from base.TestCase)
+
+    Methods
+
         setRoles(roles, name=user_name)
 
+        getRoles(name=user_name)
+
         setPermissions(permissions, role=user_role)
+
+        getPermissions(role=user_role)
 
         login(name=user_name)
 
@@ -147,6 +173,8 @@ Module PortalTestCase
 
         user_name
 
+        user_password
+
     Classes
 
         PortalTestCase
@@ -156,10 +184,7 @@ Module PortalTestCase
 Class PortalTestCase
 
     Base test case for CMF testing
-
-    Attributes
-
-        _configure_portal = 1
+    (derived from base.TestCase)
 
     Methods
 
@@ -167,19 +192,13 @@ Class PortalTestCase
 
         createMemberarea(name)
 
-        afterSetUp()
-
-        beforeTearDown()
-
-        afterClear()
-
-        beforeSetUp()
-
-        beforeClose()
-
         setRoles(roles, name=user_name)
 
-        setPermissions(permissions, role=user_role)
+        getRoles(name=user_name)
+
+        setPermissions(permissions, role='Member')
+
+        getPermissions(role='Member')
 
         login(name=user_name)
 
@@ -270,4 +289,6 @@ Module utils
         startZServer(number_of_threads=1, log=None)
 
         importObjectFromFile(container, filename, quiet=0)
+
+        appcall(func, *args, **kw)
 

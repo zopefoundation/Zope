@@ -16,7 +16,7 @@
 # example instead.
 #
 
-# $Id: testWebserver.py,v 1.14 2004/04/09 12:38:37 shh42 Exp $
+# $Id: testWebserver.py,v 1.15 2004/09/04 18:01:08 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
@@ -53,7 +53,7 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
 
     def afterSetUp(self):
         uf = self.folder.acl_users
-        uf._doAddUser('manager', 'secret', ['Manager'], [])
+        uf.userFolderAddUser('manager', 'secret', ['Manager'], [])
         manager = uf.getUserById('manager').__of__(uf)
 
         self.folder.addDTMLMethod('index_html', file='index_html called')

@@ -3,7 +3,7 @@
 # be imported more selectively.
 #
 
-# $Id: threadutils.py,v 1.5 2004/01/09 14:35:08 shh42 Exp $
+# $Id: threadutils.py,v 1.6 2004/08/19 15:31:26 shh42 Exp $
 
 from threading import Thread
 from StringIO import StringIO
@@ -41,6 +41,7 @@ def QuietPublisher(self, accept):
 
 
 from ZServer.PubCore.ZServerPublisher import ZServerPublisher
-ZServerPublisher.__old_init__ = ZServerPublisher.__init__
-ZServerPublisher.__init__ = QuietPublisher
+if not hasattr(ZServerPublisher, '__old_init__'):
+    ZServerPublisher.__old_init__ = ZServerPublisher.__init__
+    ZServerPublisher.__init__ = QuietPublisher
 

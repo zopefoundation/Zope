@@ -1,3 +1,12 @@
+0.9.2
+- Introduced new base.TestCase class which contains the bare-
+  bones framework code and serves as baseclass for ZTC and PTC.
+- ZopeLite now configures the logging module in Zope >= 2.7.
+- Teardown sequence is now compatible with Zope trunk (again).
+- Added getRoles() and getPermissions() methods to security API.
+- setRoles() now asserts 'roles' argument is ListType.
+- setPermissions() now asserts 'permissions' argument is ListType.
+
 0.9.0
 - No longer support Zope 2.4 as its DemoStorage is broken.
 - Made PortalTestCase derive from ZopeTestCase (again).

@@ -7,7 +7,7 @@
 #            'ZopeTestCase', 'ztc_common.py'))
 #
 
-# $Id: ztc_common.py,v 1.13 2004/03/30 16:40:04 shh42 Exp $
+# $Id: ztc_common.py,v 1.14 2004/05/27 15:06:24 shh42 Exp $
 
 
 # Overwrites the default framework() method to expose the
@@ -28,9 +28,9 @@ def framework(stream=sys.stderr, descriptions=1, verbosity=1):
         else:
             sys.exit(globals()[arg]() and 1 or 0)
 
-    errors = TestRunner(stream, descriptions, verbosity).run(test_suite())
+    result = TestRunner(stream, descriptions, verbosity).run(test_suite())
     from Testing.ZopeTestCase import profiler; profiler.print_stats()
-    sys.exit(errors and 1 or 0)
+    sys.exit(len(result.errors) + len(result.failures))
 
 
 # Configures the Zope environment

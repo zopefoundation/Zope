@@ -5,7 +5,7 @@
 # module level to add functionality to the test environment.
 #
 
-# $Id: utils.py,v 1.13 2004/02/17 19:34:36 shh42 Exp $
+# $Id: utils.py,v 1.16 2004/08/19 13:59:41 shh42 Exp $
 
 
 def setupCoreSessions(app=None):
@@ -105,6 +105,7 @@ def startZServer(number_of_threads=1, log=None):
         t = QuietThread(target=zserverRunner, args=(_Z2HOST, _Z2PORT, log))
         t.setDaemon(1)
         t.start()
+        time.sleep(0.1) # Sandor Palfy
     return _Z2HOST, _Z2PORT
 
 
@@ -127,13 +128,13 @@ def makerequest(app, stdout=sys.stdout):
 
 def appcall(function, *args, **kw):
     '''Calls a function passing 'app' as first argument.'''
-    import ZopeTestCase
-    app = ZopeTestCase.app()
+    from base import app, close
+    app = app()
     args = (app,) + args
     try:
         return function(*args, **kw)
     finally:
-        ZopeTestCase.close(app)
+        close(app)
 
 
 class ConnectionRegistry:
@@ -159,4 +160,7 @@ class ConnectionRegistry:
 
     def __len__(self):
         return len(self._conns)
+
+    def contains(self, conn):
+        return conn in self._conns
 

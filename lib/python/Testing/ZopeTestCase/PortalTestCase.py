@@ -14,19 +14,22 @@
 # getPortal() returns a usable portal object to the setup code.
 #
 
-# $Id: PortalTestCase.py,v 1.24 2004/03/29 01:14:14 shh42 Exp $
+# $Id: PortalTestCase.py,v 1.29 2004/09/09 18:48:59 shh42 Exp $
 
-import ZopeTestCase
+import base
+import types
 
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
 
 portal_name = 'portal'
-user_name = ZopeTestCase.user_name
+from ZopeTestCase import user_name
+from ZopeTestCase import user_password
 
 
-class PortalTestCase(ZopeTestCase.ZopeTestCase):
+class PortalTestCase(base.TestCase):
     '''Base test case for testing CMF-style portals
 
        __implements__ = (IPortalTestCase, ISimpleSecurity, IExtensibleSecurity)
@@ -37,9 +40,11 @@ class PortalTestCase(ZopeTestCase.ZopeTestCase):
     _configure_portal = 1
 
     def getPortal(self):
-        '''Returns the portal object for use by the setup
-           code. Will typically be overridden by subclasses
-           to return the object serving as the portal.
+        '''Returns the portal object to the setup code.
+           Will typically be overridden by subclasses
+           to return the object serving as the "portal".
+
+           Note: This method should not be called by tests!
         '''
         return self.app[portal_name]
 
@@ -67,7 +72,9 @@ class PortalTestCase(ZopeTestCase.ZopeTestCase):
             raise
 
     def _setup(self):
-        '''Configures the portal. Framework authors may override.'''
+        '''Configures the portal. Framework authors may
+           override.
+        '''
         if self._configure_portal:
             self._setupUserFolder()
             self._setupUser()
@@ -82,7 +89,7 @@ class PortalTestCase(ZopeTestCase.ZopeTestCase):
     def _setupUser(self):
         '''Creates the default user.'''
         uf = self.portal.acl_users
-        uf._doAddUser(user_name, 'secret', ['Member'], [])
+        uf.userFolderAddUser(user_name, user_password, ['Member'], [])
 
     def _setupHomeFolder(self):
         '''Creates the default user's home folder.'''
@@ -97,29 +104,30 @@ class PortalTestCase(ZopeTestCase.ZopeTestCase):
         if hasattr(self.portal, 'setupCurrentSkin'):
             self.portal.setupCurrentSkin()
 
-    def _clear(self, call_close_hook=0):
-        '''Clears the fixture.'''
-        # No automagic cleanups here. We rely on
-        # transaction abort. Those who commit are
-        # required to clean up their own mess.
-        if call_close_hook:
-            self.beforeClose()
-        self._close()
-        self.logout()
-        self.afterClear()
-
     # Security interfaces
 
     def setRoles(self, roles, name=user_name):
         '''Changes the user's roles.'''
+        self.assertEqual(type(roles), types.ListType)
         uf = self.portal.acl_users
-        uf._doChangeUser(name, None, roles, [])
+        uf.userFolderEditUser(name, None, roles, [])
         if name == getSecurityManager().getUser().getId():
             self.login(name)
 
+    def getRoles(self, name=user_name):
+        '''Returns the user's roles.'''
+        uf = self.portal.acl_users
+        return uf.getUserById(name).getRoles()
+
     def setPermissions(self, permissions, role='Member'):
-        '''Changes the user's permissions.'''
+        '''Changes the permissions assigned to role.'''
+        self.assertEqual(type(permissions), types.ListType)
         self.portal.manage_role(role, permissions)
+
+    def getPermissions(self, role='Member'):
+        '''Returns the permissions assigned to role.'''
+        perms = self.portal.permissionsOfRole(role)
+        return [p['name'] for p in perms if p['selected']]
 
     def login(self, name=user_name):
         '''Logs in.'''
@@ -128,6 +136,21 @@ class PortalTestCase(ZopeTestCase.ZopeTestCase):
         if not hasattr(user, 'aq_base'):
             user = user.__of__(uf)
         newSecurityManager(None, user)
+
+    def logout(self):
+        '''Logs out.'''
+        noSecurityManager()
+
+    # b/w compatibility methods
+
+    def _setRoles(self, roles, name=user_name):
+        self.setRoles(roles, name)
+    def _setPermissions(self, permissions, role='Member'):
+        self.setPermissions(permissions, role)
+    def _login(self, name=user_name):
+        self.login(name)
+    def _logout(self):
+        self.logout()
 
 
 # b/w compatibility names

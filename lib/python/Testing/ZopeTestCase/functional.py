@@ -1,11 +1,12 @@
 #
 # Support for functional unit testing in ZTC
-# After Marius Gedmina's functional.py module for Zope3.
+# After Marius Gedminas' functional.py module for Zope3.
 #
 
-# $Id: functional.py,v 1.2 2004/01/14 12:41:32 shh42 Exp $
+# $Id: functional.py,v 1.3 2004/09/12 16:49:59 shh42 Exp $
 
 import sys, re, base64
+import transaction
 import sandbox
 
 
@@ -25,7 +26,7 @@ class Functional(sandbox.Sandboxed):
         from ZPublisher.Test import publish_module
 
         # Commit the sandbox for good measure
-        get_transaction().commit()
+        transaction.commit()
 
         if env is None: 
             env = {}

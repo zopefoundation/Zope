@@ -1,6 +1,6 @@
 from Interface import Interface
 
-# $Id: IZopeTestCase.py,v 1.13 2004/02/21 18:54:38 shh42 Exp $
+# $Id: IZopeTestCase.py,v 1.14 2004/09/04 18:01:11 shh42 Exp $
 
 
 #
@@ -17,8 +17,14 @@ class ISimpleSecurity(Interface):
     def setRoles(roles):
         '''Changes the user's roles.'''
 
+    def getRoles():
+        '''Returns the user's roles.'''
+
     def setPermissions(permissions):
         '''Changes the user's permissions.'''
+
+    def getPermissions():
+        '''Returns the user's permissions.'''
 
     def login():
         '''Logs in.'''
@@ -32,8 +38,14 @@ class IExtensibleSecurity(Interface):
     def setRoles(roles, name):
         '''Changes the roles assigned to a user.'''
 
+    def getRoles(name):
+        '''Returns the specified user's roles.'''
+
     def setPermissions(permissions, role):
         '''Changes the permissions assigned to a role.'''
+
+    def getPermissions(role):
+        '''Returns the permissions assigned to a role.'''
 
     def login(name):
         '''Logs in as the specified user.'''
@@ -57,7 +69,7 @@ class IZopeTestCase(Interface):
 
     def afterClear():
         '''Called after the fixture has been cleared.
-           Note that this is done during setUp() *and*
+           Note that this may occur during setUp() *and*
            tearDown().
         '''
 
@@ -77,9 +89,11 @@ class IZopeTestCase(Interface):
 class IPortalTestCase(IZopeTestCase):
 
     def getPortal():
-        '''Returns the portal object for use by the setup 
-           code. Will typically be overridden by subclasses
-           to return the object serving as the portal.
+        '''Returns the portal object to the setup code.
+           Will typically be overridden by subclasses
+           to return the object serving as the "portal".
+
+           Note: This method should not be called by tests!
         '''
 
     def createMemberarea(member_id):

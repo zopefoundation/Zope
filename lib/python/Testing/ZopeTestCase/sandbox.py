@@ -2,9 +2,10 @@
 # Support for ZODB sandboxes in ZTC
 #
 
-# $Id: sandbox.py,v 1.1 2004/01/09 15:03:04 shh42 Exp $
+# $Id: sandbox.py,v 1.2 2004/08/19 15:31:26 shh42 Exp $
 
 import ZopeLite as Zope
+import transaction
 import utils
 
 
@@ -24,7 +25,7 @@ class Sandboxed:
 
     def _close(self):
         '''Clears the transaction and the AppZapper.'''
-        get_transaction().abort()
+        transaction.abort()
         AppZapper().clear()
 
 
@@ -55,6 +56,7 @@ def __bobo_traverse__(self, REQUEST=None, name=None):
 
 
 from ZODB.ZApplication import ZApplicationWrapper
-ZApplicationWrapper.__old_bobo_traverse__ = ZApplicationWrapper.__bobo_traverse__
-ZApplicationWrapper.__bobo_traverse__ = __bobo_traverse__
+if not hasattr(ZApplicationWrapper, '__old_bobo_traverse__'):
+    ZApplicationWrapper.__old_bobo_traverse__ = ZApplicationWrapper.__bobo_traverse__
+    ZApplicationWrapper.__bobo_traverse__ = __bobo_traverse__
 

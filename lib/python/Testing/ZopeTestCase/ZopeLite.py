@@ -12,7 +12,7 @@
 #   app = Zope.app()
 #
 
-# $Id: ZopeLite.py,v 1.19 2004/03/19 13:51:32 shh42 Exp $
+# $Id: ZopeLite.py,v 1.24 2004/08/18 09:28:54 shh42 Exp $
 
 import os, sys, time
 
@@ -20,7 +20,7 @@ import os, sys, time
 sys.setcheckinterval(2500)
 
 # Shut up if we are not in control of the import process
-_quiet = 'Zope' in sys.modules.keys()
+_quiet = sys.modules.has_key('Zope')
 
 def _print(msg):
     '''Writes 'msg' to stderr and flushes the stream.'''
@@ -48,6 +48,10 @@ try:
 except ImportError:
     pass # Zope < 2.7
 else:
+    # Configure logging
+    if not sys.modules.has_key('logging'):
+        import logging
+        logging.basicConfig()
     # Need to import Zope early on as the 
     # ZTUtils package relies on it
     config = App.config.getConfiguration()

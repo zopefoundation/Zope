@@ -21,7 +21,8 @@ Default Fixture
     - **'self.folder.acl_users'** is the user folder providing a security context to the work area.
 
       A default user account is added to the user folder with name 'test_user_1_' and password 'secret'. 
-      You should use the 'ZopeTestCase.user_name' constant when you need the user's name. 
+      You should use the 'ZopeTestCase.user_name' constant when you need the user's name, the 
+      'ZopeTestCase.user_password' constant when you need the user's password. 
       
       The default user has a single role, 'ZopeTestCase.user_role'.
 
@@ -32,9 +33,15 @@ Security API
     - **'self.setRoles(roles, name=user_name)'** allows to change the roles assigned to a user.
       If the 'name' argument is omitted, changes the roles of the default user.
 
+    - **'self.getRoles(name=user_name)'** returns the roles assigned to a user. If the name argument is
+      omitted, returns the roles assigned to the default user.
+
     - **'self.setPermissions(permissions, role=user_role)'** allows to change the permissions
       assigned to a role. If the 'role' argument is omitted, changes the permissions of the
       default role.
+
+    - **'self.getPermissions(role=user_role)'** return the permissions assigned to a role. If the role
+      argument is omitted, returns the permissions assigned to the default role.
 
     - **'self.login(name=user_name)'** allows to log in as a specified user.
       If the 'name' argument is omitted, logs in as the default user.

@@ -1,7 +1,7 @@
 #
 # Tests the PortalTestCase
 #
-# NOTE: This is *not* an example PortalTestCase. Do not
+# NOTE: This is *not* an example TestCase. Do not
 # use this file as a blueprint for your own tests!
 #
 # See testPythonScript.py and testShoppingCart.py for
@@ -9,18 +9,18 @@
 # way of getting started.
 #
 
-# $Id: testPortalTestCase.py,v 1.21 2004/04/09 12:38:37 shh42 Exp $
+# $Id: testPortalTestCase.py,v 1.24 2004/09/09 18:48:59 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-import transaction
 from Testing import ZopeTestCase
 
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from types import ListType
+from transaction import begin
 
 portal_name = 'dummy_1_'
 user_name = ZopeTestCase.user_name
@@ -30,7 +30,8 @@ def hasattr_(ob, attr):
     return hasattr(aq_base(ob), attr)
 
 
-# Dummy portal
+# Dummy Portal
+
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder       
 
@@ -56,7 +57,7 @@ class DummyPortal(Folder):
 
 
 class TestPortalTestCase(ZopeTestCase.PortalTestCase):
-    '''Tests the PortalTestCase.'''
+    '''Incrementally exercise the PortalTestCase API.'''
 
     _setUp = ZopeTestCase.PortalTestCase.setUp
     _tearDown = ZopeTestCase.PortalTestCase.tearDown
@@ -70,7 +71,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # with an empty fixture.
         self._called = []
         # Implicitly aborts previous transaction
-        transaction.begin()
+        begin()
 
     def beforeSetUp(self):
         self._called.append('beforeSetUp')
@@ -87,7 +88,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
     def afterClear(self):
         self._called.append('afterClear')
 
-    def test_01_getPortal(self):
+    def test_getPortal(self):
         # Portal should be set up
         self.app = self._app()
         self.portal = self.getPortal()
@@ -96,7 +97,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.failUnless(hasattr_(self.portal, 'portal_membership'))
         self.failUnless('Member' in self.portal.userdefined_roles())
 
-    def test_02_setupUserFolder(self):
+    def test_setupUserFolder(self):
         # User folder should be set up.
         self.app = self._app()
         self.portal = self.getPortal()
@@ -106,7 +107,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         # Must not complain if UF already exists
         self._setupUserFolder()
 
-    def test_03_setupUser(self):
+    def test_setupUser(self):
         # User should be set up
         self.app = self._app()
         self.portal = self.getPortal()
@@ -117,7 +118,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertEqual(acl_user.getRoles(), ('Member', 'Authenticated'))
         self.assertEqual(type(acl_user.roles), ListType)
 
-    def test_04_setupHomeFolder(self):
+    def test_setupHomeFolder(self):
         # User's home folder should be set up
         self.app = self._app()
         self.portal = self.getPortal()
@@ -133,7 +134,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
             owner_info = self.folder.getOwner(info=1)
         self.assertEqual(owner_info, ([portal_name, 'acl_users'], user_name))
 
-    def test_05_refreshSkinData(self):
+    def test_refreshSkinData(self):
         # The _v_skindata attribute should be refreshed
         self.app = self._app()
         self.portal = self.getPortal()
@@ -141,22 +142,18 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._refreshSkinData()
         self.assertEqual(self.portal._v_skindata, 'refreshed')
 
-    def test_06_setRoles(self):
+    def test_setRoles(self):
         # Roles should be set for user
         self.app = self._app()
         self.portal = self.getPortal()
         self._setupUserFolder()
         self._setupUser()
         test_roles = ['Manager', 'Member']
-        test_roles.sort()
         self.setRoles(test_roles)
         acl_user = self.portal.acl_users.getUserById(user_name)
-        user_roles = list(acl_user.getRoles())
-        user_roles.remove('Authenticated')
-        user_roles.sort()
-        self.assertEqual(user_roles, test_roles)
+        self.assertRolesOfUser(test_roles, acl_user)
 
-    def test_07_setRoles_2(self):
+    def test_setRoles_2(self):
         # Roles should be set for logged in user
         self.app = self._app()
         self.portal = self.getPortal()
@@ -164,30 +161,43 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setupUser()
         self.login()
         test_roles = ['Manager', 'Member']
-        test_roles.sort()
         self.setRoles(test_roles)
         auth_user = getSecurityManager().getUser()
-        user_roles = list(auth_user.getRoles())
-        user_roles.remove('Authenticated')
-        user_roles.sort()
-        self.assertEqual(user_roles, test_roles)
+        self.assertRolesOfUser(test_roles, auth_user)
 
-    def test_08_setRoles_3(self):
+    def test_setRoles_3(self):
         # Roles should be set for a specified user
         self.app = self._app()
         self.portal = self.getPortal()
         self._setupUserFolder()
-        self.portal.acl_users._doAddUser('test_user_2_', 'secret', [], [])
+        self.portal.acl_users.userFolderAddUser('user_2', 'secret', [], [])
         test_roles = ['Manager', 'Member']
-        test_roles.sort()
-        self.setRoles(test_roles, 'test_user_2_')
-        acl_user = self.portal.acl_users.getUserById('test_user_2_')
-        user_roles = list(acl_user.getRoles())
-        user_roles.remove('Authenticated')
-        user_roles.sort()
-        self.assertEqual(user_roles, test_roles)
+        self.setRoles(test_roles, 'user_2')
+        acl_user = self.portal.acl_users.getUserById('user_2')
+        self.assertRolesOfUser(test_roles, acl_user)
 
-    def test_09_setPermissions(self):
+    def test_setRolesAssertsArgumentType(self):
+        # setRoles should fail if 'roles' argument is not a list
+        self.assertRaises(self.failureException, self.setRoles, 'foo')
+        self.assertRaises(self.failureException, self.setRoles, ('foo',))
+
+    def test_getRoles(self):
+        # Should return roles of user
+        self.app = self._app()
+        self.portal = self.getPortal()
+        self._setupUserFolder()
+        self._setupUser()
+        self.assertEqual(self.getRoles(), ('Member', 'Authenticated'))
+
+    def test_getRoles_2(self):
+        # Should return roles of specified user
+        self.app = self._app()
+        self.portal = self.getPortal()
+        self._setupUserFolder()
+        self.portal.acl_users.userFolderAddUser('user_2', 'secret', ['Manager'], [])
+        self.assertEqual(self.getRoles('user_2'), ('Manager', 'Authenticated'))
+
+    def test_setPermissions(self):
         # Permissions should be set for user
         self.app = self._app()
         self.portal = self.getPortal()
@@ -195,17 +205,39 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.setPermissions(test_perms)
         self.assertPermissionsOfRole(test_perms, 'Member')
 
-    def test_10_setPermissions_2(self):
-        # Permissions should be set for a specified role
+    def test_setPermissions_2(self):
+        # Permissions should be set for specified role
         self.app = self._app()
         self.portal = self.getPortal()
-        self.portal._addRole('test_role_2_')
+        self.portal._addRole('role_2')
         test_perms = ['Add Folders']
-        self.assertPermissionsOfRole([], 'test_role_2_')
-        self.setPermissions(test_perms, 'test_role_2_')
-        self.assertPermissionsOfRole(test_perms, 'test_role_2_')
+        self.assertPermissionsOfRole([], 'role_2')
+        self.setPermissions(test_perms, 'role_2')
+        self.assertPermissionsOfRole(test_perms, 'role_2')
 
-    def test_11_login(self):
+    def test_setPermissionsAssertsArgumentType(self):
+        # setPermissions should fail if 'permissions' argument is not a list
+        self.assertRaises(self.failureException, self.setPermissions, 'foo')
+        self.assertRaises(self.failureException, self.setPermissions, ('foo',))
+
+    def test_getPermissions(self):
+        # Should return permissions of user
+        self.app = self._app()
+        self.portal = self.getPortal()
+        test_perms = ['Add Folders']
+        self.setPermissions(test_perms)
+        self.assertEqual(self.getPermissions(), test_perms)
+
+    def test_getPermissions_2(self):
+        # Should return permissions of specified role
+        self.app = self._app()
+        self.portal = self.getPortal()
+        test_perms = ['Add Folders']
+        self.portal._addRole('role_2')
+        self.setPermissions(test_perms, 'role_2')
+        self.assertEqual(self.getPermissions('role_2'), test_perms)
+
+    def test_login(self):
         # User should be able to log in
         self.app = self._app()
         self.portal = self.getPortal()
@@ -217,26 +249,26 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         auth_name = getSecurityManager().getUser().getId()
         self.assertEqual(auth_name, user_name)
 
-    def test_12_login_2(self):
+    def test_login_2(self):
         # A specified user should be logged in
         self.app = self._app()
         self.portal = self.getPortal()
         self._setupUserFolder()
-        self.portal.acl_users._doAddUser('test_user_2_', 'secret', [], [])
+        self.portal.acl_users.userFolderAddUser('user_2', 'secret', [], [])
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
-        self.login('test_user_2_')
+        self.login('user_2')
         auth_name = getSecurityManager().getUser().getId()
-        self.assertEqual(auth_name, 'test_user_2_')
+        self.assertEqual(auth_name, 'user_2')
 
-    def test_13_login_3(self):
+    def test_login_3(self):
         # Unknown user should raise AttributeError
         self.app = self._app()
         self.portal = self.getPortal()
         self._setupUserFolder()
-        self.assertRaises(AttributeError, self.login, 'test_user_3_')
+        self.assertRaises(AttributeError, self.login, 'user_3')
 
-    def test_14_logout(self):
+    def test_logout(self):
         # User should be able to log out
         self.app = self._app()
         self.portal = self.getPortal()
@@ -247,7 +279,7 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
 
-    def test_15_clear(self):
+    def test_clear(self):
         # Everything should be removed
         self.app = self._app()
         self.portal = self.getPortal()
@@ -255,16 +287,14 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self._setupUser()
         self._setupHomeFolder()
         self._clear(1)
-        # XXX: No more cleanups in _clear()
-        #self.failIf(self.portal.acl_users.getUserById(user_name))
-        #self.failIf(hasattr_(self.portal.Members, user_name))
+        self.failIf(self.app.__dict__.has_key(portal_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeClose', 'afterClear'])
         # clear must not fail when called repeatedly
         self._clear()
 
-    def test_16_setUp(self):
+    def test_setUp(self):
         # Everything should be set up
         self._setUp()
         self.failUnless(hasattr_(self.app, portal_name))
@@ -284,19 +314,17 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
         self.assertEqual(self.portal._v_skindata, 'refreshed')
 
-    def test_17_tearDown(self):
+    def test_tearDown(self):
         # Everything should be removed
         self._setUp()
         self._called = []
         self._tearDown()
-        # XXX: No more cleanups in _clear()
-        #self.failIf(hasattr_(self.portal.Members, user_name))
-        #self.assertEqual(self.portal.acl_users.getUserById(user_name), None)
+        self.failIf(self.app.__dict__.has_key(portal_name))
         auth_name = getSecurityManager().getUser().getUserName()
         self.assertEqual(auth_name, 'Anonymous User')
         self.assertEqual(self._called, ['beforeTearDown', 'beforeClose', 'afterClear'])
 
-    def test_18_configureFlag(self):
+    def test_configureFlag(self):
         # Nothing should be configured
         self._configure_portal = 0
         self._setUp()
@@ -309,18 +337,43 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         self.assertEqual(self._called, ['beforeSetUp', 'afterSetUp'])
         self.assertEqual(self.portal._v_skindata, 'refreshed')
 
-    def test_19_configureFlag_2(self):
-        # Nothing should be cleared
-        self._setUp()
-        self._configure_portal = 0
-        self._called = []
-        self._clear()
-        # XXX: Since 0.8.4 we abort before closing the connection
-        #self.failUnless(hasattr_(self.portal.Members, user_name))
-        #self.failUnless(self.portal.acl_users.getUserById(user_name))
-        auth_name = getSecurityManager().getUser().getUserName()
-        self.assertEqual(auth_name, 'Anonymous User')
-        self.assertEqual(self._called, ['afterClear'])
+    # This is crazy
+
+    def __test_crazyRoles_0(self):
+        # Permission assignments should be reset
+        self.app = self._app()
+        perms = self.getPermissionsOfRole('Anonymous', self.app)
+        for perm in ['Access contents information', 'View', 'Query Vocabulary', 'Search ZCatalog']:
+            if perm not in perms:
+                self.fail('Expected permission "%s"' % perm)
+
+    def __test_crazyRoles_1(self):
+        # Permission assignments should be reset
+        self.app = self._app()
+        self.app.manage_role('Anonymous', ['View'])
+        self.assertPermissionsOfRole(['View'], 'Anonymous', self.app)
+        self.failIf(getSecurityManager().checkPermission('Access contents information', self.app))
+
+    def __test_crazyRoles_2(self):
+        # Permission assignments should be reset
+        self.app = self._app()
+        try:
+            self.assertPermissionsOfRole(['View'], 'Anonymous', self.app)
+        except self.failureException:
+            pass
+
+    def __test_crazyRoles_3(self):
+        # Permission assignments should be reset
+        self.app = self._app()
+        self.failUnless(getSecurityManager().checkPermission('Access contents information', self.app))
+
+    def __test_crazyRoles_4(self):
+        # Permission assignments should be reset
+        self.app = self._app()
+        perms = self.getPermissionsOfRole('Anonymous', self.app)
+        for perm in ['Access contents information', 'View', 'Query Vocabulary', 'Search ZCatalog']:
+            if perm not in perms:
+                self.fail('Expected permission "%s"' % perm)
 
     # Helpers
 
@@ -328,20 +381,32 @@ class TestPortalTestCase(ZopeTestCase.PortalTestCase):
         '''Returns sorted list of permission names of the
            given role in the given context.
         '''
-        if context is None: context = self.portal
+        if context is None:
+            context = self.portal
         perms = context.permissionsOfRole(role)
-        perms = [p['name'] for p in perms if p['selected']]
-        perms.sort()
-        return perms
+        return [p['name'] for p in perms if p['selected']]
 
     def assertPermissionsOfRole(self, permissions, role, context=None):
         '''Compares list of permission names to permissions of the
            given role in the given context. Fails if the lists are not
            found equal.
         '''
-        perms = list(permissions)[:]
-        perms.sort()
-        self.assertEqual(self.getPermissionsOfRole(role, context), perms)
+        lhs = list(permissions)[:]
+        lhs.sort()
+        rhs = self.getPermissionsOfRole(role, context)
+        rhs.sort()
+        self.assertEqual(lhs, rhs)
+
+    def assertRolesOfUser(self, roles, user):
+        '''Compares list of role names to roles of user. Fails if the
+           lists are not found equal.
+        '''
+        lhs = list(roles)[:]
+        lhs.sort()
+        rhs = list(user.getRoles())[:]
+        rhs.remove('Authenticated')
+        rhs.sort()
+        self.assertEqual(lhs, rhs)
 
 
 from AccessControl.User import UserFolder
@@ -385,7 +450,7 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
         self.portal._setObject('acl_users', WrappingUserFolder())
 
     def testGetUserWrapsUser(self):
-        user = self.folder.acl_users.getUserById(user_name)
+        user = self.portal.acl_users.getUserById(user_name)
         self.failUnless(hasattr(user, 'aq_base'))
         self.failIf(user is aq_base(user))
         self.failUnless(user.aq_parent.__class__.__name__, 'WrappingUserFolder')
@@ -399,12 +464,62 @@ class TestWrappingUserFolder(ZopeTestCase.PortalTestCase):
         self.failUnless(user.aq_parent.aq_parent.__class__.__name__, 'Folder')
 
 
+# Because we override setUp we need to test again
+
+class HookTest(ZopeTestCase.PortalTestCase):
+
+    def setUp(self):
+        self._called = []
+        ZopeTestCase.PortalTestCase.setUp(self)
+        
+    def beforeSetUp(self):
+        self._called.append('beforeSetUp')
+        ZopeTestCase.PortalTestCase.beforeSetUp(self)
+        
+    def _setup(self):
+        self._called.append('_setup')
+        ZopeTestCase.PortalTestCase._setup(self)
+        
+    def afterClear(self):
+        self._called.append('afterClear')
+        ZopeTestCase.PortalTestCase.afterClear(self)
+        
+    def assertHooks(self, sequence):
+        self.assertEqual(self._called, sequence)
+
+
+class TestSetUpRaises(HookTest):
+
+    def getPortal(self):
+        self.app._setObject(portal_name, DummyPortal(portal_name))
+        return self.app[portal_name]
+
+    class Error: pass
+
+    def setUp(self):
+        try:
+            HookTest.setUp(self)
+        except self.Error:
+            self.assertHooks(['beforeSetUp', '_setup', 'afterClear'])
+            # Connection has been closed
+            from Testing.ZopeTestCase import base
+            self.assertEqual(len(base._connections), 0)
+    
+    def _setup(self):
+        HookTest._setup(self)
+        raise self.Error
+    
+    def testTrigger(self):
+        pass
+
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestPortalTestCase))
     suite.addTest(makeSuite(TestPlainUserFolder))
     suite.addTest(makeSuite(TestWrappingUserFolder))
+    suite.addTest(makeSuite(TestSetUpRaises))
     return suite
 
 if __name__ == '__main__':

@@ -4,9 +4,6 @@ Installation Instructions for ZopeTestCase
 
     Requires Python 2.1 and Zope 2.5 or higher
 
-    Upgrade Notice: Please remove an existing installation
-    of ZopeTestCase before installing version 0.9.0!
-
     1. Extract the tarball into the 'lib/python/Testing'
        directory of your Zope installation.
 
