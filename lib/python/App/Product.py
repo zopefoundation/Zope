@@ -426,7 +426,6 @@ def initializeProduct(productp, name, home, app):
         product.title='Broken product %s' % name
         product.icon='p_/BrokenProduct_icon'
         product.manage_options=(
-            {'label':'README', 'action':'manage_readme'},
             {'label':'Traceback', 'action':'manage_traceback'},
             )
 
