@@ -100,7 +100,7 @@ class Response:
             # Convert Fault object to XML-RPC response.
             body=xmlrpclib.dumps(body, methodresponse=1)
         else:
-            if type(body) == InstanceType:
+            if type(body) == types.InstanceType:
                 # Avoid disclosing private members. Private members are
                 # by convention named with a leading underscore char.
                 orig = body.__dict__
