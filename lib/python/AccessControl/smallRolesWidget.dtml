@@ -2,7 +2,7 @@
 <TR>
   <TD></TD>
   <TD>
-  <TABLE>
+  <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
   <TR>
   <TD VALIGN="TOP">
     <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E">
