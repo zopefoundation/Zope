@@ -9,7 +9,7 @@
 ############################################################################## 
 import ni, sys
 
-import SimpleDB, Sync, TJar, SingleThreadedTransaction
+import SimpleDB, Sync, TJar, SingleThreadedTransaction, os
 
 class SyncDB(SimpleDB.Default, Sync.Synchronized):
     pass
@@ -39,10 +39,19 @@ SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
 
 bobo_application=app=Bobobase['Application']
 
+if os.environ.has_key('PRINCIPIA_HIDE_TRACEBACKS'):
+    __bobo_hide_tracebacks__=os.environ['PRINCIPIA_HIDE_TRACEBACKS']
+
+if os.environ.has_key('PRINCIPIA_REALM'):
+    __bobo_realm__=os.environ['PRINCIPIA_REALM']
+
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.15  1998/03/18 20:22:45  jim
+# Added support for PRINCIPIA_HIDE_TRACEBACKS and PRINCIPIA_REALM.
+#
 # Revision 1.14  1997/11/19 20:04:23  brian
 # Hmm, removed create flag for TM - seems only to be an issue with old bobobases.
 #
