@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.3 1997/09/10 17:25:26 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Index.py,v 1.4 1997/09/10 21:46:18 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -134,12 +134,16 @@ class Index:
 		else: r = r.union(set)
 	    except KeyError: pass
 
-	if r is not None: return r, (id,)
+	if r is None: r=intSet()
+	return r, (id,)
 	
 
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.4  1997/09/10 21:46:18  jim
+# Fixed bug that caused return of None when there were no matches.
+#
 # Revision 1.3  1997/09/10 17:25:26  jim
 # Changed to use regular old BTree.
 #
