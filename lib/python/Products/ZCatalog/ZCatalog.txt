@@ -98,7 +98,7 @@ ZCatalog Tutorial
 
     Most the work is done in the first step, which is getting objects
     into the index.  This is done in two ways.  First, if your objects
-    are ZCatalog-aware they automatically update the index when the
+    are ZCatalog-aware they automatically update the index when they
     are added, edited or directly deleted.  A ZCatalog-aware object is
     one that is an instance of a 'Z Class' that informs the 'ZCatalog'
     of changes.  *Directly deleted* means the object was deleted from
@@ -116,7 +116,7 @@ ZCatalog Tutorial
     to look for properties, each of which are added to the index.
 
     There are two kinds of indexes, called FieldIndex and TextIndex.
-    FieldIndex indexes treat data atomicly.  The entire contents of a
+    FieldIndex indexes treat data atomically.  The entire contents of a
     FieldIndex-indexed property is treated as a unit.  With a
     TextIndex index, it is broken into words which are indexed
     individually.  A TextIndex is also known as *full-text index*.
@@ -124,7 +124,7 @@ ZCatalog Tutorial
     Note that the 'ZCatalog' doesn't track ZCatalog-unaware objects
     after it has indexed them.  This means that the 'ZCatalog' must
     reindex its objects occasionally when the objects have been
-    chanced.  Out of date indexes can be prevented by inheriting from
+    changed.  Out of date indexes can be prevented by inheriting from
     a ZCatalog-aware class which can tell the 'ZCatalog' to reindex it
     whenever a change is made.  Just such a class will be included
     with the Portal toolkit.
@@ -267,8 +267,8 @@ ZCatalog Tutorial
         o Create a folder, 'CDs', and create a number of instances of
         the CD Z Class in it.
 
-    'cd1' through 'cd5' should be plenty.  Remember to fill them each
-    in from their Properties view.
+    'cd1' through 'cd5' should be plenty.  Remember to fill each of
+    them in from their Properties view.
 
     Now we want to create a searchable catalog of CDs.
 
