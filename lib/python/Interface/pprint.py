@@ -2,8 +2,9 @@ import string
 
 """ Pretty-Print an Interface object as structured text (Yum) """
 
+
 def justify_and_indent(text, level, munge=0, width=72):
-    """ strip newlines, indent and justify text """
+    """ indent and justify text, rejustify (munge) if specified """
 
     lines = []
 
@@ -31,47 +32,31 @@ def justify_and_indent(text, level, munge=0, width=72):
         return string.join(lines, "\n")
             
 
-def build_signature(meth):
-    """ this is a lot of work just to build a signature... """
-    sig = "("
-    for v in meth.positional:
-        sig = sig + v
-        if v in meth.optional.keys():
-            sig = sig + "=%s" % `meth.optional[v]`
-        sig = sig + ", "
-    if meth.varargs:
-        sig = sig + "*args, "
-    if meth.kwargs:
-        sig = sig + "**kws, "
-
-    # slice off the last comma and space
-    if meth.positional or meth.varargs or meth.kwargs:
-        sig = sig[:-2]
-        
-    sig = sig + ")"
-    return sig
-
 def interface_as_stx(I, munge=0):
     """ Output structured text format.  Note, this will wack any existing
     'structured' format of the text.  """
 
-    outp = "%s\n\n" % I.__name__
+    outp = "%s\n\n" % I.getName()
     level = 1
 
-    if I.__doc__:
+    if I.getDoc():
         outp = outp + justify_and_indent(I.__doc__, level) + "\n\n"
 
-    if I.__bases__:
+    if I.getBases():
         outp = outp + (" " * level) + "This interface extends:\n\n"
         level = level + 1
-        for b in I.__bases__:
-            item = "o %s" % b.__name__
+        for b in I.getBases():
+            item = "o %s" % b.getName()
             outp = outp + justify_and_indent(item, level, munge) + "\n\n"
         level = level - 1
 
     level = level + 1
     for name, desc in I.namesAndDescriptions():
-        item = "%s%s -- %s" % (name, build_signature(desc), desc.__doc__)
+        if desc.isMethod():
+            item = "%s%s -- %s" % (desc.getName(), desc.getSignatureRepr(), desc.getDoc())
+        elif desc.isAttr():
+            item = "%s -- %s" % (desc.getName(), desc.getDoc())
+            
         outp = outp + justify_and_indent(item, level, munge)  + "\n\n"
 
     return outp
