@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.3 1997/07/28 22:32:20 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Aqueduct.py,v 1.4 1997/07/29 00:38:39 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import ManageHTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -129,7 +129,7 @@ def default_input_form(name,arguments,action='query'):
 	return (
 	    '<html><head><title>%s Input Data</title></head><body>\n'
 	    '<form action="<!--#var URL2-->/<!--#var name-->/%s" '
-	    'method="post">\n'
+	    'method="get">\n'
 	    '<h2>%s Input Data</h2>\n'
 	    'This query requires no input.<p>\n'
 	    '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
@@ -325,6 +325,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.4  1997/07/29 00:38:39  jim
+# Changed to use get due to odbc lamosity.
+#
 # Revision 1.3  1997/07/28 22:32:20  jim
 # *** empty log message ***
 #

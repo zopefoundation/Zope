@@ -8,7 +8,7 @@ Aqueduct Database Adapter<br>
 Database Connection Information
 </FONT>
 
-<form action="<!--#var PARENT_URL-->/manage_connection" method="post">
+<form action="<!--#var PARENT_URL-->/manage_connection" method="get">
 
 <strong>Enter the database connection string:</strong><br>
 <input name="value" size="60" value="<!--#var manage_connection-->"><p>
