@@ -1,48 +1,65 @@
 <HTML>
 <HEAD>
-<TITLE>Change Image</TITLE>
+<TITLE>Edit Image</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Change Image</H2>
-<P>
-You can update image in the system using the form below. 
-Select an image from your local computer by clicking the <EM>Browse</EM> 
-button. The image file you select will be uploaded to the application.
+<H2>Edit Image</H2>
 
-<FORM ACTION="manage_edit" METHOD="POST"
-      ENCTYPE="multipart/form-data" TARGET="manage_main">
-<TABLE CELLSPACING="2">
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Id</STRONG>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var id-->
-  </TD>
-</TR>
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <EM><STRONG>Title</STRONG></EM>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
-  </TD>
-</TR>
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Image</STRONG>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
-  </TD>
-</TR>
-<!--#var smallRolesWidget-->
-<TR>
-<TD></TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
-</TR>
-</TABLE>
+<H3>Edit Image Properties</H3>
+
+<FORM ACTION="manage_edit" METHOD="POST" TARGET="manage_main">
+  <TABLE CELLSPACING="2">
+    <TR>
+      <TH ALIGN="LEFT" VALIGN="TOP">Id</STRONG></TH>
+      <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+    </TR>
+    <TR>
+      <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
+      <TD ALIGN="LEFT" VALIGN="TOP">
+        <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+      </TD>
+    </TR>
+    <TR>
+      <TH ALIGN="LEFT" VALIGN="TOP"><STRONG>Content Type</STRONG></TH>
+      <TD ALIGN="LEFT" VALIGN="TOP">
+        <INPUT TYPE="TEXT" NAME="content_type:required" SIZE="40"
+           VALUE="<!--#var content_type-->">
+      </TD>
+    </TR>
+    <!--#var smallRolesWidget-->
+    <TR>
+      <TD></TD><TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
+    </TR>
+  </TABLE>
 </FORM>
+
+<hr>
+
+<H3>Upload New Data</H3>
+
+You can update data in the image using the form below. 
+Select a data file from your local computer by clicking the <EM>Browse</EM> 
+button. The file you select will be uploaded to the application.
+
+<FORM ACTION="manage_editData" METHOD="POST"
+      ENCTYPE="multipart/form-data" TARGET="manage_main">
+  <TABLE CELLSPACING="2">
+    <TR>
+       <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+       <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+    </TR>
+    <TR>
+       <TH ALIGN="LEFT" VALIGN="TOP">Data</TH>
+       <TD ALIGN="LEFT" VALIGN="TOP">
+          <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
+       </TD>
+    </TR>
+      <TR><TD></TD><TD><BR><INPUT TYPE="SUBMIT" VALUE="Change Data"></TD>
+    </TR>
+  </TABLE>
+</FORM>
+
+
 </BODY>
 </HTML>
 
