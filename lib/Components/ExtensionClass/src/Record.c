@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.10 2001/02/19 19:16:07 jeremy Exp $"
+"\n$Id: Record.c,v 1.11 2001/03/14 19:21:22 brian Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -593,7 +593,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.10 $";
+  char *rev="$Revision: 1.11 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -627,68 +627,3 @@ initRecord()
   /* Check for errors */
   if (PyErr_Occurred()) Py_FatalError("can't initialize module Record");
 }
-
-/*****************************************************************************
-Revision Log:
-
-  $Log: Record.c,v $
-  Revision 1.10  2001/02/19 19:16:07  jeremy
-  silence compiler warnings
-  (2 remain)
-
-  Revision 1.9  2000/04/21 14:17:23  tseaver
-  Collector #1012: Guarantee null-terminated buffer in Record_init() so Record_compare doesn't UMR
-
-  Revision 1.8.6.1  2000/04/11 20:39:17  tseaver
-  Guarantee null-terminated buffer in Record_init() so Record_compare doesn't UMR
-
-  Revision 1.8  1999/06/10 20:11:53  jim
-  Updated to use new ExtensionClass destructor protocol.
-
-  Revision 1.7  1999/04/16 15:21:40  jim
-  Added logic to fall back to getattr when getitem fails.
-  This is needed to make computed attributes work in ZTables,
-  but it might be better to expand the schema notion to accomidate
-  computed attributes.
-
-  Revision 1.6  1999/03/10 00:14:41  klm
-  Committing with version 1.0 of the license.
-
-  Revision 1.5  1998/12/04 20:15:24  jim
-  Detabification and new copyright.
-
-  Revision 1.4  1998/07/27 13:09:58  jim
-  Changed _p___reinit__ to _p_deactivate.
-
-  Revision 1.3  1998/01/16 21:13:28  jim
-  Added extra ignored parent object argument to __init__ and
-  __setstate__.
-
-  Revision 1.2  1997/09/26 15:05:17  jim
-  Added sequence and mapping behavior.
-
-  Revision 1.1  1997/09/25 22:12:28  jim
-  *** empty log message ***
-
-  Revision 1.5  1997/07/16 20:17:45  jim
-  *** empty log message ***
-
-  Revision 1.4  1997/06/06 18:31:54  jim
-  Fixed bug in __getstate__ that caused core dumps when some attributes
-  were unset.
-
-  Revision 1.3  1997/05/19 14:05:46  jim
-  Fixed several bugs.
-
-  Revision 1.2  1997/04/30 11:37:35  jim
-  Fixed bug in reinitialization that probably explains the bug that
-  Ellen reported where ad attributes were set to None.
-
-  Revision 1.1  1997/04/27 09:18:42  jim
-  *** empty log message ***
-
-  $Revision 1.1  1997/02/24 23:25:42  jim
-  $initial
-  $
-
-*****************************************************************************/
