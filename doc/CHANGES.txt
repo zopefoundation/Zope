@@ -58,6 +58,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1730: XML page templates couldn't call aq_parent in
+        path expressions.
+
       - Fixed brain.getObject() to correctly traverse to an object even
         if one of its parents is not accessible, to be close to what the
         Publisher does.
