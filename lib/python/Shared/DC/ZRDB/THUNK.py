@@ -99,17 +99,20 @@ class THUNKED_TM(TM.TM):
                 self._begin()
             except:
                 thunk_lock.release()
+                raise
             else:
                 self._registered=1
     
     def tpc_finish(self, *ignored):
-        try: self._finish()
-        finally:
-            thunk_lock.release()
-            self._registered=0
+        if self._registered:
+            try: self._finish()
+            finally:
+                thunk_lock.release()
+                self._registered=0
 
     def abort(self, *ignored):
-        try: self._abort()
-        finally:
-            thunk_lock.release()
-            self._registered=0
+        if self._registered:
+            try: self._abort()
+            finally:
+                thunk_lock.release()
+                self._registered=0
