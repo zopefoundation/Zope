@@ -103,8 +103,8 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
 
     __ac_permissions__=(
         ('Approve draft changes',
-         ['manage_approve__draft__',
-          'manage_Save__draft__','manage_Discard__draft__']
+         ('manage_approve__draft__',
+          'manage_Save__draft__','manage_Discard__draft__')
          ),
     )
 
