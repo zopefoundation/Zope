@@ -22,6 +22,23 @@ class NoteErr:
         self.wrote = 1
         apply(stderr.write, args)
 
+def compile_non_test(dir):
+    """Byte-compile all modules except those in test directories."""
+    success = compileall.compile_dir(dir, maxlevels=0)
+    try:
+        names = os.listdir(dir)
+    except os.error:
+        print "Can't list", dir
+        names = []
+    names.sort()
+    for name in names:
+        fullname = os.path.join(dir, name)
+        if (name != os.curdir and name != os.pardir and
+            os.path.isdir(fullname) and not os.path.islink(fullname) and
+            name != 'test' and name != 'tests'):
+            success = success and compile_non_test(fullname)
+    return success
+
 print
 print '-'*78
 print 'Compiling python modules'
@@ -32,7 +49,7 @@ try:
         success = 0
         sys.stdout = Shutup()
         sys.stderr = NoteErr()
-        success = compileall.compile_dir(os.getcwd())
+        success = compile_non_test(os.getcwd())
     finally:
         success = success and not sys.stderr.wrote
         sys.stdout = stdout
