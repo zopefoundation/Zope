@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.39 1998/04/09 17:18:41 jim Exp $"""
+$Id: ObjectManager.py,v 1.40 1998/04/15 14:58:11 jim Exp $"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -374,10 +374,7 @@ class ObjectManager(
 	except: pass
 	self._setProperty(id,value,type)
 	if REQUEST is not None:
-	    return MessageDialog(
-		   title  ='Success!',
-		   message='Your changes have been saved',
-		   action ='manage_propertiesForm')
+	    return self.manage_propertiesForm(self, REQUEST)
 
     def manage_editProperties(self,REQUEST):
 	"""Edit object properties"""
@@ -442,10 +439,7 @@ class ObjectManager(
 	    except: raise 'BadRequest', (
 		          'The property <I>%s</I> does not exist' % n)
 	if REQUEST is not None:
-	    return MessageDialog(
-	           title  ='Success!',
-	           message='Your changes have been saved',
-	           action ='manage_propertiesForm')
+	    return self.manage_propertiesForm(self, REQUEST)
 
 
     def _defaultInput(self,n,t,v):
@@ -543,6 +537,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.40  1998/04/15 14:58:11  jim
+# Don't show confirmation after add or delete.
+#
 # Revision 1.39  1998/04/09 17:18:41  jim
 # Added extra logic to verify session locks, which can become
 # stale after a session undo.
