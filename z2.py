@@ -340,11 +340,11 @@ sys.path=[os.path.join(here,'lib','python'),here
 
 # from this point forward we can use the zope logger
 
-import zLOG, posix
+import zLOG
 
 
 if Zpid:
-    import zdaemon, App.FindHomes 
+    import zdaemon, App.FindHomes, posix
     sys.ZMANAGED=1
     
     x = os.fork()
