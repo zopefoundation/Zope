@@ -97,7 +97,6 @@ __version__ = 1, 4, 0
 # is sent to stdout.  Or you can call main(args), passing what would
 # have been in sys.argv[1:] had the cmd-line form been used.
 
-import string
 TRACE = 0
 
 # define what "junk" means
@@ -515,7 +514,7 @@ def fancy_replace(a, alo, ahi, b, blo, bhi):
             btags = btags + ' ' * (la - lb)
         combined = map(lambda x,y: _combine[x+y], atags, btags)
         print '-', aelt, '+', belt, '?', \
-              string.rstrip(string.join(combined, ''))
+              ''.string.join(combined).rstrip()
     else:
         # the synch pair is identical
         print ' ', aelt,

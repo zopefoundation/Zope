@@ -15,11 +15,10 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't derive
 from any Zope persistence classes, for instance).
 
-$Id: DefaultObservable.py,v 1.4 2001/11/28 15:50:57 matt Exp $"""
+$Id: DefaultObservable.py,v 1.5 2002/02/07 17:20:59 andreasjung Exp $"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
-import string
 from types import StringType
 
 class DefaultObservable:
@@ -63,7 +62,7 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification
 
         # Assert that observer is a string or a sequence of strings.
         if type( observer ) != StringType:
-            observer = string.join( observer, '/' ) 
+            observer = '/'.join( observer) 
 
         return observer
 

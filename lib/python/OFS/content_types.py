@@ -11,9 +11,8 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
-from string import split, strip, lower, find
 import re, mimetypes
 
 
@@ -21,7 +20,7 @@ find_binary=re.compile('[\0-\7]').search
 
 def text_type(s):
     # Yuk. See if we can figure out the type by content.
-    if (lower(strip(s)[:6]) == '<html>' or find(s, '</') > 0):
+    if (s.strip().lower()[:6] == '<html>' or s.find('</') > 0):
         return 'text/html'
 
     elif s.strip().startswith('<?xml'):
@@ -92,7 +91,7 @@ def guess_content_type(name='', body='', default=None):
         else:
                 type=default or 'text/x-unknown-content-type'
         
-    return lower(type), enc and lower(enc) or None
+    return type.lower(), enc and enc.lower() or None
 
 if __name__=='__main__':
     items=mimetypes.types_map.items()

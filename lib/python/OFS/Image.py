@@ -12,9 +12,9 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.134 $'[11:-2]
+__version__='$Revision: 1.135 $'[11:-2]
 
-import Globals, string, struct
+import Globals, struct
 from OFS.content_types import guess_content_type
 from Globals import DTMLFile
 from PropertyManager import PropertyManager
@@ -133,7 +133,7 @@ class File(Persistent, Implicit, PropertyManager,
         # HTTP If-Modified-Since header handling.
         header=REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
-            header=string.split(header, ';')[0]
+            header=header.split( ';')[0]
             # Some proxies seem to send invalid date strings for this
             # header. If the date string is not valid, we ignore it
             # rather than raise an error to be generally consistent
@@ -192,7 +192,7 @@ class File(Persistent, Implicit, PropertyManager,
                         ranges = None
                 else:
                     # Date
-                    date = string.split(if_range, ';')[0]
+                    date = if_range.split( ';')[0]
                     try: mod_since=long(DateTime(date).timeTime())
                     except: mod_since=None
                     if mod_since is not None:
@@ -745,7 +745,7 @@ class Image(File):
         if width:
             result = '%s width="%s"' % (result, width)
 
-        if not 'border' in map(string.lower, args.keys()):
+        if not 'border' in [ x.lower() for x in  args.keys()]:
             result = '%s border="0"' % result
 
         if css_class is not None:
@@ -762,9 +762,9 @@ def cookId(id, title, file):
     if not id and hasattr(file,'filename'):
         filename=file.filename
         title=title or filename
-        id=filename[max(string.rfind(filename, '/'),
-                        string.rfind(filename, '\\'),
-                        string.rfind(filename, ':'),
+        id=filename[max(filename.rfind('/'),
+                        filename.rfind('\\'),
+                        filename.rfind(':'),
                         )+1:]                  
     return id, title
 
@@ -793,7 +793,7 @@ class Pdata(Persistent, Implicit):
             r.append(self.data)
             next=self.next
         
-        return string.join(r,'')
+        return ''.join(r)
 
 
 

@@ -12,14 +12,13 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
 from PropertySheets import DefaultPropertySheets, vps
 from ZPublisher.Converters import type_converters
 from Globals import DTMLFile, MessageDialog
-from string import find,join,lower,split
 from Acquisition import Implicit, aq_base
 from Globals import Persistent
 

@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -23,7 +23,6 @@ from webdav.common import rfc1123_date
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
 from sgmllib import SGMLParser
-from string import find
 from urllib import quote
 import Globals
 from AccessControl import getSecurityManager

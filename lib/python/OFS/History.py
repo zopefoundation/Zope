@@ -12,12 +12,11 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals, ndiff, ExtensionClass
 from DateTime import DateTime
 from Acquisition import Implicit, aq_base
-from string import join, split, atoi, strip
 from struct import pack, unpack
 from cgi import escape
 
@@ -59,7 +58,7 @@ class Historian(Implicit):
     def __getitem__(self, key):
         self=self.aq_parent
 
-        serial=apply(pack, ('>HHHH',)+tuple(map(atoi, split(key,'.'))))
+        serial=apply(pack, ('>HHHH',)+tuple(map(int, key.split('.'))))
 
         if serial == self._p_serial: return self
 
@@ -117,7 +116,7 @@ class Historical(ExtensionClass.Base):
 
         for d in r:
             d['time']=DateTime(d['time'])
-            d['key']=join(map(str, unpack(">HHHH", d['serial'])),'.')
+            d['key']='.'.join(map(str, unpack(">HHHH", d['serial'])))
 
         return r
 
@@ -135,7 +134,7 @@ class Historical(ExtensionClass.Base):
                 "copied to the present.<p>")
 
         key=keys[0]
-        serial=apply(pack, ('>HHHH',)+tuple(map(atoi, split(key,'.'))))
+        serial=apply(pack, ('>HHHH',)+tuple(map(int, key.split('.'))))
 
         if serial != self._p_serial:
             self.manage_beforeHistoryCopy()
@@ -175,12 +174,12 @@ class Historical(ExtensionClass.Base):
             raise HistorySelectionError, (
                 "Only two historical revision can be compared<p>")
         
-        serial=apply(pack, ('>HHHH',)+tuple(map(atoi, split(keys[-1],'.'))))
+        serial=apply(pack, ('>HHHH',)+tuple(map(int, keys[-1].split('.'))))
         rev1=historicalRevision(self, serial)
         
         if len(keys)==2:
             serial=apply(pack,
-                         ('>HHHH',)+tuple(map(atoi, split(keys[0],'.'))))
+                         ('>HHHH',)+tuple(map(int, keys[0].split('.'))))
 
             rev2=historicalRevision(self, serial)
         else:
@@ -200,7 +199,7 @@ def dump(tag, x, lo, hi, r):
             "<td><pre>\n%s\n</pre></td>\n"
             "<td><pre>\n%s\n</pre></td>\n"
             "</tr>\n"
-            % (join(r1,'\n'), escape(join(r2, '\n'))))
+            % ('\n'.join(r1), escape('\n'.join(r2))))
 
 def replace(x, xlo, xhi, y, ylo, yhi, r):
 
@@ -221,12 +220,13 @@ def replace(x, xlo, xhi, y, ylo, yhi, r):
             "<td><pre>\n%s\n%s\n</pre></td>\n"
             "<td><pre>\n%s\n%s\n</pre></td>\n"
             "</tr>\n"
-            % (join(rx1, '\n'), join(ry1, '\n'),
-               escape(join(rx2, '\n')), escape(join(ry2, '\n'))))
+            % ('\n'.join(rx1), '\n'.join(ry1),
+               escape('\n'.join(rx2)), escape('\n'.join(ry2))))
 
 def html_diff(s1, s2):
-    a=split(s1,'\n')
-    b=split(s2,'\n')
+    from string import split
+    a=s1.split('\n')
+    b=s2.split('\n')
     cruncher=ndiff.SequenceMatcher(isjunk=split, a=a, b=b)
 
     r=['<table border=1>']
@@ -243,4 +243,4 @@ def html_diff(s1, s2):
             raise ValueError, 'unknown tag ' + `tag`
     r.append('</table>')
 
-    return join(r, '\n')
+    return '\n'.join(r)

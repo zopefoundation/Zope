@@ -12,11 +12,10 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
-from string import join,split,strip,rfind,atoi,lower
 from SimpleItem import Item_w__name__, pretty_tb
 from OFS.content_types import guess_content_type
 from PropertyManager import PropertyManager
@@ -188,7 +187,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         '''
         ks = []
         for key in keys:
-            key = strip(str(key))
+            key = str(key).strip()
             if key:
                 ks.append(key)
         self._cache_namespace_keys = tuple(ks)
@@ -222,8 +221,8 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
     def _er(self,data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
         dr,dc = self._size_changes[SUBMIT]
         
-        rows=max(1,atoi(dtpref_rows)+dr)
-        cols=max(40,atoi(dtpref_cols)+dc)
+        rows=max(1,int(dtpref_rows)+dr)
+        cols=max(40,int(dtpref_cols)+dc)
         e=(DateTime('GMT') + 365).rfc822()
         resp=REQUEST['RESPONSE']
         resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
@@ -338,7 +337,6 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
                 ))
 
 import re
-from string import find, strip
 token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
 hdr_start = re.compile(r'(%s):(.*)' % token).match
 
@@ -355,9 +353,9 @@ def decapitate(html, RESPONSE=None):
         headers.append(header)
         spos = m.end() + 1
         while spos < len(html) and html[spos] in ' \t':
-            eol = find(html, '\n', spos)
+            eol = html.find( '\n', spos)
             if eol < 0: return html
-            header.append(strip(html[spos:eol]))
+            header.append(html[spos:eol].strip())
             spos = eol + 1
     if RESPONSE is not None:
         for header in headers:

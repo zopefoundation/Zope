@@ -12,12 +12,11 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.8 2001/11/28 15:50:57 matt Exp $"""
+$Id: Cache.py,v 1.9 2002/02/07 17:20:59 andreasjung Exp $"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import time, sys
-from string import join
 import Globals
 from Globals import DTMLFile
 from Acquisition import aq_get, aq_acquire, aq_inner, aq_parent, aq_base
@@ -373,7 +372,7 @@ def findCacheables(ob, manager_id, require_assoc, subfolders,
             icon = getattr(aq_base(subob), 'icon', '')
             info = {
                 'sortkey': subpath,
-                'path': join(subpath, '/'),
+                'path': '/'.join(subpath),
                 'title': getattr(aq_base(subob), 'title', ''),
                 'icon': icon,
                 'associated': associated,}

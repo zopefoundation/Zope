@@ -13,7 +13,7 @@
 """
 Objects for packages that have been uninstalled.
 """
-import string, SimpleItem, Globals, Acquisition
+import  SimpleItem, Globals, Acquisition
 from Acquisition import Acquired
 import Persistence
 from thread import allocate_lock
@@ -59,7 +59,7 @@ def Broken(self, oid, pair):
             exec ("class %s(BrokenClass): ' '; __module__=%s"
                   % (klassname, `module`)) in d
             klass = broken_klasses[pair] = d[klassname]
-            module=string.split(module,'.')
+            module=module.split('.')
             if len(module) > 2 and module[0]=='Products':
                 klass.product_name= module[1]
             klass.title=(

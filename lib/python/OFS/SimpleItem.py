@@ -17,15 +17,14 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.92 2001/11/28 15:50:57 matt Exp $'''
-__version__='$Revision: 1.92 $'[11:-2]
+$Id: SimpleItem.py,v 1.93 2002/02/07 17:20:59 andreasjung Exp $'''
+__version__='$Revision: 1.93 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource
 from ExtensionClass import Base
 from CopySupport import CopySource
-from string import join, lower, find, split
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 from AccessControl import getSecurityManager
@@ -162,7 +161,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 raise error_type, error_value, tb
             self._v_eek=1
    
-            if lower(str(error_type)) in ('redirect',):
+            if str(error_type).lower() in ('redirect',):
                 raise error_type, error_value, tb
 
             if not error_message:
@@ -342,12 +341,12 @@ def format_exception(etype,value,tb,limit=None):
         except: pass
         tb = tb.tb_next
         n = n+1
-    result.append(join(traceback.format_exception_only(etype, value),' '))
+    result.append(' '.join(traceback.format_exception_only(etype, value)))
     return result
 
 def pretty_tb(t,v,tb):
     tb=format_exception(t,v,tb,200)
-    tb=join(tb,'\n')
+    tb='\n'.join(tb)
     return tb
 
 class SimpleItem(Item, Globals.Persistent,

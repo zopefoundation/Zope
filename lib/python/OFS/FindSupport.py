@@ -11,16 +11,16 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 
-import sys, os, string, time, Globals, ExtensionClass
+import sys, os, time, Globals, ExtensionClass
 from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
 from Globals import DTMLFile
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DateTime import DateTime
-from string import find
+from string import translate
 from AccessControl.DTML import RestrictedDTML
 
 class FindSupport(ExtensionClass.Base):
@@ -114,7 +114,7 @@ class FindSupport(ExtensionClass.Base):
                 and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  find(ob.PrincipiaSearchSource(), obj_searchterm) >= 0
+                  ob.PrincipiaSearchSource().find(obj_searchterm) >= 0
                   ))
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
@@ -213,7 +213,7 @@ class FindSupport(ExtensionClass.Base):
                 and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  find(ob.PrincipiaSearchSource(), obj_searchterm) >= 0
+                  ob.PrincipiaSearchSource().find(obj_searchterm) >= 0
                   ))
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
@@ -306,6 +306,6 @@ def absattr(attr):
 
 
 def p_name(name):
-    return '_' + string.translate(name, name_trans) + '_Permission'
+    return '_' + translate(name, name_trans) + '_Permission'
 
 

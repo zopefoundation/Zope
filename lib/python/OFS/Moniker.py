@@ -18,11 +18,10 @@
    and aquisition relationships via a simple interface.
 
 """
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 import Globals
-import string
 
 class Moniker:
     """An object moniker is an intelligent reference to a

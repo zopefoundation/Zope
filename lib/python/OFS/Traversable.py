@@ -12,14 +12,13 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.13 2001/11/28 15:50:57 matt Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Traversable.py,v 1.14 2002/02/07 17:20:59 andreasjung Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
-from string import split, join
 from urllib import quote
 
 _marker=[]
@@ -44,8 +43,8 @@ class Traversable:
         path = map(quote, spp[i:])
         if relative:
             # This is useful for physical path relative to a VirtualRoot
-            return join(path, '/')
-        return join([req['SERVER_URL']] + req._script + path, '/')
+            return '/'.join(path)
+        return '/'.join([req['SERVER_URL']] + req._script + path)
 
     getPhysicalRoot__roles__=() # Private
     getPhysicalRoot=Acquired
@@ -75,7 +74,7 @@ class Traversable:
         N=None
         M=_marker
 
-        if type(path) is StringType: path = split(path,'/')
+        if type(path) is StringType: path = path.split('/')
         else: path=list(path)
 
         REQUEST={'TraversalRequestNameStack': path}

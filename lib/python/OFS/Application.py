@@ -12,12 +12,11 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.179 2002/01/09 19:14:03 andreasjung Exp $'''
-__version__='$Revision: 1.179 $'[11:-2]
+$Id: Application.py,v 1.180 2002/02/07 17:20:59 andreasjung Exp $'''
+__version__='$Revision: 1.180 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
-import time, traceback, os, string, Products
-from string import strip, lower, find, rfind, join
+import time, traceback, os,  Products
 from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
@@ -83,7 +82,7 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def PrincipiaRedirect(self,destination,URL1):
         """Utility function to allow user-controlled redirects"""
-        if find(destination,'//') >= 0: raise 'Redirect', destination
+        if destination.find('//') >= 0: raise 'Redirect', destination
         raise 'Redirect', ("%s/%s" % (URL1, destination))
     Redirect=ZopeRedirect=PrincipiaRedirect
 

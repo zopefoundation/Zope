@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.145 2001/11/28 15:50:57 matt Exp $"""
+$Id: ObjectManager.py,v 1.146 2002/02/07 17:20:59 andreasjung Exp $"""
 
-__version__='$Revision: 1.145 $'[11:-2]
+__version__='$Revision: 1.146 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -31,7 +31,7 @@ import marshal
 import App.Common
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
-import sys,string,fnmatch,copy
+import sys,fnmatch,copy
 
 import XMLExportImport
 customImporters={

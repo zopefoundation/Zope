@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-import Shared.DC.xml.ppml, string
+import Shared.DC.xml.ppml
 ppml=Shared.DC.xml.ppml
 from base64 import encodestring
 from cStringIO import StringIO
@@ -89,7 +89,7 @@ def save_record(parser, tag, data):
     file.seek(pos)
     a=data[1]
     if a.has_key('id'): oid=a['id']
-    oid=ppml.p64(string.atoi(oid))
+    oid=ppml.p64(int(oid))
     v=''
     for x in data[2:]:
         v=v+x

@@ -12,13 +12,12 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
-import time, string, App.Management, Globals
+import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
 from Globals import DTMLFile, MessageDialog
-from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
 from App.Common import rfc1123_date, iso8601_date
 from webdav.common import urlbase
@@ -52,7 +51,7 @@ class View(App.Management.Tabs, Base):
         else:
             pre=r['URL']
             for i in (1,2,3):
-                l=rfind(pre,'/')
+                l=pre.rfind('/')
                 if l >= 0:
                     pre=pre[:l]
             pre=pre+'/'
@@ -70,10 +69,10 @@ class View(App.Management.Tabs, Base):
         return r
 
     def tabs_path_info(self, script, path):
-        l=rfind(path,'/')
+        l=path.rfind('/')
         if l >= 0:
             path=path[:l]
-            l=rfind(path,'/')
+            l=path.rfind('/')
             if l >= 0: path=path[:l]
         return View.inheritedAttribute('tabs_path_info')(
             self, script, path)
@@ -285,7 +284,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
              '  %s\n' \
              '  </d:responsedescription>\n'
 
-    def dav__allprop(self, propstat=propstat, join=string.join):
+    def dav__allprop(self, propstat=propstat ):
         # DAV helper method - return one or more propstat elements
         # indicating property names and values for all properties.
         result=[]
@@ -294,14 +293,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
             value=self.getProperty(name)
 
             if type=='tokens':
-                value=join(str(value), ' ')
+                value=' '.join(str(value))
             elif type=='lines':
-                value=join(str(value), '\n')
+                value='\n'.join(str(value))
             # check for xml property
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
                 attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                attrs=join(attrs, '')
+                attrs=''.join(attrs)
             else:
                 # Quote non-xml items here?
                 attrs='' 
@@ -313,24 +312,23 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
             result.append(prop)
         if not result: return ''
-        result=join(result, '\n')
+        result='\n'.join(result)
         
         return propstat % (self.xml_namespace(), result, '200 OK', '')
 
-    def dav__propnames(self, propstat=propstat, join=string.join):
+    def dav__propnames(self, propstat=propstat):
         # DAV helper method - return a propstat element indicating
         # property names for all properties in this PropertySheet.
         result=[]
         for name in self.propertyIds():
             result.append('  <n:%s/>' % name)
         if not result: return ''
-        result=join(result, '\n')
+        result='\n'.join(result)
         return propstat % (self.xml_namespace(), result, '200 OK', '')
 
 
     def dav__propstat(self, name, result,
-                      propstat=propstat, propdesc=propdesc,
-                      join=string.join):
+                      propstat=propstat, propdesc=propdesc):
         # DAV helper method - return a propstat element indicating
         # property name and value for the requested property.
         xml_id=self.xml_namespace()
@@ -347,14 +345,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
             name, type=item['id'], item.get('type','string')
             value=self.getProperty(name)
             if type=='tokens':
-                value=join(str(value), ' ')
+                value=' '.join(str(value))
             elif type=='lines':
-                value=join(str(value), '\n')
+                value='\n'.join(str(value))
             # allow for xml properties
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
                 attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                attrs=join(attrs, '')
+                attrs=''.join(attrs)
             else:
                 # quote non-xml items here?
                 attrs=''
@@ -664,7 +662,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         else:
             pre=r['URL']
             for i in (1,2):
-                l=rfind(pre,'/')
+                l=pre.rfind('/')
                 if l >= 0:
                     pre=pre[:l]
             pre=pre+'/'
@@ -675,7 +673,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         return r
 
     def tabs_path_info(self, script, path):
-        l=rfind(path,'/')
+        l=path.rfind('/')
         if l >= 0: path=path[:l]
         return PropertySheets.inheritedAttribute('tabs_path_info')(
             self, script, path)

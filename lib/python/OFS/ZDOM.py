@@ -15,7 +15,6 @@ DOM implementation in ZOPE : Read-Only methods
 
 All standard Zope objects support DOM to a limited extent.
 """
-import string
 import Acquisition
 
 
@@ -250,7 +249,7 @@ class DOMImplementation:
         will cause the method to return true. Return Value true if the
         feature is implemented in the specified version, false otherwise.
         """
-        feature=string.lower(feature)
+        feature=feature.lower()
         if feature == 'html': return 0
         if feature == 'xml':
             if version is None: return 1
