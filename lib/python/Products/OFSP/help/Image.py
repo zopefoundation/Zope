@@ -70,8 +70,8 @@ class Image:
         Optionally, the 'height', 'width', 'alt', 'scale', 'xscale'
         and 'yscale' arguments can be provided which are turned into
         HTML IMG tag attributes. Note, 'height' and 'width' are
-        provided by default, and 'alt' comes from the 'title_or_id'
-        method.
+        provided by default, and 'alt' comes from the 'title'
+        property.
 
         Keyword arguments may be provided to support other or future IMG
         tag attributes.  The one exception to this is the HTML Cascading
