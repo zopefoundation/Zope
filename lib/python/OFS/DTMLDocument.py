@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -92,6 +92,7 @@ from DTMLMethod import DTMLMethod, decapitate
 from PropertyManager import PropertyManager
 from sgmllib import SGMLParser
 from string import find
+from urllib import quote
 
 done='done'
 
@@ -211,10 +212,10 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     if not file: file=default_dd_html
     ob=DTMLDocument(file, __name__=id)
     ob.title=title
-    self._setObject(id, ob)
+    id=self._setObject(id, ob)
     if REQUEST is not None:
         u=REQUEST['URL1']
-        if submit==" Add and Edit ": u="%s/%s" % (u,id)
+        if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 
