@@ -262,8 +262,15 @@ Lots of discussion!
  - Offer to install software home 'bin' scripts into a directory
    separate from the software home 'bin' directory.
 
-- To help binary distribution creators, mkzopeinstance probably needs
-  to make it easier to place instance files in separate directories
-  and needs to generate a zope.conf that reflects
-  logfile/lockfile/pidfile placement options that can be fed on the
-  command line.
+ - To help binary distribution creators, mkzopeinstance probably needs
+   to make it easier to place instance files in separate directories
+   and needs to generate a zope.conf that reflects
+   logfile/lockfile/pidfile placement options that can be fed on the
+   command line.
+
+ - Allow a custom Zope.conf.in to be used by someone invoking
+   mkzopeinstance?
+
+ - Allow for the installation of platform-dependent files (basically
+   Python extensions) to be installed to a place separate than that of
+   platform independent files (as requested by Luca DeVitis).
