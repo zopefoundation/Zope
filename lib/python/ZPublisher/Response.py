@@ -1,6 +1,6 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.39 1998/09/23 22:04:20 jim Exp $'''
+$Id: Response.py,v 1.40 1998/09/24 14:43:11 jim Exp $'''
 #
 # Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.39 1998/09/23 22:04:20 jim Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -573,6 +573,14 @@ class Response:
 
         headersl=[]
         append=headersl.append
+
+        # Make sure status comes out first!
+        try:
+            v=headers['status']
+            del headers['status']
+        except: v="200 OK"
+        append("Status: "+v)
+
         for k,v in headers.items():
 
             k=upper(k[:1])+k[1:]
