@@ -95,8 +95,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.32 1998/12/04 20:15:30 jim Exp $ 
-__version__ = "$Revision: 1.32 $"[11:-2]
+#$Id: MailHost.py,v 1.33 1998/12/04 21:38:02 jeffrey Exp $ 
+__version__ = "$Revision: 1.33 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -162,7 +162,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             target ='manage_main')
     
     def sendTemplate(trueself, self, messageTemplate, 
-                     statusTemplate=None, mto=None, mfrom=None, REQUEST):
+                     statusTemplate=None, mto=None, mfrom=None, REQUEST=None):
         'render a mail template, then send it...'
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
