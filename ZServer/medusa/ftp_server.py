@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.9 2000/01/14 02:35:56 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.10 2000/03/30 18:03:37 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -691,10 +691,12 @@ class ftp_server (asyncore.dispatcher):
 		self,
 		authorizer,
 		hostname	=None,
+		ip			='',
 		port		=21,
 		resolver	=None,
 		logger_object=logger.file_logger (sys.stdout)
 		):
+		self.ip = ip
 		self.port = port
 		self.authorizer = authorizer
 
@@ -716,7 +718,7 @@ class ftp_server (asyncore.dispatcher):
 		self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
 
 		self.set_reuse_addr()
-		self.bind (('', self.port))
+		self.bind ((self.ip, self.port))
 		self.listen (5)
 
 		if not logger_object:
