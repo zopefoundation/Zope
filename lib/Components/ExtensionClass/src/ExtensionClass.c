@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.20 1997/12/15 19:54:00 jim Exp $
+  $Id: ExtensionClass.c,v 1.21 1997/12/23 13:39:16 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.20 1997/12/15 19:54:00 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.21 1997/12/23 13:39:16 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -839,23 +839,28 @@ PMethod_getattro(PMethod *self, PyObject *oname)
 	}
     }
 
-  if(self->self && self->meth) /* Psuedo attrs */
+  if(self->meth)
     {
-      PyObject *myname;
+      if(r=PyObject_GetAttr(self->meth, oname)) return r;
+      PyErr_Clear();
 
-      UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return NULL;
-      oname=Py_BuildValue("OO", myname, oname);
-      Py_DECREF(myname);
-      UNLESS(oname) return NULL;
-      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
-      r=PyObject_GetAttr(self->self, oname);
-      Py_DECREF(oname);
-      return r;
+      if(self->self) /* Psuedo attrs */
+	{
+	  PyObject *myname;
+	  
+	  UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return NULL;
+	  oname=Py_BuildValue("OO", myname, oname);
+	  Py_DECREF(myname);
+	  UNLESS(oname) return NULL;
+	  UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
+	  r=PyObject_GetAttr(self->self, oname);
+	  Py_DECREF(oname);
+	  return r;
+	}
     }
 
   PyErr_SetObject(PyExc_AttributeError, oname);
   return NULL;
-
 
   return PyObject_GetAttr(self->meth, oname);
 }
@@ -864,19 +869,32 @@ static int
 PMethod_setattro(PMethod *self, PyObject *oname, PyObject *v)
 {
   int r;
+  PyObject *spam;
 
-  if(self->self && self->meth && ! PyEval_GetRestricted()) /* Psuedo attrs */
+  if(self->meth)
     {
-      PyObject *myname;
+      if(spam=PyObject_GetAttr(self->meth, oname))
+	{
+	  Py_DECREF(spam);
+	  PyErr_SetString(PyExc_TypeError,
+			  "Attempt to overwrite shared method attribute");
+	  return -1;
+	}
+      else PyErr_Clear();
 
-      UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return NULL;
-      oname=Py_BuildValue("OO", myname, oname);
-      Py_DECREF(myname);
-      UNLESS(oname) return NULL;
-      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
-      r=PyObject_SetAttr(self->self, oname, v);
-      Py_DECREF(oname);
-      return r;
+      if(self->self && ! PyEval_GetRestricted()) /* Psuedo attrs */
+	{
+	  PyObject *myname;
+
+	  UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return -1;
+	  oname=Py_BuildValue("OO", myname, oname);
+	  Py_DECREF(myname);
+	  UNLESS(oname) return NULL;
+	  UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return -1;
+	  r=PyObject_SetAttr(self->self, oname, v);
+	  Py_DECREF(oname);
+	  return r;
+	}
     }
 
   PyErr_SetObject(PyExc_AttributeError, oname);
@@ -3259,7 +3277,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.20 $";
+  char *rev="$Revision: 1.21 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3300,6 +3318,11 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.21  1997/12/23 13:39:16  jim
+  Fixed bug in method setattr.
+  Added checks for method attributes in get/setattr on user-defined
+  methods.
+
   Revision 1.20  1997/12/15 19:54:00  jim
   Fixed bug in method attribute handling.
   Added support for sniffing out __module__ for classes.
