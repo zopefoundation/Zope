@@ -209,7 +209,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
 
-    def manage_catalogObject(self, REQUEST, urls=None, blah=None):
+    def manage_catalogObject(self, REQUEST, urls=None):
         """ index all Zope objects that 'urls' point to """
         if urls:
             for url in urls:
