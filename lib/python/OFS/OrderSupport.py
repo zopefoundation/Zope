@@ -12,7 +12,7 @@
 ##############################################################################
 """ Order support for 'Object Manager'.
 
-$Id: OrderSupport.py,v 1.2 2003/06/12 10:20:59 yuppie Exp $
+$Id: OrderSupport.py,v 1.3 2003/08/07 21:33:27 yuppie Exp $
 """
 
 from types import StringType
@@ -54,7 +54,7 @@ class OrderSupport:
     #
 
     security.declareProtected(manage_properties, 'manage_move_objects_up')
-    def manage_move_objects_up(self, REQUEST, ids=None, delta=None):
+    def manage_move_objects_up(self, REQUEST, ids=None, delta=1):
         """ Move specified sub-objects up by delta in container.
         """
         if ids:
@@ -70,7 +70,7 @@ class OrderSupport:
                                 manage_tabs_message=message)
 
     security.declareProtected(manage_properties, 'manage_move_objects_down')
-    def manage_move_objects_down(self, REQUEST, ids=None, delta=None):
+    def manage_move_objects_down(self, REQUEST, ids=None, delta=1):
         """ Move specified sub-objects down by delta in container.
         """
         if ids:
