@@ -223,7 +223,7 @@ class resolving_logger:
 		def __call__ (self, host, ttl, answer):
 			if not answer:
 				answer = host
-			self.logger.log ('%s:%s' % (answer, self.message))
+			self.logger.log ('%s%s' % (answer, self.message))
 
 	def log (self, ip, message):
 		self.resolver.resolve_ptr (
