@@ -17,9 +17,9 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
-import sys, os, traceback, re, marshal
+import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
 import AccessControl, OFS, RestrictedPython
 from OFS.SimpleItem import SimpleItem
@@ -210,7 +210,7 @@ class PythonScript(Script, Historical, Cacheable):
             self._compile()
             self._v_change = 1
         elif self._code is None:
-            self._v_f = None
+            self._v_ft = None
         else:
             self._newfun(marshal.loads(self._code))
 
@@ -224,7 +224,7 @@ class PythonScript(Script, Historical, Cacheable):
         self.warnings = tuple(r[2])
         if errors:
             self._code = None
-            self._v_f = None
+            self._v_ft = None
             self._setFuncSignature((), (), 0)
             # Fix up syntax errors.
             filestring = '  File "<string>",'
@@ -255,7 +255,8 @@ class PythonScript(Script, Historical, Cacheable):
              }
         l = {}
         exec code in g, l
-        self._v_f = f = l.values()[0]
+        f = l.values()[0]
+        self._v_ft = (f.func_code, g, f.func_defaults or ())
         return f
 
     def _makeFunction(self, dummy=0): # CMFCore.FSPythonScript uses dummy arg.
@@ -263,7 +264,7 @@ class PythonScript(Script, Historical, Cacheable):
         self._compile()
 
     def _editedBindings(self):
-        if getattr(self, '_v_f', None) is not None:
+        if getattr(self, '_v_ft', None) is not None:
             self._makeFunction()
 
     def _exec(self, bound_names, args, kw):
@@ -292,21 +293,19 @@ class PythonScript(Script, Historical, Cacheable):
 
         #__traceback_info__ = bound_names, args, kw, self.func_defaults
 
-        f = self._v_f
-        if f is None:
+        ft = self._v_ft
+        if ft is None:
             __traceback_supplement__ = (
                 PythonScriptTracebackSupplement, self)
             raise RuntimeError, '%s %s has errors.' % (self.meta_type, self.id)
 
+        fcode, g, fadefs = ft
+        g = g.copy()
         if bound_names is not None:
-            # XXX This causes the whole acquisition chain
-            # to be held by self._v_f.  I think we really should
-            # use new.function() instead, similar to
-            # CMFCore.FSPythonScript.  new.function() takes
-            # about 8 microseconds on a 1 GHz Athlon. - Shane
-            f.func_globals.update(bound_names)
-        f.func_globals['__traceback_supplement__'] = (
+            g.update(bound_names)
+        g['__traceback_supplement__'] = (
             PythonScriptTracebackSupplement, self, -1)
+        f = new.function(fcode, g, None, fadefs)
 
         # Execute the function in a new security context.
         security=getSecurityManager()

@@ -57,6 +57,8 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #902: recursive Scripts were broken due to shared globals.
+
      - Product initialization would only consult a file named "version.txt"
        to read version information. Now it will check version.txt, VERSION.txt
        and VERSION.TXT.
