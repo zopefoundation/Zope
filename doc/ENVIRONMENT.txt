@@ -41,12 +41,24 @@ Zope installation
 
         This environment variable can be used to force or suppress
         Zope's normal automatic (implicit) product installation. If
-        this variable is set, then products are implicitly installed
-        is and only if the environment variable has a non-empty value.
+        this variable is set, then persistent objects representing Zope
+        products are implicitly installed if and only if the environment
+        variable has a non-empty value.
 
         If this environment variable is not set, then products are
         implicitly installed unless the ZEO_CLIENT environment
         variable is set to a non-empty value.
+
+        Here's a table explaining how FORCE_PRODUCT_LOAD and ZEO_CLIENT
+        will effect the behavior of product loading:
+
+        FORCE_PRODUCT_LOAD       ZEO_CLIENT     RESULT
+        unset                    unset          Products are loaded
+        empty string             unset          Products are not loaded
+        nonempty string          unset          Products are loaded
+        unset                    set            Products are not loaded
+        nonempty string          set            Products are loaded
+        empty string             set            Products are not loaded
 
 Profiling
 
