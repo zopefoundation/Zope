@@ -12,12 +12,11 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.68 2002/08/14 22:09:40 mj Exp $'''
-__version__ = '$Revision: 1.68 $'[11:-2]
+$Id: HTTPResponse.py,v 1.69 2002/08/21 03:09:31 chrism Exp $'''
+__version__ = '$Revision: 1.69 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
-from urllib import quote_plus
 from string import translate, maketrans
 from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
@@ -492,10 +491,6 @@ class HTTPResponse(BaseResponse):
         cookie-enabled browsers with a key "name" and value
         "value". This overwrites any previously set value for the
         cookie in the Response object.
-
-        The value is quoted using urllib's url_quote_plus, which
-        quoting will be undone when the value is accessed through
-        REQUEST in a later transaction.
         '''
         cookies = self.cookies
         if cookies.has_key(name):
@@ -504,7 +499,7 @@ class HTTPResponse(BaseResponse):
             cookie = cookies[name] = {}
         for k, v in kw.items():
             cookie[k] = v
-        cookie['value'] = quote_plus(value)
+        cookie['value'] = value
 
     def appendHeader(self, name, value, delimiter=","):
         '''\

@@ -120,11 +120,6 @@ class Response:
         "value". This overwrites any previously set value for the
         cookie in the Response object.
 
-        The value passed in is quoted using url_quote_plus before
-        the cookie is sent to the browser, and is unquoted using
-        url_unquote_plus when the cookie is received back from
-        the browser and stored in REQUEST.cookies.
-
         Permission -- Always available
 
         '''
