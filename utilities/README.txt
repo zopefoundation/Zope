@@ -14,6 +14,13 @@ To get detailed usage information, run any of these scripts without arguments:
     ZPublisher.Client.  It provides some examples of pitfalls
     and their work-arounds.
 
+  fixbbbts.py -- Fix database time stamps
+
+    Sometimes, problems with system clocks can cause invalid time stamps
+    to be written to databases.  The fixbbbts script can be used to 
+    shift invalid times in the database to make them valid.
+
+
 In addition to the scripts above, the following modules
 are included:
 
@@ -22,4 +29,6 @@ are included:
     This module supports conversion of Python pickles to 
     XML format.  Conversion from XML to Python pickle
     format is planned as well.
+
+
 
