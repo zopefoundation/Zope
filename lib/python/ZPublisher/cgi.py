@@ -841,8 +841,10 @@ class FieldStorage:
         # but it happens to be something we don't understand.
         if self.headers.has_key('content-type'):
             ctype, pdict = parse_header(self.headers['content-type'])
-        else:
+        elif self.outerboundary or method != 'POST':
             ctype, pdict = "text/plain", {}
+        else:
+            ctype, pdict = 'application/x-www-form-urlencoded', {}
         self.type = ctype
         self.type_options = pdict
         self.innerboundary = ""
@@ -865,8 +867,7 @@ class FieldStorage:
             self.read_urlencoded()
         elif ctype[:10] == 'multipart/':
             self.read_multi(environ, keep_blank_values, strict_parsing)
-        elif (self.outerboundary or
-              ctype!= 'application/x-www-form-urlencoded'):
+        elif self.outerboundary or method != 'POST':
             # we're in an inner part, but the content-type wasn't something we 
             # understood.  default to read_single() because the resulting
             # FieldStorage won't be a mapping (and doesn't need to be).
