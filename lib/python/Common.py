@@ -85,7 +85,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from time import time, asctime, gmtime
 from string import split
@@ -95,7 +95,7 @@ def rfc1123_date(t=None, time=time, asctime=asctime, gmtime=gmtime,
                  split=split):
     # Return an RFC 1123 format date string.
     t=split(asctime(gmtime(t or time())))
-    return '%s, %s %s %s %s GMT' % (t[0],t[2],t[1],t[3],t[4])
+    return '%s, %s %s %s %s GMT' % (t[0],t[2],t[1],t[4],t[3])
 
 def absattr(attr, c=callable):
     # Return the absolute value of an attribute,
