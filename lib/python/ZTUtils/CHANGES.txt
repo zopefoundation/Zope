@@ -6,6 +6,15 @@ ZTUtils changes
 
     Version 1.1.4
 
+      Features Added
+
+        - Under Python 2.2, Iterator both accepts and produces Python
+          iterator objects.
+
+        - first() and last() methods allow you to tell whether the
+          current element is different from the next or previous
+          element.  This is most useful when the sequence is sorted.
+
       Bugs Fixed
 
         - Handle both string and class Unauthorized exceptions.
