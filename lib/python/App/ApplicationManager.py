@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.93 $'[11:-2]
+__version__='$Revision: 1.94 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -536,7 +536,7 @@ class ApplicationManager(Folder,CacheManager):
 class AltDatabaseManager(DatabaseManager, CacheManager):
     """Database management DBTab-style
     """
-    db_name = ApplicationManager.db_name
-    db_size = ApplicationManager.db_size
-    manage_pack = ApplicationManager.manage_pack
+    db_name = ApplicationManager.db_name.im_func
+    db_size = ApplicationManager.db_size.im_func
+    manage_pack = ApplicationManager.manage_pack.im_func
 
