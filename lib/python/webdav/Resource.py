@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -110,7 +110,6 @@ class Resource:
         # currently set by the response object automagically.
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
-        response.setHeader('DAV', '1', 1)
 
     def dav__validate(self, object, methodname, REQUEST):
         msg='<strong>You are not authorized to access this resource.</strong>'
@@ -157,6 +156,7 @@ class Resource:
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', string.join(self.__http_methods__,', '))
         RESPONSE.setHeader('Content-Length', 0)
+        RESPONSE.setHeader('DAV', '1', 1)
         RESPONSE.setStatus(200)
         return RESPONSE
 

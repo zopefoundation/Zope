@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string
 from Resource import Resource
@@ -109,7 +109,6 @@ class Collection(Resource):
             raise 'Moved Permanently', request['URL1']+'/'
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
-        response.setHeader('DAV', '1', 1)
 
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
