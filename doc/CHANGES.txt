@@ -107,6 +107,9 @@ Zope Changes
       - Collector #285: Zope changes its working directory
         to the var directory at startup
 
+      - WebDAV: removing an non-existing property now returns a HTTP
+        200-OK response instead of 404 (now compliant with RFC 2518)
+
       - Fixed a bug in TM.py that would cause database adapters to hang
         on errors in the second phase of the two-phase commit.
 
@@ -115,6 +118,7 @@ Zope Changes
       - Collector #266: Retried requests losing track of http request
         headers, causing Connection:Close requests to stall
 
+>>>>>>> 1.440
   Zope 2.5.1 beta 1
     
     Bugs Fixed

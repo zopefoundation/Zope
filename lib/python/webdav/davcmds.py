@@ -13,7 +13,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, os
 from common import absattr, aq_base, urlfix, urlbase
@@ -241,8 +241,9 @@ class PropPatch:
                 name, ns=value
                 propset=propsets.get(ns, None)
                 if propset is None or not propset.hasProperty(name):
-                    errors.append('Property not found: %s' % name)
-                    status='404 Not Found'
+                    # removing a non-existing property is not an error!
+                    # according to RFC 2518                    
+                    status='200 OK'
                 else:
                     try: propset._delProperty(name)
                     except:
