@@ -91,8 +91,6 @@ import string
 import getopt
 import cgi
 
-from TALCompiler import TALCompiler
-
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
     # minimized form (e.g. <img ismap> rather than <img ismap="">)
@@ -235,7 +233,8 @@ class TALInterpreter:
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
             return
-        program, macros = TALCompiler(structure)()
+        raise TALError("insertStructure() not implemented")
+        program, macros = XXX # not implemented
         saveMacros = self.macros
         if macros:
             self.macros = saveMacros.copy()
