@@ -53,7 +53,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.2 1997/07/02 20:19:37 jim Exp $"
+"\n$Id: Missing.c,v 1.3 1997/09/17 22:49:35 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -64,6 +64,9 @@ typedef struct {
   PyObject_HEAD
 } Missing;
 
+static PyObject *vname=0, *Missing_dot_Value=0, *empty_string=0, *reduce=0;
+static PyObject *theValue;
+
 static void
 Missing_dealloc(Missing *self)
 {
@@ -73,13 +76,15 @@ Missing_dealloc(Missing *self)
 static PyObject *
 Missing_repr(Missing *self)
 {
-  return PyString_FromString("Missing.Value");
+  Py_INCREF(Missing_dot_Value);
+  return Missing_dot_Value;
 }
 
 static PyObject *
 Missing_str(Missing *self)
 {
-  return PyString_FromString("");
+  Py_INCREF(empty_string);
+  return empty_string;
 }
 
 /* Code to access Missing objects as numbers */
@@ -87,18 +92,21 @@ Missing_str(Missing *self)
 static PyObject *
 Missing_bin(PyObject *v, PyObject *w)
 {
+  Py_INCREF(v);
   return v;
 }
 
 static PyObject *
 Missing_pow(PyObject *v, PyObject *w, PyObject *z)
 {
+  Py_INCREF(v);
   return v;
 }				
 
 static PyObject *
 Missing_un(PyObject *v)
 {
+  Py_INCREF(v);
   return v;
 }
 
@@ -185,13 +193,50 @@ static PyNumberMethods Missing_as_number = {
 
 /* ------------------------------------------------------- */
 
-static char Missingtype__doc__[] = 
-"Represent totally unknown quantities\n"
-"\n"
-"Missing values are used to represent numberic quantities that are\n"
-"unknown.  They support all mathematical operations except\n"
-"conversions by returning themselves.\n"
-;
+static PyObject *
+Missing_reduce(PyObject *self, PyObject *args, PyObject *kw)
+{
+  if(self==theValue)
+    {
+      Py_INCREF(vname);
+      return vname;
+    }
+  return Py_BuildValue("O()",self->ob_type);
+}
+
+static struct PyMethodDef reduce_ml[] = {  
+  {"__reduce__", (PyCFunction)Missing_reduce, 1,
+   "Return a missing value reduced to standard python objects"
+  }
+};
+
+static PyObject *
+Missing_getattr(PyObject *self, PyObject *name)
+{
+  char *c;
+
+  if(!(c=PyString_AsString(name))) return NULL;
+
+  if(*c=='_' && strcmp(c,"__reduce__")==0)
+    {
+      if(self==theValue)
+	{
+	  Py_INCREF(reduce);
+	  return reduce;
+	}
+      return PyCFunction_New(reduce_ml, self);
+    }
+
+  Py_INCREF(self);
+  return self;
+}
+
+static PyObject *
+Missing_call(PyObject *self, PyObject *args, PyObject *kw)
+{
+  Py_INCREF(self);
+  return self;
+}
 
 static PyExtensionClass MissingType = {
   PyObject_HEAD_INIT(NULL)
@@ -210,14 +255,18 @@ static PyExtensionClass MissingType = {
   0,					/*tp_as_sequence*/
   0,					/*tp_as_mapping*/
   (hashfunc)0,				/*tp_hash*/
-  (ternaryfunc)0,			/*tp_call*/
+  (ternaryfunc)Missing_call,		/*tp_call*/
   (reprfunc)Missing_str,		/*tp_str*/
-  (getattrofunc)0,			/*tp_getattro*/
+  (getattrofunc)Missing_getattr,	/*tp_getattro*/
   (setattrofunc)0,			/*tp_setattro*/
   
   /* Space for future expansion */
   0L,0L,
-  Missingtype__doc__, /* Documentation string */
+  "Represent totally unknown quantities\n"
+  "\n"
+  "Missing values are used to represent numberic quantities that are\n"
+  "unknown.  They support all mathematical operations except\n"
+  "conversions by returning themselves.\n",
   METHOD_CHAIN(NULL)
 };
 
@@ -231,13 +280,16 @@ static struct PyMethodDef Module_Level__methods[] = {
   {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
 };
 
-/* Initialization function for the module (*must* be called initMissing) */
-
 void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
+
+  if(! ((vname=PyString_FromString("V"))
+	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
+	&& (empty_string=PyString_FromString(""))
+	)) return;
 
   /* Create the module and add the functions */
   m = Py_InitModule4("Missing", Module_Level__methods,
@@ -247,15 +299,16 @@ initMissing()
   /* Add some symbolic constants to the module */
   d = PyModule_GetDict(m);
 
-  PyExtensionClass_Export(d,"Missing",MissingType);
-
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  
 
-  PyDict_SetItemString(d, "Value",
-		       PyObject_CallObject((PyObject*)&MissingType, NULL));
-  
+  PyExtensionClass_Export(d,"Missing",MissingType);
+
+  theValue=PyObject_CallObject((PyObject*)&MissingType, NULL);
+  reduce=PyCFunction_New(reduce_ml, theValue);
+
+  PyDict_SetItemString(d, "Value", theValue);
+  PyDict_SetItemString(d, "V", theValue); 
 	
   /* Check for errors */
   if (PyErr_Occurred())
@@ -266,11 +319,15 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.3  1997/09/17 22:49:35  jim
+  Fixed refcount bug.
+  Added logic so:  Missing.Value.spam() returns Missing.Value.
+  Added logic to make Missing.Value picklable.
+
   Revision 1.2  1997/07/02 20:19:37  jim
   Got rid of unused macros and ErrorObject.
 
   Revision 1.1  1997/07/01 21:36:34  jim
-  *** empty log message ***
 
 
 *****************************************************************************/
