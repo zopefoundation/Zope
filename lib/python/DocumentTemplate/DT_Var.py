@@ -106,7 +106,7 @@ __doc__='''Variable insertion parameters
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.9 1998/01/12 16:47:34 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.10 1998/03/10 20:32:32 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -160,7 +160,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.9 1998/01/12 16:47:34 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DT_Util import *
 
@@ -175,7 +175,7 @@ class Var:
 			    capitalize=1, spacify=1, null='', fmt='s',
 			    size=0, etc='...', thousands_commas=1,
 			    html_quote=1, url_quote=1, sql_quote=1,
-			    newline_to_break=1)
+			    newline_to_br=1)
 	self.args=args
 	
 	self.modifiers=tuple(
@@ -343,6 +343,9 @@ modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.10  1998/03/10 20:32:32  jim
+# Fixed miss-spelling of newline_to_br
+#
 # Revision 1.9  1998/01/12 16:47:34  jim
 # Changed a number of custom formats to modifiers, since they can
 # be applies cumulatively.
