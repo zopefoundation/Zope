@@ -110,7 +110,8 @@ from PubCore import handle
 from PubCore.ZEvent import Wakeup
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
-from Producers import ShutdownProducer, LoggingProducer
+from Producers import ShutdownProducer, LoggingProducer, CallbackProducer
+import DebugLogger
 
 from cStringIO import StringIO
 from tempfile import TemporaryFile
@@ -141,6 +142,9 @@ class PCGIChannel(asynchat.async_chat):
             self.size=string.atoi(self.data.read())
             self.set_terminator(self.size)
             if self.size==0:
+            
+                DebugLogger.log('I', id(self), 0)
+            
                 self.set_terminator('\r\n') 
                 self.data=StringIO()
                 self.send_response()
@@ -170,9 +174,16 @@ class PCGIChannel(asynchat.async_chat):
                         string.strip(self.env['PATH_INFO']),'/'))
                 self.env['PATH_INFO'] = '/' + string.join(path[len(script):],'/')
             self.data=StringIO()
+            
+            DebugLogger.log('B', id(self), 
+                '%s %s' % (self.env['REQUEST_METHOD'], self.env['PATH_INFO']))
+                
             # now read the next size header
             self.set_terminator(10)
         else:
+
+            DebugLogger.log('I', id(self), self.terminator)     
+        
             # we're done, we've got both env and stdin
             self.set_terminator('\r\n')
             self.data.seek(0)
@@ -195,9 +206,8 @@ class PCGIChannel(asynchat.async_chat):
             return 1
      
     def log_request(self, bytes):
-        # XXX need to add reply code logging
         if self.env.has_key('PATH_INFO'):
-            path='%s%s' % (self.server.module, self.env['PATH_INFO'])
+            path=self.env['PATH_INFO']
         else:
             path='%s/' % self.server.module
         if self.env.has_key('REQUEST_METHOD'):
@@ -207,24 +217,24 @@ class PCGIChannel(asynchat.async_chat):
         if self.addr:
             self.server.logger.log (
                 self.addr[0],
-                '%d - - [%s] "%s %s" %d' % (
+                '%d - - [%s] "%s %s" %d %d' % (
                     self.addr[1],
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.gmtime(time.time())
                     ) + tz_for_log,
-                    method, path, bytes
+                    method, path, self.reply_code, bytes
                     )
                 )
         else:
             self.server.logger.log (
                 '127.0.0.1',
-                '- - [%s] "%s %s" %d' % (
+                '- - [%s] "%s %s" %d %d' % (
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.gmtime(time.time())
                     ) + tz_for_log,
-                    method, path, bytes
+                    method, path, self.reply_code, bytes
                     )
                 )       
 
@@ -399,8 +409,16 @@ class PCGIPipe:
     def close(self):
         data=self._data.getvalue()
         l=len(data)
+        
+        DebugLogger.log('A', id(self._channel), 
+            '%s %s' % (self._channel.reply_code, l))
+        
         self._channel.push('%010d%s%010d' % (l, data, 0), 0)
         self._channel.push(LoggingProducer(self._channel, l, 'log_request'), 0)
+        
+        self._channel.push(CallbackProducer(
+            lambda t=('E', id(self._channel)): apply(DebugLogger.log,t)))
+        
         if self._shutdown:
             try: r=self._shutdown[0]
             except: r=0
@@ -413,10 +431,11 @@ class PCGIPipe:
         self._data=None
         self._channel=None
         
-    def finish(self,request):
-        if request.headers.get('bobo-exception-type','') == \
+    def finish(self, response):
+        if response.headers.get('bobo-exception-type','') == \
                 'exceptions.SystemExit':
-            r=request.headers.get('bobo-exception-value','0')
+            r=response.headers.get('bobo-exception-value','0')
             try: r=string.atoi(r)
             except: r = r and 1 or 0
             self._shutdown=r,
+        self._channel.reply_code=response.status

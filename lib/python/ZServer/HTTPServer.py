@@ -123,7 +123,7 @@ from medusa.default_handler import split_path, unquote, get_header
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
 
 from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
-
+import DebugLogger
 
 register_subsystem('ZServer HTTPServer')
 
@@ -140,10 +140,7 @@ header2env={'content-length'    : 'CONTENT_LENGTH',
 
 class zhttp_handler:
     "A medusa style handler for zhttp_server"
-    
-    # XXX add code to allow env overriding 
-    
-    
+        
     def __init__ (self, module, uri_base=None, env=None):
         """Creates a zope_handler
         
@@ -182,6 +179,9 @@ class zhttp_handler:
 
     def handle_request(self,request):
         self.hits.increment()
+
+        DebugLogger.log('B', id(request), '%s %s' % (string.upper(request.command), request.uri))
+
         size=get_header(CONTENT_LENGTH, request.header)
         if size and size != '0':
             size=string.atoi(size)
@@ -269,6 +269,14 @@ class zhttp_handler:
 
     def continue_request(self, sin, request):
         "continue handling request now that we have the stdin"
+       
+        s=get_header(CONTENT_LENGTH, request.header)
+        if s:
+            s=string.atoi(s)
+        else:
+            s=0    
+        DebugLogger.log('I', id(request), s)
+
         env=self.get_environment(request)
         zresponse=make_response(request,env)
         zrequest=HTTPRequest(sin, env, zresponse)
