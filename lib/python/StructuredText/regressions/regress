@@ -1,12 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 
 # Compare current StructuredText.py processing against prior versions.
-# You should see no output if there's no discrepancies.
+# You should see no output if there are no discrepancies.
+
+regressdir=`dirname $0`
+PYTHONPATH=`cd $regressdir/../..; pwd`:$PYTHONPATH
+export PYTHONPATH
 
 differences=""
 for i in *.stx; do
   stx=$i
-  base=${i%.stx}
+  base=`basename $i .stx`
   ref=$base.ref
   new=$base.new
   python ../StructuredText.py $stx > $new
