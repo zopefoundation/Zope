@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.22 $'[-2:][0]
+__version__ = '$Revision: 1.23 $'[-2:][0]
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net.  It is compatible with release 3.4 of
@@ -45,7 +45,7 @@ except NameError:
 
 
 
-class Minimal(BerkeleyBase, ConflictResolvingStorage):
+class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
     def _setupDBs(self):
         # Data Type Assumptions:
         #

@@ -21,10 +21,10 @@ from ZODB.referencesf import referencesf
 from ZODB.tests.MinPO import MinPO
 from Persistence import Persistent
 
-from bsddb3Storage.Full import Full
-from bsddb3Storage.Minimal import Minimal
-from bsddb3Storage.BerkeleyBase import BerkeleyConfig
-from bsddb3Storage.tests.BerkeleyTestBase import BerkeleyTestBase
+from BDBStorage.BDBFullStorage import BDBFullStorage
+from BDBStorage.BDBMinimalStorage import BDBMinimalStorage
+from BDBStorage.BerkeleyBase import BerkeleyConfig
+from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
 
 ZERO = '\0'*8
 
@@ -60,7 +60,7 @@ class TestAutopackBase(BerkeleyTestBase):
 
 
 class TestAutopack(TestAutopackBase):
-    ConcreteStorage = Full
+    ConcreteStorage = BDBFullStorage
 
     def checkAutopack(self):
         unless = self.failUnless
@@ -93,7 +93,7 @@ class TestAutopack(TestAutopackBase):
 
 
 class TestAutomaticClassicPack(TestAutopackBase):
-    ConcreteStorage = Full
+    ConcreteStorage = BDBFullStorage
 
     def _config(self):
         config = BerkeleyConfig()
@@ -174,7 +174,7 @@ class TestAutomaticClassicPack(TestAutopackBase):
 
 
 class TestMinimalPack(TestAutopackBase):
-    ConcreteStorage = Minimal
+    ConcreteStorage = BDBMinimalStorage
 
     def _config(self):
         config = BerkeleyConfig()

@@ -18,9 +18,9 @@ import os
 import time
 import unittest
 
-from bsddb3Storage.BerkeleyBase import BerkeleyConfig
-from bsddb3Storage.tests import BerkeleyTestBase
-from bsddb3Storage.Full import Full
+from BDBStorage.BerkeleyBase import BerkeleyConfig
+from BDBStorage.tests import BerkeleyTestBase
+from BDBStorage.BDBFullStorage import BDBFullStorage
 
 
 
@@ -97,9 +97,9 @@ class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
         # This instance won't have the necessary attributes, so the creation
         # will fail.  We want to be sure that everything gets cleaned up
         # enough to fix that and create a proper storage.
-        self.assertRaises(AttributeError, Full, self._dir, config=c)
+        self.assertRaises(AttributeError, BDBFullStorage, self._dir, config=c)
         c = BerkeleyConfig()
-        s = Full(self._dir, config=c)
+        s = BDBFullStorage(self._dir, config=c)
         s.close()
 
 

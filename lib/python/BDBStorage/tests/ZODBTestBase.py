@@ -18,7 +18,7 @@ import os
 import errno
 
 from ZODB import DB
-from bsddb3Storage.tests.BerkeleyTestBase import BerkeleyTestBase
+from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
 
 DBHOME = 'test-db'
 

@@ -19,10 +19,10 @@ import unittest
 from ZODB.utils import U64
 from ZODB.tests.MinPO import MinPO
 from ZODB.tests.StorageTestBase import zodb_unpickle
-from bsddb3Storage.Minimal import Minimal
-from bsddb3Storage.Full import Full
-from bsddb3Storage.tests.BerkeleyTestBase import BerkeleyTestBase
-from bsddb3Storage.tests.ZODBTestBase import ZODBTestBase
+from BDBStorage.BDBMinimalStorage import BDBMinimalStorage
+from BDBStorage.BDBFullStorage import BDBFullStorage
+from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
+from BDBStorage.tests.ZODBTestBase import ZODBTestBase
 
 from Persistence import Persistent
 
@@ -36,7 +36,7 @@ class Object(Persistent):
 
 
 class WhiteboxLowLevelMinimal(BerkeleyTestBase):
-    ConcreteStorage = Minimal
+    ConcreteStorage = BDBMinimalStorage
 
     def checkTableConsistencyAfterCommit(self):
         unless = self.failIf
@@ -80,7 +80,7 @@ class WhiteboxLowLevelMinimal(BerkeleyTestBase):
 
 
 class WhiteboxHighLevelMinimal(ZODBTestBase):
-    ConcreteStorage = Minimal
+    ConcreteStorage = BDBMinimalStorage
 
     def checkReferenceCounting(self):
         eq = self.assertEqual
@@ -167,7 +167,7 @@ class WhiteboxHighLevelMinimal(ZODBTestBase):
 
 
 class WhiteboxHighLevelFull(ZODBTestBase):
-    ConcreteStorage = Full
+    ConcreteStorage = BDBFullStorage
 
     def checkReferenceCounting(self):
         eq = self.assertEqual

@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.61 $'.split()[-2:][0]
+__version__ = '$Revision: 1.62 $'.split()[-2:][0]
 
 import time
 import cPickle as pickle
@@ -64,7 +64,7 @@ except NameError:
 
 
 
-class Full(BerkeleyBase, ConflictResolvingStorage):
+class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
     def _setupDBs(self):
         # Data Type Assumptions:
         #

@@ -65,7 +65,7 @@ from bsddb3 import db
 from ZODB import utils
 from ZODB.TimeStamp import TimeStamp
 from ZODB.FileStorage import FileStorage
-from bsddb3Storage.Full import Full
+from BDBStorage.BDBFullStorage import BDBFullStorage
 
 PROGRAM = sys.argv[0]
 ZERO = '\0'*8
@@ -157,7 +157,7 @@ def main():
 #
     print >>sys.stderr, 'Opening destination BDB...'
     t0 = time.time()
-##    dstdb = Full(options.dest)
+##    dstdb = BDBFullStorage(options.dest)
     dstdb = None
     t1 = time.time()
     print >>sys.stderr, 'Opening destination BDB done. %s seconds' % (t1-t0)

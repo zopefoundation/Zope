@@ -12,12 +12,13 @@
 #
 ##############################################################################
 
-# Basic test framework class for both the Full and Minimal Berkeley storages
+# Basic test framework class for both the BDBFullStorage and BDBMinimalStorage
+# Berkeley storages
 
 import os
 import errno
 
-from bsddb3Storage.BerkeleyBase import BerkeleyConfig
+from BDBStorage.BerkeleyBase import BerkeleyConfig
 from ZODB.tests.StorageTestBase import StorageTestBase
 
 DBHOME = 'test-db'
@@ -63,10 +64,10 @@ class BerkeleyTestBase(StorageTestBase):
 
 
 class MinimalTestBase(BerkeleyTestBase):
-    from bsddb3Storage import Minimal
-    ConcreteStorage = Minimal.Minimal
+    from BDBStorage import BDBMinimalStorage
+    ConcreteStorage = BDBMinimalStorage.BDBMinimalStorage
 
 
 class FullTestBase(BerkeleyTestBase):
-    from bsddb3Storage import Full
-    ConcreteStorage = Full.Full
+    from BDBStorage import BDBFullStorage
+    ConcreteStorage = BDBFullStorage.BDBFullStorage

@@ -12,9 +12,9 @@
 # 
 ##############################################################################
 
-# Test some simple ZODB level stuff common to both the Minimal and Full
-# storages, like transaction aborts and commits, changing objects, etc.
-# Doesn't test undo, versions, or packing.
+# Test some simple ZODB level stuff common to both the BDBMinimalStorage and
+# BDBFullStorage storages, like transaction aborts and commits, changing
+# objects, etc.  Doesn't test undo, versions, or packing.
 
 import time
 import unittest
@@ -69,13 +69,13 @@ class CommitAndRead:
 
 
 class MinimalCommitAndRead(ZODBTestBase, CommitAndRead):
-    from bsddb3Storage import Minimal
-    ConcreteStorage = Minimal.Minimal
+    from BDBStorage import BDBMinimalStorage
+    ConcreteStorage = BDBMinimalStorage.BDBMinimalStorage
 
 
 class FullCommitAndRead(ZODBTestBase, CommitAndRead):
-    from bsddb3Storage import Full
-    ConcreteStorage = Full.Full
+    from BDBStorage import BDBFullStorage
+    ConcreteStorage = BDBFullStorage.BDBFullStorage
 
 
 

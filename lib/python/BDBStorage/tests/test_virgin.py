@@ -34,13 +34,13 @@ class InsertMixin:
 
 
 class FullNewInsertsTest(ZODBTestBase, InsertMixin):
-    from bsddb3Storage import Full
-    ConcreteStorage = Full.Full
+    from BDBStorage import BDBFullStorage
+    ConcreteStorage = BDBFullStorage.BDBFullStorage
 
 
 class MinimalNewInsertsTest(ZODBTestBase, InsertMixin):
-    from bsddb3Storage import Minimal
-    ConcreteStorage = Minimal.Minimal
+    from BDBStorage import BDBMinimalStorage
+    ConcreteStorage = BDBMinimalStorage.BDBMinimalStorage
 
 
 
