@@ -88,14 +88,41 @@ import os, sys, unittest
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Acquisition import Implicit
+from AccessControl import SecurityManager
 
 class AqPageTemplate(Implicit, PageTemplate):
    pass
+
+class UnitTestSecurityPolicy:
+    """
+        Stub out the existing security policy for unit testing purposes.
+    """
+    #
+    #   Standard SecurityPolicy interface
+    #
+    def validate( self
+                , accessed=None
+                , container=None
+                , name=None
+                , value=None
+                , context=None
+                , roles=None
+                , *args
+                , **kw):
+        return 1
+    
+    def checkPermission( self, permission, object, context) :
+        return 1
 
 class DTMLTests(unittest.TestCase):
 
    def setUp(self):
       self.t=(AqPageTemplate())
+      self.policy = UnitTestSecurityPolicy()
+      self.oldPolicy = SecurityManager.setSecurityPolicy( self.policy )
+
+   def tearDown(self):
+      SecurityManager.setSecurityPolicy( self.oldPolicy )
 
    def check1(self):
       """DTML test 1: if, in, and var:
