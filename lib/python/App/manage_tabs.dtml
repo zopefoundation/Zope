@@ -53,14 +53,16 @@
   <td bgcolor="#ffffff" valign="bottom" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1">&nbsp;<a 
-   href="<!--#var action-->"><font 
+   href="<!--#var action-->"<!--#if target--> target="<!--#var
+   target-->"<!--#endif-->><font 
    color="#000000"><strong><!--#var 
    label--></strong></font></a>&nbsp;</font></td>
 <!--#else-->
   <td bgcolor="#efefef" valign="bottom" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1">&nbsp;<a 
-   href="<!--#var action-->"><font 
+   href="<!--#var action-->"<!--#if target--> target="<!--#var
+   target-->"<!--#endif-->><font 
    color="#000000"><strong><!--#var 
    label--></strong></font></a>&nbsp;</font></td>
 <!--#endif-->
