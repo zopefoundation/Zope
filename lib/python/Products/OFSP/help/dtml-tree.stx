@@ -37,7 +37,10 @@ tree: Inserts a tree widget
     support. This attribute is for advanced usage only.
 
     leaves=string -- The name of a DTML Document or Method used to
-    render nodes that don't have any children.
+    render nodes that don't have any children. Note: this document
+    should begin with '<dtml-var standard_html_header>' and end with
+    '<dtml-var standard_html_footer>' in order to ensure proper
+    display in the tree.
 
     header=string -- The name of a DTML Document or Method displayed
     before expanded nodes. If the header is not found, it is skipped.
