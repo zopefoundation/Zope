@@ -133,10 +133,10 @@ Special symbology is used to indicate special constructs:
   by punctuation plus white space, *or* just white space, is treated as a
   hyper link. For example:
 
-    "Zope site":http://www.zope.org/. 
+    "Zope":http://www.zope.org/ is ...
 
-  Is interpreted as '<a href="http://www.zope.oprg/">Zope site</a>.' Note:
-  This works for relative as well as absolute URLs.
+  Is interpreted as '<a href="http://www.zope.org/">Zope</a> is ....'
+  Note: This works for relative as well as absolute URLs.
 
 - Text enclosed by double quotes followed by a comma, one or more spaces,
   an absolute URL and concluded by punctuation plus white space, or just
@@ -164,7 +164,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.13 1999/03/11 00:49:57 klm Exp $'''
+$Id: StructuredText.py,v 1.14 1999/03/11 01:35:19 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -216,6 +216,20 @@ $Id: StructuredText.py,v 1.13 1999/03/11 00:49:57 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.14  1999/03/11 01:35:19  klm
+# Fixed a small typo, and refined the module docstring link example, in
+# order to do a checkin to exercise the CVS repository mirroring.  Might
+# as well include my last checkin message, with some substantial stuff:
+#
+# Links are now recognized whether or not the candidate strings are
+# terminated with punctuation before the trailing whitespace.  The old
+# form - trailing punctuation then whitespace - is preserved, but the
+# punctuation is now unnecessary.
+#
+# The regular expressions are a bit more complicated, but i've factored
+# out the common parts and but them in variables with suggestive names,
+# which may make them easier to understand.
+#
 # Revision 1.13  1999/03/11 00:49:57  klm
 # Links are now recognized whether or not the candidate strings are
 # terminated with punctuation before the trailing whitespace.  The old
