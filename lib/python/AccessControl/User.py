@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -222,16 +222,10 @@ class BasicUser(Implicit):
         if type(roles)==type('s'):
             roles=[roles]
         if object is not None:
-            # Check in object for local roles.
-            user = self.getUserName()
-            dict = object.__ac_local_roles__ or {}
-            if dict.has_key(user):
-                local_roles = dict[user]
-                for role in roles:
-                    if role in local_roles:
-                        return 1
-        # No local roles, try global roles...
-        user_roles=self.getRoles()
+            user_roles = self.getRolesInContext(object)
+        else:
+            # Global roles only...
+            user_roles=self.getRoles()
         for role in roles:
             if role in user_roles:
                 return 1
