@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -339,7 +339,7 @@ class HTTPRequest(BaseRequest):
         hasattr=hasattr,
         getattr=getattr,
         setattr=setattr,
-        search_type=re.compile('(:[a-zA-Z][a-zA-Z0-9_]+|\\.[xy])$').search,
+        search_type=re.compile('(:[a-zA-Z][-a-zA-Z0-9_]+|\\.[xy])$').search,
         ):
         """Process request inputs
 

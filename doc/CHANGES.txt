@@ -25,6 +25,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #736: ZPublisher now allows marshalling tags to contain
+        a '-'. This is the first step towards a fix for Collector #737
+
       - Collector #714: CopySupport's manage_clone now calls 
         manage_afterClone in the saem way that manage_pasteObjects does.
 
