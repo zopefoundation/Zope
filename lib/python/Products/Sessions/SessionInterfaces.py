@@ -12,11 +12,9 @@
 ############################################################################
 """
 
-Session API
+Sessioning-related Object APIs
 
   See Also
-
-    - "Programming with the Session API":sessionapi-prog.stx
 
     - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
 
@@ -132,6 +130,16 @@ class BrowserIdManagerInterface(
         a browser id namespace at the time of the call.
         """
 
+    def getHiddenFormField():
+        """
+        Returns a string in the form:
+
+        <input type="hidden" name="_ZopeId" value="H7HJGYUFGFyHKH*">
+
+        Where the name and the value represent the current browser id
+        name and current browser id.
+        """
+
 class SessionDataManagerInterface(
     Interface.Base
     ):
@@ -179,3 +187,24 @@ class SessionDataManagerInterface(
         Permission required: Access arbitrary user session data
         """
 
+class SessionDataManagerErr(Interface.Base):
+    """
+    Error raised during some session data manager operations, as
+    explained in the API documentation of the Session Data Manager.
+
+    This exception may be caught in PythonScripts.  A successful
+    import of the exception for PythonScript use would need to be::
+
+       from Products.Sessions import SessionDataManagerErr
+    """
+
+class BrowserIdManagerErr(Interface.Base):
+    """
+    Error raised during some browser id manager operations, as
+    explained in the API documentation of the Browser Id Manager.
+
+    This exception may be caught in PythonScripts.  A successful
+    import of the exception for PythonScript use would need to be::
+
+       from Products.Sessions import BrowserIdManagerErr
+    """

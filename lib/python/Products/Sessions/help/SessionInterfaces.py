@@ -11,14 +11,20 @@
 #
 ############################################################################
 """
-Session API
+
+Session APIs
 
   See Also
 
-  - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
+    - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
+
 """
 
-class BrowserIdManagerInterface:
+import Interface
+
+class BrowserIdManagerInterface(
+    Interface.Base
+    ):
     """
     Zope Browser Id Manager interface.
 
@@ -26,7 +32,7 @@ class BrowserIdManagerInterface:
     visitors, and for servicing requests from Session Data Managers
     related to the browser id.
     """
-    def encodeUrl(self, url):
+    def encodeUrl(url):
         """
         Encodes a provided URL with the current request's browser id
         and returns the result.  For example, the call
@@ -38,7 +44,7 @@ class BrowserIdManagerInterface:
         Raises:  BrowserIdManagerErr.  If there is no current browser id.
         """
 
-    def getBrowserIdName(self):
+    def getBrowserIdName():
         """
         Returns a string with the name of the cookie/form variable which is
         used by the current browser id manager as the name to look up when
@@ -47,7 +53,7 @@ class BrowserIdManagerInterface:
         Permission required: Access contents information
         """
 
-    def getBrowserId(self, create=1):
+    def getBrowserId(create=1):
         """
         If create=0, returns a the current browser id or None if there
         is no browser id associated with the current request.  If create=1,
@@ -60,18 +66,18 @@ class BrowserIdManagerInterface:
 
         Permission required: Access contents information
 
-        Raises:  BrowserIdManagerErr if ill-formed browser id
+        Raises:  BrowserIdManagerErr.  If ill-formed browser id
         is found in REQUEST.
         """
 
-    def hasBrowserId(self):
+    def hasBrowserId():
         """
         Returns true if there is a browser id for this request.
 
         Permission required: Access contents information
         """
 
-    def isBrowserIdNew(self):
+    def isBrowserIdNew():
         """
         Returns true if browser id is 'new'.  A browser id is 'new'
         when it is first created and the client has therefore not sent it
@@ -82,7 +88,7 @@ class BrowserIdManagerInterface:
         Raises:  BrowserIdManagerErr.  If there is no current browser id.
         """
 
-    def isBrowserIdFromForm(self):
+    def isBrowserIdFromForm():
         """
         Returns true if browser id comes from a form variable (query
         string or post).
@@ -92,7 +98,7 @@ class BrowserIdManagerInterface:
         Raises:  BrowserIdManagerErr.  If there is no current browser id.
         """
 
-    def isBrowserIdFromCookie(self):
+    def isBrowserIdFromCookie():
         """
         Returns true if browser id comes from a cookie.
 
@@ -101,7 +107,7 @@ class BrowserIdManagerInterface:
         Raises:  BrowserIdManagerErr.  If there is no current browser id.
         """
 
-    def flushBrowserIdCookie(self):
+    def flushBrowserIdCookie():
         """
         Deletes the browser id cookie from the client browser, iff the
         'cookies' browser id namespace is being used.
@@ -112,7 +118,7 @@ class BrowserIdManagerInterface:
         a browser id namespace at the time of the call.
         """
 
-    def setBrowserIdCookieByForce(self, bid):
+    def setBrowserIdCookieByForce(bid):
         """
         Sets the browser id cookie to browser id 'bid' by force.
         Useful when you need to 'chain' browser id cookies across domains
@@ -124,7 +130,19 @@ class BrowserIdManagerInterface:
         a browser id namespace at the time of the call.
         """
 
-class SessionDataManagerInterface:
+    def getHiddenFormField():
+        """
+        Returns a string in the form:
+
+        <input type="hidden" name="_ZopeId" value="H7HJGYUFGFyHKH*">
+
+        Where the name and the value represent the current browser id
+        name and current browser id.
+        """
+
+class SessionDataManagerInterface(
+    Interface.Base
+    ):
     """
     Zope Session Data Manager interface.
 
@@ -133,7 +151,7 @@ class SessionDataManagerInterface:
     related to Session Data Objects.  It also communicates with a Browser
     Id Manager to provide information about browser ids.
     """
-    def getBrowserIdManager(self):
+    def getBrowserIdManager():
         """
         Returns the nearest acquirable browser id manager.
 
@@ -142,7 +160,7 @@ class SessionDataManagerInterface:
         Permission required: Access session data
         """
 
-    def getSessionData(self, create=1):
+    def getSessionData(create=1):
         """
         Returns a Session Data Object associated with the current
         browser id.  If there is no current browser id, and create is true,
@@ -152,17 +170,16 @@ class SessionDataManagerInterface:
         Permission required: Access session data
         """
 
-    def hasSessionData(self):
+    def hasSessionData():
         """
         Returns true if a Session Data Object associated with the
-        current browser id is found in the Session Data Container.
-        If there is no current browser id, returns false.  Does
+        current browser id is found in the Session Data Container.  Does
         not create a Session Data Object if one does not exist.
 
         Permission required: Access session data
         """
 
-    def getSessionDataByKey(self, key):
+    def getSessionDataByKey(key):
         """
         Returns a Session Data Object associated with 'key'.  If there is
         no Session Data Object associated with 'key' return None.
@@ -170,7 +187,7 @@ class SessionDataManagerInterface:
         Permission required: Access arbitrary user session data
         """
 
-class SessionDataManagerErr:
+class SessionDataManagerErr(Interface.Base):
     """
     Error raised during some session data manager operations, as
     explained in the API documentation of the Session Data Manager.
@@ -181,7 +198,7 @@ class SessionDataManagerErr:
        from Products.Sessions import SessionDataManagerErr
     """
 
-class BrowserIdManagerErr:
+class BrowserIdManagerErr(Interface.Base):
     """
     Error raised during some browser id manager operations, as
     explained in the API documentation of the Browser Id Manager.
@@ -191,5 +208,3 @@ class BrowserIdManagerErr:
 
        from Products.Sessions import BrowserIdManagerErr
     """
-    
-

@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -378,6 +378,15 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         browser id.
         """
         return ('form', 'cookies')
+
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getHiddenFormField')
+    def getHiddenFormField(self):
+        """
+        Convenience method which returns a hidden form element
+        representing the current browser id name and browser id
+        """
+        s = '<input type="hidden" name="%s" value="%s">'
+        return s % (self.getBrowserIdName(), self.getBrowserId())
 
     # non-interface methods follow
 

@@ -13,9 +13,9 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.9 2002/07/19 04:44:35 chrism Exp $
+$Id: testBrowserIdManager.py,v 1.10 2002/08/10 19:28:38 chrism Exp $
 """
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.10 $"[11:-2]
 
 import sys
 import ZODB
@@ -226,6 +226,14 @@ class TestBrowserIdManager(TestCase):
         u = 'http://www.zope.org/Members/mcdonc?foo=bar&spam=eggs'
         r = self.m.encodeUrl(u)
         self.failUnless( r == '%s&amp;%s=%s' % (u, keystring, key) )
+
+    def testGetHiddenFormField(self):
+        keystring = self.m.getBrowserIdName()
+        key = self.m.getBrowserId()
+        html = self.m.getHiddenFormField()
+        expected = ('<input type="hidden" name="%s" value="%s">' %
+                    (keystring, key))
+        self.failUnless( html == expected )
 
 def test_suite():
     testsuite = makeSuite(TestBrowserIdManager, 'test')
