@@ -5,6 +5,9 @@ Zope Changes
   file HISTORY.txt.
 
 
+        - Collector #2532: ZCatalog.availableSplitters is now protected
+          by security mechanism.
+
         - Collector #2412: a read-only FileStorage has not been closed
           properly.
 

@@ -199,7 +199,8 @@ class ZCatalog(Folder, Persistent, Implicit):
           
           'manage_catalogReindex', 'manage_catalogFoundItems',
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
-          'manage_addIndex', 'manage_delIndexes', 'manage_main',], 
+          'manage_addIndex', 'manage_delIndexes', 'manage_main',
+          'availableSplitters'], 
          ['Manager']),
 
         ('Search ZCatalog',
@@ -236,7 +237,6 @@ class ZCatalog(Folder, Persistent, Implicit):
         self.title=title
 
         self.vocabulary = None
-        self.availableSplitters = Splitter.availableSplitters
         
         self.threshold = 10000
         self._v_total = 0
@@ -474,6 +474,12 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Reindexing%20Performed')
+
+
+    def availableSplitter(self):
+        """ splitter we can add """
+        return Splitter.availableSplitters
+
 
     def catalog_object(self, obj, uid=None, idxs=[]):
         """ wrapper around catalog """
