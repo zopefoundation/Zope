@@ -167,4 +167,4 @@ class ZopeService(win32serviceutil.ServiceFramework):
             (self._svc_name_, ' (%s) ' % self._svc_display_name_))
 
 if __name__=='__main__':
-    win32serviceutil.HandleCommandLine(ZopeInstanceService)
+    win32serviceutil.HandleCommandLine(ZopeService)
