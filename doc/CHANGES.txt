@@ -8,6 +8,9 @@ Zope Changes
 
     new Features:
 
+      - Structured Text's "DocumentWithImages" class did not recognize
+        image filenames with underscores.
+
       - The getElementsByTagName method of STDOM (used by Structured Text)
         would croak on most documents, especially those containing
         unwrapped text nodes.  Fixed.
