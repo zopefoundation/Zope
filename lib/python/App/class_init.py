@@ -84,6 +84,7 @@
 ##############################################################################
 
 from AccessControl.PermissionRole import PermissionRole
+import AccessControl.Permission
 
 class ApplicationDefaultPermissions:
     _View_Permission='Manager', 'Anonymous'
@@ -104,16 +105,11 @@ def default__class_init__(self):
             name=name+'__roles__'
             if not have(name): dict[name]='Manager',
 
-    if hasattr(self, '__ac_permissions__'):
+    if self.__dict__.has_key('__ac_permissions__'):
+        AccessControl.Permission.registerPermissions(self.__ac_permissions__)
         for acp in self.__ac_permissions__:
             pname, mnames = acp[:2]
             pr=PermissionRole(pname)
             for mname in mnames:
                 try: getattr(self, mname).__roles__=pr
                 except: dict[mname+'__roles__']=pr
-            pname=pr._p
-            if not hasattr(ApplicationDefaultPermissions, pname):
-                if len(acp) > 2:
-                    setattr(ApplicationDefaultPermissions, pname, acp[2])
-                else:
-                    setattr(ApplicationDefaultPermissions, pname, ('Manager',))
