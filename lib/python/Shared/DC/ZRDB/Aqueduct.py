@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.10 1997/09/25 21:45:08 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Aqueduct.py,v 1.11 1997/09/25 22:33:01 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import HTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -65,7 +65,8 @@ class BaseQuery:
 		    'The value entered for <em>%s</em> was invalid' % arg)
 		
 	    if v is REQUEST:
-		v=args[a]
+		try: v=args[a]['default']
+		except: v=None
 		if v is None:
 		    if hasattr(self,arg): v=getattr(self,arg)
 		    else:
@@ -99,6 +100,8 @@ class BaseQuery:
 
 def default_input_form(id,arguments,action='query'):
     if arguments:
+	items=arguments.items()
+	items.sort()
 	return (
 	    "%s\n%s%s" % (
 		'<html><head><title>%s Input Data</title></head><body>\n'
@@ -122,7 +125,7 @@ def default_input_form(id,arguments,action='query'):
 				),
 			    a[1].has_key('default') and a[1]['default'] or ''
 			    ))
-			, arguments.items()
+			, items
 			),
 		'\n'),
 		'\n<tr><td></td><td>\n'
@@ -362,6 +365,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.11  1997/09/25 22:33:01  jim
+# fixed argument handling bugs
+#
 # Revision 1.10  1997/09/25 21:45:08  jim
 # Fixed argument parse bug
 #
