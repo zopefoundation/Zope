@@ -244,6 +244,10 @@ class Index(Persistent):
             map = new
         self._wordinfo[wid] = map # Not redundant, because of Persistency!
 
+    # Used only by tests.
+    def _get_undoinfo(self, docid):
+        return WidCode.decode(self._docwords[docid])
+
 def inverse_doc_frequency(term_count, num_items):
     """Return the inverse doc frequency for a term,
 

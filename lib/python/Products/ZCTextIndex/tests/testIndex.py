@@ -14,18 +14,38 @@
 
 from unittest import TestCase, TestSuite, main, makeSuite
 
-from Products.ZCTextIndex.Index import Index
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
+from Products.ZCTextIndex.Index      import Index as CosineIndex
+from Products.ZCTextIndex.OkapiIndex import Index as OkapiIndex
+
+# The cosine and Okapi indices have the same public interfaces, but these
+# tests access internal attributes, and those aren't identical.
+# The IndexTest class is abstract, and subclasses must implement the
+# check_docid_known and num_docs_known methods.  CosineIndexTest (later in
+# this file) does those in terms of ._docweight, while OkapiIndexTest
+# (later in this file) does them in terms of ._doclen.
 
 class IndexTest(TestCase):
+
+    # Subclasses must implement these methods, and set a class variable
+    # IndexFactory to the appropriate index object constructor.
+
+    def check_docid_known(self, DOCID):
+        raise NotImplementedError
+
+    def num_docs_known(self):
+        raise NotImplementedError
+
+
     def setUp(self):
         self.lexicon = Lexicon(Splitter())
-        self.index = Index(self.lexicon)
+        self.index = self.IndexFactory(self.lexicon)
 
     def test_index_document(self, DOCID=1):
         doc = "simple document contains five words"
         self.index.index_doc(DOCID, doc)
-        self.assert_(self.index._docweight[DOCID])
+        self.check_docid_known(DOCID)
+        self.assertEqual(self.num_docs_known(), 1)
         self.assertEqual(len(self.index._wordinfo), 5)
         self.assertEqual(len(self.index._docwords), 1)
         self.assertEqual(len(self.index._get_undoinfo(DOCID)), 5)
@@ -37,7 +57,7 @@ class IndexTest(TestCase):
         DOCID = 1
         self.test_index_document(DOCID)
         self.index.unindex_doc(DOCID)
-        self.assertEqual(len(self.index._docweight), 0)
+        self.assertEqual(self.num_docs_known(), 0)
         self.assertEqual(len(self.index._wordinfo), 0)
         self.assertEqual(len(self.index._docwords), 0)
 
@@ -46,7 +66,8 @@ class IndexTest(TestCase):
         doc = "another document just four"
         DOCID = 2
         self.index.index_doc(DOCID, doc)
-        self.assert_(self.index._docweight[DOCID])
+        self.check_docid_known(DOCID)
+        self.assertEqual(self.num_docs_known(), 2)
         self.assertEqual(len(self.index._wordinfo), 8)
         self.assertEqual(len(self.index._docwords), 2)
         self.assertEqual(len(self.index._get_undoinfo(DOCID)), 4)
@@ -66,8 +87,8 @@ class IndexTest(TestCase):
         self.test_index_two_documents()
         self.index.unindex_doc(1)
         DOCID = 2
-        self.assertEqual(len(self.index._docweight), 1)
-        self.assert_(self.index._docweight[DOCID])
+        self.assertEqual(self.num_docs_known(), 1)
+        self.check_docid_known(DOCID)
         self.assertEqual(len(self.index._wordinfo), 4)
         self.assertEqual(len(self.index._docwords), 1)
         self.assertEqual(len(self.index._get_undoinfo(DOCID)), 4)
@@ -78,10 +99,10 @@ class IndexTest(TestCase):
     def test_index_duplicated_words(self, DOCID=1):
         doc = "very simple repeat repeat repeat document test"
         self.index.index_doc(DOCID, doc)
-        self.assert_(self.index._docweight[DOCID])
+        self.check_docid_known(DOCID)
         self.assertEqual(len(self.index._wordinfo), 5)
         self.assertEqual(len(self.index._docwords), 1)
-##        self.assertEqual(len(self.index._get_undoinfo(DOCID)), 5)
+        self.assertEqual(len(self.index._get_undoinfo(DOCID)), 7)
         wids = self.lexicon.termToWordIds("repeat")
         self.assertEqual(len(wids), 1)
         repititive_wid = wids[0]
@@ -120,8 +141,28 @@ class IndexTest(TestCase):
         results = self.index.search_glob("b*")
         self.assertEqual(list(results.keys()), [1, 2, 3])
 
+class CosineIndexTest(IndexTest):
+    IndexFactory = CosineIndex
+
+    def check_docid_known(self, docid):
+        self.assert_(self.index._docweight.has_key(docid))
+
+    def num_docs_known(self):
+        return len(self.index._docweight)
+
+class OkapiIndexTest(IndexTest):
+    IndexFactory = OkapiIndex
+
+    def check_docid_known(self, docid):
+        self.assert_(self.index._doclen.has_key(docid))
+
+    def num_docs_known(self):
+        return len(self.index._doclen)
+
 def test_suite():
-    return makeSuite(IndexTest)
+    return TestSuite((makeSuite(CosineIndexTest),
+                      makeSuite(OkapiIndexTest),
+                    ))
 
 if __name__=='__main__':
     main(defaultTest='test_suite')

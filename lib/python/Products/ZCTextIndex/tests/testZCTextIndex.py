@@ -28,7 +28,7 @@ def eq(scaled1, scaled2, epsilon=scaled_int(0.01)):
     if abs(scaled1 - scaled2) > epsilon:
         raise AssertionError, "%s != %s" % (scaled1, scaled2)
 
-class IndexTests(testIndex.IndexTest):
+class IndexTests(testIndex.CosineIndexTest):
 
     def setUp(self):
         extra = Extra()
