@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.62 2000/05/11 18:54:14 jim Exp $''' 
-__version__='$Revision: 1.62 $'[11:-2]
+'''$Id: DT_Util.py,v 1.63 2000/05/25 18:29:25 brian Exp $''' 
+__version__='$Revision: 1.63 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -251,7 +251,9 @@ d['getattr']=careful_getattr
 d['hasattr']=careful_hasattr
 d['range']=careful_range
 
-class namespace_: pass
+class namespace_:
+    __allow_access_to_unprotected_subobjects__=1
+
 
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whos attributes are
