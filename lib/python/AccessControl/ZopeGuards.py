@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -149,7 +149,7 @@ def guarded_getitem(object, index):
         # We don't guard slices.
         return v
     v = object[index]
-    if Containers(type(object)):
+    if Containers(type(object)) and Containers(type(v)):
         # Simple type.  Short circuit.
         return v
     if getSecurityManager().validate(object, object, index, v):
