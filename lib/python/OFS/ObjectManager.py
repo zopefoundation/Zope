@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.102 2000/08/04 13:59:33 jim Exp $"""
+$Id: ObjectManager.py,v 1.103 2000/08/07 18:31:21 shane Exp $"""
 
-__version__='$Revision: 1.102 $'[11:-2]
+__version__='$Revision: 1.103 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -108,6 +108,11 @@ customImporters={
     }
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
+
+# Global constants: __replaceable__ states (see ObjectManager._checkId):
+NOT_REPLACEABLE = 0
+REPLACEABLE = 1
+UNIQUE = -1
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
 
@@ -206,25 +211,37 @@ class ObjectManager(
     def _checkId(self, id, allow_dup=0):
         # If allow_dup is false, an error will be raised if an object
         # with the given id already exists. If allow_dup is true,
-        # only check that the id string contains no illegal chars.
+        # only check that the id string contains no illegal chars;
+        # _checkId() will be called again later with allow_dup
+        # set to false before the object is added.
         if not id or (type(id) != type('')):
-            raise 'Bad Request', 'Empty or invalid specified'
+            raise 'Bad Request', 'Empty or invalid id specified.'
         if bad_id(id) != -1:
             raise 'Bad Request', (
-            'The id %s contains characters illegal in URLs.' % id)
+            'The id "%s" contains characters illegal in URLs.' % id)
         if id[0]=='_': raise 'Bad Request', (
-            'The id %s  is invalid - it begins with an underscore.'  % id)
+            'The id "%s" is invalid - it begins with an underscore.'  % id)
         if not allow_dup:
-            if hasattr(self, 'aq_base'):
-                self=self.aq_base
-            if hasattr(self, id):
-                raise 'Bad Request', (
-                    'The id %s is invalid - it is already in use.' % id)
+            obj = getattr(self, id, None)
+            if obj is not None:
+                # An object by the given id exists either in this
+                # ObjectManager or in the acquisition path.
+                print obj, dir(obj)
+                flag = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
+                if flag == UNIQUE:
+                    raise 'Bad Request', \
+                          ('The id "%s" is reserved by another object.' % id)
+                base = getattr(self, 'aq_base', self)
+                if hasattr(base, id):
+                    # The object is located in this ObjectManager.
+                    if flag != REPLACEABLE:
+                        raise 'Bad Request', ('The id "%s" is invalid - ' \
+                              'it is already in use.' % id)
         if id == 'REQUEST':
             raise 'Bad Request', 'REQUEST is a reserved name.'
         if '/' in id:
             raise 'Bad Request', (
-                'The id %s contains characters illegal in URLs.' % id
+                'The id "%s" contains characters illegal in URLs.' % id
                 )
 
     def _setOb(self, id, object): setattr(self, id, object)
@@ -244,6 +261,13 @@ class ObjectManager(
         if v is not None: id=v
         try:    t=object.meta_type
         except: t=None
+
+        # If an object by the given id already exists, remove it.
+        for object_info in self._objects:
+            if object_info['id'] == id:
+                self._delObject(id)
+                break
+
         self._objects=self._objects+({'id':id,'meta_type':t},)
         # Prepare the _p_jar attribute immediately. _getCopy() may need it.
         object._p_jar = self._p_jar
