@@ -60,7 +60,6 @@ class Historian(Implicit):
     def __getitem__(self, key):
         self=self.aq_parent
 
-        print 'key', key
         serial=apply(pack, ('>HHHH',)+tuple(map(int, key.split('.'))))
 
         if serial == self._p_serial: return self
