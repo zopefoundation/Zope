@@ -11,20 +11,19 @@ database packing, and &quot;undoing&quot; previous changes to your
 application's configuration or data.
 
 <P>
-<TABLE CELLPADDING="4">
+<TABLE>
 <TR>
-<TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Process Id:</STRONG></TD>
-<TD ALIGN="LEFT" VALIGN="TOP"><!--#var process_id--></TD>
+<TH>Process Id</TH>
+<TH>Process Uptime</TH>
+<TH>Database Size</TH>
 </TR>
 <TR>
-<TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Process Uptime:</STRONG></TD>
-<TD ALIGN="LEFT" VALIGN="TOP"><!--#var process_time--></TD>
+<TD ALIGN=CENTER><!--#var process_id--></TD>
+<TD ALIGN=CENTER><!--#var process_time--></TD>
+<TD ALIGN=CENTER><!--#var db_size--></TD>
 </TR>
-<TR>
-<TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Database Size:</STRONG></TD>
-<TD ALIGN="LEFT" VALIGN="TOP"><!--#var db_size--></TD>
-</TR>
-
+</TABLE>
+<TABLE>
 <TR>
 <TD ALIGN="LEFT" VALIGN="TOP">
 <BR>Click &quot;Shutdown&quot; to shutdown the application..
