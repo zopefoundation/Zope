@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.11 1997/04/27 09:20:26 jim Exp $
+  $Id: ExtensionClass.c,v 1.12 1997/06/16 13:50:51 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.11 1997/04/27 09:20:26 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.12 1997/06/16 13:50:51 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -110,12 +110,13 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__long__, *py__float__, *py__oct__, *py__hex__,
   *py__of__, *py__call__, *py__call_method__,
   *py__getitem__, *py__setitem__, *py__delitem__,
-  *py__getslice__, *py__setslice__, *py__delslice__,
-  *py__concat__, *py__repeat__, *py__len__,
+  *py__getslice__, *py__setslice__, *py__delslice__, *py__len__,
   *py__getattr__, *py__setattr__, *py__delattr__,
   *py__del__, *py__repr__, *py__str__, *py__class__,
   *py__hash__, *py__cmp__, *py__var_size__, *py__init__, *py__getinitargs__,
   *py__getstate__, *py__setstate__, *py__dict__, *pyclass_;
+
+static PyObject *subclass_watcher=0;  /* Object that subclass events */
 
 static void
 init_py_names()
@@ -150,8 +151,6 @@ init_py_names()
   INIT_PY_NAME(__getslice__);
   INIT_PY_NAME(__setslice__);
   INIT_PY_NAME(__delslice__);
-  INIT_PY_NAME(__concat__);
-  INIT_PY_NAME(__repeat__);
   INIT_PY_NAME(__len__);
   INIT_PY_NAME(__of__);
   INIT_PY_NAME(__call__);
@@ -297,13 +296,12 @@ CMethod_dealloc(CMethod *self)
 static PyObject *
 call_cmethod(CMethod *self, PyObject *inst, PyObject *args, PyObject *kw)
 {
-  if (!(self->flags & METH_VARARGS)) {
-    int size = PyTuple_Size(args);
-    if (size == 1)
-      args = PyTuple_GET_ITEM(args, 0);
-    else if (size == 0)
-      args = NULL;
-  }
+  if (!(self->flags & METH_VARARGS))
+    {
+      int size = PyTuple_Size(args);
+      if (size == 1)      args = PyTuple_GET_ITEM(args, 0);
+      else if (size == 0) args = NULL;
+    }
   if (self->flags & METH_KEYWORDS)
     return (*(PyCFunctionWithKeywords)self->meth)(inst, args, kw);
   else
@@ -694,7 +692,7 @@ static PyObject *CCL_getattr(PyExtensionClass*,PyObject*,int);
 #define UNARY_OP(OP) \
 static PyObject * \
 OP ## _by_name(PyObject *self, PyObject *args) { \
-  UNLESS(PyArg_Parse(args,"")) return NULL; \
+  UNLESS(PyArg_ParseTuple(args,"")) return NULL; \
   return self->ob_type->tp_ ## OP(self); \
 } 
 
@@ -704,7 +702,7 @@ UNARY_OP(str)
 static PyObject * 
 hash_by_name(PyObject *self, PyObject *args) { 
   long r; 
-  UNLESS(PyArg_Parse(args,"")) return NULL; 
+  UNLESS(PyArg_ParseTuple(args,"")) return NULL; 
   UNLESS(-1 != (r=self->ob_type->tp_hash(self))) return NULL; 
   return PyInt_FromLong(r); 
 } 
@@ -720,7 +718,7 @@ compare_by_name(PyObject *self, PyObject *args)
 {
   PyObject *other;
 
-  UNLESS(PyArg_Parse(args,"O", &other)) return NULL; 
+  UNLESS(PyArg_ParseTuple(args,"O", &other)) return NULL; 
   return PyInt_FromLong(self->ob_type->tp_compare(self,other)); 
 } 
 
@@ -728,7 +726,7 @@ static PyObject *
 getattr_by_name(PyObject *self, PyObject *args)
 {
   char *name;
-  UNLESS(PyArg_Parse(args,"s",&name)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"s",&name)) return NULL;
   return self->ob_type->tp_getattr(self,name);
 }
 
@@ -747,7 +745,7 @@ static PyObject *
 getattro_by_name(PyObject *self, PyObject *args)
 {
   PyObject *name;
-  UNLESS(PyArg_Parse(args,"O",&name)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"O",&name)) return NULL;
   return self->ob_type->tp_getattro(self,name);
 }
 
@@ -766,7 +764,7 @@ static PyObject *
 length_by_name(PyObject *self, PyObject *args)
 { 
   long r; 
-  UNLESS(PyArg_Parse(args,"")) return NULL; 
+  UNLESS(PyArg_ParseTuple(args,"")) return NULL; 
   if(self->ob_type->tp_as_sequence)
     {
       UNLESS(-1 != (r=self->ob_type->tp_as_sequence->sq_length(self)))
@@ -785,7 +783,7 @@ getitem_by_name(PyObject *self, PyObject *args)
 { 
   PyObject *key;
   
-  UNLESS(PyArg_Parse(args,"O",&key)) return NULL; 
+  UNLESS(PyArg_ParseTuple(args,"O",&key)) return NULL; 
   if(self->ob_type->tp_as_mapping)
     return self->ob_type->tp_as_mapping->mp_subscript(self,key);
   else
@@ -849,7 +847,7 @@ static PyObject *
 concat_by_name(PyObject *self, PyObject *args)
 {
   PyObject *other;
-  UNLESS(PyArg_Parse(args,"O",&other)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"O",&other)) return NULL;
   return self->ob_type->tp_as_sequence->sq_concat(self,other);
 }
 
@@ -857,7 +855,7 @@ static PyObject *
 repeat_by_name(PyObject *self, PyObject *args)
 {
   int r;
-  UNLESS(PyArg_Parse(args,"i",&r)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"i",&r)) return NULL;
   return self->ob_type->tp_as_sequence->sq_repeat(self,r);
 }
 
@@ -865,7 +863,7 @@ repeat_by_name(PyObject *self, PyObject *args)
 static PyObject * \
 OP ## _by_name(PyObject *self, PyObject *args) { \
   PyObject *v; \
-  UNLESS(PyArg_Parse(args,"O",&v)) return NULL; \
+  UNLESS(PyArg_ParseTuple(args,"O",&v)) return NULL; \
   return PyNumber_ ## AOP(self,v); \
 }
 
@@ -887,7 +885,7 @@ power_by_name(PyObject *self, PyObject *args)
 #define UNOP(OP) \
 static PyObject * \
 OP ## _by_name(PyObject *self, PyObject *args) { \
-  UNLESS(PyArg_Parse(args,"")) return NULL; \
+  UNLESS(PyArg_ParseTuple(args,"")) return NULL; \
   return self->ob_type->tp_as_number->nb_ ## OP(self); \
 }
 
@@ -898,7 +896,7 @@ UNOP(absolute)
 static PyObject * 
 nonzero_by_name(PyObject *self, PyObject *args) { 
   long r; 
-  UNLESS(PyArg_Parse(args,"")) return NULL; 
+  UNLESS(PyArg_ParseTuple(args,"")) return NULL; 
   UNLESS(-1 != (r=self->ob_type->tp_as_number->nb_nonzero(self))) return NULL; 
   return PyInt_FromLong(r); 
 } 
@@ -916,7 +914,7 @@ coerce_by_name(PyObject *self, PyObject *args)
 {
   PyObject *v;
   int r;
-  UNLESS(PyArg_Parse(args,"O", &v)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"O", &v)) return NULL;
   UNLESS(-1 != (r=self->ob_type->tp_as_number->nb_coerce(&self,&v)))
     {
       Py_INCREF(Py_None);
@@ -951,65 +949,78 @@ getBaseDictionary(PyExtensionClass *type)
   UNLESS(dict=type->class_dictionary)
     UNLESS(dict=PyDict_New()) return NULL;
   
-  FILLENTRY(type->tp, repr, repr, 0, "convert to an expression string");
-  FILLENTRY(type->tp, hash, hash, 0, "compute a hash value");
-  FILLENTRY(type->tp, call, call, 2, "call as a function");
-  FILLENTRY(type->tp, compare, comp, 0, "compare with another object");
-  FILLENTRY(type->tp, getattr, getattr, 0, "Get an attribute");
-  FILLENTRY(type->tp, setattr, setattr, 1, "Set an attribute");
-  FILLENTRY(type->tp, getattro, getattr, 0, "Get an attribute");
-  FILLENTRY(type->tp, setattro, setattr, 1, "Set an attribute");
+  FILLENTRY(type->tp, repr, repr, METH_VARARGS,
+	    "convert to an expression string");
+  FILLENTRY(type->tp, hash, hash, METH_VARARGS, "compute a hash value");
+  FILLENTRY(type->tp, call, call, METH_VARARGS | METH_KEYWORDS,
+	    "call as a function");
+  FILLENTRY(type->tp, compare, comp, METH_VARARGS,
+	    "compare with another object");
+  FILLENTRY(type->tp, getattr, getattr, METH_VARARGS, "Get an attribute");
+  FILLENTRY(type->tp, setattr, setattr, METH_VARARGS, "Set an attribute");
+  FILLENTRY(type->tp, getattro, getattr, METH_VARARGS, "Get an attribute");
+  FILLENTRY(type->tp, setattro, setattr, METH_VARARGS, "Set an attribute");
 
   if(sm=type->tp_as_sequence)
     {
-      FILLENTRY(sm->sq, length, len, 0, "Get the object length");
-      FILLENTRY(sm->sq, concat, concat, 0,
-		"Concatinate the object with another");
-      FILLENTRY(sm->sq, repeat, repeat, 0,
+      FILLENTRY(sm->sq, length, len, METH_VARARGS, "Get the object length");
+      FILLENTRY(sm->sq, repeat, mul, METH_VARARGS,
 		"Get a new object that is the object repeated.");
-      FILLENTRY(sm->sq, item, getitem, 0, "Get an item");
-      FILLENTRY(sm->sq, slice, getslice, 1, "Get a slice");
-      FILLENTRY(sm->sq, ass_item, setitem, 1, "Assign an item");
-      FILLENTRY(sm->sq, ass_slice, setslice, 1, "Assign a slice");
+      FILLENTRY(sm->sq, item, getitem, METH_VARARGS, "Get an item");
+      FILLENTRY(sm->sq, slice, getslice, METH_VARARGS, "Get a slice");
+      FILLENTRY(sm->sq, ass_item, setitem, METH_VARARGS, "Assign an item");
+      FILLENTRY(sm->sq, ass_slice, setslice, METH_VARARGS, "Assign a slice");
     }      
 
   if(mm=type->tp_as_mapping)
     {
-      FILLENTRY(mm->mp, length, len, 0, "Get the object length");
-      FILLENTRY(mm->mp, subscript, getitem, 0, "Get an item");
-      FILLENTRY(mm->mp, ass_subscript, setitem, 0, "Assign an item");
+      FILLENTRY(mm->mp, length, len, METH_VARARGS, "Get the object length");
+      FILLENTRY(mm->mp, subscript, getitem, METH_VARARGS, "Get an item");
+      FILLENTRY(mm->mp, ass_subscript, setitem, METH_VARARGS,
+		"Assign an item");
     }      
 
   if((nm=type->tp_as_number) != NULL)
     {
-      FILLENTRY(nm->nb, add, add, 0, "Add to another");
-      FILLENTRY(nm->nb, subtract, sub, 0, "Subtract another");
-      FILLENTRY(nm->nb, multiply, mul, 0, "Multiple by another");
-      FILLENTRY(nm->nb, divide, div, 0, "Divide by another");
-      FILLENTRY(nm->nb, remainder, mod, 0, "Compute a remainder");
-      FILLENTRY(nm->nb, power, pow, 1, "Raise to a power");
-      FILLENTRY(nm->nb, divmod, divmod, 0,
+      FILLENTRY(nm->nb, add, add, METH_VARARGS, "Add to another");
+      FILLENTRY(nm->nb, subtract, sub, METH_VARARGS, "Subtract another");
+      FILLENTRY(nm->nb, multiply, mul, METH_VARARGS, "Multiple by another");
+      FILLENTRY(nm->nb, divide, div, METH_VARARGS, "Divide by another");
+      FILLENTRY(nm->nb, remainder, mod, METH_VARARGS, "Compute a remainder");
+      FILLENTRY(nm->nb, power, pow, METH_VARARGS, "Raise to a power");
+      FILLENTRY(nm->nb, divmod, divmod, METH_VARARGS,
 		"Compute the whole result and remainder of dividing\n"
 		"by another");
-      FILLENTRY(nm->nb, negative, neg, 0, "Get the negative value.");
-      FILLENTRY(nm->nb, positive, pos, 0, "Compute positive value");
-      FILLENTRY(nm->nb, absolute, abs, 0, "Compute absolute value");
-      FILLENTRY(nm->nb, nonzero, nonzero, 0, "Determine whether nonzero");
-      FILLENTRY(nm->nb, invert, inv, 0, "Compute inverse");
-      FILLENTRY(nm->nb, lshift, lshift, 0, "Shist left");
-      FILLENTRY(nm->nb, rshift, rshift, 0, "Shist right");
-      FILLENTRY(nm->nb, and, and, 0, "bitwize logical and");
-      FILLENTRY(nm->nb, or, or, 0, "bitwize logical or");
-      FILLENTRY(nm->nb, xor, xor, 0, "bitwize logical excusive or");
-      FILLENTRY(nm->nb, coerce, coerce, 0,
+      FILLENTRY(nm->nb, negative, neg, METH_VARARGS,
+		"Get the negative value.");
+      FILLENTRY(nm->nb, positive, pos, METH_VARARGS, "Compute positive value");
+      FILLENTRY(nm->nb, absolute, abs, METH_VARARGS, "Compute absolute value");
+      FILLENTRY(nm->nb, nonzero, nonzero, METH_VARARGS,
+		"Determine whether nonzero");
+      FILLENTRY(nm->nb, invert, inv, METH_VARARGS, "Compute inverse");
+      FILLENTRY(nm->nb, lshift, lshift, METH_VARARGS, "Shist left");
+      FILLENTRY(nm->nb, rshift, rshift, METH_VARARGS, "Shist right");
+      FILLENTRY(nm->nb, and, and, METH_VARARGS, "bitwize logical and");
+      FILLENTRY(nm->nb, or, or, METH_VARARGS, "bitwize logical or");
+      FILLENTRY(nm->nb, xor, xor, METH_VARARGS, "bitwize logical excusive or");
+      FILLENTRY(nm->nb, coerce, coerce, METH_VARARGS,
 		"Coerce woth another to a common type");
-      FILLENTRY(nm->nb, int, int, 0, "Convert to an integer");
-      FILLENTRY(nm->nb, long, long, 0,
+      FILLENTRY(nm->nb, int, int, METH_VARARGS, "Convert to an integer");
+      FILLENTRY(nm->nb, long, long, METH_VARARGS,
 		"Convert to an infinite-precision integer");
-      FILLENTRY(nm->nb, float, float, 0, "Convert to floating point number");
-      FILLENTRY(nm->nb, oct, oct, 0, "Convert to an octal string");
-      FILLENTRY(nm->nb, hex, hex, 0, "Convert to a hexadecimal string");
+      FILLENTRY(nm->nb, float, float, METH_VARARGS,
+		"Convert to floating point number");
+      FILLENTRY(nm->nb, oct, oct, METH_VARARGS, "Convert to an octal string");
+      FILLENTRY(nm->nb, hex, hex, METH_VARARGS,
+		"Convert to a hexadecimal string");
     }
+
+  if(sm=type->tp_as_sequence)
+    {
+      FILLENTRY(sm->sq, concat, add, METH_VARARGS,
+		"Concatinate the object with another");
+    }      
+
   return dict;
 err:
   Py_DECREF(dict);
@@ -1418,7 +1429,9 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 static int
 CCL_setattro(PyExtensionClass *self, PyObject *name, PyObject *v)
 {
-  if(v && UnboundCMethod_Check(v))
+  if(v && UnboundCMethod_Check(v) &&
+     ! (self->class_flags & EXTENSIONCLASS_METHODHOOK_FLAG)
+     )
     {
       char *n;
       PyNumberMethods *nm;
@@ -1426,10 +1439,8 @@ CCL_setattro(PyExtensionClass *self, PyObject *name, PyObject *v)
       PyMappingMethods *m, *mm;
 
       UNLESS(n=PyString_AsString(name)) return -1;
-      if(*n=='_' && n[1]=='_')
+      if(*n++=='_' && *n++=='_')
 	{
-	  n+=2;
-
 #define SET_SPECIAL(C,P) \
 	  if(strcmp(n,#P "__")==0 \
 	     && AsCMethod(v)->meth==(PyCFunction)C ## _by_name \
@@ -1612,6 +1623,10 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
       Py_DECREF(init);
     }
   else PyErr_Clear();
+
+  if(self->bases && subclass_watcher &&
+     ! PyObject_CallMethod(subclass_watcher,"created","O",inst))
+    PyErr_Clear();
 
   return inst;
 err:
@@ -1817,7 +1832,8 @@ subclass_compare(PyObject *self, PyObject *v)
 
   UNLESS(m=subclass_getspecial(self,py__cmp__)) return -1;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==compare_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     r=AsCMethod(m)->type->tp_compare(self,v);
   else
     {
@@ -1841,7 +1857,8 @@ subclass_hash(PyObject *self)
 
   UNLESS(m=subclass_getspecial(self,py__hash__)) return -1;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==hash_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     r=AsCMethod(m)->type->tp_hash(self);
   else
     {
@@ -1877,7 +1894,8 @@ subclass_repr(PyObject *self)
     return default_subclass_repr(self);
 
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==repr_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     ASSIGN(m,AsCMethod(m)->type->tp_repr(self));
   else if(UnboundEMethod_Check(m))
     ASSIGN(m,PyObject_CallFunction(m,"O",self));
@@ -1893,7 +1911,8 @@ subclass_call(PyObject *self, PyObject *args, PyObject *kw)
 
   UNLESS(m=subclass_getspecial(self,py__call__)) return NULL;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==(PyCFunction)call_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     ASSIGN(m,AsCMethod(m)->type->tp_call(self,args,kw));
   else
     {
@@ -1923,7 +1942,8 @@ subclass_str(PyObject *self)
       return subclass_repr(self);
     }
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==str_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     ASSIGN(m,AsCMethod(m)->type->tp_str(self));
   else if(UnboundEMethod_Check(m))
     ASSIGN(m,PyObject_CallFunction(m,"O",self));
@@ -1939,18 +1959,68 @@ subclass_ ## M(PyObject *self, PyObject *v) \
   PyObject *m; \
   UNLESS(m=subclass_getspecial(self,py__ ## N ## __)) return NULL; \
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==M ## _by_name \
-     && SubclassInstance_Check(self,AsCMethod(m)->type)) \
-    ASSIGN(m,PyNumber_ ## A(self,v)); \
+     && SubclassInstance_Check(self,AsCMethod(m)->type) \
+     && ! HasMethodHook(self)) \
+    ASSIGN(m,AsCMethod(m)->type->tp_as_number->nb_ ## M(self,v)); \
   else if(UnboundEMethod_Check(m)) \
     ASSIGN(m,PyObject_CallFunction(m,"OO",self,v)); \
   else \
     ASSIGN(m,PyObject_CallFunction(m,"O",v)); \
   return m; \
 }  
-  
-BINSUB(add,add,Add)
+
+static PyObject * 
+subclass_add(PyObject *self, PyObject *v)
+{ 
+  PyObject *m; 
+
+  UNLESS(m=subclass_getspecial(self,py__add__)) return NULL; 
+
+  if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==concat_by_name 
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self)) 
+    ASSIGN(m,AsCMethod(m)->type->tp_as_sequence->sq_concat(self,v)); 
+  else if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==add_by_name 
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self)) 
+    ASSIGN(m,AsCMethod(m)->type->tp_as_number->nb_add(self,v)); 
+  else if(UnboundEMethod_Check(m)) 
+    ASSIGN(m,PyObject_CallFunction(m,"OO",self,v)); 
+  else 
+    ASSIGN(m,PyObject_CallFunction(m,"O",v)); 
+
+  return m; 
+}  
+
 BINSUB(subtract,sub,Subtract)
-BINSUB(multiply,mul,Multiply)
+
+static PyObject * 
+subclass_multiply(PyObject *self, PyObject *v)
+{ 
+  PyObject *m; 
+
+  UNLESS(m=subclass_getspecial(self,py__mul__)) return NULL; 
+  if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==repeat_by_name 
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
+    {
+      int i;
+
+      i=PyInt_AsLong(v);
+      if(i==-1 && PyErr_Occurred()) return NULL;
+      ASSIGN(m,AsCMethod(m)->type->tp_as_sequence->sq_repeat(self,i));
+    }
+  else if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==multiply_by_name 
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self)) 
+    ASSIGN(m,AsCMethod(m)->type->tp_as_number->nb_multiply(self,v)); 
+  else if(UnboundEMethod_Check(m)) 
+    ASSIGN(m,PyObject_CallFunction(m,"OO",self,v)); 
+  else 
+    ASSIGN(m,PyObject_CallFunction(m,"O",v)); 
+  return m; 
+}  
+
 BINSUB(divide,div,Divide)
 BINSUB(remainder,mod,Remainder)
 
@@ -1960,7 +2030,8 @@ subclass_power(PyObject *self, PyObject *v, PyObject *w)
   PyObject *m; 
   UNLESS(m=subclass_getspecial(self,py__pow__)) return NULL; 
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==power_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type)) 
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self)) 
     ASSIGN(m,AsCMethod(m)->type->tp_as_number->nb_power(self,v,w));
   else if(UnboundEMethod_Check(m))
     ASSIGN(m,PyObject_CallFunction(m,"OOO",self,v,w));
@@ -1983,9 +2054,16 @@ subclass_coerce(PyObject **self, PyObject **v)
   PyObject *m; 
   int r;
 
-  UNLESS(m=subclass_getspecial(*self,py__coerce__)) return -1; 
+  UNLESS(m=subclass_getspecial(*self,py__coerce__))
+    {
+      PyErr_Clear();
+      Py_INCREF(*self);
+      Py_INCREF(*v);
+      return 0;
+    }
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==coerce_by_name
-     && SubclassInstance_Check(*self,AsCMethod(m)->type)) 
+     && SubclassInstance_Check(*self,AsCMethod(m)->type)
+     && ! HasMethodHook(*self)) 
     r=AsCMethod(m)->type->tp_as_number->nb_coerce(self,v);
   else 
     { 
@@ -2014,7 +2092,8 @@ subclass_ ## M(PyObject *self) \
   PyObject *m; \
   UNLESS(m=subclass_getspecial(self,py__ ## N ## __)) return NULL; \
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==M ## _by_name \
-     && SubclassInstance_Check(self,AsCMethod(m)->type)) \
+     && SubclassInstance_Check(self,AsCMethod(m)->type) \
+     && ! HasMethodHook(self)) \
     ASSIGN(m,AsCMethod(m)->type->tp_as_number->nb_ ## M(self)); \
   else if(UnboundEMethod_Check(m)) \
     ASSIGN(m,PyObject_CallFunction(m,"O",self)); \
@@ -2045,7 +2124,8 @@ subclass_nonzero(PyObject *self)
 	}
     }
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==nonzero_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     r=AsCMethod(m)->type->tp_as_number->nb_nonzero(self);
   else
     {
@@ -2107,7 +2187,8 @@ subclass_length(PyObject *self)
 
   UNLESS(m=subclass_getspecial(self,py__len__)) return -1;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==length_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     {
       t=(PyExtensionClass*)AsCMethod(m)->type;
       Py_DECREF(m);
@@ -2134,7 +2215,8 @@ subclass_item(PyObject *self, int index)
 
   UNLESS(m=subclass_getspecial(self,py__getitem__)) return NULL;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==getitem_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     {
       t=(PyExtensionClass*)AsCMethod(m)->type;
       if(t->tp_as_sequence && t->tp_as_sequence->sq_item)
@@ -2157,7 +2239,8 @@ subclass_slice(PyObject *self, int i1, int i2)
 
   UNLESS(m=subclass_getspecial(self,py__getslice__)) return NULL;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==slice_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     ASSIGN(m,AsCMethod(m)->type->tp_as_sequence->sq_slice(self,i1,i2));
   else if(UnboundEMethod_Check(m))
     ASSIGN(m,PyObject_CallFunction(m,"Oii",self,i1,i2));
@@ -2186,7 +2269,8 @@ subclass_ass_item(PyObject *self, int index, PyObject *v)
   UNLESS(m=subclass_getspecial(self,py__setitem__)) return -1;
   if(UnboundCMethod_Check(m) &&
      AsCMethod(m)->meth==(PyCFunction)setitem_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     {
       t=(PyExtensionClass*)AsCMethod(m)->type;
       if(t->tp_as_sequence && t->tp_as_sequence->sq_ass_item)
@@ -2229,7 +2313,8 @@ subclass_ass_slice(PyObject *self, int i1, int i2, PyObject *v)
   UNLESS(m=subclass_getspecial(self,py__setslice__)) return -1;
   if(UnboundCMethod_Check(m) &&
      AsCMethod(m)->meth==(PyCFunction)ass_slice_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     {	
       r=AsCMethod(m)->type->tp_as_sequence->sq_ass_slice(self,i1,i2,v);
       Py_DECREF(m);
@@ -2253,64 +2338,14 @@ subclass_ass_slice(PyObject *self, int i1, int i2, PyObject *v)
 }  
 
 static PyObject *
-subclass_concat(PyObject *self, PyObject *v)
-{
-  PyObject *m;
-
-  UNLESS(m=subclass_getspecial(self,py__concat__))
-    { /* Maybe we should check for __add__ */
-      PyObject *am;
-
-      PyErr_Clear();
-      UNLESS(am=subclass_getspecial(self,py__add__)) return NULL;
-      if(m=subclass_getspecial(self,py__coerce__))
-	{
-	  if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==coerce_by_name
-	     && SubclassInstance_Check(self,AsCMethod(m)->type))
-	    {
-	      PyObject *x,*y;
-
-	      x=self;
-	      y=v;
-	      if(0==AsCMethod(m)->type->tp_as_number->nb_coerce(&x,&y))
-		{
-		  Py_DECREF(am);
-		  if(x->ob_type->tp_as_number)
-		    am=x->ob_type->tp_as_number->nb_add(x,y);
-		  else
-		    am=NULL;
-		  Py_DECREF(m);
-		  Py_DECREF(x);
-		  Py_DECREF(y);
-		  if(am) return am;
-		}
-	    }
-	  Py_DECREF(m);
-	}
-      Py_DECREF(am);
-      PyErr_SetString(PyExc_AttributeError,
-	 "No __add__ or __concat__ methods, or maybe I'm just being stupid.");
-      return NULL;
-    }
-
-  if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==concat_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
-    ASSIGN(m,AsCMethod(m)->type->tp_as_sequence->sq_concat(self,v));
-  else if(UnboundEMethod_Check(m))
-    ASSIGN(m,PyObject_CallFunction(m,"OO",self,v));
-  else
-    ASSIGN(m,PyObject_CallFunction(m,"O",v));
-  return m;
-}
-
-static PyObject *
 subclass_repeat(PyObject *self, int v)
 {
   PyObject *m;
 
-  UNLESS(m=subclass_getspecial(self,py__repeat__)) return NULL;
+  UNLESS(m=subclass_getspecial(self,py__mul__)) return NULL;
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==repeat_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     ASSIGN(m,AsCMethod(m)->type->tp_as_sequence->sq_repeat(self,v));
   else if(UnboundEMethod_Check(m))
     ASSIGN(m,PyObject_CallFunction(m,"Oi",self,v));
@@ -2321,7 +2356,7 @@ subclass_repeat(PyObject *self, int v)
 
 PySequenceMethods subclass_as_sequence = {
 	(inquiry)subclass_length,   		/*sq_length*/
-	(binaryfunc)subclass_concat,		/*sq_concat*/
+	(binaryfunc)subclass_add,		/*sq_concat*/
 	(intargfunc)subclass_repeat,		/*sq_repeat*/
 	(intargfunc)subclass_item,		/*sq_item*/
 	(intintargfunc)subclass_slice,		/*sq_slice*/
@@ -2338,7 +2373,8 @@ subclass_subscript(PyObject *self, PyObject *key)
   UNLESS(m=subclass_getspecial(self,py__getitem__)) return NULL;
   if(UnboundCMethod_Check(m) &&
      AsCMethod(m)->meth==(PyCFunction)getitem_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     {
       t=(PyExtensionClass*)AsCMethod(m)->type;
       if(t->tp_as_mapping && t->tp_as_mapping->mp_subscript)
@@ -2374,10 +2410,11 @@ subclass_ass_subscript(PyObject *self, PyObject *index, PyObject *v)
   UNLESS(m=subclass_getspecial(self,py__setitem__)) return -1;
   if(UnboundCMethod_Check(m) &&
      AsCMethod(m)->meth==(PyCFunction)setitem_by_name
-     && SubclassInstance_Check(self,AsCMethod(m)->type))
+     && SubclassInstance_Check(self,AsCMethod(m)->type)
+     && ! HasMethodHook(self))
     {
       t=(PyExtensionClass*)AsCMethod(m)->type;
-      if(t->tp_as_sequence && t->tp_as_mapping->mp_ass_subscript)
+      if(t->tp_as_mapping && t->tp_as_mapping->mp_ass_subscript)
 	{
 	  Py_DECREF(m);
 	  return t->tp_as_mapping->mp_ass_subscript(self,index,v);
@@ -2443,6 +2480,11 @@ subclass_dealloc(PyObject *self)
 
   PyErr_Fetch(&t,&v,&tb);
   Py_INCREF(self);		/* Give us a new lease on life */
+
+  if(subclass_watcher &&
+     ! PyObject_CallMethod(subclass_watcher,"destroying","O",self))
+    PyErr_Clear();
+
 
   if(m=subclass_getspecial(self,py__del__))
     {
@@ -2574,48 +2616,6 @@ subclass_hasattr(PyExtensionClass *type, PyObject *name)
   return 0;
 }
 
-static int
-has_number_methods(PyExtensionClass *type)
-{
-  return (subclass_hasattr(type,py__add__) ||
-	  subclass_hasattr(type,py__sub__) ||
-	  subclass_hasattr(type,py__mul__) ||
-	  subclass_hasattr(type,py__div__) ||
-	  subclass_hasattr(type,py__mod__) ||
-	  subclass_hasattr(type,py__pow__) ||
-	  subclass_hasattr(type,py__divmod__) ||
-	  subclass_hasattr(type,py__lshift__) ||
-	  subclass_hasattr(type,py__rshift__) ||
-	  subclass_hasattr(type,py__and__) ||
-	  subclass_hasattr(type,py__or__) ||
-	  subclass_hasattr(type,py__xor__) ||
-	  subclass_hasattr(type,py__coerce__) ||
-	  subclass_hasattr(type,py__neg__) ||
-	  subclass_hasattr(type,py__pos__) ||
-	  subclass_hasattr(type,py__abs__) ||
-	  subclass_hasattr(type,py__nonzero__) ||
-	  subclass_hasattr(type,py__inv__) ||
-	  subclass_hasattr(type,py__int__) ||
-	  subclass_hasattr(type,py__long__) ||
-	  subclass_hasattr(type,py__float__) ||
-	  subclass_hasattr(type,py__oct__) ||
-	  subclass_hasattr(type,py__hex__)
-	  );
-}	  
-
-static int
-has_collection_methods(PyExtensionClass *type)
-{
-  return (subclass_hasattr(type,py__getitem__) ||
-	  subclass_hasattr(type,py__setitem__) ||
-	  subclass_hasattr(type,py__getslice__) ||
-	  subclass_hasattr(type,py__setslice__) ||
-	  subclass_hasattr(type,py__concat__) ||
-	  subclass_hasattr(type,py__repeat__) ||
-	  subclass_hasattr(type,py__len__) 
-	  );
-}	  
-
 static void
 subclass_init_getattr(PyExtensionClass *self, PyObject *methods)
 {
@@ -2716,7 +2716,7 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   PyObject *bases, *methods, *class_init;
   PyExtensionClass *type;
   char *name, *p;
-  int dynamic=1, l;
+  int l;
 
   UNLESS(PyArg_ParseTuple(args,"sOO", &name, &bases, &methods)) return NULL;
   l=strlen(name)+1;
@@ -2783,31 +2783,19 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
     }
 
 
-  if(dynamic || has_number_methods(self))
-    {
-      self->tp_as_number=(PyNumberMethods*)malloc(sizeof(PyNumberMethods));
-      UNLESS(self->tp_as_number) return PyErr_NoMemory();
-      *(self->tp_as_number)=subclass_as_number;
-    }
-  else
-    self->tp_as_number=NULL;
+  self->tp_as_number=(PyNumberMethods*)malloc(sizeof(PyNumberMethods));
+  UNLESS(self->tp_as_number) return PyErr_NoMemory();
+  *(self->tp_as_number)=subclass_as_number;
     
-  if(dynamic || has_collection_methods(self))
-    {
-      self->tp_as_sequence=
-	(PySequenceMethods*)malloc(sizeof(PySequenceMethods));
-      UNLESS(self->tp_as_sequence) return PyErr_NoMemory();
-      *(self->tp_as_sequence)=subclass_as_sequence;
+  self->tp_as_sequence=
+    (PySequenceMethods*)malloc(sizeof(PySequenceMethods));
+  UNLESS(self->tp_as_sequence) return PyErr_NoMemory();
+  *(self->tp_as_sequence)=subclass_as_sequence;
+  
+  self->tp_as_mapping=(PyMappingMethods*)malloc(sizeof(PyMappingMethods));
+  UNLESS(self->tp_as_mapping) return PyErr_NoMemory();
+  *(self->tp_as_mapping)=subclass_as_mapping;
 
-      self->tp_as_mapping=(PyMappingMethods*)malloc(sizeof(PyMappingMethods));
-      UNLESS(self->tp_as_mapping) return PyErr_NoMemory();
-      *(self->tp_as_mapping)=subclass_as_mapping;
-    }
-  else
-    {
-      self->tp_as_sequence=NULL;
-      self->tp_as_sequence=NULL;
-    }
   subclass_set(hash,hash);
   subclass_set(call,call);
   subclass_set(str,str);
@@ -2864,7 +2852,25 @@ static PyExtensionClass ECType = {
 
 /* List of methods defined in the module */
 
+static PyObject *
+set_subclass_watcher(PyObject *ignored, PyObject *args)
+{
+  PyObject *old, *sw=0;
+
+  UNLESS(PyArg_ParseTuple(args,"|O",&sw)) return NULL;
+  old=subclass_watcher;
+  subclass_watcher=sw;
+  if(sw) Py_INCREF(sw);
+  if(old) return old;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static struct PyMethodDef CC_methods[] = {
+  {"subclass_watcher", (PyCFunction)set_subclass_watcher, 1,
+   "subclass_watcher(ob) -- "
+   "Register an object to watch subclass instance events"
+  },
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -2891,7 +2897,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -2928,6 +2934,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.12  1997/06/16 13:50:51  jim
+  Major cleanup.  Fixed bugs in numeric handling.
+
   Revision 1.11  1997/04/27 09:20:26  jim
   Fixed bugs in handling dict-less subclasses.
 
