@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -270,7 +270,6 @@ class ApplicationManager(Folder,CacheManager):
     DavLocks = DavLockManager()
 
     manage=manage_main=DTMLFile('dtml/cpContents', globals())
-    manage_undoForm=DTMLFile('dtml/undo', globals())
 
     def version_txt(self):
         if not hasattr(self, '_v_version_txt'):
