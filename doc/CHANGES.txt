@@ -19,6 +19,12 @@ Zope Changes
           can be given in any order.  This makes startup scripts loke
           serve.py quite a bit simpler.
 
+      Bugs fixed
+
+        - The start.bat file used to start ZopeHTTPServer on win32 was
+          misnamed and didn't correctly pass command-line arguments.
+
+
     Zope 1.9 beta 2
 
       In addition to various documentation updates, this release includes:
@@ -59,7 +65,7 @@ Zope Changes
 
       Bugs fixed:
 
-        - pcgi did not build correctly on Solaurus 2.6
+        - pcgi did not build correctly on Solaris 2.6
 
         - links in headers were broken when Zope was reached with
           /, as is the case when the ZopeHTTPServer is used.
