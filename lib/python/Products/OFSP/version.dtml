@@ -40,29 +40,6 @@
       <input type=submit value="Start Working in <!--#var title_or_id-->">
     </form>
 <!--#endif-->
-
-<!--#if nonempty-->
-
-  <hr>
-  
-  <p><form action=save>
-  You can make work done in <!--#var title_and_id--> permanent by
-  entering a remark in the space below and then
-  clicking on the "Save" button.<br>
-  <textarea name=remark rows=10 cols=50></textarea><br>
-  <input type=submit value="Save">
-  </form>
-  
-  <hr>
-  
-  <p><form action=discard>
-  You can throw away work done in <!--#var title_and_id--> by
-  clicking on the "Discard" button.
-  <input type=submit value="Discard">
-  </form>
-
-<!--#endif-->
-
 </body> </html>
 
 

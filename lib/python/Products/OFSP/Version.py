@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -110,25 +110,32 @@ class Version(Persistent,Implicit,RoleManager,Item):
     """ """
     meta_type='Version'
 
-    manage_options=({'label':'Join/Leave', 'action':'manage_main'},
-                    {'label':'Properties', 'action':'manage_editForm'},
-                    {'label':'Security', 'action':'manage_access'},
-                   )
+    manage_options=(
+        {'label':'Join/Leave', 'action':'manage_main'},
+        {'label':'Save/Discard', 'action':'manage_end'},
+        {'label':'Properties', 'action':'manage_editForm'},
+        {'label':'Security', 'action':'manage_access'},
+        )
 
     __ac_permissions__=(
         ('View management screens', ('manage','manage_editForm', '')),
         ('Change Versions', ('manage_edit',)),
-        ('Join/leave Versions', ('enter','leave','leave_another')),
-        ('Save/discard Version changes', ('save','discard')),
+        ('Join/leave Versions',
+         ('manage_main', 'enter','leave','leave_another')),
+        ('Save/discard Version changes',
+         ('manage_end', 'save','discard')),
         )
 
     cookie=''
+
+    index_html=None # Ugh.
 
     def __init__(self, id, title, REQUEST):
         self.id=id
         self.title=title
 
-    manage=manage_main=Globals.HTMLFile('version', globals())
+    manage_main=Globals.HTMLFile('version', globals())
+    manage_end=Globals.HTMLFile('versionEnd', globals())
     manage_editForm   =Globals.HTMLFile('versionEdit', globals())
 
     def title_and_id(self):
@@ -208,7 +215,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
     
-    def discard(self, REQUEST=None):
+    def discard(self, remark='', REQUEST=None):
         'Discard changes made during the version'
         try: db=self._p_jar.db()
         except:
@@ -216,6 +223,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
             Globals.VersionBase[self.cookie].abort()
         else:
             # ZODB 3
+            get_transaction().note(remark)
             db.abortVersion(self.cookie)
 
         if REQUEST is not None:
