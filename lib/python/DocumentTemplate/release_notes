@@ -36,6 +36,9 @@ DocumentTemplate releases
         In particular, if a valueless parameter is not
         in the first position, it is not confused for a name,
 
+      - Source files used tabs and spaces for indentation.
+        All tabs have now been removed.
+
   2.1
 
     This release has a number of new features and bug fixes.
