@@ -1,7 +1,8 @@
 """Image object"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
+import Globals
 from Globals import HTMLFile, MessageDialog
 from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
@@ -166,3 +167,7 @@ class ImageHandler:
 		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
+
+
+Globals.default__class_init__(ImageHandler)
+

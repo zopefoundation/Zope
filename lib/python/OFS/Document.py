@@ -1,13 +1,13 @@
 """Document object"""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
 from Acquisition import Explicit
-import regex
+import regex, Globals
 
 
 class Document(HTML, Explicit, RoleManager, Item_w__name__):
@@ -160,6 +160,7 @@ class DocumentHandler:
 		t.append((n,getattr(self,n)))
 	return t
 
+Globals.default__class_init__(DocumentHandler)
 
 
 def decapitate(html, RESPONSE=None,
