@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.24 1997/03/24 20:22:27 chris Exp $'''
+$Id: InvertedIndex.py,v 1.25 1997/03/28 16:53:50 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,11 @@ $Id: InvertedIndex.py,v 1.24 1997/03/24 20:22:27 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.25  1997/03/28 16:53:50  chris
+# indexed data now stored as dictionaries rather than ResultLists.
+# indexing documents with few than two keywords fails silently rather
+# than raising an exception.
+#
 # Revision 1.24  1997/03/24 20:22:27  chris
 # *** empty log message ***
 #
@@ -167,7 +172,7 @@ $Id: InvertedIndex.py,v 1.24 1997/03/24 20:22:27 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -293,14 +298,16 @@ class ResultList:
 
     for key,v in self.items():
 	try:
-	    xv=x[key]
-	    v=v[0]+xv[0], v[1]+xv[1]
+	    xv = x[key]
+	    v = v[0] + xv[0], v[1] + xv[1]
 	except: pass
 	result[key] = v
 
     for key,v in x.items():
-	try: self[key]
-	except: result[key]=v
+	try: 
+            self[key]
+	except: 
+            result[key]=v
 
     return result
 
@@ -383,16 +390,18 @@ RegexType = type(regex.compile(''))
 IndexingError = 'InvertedIndex.IndexingError'
 
 _default_stop_words = [
-    'also', 'an', 'and', 'are', 'at', 'be', 'been', 'being', 'but', 'by',
-    'can', 'cannot', 'did', 'do', 'doing', 'either', 'else', 'even', 'for',
-    'from', 'get', 'got', 'had', 'has', 'have', 'he', 'her', 'hers', 'herself',
-    'him', 'himself', 'his', 'if', 'in', 'it', 'its', 'me', 'my', 'myself',
-    'no', 'not', 'of', 'on', 'only', 'onto', 'or', 'our', 'ourselves', 'she', 'so', 'some',
-    'than', 'that', 'the', 'their', 'them', 'themselves', 'then', 'there',
-    'these', 'they', 'this', 'those', 'to', 'too', 'unless', 'until', 'us',
-    'very', 'was', 'we', 'were', 'what', 'when', 'where', 'which', 'while',
-    'who', 'whoever', 'whom', 'whomever', 'whose', 'why', 'with', 'without',
-    'would', 'yes', 'your', 'yours', 'yourself', 'yourselves',
+    'about', 'all', 'also', 'an', 'and', 'any', 'are', 'as', 'at', 'be', 
+    'because', 'been', 'being', 'but', 'by', 'can', 'cannot', 'did', 'do',
+    'doing', 'each', 'either', 'else', 'even', 'for', 'from', 'get', 'got',
+    'had', 'has', 'have', 'he', 'her', 'hers', 'herself', 'him', 'himself',
+    'his', 'how', 'if', 'in', 'into', 'is', 'it', 'its', 'me', 'my', 'myself',
+    'no', 'not', 'of', 'on', 'one', 'only', 'onto', 'or', 'our', 'ourselves',
+    'she', 'since', 'so', 'some', 'take', 'than', 'that', 'the', 'their', 'them',
+    'themselves', 'then', 'there', 'these', 'they', 'this', 'those', 'through',
+    'to', 'too', 'unless', 'until', 'upon',  'us', 'very', 'was', 'we', 'were',
+    'what', 'when', 'where', 'which', 'while', 'who', 'whoever', 'whom',
+    'whomever', 'whose', 'why', 'will', 'with', 'without', 'would', 'yes',
+    'you', 'your', 'yours', 'yourself', 'yourselves',
     ]
 
 default_stop_words = {}
@@ -448,95 +457,92 @@ class Index:
     print i['blah']
   '''
 
-  list_class = ResultList
+  def __init__(self, index_dictionary = None)
+      'Create an inverted index'
+      if (index_dictionary is None):
+          index_dictionary = copy.copy(default_stop_words)
 
-  def __init__(self, index_dictionary = None, list_class = None):
-    'Create an inverted index'
-    if (list_class is not None):
-        self.list_class = list_class
-
-    if (index_dictionary is None):
-        index_dictionary = copy.copy(default_stop_words)
-
-    self.set_index(index_dictionary)
+      self.set_index(index_dictionary)
 
  
   def set_index(self, index_dictionary = None):
-    'Change the index dictionary for the index.'
+      'Change the index dictionary for the index.'
 
-    if (index_dictionary is None):
-      index_dictionary = {}
+      if (index_dictionary is None):
+          index_dictionary = {}
     
-    self._index_object = index_dictionary
+      self._index_object = index_dictionary
 
 
   def split_words(self, s):
-    'split a string into separate words'
-    return regsub.split(s, '[^a-zA-Z]+')
+      'split a string into separate words'
+      return regsub.split(s, '[^a-zA-Z]+')
 
 
   def index(self, src, srckey):
-    '''\
-    index(src, srckey)
+      '''\
+      index(src, srckey)
 
-    Update the index by indexing the words in src to the key, srckey
+      Update the index by indexing the words in src to the key, srckey
 
-    The source object, src, will be converted to a string and the
-    words in the string will be used as indexes to retrieve the objects 
-    key, srckey.  For simple objects, the srckey may be the object itself,
-    or it may be a key into some other data structure, such as a table.
-    '''
+      The source object, src, will be converted to a string and the
+      words in the string will be used as indexes to retrieve the objects 
+      key, srckey.  For simple objects, the srckey may be the object itself,
+      or it may be a key into some other data structure, such as a table.
+      '''
 
-    import math
+      import math
 
-    index = self._index_object
+      index = self._index_object
 
-    src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
-    src = map(lower,filter(None, self.split_words(src)))
+      src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
+      src = map(lower,filter(None, self.split_words(src)))
 
-    if (len(src) < 2):
-      raise IndexingError, 'cannot index document with fewer than two keywords'
+      if (len(src) < 2):
+          return
 
-    nwords = math.log(len(src))
+      nwords = math.log(len(src))
 
-    d = {}
-    i = -1
-    for s in src:
-      i = i + 1
-      stopword_flag = 0
+      d = {}
+      i = -1
+      for s in src:
+          i = i + 1
+          stopword_flag = 0
 
-      while (not stopword_flag):
-        try:
-          index_val = index[s]
-        except KeyError:
-          break
+          while (not stopword_flag):
+              try:
+                  index_val = index[s]
+              except KeyError:
+                  break
 
-        if (index_val is None):
-	  stopword_flag = 1
-	elif (type(index_val) != StringType):
-          break
-        else:
-          s = index_val
-      else:  # s is a stopword
-        continue
+              if (index_val is None):
+	          stopword_flag = 1
+              elif (type(index_val) != StringType):
+                  break
+              else:
+                  s = index_val
+          else:  # s is a stopword
+              continue
 
-      try:
-        d[s].append(i)
-      except KeyError:
-        d[s] = [ i ]
+          try:
+              d[s].append(i)
+          except KeyError:
+              d[s] = [ i ]
 
-    addentry=self.addentry
-    for word,positions in d.items():
-      freq = int(10000 * (len(positions) / nwords))
-      addentry(word,srckey,(freq, positions))
+      addentry = self.addentry
+      for word, positions in d.items():
+          freq = int(10000 * (len(positions) / nwords))
+          addentry(word,srckey,(freq, positions))
 
   def addentry(self,word,key,data):
-      index=self._index_object
-      try: rl=index[word]
+      index = self._index_object
+      try:
+          rl = index[word]
       except:
-	  rl=self.list_class()
-	  index[word]=rl
-      rl[key]=data
+	  rl = self.list_class()
+	  index[word] = {}
+
+      rl[key] = data
 
   def __getitem__(self, key):
     '''\
@@ -550,7 +556,7 @@ class Index:
     '''
 
     index = self._index_object 
-    List = self.list_class
+    List = ResultList
 
     if (type(key) == RegexType):
       dict = {}
@@ -585,7 +591,7 @@ class Index:
     if (key is None):
       return List()
 
-    return key
+    return List(key)
 
 
   def keys(self):
