@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.7 2003/06/13 15:42:25 chrism Exp $
-# $Revision: 1.7 $
+# $Id: configure,v 1.8 2003/06/13 16:43:05 chrism Exp $
+# $Revision: 1.8 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -31,6 +31,9 @@ EXENAMES="python python2 python2.1 python2.2 python2.3"
 
 # where are we?
 HERE=`dirname $0`
+
+# should we be quiet?
+QUIET=""
 
 usage()
 {
@@ -61,8 +64,8 @@ get_python() {
     FOUND=""
     VERSION=""
     FOUNDLIST=""
-    echo "Testing for an acceptable Python interpreter..."
-    echo
+    out "Testing for an acceptable Python interpreter..."
+    out ""
     for DIR in $PATH; do
         IFS="$OLDIFS"
         for EXECUTABLE in $EXENAMES; do
@@ -72,7 +75,7 @@ get_python() {
 		# Strip trailing + from version number
 		CMD="$CMD;a=(a[-1]=='+')and(a[:-1])or(a);print a"
                 VERSION=`$FULL -c "$CMD"`
-                echo "  Python version $VERSION found at $FULL"
+                out "  Python version $VERSION found at $FULL"
                 if [ "$VERSION" = "$TARGET" ]; then
                     FOUND="$FULL"
                     FOUNDVERSION=$VERSION
@@ -103,14 +106,14 @@ get_python() {
         done
     done
     if [ "$VERSION" = "$TARGET" ]; then
-        echo
-        echo "  The optimimum Python version ($TARGET) was found at $FOUND."
+        out ""
+        out "  The optimimum Python version ($TARGET) was found at $FOUND."
     elif [ -z "$FOUND1" ] && [ -z "$FOUND2" ] && [ -z "$FOUND3" ] &&
          [ -z "$FOUND4" ] && [ -z "$FOUND5" ] && [ -z "$FOUND6" ] ; then
-        echo
-        echo "  No suitable Python version found.  You should install Python"
-        echo "  version $TARGET before continuing.  Versions $ACCEPTABLE"
-        echo "  also work, but not as optimally."
+        out ""
+        out "  No suitable Python version found.  You should install"
+        out "  Python version $TARGET before continuing.  Versions"
+        out "  $ACCEPTABLE also work, but not as optimally."
         exit 1
     else
         if   [ -n "$FOUND1" ]; then
@@ -132,17 +135,23 @@ get_python() {
             FOUND=$FOUND6
             FOUNDVERSION=$FOUNDVERSION6
         fi
-        echo
-        echo "  !! WARNING !! "
-        echo "  An acceptable, but non-optimal Python version ($FOUNDVERSION) "
-        echo "  was found at '$FOUND'."
-        echo "  But consider installing version '$TARGET' before running "
-        echo "  'make'.  If this isn't the Python version or interpreter "
-        echo "  instance you wish to use, you may specify a Python interpreter"
-        echo "  manually by rerunning the ./configure script with the "
-        echo "  '--with-python' option."
+        out ""
+        out "  !! WARNING !! "
+        out "  An acceptable, but non-optimal Python version ($FOUNDVERSION) "
+        out "  was found at '$FOUND'."
+        out "  But consider installing version '$TARGET' before running "
+        out "  'make'.  If this isn't the Python version or interpreter "
+        out "  instance you wish to use, you may specify a Python interpreter"
+        out "  manually by rerunning the ./configure script with the "
+        out "  '--with-python' option."
     fi
-echo
+out ""
+}
+
+out() {
+    if [ -z $QUIET ]; then
+      echo $1
+    fi
 }
 
 NEWOPTS=""
@@ -160,8 +169,12 @@ for OPT in $@; do
         FOUND=`echo $OPT | sed -e 's/--with-python\=//'`
         # use eval to do tilde expansion below
         eval "FOUND='$FOUND'"
-        echo
-        echo "Using Python interpreter at $FOUND"
+        out ""
+        out "Using Python interpreter at $FOUND"
+        ;;
+    --quiet* | -q*)
+        QUIET="true"
+        NEWOPTS="$NEWOPTS $OPT"
         ;;
     *)
         NEWOPTS="$NEWOPTS $OPT"
@@ -169,9 +182,9 @@ for OPT in $@; do
     esac
 done
 
-echo
-echo "Configuring Zope installation"
-echo
+out ""
+out "Configuring Zope installation"
+out ""
 
 if [ -z "$FOUND" ]; then
     get_python

@@ -16,8 +16,9 @@ Create a Makefile for building and installing Zope.
 import getopt
 import os
 import sys
-
 import versions
+
+QUIET=0
 
 if sys.platform == 'win32':
     PREFIX = 'c:\\Zope-' + versions.ZOPE_MAJOR_VERSION
@@ -63,13 +64,15 @@ def main():
             BUILD_BASE = a
         if o == '--quiet':
             DISTUTILS_OPTS = '-q'
+            global QUIET
+            QUIET = 1
     if REQUIRE_LF_ENABLED:
         test_largefile()
     if REQUIRE_ZLIB:
         test_zlib()
-    print "  - Zope top-level binary directory will be %s." % PREFIX
+    out("  - Zope top-level binary directory will be %s." % PREFIX)
     if INSTALL_FLAGS:
-        print "  - Distutils install flags will be '%s'" % INSTALL_FLAGS
+        out("  - Distutils install flags will be '%s'" % INSTALL_FLAGS)
     idata = {
         '<<PYTHON>>':PYTHON,
         '<<PREFIX>>':PREFIX,
@@ -85,10 +88,10 @@ def main():
         MAKEFILE = MAKEFILE.replace(k, v)
     f = open(os.path.join(os.getcwd(), 'makefile'), 'w')
     f.write(MAKEFILE)
-    print "  - Makefile written."
-    print
-    print "  Next, run %s." % MAKE_COMMAND
-    print
+    out("  - Makefile written.")
+    out("")
+    out("  Next, run %s." % MAKE_COMMAND)
+    out("")
 
 def usage():
     usage = ("""
@@ -180,5 +183,9 @@ size ever exceeds 2GB.
         )
     sys.exit(1)
 
+def out(s):
+    if not QUIET:
+        print s
+    
 if __name__ == '__main__':
     main()
