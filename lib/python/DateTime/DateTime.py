@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -1620,3 +1620,55 @@ class strftimeFormatter:
 def Timezones():
     """Return the list of recognized timezone names"""
     return _cache._zlst
+
+
+# Parse a ISO 8601
+
+def parse_iso8601(s):
+    """ parse an ISO 8601 compliant date string and return an 
+        instance of DateTime
+    """
+
+    try:
+        return _parse_iso8601(s)
+    except:
+        print sys.exc_type,sys.exc_value
+        raise 'DateTimeError','not ISO 8601 compliant date string: %s' %s
+
+def _parse_iso8601(s):
+
+    year=0
+    month=day=1
+    hour=minute=seconds=hour_off=min_off=0
+    
+    datereg = re.compile('([0-9]{4})(-([0-9][0-9]))?(-([0-9][0-9]))?')
+    timereg = re.compile('([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
+
+    # Date part
+
+    fields = datereg.split(s.strip())
+    
+    if fields[1]:   year  = atoi(fields[1])
+    if fields[3]:   month = atoi(fields[3])
+    if fields[5]:   day   = atoi(fields[5])
+
+    if s.find('T')>-1:
+        fields = timereg.split(s[s.find('T')+1:])
+
+        if fields[1]:   hour     = atoi(fields[1])
+        if fields[3]:   minute   = atoi(fields[3])
+        if fields[5]:   seconds  = atoi(fields[5])
+        if fields[6]:   seconds  = seconds+atof(fields[6])
+
+    if s.find('Z')>-1:
+        pass
+
+    if s[-3]==':' and s[-6] in ['+','-']:
+        hour_off = atoi(s[-6:-3])
+        min_off  = atoi(s[-2:])
+
+    ts = mktime((year,month,day,hour,minute,seconds,0,0,0))
+    ts = ts + (hour_off*60-min_off)
+
+    return DateTime(ts)
+
