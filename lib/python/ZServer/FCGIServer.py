@@ -563,7 +563,7 @@ class FCGIChannel(asynchat.async_chat):
         self.producer_fifo.push(producer)
         if send: self.initiate_send()
 
-	push_with_producer=push
+    push_with_producer=push
 
     def close(self):
         self.closed=1
@@ -667,7 +667,7 @@ class FCGIServer(asyncore.dispatcher):
 
 class FCGIResponse(HTTPResponse):
   
-	def setChannel(self, channel):
+    def setChannel(self, channel):
         self.channel = channel
 
     def write(self, data):
@@ -694,9 +694,9 @@ class FCGIResponse(HTTPResponse):
             shutdown = r
 
         if not self.channel.closed:
-			self.channel.push_with_producer(LoggingProducer(self.channel,
-                                                        self.stdout.length,
-                                                        'log_request'))
+            self.channel.push_with_producer(LoggingProducer(self.channel,
+                                                            self.stdout.length,
+                                                            'log_request'))
         if shutdown:
             sys.ZServerExitCode = shutdown
             self.channel.push_with_producer(ShutdownProducer())
