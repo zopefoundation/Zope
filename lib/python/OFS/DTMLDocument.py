@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
 from DTMLMethod import DTMLMethod, decapitate
@@ -289,8 +289,7 @@ class hp(SGMLParser):
 default_dd_html="""<!--#var standard_html_header-->
 <h2><!--#var title_or_id--></h2>
 <p>
-This is the <!--#var id--> Document in 
-the <!--#var "aq_parent.id()"--> Folder.
+This is the <!--#var id--> Document.
 </p>
 <!--#var standard_html_footer-->"""
 
