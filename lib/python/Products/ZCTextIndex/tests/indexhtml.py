@@ -48,10 +48,10 @@ class MySplitter:
 
 def make_old_index():
     from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
-    from Products.PluginIndexes.TextIndex.Lexicon \
-         import Lexicon, stop_word_dict
+    from Products.PluginIndexes.TextIndex.Lexicon  import Lexicon
+    from Products.ZCTextIndex.StopDict import get_stopdict
 
-    l = Lexicon(stop_word_dict)
+    l = Lexicon(get_stopdict())
     l.SplitterFunc = MySplitter()
     return TextIndex("read", lexicon=l)
 
