@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.160 2003/03/17 13:58:43 ctheune Exp $"""
-__version__='$Revision: 1.160 $'[11:-2]
+$Id: Publish.py,v 1.161 2003/03/21 21:15:02 fdrake Exp $"""
+__version__='$Revision: 1.161 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -219,8 +219,6 @@ def get_module_info(module_name, modules={},
         try:
             module=__import__(module_name, globals(), globals(), ('__doc__',))
 
-            realm=module_name
-
             # Let the app specify a realm
             if hasattr(module,'__bobo_realm__'):
                 realm=module.__bobo_realm__
@@ -228,7 +226,8 @@ def get_module_info(module_name, modules={},
                 realm=os.environ['Z_REALM']
             elif os.environ.has_key('BOBO_REALM'):
                 realm=os.environ['BOBO_REALM']
-            else: realm=module_name
+            else:
+                realm=module_name
 
             # Check for debug mode
             debug_mode=None
