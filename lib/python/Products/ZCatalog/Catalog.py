@@ -168,7 +168,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         else:
             r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
             r.data_record_id_ = index
-            r.data_record_id_ = 1
+            r.data_record_score__ = 1
 
         return r
 
