@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.38 1998/01/13 23:04:54 brian Exp $'''
-__version__='$Revision: 1.38 $'[11:-2]
+$Id: Application.py,v 1.39 1998/01/15 15:16:45 brian Exp $'''
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -66,11 +66,7 @@ class Application(Folder.Folder):
      'action':'manage_access',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
-#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-#     'action':'manage_help',   'target':'_new'},
     )
-
-#    manage_rolesForm=Globals.HTMLFile('rolesForm', globals())
 
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
@@ -80,7 +76,6 @@ class Application(Folder.Folder):
     def _init(self):
 	# Initialize users
 	self.__allow_groups__=UserFolder()
-#	self.__allow_groups__._init()
 	self._setObject('acl_users', self.__allow_groups__)
 
 	# Initialize control panel
@@ -259,6 +254,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.39  1998/01/15 15:16:45  brian
+# Fixed Setup, cleaned up SimpleItem
+#
 # Revision 1.38  1998/01/13 23:04:54  brian
 # Removed __ac_types__
 #

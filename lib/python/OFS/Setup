@@ -6,9 +6,7 @@
 # install Moniker.py
 # install ObjectManager.py
 # install SimpleItem.py
-# install __init__.py
 # install content_types.py
-# install rPickle.py
 # install documentAdd.dtml
 # install documentEdit.dtml
 # install documentUpload.dtml
@@ -20,4 +18,5 @@
 # install main.dtml
 # install pasteDialog.dtml
 # install properties.dtml
-# install rolesForm.dtml
+# install rPickle.py
+# install www

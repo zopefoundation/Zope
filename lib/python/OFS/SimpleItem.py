@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.14 1998/01/12 21:31:39 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: SimpleItem.py,v 1.15 1998/01/15 15:16:46 brian Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, App.Management
 from DateTime import DateTime
@@ -44,7 +44,7 @@ class Item(CopySource, App.Management.Tabs):
 		     'action':'manage_main', 'target':'manage_main',
 	            },
 		    {'icon':'', 'label':'Access Control',
-		     'action':'manage_rolesForm', 'target':'manage_main',
+		     'action':'manage_access', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Undo',
 		     'action':'manage_UndoForm','target':'manage_main',
@@ -119,6 +119,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.15  1998/01/15 15:16:46  brian
+# Fixed Setup, cleaned up SimpleItem
+#
 # Revision 1.14  1998/01/12 21:31:39  jim
 # Made standard defaulr ['Manager', 'Shared'].
 #
