@@ -85,11 +85,10 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.29 2000/12/21 17:12:00 brian Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: RDB.py,v 1.30 2001/04/27 18:07:16 andreas Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
-import regex, regsub
-from string import split, strip, lower, upper, atof, atoi, atol, find, join
+from string import split, strip, lower, upper, atof, atoi, atol, find, join,find
 import DateTime
 from Missing import MV
 from array import array
@@ -136,8 +135,8 @@ class DatabaseResults:
         self._parent=parent
         if zbrains is None: zbrains=NoBrains
 
-        comment_pattern=regex.compile('#')
-        while line and comment_pattern.match(line) >= 0: line=readline()
+        
+        while line and line.find('#') != -1 : line=readline()
 
         line=line[:-1]
         if line and line[-1:] in '\r\n': line=line[:-1]
@@ -174,14 +173,14 @@ class DatabaseResults:
         
         i=0
         self._parsers=parsers=[]
-        defre=regex.compile('\([0-9]*\)\([a-zA-Z]\)?')
+        defre=re.compile(r'([0-9]*)([a-zA-Z])?')
         self._data_dictionary=dd={}
         self.__items__=items=[]
         for _def in defs:
             _def=strip(_def)
             if not _def:
                 raise ValueError, ('Empty column definition for %s' % names[i])
-            if defre.match(_def) < 0:
+            if defre.match(_def) is None:
                 raise ValueError, (
                     'Invalid column definition for, %s, for %s'
                     % _def, names[i])

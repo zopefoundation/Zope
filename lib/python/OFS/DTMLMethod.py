@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -402,7 +402,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
 import re
 from string import find, strip
 token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
-hdr_start = re.compile('(%s):(.*)' % token).match
+hdr_start = re.compile(r'(%s):(.*)' % token).match
 
 def decapitate(html, RESPONSE=None):
     headers = []

@@ -217,11 +217,11 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.37 2000/09/05 22:03:12 amos Exp $'
-__version__='$Revision: 1.37 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.38 2001/04/27 18:07:11 andreas Exp $'
+__version__='$Revision: 1.38 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
-import regex, string, sys, regex
+import re, string, sys
 from string import find, split, join, atoi, rfind
 from urllib import quote, quote_plus
 
@@ -373,8 +373,8 @@ def dollars_and_cents(v, name='(Unknown name)', md={}):
     except: return ''
 
 def thousands_commas(v, name='(Unknown name)', md={},
-                     thou=regex.compile(
-                         "\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)").search):
+                     thou=re.compile(
+                         r"([0-9])([0-9][0-9][0-9]([,.]\|$))").search):
     v=str(v)
     vl=split(v,'.')
     if not vl: return v
@@ -382,8 +382,9 @@ def thousands_commas(v, name='(Unknown name)', md={},
     del vl[0]
     if vl: s='.'+join(vl,'.')
     else: s=''
-    l=thou(v)
-    while l >= 0:
+    mo=thou(v)
+    while mo is not None:
+        l = mo.start(0)
         v=v[:l+1]+','+v[l+1:]
         l=thou(v)
     return v+s

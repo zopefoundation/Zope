@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 #XXX I strongly suspect that this is broken, but I'm not going to fix it. :(
 
@@ -212,7 +212,7 @@ from BTrees.IIBTree import IISet, IIBucket
 import operator
 from Splitter import Splitter
 from string import strip
-import string, ts_regex, regex
+import string, re
 
 from Lexicon import Lexicon, stop_word_dict
 from ResultList import ResultList
@@ -463,7 +463,7 @@ QueryError='TextIndex.QueryError'
 def query(s, index, default_operator = Or,
           ws = (string.whitespace,)):
     # First replace any occurences of " and not " with " andnot "
-    s = ts_regex.gsub('[%s]+and[%s]+not[%s]+' % (ws * 3), ' andnot ', s)
+    s = re.sub('[%s]+and[%s]+not[%s]+' % (ws * 3), ' andnot ', s)
     q = parse(s)
     q = parse2(q, default_operator)
     return evaluate(q, index)
@@ -515,13 +515,13 @@ def parse2(q, default_operator,
     return q
 
 
-def parens(s, parens_re = regex.compile('(\|)').search):
+def parens(s, parens_re = re.compile(r'(\|)').search):
 
     index=open_index=paren_count = 0
 
     while 1:
         index = parens_re(s, index)
-        if index < 0 : break
+        if index is None : break
     
         if s[index] == '(':
             paren_count = paren_count + 1
@@ -543,7 +543,7 @@ def parens(s, parens_re = regex.compile('(\|)').search):
 
 def quotes(s, ws = (string.whitespace,)):
      # split up quoted regions
-     splitted = ts_regex.split(s, '[%s]*\"[%s]*' % (ws * 2))
+     splitted = re.split( '[%s]*\"[%s]*' % (ws * 2),s)
      split=string.split
 
      if (len(splitted) > 1):

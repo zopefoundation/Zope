@@ -139,3 +139,6 @@ class DateTimeTests (unittest.TestCase):
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
+
+if __name__=="__main__":
+   unittest.TextTestRunner().run(test_suite())

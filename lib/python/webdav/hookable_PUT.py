@@ -1,7 +1,7 @@
 #   Implement the "hookable PUT" hook.
 import re, OFS.DTMLMethod
 
-TEXT_PATTERN = re.compile( '^text/.*$' )
+TEXT_PATTERN = re.compile( r'^text/.*$' )
 
 def PUT_factory( self, name, typ, body ):
     """

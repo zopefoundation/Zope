@@ -109,7 +109,7 @@ class NameAssignments:
               ('name_subpath',   'self._getTraverseSubpath()'),
               )
 
-    _isLegalName = re.compile('_$|[a-zA-Z][a-zA-Z0-9_]*$').match
+    _isLegalName = re.compile(r'_$|[a-zA-Z][a-zA-Z0-9_]*$').match
     _asgns = {}
 
     __allow_access_to_unprotected_subobjects__ = 1

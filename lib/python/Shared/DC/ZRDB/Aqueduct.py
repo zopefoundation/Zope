@@ -84,12 +84,12 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.44 2001/01/15 16:07:39 brian Exp $'''
-__version__='$Revision: 1.44 $'[11:-2]
+$Id: Aqueduct.py,v 1.45 2001/04/27 18:07:16 andreas Exp $'''
+__version__='$Revision: 1.45 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
-import DocumentTemplate, DateTime, ts_regex,  regex, string
+import DocumentTemplate, DateTime,  re, string
 import binascii, Acquisition
 DateTime.now=DateTime.DateTime
 from cStringIO import StringIO
@@ -275,7 +275,7 @@ custom_default_report_src=DocumentTemplate.File(
     os.path.join(dtml_dir,'customDefaultReport.dtml'))
 
 def custom_default_report(id, result, action='', no_table=0,
-                          goofy=regex.compile('[^a-zA-Z0-9_]').search
+                          goofy=re.compile(r'\W').search
                           ):
     columns=result._searchable_result_columns()
     __traceback_info__=columns
@@ -294,7 +294,8 @@ def custom_default_report(id, result, action='', no_table=0,
     row=[]
     for c in columns:
         n=c['name']
-        if goofy(n) >= 0: n='expr="_[\'%s]"' % (`'"'+n`[2:])
+        if goofy(n) is not None:
+            n='expr="_[\'%s]"' % (`'"'+n`[2:])
         row.append('          %s<dtml-var %s%s>%s'
                    % (td,n,c['type']!='s' and ' null=""' or '',_td))
 
@@ -342,12 +343,12 @@ class Args:
 def parse(text,
           result=None,
           keys=None,
-          unparmre=ts_regex.compile(
-              '\([\0- ]*\([^\0- =\"]+\)\)'),
-          parmre=ts_regex.compile(
-              '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-          qparmre=ts_regex.compile(
-              '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
+          unparmre=re.compile(
+              r'([\0- ]*([^\0- =\"]+))'),
+          parmre=re.compile(
+              r'([\0- ]*([^\0- =\"]+)=([^\0- =\"]+))'),
+          qparmre=re.compile(
+              r'([\0- ]*([^\0- =\"]+)="([^"]*)\")'),
           ):
 
     if result is None:
@@ -356,25 +357,22 @@ def parse(text,
 
     __traceback_info__=text
 
-    ts_results = parmre.match_group(text, (1,2,3))
-    if ts_results:
-        start, grps = ts_results
-        name=grps[1]
-        value={'default':grps[2]}
-        l=len(grps[0])
+    mo  = parmre.match(text)
+    if mo:
+        name=mo.group(1)
+        value={'default':mo.group(2)}
+        l=len(mo.group(0))
     else:
-        ts_results = qparmre.match_group(text, (1,2,3))
-        if ts_results:
-                start, grps = ts_results
-                name=grps[1]
-                value={'default':grps[2]}
-                l=len(grps[0])
+        mo = qparmre.match(text)
+        if mo:
+                name=mo.group(0)
+                value={'default':mo.group(2)}
+                l=len(mo.group(0))
         else:
-            ts_results = unparmre.match_group(text, (1,2))
+            mo = unparmre.match(text)
             if ts_results:
-                start, grps = ts_results
-                name=grps[1]
-                l=len(grps[0])
+                name=mo.group(1)
+                l=len(mo.group(0))
                 value={}
             else:
                 if not text or not strip(text): return Args(result,keys)
@@ -409,22 +407,22 @@ def nicify(name):
     return string.upper(name[:1])+name[1:]
 
 def decapitate(html, RESPONSE=None,
-               header_re=ts_regex.compile(
-                   '\(\('
+               header_re=re.compile(
+                   r'(('
                           '[^\0- <>:]+:[^\n]*\n'
                       '\|'
                           '[ \t]+[^\0- ][^\n]*\n'
-                   '\)+\)[ \t]*\n\([\0-\377]+\)'
+                   ')+)[ \t]*\n([\0-\377]+)'
                    ),
-               space_re=ts_regex.compile('\([ \t]+\)'),
-               name_re=ts_regex.compile('\([^\0- <>:]+\):\([^\n]*\)'),
+               space_re=re.compile(r'([ \t]+)'),
+               name_re=re.compile(r'([^\0- <>:]+):([^\n]*)'),
                ):
 
 
-    ts_results = header_re.match_group(html, (1,3))
-    if not ts_results: return html
+    mo = header_re.match(html)  
+    if mo is None: return html
 
-    headers, html = ts_results[1]
+    headers, html = mo.group(1,3)
 
     headers=string.split(headers,'\n')
 
@@ -433,18 +431,18 @@ def decapitate(html, RESPONSE=None,
         if not headers[i]:
             del headers[i]
         else:
-            ts_results = space_re.match_group(headers[i], (1,))
-            if ts_results:
+            mo = space_re.match(headers[i])
+            if mo:
                 headers[i-1]="%s %s" % (headers[i-1],
-                                        headers[i][len(ts_reults[1]):])
+                                        headers[i][len(mo.group(1)):])
                 del headers[i]
             else:
                 i=i+1
 
     for i in range(len(headers)):
-        ts_results = name_re.match_group(headers[i], (1,2))
-        if ts_reults:
-            k, v = ts_reults[1]
+        mo = name_re.match(headers[i])
+        if mo:
+            k,v = mo.group(1,2)
             v=string.strip(v)
         else:
             raise ValueError, 'Invalid Header (%d): %s ' % (i,headers[i])

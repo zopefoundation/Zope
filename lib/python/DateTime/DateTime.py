@@ -84,10 +84,10 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 
-import sys, os, math, regex, ts_regex, DateTimeZone
+import re,sys, os, math,  DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time, gmtime, localtime, asctime
 from time import timezone, strftime, mktime
@@ -108,7 +108,7 @@ EPOCH  =(to_year+to_month+dy+(hr/24.0+mn/1440.0+sc/86400.0))*86400
 jd1901 =2415385L
 
 
-numericTimeZoneMatch=regex.compile('[+-][\0-\9][\0-\9][\0-\9][\0-\9]').match #TS
+numericTimeZoneMatch=re.compile(r'[+-][0-9][0-9][0-9][0-9]').match #TS
 
 
 
@@ -306,7 +306,7 @@ class _cache:
     def __getitem__(self,k):
         try:   n=self._zmap[lower(k)]
         except KeyError:
-            if numericTimeZoneMatch(k) <= 0:
+            if numericTimeZoneMatch(k) == None:
                 raise 'DateTimeError','Unrecognized timezone: %s' % k
             return k
         try: return self._d[n]
@@ -436,7 +436,7 @@ def _tzoffset(tz, t):
     try:
         return DateTime._tzinfo[tz].info(t)[0]
     except:
-        if numericTimeZoneMatch(tz) > 0:
+        if numericTimeZoneMatch(tz) is not None:
             return atoi(tz[1:3])*3600+atoi(tz[3:5])*60
         else:
             return 0 # ??
@@ -717,7 +717,7 @@ class DateTime:
                 if tz:
                     try: tz=self._tzinfo._zmap[lower(tz)]
                     except KeyError:
-                        if numericTimeZoneMatch(tz) <= 0:
+                        if numericTimeZoneMatch(tz) is None:
                             raise self.DateTimeError, \
                                   'Unknown time zone in date: %s' % arg
                 else:
@@ -785,7 +785,7 @@ class DateTime:
             if tz:
                 try: tz=self._tzinfo._zmap[lower(tz)]
                 except KeyError:
-                    if numericTimeZoneMatch(tz) <= 0:
+                    if numericTimeZoneMatch(tz) is None:
                         raise self.DateTimeError, \
                               'Unknown time zone: %s' % tz
             else:
@@ -817,9 +817,9 @@ class DateTime:
     DateTimeError='DateTimeError'
     SyntaxError  ='Invalid Date-Time String'
     DateError    ='Invalid Date Components'
-    int_pattern  =ts_regex.compile('\([0-9]+\)') #TS
-    flt_pattern  =ts_regex.compile(':\([0-9]+\.[0-9]+\)') #TS
-    name_pattern =ts_regex.compile('\([a-z][a-z]+\)', ts_regex.casefold) #TS
+    int_pattern  =re.compile(r'([0-9]+)') #AJ
+    flt_pattern  =re.compile(r':([0-9]+\.[0-9]+)') #AJ
+    name_pattern =re.compile(r'([a-zA-Z]+)', re.I) #AJ
     space_chars  =' \t\n'
     delimiters   ='-/.:,+'
     _month_len  =((0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
@@ -938,19 +938,17 @@ class DateTime:
             if i > 0: b=i-1
             else: b=i
 
-            ts_results = fltpat.match_group(string, (1,), b)
+            ts_results = fltpat.match(string, b)
             if ts_results:
-                #s=ts_results[1][0]
-                s=ts_results[1]
+                s=ts_results.group(1)
                 i=i+len(s)
                 ints.append(atof(s))
                 continue
             
-            #TS
-            ts_results = intpat.match_group(string, (1,), i)
+            #AJ
+            ts_results = intpat.match(string, i)
             if ts_results: 
-                #s=ts_results[1][0]
-                s=ts_results[1]
+                s=ts_results.group(0)
 
                 ls=len(s)
                 i=i+ls
@@ -963,9 +961,9 @@ class DateTime:
                 continue
 
 
-            ts_results = wordpat.match_group(string, (1,), i)
+            ts_results = wordpat.match(string, i)
             if ts_results:
-                o,s=ts_results[1],lower(ts_results[1])
+                o,s=ts_results.group(0),lower(ts_results.group(0))
                 i=i+len(s)
                 if i < l and string[i]=='.': i=i+1
                 # Check for month name:
@@ -1386,10 +1384,7 @@ class DateTime:
     def strftime(self, format):
         # Format the date/time using the *current timezone representation*.
         diff = _tzoffset(self._tz, self._t)
-        format = ts_regex.gsub('\(^\|[^%]\)%Z',
-                               '\\1' + self._tz,
-                               format)
-        format = ts_regex.gsub('\(^\|[^%]\)%z',
+        format = re.sub('(^\|[^%])%z',
                                '\\1%+05d' % (diff / 36),
                                format)
         return strftime(format, safegmtime(self.timeTime() + diff))

@@ -82,10 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
-import regex, string, sys, regex
+import  string, sys
 from string import find, split, join, atoi, rfind
 
 class ReturnTag: 

@@ -89,10 +89,10 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.88 2001/04/18 18:00:07 chrism Exp $'''
-__version__='$Revision: 1.88 $'[11:-2]
+$Id: SimpleItem.py,v 1.89 2001/04/27 18:07:13 andreas Exp $'''
+__version__='$Revision: 1.89 $'[11:-2]
 
-import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
+import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource
 from ExtensionClass import Base
@@ -213,7 +213,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         self, client=None, REQUEST={},
         error_type=None, error_value=None, tb=None,
         error_tb=None, error_message='',
-        tagSearch=ts_regex.compile('[a-zA-Z]>').search):
+        tagSearch=re.compile(r'[a-zA-Z]>').search):
 
         try:
             if error_type  is None: error_type =sys.exc_info()[0]
@@ -245,10 +245,10 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                     except:
                         pass
                     else:
-                        if tagSearch(s) >= 0:
+                        if tagSearch(s) is not None:
                             error_message=error_value
                 elif (type(error_value) is StringType
-                      and tagSearch(error_value) >= 0):
+                      and tagSearch(error_value) is not None):
                     error_message=error_value
 
             if client is None: client=self

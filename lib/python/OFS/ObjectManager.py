@@ -84,12 +84,12 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.135 2001/04/26 00:14:15 andreas Exp $"""
+$Id: ObjectManager.py,v 1.136 2001/04/27 18:07:12 andreas Exp $"""
 
-__version__='$Revision: 1.135 $'[11:-2]
+__version__='$Revision: 1.136 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
-import os, App.FactoryDispatcher, ts_regex, Products
+import os, App.FactoryDispatcher, re, Products
 from OFS.Traversable import Traversable
 from Globals import DTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
@@ -109,7 +109,7 @@ customImporters={
     XMLExportImport.magic: XMLExportImport.importXML,
     }
 
-bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
+bad_id=re.compile(r'[^a-zA-Z0-9-_~,. ]').search #TS
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -126,7 +126,7 @@ def checkValidId(self, id, allow_dup=0):
     # set to false before the object is added.
     if not id or (type(id) != type('')):
         raise BadRequestException, 'Empty or invalid id specified.'
-    if bad_id(id) != -1:
+    if bad_id(id) is not None:
         raise BadRequestException, (
             'The id "%s" contains characters illegal in URLs.' % id)
     if id[0]=='_': raise BadRequestException, (

@@ -82,68 +82,75 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""Provide a thread-safe interface to regex
 """
-import regex, regsub #, Sync
-from regex import *
-from regsub import split, sub, gsub, splitx, capwords
+Replacement of the old ts_regex module using the standard re module
+"""
 
-try: 
-    import thread
-except:
-    class allocate_lock:
-        def acquire(*args): pass
-        def release(*args): pass
+import re,reconvert
+import sys
 
-else:
-    class SafeFunction:
-        _l=thread.allocate_lock()
-        _a=_l.acquire
-        _r=_l.release
+import ts_regex_old as OLD
+import ts_regex_new as NEW
 
-        def __init__(self, f):
-            self._f=f
 
-        def __call__(self, *args, **kw):
-            self._a()
-            try: return apply(self._f, args, kw)
-            finally: self._r()
+def _rcCV(s):
 
-    split=SafeFunction(split)
-    sub=SafeFunction(sub)
-    gsub=SafeFunction(gsub)
-    splitx=SafeFunction(splitx)
-    capwords=SafeFunction(capwords)
+    cs = reconvert.convert(s)
+    if cs != s:
+        print 'Warning: "%s" must be converted to "%s"' % (s,cs)
 
-    allocate_lock=thread.allocate_lock
+    return cs
+
+
+def sub(pat,repl,str):
+    x = OLD.sub(pat,repl,str)
+    y = NEW.sub(pat,repl,str)
+    if x!=y: print 'Warning: sub():',pat,repl,str
+    return x
+
+def gsub(pat,repl,str):
+    x = OLD.gsub(pat,repl,str)
+    y = NEW.gsub(pat,repl,str)
+    if x!=y: print 'Warning: subg():',pat,repl,str
+    return x
+
+
+def split(str,pat,maxsplit=0):
+    x = OLD.split(str,pat,maxsplit)
+    y = NEW.split(str,pat,maxsplit)
+    if x!=y: print 'Warning: split():',str,pat,maxsplit
+    return x
+
+
+def splitx(str,pat,maxsplit=0):
+    x = OLD.splitx(str,pat,maxsplit)
+    y = NEW.splitx(str,pat,maxsplit)
+    if x!=y: print 'Warning: splitx():',str,pat,maxsplit
+    return x
+    
+
 
 class compile:
 
-    _r=None
-    groupindex=None
-
     def __init__(self, *args):
-        self._r=r=apply(regex.compile,args)
-        self._init(r)
+        print>>sys.stderr, args
+        self._old = apply(OLD.compile,args)
+        self._new = apply(NEW.compile,args)
 
-    def _init(self, r):
-        lock=allocate_lock()
-        self.__a=lock.acquire
-        self.__r=lock.release
-        self.translate=r.translate
-        self.givenpat=r.givenpat
-        self.realpat=r.realpat
 
     def match(self, string, pos=0):
-        self.__a()
-        try: return self._r.match(string, pos)
-        finally: self.__r()
+        x = self._old.match(string,pos)
+        y = self._new.match(string,pos)
+        if x!=y: print 'Warning: match():',string,pos
+        return x
+
 
     def search(self, string, pos=0):
-        self.__a()
-        try: return self._r.search(string, pos)
-        finally: self.__r()
-        
+        x = self._old.search(string,pos)
+        y = self._new.search(string,pos)
+        if x!=y: print 'Warning: search():',string,pos
+        return x
+ 
     def search_group(self, str, group, pos=0):
         """Search a string for a pattern.
 
@@ -151,13 +158,11 @@ class compile:
         otherwise, the location where the pattern was found,
         as well as any specified group are returned.
         """
-        self.__a()
-        try:
-            r=self._r
-            l=r.search(str, pos)
-            if l < 0: return None
-            return l, apply(r.group, group)
-        finally: self.__r()
+        x = self._old.search_group(str,group,pos)
+        y = self._new.search_group(str,group,pos)
+        if x!=y: print 'Warning: seach_group(%s,%s,%s) %s vs %s' % (str,group,pos,x,y)
+        return x
+
 
     def match_group(self, str, group, pos=0):
         """Match a pattern against a string
@@ -166,50 +171,53 @@ class compile:
         returned, otherwise, the length of the match, as well
         as any specified group are returned.
         """
-        self.__a()
-        try:
-            r=self._r
-            l=r.match(str, pos)
-            if l < 0: return None
-            return l, apply(r.group, group)
-        finally: self.__r()
+        x = self._old.match_group(str,group,pos)
+        y = self._new.match_group(str,group,pos)
+        if x!=y: 
+            print 'Warning: match_group(%s,%s,%s) %s vs %s' % (str,group,pos,x,y)
+            print self._old.givenpat
+            print self._new.givenpat
+        return x
 
-    def search_regs(self, str, pos=0):
-        """Search a string for a pattern.
+      
 
-        If the pattern was not found, then None is returned,
-        otherwise, the 'regs' attribute of the expression is
-        returned.
-        """
-        self.__a()
-        try:
-            r=self._r
-            r.search(str, pos)
-            return r.regs
-        finally: self.__r()
+if __name__=='__main__':
 
-    def match_regs(self, str, pos=0):
-        """Match a pattern against a string
+    import sys
 
-        If the string does not match the pattern, then None is
-        returned, otherwise, the 'regs' attribute of the expression is
-        returned.
-        """
-        self.__a()
-        try:
-            r=self._r
-            r.match(str, pos)
-            return r.regs
-        finally: self.__r()
+    s1 = 'The quick brown fox jumps of The lazy dog'
+    s2 = '892 The quick brown 123 fox jumps over  3454 21 The lazy dog'
 
-class symcomp(compile):
+    r1 = ' [a-zA-Z][a-zA-Z] '
+    r2 = '[0-9][0-9]'
+    print 'new:',split(s1,' ')
+    print 'new:',splitx(s2,' ')
+    print 'new:',split(s2,' ',2)
+    print 'new:',splitx(s2,' ',2)
+    print 'new:',sub('The','###',s1)
+    print 'new:',gsub('The','###',s1)
 
-    def __init__(self, *args):
-        self._r=r=apply(regex.symcomp,args)
-        self._init(r)
-        self.groupindex=r.groupindex
+    p1 = compile(r1)
+    p2 = compile(r2)
+
+    for s in [s1,s2]:
 
 
+      print 'search' 
+
+      print 'new:',p1.search(s)
+      print 'new:',p2.search(s)
+
+      print 'match' 
+      print 'new:',p1.match(s)
+      print 'new:',p2.match(s)
+ 
+
+      print 'match_group'
+      print 'new:',p1.match_group(s,(0,))
+      print 'new:',p2.match_group(s,(0,))
 
 
-        
+      print 'search_group'
+      print 'new:',p1.match_group(s,(0,1))
+      print 'new:',p2.match_group(s,(0,1))

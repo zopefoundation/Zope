@@ -85,9 +85,9 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
-import sys, os, string, regex
+import sys, os, string
 from common import absattr, aq_base, urlfix, urlbase
 from OFS.PropertySheets import DAVProperties
 from LockItem import LockItem

@@ -84,37 +84,37 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.24 2000/08/17 14:03:42 brian Exp $"""
+$Id: DT_HTML.py,v 1.25 2001/04/27 18:07:09 andreas Exp $"""
 
 from DT_String import String, FileMixin
-import DT_String, regex
+import DT_String, re
 from DT_Util import ParseError, str
 from string import strip, find, split, join, rfind, replace
 
 class dtml_re_class:
-
+    """ This needs to be replaced before 2.4.  It's a hackaround. """
     def search(self, text, start=0,
-               name_match=regex.compile('[\0- ]*[a-zA-Z]+[\0- ]*').match,
-               end_match=regex.compile('[\0- ]*\(/\|end\)',
-                                       regex.casefold).match,
-               start_search=regex.compile('[<&]').search,
-               ent_name=regex.compile('[-a-zA-Z0-9_.]+').match,
+               name_match=re.compile(r'[\0- ]*[a-zA-Z]+[\0- ]*').match,
+               end_match=re.compile(r'[\0- ]*(/|end)', re.I).match,
+               start_search=re.compile(r'[<&]').search,
+               ent_name=re.compile(r'[-a-zA-Z0-9_.]+').match,
                find=find,
                strip=strip,
                replace=replace,
                ):
-
         while 1:
-            s=start_search(text, start)
-            if s < 0: return -1
+            mo = start_search(text,start)
+            if mo is None: return None
+            s = mo.start(0)
             if text[s:s+5] == '<!--#':
                 n=s+5
                 e=find(text,'-->',n)
-                if e < 0: return -1
+                if e < 0: return None
                 en=3
 
-                l=end_match(text,n)
-                if l > 0:
+                mo =end_match(text,n)
+                if mo is not None:
+                    l = mo.end(0) - mo.start(0)
                     end=strip(text[n:n+l])
                     n=n+l
                 else: end=''
@@ -123,7 +123,7 @@ class dtml_re_class:
                 e=n=s+6
                 while 1:
                     e=find(text,'>',e+1)
-                    if e < 0: return -1
+                    if e < 0: return None
                     if len(split(text[n:e],'"'))%2:
                         # check for even number of "s inside
                         break
@@ -135,7 +135,7 @@ class dtml_re_class:
                 e=n=s+7
                 while 1:
                     e=find(text,'>',e+1)
-                    if e < 0: return -1
+                    if e < 0: return None
                     if len(split(text[n:e],'"'))%2:
                         # check for even number of "s inside
                         break
@@ -150,32 +150,38 @@ class dtml_re_class:
                     if e >= 0:
                         args=text[n:e]
                         l=len(args)
-                        if ent_name(args) == l:
-                            d=self.__dict__
-                            if text[s+5]=='-':
-                                d[1]=d['end']=''
-                                d[2]=d['name']='var'
-                                d[0]=text[s:e+1]
-                                d[3]=d['args']=args+' html_quote'
-                                return s
-                            else:
-                                nn=find(args,'-')
-                                if nn >= 0 and nn < l-1:
+                        mo = ent_name(args)
+                        if mo is not None:
+                            if mo.end(0)-mo.start(0) == l:
+                                d=self.__dict__
+                                if text[s+5]=='-':
                                     d[1]=d['end']=''
                                     d[2]=d['name']='var'
                                     d[0]=text[s:e+1]
-                                    args=(args[nn+1:]+' '+
-                                          replace(args[:nn],'.',' '))
-                                    d[3]=d['args']=args
-                                    return s
+                                    d[3]=d['args']=args+' html_quote'
+                                    self._start = s
+                                    return self
+                                else:
+                                    nn=find(args,'-')
+                                    if nn >= 0 and nn < l-1:
+                                        d[1]=d['end']=''
+                                        d[2]=d['name']='var'
+                                        d[0]=text[s:e+1]
+                                        args=(args[nn+1:]+' '+
+                                              replace(args[:nn],'.',' '))
+                                        d[3]=d['args']=args
+                                        self._start = s
+                                        return self
                         
                 start=s+1
                 continue
 
             break
 
-        l=name_match(text,n)
-        if l < 0: return l
+        mo = name_match(text,n)
+        if mo is None: return None
+        l = mo.end(0) - mo.start(0)
+ 
         a=n+l
         name=strip(text[n:a])
 
@@ -186,8 +192,8 @@ class dtml_re_class:
         d[1]=d['end']=end
         d[2]=d['name']=name
         d[3]=d['args']=args
-
-        return s
+        self._start = s
+        return self
 
     def group(self, *args):
         get=self.__dict__.get
@@ -195,7 +201,8 @@ class dtml_re_class:
             return get(args[0])
         return tuple(map(get, args))
 
-        
+    def start(self, *args):
+        return self._start
 
 class HTML(DT_String.String):
     """HTML Document Templates

@@ -46,7 +46,7 @@
     </td>
     <td align="left" valign="top">
     <div class="form-text">
-      <dtml-with name="aq_self" only>
+      <dtml-with sequence-item only>
         <dtml-if name="meta_type">
           <dtml-var name="meta_type" size="15">
         <dtml-else>

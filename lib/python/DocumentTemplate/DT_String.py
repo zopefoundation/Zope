@@ -1,9 +1,10 @@
+
 ##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
 # -------------------------------------
 # 
-# Copyright (c) Digital Creations.  All rights reserved.
+# Copyright (c) Digital Ceeations.  All rights reserved.
 # 
 # This license has been certified as Open Source(tm).
 # 
@@ -82,10 +83,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.39 2000/12/12 21:20:25 shane Exp $"
+"$Id: DT_String.py,v 1.40 2001/04/27 18:07:10 andreas Exp $"
 
 from string import split, strip
-import regex, ts_regex
+import thread,re
 
 from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
 from DT_Var import Var, Call, Comment
@@ -154,15 +155,15 @@ class String:
 
     tagre__roles__=()
     def tagre(self):
-        return regex.symcomp(
-            '%('                                     # beginning
-            '\(<name>[a-zA-Z0-9_/.-]+\)'                       # tag name
-            '\('
+        return re.compile(
+            r'%('                                     # beginning
+            '(?P<name>[a-zA-Z0-9_/.-]+)'                       # tag name
+            '('
             '[\0- ]+'                                # space after tag name
-            '\(<args>\([^)"]+\("[^"]*"\)?\)*\)'      # arguments
-            '\)?'
-            ')\(<fmt>[0-9]*[.]?[0-9]*[a-z]\|[]![]\)' # end
-            , regex.casefold) 
+            '(?P<args>([^)"]+("[^"]*")?\)*)'      # arguments
+            ')?'
+            ')(?P<fmt>[0-9]*[.]?[0-9]*[a-z]\|[]![])' # end
+            , re.I) 
 
     _parseTag__roles__=()
     def _parseTag(self, tagre, command=None, sargs='', tt=type(())):
@@ -227,8 +228,9 @@ class String:
     def parse(self,text,start=0,result=None,tagre=None):
         if result is None: result=[]
         if tagre is None: tagre=self.tagre()
-        l=tagre.search(text,start)
-        while l >= 0:
+        mo =tagre.search(text,start)
+        while mo :
+            l = mo.start(0)
 
             try: tag, args, command, coname = self._parseTag(tagre)
             except ParseError, m: self.parse_error(m[0],m[1],text,l)
@@ -248,17 +250,19 @@ class String:
                     result.append(r)
                 except ParseError, m: self.parse_error(m[0],tag,text,l)
 
-            l=tagre.search(text,start)
+            mo = tagre.search(text,start)
 
         text=text[start:]
         if text: result.append(text)
         return result
 
     skip_eol__roles__=()
-    def skip_eol(self, text, start, eol=regex.compile('[ \t]*\n')):
+    def skip_eol(self, text, start, eol=re.compile(r'[ \t]*\n')):
         # if block open is followed by newline, then skip past newline
-        l=eol.match(text,start)
-        if l > 0: start=start+l
+        mo =eol.match(text,start)
+        if mo is not None: 
+            start = start + mo.end(0) - mo.start(0)
+
         return start
 
     parse_block__roles__=()
@@ -274,8 +278,9 @@ class String:
         sa=sargs
         while 1:
 
-            l=tagre.search(text,start)
-            if l < 0: self.parse_error('No closing tag', stag, text, sloc)
+            mo = tagre.search(text,start)
+            if mo is None: self.parse_error('No closing tag', stag, text, sloc)
+            l = mo.start(0)
 
             try: tag, args, command, coname= self._parseTag(tagre,scommand,sa)
             except ParseError, m: self.parse_error(m[0],m[1], text, l)
@@ -312,8 +317,9 @@ class String:
     parse_close__roles__=()
     def parse_close(self, text, start, tagre, stag, sloc, scommand, sa):
         while 1:
-            l=tagre.search(text,start)
-            if l < 0: self.parse_error('No closing tag', stag, text, sloc)
+            mo = tagre.search(text,start)
+            if mo is None: self.parse_error('No closing tag', stag, text, sloc)
+            l = mo.start(0)
 
             try: tag, args, command, coname= self._parseTag(tagre,scommand,sa)
             except ParseError, m: self.parse_error(m[0],m[1], text, l)
@@ -401,7 +407,7 @@ class String:
 
     cook__roles__=()
     def cook(self,
-             cooklock=ts_regex.allocate_lock(),
+             cooklock=thread.allocate_lock(),
              ):
         cooklock.acquire()
         try:

@@ -82,10 +82,11 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.72 2001/01/22 16:36:16 brian Exp $''' 
-__version__='$Revision: 1.72 $'[11:-2]
+'''$Id: DT_Util.py,v 1.73 2001/04/27 18:07:11 andreas Exp $''' 
+__version__='$Revision: 1.73 $'[11:-2]
 
-import regex, string, math, os
+import  string, math, os
+import re
 from string import strip, join, atoi, lower, split, find
 import VSEval
 
@@ -449,14 +450,14 @@ ListType=type([])
 def parse_params(text,
                  result=None,
                  tag='',
-                 unparmre=regex.compile(
-                     '\([\0- ]*\([^\0- =\"]+\)\)'),
-                 qunparmre=regex.compile(
-                     '\([\0- ]*\("[^"]*"\)\)'),
-                 parmre=regex.compile(
-                     '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-                 qparmre=regex.compile(
-                     '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
+                 unparmre=re.compile(
+                     r'([\0- ]*([^\0- =\"]+))'),
+                 qunparmre=re.compile(
+                     r'([\0- ]*("[^"]*"))'),
+                 parmre=re.compile(
+                     r'([\0- ]*([^\0- =\"]+)=([^\0- =\"]+))'),
+                 qparmre=re.compile(
+                     r'([\0- ]*([^\0- =\"]+)="([^"]*)\")'),
                  **parms):
 
     """Parse tag parameters
@@ -482,17 +483,25 @@ def parse_params(text,
 
     result=result or {}
 
-    if parmre.match(text) >= 0:
-        name=lower(parmre.group(2))
-        value=parmre.group(3)
-        l=len(parmre.group(1))
-    elif qparmre.match(text) >= 0:
-        name=lower(qparmre.group(2))
-        value=qparmre.group(3)
-        l=len(qparmre.group(1))
-    elif unparmre.match(text) >= 0:
-        name=unparmre.group(2)
-        l=len(unparmre.group(1))
+    # HACK - we precalculate all matches. Maybe we don't need them 
+    # all. This should be fixed for performance issues
+
+    mo_p = parmre.match(text)
+    mo_q = qparmre.match(text)
+    mo_unp = unparmre.match(text)
+    mo_unq = qunparmre.match(text)
+
+    if mo_p:
+        name=lower(mo_p.group(2))
+        value=mo_p.group(3)
+        l=len(mo_p.group(1))
+    elif mo_q:
+        name=lower(mo_q.group(2))
+        value=mo_q.group(3)
+        l=len(mo_q.group(1))
+    elif mo_unp:
+        name=mo_unp.group(2)
+        l=len(mo_unp.group(1))
         if result:
             if parms.has_key(name):
                 if parms[name] is None: raise ParseError, (
@@ -504,9 +513,9 @@ def parse_params(text,
         else:
             result['']=name
         return apply(parse_params,(text[l:],result),parms)
-    elif qunparmre.match(text) >= 0:
-        name=qunparmre.group(2)
-        l=len(qunparmre.group(1))
+    elif mo_unq:
+        name=mo_unq.group(2)
+        l=len(mo_unq.group(1))
         if result: raise ParseError, (
             'Invalid attribute name, "%s"' % name, tag)
         else: result['']=name

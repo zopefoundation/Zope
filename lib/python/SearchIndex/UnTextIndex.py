@@ -91,10 +91,10 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.46 $'[11:-2]
+__version__ = '$Revision: 1.47 $'[11:-2]
 
 
-import string, regex, regsub, ts_regex
+import string, re
 import operator
 
 from Globals import Persistent
@@ -558,7 +558,7 @@ class UnTextIndex(Persistent, Implicit):
         parsed again, then the whole thing is 'evaluated'. """
 
         # First replace any occurences of " and not " with " andnot "
-        s = ts_regex.gsub(
+        s = re.sub(
             '[%s]+[aA][nN][dD][%s]*[nN][oO][tT][%s]+' % (ws * 3),
             ' andnot ', s)
 
@@ -700,13 +700,13 @@ def parse2(q, default_operator,
     return q
 
 
-def parens(s, parens_re=regex.compile('(\|)').search):
+def parens(s, parens_re=re.compile(r'(\|)').search):
 
     index = open_index = paren_count = 0
 
     while 1:
         index = parens_re(s, index)
-        if index < 0 : break
+        if index is None : break
     
         if s[index] == '(':
             paren_count = paren_count + 1
@@ -728,7 +728,7 @@ def parens(s, parens_re=regex.compile('(\|)').search):
 
 def quotes(s, ws=(string.whitespace,)):
      # split up quoted regions
-     splitted = ts_regex.split(s, '[%s]*\"[%s]*' % (ws * 2))
+     splitted = re.split( '[%s]*\"[%s]*' % (ws * 2),s)
      split=string.split
 
      if (len(splitted) > 1):
@@ -752,3 +752,4 @@ def quotes(s, ws=(string.whitespace,)):
          splitted = filter(None, split(s))
 
      return splitted
+

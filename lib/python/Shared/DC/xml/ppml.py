@@ -93,7 +93,6 @@ from string import replace
 import struct
 import base64
 import string
-import regex
 import pickle
 import tempfile
 import marshal

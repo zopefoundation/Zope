@@ -93,9 +93,8 @@ from ZPublisher.HTTPRequest import HTTPRequest
 
 from cStringIO import StringIO
 import os
-from regsub import gsub
 from base64 import encodestring
-import string
+import string,re
 
 class FTPRequest(HTTPRequest):
 
@@ -141,7 +140,7 @@ class FTPRequest(HTTPRequest):
         env['REQUEST_METHOD']='GET' # XXX what should this be?
         env['SERVER_SOFTWARE']=channel.server.SERVER_IDENT
         if channel.userid != 'anonymous':
-            env['HTTP_AUTHORIZATION']='Basic %s' % gsub('\012','',
+            env['HTTP_AUTHORIZATION']='Basic %s' % re.sub('\012','',
                     encodestring('%s:%s' % (channel.userid, channel.password)))
         env['SERVER_NAME']=channel.server.hostname
         env['SERVER_PORT']=str(channel.server.port)

@@ -101,6 +101,9 @@ def HTML(aStructuredString, level=0):
     doc = Document(st)
     return HTMLNG(doc)
 
+def StructuredText(aStructuredString, level=0):
+    return HTML(aStructuredString,level)
+
 def html_with_references(text, level=1):
     text = re.sub(
         r'[\0\n]\.\. \[([0-9_%s-]+)\]' % letters,

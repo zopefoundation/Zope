@@ -84,9 +84,9 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.147 $'[11:-2]
+__version__='$Revision: 1.148 $'[11:-2]
 
-import Globals, socket, ts_regex, SpecialUsers
+import Globals, socket, SpecialUsers,re
 import os
 from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
 from string import join, strip, split, lower, upper
@@ -1009,14 +1009,14 @@ def rolejoin(roles, other):
     roles.sort()
     return roles
 
-addr_match=ts_regex.compile('[0-9\.\*]*').match #TS
-host_match=ts_regex.compile('[-A-Za-z0-9\.\*]*').match #TS
-
+addr_match=re.compile(r'[\d.]*').match
+host_match=re.compile(r'[-\w.]*').match
 
 def domainSpecMatch(spec, request):
     host=''
     addr=''
 
+    
     # Fast exit for the match-all case
     if len(spec) == 1 and spec[0] == '*':
         return 1
@@ -1037,6 +1037,7 @@ def domainSpecMatch(spec, request):
         try:    addr=socket.gethostbyname(host)
         except: pass
 
+
     _host=split(host, '.')
     _addr=split(addr, '.')
     _hlen=len(_host)
@@ -1047,35 +1048,39 @@ def domainSpecMatch(spec, request):
         _ob=split(ob, '.')
         _sz=len(_ob)
 
-        if addr_match(ob)==sz:
-            fail=0
-            for i in range(_sz):
-                a=_addr[i]
-                o=_ob[i]
-                if (o != a) and (o != '*'):
-                    fail=1
-                    break
-            if fail:
-                continue
-            return 1
+        mo = addr_match(ob)
+        if mo is not None:
+            if mo.end(0)==sz: 
+                fail=0
+                for i in range(_sz):
+                    a=_addr[i]
+                    o=_ob[i]
+                    if (o != a) and (o != '*'):
+                        fail=1
+                        break
+                if fail:
+                    continue
+                return 1
 
-        if host_match(ob)==sz:
-            if _hlen < _sz:
-                continue
-            elif _hlen > _sz:
-                _item=_host[-_sz:]
-            else:
-                _item=_host
-            fail=0
-            for i in range(_sz):
-                h=_item[i]
-                o=_ob[i]
-                if (o != h) and (o != '*'):
-                    fail=1
-                    break
-            if fail:
-                continue
-            return 1
+        mo = host_match(ob)
+        if mo is not None:
+            if mo.end(0)==sz:
+                if _hlen < _sz:
+                    continue
+                elif _hlen > _sz:
+                    _item=_host[-_sz:]
+                else:
+                    _item=_host
+                fail=0
+                for i in range(_sz):
+                    h=_item[i]
+                    o=_ob[i]
+                    if (o != h) and (o != '*'):
+                        fail=1
+                        break
+                if fail:
+                    continue
+                return 1
     return 0
 
 

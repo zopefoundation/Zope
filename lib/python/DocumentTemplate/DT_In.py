@@ -402,13 +402,13 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.48 2001/04/13 19:31:42 brian Exp $'
-__version__='$Revision: 1.48 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.49 2001/04/27 18:07:09 andreas Exp $'
+__version__='$Revision: 1.49 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
 from string import find, atoi, join, split, lower
-import ts_regex
+import re
 from DT_InSV import sequence_variables, opt
 TupleType=type(())
 
@@ -471,11 +471,12 @@ class InClass:
             if type(v)==type(''):
                 try: atoi(v)
                 except:
-                    self.start_name_re=ts_regex.compile(
+
+                    self.start_name_re=re.compile(
                         '&+'+
                         join(map(lambda c: "[%s]" % c, v),'')+
                         '=[0-9]+&+')
-                    
+                   
         name,expr=name_param(args,'in',1)
         if expr is not None: expr=expr.eval
         self.__name__, self.expr = name, expr

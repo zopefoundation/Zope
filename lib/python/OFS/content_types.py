@@ -83,13 +83,13 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from string import split, strip, lower, find
-import ts_regex, mimetypes
+import re, mimetypes
 
 
-find_binary=ts_regex.compile('[\0-\7]').search
+find_binary=re.compile('[\0-\7]').search
 
 def text_type(s):
     # Yuk. See if we can figure out the type by content.
@@ -151,7 +151,7 @@ def guess_content_type(name='', body='', default=None):
     type, enc=mimetypes.guess_type(name)
     if type is None:
         if body:
-            if find_binary(body) >= 0:
+            if find_binary(body) is not None:
                 type=default or 'application/octet-stream'
             else:
                 type=(default or text_type(body) 

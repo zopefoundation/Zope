@@ -85,11 +85,12 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.18 2001/01/16 21:57:19 chrism Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: DT_InSV.py,v 1.19 2001/04/27 18:07:10 andreas Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 from string import lower, rfind, split, join
 from math import sqrt
+import re
 TupleType=type(())
 try:
     import Missing
@@ -199,6 +200,7 @@ class sequence_variables:
         return l
 
     def query(self, *ignored):
+        
         if self.start_name_re is None: raise KeyError, 'sequence-query'
         query_string=self.query_string
         while query_string and query_string[:1] in '?&':
@@ -207,16 +209,26 @@ class sequence_variables:
             query_string=query_string[:-1]
         if query_string:
             query_string='&%s&' % query_string                  
-            re=self.start_name_re
-            l=re.search_group(query_string, (0,))
-            if l:
-                v=l[1]
-                l=l[0]
-                query_string=(query_string[:l]+
-                              query_string[l+len(v)-1:])
+            reg=self.start_name_re
+
+            if type(reg)==type(re.compile(r"")):
+                mo = reg.search(query_string)
+                if mo is not None:
+                    v = mo.group(0)
+                    l = mo.start(0)
+                    query_string=(query_string[:l]+ query_string[l+len(v)-1:])
+
+            else:
+                l=reg.search_group(query_string, (0,))
+                if l:
+                    v=l[1]
+                    l=l[0]
+                    query_string=(query_string[:l]+ query_string[l+len(v)-1:])
+
             query_string='?'+query_string[1:]
         else: query_string='?'
         self.data['sequence-query']=query_string
+        
         return query_string
         
 

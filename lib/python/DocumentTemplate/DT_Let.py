@@ -112,8 +112,9 @@
    as desired.
 ''' 
 
-from DT_Util import render_blocks, Eval, expr_globals, ParseError, regex, strip
+from DT_Util import render_blocks, Eval, expr_globals, ParseError,  strip
 from DT_Util import str # Probably needed due to hysterical pickles.
+import re
 
 
 class Let:
@@ -149,29 +150,33 @@ class Let:
 
     __call__ = render
 
+
 def parse_let_params(text,
             result=None,
             tag='let',
-            parmre=regex.compile(
-                '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-            qparmre=regex.compile(
-                '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
+            parmre=re.compile(
+                r'([\0- ]*([^\0- =\"]+)=([^\0- =\"]+))'),
+            qparmre=re.compile(
+                r'([\0- ]*([^\0- =\"]+)="([^"]*)\")'),
             **parms):
 
     result=result or []
 
-    if parmre.match(text) >= 0:
-        name=parmre.group(2)
-        value=parmre.group(3)
-        l=len(parmre.group(1))
-    elif qparmre.match(text) >= 0:
-        name=qparmre.group(2)
-        value='"%s"' % qparmre.group(3)
-        l=len(qparmre.group(1))
+    mo = parmre.match(text)
+    mo1= qparmre.match(text)
+
+    if mo is not None:
+        name=mo.group(2)
+        value=mo.group(3)
+        l=len(mo.group(1))
+    elif mo1 is not None:
+        name=mo1.group(2)
+        value='"%s"' % mo1.group(3)
+        l=len(mo1.group(1))
     else:
         if not text or not strip(text): return result
         raise ParseError, ('invalid parameter: "%s"' % text, tag)
-    
+
     result.append((name,value))
 
     text=strip(text[l:])

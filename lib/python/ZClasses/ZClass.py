@@ -85,7 +85,7 @@
 """Zope Classes
 """
 import Globals, string, OFS.SimpleItem, OFS.PropertySheets, Products
-import Method, Basic, Property, AccessControl.Role, ts_regex
+import Method, Basic, Property, AccessControl.Role, re
 
 from ZPublisher.mapply import mapply
 from ExtensionClass import Base
@@ -190,14 +190,14 @@ def dbVersionEquals(ver):
        Globals.DatabaseVersion == ver
 
 
-bad_id=ts_regex.compile('[^a-zA-Z0-9_]').search
+bad_id=re.compile('[^a-zA-Z0-9_]').search
 
 def manage_addZClass(self, id, title='', baseclasses=[],
                      meta_type='', CreateAFactory=0, REQUEST=None,
                      zope_object=0):
     """Add a Z Class
     """
-    if bad_id(id) != -1:
+    if bad_id(id) is not None:
         raise 'Bad Request', (
             'The id %s is invalid as a class name.' % id)
     if not meta_type: meta_type=id

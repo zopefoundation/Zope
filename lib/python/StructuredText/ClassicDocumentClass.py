@@ -85,6 +85,7 @@
 
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find
+from STletters import letters
 
 StringType=type('')
 ListType=type([])
@@ -500,7 +501,7 @@ class DocumentClass:
 
     def doc_numbered(
         self, paragraph,
-        expr = re.compile('(\s*[a-zA-Z]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)').match):
+        expr = re.compile('(\s*[%s]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)' % letters).match):
         
         # This is the old expression. It had a nasty habit
         # of grabbing paragraphs that began with a single
@@ -549,7 +550,7 @@ class DocumentClass:
            delim=d)
 
     def doc_header(self, paragraph,
-                    expr    = re.compile('[ a-zA-Z0-9.:/,-_*<>\?\'\"]+').match
+                    expr    = re.compile('[ %s0-9.:/,-_*<>\?\'\"]+' % letters).match
                     ):
         subs=paragraph.getSubparagraphs()
         if not subs: return None
@@ -583,7 +584,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile('\s*\*([ \na-zA-Z0-9.:/;,\'\"\?\=\-\>\<\(\)]+)\*(?!\*|-)').search
+        expr = re.compile('\s*\*([ \n%s0-9.:/;,\'\"\?\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
         ):
 
         r=expr(s)
@@ -596,7 +597,7 @@ class DocumentClass:
     def doc_inner_link(self,
                        s,
                        expr1 = re.compile("\.\.\s*").search,
-                       expr2 = re.compile("\[[a-zA-Z0-9]+\]").search):
+                       expr2 = re.compile("\[[%s0-9]+\]" % letters).search):
         
         # make sure we dont grab a named link
         if expr2(s) and expr1(s):
@@ -616,7 +617,7 @@ class DocumentClass:
     
     def doc_named_link(self,
                        s,
-                       expr=re.compile("(\.\.\s)(\[[a-zA-Z0-9]+\])").search):
+                       expr=re.compile("(\.\.\s)(\[[%s0-9]+\])" % letters).search):
         
         result = expr(s)
         if result:
@@ -631,7 +632,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile("\_([a-zA-Z0-9\s\.,\?\/]+)\_").search):
+                      expr=re.compile("\_([%s0-9\s\.,\?\/]+)\_" % letters).search):
         
         result = expr(s)
         if result:
@@ -643,7 +644,7 @@ class DocumentClass:
     
     def doc_strong(self, 
                    s,
-        expr = re.compile('\s*\*\*([ \na-zA-Z0-9.:/;\-,!\?\'\"]+)\*\*').search
+        expr = re.compile('\s*\*\*([ \n%s0-9.:/;\-,!\?\'\"]+)\*\*' % letters).search
         ):
 
         r=expr(s)
@@ -656,8 +657,8 @@ class DocumentClass:
     def doc_href(
         
         self, s,
-        expr1 = re.compile("(\"[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\:\/\.\~\-]+)([,]*\s*)").search,
-        expr2 = re.compile('(\"[ a-zA-Z0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#]+)(\s*)').search):
+        expr1 = re.compile("(\"[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\:\/\.\~\-]+)([,]*\s*)" % letters).search,
+        expr2 = re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#]+)(\s*)' % letters).search):
         
         #expr1=re.compile('\"([ a-zA-Z0-9.:/;,\n\~\(\)\-]+)\"'
         #                  ':'

@@ -85,6 +85,8 @@
 
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find, rstrip
+from STletters import letters
+
 
 StringType=type('')
 ListType=type([])
@@ -784,7 +786,7 @@ class DocumentClass:
 
     def doc_numbered(
         self, paragraph,
-        expr = re.compile(r'(\s*[a-zA-Z]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)').match):
+        expr = re.compile(r'(\s*[%s]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)' % letters).match):
         
         # This is the old expression. It had a nasty habit
         # of grabbing paragraphs that began with a single
@@ -833,7 +835,7 @@ class DocumentClass:
            delim=d)
 
     def doc_header(self, paragraph,
-                    expr    = re.compile(r'[ a-zA-Z0-9.:/,-_*<>\?\'\"]+').match
+                    expr    = re.compile(r'[ %s0-9.:/,-_*<>\?\'\"]+' % letters).match
                     ):
         subs=paragraph.getSubparagraphs()
         if not subs: return None
@@ -865,7 +867,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile(r'\s*\*([ \na-zA-Z0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)').search
+        expr = re.compile(r'\s*\*([ \n%s0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
         ):
 
         r=expr(s)
@@ -878,7 +880,7 @@ class DocumentClass:
     def doc_inner_link(self,
                        s,
                        expr1 = re.compile(r"\.\.\s*").search,
-                       expr2 = re.compile(r"\[[a-zA-Z0-9]+\]").search):
+                       expr2 = re.compile(r"\[[%s0-9]+\]" % letters ).search):
         
         # make sure we dont grab a named link
         if expr2(s) and expr1(s):
@@ -898,7 +900,7 @@ class DocumentClass:
     
     def doc_named_link(self,
                        s,
-                       expr=re.compile(r"(\.\.\s)(\[[a-zA-Z0-9]+\])").search):
+                       expr=re.compile(r"(\.\.\s)(\[[%s0-9]+\])" % letters).search):
         
         result = expr(s)
         if result:
@@ -912,7 +914,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile(r"\_([a-zA-Z0-9\s\.,\?]+)\_").search):
+                      expr=re.compile(r"\_([%s0-9\s\.,\?]+)\_" % letters).search):
         
         result = expr(s)
         if result:
@@ -924,7 +926,7 @@ class DocumentClass:
     
     def doc_strong(self, 
                    s,
-        expr = re.compile(r'\s*\*\*([ \na-zA-Z0-9.:/;\-,!\?\'\"]+)\*\*').search
+        expr = re.compile(r'\s*\*\*([ \n%sZ0-9.:/;\-,!\?\'\"]+)\*\*' % letters).search
         ):
 
         r=expr(s)
@@ -935,8 +937,8 @@ class DocumentClass:
            return None
 
     ## Some constants to make the doc_href() regex easier to read.
-    _DQUOTEDTEXT = r'("[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/\*\']+")' ## double quoted text
-    _URL_AND_PUNC = r'([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)'
+    _DQUOTEDTEXT = r'("[%s0-9\n\-\.\,\;\(\)\/\:\/\*\']+")'  % letters ## double quoted text
+    _URL_AND_PUNC = r'([%s0-9\@\.\,\?\!\/\:\;\-\#\~]+)' % letters 
     _SPACES = r'(\s*)'
     
     def doc_href(self, s,
@@ -970,7 +972,7 @@ class DocumentClass:
         else:
             return None
     
-    def doc_sgml(self,s,expr=re.compile(r"\<[a-zA-Z0-9\.\=\'\"\:\/\-\#\+\s\*]+\>").search):
+    def doc_sgml(self,s,expr=re.compile(r"\<[%s0-9\.\=\'\"\:\/\-\#\+\s\*]+\>" % letters).search):
         """
         SGML text is ignored and outputed as-is
         """
@@ -982,7 +984,7 @@ class DocumentClass:
 
 
     def doc_xref(self, s,
-        expr = re.compile('\[([a-zA-Z0-9\-.:/;,\n\~]+)\]').search
+        expr = re.compile('\[([%s0-9\-.:/;,\n\~]+)\]' % letters).search
         ):
         r = expr(s)
         if r:

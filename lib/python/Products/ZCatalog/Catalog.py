@@ -86,9 +86,8 @@
 from Persistence import Persistent
 import Acquisition
 import ExtensionClass
-from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex, Query
+from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex
 from SearchIndex.Lexicon import Lexicon
-import regex, pdb
 from MultiMapping import MultiMapping
 from string import lower
 import Record
@@ -105,19 +104,6 @@ import BTrees.Length
 from SearchIndex.randid import randid
 
 import time
-
-def orify(seq,
-          query_map={
-              type(regex.compile('')): Query.Regex,
-              type(''): Query.String,
-              }):
-    subqueries=[]
-    for q in seq:
-        try: q=query_map[type(q)](q)
-        except KeyError: q=Query.Cmp(q)
-        subqueries.append(q)
-    return apply(Query.Or,tuple(subqueries))
-    
 
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog
@@ -607,13 +593,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         return used
 
-    def searchResults(self, REQUEST=None, used=None,
-                      query_map={
-                          type(regex.compile('')): Query.Regex,
-                          type([]): orify,
-                          type(''): Query.String,
-                          }, **kw):
-
+    def searchResults(self, REQUEST=None, used=None, **kw):
         # Get search arguments:
         if REQUEST is None and not kw:
             try: REQUEST=self.REQUEST

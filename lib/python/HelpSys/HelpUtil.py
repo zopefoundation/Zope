@@ -84,12 +84,12 @@
 ##############################################################################
 """Help system support module"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 import Globals, Acquisition
 import StructuredText.StructuredText
-import sys, os, string, regex
+import sys, os, string, re
 
 
 stx_class=StructuredText.StructuredText.HTML
@@ -282,9 +282,9 @@ class classobject(object):
 
 
 
-
-pre_match=regex.compile('[A-Za-z0-9_]*([^)]*)[ -]*').match #TS
-sig_match=regex.compile('[A-Za-z0-9_]*([^)]*)').match #TS
+# needs to be tested !!! The conversion of reconvert.convert looks suspicious
+sig_match=re.compile(r'[\w]*\([^)]*\)').match # matches "f(arg1, arg2)"
+pre_match=re.compile(r'[\w]*\([^)]*\)[ -]*').match # with ' ' or '-' included
 
 class methodobject(object):
 
@@ -309,9 +309,9 @@ class methodobject(object):
         if hasattr(func, 'func_code'):
             if hasattr(func.func_code, 'co_varnames'):
                 return doc
-        n=pre_match(doc)
-        if n > -1:
-            return doc[n:]
+        mo=pre_match(doc)
+        if mo is not None:
+            return doc[mo.end(0):]
         return doc
 
     def get_signaturex(self):
@@ -348,9 +348,9 @@ class methodobject(object):
             doc=func.__doc__
             if not doc: doc=''
             doc=string.strip(doc)
-            n=sig_match(doc)
-            if n > -1:
-                return doc[:n]
+            mo=sig_match(doc)
+            if mo is not None:
+                return doc[:mo.end(0)]
         return '%s()' % name
                       
 

@@ -107,7 +107,7 @@
 
 
 import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition, Products
-import regex, zlib, Globals, cPickle, marshal, rotor
+import re, zlib, Globals, cPickle, marshal, rotor
 import ZClasses, ZClasses.ZClass, AccessControl.Owned
 
 from OFS.Folder import Folder
@@ -157,12 +157,12 @@ class Product(Folder, PermissionManager):
     _isBeingUsedAsAMethod_=1
 
     def new_version(self,
-                    _intending=regex.compile("[.]?[0-9]+$").search, #TS
+                    _intending=re.compile(r"[.]?[0-9]+$").search, #TS
                     ):
         # Return a new version number based on the existing version.
         v=str(self.version)
         if not v: return '1.0'
-        if _intending(v) < 0: return v
+        if _intending(v) is None: return v
         l=rfind(v,'.')
         return v[:l+1]+str(1+atoi(v[l+1:]))            
                     

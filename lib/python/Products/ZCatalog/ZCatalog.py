@@ -90,17 +90,15 @@ from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
 from DateTime import DateTime
 from SearchIndex import Query
-import string, regex, urlparse, urllib, os, sys, time
+import string, urlparse, urllib, os, sys, time
 import Products
 from Acquisition import Implicit
 from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
-from Catalog import Catalog, orify, CatalogError
-from SearchIndex import UnIndex, UnTextIndex
+from Catalog import Catalog, CatalogError
 from Vocabulary import Vocabulary
-from Shared.DC.ZRDB.TM import TM
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
 
@@ -518,21 +516,14 @@ class ZCatalog(Folder, Persistent, Implicit):
                   'width': 8})
         return r
 
-    def searchResults(self, REQUEST=None, used=None,
-                      query_map={
-                          type(regex.compile('')): Query.Regex,
-                          type([]): orify,
-                          type(()): orify,
-                          type(''): Query.String,
-                          }, **kw):
+    def searchResults(self, REQUEST=None, used=None, **kw):
         """
         Search the catalog according to the ZTables search interface.
         Search terms can be passed in the REQUEST or as keyword
         arguments. 
         """
 
-        return apply(self._catalog.searchResults,
-                     (REQUEST,used, query_map), kw)
+        return apply(self._catalog.searchResults, (REQUEST,used), kw)
 
     __call__=searchResults
 
