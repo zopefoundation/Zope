@@ -242,7 +242,7 @@ class ClassSecurityInfo(SecurityInfo):
         for permission_name, names in permissions:
             roles = getRoles(permission_name, ())
             if len(roles):
-                entry = (permission_name, tuple(names), tuple(roles))
+                entry = (permission_name, tuple(names), tuple(roles.keys()))
             else:
                 entry = (permission_name, tuple(names))
             __ac_permissions__.append(entry)
