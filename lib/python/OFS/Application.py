@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.106 1999/05/11 18:31:27 jim Exp $'''
-__version__='$Revision: 1.106 $'[11:-2]
+$Id: Application.py,v 1.107 1999/05/24 17:18:27 brian Exp $'''
+__version__='$Revision: 1.107 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -352,6 +352,13 @@ def initialize(app):
             _standard_error_msg)
         get_transaction().note('Added standard_error_message')
         get_transaction().commit()
+
+    # b/c: Ensure that Owner role exists.
+    if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
+        app.__ac_roles__=app.__ac_roles__ + ('Owner',)
+        get_transaction().note('Added Owner role')
+        get_transaction().commit()
+            
 
     install_products(app)
     get_transaction().note('Product installations')
