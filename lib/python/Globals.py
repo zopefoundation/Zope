@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from SingleThreadedTransaction import PickleDictionary, Persistent
 from SingleThreadedTransaction import PersistentMapping
@@ -15,7 +15,7 @@ class HTMLFile(STPDocumentTemplate.HTMLFile):
 
     def __init__(self,name='',*args,**kw):
 	args=(self, '%s/lib/python/%s.dtml' % (SOFTWARE_HOME,name),) + args
-	apply(baseHTMLFile.__init__,args,kw)
+	apply(STPDocumentTemplate.HTMLFile.__init__,args,kw)
 
 try:
     home=CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL
@@ -35,6 +35,9 @@ HTML.shared_globals['SOFTWARE_URL']=SOFTWARE_URL
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.4  1997/08/13 22:14:04  jim
+# *** empty log message ***
+#
 # Revision 1.3  1997/08/13 21:42:45  jim
 # Added back specialized HTMLFile
 #
