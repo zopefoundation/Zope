@@ -1,12 +1,11 @@
 """Copy interface"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
-import Globals, Moniker, rPickle
+import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
 from urllib import quote, unquote
 from App.Dialogs import MessageDialog
-
 
 rPickle.register('OFS.Moniker', 'Moniker', Moniker.Moniker)
 
@@ -68,7 +67,12 @@ class CopySource:
 
     def _getCopy(self, container):
 	# Ask an object for a new copy of itself.
-	return loads(dumps(self,1))
+	f=tempfile.TemporaryFile()
+	self._p_jar.export_file(self,f)
+	f.seek(0)
+	r=container._p_jar.import_file(f)
+	f.close()
+	return r
 
     def _postCopy(self, container):
 	# Called after the copy is finished to accomodate special cases
