@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -273,9 +273,10 @@ class Resource(ExtensionClass.Base):
         except 'Unauthorized':
             raise 'Unauthorized', sys.exc_value
         except: raise 'Forbidden', sys.exc_value
-        try: self._notifyOfCopyTo(parent, op=0)
-        except: raise 'Forbidden', sys.exc_value
+        #try: self._notifyOfCopyTo(parent, op=0)
+        #except: raise 'Forbidden', sys.exc_value
         ob=self._getCopy(parent)
+        ob.manage_afterClone(ob)
         ob._setId(name)
         if depth=='0' and hasattr(ob, '__dav_collection__'):
             for id in ob.objectIds():
@@ -285,8 +286,8 @@ class Resource(ExtensionClass.Base):
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
         parent._setObject(name, ob)
-        ob=ob.__of__(parent)
-        ob._postCopy(parent, op=0)
+        #ob=ob.__of__(parent)
+        #ob._postCopy(parent, op=0)
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
             RESPONSE.setHeader('Location', dest)
@@ -328,8 +329,8 @@ class Resource(ExtensionClass.Base):
         except: raise 'Forbidden', sys.exc_value
         try: parent._verifyObjectPaste(self, REQUEST)
         except: raise 'Forbidden', sys.exc_value
-        try: self._notifyOfCopyTo(parent, op=1)
-        except: raise 'Forbidden', sys.exc_value        
+        #try: self._notifyOfCopyTo(parent, op=1)
+        #except: raise 'Forbidden', sys.exc_value        
         ob=aq_base(self._getCopy(parent))
         self.aq_parent._delObject(absattr(self.id))
         ob._setId(name)
@@ -338,8 +339,8 @@ class Resource(ExtensionClass.Base):
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)            
         parent._setObject(name, ob)
-        ob=ob.__of__(parent)
-        ob._postCopy(parent, op=1)
+        #ob=ob.__of__(parent)
+        #ob._postCopy(parent, op=1)
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
             RESPONSE.setHeader('Location', dest)
