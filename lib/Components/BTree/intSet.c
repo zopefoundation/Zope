@@ -13,7 +13,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.21 2001/11/28 15:50:50 matt Exp $"
+"\n$Id: intSet.c,v 1.22 2002/03/21 15:48:53 htrd Exp $"
 ;
 
 #include <limits.h>
@@ -524,7 +524,6 @@ void
 initintSet(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.21 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -545,10 +544,6 @@ initintSet(void)
   d = PyModule_GetDict(m);
 
   PyExtensionClass_Export(d,"intSet",intSetType);
-
-  PyDict_SetItemString(d, "__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  
 
   /* Check for errors */
   if (PyErr_Occurred())

@@ -71,7 +71,7 @@ my_StartElementHandler(void *userdata, const char *name, const char **atts) {
 	PyObject *attrs_obj;
 	int attrs_len;
 	const char **attrs_p, **attrs_k;
-	
+
 
 	if (self->StartElementHandler != Py_None) {
 	        if (self->attrdict) {
@@ -709,13 +709,13 @@ static struct PyMethodDef pyexpat_methods[] = {
 /* Initialization function for the module (*must* be called initpyexpat) */
 
 static char pyexpat_module_documentation[] = 
-""
+"$Id: dcpyexpat.c,v 1.4 2002/03/21 15:48:56 htrd Exp $"
 ;
 
 void
 initdcpyexpat(void) {
 	PyObject *m, *d;
-	char *rev="$Revision: 1.3 $";
+	char *rev="$Revision: 1.4 $";
 
 	Xmlparsetype.ob_type = &PyType_Type;
 
@@ -727,10 +727,6 @@ initdcpyexpat(void) {
 	ErrorObject = PyString_FromString("pyexpat.error");
 	PyDict_SetItemString(d, "error", ErrorObject);
 
-	PyDict_SetItemString(d,"__version__",
-			     PyString_FromStringAndSize(rev+11,
-							strlen(rev+11)-2));
-		
 #define MYCONST(name) \
 	PyDict_SetItemString(d, #name, PyInt_FromLong(name))
 		

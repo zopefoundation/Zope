@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.42 2001/11/28 15:50:55 matt Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.43 2002/03/21 15:48:54 htrd Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -867,7 +867,6 @@ void
 initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.42 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
@@ -909,8 +908,5 @@ initcDocumentTemplate(void)
 
   PyExtensionClass_Export(d,"InstanceDict",InstanceDictType);
   PyExtensionClass_Export(d,"TemplateDict",MMtype);
-
-  PyDict_SetItemString(d, "__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
 }

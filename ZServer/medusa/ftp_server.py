@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: ftp_server.py,v 1.18 2001/07/09 15:13:06 andreas Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.19 2002/03/21 15:48:53 htrd Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -48,7 +48,10 @@ import time
 # 2) carefully control the effective uid around filesystem accessing
 #    methods, using try/finally. [this seems to work]
 
-VERSION = string.split(RCS_ID)[2]
+if RCS_ID.startswith('$Id: '):
+    VERSION = string.split(RCS_ID)[2]
+else:
+    VERSION = '0.0'
 
 from counter import counter
 import producers

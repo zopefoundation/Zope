@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.30 2001/09/20 13:29:28 andreasjung Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.31 2002/03/21 15:48:53 htrd Exp $'
 
 # python modules
 import os
@@ -28,7 +28,10 @@ import producers
 import status_handler
 import logger
 
-VERSION_STRING = string.split(RCS_ID)[2]
+if RCS_ID.startswith('$Id: '):
+    VERSION_STRING = string.split(RCS_ID)[2]
+else:
+    VERSION_STRING = '0.0'
 
 from counter import counter
 from urllib import unquote

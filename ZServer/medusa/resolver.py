@@ -4,7 +4,7 @@
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 
-RCS_ID =  '$Id: resolver.py,v 1.9 2001/05/01 11:44:49 andreas Exp $'
+RCS_ID =  '$Id: resolver.py,v 1.10 2002/03/21 15:48:53 htrd Exp $'
 
 
 # Fast, low-overhead asynchronous name resolver.  uses 'pre-cooked'
@@ -19,7 +19,10 @@ import sys
 import time
 from counter import counter
 
-VERSION = string.split(RCS_ID)[2]
+if RCS_ID.startswith('$Id: '):
+    VERSION = string.split(RCS_ID)[2]
+else:
+    VERSION = '0.0'
 
 # header
 #                                    1  1  1  1  1  1

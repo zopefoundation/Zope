@@ -13,7 +13,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.30 2001/11/28 15:50:50 matt Exp $"
+"\n$Id: BTree.c,v 1.31 2002/03/21 15:48:53 htrd Exp $"
 ;
 
 #define PERSISTENT
@@ -2027,9 +2027,6 @@ initBTree(void)
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.30 $";
-
-
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;
@@ -2073,10 +2070,6 @@ initBTree(void)
   PyExtensionClass_Export(d,"Bucket",BucketType);
   PyExtensionClass_Export(d,"BTree",BTreeType);
 
-  PyDict_SetItemString(d, "__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  
- 
   /* Check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module BTree");

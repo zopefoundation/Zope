@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.14 2002/02/01 18:08:10 matt Exp $
+  $Id: cAccessControl.c,v 1.15 2002/03/21 15:48:54 htrd Exp $
 
   If you have questions regarding this software,
   contact:
@@ -2077,7 +2077,6 @@ static struct PyMethodDef dtml_methods[] = {
 void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.14 $";
         PURE_MIXIN_CLASS(RestrictedDTMLMixin,
                          "A mix-in for derivatives of DT_String.String "
                          "that adds Zope security."
@@ -2098,15 +2097,12 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.14 2002/02/01 18:08:10 matt Exp $\n");
+		"$Id: cAccessControl.c,v 1.15 2002/03/21 15:48:54 htrd Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
 
 	dict = PyModule_GetDict(module);
-
-	PyDict_SetItemString(dict, "__version__",
-		PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
 	PyDict_SetItemString(dict, "_what_not_even_god_should_do",
 		_what_not_even_god_should_do);

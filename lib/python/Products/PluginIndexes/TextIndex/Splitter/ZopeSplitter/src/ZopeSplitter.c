@@ -527,7 +527,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ZopeSplitter.c,v 1.7 2002/01/21 19:28:55 andreasjung Exp $\n"
+    "$Id: ZopeSplitter.c,v 1.8 2002/03/21 15:48:54 htrd Exp $\n"
     ;
 
 
@@ -535,7 +535,6 @@ void
 initZopeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.7 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("ZopeSplitter", Splitter_module_methods,
@@ -544,8 +543,6 @@ initZopeSplitter(void)
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "__version__",
-                         PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
     if (PyErr_Occurred())
         Py_FatalError("can't initialize module Splitter");
