@@ -72,16 +72,16 @@ def _populate(app):
         requestName='TESTOFSESSION')
 
     try: app._delObject(idmgr_name)
-    except AttributeError: pass
+    except (AttributeError, KeyError): pass
 
     try: app._delObject(tf_name)
-    except AttributeError: pass
+    except (AttributeError, KeyError): pass
 
     try: app._delObject(sdm_name)
-    except AttributeError: pass
+    except (AttributeError, KeyError): pass
 
     try: app._delObject('index_html')
-    except AttributeError: pass
+    except (AttributeError, KeyError): pass
 
     app._setObject(idmgr_name, bidmgr)
 
