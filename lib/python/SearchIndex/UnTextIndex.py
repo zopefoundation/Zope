@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.38 $'[11:-2]
+__version__ = '$Revision: 1.39 $'[11:-2]
 
 import string, regex, regsub, ts_regex
 import operator
@@ -179,7 +179,12 @@ class UnTextIndex(Persistent, Implicit):
         in this way, but I don't see too much of a problem with it."""
 
         if type(vocab_id) is not StringType:
-            return vocab_id
+            vocab = vocab_id # we already havd the lexicon
+
+            # Through some sick hysterical accident, some lexicons
+            # simply wrap other lexicons, unless they don't. Waaaaaa.
+            vocab = getattr(vocab, 'lexicon', vocab)
+            return vocab
         else:
             vocab = getattr(self, vocab_id)
             return vocab.lexicon
