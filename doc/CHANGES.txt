@@ -57,6 +57,11 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #892: misleading error msg when initializing an OIBTree
+       from a dict with a float value.  The message claimed that the
+       dict's items didn't consist of 2-element tuples, but of course
+       they do.  The TypeError now says "expected integer value".
+
      - Collector #882: delPropertySheet was broken due to a typo
 
      - Collector #683: WeDAV request without XML preamble
