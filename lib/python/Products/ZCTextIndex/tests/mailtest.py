@@ -90,6 +90,8 @@ def index(rt, mboxfile, db, profiler):
     rt["index"] = idx = ZCTextIndex("index", extra, caller)
     if not EXCLUDE_TEXT:
         rt["documents"] = docs = IOBTree()
+    else:
+        docs = None
     get_transaction().commit()
 
     mbox = mailbox.UnixMailbox(open(mboxfile, 'rb'))
