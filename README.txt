@@ -1,5 +1,5 @@
 Welcome to the Zope source release
-----------------------------------
+
 
   This document provides some general information about the Zope
   source release and provides links to other documents.
@@ -12,7 +12,7 @@ Welcome to the Zope source release
   (zope@zope.org) To subscribe to the list send mail to
   zope-request@zope.org with "subscribe" in the subject line.
 
-Introduction:
+Introduction
 
   The source release is intended for tinkerers, those who want
   to use Zope components separately, Bobo hackers, people who
@@ -35,7 +35,7 @@ Important
 
   See notes on Zope 2 and ZODB 3 in CHANGES.txt.
 
-Installing Zope:
+Installing Zope
 
   Follow the instructions in doc/INSTALL.txt to install Zope. You
   may wish to run the installer even if you only plan on using
@@ -65,7 +65,10 @@ Using Zope Components Separately
 Notes
 
   * Zope requires Python 1.5.2.
+
   * Lots more documentation is coming.
+
   * Don't forget to check the Zope web site and mailing list.
+
   * Read the source, have fun!
 
