@@ -209,11 +209,11 @@ class zhttp_handler:
         # This sucks like hell but it works pretty fine ;-)
 
         if env['REQUEST_METHOD']=='GET':
-            if sys.WEBDAV_SOURCE_PORT_CLIENTS:
+            wdav_client_reg = getattr(sys,'WEBDAV_SOURCE_PORT_CLIENTS',None)
 
+            if wdav_client_reg:
                 agent = get_header(USER_AGENT,request.header)
-                
-                if sys.WEBDAV_SOURCE_PORT_CLIENTS(agent):
+                if wdav_client_reg(agent):
 
                     env['WEBDAV_SOURCE_PORT'] = 1
                     path_info  = env['PATH_INFO']
