@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -148,7 +148,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.pt_edit(text, content_type)
 
     def _setPropValue(self, id, value):
-        Cache._setPropValue(self, id, value)
+        PropertyManager._setPropValue(self, id, value)
         self.ZCacheable_invalidate()
 
     security = AccessControl.ClassSecurityInfo()
