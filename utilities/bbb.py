@@ -122,6 +122,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
      
     tlast=0
     err=0
+    tnamelast=''
     while 1:
         if fromEnd:
             seek(pos-4)
@@ -207,13 +208,14 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
         y,m,d,h,mn,s=gmtime(start)[:6]
         s=s+f
         start="%.4d-%.2d-%.2d %.2d:%.2d:%.3f" % (y,m,d,h,mn,s)
-        rpt(pos,oid,start,tname,user,t,p,first)
+        rpt(pos,oid,start,tname,user,t,p,first,tname!=tnamelast)
         first=0
+        tnamelast=tname
 
     if err and both and not fromEnd:
         _read_and_report(file, rpt, 1, 0, n, show)
 
-    rpt(None, None, None, None, None, None, None, None)
+    rpt(None, None, None, None, None, None, None, None, None)
 
 
 def none(*ignored): pass
@@ -227,7 +229,12 @@ def oids(pos, oid, *ignored):
 def tab_delimited(*args):
     sys.stdout.write("%s\n" % string.join(args[:6],'\t'))
 
-def xml(pos, oid, start, tname, user, t, p, first):
+def undo_log(pos, oid, start, tname, user, t, p, first, newtrans):
+    if not newtrans: return
+    
+    sys.stdout.write("%s:\t%s\t%s\t%s\n" % (pos, start, user, t))
+
+def xml(pos, oid, start, tname, user, t, p, first, newtrans):
     
     global ppml
     if ppml is None: import ppml
@@ -241,7 +248,7 @@ def xml(pos, oid, start, tname, user, t, p, first):
         write('</ZopeData>\n')
         return
 
-    if user or t or first:
+    if newtrans:
         if pos > 9: write('</transaction>\n')
         write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
     l=len(p)
@@ -254,7 +261,7 @@ def xml(pos, oid, start, tname, user, t, p, first):
         p=p+u.load().__str__(4)
     write('  <rec id="%s" time="%s">\n%s  </rec>\n' % (oid, start, p))
 
-def xmls(pos, oid, start, tname, user, t, p, first):
+def xmls(pos, oid, start, tname, user, t, p, first, newtrans):
     write=sys.stdout.write
 
     if first: write('<?xml version="1.0">\n<transactions>\n')
@@ -263,9 +270,11 @@ def xmls(pos, oid, start, tname, user, t, p, first):
         write('</transactioons>\n')
         return
 
-    if user or t or first:
+    if newtrans:
         if pos > 9: write('</transaction>\n')
         write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
+
+
         
 reports={
     'none': (none,
@@ -285,6 +294,21 @@ reports={
                   ('Read the database and output record positions',)),
     'tab_delimited': (tab_delimited,
                       ('Output record meta-data in tab-delimited format',)),
+
+    'undo': (undo_log,
+             (
+                 'Output a transaction summary that shows the position of',
+                 'each transaction.  This is useful for undoing ',
+                 'transactions from the OS command line when',
+                 'some programming error has caused objects to get to',
+                 'a state where Zope can\'t start up.',
+                 '',
+                 'Eventually, there will be an undo utility for undoing',
+                 'individual transactions.  For now, you can simply',
+                 'truncate the file at the position of a problem',
+                 'transaction to return the database to the state it',
+                 'was in before the transaction',
+                 )),
     }
 
 if __name__=='__main__':
@@ -322,6 +346,15 @@ if __name__=='__main__':
 
           If a corrupted data record is found, show the first n
           bytes of the corrupted record.
+
+       -f filename
+
+          Convert to ZODB 3 File-Storage format
+
+       -p path
+
+          Add a directory to the Python path.
+
           
     """ % (sys.argv[0],
            string.join(map(
@@ -333,7 +366,7 @@ if __name__=='__main__':
     sys.path.append(os.path.split(sys.argv[0])[0])
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],'r:ebl:s:')
+        opts, args = getopt.getopt(sys.argv[1:],'r:ebl:s:f:p:')
         filename,=args
     except: error(usage,1,1)
     
@@ -355,12 +388,20 @@ if __name__=='__main__':
             try: show=string.atoi(v)
             except: error('The number of bytes, %s, shuld ne an integer'
                           % v, 1)
-        elif o=='e':
-            fromEnd=1
-        elif o=='b':
-            both=1
-        else:
-            error('Unrecognized option: -%s' % o, 1)
+        elif o=='e': fromEnd=1
+        elif o=='f':
+            import FS
+            rpt=FS.FS(v).rpt
+            
+        elif o=='b': both=1
+        elif o=='p':
+            if v=='-':
+                v=os.path.join(
+                    os.path.split(sys.argv[0])[0],
+                    '..','lib','python')
+            sys.path.insert(0,v)
+            print sys.path
+        else: error('Unrecognized option: -%s' % o, 1)
 
     try: file=open(filename,'rb')
     except: error('Coud not open %s' % filename,1,1)
