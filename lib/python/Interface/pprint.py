@@ -10,7 +10,6 @@ def justify_and_indent(text, level, munge=0, width=72):
 
     if munge:
         line = " " * level
-
         text = string.split(string.strip(string.translate(text, string.maketrans("\r\n", "  "))))
 
         for word in text:
@@ -40,7 +39,7 @@ def interface_as_stx(I, munge=0):
     level = 1
 
     if I.getDoc():
-        outp = outp + justify_and_indent(I.__doc__, level) + "\n\n"
+        outp = outp + justify_and_indent(I.getDoc(), level) + "\n\n"
 
     if I.getBases():
         outp = outp + (" " * level) + "This interface extends:\n\n"
@@ -52,9 +51,9 @@ def interface_as_stx(I, munge=0):
 
     level = level + 1
     for name, desc in I.namesAndDescriptions():
-        if desc.isMethod():
+        if hasattr(desc, 'getSignatureRepr'):   # ugh...
             item = "%s%s -- %s" % (desc.getName(), desc.getSignatureRepr(), desc.getDoc())
-        elif desc.isAttr():
+        else:
             item = "%s -- %s" % (desc.getName(), desc.getDoc())
             
         outp = outp + justify_and_indent(item, level, munge)  + "\n\n"
