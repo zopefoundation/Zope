@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.41 2000/08/18 15:02:02 jim Exp $
+  $Id: Acquisition.c,v 1.42 2000/09/27 15:30:48 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1026,7 +1026,7 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 static PyObject *
 Wrapper_inContextOf(Wrapper *self, PyObject *args)
 {
-  PyObject *o, *c;
+  PyObject *o, *c, *bc;
   int inner=0;
 
   UNLESS(PyArg_ParseTuple(args,"O|i",&o,&inner)) return NULL;
@@ -1035,14 +1035,31 @@ Wrapper_inContextOf(Wrapper *self, PyObject *args)
     while (self->obj && isWrapper(self->obj))
       self=WRAPPER(self->obj);
 
-  if (OBJECT(self)==o) return PyInt_FromLong(1);
-  c=self->container;
+  c = OBJECT(self);
   while (1)
     {
       if (c==o) return PyInt_FromLong(1);
       if (c && isWrapper(c)) c=WRAPPER(c)->container;
-      else return PyInt_FromLong(0);
+      else break;
     }
+
+  /* Now try harder: Compare each object in the containment chain that
+     starts at self, with the object of the wrapper passed in to this
+     method. If a match is found, return 1. Thanks to Toby Dickenson.*/
+
+  while (isWrapper(o) && WRAPPER(o)->obj) o=WRAPPER(o)->obj;
+
+  c = OBJECT(self);
+  while (1)
+    {
+      bc=c;
+      while (isWrapper(bc) && WRAPPER(bc)->obj) bc=WRAPPER(bc)->obj;
+      if (bc==o) return PyInt_FromLong(1);
+      if (c && isWrapper(c)) c=WRAPPER(c)->container;
+      else break;
+    }
+
+  return PyInt_FromLong(0);
 }
 
 static struct PyMethodDef Wrapper_methods[] = {
@@ -1384,7 +1401,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.41 $";
+  char *rev="$Revision: 1.42 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1403,7 +1420,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.41 2000/08/18 15:02:02 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.42 2000/09/27 15:30:48 shane Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
