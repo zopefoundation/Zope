@@ -242,8 +242,10 @@ InitializeClass(ZCTextIndex)
 def manage_addZCTextIndex(self, id, extra=None, REQUEST=None,
                           RESPONSE=None):
     """Add a text index"""
-    if REQUEST is None: URL3 = None
-    else: URL3 = REQUEST.URL3
+    if REQUEST is None:
+        URL3 = None
+    else:
+        URL3 = REQUEST.URL3
     return self.manage_addIndex(id, 'ZCTextIndex', extra,
                                 REQUEST, RESPONSE, URL3)
 
