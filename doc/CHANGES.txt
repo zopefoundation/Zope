@@ -192,6 +192,15 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 alpha 4
+
+      Features added
+
+      Bugs fixed
+
+        Got rid of some DOS line-endings in xmlrpclib.py that caused
+        install-time module compilation to fail.
+
     Zope 2.0 alpha 3
 
       Features added
