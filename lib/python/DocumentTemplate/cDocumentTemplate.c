@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.40 2001/10/26 16:07:50 matt Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.41 2001/11/09 21:37:09 evan Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -767,9 +767,9 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
                   && PyTuple_GET_SIZE(block) == 3) /* html_quote */
                 {
                   if (strchr(PyString_AS_STRING(t), '&')
-                      && strchr(PyString_AS_STRING(t), '<')
-                      && strchr(PyString_AS_STRING(t), '>')
-                      && strchr(PyString_AS_STRING(t), '"')
+                      || strchr(PyString_AS_STRING(t), '<')
+                      || strchr(PyString_AS_STRING(t), '>')
+                      || strchr(PyString_AS_STRING(t), '"')
                       )
                     ASSIGN(t, PyObject_CallFunction(html_quote, "O", t));
 		    if (t == NULL) return -1;
@@ -939,7 +939,7 @@ void
 initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.40 $";
+  char *rev="$Revision: 1.41 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
