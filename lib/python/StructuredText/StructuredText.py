@@ -99,7 +99,7 @@ HTMLNG = HTMLClass.HTMLClass()
 def HTML(aStructuredString, level=0, header=1):
     st = Basic(aStructuredString)
     doc = Document(st)
-    return HTMLNG(doc,header=header)
+    return HTMLNG(doc,header=header,level=level)
 
 def StructuredText(aStructuredString, level=0):
     return HTML(aStructuredString,level)
