@@ -97,8 +97,9 @@ except:
 
 cd=os.chdir
 
-def do(command, picky=1):
-    print command
+def do(command, picky=1, quiet=0):
+    if not quiet:
+        print command
     i=os.system(command)
     if i and picky: raise SystemError, i
 
@@ -111,15 +112,15 @@ def error(message, error):
     print message
     if error: print "%s: %s" % error[:2]
 
-def ch(path, user, group, mode=0600):
+def ch(path, user, group, mode=0600, quiet=0):
     if group:
         mode=mode+060
-        do("chgrp %s %s" % (group, path), 0)
+        do("chgrp %s %s" % (group, path), 0, quiet)
 
     if user:
-        do("chown %s %s" % (user, path), 0)
+        do("chown %s %s" % (user, path), 0, quiet)
 
-    do("chmod %s %s" % (oct(mode), path), 0)
+    do("chmod %s %s" % (oct(mode), path), 0, quiet)
     
 
 def make(*args):
