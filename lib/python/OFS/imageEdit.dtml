@@ -9,7 +9,7 @@ You can update image in the system using the form below.
 Select an image from your local computer by clicking the <EM>Browse</EM> 
 button. The image file you select will be uploaded to the application.
 
-<FORM ACTION="<!--#var PARENT_URL-->/manage_edit" METHOD="POST"
+<FORM ACTION="manage_edit" METHOD="POST"
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
