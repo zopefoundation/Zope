@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -375,7 +375,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         if not roles:
             raise ValueError, 'One or more roles must be given!'
         dict=self.__ac_local_roles__ or {}
-        local_roles = dict.get(userid, [])
+        local_roles = list(dict.get(userid, []))
         for r in roles:
             if r not in local_roles:
                 local_roles.append(r)
