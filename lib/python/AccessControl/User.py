@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.143 $'[11:-2]
+__version__='$Revision: 1.144 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -248,11 +248,7 @@ class BasicUser(Implicit):
                             # Fail the access attempt.  Otherwise
                             # this would be a security hole.
                             return None
-                    # -----------------------------------------------------
-                    # FIXME: this is a workaround for broken aq_inContextOf
-                    # -----------------------------------------------------
-                    # if not object.aq_inContextOf(ucontext, 1):
-                    if not isInContext(ucontext, object):
+                    if not object.aq_inContextOf(ucontext, 1):
                         if 'Shared' in object_roles:
                             # Damn, old role setting. Waaa
                             object_roles=self._shared_roles(object)
@@ -1067,15 +1063,5 @@ def absattr(attr):
 def reqattr(request, attr):
     try:    return request[attr]
     except: return None
-
-from Acquisition import aq_base, aq_inner, aq_parent
-def isInContext(fixed, variable):
-    fixed = aq_base(fixed)
-    while variable is not None:
-        v = aq_base(variable)
-        if v is fixed:
-            return 1
-        variable = aq_parent(aq_inner(variable))
-    return 0
 
 Super = UnrestrictedUser  # Note: use of the Super alias is deprecated.
