@@ -168,10 +168,10 @@ class Results:
         if index==self._index: return self._row
         parent=self._parent
         fields=self._class(self._data[index], parent)
+        if parent is not None: fields=fields.__of__(parent)
         self._index=index
         self._row=fields
-        if parent is None: return fields
-        return fields.__of__(parent)
+        return fields
 
     def tuples(self):
         return map(tuple, self)
