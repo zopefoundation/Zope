@@ -108,6 +108,17 @@ Zope Changes
           incorrectly if the standard_html_header did not begin
           with an HTML tag.
 
+        - The undo form was accessible even to people who couldn't do
+          undo. This made it look like we were allowing undo in cases
+          where we were'nt supposed to.
+
+        - The undo form did not restrict undoable transactions to
+          just those transactions performed by users that were 
+	  authenticated at the same level.  This made the new undo
+          less restrictive than the Zope 1 undo.  Undo should probably
+          be *more* restrictive, but that will have to wait for 2.1
+          or later.
+
     Zope 2.0 beta 4
     
       Features Removed
