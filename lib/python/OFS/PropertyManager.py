@@ -83,21 +83,9 @@
 # 
 ##############################################################################
 
-"""Property management"""
-__version__='$Revision: 1.2 $'[11:-2]
+"""Property management."""
+__version__='$Revision: 1.3 $'[11:-2]
 
-
-
-## from ObjectManager import ObjectManager
-## from CopySupport import CopyContainer
-## from FindSupport import FindSupport
-## from Image import Image, File
-## from Document import DocumentHandler
-## from AccessControl.Role import RoleManager
-## import SimpleItem
-## from string import rfind, lower
-## from content_types import content_type, find_binary, text_type
-## import Globals
 
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
@@ -105,12 +93,6 @@ from string import find,join,lower,split
 from DocumentTemplate import html_quote
 from DateTime import DateTime
 
-
-
-def aq_base(ob):
-    if hasattr(ob, 'aq_base'):
-        return ob.aq_base
-    return ob
 
 
 class PropertyManager:
@@ -328,3 +310,9 @@ class PropertyManager:
             v=getattr(self,n)
             r.append({'id': n, 'input': imap[t](None,n,t,v)})
         return r
+
+
+def aq_base(ob):
+    if hasattr(ob, 'aq_base'):
+        return ob.aq_base
+    return ob

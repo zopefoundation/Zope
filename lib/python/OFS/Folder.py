@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.57 1999/01/19 23:59:09 amos Exp $"""
+$Id: Folder.py,v 1.58 1999/01/27 20:30:28 brian Exp $"""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -116,7 +116,6 @@ from PropertyManager import PropertyManager
 from CopySupport import CopyContainer
 from FindSupport import FindSupport
 from Image import Image, File
-from Document import DocumentHandler
 from AccessControl.Role import RoleManager
 import SimpleItem
 from string import rfind, lower
@@ -139,16 +138,11 @@ def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
     i.title=title
     self._setObject(id,i)
     if createUserF:  i.manage_addUserFolder()
-    if createPublic: i.manage_addDocument(id='index_html',title='')
+    if createPublic: i.manage_addDTMLDocument(id='index_html',title='')
     if REQUEST is not None: return self.manage_main(self,REQUEST,update_menu=1)
 
-class Folder(ObjectManager,
-             PropertyManager,
-             RoleManager,
-             DocumentHandler,
-             SimpleItem.Item,
-             CopyContainer,
-             FindSupport):
+class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
+             CopyContainer, FindSupport):
     """
     The basic container object in Principia.  Folders can hold almost all
     other Principia objects.
@@ -292,8 +286,8 @@ class PUTer(Acquisition.Explicit):
                 else: type=text_type(BODY)
             __traceback_info__=suf, dot, name, type
         if lower(type)[:5]=='text/':
-            return self._parent.manage_addDocument(name,'',BODY,
-                                                   REQUEST=REQUEST)
+            return self._parent.manage_addDTMLDocument(name,'',BODY,
+                                                       REQUEST=REQUEST)
         if lower(type)[:6]=='image/':
             self._parent._setObject(name, Image(name, '', BODY, 
                                                    content_type=type))

@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.84 1999/01/21 22:48:18 jim Exp $'''
-__version__='$Revision: 1.84 $'[11:-2]
+$Id: Application.py,v 1.85 1999/01/27 20:30:28 brian Exp $'''
+__version__='$Revision: 1.85 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -157,7 +157,9 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         folder=ImageFile('www/Folder_icon.gif', globals())
         image =ImageFile('www/Image_icon.gif', globals())
         file  =ImageFile('www/File_icon.gif', globals())
-        doc   =ImageFile('www/Document_icon.gif', globals())
+        dtmldoc=doc=ImageFile('www/dtmldoc.gif', globals())
+        dtmlmethod =ImageFile('www/dtmlmethod.gif', globals())
+        
         broken=ImageFile('www/broken.gif', globals())
 
         UserFolder=ImageFile('AccessControl/www/UserFolder_icon.gif')
