@@ -70,6 +70,10 @@ Zope Changes
           prevented product distributions from installing correctly 
           have been fixed.
 
+        - Description lines on the Undo screen were not HTML quoted,
+          which could cause problems rendering the Undo log if any 
+          of the descriptions contained stray HTML tags.
+
 
     Zope 2.1.0 beta 1
 
