@@ -33,16 +33,9 @@ newWordSequence(PyObject *text, PyObject *synstop, PyObject *wordletters)
         return NULL;
     }
 
-    if ((synstop == NULL) || PyDict_Size(synstop) == 0)
-    {
-        self->synstop = NULL;
-    }
-    else
-    {
-        self->synstop = synstop;
-        Py_INCREF(self->synstop);
-    }
-
+    self->synstop = synstop;
+    Py_XINCREF(self->synstop);
+    
     if (wordletters == NULL) wordletters=default_wordletters;
     Py_INCREF(wordletters);
     self->wordletters = wordletters;
@@ -139,28 +132,23 @@ check_synstop(WordSequence *self, PyObject *word)
         return Py_None;
     }
 
-    if (self->synstop == NULL)
-    {
-        Py_INCREF(word);
-        return word;
-    }
+    Py_INCREF(word);
 
-    while ((value = PyDict_GetItem(self->synstop, word)) && 
-        PyString_Check(value))
+    if (self->synstop == NULL) return word;
+
+    while ((value = PyObject_GetItem(self->synstop, word)) &&
+	   PyString_Check(value))
     {
-        word = value;
+        ASSIGN(word,value);
     }
 
     if (value == NULL)
     {
         PyErr_Clear();
-
-        Py_INCREF(word);
         return word;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return value;		/* Which must be None! */
 }
     
 static PyObject *
@@ -192,12 +180,28 @@ next_word(WordSequence *self)
         }
         else if (i != 0)
         {
+
+	    /* We've found the end of a word */
+
+	    /* Check for a phone number (I know it's lame :) */
+	    if(wbuf[0] >= '0' && wbuf[0] <= '9' && 
+	       wbuf[1] >= '0' && wbuf[1] <= '9' && 
+	       wbuf[2] >= '0' && wbuf[2] <= '9' &&
+	       wbuf[3] == '-' &&
+	       wbuf[4] >= '0' && wbuf[4] <= '9' && 
+	       wbuf[5] >= '0' && wbuf[5] <= '9' && 
+	       wbuf[6] >= '0' && wbuf[6] <= '9' && 
+	       wbuf[7] >= '0' && wbuf[7] <= '9')
+	      {
+		i=0;
+		self->here++;
+		continue;
+	      }
+	    
             UNLESS(pyword = PyString_FromStringAndSize(wbuf, i))
             {
                 return NULL;
 	    }
-
-	    /* We've found the end of a word */
 
             UNLESS(res = check_synstop(self, pyword))
             {
@@ -510,13 +514,6 @@ get_WordSequence(PyObject *self, PyObject *args)
         goto finally;
     }
 
-    if (synstop && !PyDict_Check(synstop))
-    {
-        PyErr_SetString(PyExc_TypeError, "Second argument to WordSequence "
-            "must be dictionary");
-        goto finally;
-    }
-
     if (wordletters && !PyString_Check(wordletters))
     {
         PyErr_SetString(PyExc_TypeError, "Thirst argument to WordSequence "
@@ -541,7 +538,7 @@ static char WordSequence_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: WordSequence.c,v 1.5 1997/06/19 19:38:48 jim Exp $\n"
+"$Id: WordSequence.c,v 1.6 1997/06/30 15:36:06 jim Exp $\n"
 ;
 
 void
