@@ -1,70 +1,12 @@
-#!/bin/env python
-#
-#     Copyright 
-#
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.  Copyright in this software is owned by DCLC,
-#       unless otherwise indicated. Permission to use, copy and
-#       distribute this software is hereby granted, provided that the
-#       above copyright notice appear in all copies and that both that
-#       copyright notice and this permission notice appear. Note that
-#       any product, process or technology described in this software
-#       may be the subject of other Intellectual Property rights
-#       reserved by Digital Creations, L.C. and are not licensed
-#       hereunder.
-#
-#     Trademarks 
-#
-#       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-#       All other trademarks are owned by their respective companies. 
-#
-#     No Warranty 
-#
-#       The software is provided "as is" without warranty of any kind,
-#       either express or implied, including, but not limited to, the
-#       implied warranties of merchantability, fitness for a particular
-#       purpose, or non-infringement. This software could include
-#       technical inaccuracies or typographical errors. Changes are
-#       periodically made to the software; these changes will be
-#       incorporated in new editions of the software. DCLC may make
-#       improvements and/or changes in this software at any time
-#       without notice.
-#
-#     Limitation Of Liability 
-#
-#       In no event will DCLC be liable for direct, indirect, special,
-#       incidental, economic, cover, or consequential damages arising
-#       out of the use of or inability to use this software even if
-#       advised of the possibility of such damages. Some states do not
-#       allow the exclusion or limitation of implied warranties or
-#       limitation of liability for incidental or consequential
-#       damages, so the above limitation or exclusion may not apply to
-#       you.
-#  
-#
-# If you have questions regarding this software, contact:
-#
-#   Digital Creations, L.C.
-#   910 Princess Ann Street
-#   Fredericksburge, Virginia  22401
-#
-#   info@digicool.com
-#
-#   (540) 371-6909
-# 
-__doc__='''bobo call interface
+"""Bobo call interface"""
+__version__='$Revision: 1.4 $'[11:-2]
 
-
-$Id: Client.py,v 1.3 1997/03/31 20:32:32 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
-
-import regex
+import sys,regex
 from httplib import HTTP
 from time import time
 from base64 import encodestring
 from urllib import urlopen, quote
-from string import split,atoi,join,rfind
+from string import split,atoi,join,rfind,splitfields
 from regsub import gsub
 
 def marshal_float(n,f): return '%s:float=%s' % (n,f)
@@ -87,8 +29,6 @@ def marshal_list(n,l):
 def marshal_tuple(n,l):
     return join(map(lambda v, n=n: "%s:tuple=%s" % (n,quote(v)),l),'&')
     
-    
-
 type2marshal={
     type(1.0): 			marshal_float,
     type(1): 			marshal_int,
@@ -100,8 +40,128 @@ type2marshal={
 
 urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)', regex.casefold)
 
-NotFound='bci.NotFound'
-ServerError='bci.ServerError'
+NotFound     ='bci.NotFound'
+InternalError='bci.InternalError'
+BadRequest   ='bci.BadRequest'
+Unauthorized ='bci.Unauthorized'
+ServerError  ='bci.ServerError'
+NotAvailable ='bci.NotAvailable'
+
+exceptmap   ={'AccessError'      :AccessError,
+	      'AttributeError'   :AttributeError,
+	      'BadRequest'       :BadRequest,
+	      'ConflictError'    :ConflictError,
+	      'EOFError'         :EOFError,
+	      'IOError'          :IOError,
+	      'ImportError'      :ImportError,
+	      'IndexError'       :IndexError,
+	      'InternalError'    :InternalError,
+	      'KeyError'         :KeyError,
+	      'MemoryError'      :MemoryError,
+	      'NameError'        :NameError,
+	      'NotFound'         :NotFound,
+	      'OverflowError'    :OverflowError,
+	      'RuntimeError'     :RuntimeError,
+	      'ServerError'      :ServerError,
+	      'SyntaxError'      :SyntaxError,
+	      'SystemError'      :SystemError,
+	      'SystemExit'       :SystemExit,
+	      'TypeError'        :TypeError,
+	      'Unauthorized'     :Unauthorized,
+	      'ValueError'       :ValueError,
+	      'ZeroDivisionError':ZeroDivisionError}
+
+
+
+class RemoteException:
+    def __init__(self,etype=None,evalue=None,url=None,query=None,
+		 http_code=None, http_msg=None, http_resp=None):
+        """Contains information about an exception which
+           occurs in a remote method call"""
+        self.exc_type    =etype
+	self.exc_value   =evalue
+        self.url         =url
+	self.query       =query
+	self.http_code   =http_code
+        self.http_message=http_msg
+        self.response    =http_resp
+
+    def __repr__(self): return repr(self.exc_value)
+
+
+
+
+class RemoteMethod:
+    username=password=''
+    def __init__(self,url,*args):
+	while url[-1:]=='/': url=url[:-1]
+	self.url=url
+	self.headers={}
+	self.func_name=self.__name__=url[rfind(url,'/')+1:]
+	self.func_defaults=()
+	
+	self.args=args
+	if urlregex.match(url) >= 0:
+	    host,port,rurl=urlregex.group(1,2,3)
+	    if port: port=atoi(port[1:])
+	    else: port=80
+	    self.host=host
+	    self.port=port
+	    self.rurl=rurl
+	else: raise ValueError, url
+
+    def __call__(self,*args,**kw):
+	akw={}
+	for i in range(len(args)):
+	    try:
+		k=self.args[i]
+		if kw.has_key(k):
+		    raise TypeError, 'keyword parameter redefined'
+		akw[k]=args[i]
+	    except IndexError:
+		raise TypeError, 'too many arguments'
+	query=[]
+	for k,v in akw.items()+kw.items():
+	    try: q=type2marshal[type(v)](k,v)
+	    except KeyError: q='%s=%s' % (k,quote(v))
+	    query.append(q)
+	query=join(query,'&')
+	try:
+	    h=HTTP()
+	    h.connect(self.host, self.port)
+	    h.putrequest('POST', self.rurl)
+	    h.putheader('Content-Type', 'application/x-www-form-urlencoded')
+	    h.putheader('Content-Length', str(len(query)))
+	    for hn,hv in self.headers.items(): h.putheader(hn,hv)
+	    if self.username and self.password:
+	        credentials=gsub('\012','',encodestring('%s:%s' % (
+		                           self.username,self.password)))
+	        h.putheader('Authorization',"Basic %s" % credentials)
+	    h.endheaders()
+	    h.send(query)
+	    ec,em,headers=h.getreply()
+	    response     =h.getfile().read()
+	except:
+	    raise NotAvailable, \
+		  RemoteException(NotAvailable,sys.exc_value,self.rurl,query)
+
+	if ec==200: return (headers,response)
+	else:
+	    try:    v=headers.dict['bobo-exception-value']
+	    except: v=ec
+	    try:    t=exceptmap[headers.dict['bobo-exception-type']]
+	    except:
+		if   ec >= 400 and ec < 500: t=NotFound
+		elif ec >= 500 and ec < 600: t=ServerError
+		else:                        t=NotAvailable
+	    raise t, RemoteException(t,v,self.rurl,query,ec,em,response)
+
+
+
+
+
+
+Function=RemoteMethod
 
 def ErrorTypes(code):
     if code >= 400 and code < 500: return NotFound
@@ -109,10 +169,8 @@ def ErrorTypes(code):
     return 'HTTP_Error_%s' % code
 
 class BoboFunction:
-    '''Make bobo-published callable objects look like functions
-    '''
+    """Make bobo-published callable objects look like functions"""
     username=password=''
-
     def __init__(self,url,*args):
 	while url[-1:]=='/': url=url[:-1]
 	self.url=url
@@ -130,27 +188,22 @@ class BoboFunction:
 	else: raise ValueError, url
 
     def __call__(self,*args,**kw):
-
-	# get positional arguments
 	akw={}
 	for i in range(len(args)):
 	    try:
 		k=self.args[i]
-		if kw.has_key(k): raise TypeError, 'keyword parameter redefined'
+		if kw.has_key(k):
+		    raise TypeError, 'keyword parameter redefined'
 		akw[k]=args[i]
-	    except IndexError: TypeError, 'too many arguments'
+	    except IndexError:
+		raise TypeError, 'too many arguments'
 
 	query=[]
 	for k,v in akw.items()+kw.items():
-	    try:
-		q=type2marshal[type(v)]
-		q=q(k,v)
-		query.append(q)
-	    except KeyError:
-		q='='+quote(v)
-		query.append(quote(k)+q)
+	    try: q=type2marshal[type(v)](k,v)
+	    except KeyError: q='%s=%s' % (k,quote(v))
+	    query.append(q)
 	query=join(query,'&')
-
 
 	# Make http request:
 	h=HTTP()
@@ -166,12 +219,16 @@ class BoboFunction:
 	h.send(query)
 	errcode,errmsg,headers=h.getreply()
 	response=h.getfile().read()
-	__traceback_info__=query, self.__dict__,errcode,errmsg,response
+	__traceback_info__=query,self.__dict__,errcode,errmsg,response
 	if errcode != 200:
-	    raise ErrorTypes(errcode), errmsg
+	    raise ErrorTypes(errcode), self.rurl + '\n' + errmsg + response
 	return response
-	    
-	
+
+
+
+
+
+
 
 def main():
     # The "main" program for this module
@@ -186,11 +243,8 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
-# Revision 1.3  1997/03/31 20:32:32  jim
-# Fixed glaring bug
-#
-# Revision 1.2  1997/03/27 18:10:47  jim
-# Fixed bugs.
+# Revision 1.4  1997/04/12 17:18:18  jim
+# Many wonderous changes by Brian.
 #
 # Revision 1.1  1997/03/27 17:13:54  jim
 # *** empty log message ***
