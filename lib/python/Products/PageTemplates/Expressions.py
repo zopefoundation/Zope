@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE
@@ -167,6 +167,9 @@ class PathExpr:
                 ob = var[base]
             else:
                 ob = contexts[base]
+                # Work around lack of security declaration
+                if path and (ob is contexts['repeat']):
+                    ob = ob[path.pop(0)]
             ob = restrictedTraverse(ob, path)
         except (AttributeError, KeyError):
             if self._name == 'exists':

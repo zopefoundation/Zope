@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import re, sys
 from MultiMapping import MultiMapping
@@ -209,7 +209,7 @@ class Context:
         # Keep track of what contexts get pushed as each scope begins.
         self._ctxts_pushed = []
         # These contexts will need to be pushed.
-        self._current_ctxts = {'local': 1, 'loop': 1}
+        self._current_ctxts = {'local': 1, 'repeat': 1}
         
         contexts['local'] = lv = MultiMapping()
         init_local = contexts.get('local', None)
@@ -218,7 +218,8 @@ class Context:
         contexts['global'] = gv = contexts.copy()
         gv['standard'] = contexts
         contexts['var'] = MultiMapping(gv, lv)
-        contexts['loop'] = MultiMapping()
+        contexts['repeat'] = rep =  MultiMapping()
+        contexts['loop'] = rep # alias
         
     def beginScope(self):
         oldctxts = self._current_ctxts
@@ -246,7 +247,7 @@ class Context:
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
         it = self._engine.Iterator(name, expr, self)
-        self._current_ctxts['loop'][name] = it
+        self._current_ctxts['repeat'][name] = it
         return it
 
     def evaluate(self, expression):
