@@ -68,20 +68,15 @@ td {
 <table width="100%" bgcolor="#6699cc">
 <tr>
 <td valign="top" align="center">
-<div align="center">
-<a href="http://www.zope.org/" target="_new"><img src="<dtml-var 
-BASEPATH1>/p_/zopelogo_jpg" height="32" width="90" border="0" 
-alt="" /></a>
-</div>
 <div class="form-element">
 <form action="<dtml-var BASEPATH1>/" method="POST" target="manage_main">
 <span class="std-text">Logged in as <strong><dtml-var 
  AUTHENTICATED_USER></strong></span> &nbsp;&nbsp;
-
+<br />
 <select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
-<option value="zope_quick_start">Getting Started</option>
+<option value="zope_quick_start">Zope Quick Start</option>
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
-<option value="manage_zmi_prefs">Preferences</option>
+<option value="manage_zmi_prefs">Set Preferences</option>
 <option value="manage_zmi_logout">Logout</option>
 </dtml-if>
 </select> 
