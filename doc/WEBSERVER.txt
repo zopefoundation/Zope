@@ -2,8 +2,8 @@ Using Zope with an existing web server
 --------------------------------------
 
   While Zope comes with a web server, you may wish to use it with an
-  existing web server.  Use Persistent CGI (PCGI) to allow your
-  existing web server to work with Zope on Unix and Windows.
+  existing web server.  Use Persistent CGI (PCGI) or FastCGI to allow
+  your existing web server to work with Zope on Unix and Windows.
 
   Roughly, PCGI is a protocol for translating CGI requests from a web
   server into Zope requests.  CGI requests are traditionally one shot
@@ -17,6 +17,12 @@ Using Zope with an existing web server
   and stop an application server like Zope.  Thus, PCGI is one of the
   options for gatewaying from the separate CGI processes to the Zope
   long running process.
+
+  FastCGI is very similar to PCGI.  Where PCGI has a "wafer-thin"
+  external CGI program to connect Apache and Zope, FastCGI has an
+  Apache module.  This saves the so called "fork tax" which is incurred
+  when Apache forks to execute the PCGI CGI program.
+
 
 Using Zope in multi-threaded mode with ZServer
 ----------------------------------------------
@@ -34,8 +40,10 @@ Using Zope in multi-threaded mode with ZServer
 
   It is not necessary, however, for ZServer to actually listen for
   incoming HTTP requests.  If you want Apache to do the actual
-  listening and serving, then you can use ZServer's PCGI component to
-  communicate with Apache.
+  listening and serving, then you can use ZServer's PCGI or FastCGI
+  components to communicate with Apache.
+
+ PCGI
 
   To run ZServer with PCGI, you must specify the -p option to the
   'z2.py' startup script.  From the top level Zope directory, you
@@ -86,6 +94,142 @@ Using Zope in multi-threaded mode with ZServer
   Note: Apache requires some tricky configuration to get it to pass
   the HTTP authentication header information to Zope.  See the section 
   'Zope authentication with existing web servers'.
+
+ FastCGI
+
+  FastCGI is relatively easy to set up if you have installed an Apache
+  module before.  If you haven't, don't worry, it isn't difficult.  It
+  comes with straightforward instructions.  You will need to download
+  the mod_fastcgi module from FastCGI.com:
+
+    http://www.fastcgi.com
+
+  A version more recent than 2.2.2 is needed.  If 2.2.3 or greater is
+  not yet available, get one of the snapshots from October 6th or
+  later:
+
+    http://www.fastcgi.com/dist/
+
+  Extract the archive and follow the directions in its 'INSTALL' file.
+  Using the 'DSO' method is usually easiest.
+
+  Next, Zope must be set up to use FastCGI.  You must decide whether
+  you want to use FastCGI via a Unix domain socket or a TCP port.
+
+  You will have to use a TCP port if you are using a Win32 box, or any
+  other operating system that does not provide Unix domain sockets
+  (sockets in the filesystem).  It is also the method you must use if
+  Apache and Zope reside on different computers.  You will need to
+  select a port number.  This is arbitrary, but it must not already be
+  in use, and if you are not the super-user, it must be a sufficiently
+  high number.  For illustrative purposes, I will use 8889.
+
+  Unix domain sockets do not open a TCP port, which may be significant
+  in some tight-security situation, but it requires slightly more
+  setup, and so it is slightly less fool-proof.  You will need to
+  select a location and filename for the socket.  Likely options are
+  '/tmp/zope.soc' or within Zope's 'var' directory.  Make sure that
+  both Zope and Apache will have adequate file permissions to read and
+  write to the socket.  For illustrative purposes, I will use
+  '/tmp/zope.soc'.
+
+  The option to configure this is '-F (port #|socket filename)'.  Edit
+  your 'start' script.  It's found in the root of your Zope
+  installation, and it will look something like this::
+
+#! /bin/sh
+reldir=`dirname $0`
+PYTHONHOME=`cd $reldir; pwd`
+export PYTHONHOME
+exec /usr/bin/python \
+     $PYTHONHOME/z2.py \
+     -D "$@"
+
+  Insert a line before after '$PYTHONHOME/z2.py \'.  If you are using
+  a TCP port, it will look like this::
+
+     -F 8889 \
+
+  If you are using a socket, the line will look like this::
+
+     -F /tmp/zope.soc \
+
+  The trailing backslash is significant!  You can start Zope at this
+  point by running the 'start' script::
+
+$ ./start
+
+  Note that by default the start script starts Zope in debug mode, and
+  so this command will not come back to a shell prompt until Zope
+  exits.
+
+  Next, Apache must be set up to pass FastCGI requests to Zope.  This
+  is done with a 'FastCgiExternalServer' directive in Apache's
+  httpd.conf.  By using 'FastCgiExternalServer' we are telling FastCGI
+  that we'll be launching and killing the long-running process
+  manually.  It goes at the beginning of 'Section 2'.  This directive
+  will look like this for a TCP port configuration::
+
+FastCgiExternalServer /PATH/TO/apache/htdocs/zope \
+                      -host localhost:8889        \
+                      -pass-header Authorization
+
+  ...or like this for a socket configuration::
+
+FastCgiExternalServer /PATH/TO/apache/htdocs/zope \
+                      -socket /tmp/zope.soc       \
+                      -pass-header Authorization
+
+  The first argument after the directive name is confusing.  Apache
+  maps URLs to directories and files within your 'DocumentRoot'.  You
+  must specify the name of a file within your DocumentRoot directory,
+  but that file need not (and probably should not) actually exist.
+  When Apache tries to serve that file, it will instead send the
+  request through FastCGI.  Make sense?
+
+  Say, for instance, you want zope to be accessible from this URL:
+
+    http://myserver.org/myzope
+
+  Suppose further that you have Apache installed at /usr/local/apache.
+  The directive would have to look like this::
+
+FastCgiExternalServer /usr/local/apache/htdocs/myzope \
+                      ...
+                      ...
+
+  The next argument depends on whether you are using a TCP port or a
+  socket.  Note that the -host (port) argument requires the hostname.
+  In the example, it's the same host as Apache runs on, but this need
+  not be the case.  If you are using a socket, make sure Apache has
+  the appropriate privileges to find it.
+
+  The last argument, '-pass-header Authorization', tells FastCGI to
+  pass the Authorization headers to Zope.  Without this, you would not
+  be able to use the Zope web management interface, or anything else
+  that requires authorization.  (Note: This feature was not in
+  mod_fastcgi 2.2.2)
+
+  One more item must be added to the httpd.conf.  Below the
+  'FastCgiExternServer' directive, enter the following::
+
+<Location /zope>
+ SetHandler fastcgi-script
+</Location>
+
+  ...changing '/zope' as appropriate.  Using the
+  'http://myserver.org/myzope' example from above, it would look like
+  this::
+
+<Location /myzope>
+ SetHandler fastcgi-script
+</Location>
+
+  This creates a special case for the location specified, telling
+  Apache to let FastCGI handle the request.
+
+  That is all that is needed.  Make sure Zope is running, start or
+  restart Apache, and you are finished.
 
 
 Using Zope in single-threaded mode with pcgi_publisher
@@ -265,29 +409,30 @@ Zope authentication with existing web servers
 
       * An ISAPI module to support PCGI is under development.
 
-      * IIS 4.0 throws away Zope's error messages by default. This behavior
-      can create quite a few problems, including authentication problems.
+      * IIS 4.0 throws away Zope's error messages by default. This 
+        behavior can create quite a few problems, including authentication 
+        problems.
 
-      Microsoft prides itself on the clear error messages that IIS 4.0 presents,
-      when the user makes a mistake. These error messages are implemented in the
-      form of Custom Error handlers, that return a file, or URL to a user when a
-      certain error occurs.
+      Microsoft prides itself on the clear error messages that IIS 4.0 
+      presents, when the user makes a mistake. These error messages are 
+      implemented in the form of Custom Error handlers, that return a file, 
+      or URL to a user when a certain error occurs.
 
-      This means, that when you forget to fill in an Id when you want to create,
-      say, a new SQL Method, Zope's clear error message is replaced by IIS's
-      totally irrelevant error message. Also, it completely breaks authentication
-      when the user uses IE5.0 when trying to log into a secure area of the
-      server. These Custom Error handlers are enabled by default.
+      This means, that when you forget to fill in an Id when you want to 
+      create, say, a new SQL Method, Zope's clear error message is replaced 
+      by IIS's totally irrelevant error message. Also, it completely breaks 
+      authentication when the user uses IE5.0 when trying to log into a secure 
+      area of the server. These Custom Error handlers are enabled by default.
 
       Luckily, the handlers can quite easily be switched off:
 
-      Open the IIS website in the Management Console, and navigate to the folder
-      you put the PCGI executable in. If you named your Zope installation 'Zope',
-      it will be called 'Zope.exe'. Double-click on that file. A property page
-      will appear. Select the 'Custom Errors' tab. Now, select every HTTP Error
-      code in the listbox that doesn't have type 'Default', and click on the 'Set
-      to Default' button for each one. This will disable IIS overriding the error
-      message returned by Zope.
+      Open the IIS website in the Management Console, and navigate to the 
+      folder you put the PCGI executable in. If you named your Zope installation 
+      'Zope', it will be called 'Zope.exe'. Double-click on that file. A property 
+      page will appear. Select the 'Custom Errors' tab. Now, select every HTTP 
+      Error code in the listbox that doesn't have type 'Default', and click on 
+      the 'Set to Default' button for each one. This will disable IIS overriding 
+      the error message returned by Zope.
 
       Click OK, and voila, Zope is allowed to tell the world what it thinks went
       wrong.
