@@ -54,9 +54,11 @@ class TestRunner:
         file, pathname, desc=imp.find_module(name, [path])
         saved_syspath = sys.path[:]
         try:
+            sys.path.append(path)       # let module find things in its dir
             module=imp.load_module(name, file, pathname, desc)
         finally:
             file.close()
+            sys.path.pop()              # Remove module level path
             sys.path[:] = saved_syspath
         function=getattr(module, 'test_suite', None)
         if function is None:
