@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 <title><dtml-if title><dtml-var title></dtml-if></title>
 <link rel="stylesheet" type="text/css" href="<dtml-var BASEPATH1>/manage_page_style.css">
 <dtml-if debug_auto_reload>
