@@ -41,7 +41,7 @@ Building Zope
     following sequence of commands within a Zope source directory:
 
       ./configure
-      make instance MKZ_FLAGS="--user admin:adminpw"
+      make instance
 
     This command also creates an administrative user with the
     specified username and password.
