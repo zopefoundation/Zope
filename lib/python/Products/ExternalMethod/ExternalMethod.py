@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
@@ -161,7 +161,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         (
         {'label':'Properties', 'action':'manage_main',
          'help':('ExternalMethod','External-Method_Properties.stx')},
-        {'label':'Try It', 'action':'',
+        {'label':'Test', 'action':'',
          'help':('ExternalMethod','External-Method_Try-It.stx')},
         )
         +OFS.SimpleItem.Item.manage_options
