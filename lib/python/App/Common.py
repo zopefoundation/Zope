@@ -85,7 +85,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os, time
 from string import rfind
@@ -122,13 +122,14 @@ def rfc1123_date(ts=None, format='%a, %d %b %Y %H:%M:%S GMT'):
     # Return an RFC 1123 format date string, required for
     # use in HTTP Date headers per the HTTP 1.1 spec.
     # 'Fri, 10 Nov 2000 16:21:09 GMT'
+    # XXX It looks like the 'format' argument is not just unused, but
+    #     useless.  klm 11/13/2000.
+    if ts is None: ts=time.time()
     year, month, day, hh, mm, ss, wd, y, z = time.gmtime(ts)
-    return "%s, %02d-%3s-%4d %02d:%02d:%02d GMT" % (
-            weekday_abbr[wd],
-            day, monthname[month],
-            year,
-            hh, mm, ss)
-
+    return "%s, %02d-%3s-%4d %02d:%02d:%02d GMT" % (weekday_abbr[wd],
+                                                    day, monthname[month],
+                                                    year,
+                                                    hh, mm, ss)
 
 def absattr(attr, c=callable):
     # Return the absolute value of an attribute,
