@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ThreadLock.c,v 1.8 2001/03/15 13:16:21 jim Exp $
+  $Id: ThreadLock.c,v 1.9 2001/04/02 16:38:58 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -46,7 +46,7 @@
 */
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.8 2001/03/15 13:16:21 jim Exp $"
+"\n$Id: ThreadLock.c,v 1.9 2001/04/02 16:38:58 jeremy Exp $"
 ;
 
 #include "Python.h"
@@ -303,10 +303,10 @@ static struct PyMethodDef Module_methods[] = {
 };
 
 void
-initThreadLock()
+initThreadLock(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
 
   m = Py_InitModule4("ThreadLock", Module_methods,
 		     ThreadLock_module_documentation,

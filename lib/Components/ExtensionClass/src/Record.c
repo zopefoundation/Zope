@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.11 2001/03/14 19:21:22 brian Exp $"
+"\n$Id: Record.c,v 1.12 2001/04/02 16:38:58 jeremy Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -590,10 +590,10 @@ static struct PyMethodDef Module_Level__methods[] = {
 /* Initialization function for the module (*must* be called initRecord) */
 
 void
-initRecord()
+initRecord(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
