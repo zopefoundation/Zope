@@ -68,6 +68,38 @@ Document templates support conditional and sequence insertion
 
     %(In)s
 
+Access Control
+
+    Document templates provide a basic level of access control by
+    preventing access to names beginning with an underscore.
+    Addational control may be provided by providing document templates
+    with a 'validate' method.  This would typically be done by
+    subclassing one or more of the DocumentTemplate classes.
+
+    If provided, the the 'validate' method will be called when objects
+    are accessed as accessed as instance attributes or when they are
+    accessed through keyed access in an expression..  The 'validate'
+    method will be called with five arguments:
+
+    1. The containing object that the object was accessed from,
+
+    2. The actual containing object that the object was found in,
+       which may be different from the containing onject the object
+       was accessed from, if the containing object supports
+       acquisition,
+
+    3. The name used to acces the object,
+
+    4. The object, and
+
+    5. The namespace object used to render the document template.
+
+       If a document template was called from Bobo, then the namespace
+       object will have an attribute, AUTHENTICATED_USER that is the
+       user object that was found if and when Bobo authenticated a user.
+
+%(Expr)s
+
 Document Templates may be created 4 ways:
 
     DocumentTemplate.String -- Creates a document templated from a
