@@ -154,7 +154,7 @@ sys.modules['Main']=sys.modules['Zope']
 
 import ZODB.POSException, ZPublisher, string, ZPublisher
 import ExtensionClass
-from zLOG import LOG, INFO
+from zLOG import LOG, INFO, WARNING
 
 def debug(*args, **kw):
     return apply(ZPublisher.test,('Zope',)+args, kw)
@@ -222,6 +222,79 @@ def zpublisher_exception_hook(
         
     finally: traceback=None
 
+
+class TransactionsManager:
+    def begin(self,
+              # Optimize global var lookups:
+              get_transaction=get_transaction):
+        get_transaction().begin()
+
+    def commit(self,
+              # Optimize global var lookups:
+               get_transaction=get_transaction):
+        get_transaction().commit()
+
+    def abort(self,
+              # Optimize global var lookups:
+              get_transaction=get_transaction):
+        get_transaction().abort()
+
+    def recordMetaData(self, object, request,
+                       # Optimize global var lookups:
+                       hasattr=hasattr, join=string.join, getattr=getattr,
+                       get_transaction=get_transaction,
+                       LOG=LOG, WARNING=WARNING,
+                       ):
+        request_get = request.get
+        if hasattr(object, 'getPhysicalPath'):
+            path = join(object.getPhysicalPath(), '/')
+        else:
+            # Try hard to get the physical path of the object,
+            # but there are many circumstances where that's not possible.
+            to_append = ()
+            
+            if hasattr(object, 'im_self') and hasattr(object, '__name__'):
+                # object is a Python method.
+                to_append = (object.__name__,)
+                object = object.im_self
+                
+            while object and not hasattr(object, 'getPhysicalPath'):
+                if not hasattr(object, '__name__'):
+                    object = None
+                    break
+                to_append = (object.__name__,) + to_append
+                object = getattr(object, 'aq_inner', object)
+                object = getattr(object, 'aq_parent', None)
+
+            if object:
+                path = join(object.getPhysicalPath() + to_append, '/')
+            else:
+                # As Jim would say, "Waaaaaaaa!"
+                # This may cause problems with virtual hosts
+                # since the physical path is different from the path
+                # used to retrieve the object.
+                path = request_get('PATH_INFO')
+
+        T=get_transaction()
+        T.note(path)
+        auth_user=request_get('AUTHENTICATED_USER',None)
+        if auth_user is not None:
+            try:
+                auth_folder = auth_user.aq_parent
+            except AttributeError:
+                # Most likely some product forgot to call __of__()
+                # on the user object.
+                LOG('AccessControl', WARNING,
+                    'A user object of type %s has no aq_parent.'
+                    % str(type(auth_user)))
+                auth_path = request_get('AUTHENTICATION_PATH')
+            else:
+                auth_path = join(auth_folder.getPhysicalPath()[1:-1], '/')
+                
+            T.setUser(auth_user, auth_path)
+        
+
+zpublisher_transactions_manager = TransactionsManager()
 
 zpublisher_validated_hook=AccessControl.SecurityManagement.newSecurityManager
 __bobo_before__=AccessControl.SecurityManagement.noSecurityManager
