@@ -121,6 +121,18 @@
 
   </sectiontype>
 
+  <sectiontype name="zodb_db" datatype="ZODB.config.ZODBDatabase"
+               implements="ZODB.database" extends="zodb">
+    <description>
+      We need to specialize the database configuration section for Zope
+      only by including a (required) mount-point argument, which
+      is a string.  A Zope ZODB database can have multiple mount points,
+      so this is a multikey.
+    </description>
+    <multikey name="mount-point" required="yes" attribute="mount_points"
+              datatype=".mount_point"/>
+  </sectiontype>
+
   <!-- end of type definitions -->
 
   <!-- schema begins  -->
@@ -261,7 +273,17 @@
     </description>
   </key>
 
-  <multisection type="ZODB.database" name="*" attribute="databases"/>
+  <multisection type="ZODB.database" name="+" attribute="databases">
+    <description>
+       Zope ZODB databases must have a name, and they are required to be
+       referenced via the "zodb_db" database type because it is
+       the only kind of database definition that implements
+       the required mount-point argument.  There is another
+       database sectiontype named "zodb", but it cannot be used
+       in the context of a proper Zope configuration (due to
+       lack of a mount-point).
+    </description>
+  </multisection>
 
   <section type="zoperunner" name="*" attribute="runner"/>
 

@@ -68,12 +68,22 @@ def dns_resolver(hostname):
     from ZServer.medusa import resolver
     return resolver.caching_resolver(hostname)
 
+# mount-point definition
+
+def mount_point(value):
+    if not value:
+        raise ValueError, 'mount-point must not be empty'
+    if not value.startswith('/'):
+        raise ValueError, ("mount-point '%s' is invalid: mount points must "
+                           "begin with a slash" % value)
+    return value
 
 # Datatype for the root configuration object
 # (adds the softwarehome and zopehome fields; default values for some
 #  computed paths)
 
 def root_config(section):
+    from ZConfig import ConfigurationError
     here = os.path.dirname(os.path.abspath(__file__))
     swhome = os.path.dirname(os.path.dirname(here))
     section.softwarehome = swhome
@@ -88,4 +98,46 @@ def root_config(section):
         section.pid_filename = os.path.join(section.clienthome, 'Z2.pid')
     if section.lock_filename is None:
         section.lock_filename = os.path.join(section.clienthome, 'Z2.lock')
+
+    if not section.databases:
+        # default to a filestorage named 'Data.fs' in clienthome
+        from ZODB.config import FileStorage
+        from ZODB.config import ZODBDatabase
+        class dummy:
+            def __init__(self, name):
+                self.name = name
+            def getSectionName(self):
+                return self.name
+                
+        path = os.path.join(section.clienthome, 'Data.fs')
+        ns = dummy('default filestorage at %s' % path)
+        ns.path = path
+        ns.create = None
+        ns.read_only = None
+        ns.quota = None
+        storage = FileStorage(ns)
+        ns2 = dummy('default zodb database using filestorage at %s' % path)
+        ns2.storage = storage
+        ns2.cache_size = 5000
+        ns2.pool_size = 7
+        ns2.version_pool_size=3
+        ns2.version_cache_size = 100
+        ns2.mount_points = ['/']
+        section.databases = [ZODBDatabase(ns2)]
+
+    section.db_mount_tab = db_mount_tab = {}
+    section.db_name_tab =  db_name_tab = {}
+    dup_err = ('Invalid configuration: ZODB databases named "%s" and "%s" are '
+               'both configured to use the same mount point, named "%s"')
+
+    for database in section.databases:
+        mount_points = database.config.mount_points
+        name = database.config.getSectionName()
+        db_name_tab[name] = database
+        for point in mount_points:
+            if db_mount_tab.has_key(point):
+                raise ConfigurationError(dup_err % (db_mount_tab[point], name,
+                                         point))
+            db_mount_tab[point] = name
+
     return section

@@ -705,11 +705,11 @@ products $INSTANCE/Products
 #     port-base 1000
 
 
-# Database section
+# Database (zodb_db) section
 #
 # Description:
 #     A database section allows the definition of custom database and
-#     storage types.  The standard 
+#     storage types.
 #
 # Influences: Zope configuration
 #
@@ -719,12 +719,13 @@ products $INSTANCE/Products
 #
 # Example:
 #
-# <zodb>
+# <zodb_db>
 #    <filestorage>
 #      path $INSTANCE/var/Data.fs
 #    </filestorage>
+#    mount-point /
 #    cache-size                     5000
 #    pool-size                      7
 #    version-pool-size              3
 #    version-cache-size             100
-# </zodb>
+# </zodb_db>

@@ -48,9 +48,11 @@ def startup():
         # Try to use custom storage
         m=imp.find_module('custom_zodb',[getConfiguration().instancehome])
     except:
-        import ZODB.FileStorage
-        storage = ZODB.FileStorage.FileStorage(Globals.BobobaseName)
-        DB = ZODB.DB(storage)
+        # if there is no custom_zodb, use the config file specified databases
+        config = getConfiguration()
+        name = config.db_mount_tab['/']
+        DB = config.db_name_tab[name].open()
+        Globals.BobobaseName = name
     else:
         m=imp.load_module('Zope.custom_zodb', m[0], m[1], m[2])
         if hasattr(m,'DB'):
