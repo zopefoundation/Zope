@@ -112,6 +112,8 @@ class ZServerHTTPResponse(HTTPResponse):
     _http_version='1.0'
     _http_connection='close'
     _server_version='Zope/2.0 ZServer/2.0'
+
+    _streaming=0
     
     def __str__(self,
                 html_search=regex.compile('<html>',regex.casefold).search,
@@ -141,15 +143,19 @@ class ZServerHTTPResponse(HTTPResponse):
                 body=self.body
 
         # set 204 (no content) status if 200 and response is empty
+        # and not streaming
         if not headers.has_key('content-type') and \
                 not headers.has_key('content-length') and \
                 not headers.has_key('transfer-encoding') and \
+                not self._streaming and \
                 self.status == 200:
             self.setStatus('nocontent')
 
         # add content length if not transfer encoded
+        # and not streaming
         if not headers.has_key('content-length') and \
-                not headers.has_key('transfer-encoding'):
+                not headers.has_key('transfer-encoding') and \
+                not self._streaming:
             self.setHeader('content-length',len(body))
 
         headersl=[]
@@ -244,7 +250,8 @@ class ZServerHTTPResponse(HTTPResponse):
                         self._tempfile=tempfile.TemporaryFile()
                         self._templock=thread.allocate_lock()
                 except: pass
-                    
+
+            self._streaming=1
             stdout.write(str(self))
             self._wrote=1
 
