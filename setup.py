@@ -645,7 +645,6 @@ setup(
     author=AUTHOR,
 
     packages=['zLOG', 'zLOG.tests'],
-    data_files=[['zLOG', ['zLOG/*.xml']]],
     )
 
 # zdaemon
