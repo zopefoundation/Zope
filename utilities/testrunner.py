@@ -33,9 +33,10 @@ VERBOSE = 2
 class TestRunner:
     """Test suite runner"""
 
-    def __init__(self, path, verbosity, mega_suite):
+    def __init__(self, path, verbosity, mega_suite, verbose_on_error):
         self.basepath = path
         self.verbosity = verbosity
+        self.verbose_on_error = verbose_on_error
         self.results = []
         self.mega_suite = mega_suite
         # initialize python path
@@ -112,8 +113,9 @@ class TestRunner:
         return self._runner
 
     def createTestRunner(self):
-        return unittest.TextTestRunner(stream=sys.stderr,
-                                       verbosity=self.verbosity)
+        return FancyTestRunner(stream=sys.stderr,
+                               verbosity=self.verbosity,
+                               verbose_on_error=self.verbose_on_error)
 
     def report(self, message):
         print >>sys.stderr, message
@@ -214,13 +216,82 @@ class TestRunner:
         os.chdir(working_dir)
 
 
-class TimingTestResult(unittest._TextTestResult):
+class FancyTestResult(unittest._TextTestResult):
+    have_blank_line = 1
+    verbose_on_error = 0
+
     def __init__(self, *args, **kw):
-        self.timings = []
+        if "verbose_on_error" in kw:
+            self.verbose_on_error = kw["verbose_on_error"]
+            del kw["verbose_on_error"]
         unittest._TextTestResult.__init__(self, *args, **kw)
 
+    def addSuccess(self, test):
+        unittest.TestResult.addSuccess(self, test)
+        if self.showAll:
+            self.stream.writeln("ok")
+        elif self.dots:
+            self.stream.write('.')
+            self.have_blank_line = 0
+
+    def addError(self, test, err):
+        unittest.TestResult.addError(self, test, err)
+        if self.showAll:
+            self.stream.writeln(excname(err[0]))
+        elif self.verbose_on_error:
+            if not self.have_blank_line:
+                self.stream.writeln()
+            self.stream.write(self.getDescription(test) + ": ")
+            if isinstance(err[0], str):
+                self.stream.writeln(err[0])
+            else:
+                self.stream.writeln(excname(err[0]))
+            self.have_blank_line = 1
+        elif self.dots:
+            self.stream.write("E")
+            self.have_blank_line = 0
+
+    def addFailure(self, test, err):
+        unittest.TestResult.addFailure(self, test, err)
+        if self.showAll:
+            self.stream.writeln("FAIL")
+        elif self.verbose_on_error:
+            if not self.have_blank_line:
+                self.stream.writeln()
+            self.stream.writeln(self.getDescription(test) + ": FAIL")
+            self.have_blank_line = 1
+        elif self.dots:
+            self.stream.write("F")
+            self.have_blank_line = 0
+
+def excname(cls):
+    if cls.__module__ == "exceptions":
+        return cls.__name__
+    else:
+        return "%s.%s" % (cls.__module__, cls.__name__)
+
+
+class FancyTestRunner(unittest.TextTestRunner):
+    def __init__(self, *args, **kw):
+        if "verbose_on_error" in kw:
+            self.verbose_on_error = kw["verbose_on_error"]
+            del kw["verbose_on_error"]
+        else:
+            self.verbose_on_error = False
+        unittest.TextTestRunner.__init__(self, *args, **kw)
+
+    def _makeResult(self):
+        return FancyTestResult(self.stream, self.descriptions, self.verbosity,
+                               verbose_on_error=self.verbose_on_error)
+
+
+class TimingTestResult(FancyTestResult):
+    def __init__(self, *args, **kw):
+        self.timings = []
+        FancyTestResult.__init__(self, *args, **kw)
+
     def startTest(self, test):
-        unittest._TextTestResult.startTest(self, test)
+        FancyTestResult.startTest(self, test)
         self._t2 = None
         self._t1 = time.time()
 
@@ -230,28 +301,29 @@ class TimingTestResult(unittest._TextTestResult):
             t2 = self._t2
         t = t2 - self._t1
         self.timings.append((t, str(test)))
-        unittest._TextTestResult.stopTest(self, test)
+        FancyTestResult.stopTest(self, test)
 
     def addSuccess(self, test):
         self._t2 = time.time()
-        unittest._TextTestResult.addSuccess(self, test)
+        FancyTestResult.addSuccess(self, test)
 
     def addError(self, test, err):
         self._t2 = time.time()
-        unittest._TextTestResult.addError(self, test, err)
+        FancyTestResult.addError(self, test, err)
 
     def addFailure(self, test, err):
         self._t2 = time.time()
-        unittest._TextTestResult.addFailure(self, test, err)
+        FancyTestResult.addFailure(self, test, err)
 
 
-class TimingTestRunner(unittest.TextTestRunner):
+class TimingTestRunner(FancyTestRunner):
     def __init__(self, *args, **kw):
-        unittest.TextTestRunner.__init__(self, *args, **kw)
+        FancyTestRunner.__init__(self, *args, **kw)
         self.timings = []
 
     def _makeResult(self):
-        r = TimingTestResult(self.stream, self.descriptions, self.verbosity)
+        r = TimingTestResult(self.stream, self.descriptions, self.verbosity,
+                             verbose_on_error=self.verbose_on_error)
         self.timings = r.timings
         return r
 
@@ -259,7 +331,8 @@ class TimingTestRunner(unittest.TextTestRunner):
 class TestTimer(TestRunner):
     def createTestRunner(self):
         return TimingTestRunner(stream=sys.stderr,
-                                verbosity=self.verbosity)
+                                verbosity=self.verbosity,
+                                verbose_on_error=self.verbose_on_error)
 
     def reportTimes(self, num):
         r = self.getTestRunner()
@@ -324,6 +397,13 @@ def main(args):
             1 - Quiet (produces a dot for each succesful test)
             2 - Verbose (default - produces a line of output for each test)
 
+       -e
+          Modifier to the verbosity level.  This causes a errors and
+          failures to generate a one-line report the test instead of
+          an 'E' or 'F'.  This can make it easier to work on solving
+          problem while the tests are still running.  This causes the
+          'silent' mode (-v0) to be less than completely silent.
+
        -q
           Run tests without producing verbose output.  The tests are
           normally run in verbose mode, which produces a line of
@@ -349,8 +429,9 @@ def main(args):
     mega_suite = True
     set_python_path = True
     timed = 0
+    verbose_on_error = False
 
-    options, arg = getopt.getopt(args, 'amPhd:f:v:qMo:t:')
+    options, arg = getopt.getopt(args, 'aemPhd:f:v:qMo:t:')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
@@ -370,6 +451,8 @@ def main(args):
             filename = value.strip()
         elif name == '-h':
             err_exit(usage_msg, 0)
+        elif name == '-e':
+            verbose_on_error = True
         elif name == '-v':
             verbosity = int(value)
         elif name == '-q':
@@ -386,9 +469,11 @@ def main(args):
     os.path.walk(os.curdir, remove_stale_bytecode, None)
 
     if timed:
-        testrunner = TestTimer(os.getcwd(), verbosity, mega_suite)
+        testrunner = TestTimer(os.getcwd(), verbosity, mega_suite,
+                               verbose_on_error)
     else:
-        testrunner = TestRunner(os.getcwd(), verbosity, mega_suite)
+        testrunner = TestRunner(os.getcwd(), verbosity, mega_suite,
+                                verbose_on_error)
 
     if set_python_path:
         script = sys.argv[0]
