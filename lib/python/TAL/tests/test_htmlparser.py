@@ -177,6 +177,7 @@ text
         self._parse_error("<")
         self._parse_error("<>")
         self._parse_error("</>")
+        self._parse_error("</$>")
         self._parse_error("</")
         self._parse_error("</a")
         self._parse_error("</a")
