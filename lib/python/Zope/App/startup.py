@@ -22,6 +22,7 @@ from types import StringType, ListType
 from zExceptions import Unauthorized
 from zLOG import LOG, WARNING, INFO, BLATHER, log_time
 from ZODB.POSException import ConflictError
+import transaction
 import AccessControl.User
 import App.FindHomes
 import ExtensionClass
@@ -213,8 +214,8 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
 class TransactionsManager:
     def begin(self,
               # Optimize global var lookups:
-              get_transaction=get_transaction):
-        get_transaction().begin()
+              transaction=transaction):
+        transaction.begin()
 
     def commit(self,
               # Optimize global var lookups:

@@ -15,6 +15,7 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+import transaction
 from Testing import ZopeTestCase
 
 from Acquisition import aq_base
@@ -44,7 +45,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         # with an empty fixture.
         self._called = []
         # Implicitly aborts previous transaction
-        get_transaction().begin()
+        transaction.begin()
 
     def beforeSetUp(self):
         self._called.append('beforeSetUp')

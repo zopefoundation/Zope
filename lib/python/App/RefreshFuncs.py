@@ -17,6 +17,7 @@ $Id$
 
 import os, sys
 from time import time
+import transaction
 import Products
 from ExtensionClass import Base
 from Globals import PersistentMapping
@@ -321,7 +322,7 @@ def autoRefresh(jar):
         Connection.resetCaches()
         get_transaction().commit()
         jar._resetCache()
-        get_transaction().begin()
+        transaction.begin()
 
 def setupAutoRefresh(jar):
     # Install hook.

@@ -19,6 +19,7 @@ import unittest
 import utils
 import profiler
 
+import transaction
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -85,7 +86,7 @@ class ZopeTestCase(profiler.Profiled, unittest.TestCase):
            at the start of setUp(). By default begins
            a new transaction.
         '''
-        get_transaction().begin()
+        transaction.begin()
 
     def beforeClose(self):
         '''Called before the ZODB connection is closed,

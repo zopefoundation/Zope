@@ -15,6 +15,7 @@ __doc__="""Python Object Publisher -- Publish Python objects on web servers
 $Id$"""
 
 import sys, os
+import transaction
 from Response import Response
 from Request import Request
 from maybe_lock import allocate_lock
@@ -298,9 +299,12 @@ def get_module_info(module_name, modules={},
 
 
 class DefaultTransactionsManager:
-    def begin(self): get_transaction().begin()
-    def commit(self): get_transaction().commit()
-    def abort(self): get_transaction().abort()
+    def begin(self):
+        transaction.begin()
+    def commit(self):
+        get_transaction().commit()
+    def abort(self):
+        get_transaction().abort()
     def recordMetaData(self, object, request):
         # Is this code needed?
         request_get = request.get
