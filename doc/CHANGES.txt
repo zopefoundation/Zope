@@ -11,6 +11,13 @@ Zope changes
           and standard_error_message in Data.fs.in to use "new" DTML syntax
           (as opposed to SSI-style syntax).
 
+        - Added check for 'FORCE_PRODUCT_LOAD' environ var to bits which
+          try to detect whether we're a ZEO client or not in order not to
+          skip product-loading tasks.  This has the consequence that a ZEO
+          client with the "ZEO_CLIENT" env var set will cause product
+          loading tasks to occur iff his "FORCE_PRODUCT_LOAD" environment
+          var is set as well.  
+
     Zope 2.3.0 beta 3
 
       Features Added
