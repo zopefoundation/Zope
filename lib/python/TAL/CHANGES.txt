@@ -1,0 +1,14 @@
+TAL changes
+
+  This file contains change information for the current release. 
+  Change information for previous versions can be found in the
+  file HISTORY.txt.
+
+    Version 1.3.2
+
+      Features Added
+
+        - Adopted Zope-style CHANGES.txt and HISTORY.txt
+        - Improved execution performance
+
+      Bugs Fixed

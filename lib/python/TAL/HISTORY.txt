@@ -1,0 +1,39 @@
+TAL history
+
+  This file contains change information for previous versions.
+  Change information for the current release can be found
+  in the file CHANGES.txt.
+
+    Version 1.3.0
+
+      Features Added
+
+        - New builtin variable 'attrs'.
+
+      Bug Fixed
+
+        - Nested macros were not working correctly.
+
+    Version 1.2.0
+
+      Features Added
+
+        - The 'if' path modifier can cancel any TAL action.
+
+      Bug Fixed
+
+        - tal:attributes inserted empty attributes into source.
+
+    Version 1.1.0
+
+      Features Added
+        - TAL does not try to parse replacement structural text.
+        - Changed tests to match TAL's omitted attributes.
+
+    Version 1.0.0
+
+        - Various minor bugs fixed
+
+    Version 1.0.0b1
+
+	- All functionality described in the Project Wiki is implemented
