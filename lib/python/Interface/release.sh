@@ -3,7 +3,7 @@ R=$1
 M=Interface
 
 for f in test.py `cat pyfiles`; do
-  python1.5.1 /projects/sbin/tabnanny.py $f
+  python1.5.2 /projects/sbin/tabnanny.py $f
 done
 
 mkdir "$M-$R" "$M-$R/Interface"
