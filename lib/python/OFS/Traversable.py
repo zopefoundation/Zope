@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.21 2003/09/29 12:34:38 andreasjung Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: Traversable.py,v 1.22 2003/11/28 16:45:44 jim Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -91,7 +91,8 @@ class Traversable:
             # If the path starts with an empty string, go to the root first.
             pop()
             self=self.getPhysicalRoot()
-            if (restricted and not securityManager.validateValue(self)):
+            if (restricted and not securityManager.validate(
+                None, None, None, self)):
                 raise Unauthorized, name
 
         try:
