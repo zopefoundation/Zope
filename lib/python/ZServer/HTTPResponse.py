@@ -170,7 +170,7 @@ class ZServerHTTPResponse(HTTPResponse):
         status=headers.get('status', '200 OK')
      
         # status header must come first.
-        append("HTTP/%s %s" % (self._http_version, status))
+        append("HTTP/%s %s" % (self._http_version or '1.0' , status))
         if headers.has_key('status'):
             del headers['status']
         
