@@ -101,6 +101,9 @@ Zope Changes
       - Exceptions that use untrusted information from a REQUEST object in
         the exception message now html-quote that information.
 
+      - Stop leaking FastCGI Authorization header in environment to
+        prevent password compromise
+
     Features Added
 
       - <dtml-var name> and &dtml.-name; will now automatically HTML-quote
