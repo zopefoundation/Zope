@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -65,6 +65,7 @@ class CopyContainer:
 	    obj._setId(clip_id)
 	    self._setObject(clip_id, obj)
 	    obj._postCopy(self)
+
 	    if REQUEST is not None:
 		return self.manage_main(self, REQUEST, update_menu=1)
 	    return ''
@@ -74,10 +75,12 @@ class CopyContainer:
 
 	    prev_id=Moniker.absattr(obj.id)
 	    obj.aq_parent._delObject(prev_id)
-            obj=obj.aq_base
-	    obj=obj.__of__(self)
+            if hasattr(obj, 'aq_base'):
+                obj=obj.aq_base
 	    self._setObject(clip_id, obj)
-
+	    obj=obj.__of__(self)            
+            obj._setId(clip_id)
+            obj._postMove(self)
 	    if REQUEST is not None:
 		# Remove cookie after a move
 		REQUEST['RESPONSE'].setCookie('clip_data', 'deleted',
@@ -111,6 +114,10 @@ class CopySource:
 	# Called after the copy is finished to accomodate special cases
 	pass
 
+    def _postMove(self, container):
+        # Called after a move is finished to accomodate special cases
+        pass
+    
     def _setId(self, id):
 	# Called to set the new id of a copied object.
 	self.id=id
