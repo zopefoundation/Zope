@@ -165,6 +165,10 @@ Zope Changes
 
     Zope 2.0 beta 2
 
+      Features added
+
+        - Added a '-r' switch to z2.py for ZServer read-only mode.
+
       Bugs fixed
 
         - Database browsing didn't work for ZGadflyDA database adapters.
@@ -173,7 +177,7 @@ Zope Changes
           ZPublisher, which made the undo log look odd wrt the user
           who performed the transaction.
 
-        - Permissions for version operations were not et correctly. This
+        - Permissions for version operations were not set correctly. This
           made it hard to delegate work to be done in versions and to
           separate version participation from version finalization.
           To fix this, it was necessary to split the "Join/Leave" view
@@ -181,23 +185,16 @@ Zope Changes
 
         - No remark could be entered when discarding versions.
         
-
-      Note:
-
-        The section for Zope 2.0 alpha 4 did not mention that ZCatalog 
-        is now shipped with the Zope core.
-
-    Zope 2.0 beta 2
-    
-      Features added
-      
-      Bugs fixed
-      
         - Fixed a ZServer kill_zombies bug which kept ZServer from killing
           hung connections.
       
         - Fixed a product permissions registration bug that allowed
           product permission data to get lost.
+
+      Note:
+
+        The section for Zope 2.0 alpha 4 did not mention that ZCatalog 
+        is now shipped with the Zope core.
 
     Zope 2.0 beta 1
 
