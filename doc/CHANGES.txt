@@ -32,6 +32,11 @@ Zope Changes
 
         o Simpler creation of Python products.
 
+    Unfortunately, there are a number of incompatabilities between
+    Zope and Python 1.5.2 that have been reported but not yet
+    fixed. Zope 2.0 alpha 2, which will be released the week of May
+    26, will fix most or all of these.
+
     ZODB 3
 
       ZODB is the next generation of our object database architecture.
@@ -73,6 +78,10 @@ Zope Changes
 
         - FileStorage packing isn't available yet,
 
+	- OPTIMIZATION: FileStorage will get a more efficient data
+          structure for maintaining index information and key methods
+          in the ZODB framework will move to C.
+
         - Tools to convert ZODB 2 databases to ZODB 3 File
           Storages or import files are needed.
 
@@ -97,6 +106,8 @@ Zope Changes
           This is only a problem when running Zope 2 with multiple
 	  threads.
 	
+	- The default content needs to be provided for the new
+          database format.
 
     ZClasses
 
@@ -140,9 +151,10 @@ Zope Changes
         candidate releases over the next several weeks.
 
         Early releases will support both the ZODB 2 (aka 
-        BoboPOS) and ZODB3.  We may even support ZODB 2 in Zope 2.0
+        BoboPOS) and ZODB 3.  We may even support ZODB 2 in Zope 2.0
         final, but ZODB 2 support will be phased out by Zope 2.1 or
-        sooner. 
+        sooner.  Some features (e.g. the new control panel version
+        manager) may require ZODB 3.
 
   Releases
 

@@ -44,8 +44,33 @@ Choosing your database
 
     - You can use ZODB 3 with the ZopeHTTPServer and the
       PCGI publisher by changing the published module to
-      Zope.  This will only use a single thread, however.
+      Zope. 
   )
+
+Quick Start
+
+  If you are impatient, the following commands should get you up and
+  running with Zope 2 using ZServer and ZODB 3 on Unix::
+
+    python wo_pcgi.py  # Note, this mst be Python 1.5.2
+    python z2.py -d <your dns server>
+
+  where you need to supply the IP address of your dns server to the -d
+  option.  If you get errors indicating that addresses are in use,
+  then you will have to supply arguments to z2.py to change the ports
+  used for HTTP or FTP. (See the help for the z2.py script by
+  running z2.py with the -h option.)
+
+  You can then connect to Zope 2 by directing your browser to::
+
+     http://yourhost:9673/manage
+
+  where yourhost is the name or address of the machine running Zope 2.
+  If you changed the HTTP port with the -w option to z2.py, then use
+  it rather than 9673.  
+
+  You will be prompted for a user name and password, which may
+  be found in the 'access' file in the Zope installation directory.
 
 Building Zope
   
