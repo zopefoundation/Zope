@@ -12,6 +12,9 @@ Zope Changes
       - New accelerated security management bugfix in App/Manager.py,
         changing calling sequence to positional parameters.
 
+      - STXNG: re-enabled inner now work also through DTML
+        and not only when using STXNG standalone
+
   Zope 2.5 Alpha 1
 
     Features Added
