@@ -91,17 +91,13 @@ import re
 import cgi
 
 from TALDefs import *
-
-class DummyCompiler:
-
-    def compile(self, expr):
-        return expr
+from DummyEngine import DummyEngine
 
 class TALGenerator:
 
     def __init__(self, expressionCompiler=None, xml=1):
         if not expressionCompiler:
-            expressionCompiler = DummyCompiler()
+            expressionCompiler = DummyEngine()
         self.expressionCompiler = expressionCompiler
         self.program = []
         self.stack = []
@@ -111,6 +107,7 @@ class TALGenerator:
         self.slotStack = []
         self.xml = xml
         self.emit("version", TAL_VERSION)
+        self.emit("mode", xml and "xml" or "html")
 
     def getCode(self):
         return self.optimize(self.program), self.macros
@@ -196,17 +193,17 @@ class TALGenerator:
             opcode = "startEndTag"
         else:
             opcode = "startTag"
-        self.program.append((opcode, name, attrlist))
+        self.emit(opcode, name, attrlist)
 
     def emitEndTag(self, name):
         if self.xml and self.program and self.program[-1][0] == "startTag":
             # Minimize empty element
             self.program[-1] = ("startEndTag",) + self.program[-1][1:]
         else:
-            self.program.append(("endTag", name))
+            self.emit("endTag", name)
 
     def emitRawText(self, text):
-        self.program.append(("rawtext", text))
+        self.emit("rawtext", text)
 
     def emitText(self, text):
         self.emitRawText(cgi.escape(text))
@@ -329,7 +326,7 @@ class TALGenerator:
             rest = rest + string.join(collect, "")
             del self.program[i:]
             if text:
-                self.program.append(("rawtext", text))
+                self.emit("rawtext", text)
             return rest
         return None
 
@@ -350,7 +347,7 @@ class TALGenerator:
 
     def emitStartElement(self, name, attrlist, taldict, metaldict,
                          position=(None, None), isend=0):
-        if len(taldict) == len(metaldict) == 0:
+        if not taldict and not metaldict:
             # Handle the simple, common case
             self.emitStartTag(name, attrlist, isend)
             self.todoPush({})
@@ -433,6 +430,8 @@ class TALGenerator:
                 self.emitText(repeatWhitespace)
         if attrsubst:
             repldict = parseAttributeReplacements(attrsubst)
+            for key, value in repldict.items():
+                repldict[key] = self.expressionCompiler.compile(value)
         else:
             repldict = {}
         if replace:
