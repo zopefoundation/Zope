@@ -275,7 +275,7 @@ class HTMLParser:
                 break
             attrname, rest, attrvalue = m.group(1, 2, 3)
             if not rest:
-                attrvalue = None
+                attrvalue = attrname
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
