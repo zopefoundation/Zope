@@ -15,17 +15,17 @@
 <!--#var expr="user.name"-->
 </TD>
 </TR>
-
+<TR><TD COLSPAN=2>&nbsp;</TD></TR>
 <!--#if remote_user_mode__-->
   <INPUT TYPE="HIDDEN" NAME="password" value="<!--#var password html_quote-->">
   <INPUT TYPE="HIDDEN" NAME="confirm"  value="<!--#var password html_quote-->">
 <!--#else-->
 <TR>
 <TD VALIGN="TOP">
-<STRONG>Password</STRONG>
+<STRONG>New Password</STRONG>
 </TD>
 <TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="password" VALUE="<!--#var password html_quote-->" SIZE="40">
+<INPUT TYPE="PASSWORD" NAME="password" SIZE="40">
 </TD>
 </TR>
 <TR>
@@ -33,11 +33,11 @@
 <STRONG>(Confirm)</STRONG>
 </TD>
 <TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="confirm" VALUE="<!--#var password html_quote-->" SIZE="40">
+<INPUT TYPE="PASSWORD" NAME="confirm" SIZE="40">
 </TD>
 </TR>
 <!--#/if-->
-
+<TR><TD COLSPAN=2>&nbsp;</TD></TR>
 <TR>
 <TD VALIGN="TOP">
 <STRONG>Domains</STRONG>
