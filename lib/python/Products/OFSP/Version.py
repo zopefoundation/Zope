@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -30,7 +30,7 @@ class Session(Persistent,Implicit,RoleManager,Item):
 		   )
 
     __ac_permissions__=(
-    ('View management screens', ['manage','manage_tabs','manage_editForm']),
+    ('View management screens', ['manage','manage_tabs','manage_editForm', '']),
     ('Change permissions', ['manage_access']),
     ('Edit session', ['manage_edit']),
     ('Join/leave session', ['enter','leave','leave_another']),
@@ -108,6 +108,9 @@ __init__.need_license=1
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.17  1998/05/20 17:57:40  jim
+# Included '' in permission settings.
+#
 # Revision 1.16  1998/04/13 19:23:06  jim
 # Added license flag
 #
