@@ -403,13 +403,10 @@ Lesson 6. Recent Elvis Sightings, cont.
       <h1 tal:content="template/title">title</h1>
 
       <table border="1">
-        <tr>
-        <td>
-        <div tal:repeat="sighting container/sightingsFolder/objectValues"
-             tal:content="structure sighting">
-        Sighting goes here
-        </div>
-        </td>
+        <tr tal:repeat="sighting container/sightingsFolder/objectValues">
+          <td tal:content="structure sighting">
+            Sighting goes here
+          </td>
         </tr>
       </table>
 

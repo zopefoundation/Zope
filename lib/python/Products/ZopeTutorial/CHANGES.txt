@@ -1,3 +1,9 @@
+Zope Tutorial 1.2
+
+  Bug Fixes
+
+    * Fix niglet in step 7.
+
 Zope Tutorial 1.1
 
   Features

@@ -139,6 +139,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1295: Fixed minor niglet with the Elvis tutorial.
+
      - added "version.txt" to setup.py to avoid untrue "unreleased version"
        messages within the control panel
 
