@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.74 2002/08/14 22:14:51 mj Exp $"""
-__version__ = "$Revision: 1.74 $"[11:-2]
+$Id: MailHost.py,v 1.75 2002/10/11 14:05:30 Torped Exp $"""
+__version__ = "$Revision: 1.75 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -202,6 +202,9 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
 
     if mo.getheader('Bcc'):
         mo.__delitem__('Bcc')
+
+    if not mo.getheader('Date'):
+        mo['Date'] = DateTime().rfc822()
 
     mo.rewindbody()
     finalmessage = mo
