@@ -158,7 +158,8 @@ def manage_addZClass(self, id, title='', baseclasses=[],
             id+'_addForm',
             )
     
-    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    if REQUEST is not None:
+        return self.manage_main(self,REQUEST, update_menu=1)
 
 def manage_subclassableClassNames(self):
     r={}
