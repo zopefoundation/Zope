@@ -143,7 +143,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
 
-    manage_options=(  
+    manage_options=Folder.manage_options + (  
         {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
          'target': 'manage_main',
          'help':('ZCatalog','ZCatalog_Cataloged-Objects.dtml')},
@@ -159,7 +159,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Status', 'action': 'manage_catalogStatus', 
          'target':'manage_main',
          'help':('ZCatalog','ZCatalog_Status.dtml')},
-        )+Folder.manage_options
+        )
 
     __ac_permissions__=(
 

@@ -102,11 +102,12 @@ class CatalogAware:
 
     manage_editCatalogerForm=HTMLFile('editCatalogerForm', globals())
 
-    def manage_editCataloger(self, default, REQUEST):
+    def manage_editCataloger(self, default, REQUEST=None):
         """ """
         self.default_catalog=default
         message = "Your changes have been saved"
-        return self.manage_main(self, REQUEST, manage_tabs_message=message)
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, manage_tabs_message=message)
     
 
     def manage_afterAdd(self, item, container):

@@ -28,10 +28,10 @@ that have one or more keywords specified in a search query.</p>
 <form action="<dtml-var URL1>">
 
 <ul>
-<dtml-in indexes>
+<dtml-in index_objects>
  <li>
   <input type="checkbox" name="names:list" value="<dtml-var sequence-item html_quote>">
-<dtml-var sequence-item></li>
+<dtml-var id>    (<i><dtml-var meta_type></i>)</li>
 </dtml-in>
 </ul>
 <br>

@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -110,6 +110,8 @@ def nonEmpty(s):
 
 class UnIndex(Persistent, Implicit):
     """UnIndex object interface"""
+
+    meta_type = 'Field Index'
 
     def __init__(self, id=None, ignore_ex=None, call_methods=None):
         """Create an unindex

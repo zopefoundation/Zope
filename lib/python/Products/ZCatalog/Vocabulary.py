@@ -122,10 +122,10 @@ class Vocabulary(Item, Persistent, Implicit,
     
     manage_options=(
         (
-        {'label': 'Vocabulary', 'action': 'manage_vocabulary',
-         'target': 'manage_main'},
+        {'label': 'Vocabulary', 'action': 'manage_main',
+         'target': 'manage_workspace'},
         {'label': 'Query', 'action': 'manage_query',
-         'target': 'manage_main'},
+         'target': 'manage_workspace'},
         )
         +Item.manage_options
         +AccessControl.Role.RoleManager.manage_options
@@ -144,8 +144,7 @@ class Vocabulary(Item, Persistent, Implicit,
 
     
 
-##    manage_main = HTMLFile('vocab_manage_main', globals())
-    manage_vocabulary = HTMLFile('manage_vocab', globals())
+    manage_main = HTMLFile('manage_vocab', globals())
     manage_query = HTMLFile('vocab_query', globals())
 
     def __init__(self, id, title='', globbing=None):
@@ -175,7 +174,7 @@ class Vocabulary(Item, Persistent, Implicit,
         self.insert(word)
 
         if RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_vocabulary')
+            RESPONSE.redirect(URL1 + '/manage_main')
 
     def manage_stop_syn(self, stop_syn, REQUEST=None):
         pass

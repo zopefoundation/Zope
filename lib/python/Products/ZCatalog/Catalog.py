@@ -523,13 +523,18 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # reached, therefor 'sort-on' does not happen in the
                 # context of text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
-                for k, intset in sort_index._index.items():
-                    if type(rs) is IIBType:
-                        intset=rs.intersection(intset)
-                    else:
-                        intset=intset.intersection(rs)
-                    if intset: 
-                        append((k,LazyMap(self.__getitem__, intset)))
+                if len(rs)>len(sort_index._index):
+                    for k, intset in sort_index._index.items():
+                        if type(rs) is IIBType:
+                            intset=rs.intersection(intset)
+                        else:
+                            intset=intset.intersection(rs)
+                        if intset: 
+                            append((k,LazyMap(self.__getitem__, intset)))
+                else:
+                    for r in rs:
+                        append(sort_index._unindex[r],
+                               LazyMap(self.__getitem__,[r]))
 
         return used
 

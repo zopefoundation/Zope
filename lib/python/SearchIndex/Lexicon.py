@@ -148,9 +148,9 @@ class Lexicon(Persistent, Implicit):
             self.counter = self.counter + 1
             return self.counter - 1 
 
-    def get(self, key):
+    def get(self, key, default=None):
         """  """
-        return [self._lexicon[key]]
+        return [self._lexicon.get(key, default)]
 
     def __getitem__(self, key):
         return self.get(key)

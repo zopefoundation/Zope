@@ -2,6 +2,9 @@ from UnIndex import UnIndex, MV, intSet
 from types import ListType, TupleType
 
 class UnKeywordIndex(UnIndex):
+
+    meta_type = 'Keyword Index'
+    
     """Like an UnIndex only it indexes sequences of items
     
     Searches match any keyword.
