@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -185,7 +185,6 @@ class PropertySheet(Persistent, Implicit):
         if hasattr(aq_base(self),id):
             raise 'Bad Request', (
                 'Invalid property id, %s. It is in use.' % id)
-            
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
         self._properties=self._properties+(prop,)
@@ -198,8 +197,11 @@ class PropertySheet(Persistent, Implicit):
         # it will used to _replace_ the properties meta data.
         if not self.hasProperty(id):
             raise 'Bad Request', 'The property %s does not exist.' % id
+        propinfo=self.propertyInfo(id)
+        if not 'w' in propinfo.get('mode', 'wd'):
+            raise 'Bad Request', '%s cannot be changed.' % id
         if type(value)==type(''):
-            proptype=self.propertyInfo(id).get('type', 'string')
+            proptype=self.propinfo.get('type', 'string')
             if type_converters.has_key(proptype):
                 value=type_converters[proptype](value)
         if meta is not None:
@@ -214,11 +216,16 @@ class PropertySheet(Persistent, Implicit):
         # Delete the property with the given id. If a property with the
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
-            raise ValueError, 'The property %s does not exist.' % id
-        self=self.v_self()
-        delattr(self, id)
-        self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
-                                      self._properties))
+            raise 'Bad Request', 'The property %s does not exist.' % id
+        vself=self.v_self()
+        if hasattr(vself, '_reserved_names'):
+            nd=vself._reserved_names
+        else: nd=()
+        if (not 'd' in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
+            raise 'Bad Request', '%s cannot be deleted.' % id
+        delattr(vself, id)
+        vself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
+                                       vself._properties))
 
     def propertyIds(self):
         # Return a list of property ids.
@@ -238,7 +245,7 @@ class PropertySheet(Persistent, Implicit):
         # Return a mapping containing property meta-data
         for p in self.propertyMap():
             if p['id']==id: return p
-        raise ValueError, 'Property %s not found.' % id
+        raise ValueError, 'The property %s does not exist.' % id
 
     def propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
@@ -343,8 +350,6 @@ class PropertySheet(Persistent, Implicit):
         vself=self.v_self()
         for name, value in props.items():
             if self.hasProperty(name):
-                if not 'w' in propdict[name].get('mode', 'wd'):
-                    raise 'BadRequest', '%s cannot be changed.' % name
                 vself._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
@@ -359,20 +364,7 @@ class PropertySheet(Persistent, Implicit):
                    title='No property specified',
                    message='No properties were specified!',
                    action ='./manage_propertiesForm',)
-        propdict=self._propdict()
-        vself=self.v_self()
-        if hasattr(vself, '_reserved_names'):
-            nd=vself._reserved_names
-        else: nd=()
         for id in ids:
-            if not propdict.has_key(id):
-                raise 'BadRequest', (
-                      'The property <em>%s</em> does not exist.' % id)
-            if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):
-                return MessageDialog(
-                title  ='Cannot delete %s' % id,
-                message='The property <em>%s</em> cannot be deleted.' % id,
-                action ='manage_propertiesForm')
             self._delProperty(id)
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
