@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -92,6 +92,7 @@ UNSPECIFIED_ROLES=''
 try:
     from ExtensionClass import Base
     class RequestContainer(Base):
+        __roles__=None
         def __init__(self,**kw):
             for k,v in kw.items(): self.__dict__[k]=v
 
@@ -100,6 +101,7 @@ try:
             
 except:
     class RequestContainer:
+        __roles__=None
         def __init__(self,**kw):
             for k,v in kw.items(): self.__dict__[k]=v
 
