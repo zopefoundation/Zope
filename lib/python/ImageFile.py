@@ -1,12 +1,13 @@
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from string import rfind
 from Globals import package_home
 from DateTime import DateTime
+import Acquisition
 
-class ImageFile:
+class ImageFile(Acquisition.Explicit):
     """Image object stored in an external file"""
 
     def __init__(self,path,_prefix=None):
