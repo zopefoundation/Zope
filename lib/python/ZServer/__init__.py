@@ -11,10 +11,23 @@
 # 
 ##############################################################################
 
-import sys,os
+import sys, os
+
+# HACKERY to get around asyncore issues. This ought to go away! We're
+# currently using the Python 2.2 asyncore bundled with Zope to override
+# brokenness in the Python 2.1 version. We need to do some funny business
+# to make this work, as a 2.2-ism crept into the asyncore code.
+import fcntl, FCNTL
+if not hasattr(fcntl, 'F_GETFL'):
+    fcntl.F_GETFL = FCNTL.F_GETFL
+    fcntl.F_SETFL = FCNTL.F_SETFL
+    
+from medusa import asyncore
+sys.modules['asyncore'] = asyncore
+
+
+
 from medusa.test import max_sockets
-
-
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
 ZSERVER_VERSION='1.1b1'
