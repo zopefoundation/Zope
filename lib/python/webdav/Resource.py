@@ -13,7 +13,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import sys, os,  mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -167,7 +167,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             mtime=rfc1123_date(self._p_mtime)
             RESPONSE.setHeader('Last-Modified', mtime)
         if hasattr(aq_base(self), 'http__etag'):
-            RESPONSE.setHeader('Etag', self.aq_base.http__etag())
+            etag = self.http__etag(readonly=1)
+            if etag:
+                RESPONSE.setHeader('Etag', etag)
         RESPONSE.setStatus(200)
         return RESPONSE
 

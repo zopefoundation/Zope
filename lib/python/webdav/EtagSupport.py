@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 
 import time, Interface, re
@@ -66,9 +66,11 @@ class EtagSupport:
     """
     __implements__ = (EtagBaseInterface,)
 
-    def http__etag(self):
+    def http__etag(self, readonly=0):
         try: etag = self.__etag
         except AttributeError:
+            if readonly: # Don't refresh the etag on reads
+                return
             self.http__refreshEtag()
             etag = self.__etag
         return etag

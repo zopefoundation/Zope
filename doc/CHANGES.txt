@@ -6,9 +6,8 @@ Zope Changes
 
     Bugs Fixed
 
-      - Fixed bug in manage_editProperties which used an incorrect default
-        for several types of property when they were not found in the
-        REQUEST.
+      - Collector #574: Fixed write on HEAD requests caused by overzealous
+        ETag support.
 
       - Fixed broken management form for TopicIndexes.
     
