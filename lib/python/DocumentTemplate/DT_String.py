@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.30 1999/07/12 17:24:53 jim Exp $"
+"$Id: DT_String.py,v 1.31 1999/08/18 20:50:37 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -145,7 +145,7 @@ class String:
     def SubTemplate(self, name): return String('', __name__=name)
 
     def tagre(self):
-        return ts_regex.symcomp(
+        return regex.symcomp(
             '%('                                     # beginning
             '\(<name>[a-zA-Z0-9_/.-]+\)'                       # tag name
             '\('
