@@ -140,6 +140,12 @@ class TALGenerator:
             if opcode == "startEndTag":
                 if self.optimizeStartTag(collect, item[1], item[2], endsep):
                     continue
+            if opcode in ("beginScope", "endScope"):
+                # Push *Scope instructions in front of any text instructions;
+                # this allows text instructions separated only by *Scope
+                # instructions to be joined together.
+                output.append(self.optimizeArgsList(item))
+                continue
             text = string.join(collect, "")
             if text:
                 i = string.rfind(text, "\n")
@@ -149,13 +155,16 @@ class TALGenerator:
                 else:
                     output.append(("rawtextOffset", (text, len(text))))
             if opcode != None:
-                if len(item) == 2:
-                    output.append((opcode, item[1]))
-                else:
-                    output.append((opcode, tuple(item[1:])))
+                output.append(self.optimizeArgsList(item))
             rawseen = cursor+1
             collect = []
         return output
+
+    def optimizeArgsList(self, item):
+        if len(item) == 2:
+            return item
+        else:
+            return item[0], tuple(item[1:])
 
     actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4,
                    0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
