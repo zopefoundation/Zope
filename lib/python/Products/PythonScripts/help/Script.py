@@ -11,11 +11,6 @@
 # 
 ##############################################################################
 
-"""Script module
-
-This provides generic script support
-"""
-
 class Script:
     """
 

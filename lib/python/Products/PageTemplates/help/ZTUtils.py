@@ -13,7 +13,7 @@ class Batch:
     results) over several pages.
 
     Batches provide Page Templates with similar functions as those
-    built-in to <dtml-in>.
+    built-in to '<dtml-in>'.
 
     You can access elements of a batch just as you access elements of
     a list. For example::
