@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.15 1998/10/13 21:07:17 jeffrey Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Index.py,v 1.16 1998/12/14 16:32:55 jeffrey Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -21,6 +21,15 @@ from Missing import MV
 import string
 
 ListType=type([])
+StringType=type('s')
+
+def nonEmpty(s):
+    "returns true if a non-empty string or any other (nonstring) type"
+    if type(s) is StringType:
+	if s: return 1
+	else: return 0
+    else:
+	return 1
 
 class Index(Persistent):
     """Index object interface"""
@@ -63,11 +72,14 @@ class Index(Persistent):
 	    name = self.id
 	elif name != self.id:
 	    return []
-	if not withLengths: return tuple(self._index.keys())
+	if not withLengths: return tuple(
+	    filter(nonEmpty,self._index.keys())
+	    )
 	else: 
 	    rl=[]
 	    for i in self._index.keys():
-		rl.append((i, len(self._index[i])))
+		if not nonEmpty(i): continue
+		else: rl.append((i, len(self._index[i])))
 	    return tuple(rl)
 
     def clear(self):
@@ -206,6 +218,9 @@ class Index(Persistent):
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.16  1998/12/14 16:32:55  jeffrey
+# unique values listing now won't return empty strings
+#
 # Revision 1.15  1998/10/13 21:07:17  jeffrey
 # added dpUniqueValues and dpHasUniqueValuesFor methods
 #
