@@ -84,13 +84,13 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time, gmtime, localtime, asctime
-from time import timezone, strftime, mktime
+from time import timezone, strftime
 from time import daylight, timezone, altzone
 from types import InstanceType,IntType,FloatType,StringType,UnicodeType
 try: from time import tzname
@@ -1657,10 +1657,7 @@ class DateTime:
         if s[-3]==':' and s[-6] in ['+','-']:
             hour_off = atoi(s[-6:-3])
             min_off  = atoi(s[-2:])
-    
-        ts = mktime((year,month,day,hour,minute,seconds,0,0,0))
-        ts = ts + (hour_off*60-min_off)
-    
+
         return year,month,day,hour,minute,seconds,'GMT%+03d%02d' % (hour_off,min_off)
 
 
