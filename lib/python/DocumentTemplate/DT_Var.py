@@ -151,8 +151,8 @@ Evaluating expressions without rendering results
 
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.58 2002/09/16 10:09:11 htrd Exp $'
-__version__='$Revision: 1.58 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.59 2003/02/01 09:25:58 andreasjung Exp $'
+__version__='$Revision: 1.59 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -396,6 +396,18 @@ def len_format(v, name='(Unknown name)', md={}):
 def len_comma(v, name='(Unknown name)', md={}):
     return thousands_commas(str(len(v)))
 
+def restructured_text(v, name='(Unknown name)', md={}):
+
+    from reStructuredText import HTML
+
+    if isinstance(v,StringType): txt = v
+    elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
+        txt = aq_base(v).read_raw()
+    else: txt = str(v)
+
+    return HTML(txt)
+
+
 StructuredText=None
 def structured_text(v, name='(Unknown name)', md={}):
     global StructuredText
@@ -428,6 +440,7 @@ special_formats={
     'dollars-and-cents': dollars_and_cents,
     'collection-length': len_format,
     'structured-text': structured_text,
+    'restructured-text': restructured_text,
 
     # The rest are deprecated:
     'sql-quote': sql_quote,

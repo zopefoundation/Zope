@@ -33,6 +33,9 @@ Zope Changes
        than one attribute of an object. This removes the ties between the
        indexes ID and the attribute name to be indexed. 
 
+     - Integration of reStructuredText (reST). 
+       See doc/RESTRUCTUREDTEXT.txt for details.
+
     Bugs Fixed
 
      - Collector #771: ZCatalog failed to index DTML Document if the name

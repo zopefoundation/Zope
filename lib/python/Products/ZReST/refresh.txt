@@ -1,0 +1,1 @@
+This is a flag that tells Zope that the product may be auto-refreshed.
