@@ -83,6 +83,7 @@ my_StartElementHandler(userdata, name, atts)
 		}
 		
 		args = Py_BuildValue("(sO)", name, attrs_obj);
+		Py_XDECREF(attrs_obj);
 		if (!args) return;
 		rv = PyEval_CallObject(self->StartElementHandler, args);
 		Py_XDECREF(args);
