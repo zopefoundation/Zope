@@ -1,6 +1,6 @@
 """Virtual Host Monster regression tests.
 
-These tests mainly verify that OFS.Traversable.absolute_url() 
+These tests mainly verify that OFS.Traversable.absolute_url()
 works correctly in a VHM environment.
 
 Also see http://zope.org/Collectors/Zope/809
@@ -26,7 +26,8 @@ class VHMRegressions(unittest.TestCase):
         transaction.begin()
         self.app = makerequest(Zope.app())
         try:
-            self.app.manage_addProduct['SiteAccess'].manage_addVirtualHostMonster('VHM')
+            #self.app.manage_addProduct['SiteAccess'].manage_addVirtualHostMonster('VHM')
+            # now we have a VHM as virtual_hosting per default
             self.app.manage_addFolder('folder')
             self.app.folder.manage_addDTMLMethod('doc', '')
             self.app.REQUEST.set('PARENTS', [self.app])

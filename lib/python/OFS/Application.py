@@ -291,7 +291,7 @@ class AppInitializer:
     def commit(self, note):
         get_transaction().note(note)
         get_transaction().commit()
-        
+
     def initialize(self):
         app = self.getApp()
         # make sure to preserve relative ordering of calls below.
@@ -303,8 +303,9 @@ class AppInitializer:
         self.install_zglobals()
         self.install_inituser()
         self.install_errorlog()
-        self.install_products() 
+        self.install_products()
         self.install_standards()
+        self.install_virtual_hosting()
         self.check_zglobals()
 
     def install_cp_and_products(self):
@@ -316,7 +317,7 @@ class AppInitializer:
             cpl._init()
             app._setObject('Control_Panel', cpl)
             self.commit('Added Control_Panel')
-        
+
         # b/c: Ensure that a ProductFolder exists.
         if not hasattr(aq_base(app.Control_Panel), 'Products'):
             app.Control_Panel.Products=App.Product.ProductFolder()
@@ -378,7 +379,7 @@ class AppInitializer:
             default_limit = 1000
             default_period_secs = 20
             default_timeout_mins = 20
-            
+
             limit = (getattr(config, 'maximum_number_of_session_objects', None)
                      or default_limit)
             timeout_spec = getattr(config, 'session_timeout_minutes',
@@ -452,7 +453,7 @@ class AppInitializer:
 
     def install_required_roles(self):
         app = self.getApp()
-        
+
         # Ensure that Owner role exists.
         if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
             app.__ac_roles__=app.__ac_roles__ + ('Owner',)
@@ -497,6 +498,18 @@ class AppInitializer:
             app._setObject('error_log', error_log)
             app._setInitializerFlag('error_log')
             self.commit('Added site error_log at /error_log')
+
+    def install_virtual_hosting(self):
+        app = self.getApp()
+        if app._getInitializerFlag('virtual_hosting'):
+            return
+        if not app.objectIds('Virtual Host Monster') and not hasattr(app, 'virtual_hosting'):
+            from Products.SiteAccess.VirtualHostMonster import VirtualHostMonster
+            vhm=VirtualHostMonster()
+            vhm.id='virtual_hosting'
+            vhm.addToContainer(app)
+            app._setInitializerFlag('virtual_hosting')
+            self.commit('Added virtual_hosting')
 
     def check_zglobals(self):
         if not doInstall():
@@ -611,7 +624,7 @@ def get_products():
                      os.path.exists(os.path.join(fullpath, '__init__.pyo')) or
                      os.path.exists(os.path.join(fullpath, '__init__.pyc')) ):
                     # import PluginIndexes 1st (why?)
-                    priority = (name != 'PluginIndexes') 
+                    priority = (name != 'PluginIndexes')
                     # i is used as sort ordering in case a conflict exists
                     # between Product names.  Products will be found as
                     # per the ordering of Products.__path__

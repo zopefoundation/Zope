@@ -109,7 +109,7 @@ class TestInitialization( unittest.TestCase ):
         self.assertEqual(app.temp_folder.session_data.meta_type,
                          'Transient Object Container')
         self.failUnless(app._getInitializerFlag('temp_folder'))
-        
+
     def test_install_tempfolder_and_sdc_status(self):
         self.configure(good_cfg)
         i = self.getOne()
@@ -128,6 +128,14 @@ class TestInitialization( unittest.TestCase ):
         i.install_browser_id_manager()
         self.assertEqual(app.browser_id_manager.meta_type,'Browser Id Manager')
         self.failUnless(app._getInitializerFlag('browser_id_manager'))
+
+    def test_install_virtual_hosting(self):
+        self.configure(good_cfg)
+        i = self.getOne()
+        app = i.getApp()
+        i.install_virtual_hosting()
+        self.assertEqual(app.virtual_hosting.meta_type,'Virtual Host Monster')
+        self.failUnless(app._getInitializerFlag('virtual_hosting'))
 
     def test_install_session_data_manager(self):
         self.configure(good_cfg)
@@ -154,7 +162,7 @@ class TestInitialization( unittest.TestCase ):
         root = i.getApp()._p_jar.root()
         self.failUnless(root.has_key('ZGlobals'))
         self.failUnless(isinstance(root['ZGlobals'], OOBTree))
-            
+
     def test_install_inituser(self):
         fname = os.path.join(TEMPNAME, 'inituser')
         f = open(fname, 'w')
@@ -183,7 +191,7 @@ class TestInitialization( unittest.TestCase ):
         i = self.getOne()
         i.install_products()
         self.failUnless(Application.misc_.__dict__.has_key('OFSP'))
-        
+
     def test_install_standards(self):
         self.configure(good_cfg)
         i = self.getOne()
