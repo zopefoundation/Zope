@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.8 2001/11/28 15:51:05 matt Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: __init__.py,v 1.9 2001/12/14 18:59:28 evan Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import PythonScript
 try:
@@ -41,3 +41,21 @@ def initialize(context):
     context.registerHelp()
     context.registerHelpTitle('Script (Python)')
     
+# utility stuff
+
+def recompile(self):
+    '''Recompile all Python Scripts'''
+    base = self.this()
+    scripts = base.ZopeFind(base, obj_metatypes=('Script (Python)',))
+    names = []
+    for name, ob in scripts:
+        if ob._v_change:
+            names.append(name)
+            ob._compile()
+            ob._p_changed = 1
+
+    if names:
+        return 'The following Scripts were recompiled:\n' + '\n'.join(names)
+    return 'No Scripts were found that required recompilation.'
+
+_m = {'recompile': recompile}
