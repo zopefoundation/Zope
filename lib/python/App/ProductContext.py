@@ -86,6 +86,8 @@
 """
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
+from HelpSys import HelpTopic
+import string, os.path
 
 if not hasattr(Products, 'meta_types'): Products.meta_types=()
 if not hasattr(Products, 'meta_classes'):
@@ -102,6 +104,7 @@ class ProductContext:
     def registerClass(self, instance_class=None, meta_type='', 
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
+                      constructor_help=None,
         ):
         """Register a constructor
 
@@ -201,7 +204,8 @@ class ProductContext:
             { 'name': meta_type or instance_class.meta_type,
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
               'product': pid,
-              'permission': permission,                
+              'permission': permission,
+              'help': constructor_help
               },)
 
         m[name]=initial
@@ -248,3 +252,65 @@ class ProductContext:
         Z.__module__=pack.__name__
         setattr(pack, zname, Z)
         return self.registerZClass(Z, meta_type)
+
+
+    def registerHelpTopic(self, id, topic):
+        """
+        Register a Help Topic for a product.
+        """
+        self.__prod.__of__(self.__app.Control_Panel.Products).Help._setObject(id, topic)
+
+    def registerHelpViews(self, klass):
+        """
+        Associates a class's views with help topics.
+        This relies on the manage_options structure of
+        the class.
+        Note: right now this just sets the permissions on
+        the help topics.
+        """
+        # this needs to be better thought out.
+        #
+        for option in klass.manage_options:
+            if option.has_key('help'):
+                prod_id, topic_id = option['help']
+                prod=getattr(self.__app.Control_Panel.Products, prod_id)
+                topic=getattr(pdoc.Help, topic_id)
+                
+                perms=topic.permissions + [permission]
+                topic._setPropValue('permissions',perms)
+         
+    def registerHelp(self, directory='help', clear=1):
+        """
+        Registers Help Topics for all objects in a directory.
+
+        'clear' indicates whether or not to delete all existing
+        Topics from the Product.
+        
+        HelpTopics are created for these kind of files
+        
+        .dtml            -- DTMLHelpTopic
+        .html .htm .txt  -- TextHelpTopic        
+        .stx .txt        -- STXHelpTopic
+        .jpg .png .gif   -- ImageHelpTopic
+        """
+        if clear:
+            help=self.__prod.__of__(self.__app.Control_Panel.Products).Help
+            for id in help.objectIds('Help Topic'):
+                help._delObject(id)
+        path=os.path.join(Globals.package_home(self.__pack.__dict__), directory)
+        for file in os.listdir(path):
+            ext=os.path.splitext(file)[1]
+            ext=string.lower(ext)
+            if ext in ('.dtml',):
+                ht=HelpTopic.DTMLTopic(file, '', os.path.join(path,file))
+                self.registerHelpTopic(file, ht)
+            elif ext in ('.html', '.htm'):
+                ht=HelpTopic.TextTopic(file, '', os.path.join(path,file))
+                self.registerHelpTopic(file, ht)
+            elif ext in ('.stx', '.txt'):
+                ht=HelpTopic.STXTopic(file, '', os.path.join(path, file))
+                self.registerHelpTopic(file,ht)
+            elif ext in ('.jpg', '.gif', '.png'):
+                ht=HelpTopic.ImageTopic(file, '', os.path.join(path, file))
+                self.registerHelpTopic(file,ht)
+                

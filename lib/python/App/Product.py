@@ -113,6 +113,8 @@ from string import rfind, atoi, find, strip, join
 from Factory import Factory
 from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
+from HelpSys.HelpSystem import ProductHelp
+
 
 class ProductFolder(Folder):
     "Manage a collection of Products"
@@ -198,6 +200,8 @@ class Product(Folder, PermissionManager):
         {'id':'version', 'type': 'string'},
         )
 
+    _reserved_names=('Help',)
+
     manage_addPrincipiaFactoryForm=Globals.HTMLFile('addFactory',globals())
     def manage_addPrincipiaFactory(
         self, id, title, object_type, initial, permission=None, REQUEST=None):
@@ -210,7 +214,8 @@ class Product(Folder, PermissionManager):
     def __init__(self, id, title):
         self.id=id
         self.title=title
-
+        self._setObject('Help', ProductHelp('Help', '%s Help' % id))
+        
     def Destination(self):
         "Return the destination for factory output"
         return self
