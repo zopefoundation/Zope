@@ -85,9 +85,12 @@
 """Objects providing context for product initialization
 """
 from AccessControl.PermissionRole import PermissionRole
-import Globals, os, OFS.ObjectManager, OFS.misc_, Products
+import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
 
 if not hasattr(Products, 'meta_types'): Products.meta_types=()
+if not hasattr(Products, 'meta_classes'):
+    Products.meta_classes={}
+    Products.meta_class_info={}
 
 class ProductContext:
 
@@ -214,4 +217,21 @@ class ProductContext:
             getattr(OFS.misc_.misc_, pid)[name]=icon
 
 
+    def registerZClass(self, Z, meta_type=None):
+        base_class=Z._zclass_
+        if meta_type is None:
+            if hasattr(base_class, 'meta_type'): meta_type=base_class.meta_type
+            else:                                meta_type=base_class.__name__
+            
+        key="%s/%s" % (base_class.__module__, base_class.__name__)
+        Products.meta_class_info[key]=meta_type
+        Products.meta_classes[key]=Z
+        
 
+    def registerBaseClass(self, base_class, meta_type=None):
+
+        class Z: pass
+        Z.propertysheets=OFS.PropertySheets.PropertySheets()
+        Z._zclass_=base_class
+        Z.manage_options=()
+        return self.registerZClass(Z, meta_type)
