@@ -164,7 +164,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     manage_catalogStatus = HTMLFile('catalogStatus', globals())
 
 
-    def __init__(self,id,title=None):
+    def __init__(self,id,title=''):
         self.id=id
         self.title=title
         self.threshold = 1000
