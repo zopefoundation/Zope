@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -728,7 +728,8 @@ class DateTime:
                     continue
             raise self.SyntaxError, string
 
-        if ints[-1] > 60 and d not in ['.',':']:
+        day=None
+        if ints[-1] > 60 and d not in ['.',':'] and len(ints) > 2:
             year=ints[-1]
             del ints[-1]
             if month:
@@ -738,36 +739,51 @@ class DateTime:
                 month=ints[0]
                 day=ints[1]
                 del ints[:2]
-        elif ints[0] > 31:
-            year=ints[0]
-            if month:
-                day=ints[1]
+        elif month:
+            if len(ints) > 1:
+                if ints[0] > 31:
+                    year=ints[0]
+                    day=ints[1]
+                else:
+                    year=ints[1]
+                    day=ints[0]
                 del ints[:2]
-            else:
-                month=ints[1]
-                day=ints[2]
-                del ints[:3]
-        elif month and ints[1] > 31:
-            year=ints[1]
-            day=ints[0]
-            del ints[:2]
-        elif not month and ints[2] > 31:
-            month=ints[0]
-            day=ints[1]
-            year=ints[2]
+        elif len(ints) > 2:
+            if ints[0] > 31:
+                year=ints[0]
+                if ints[1] > 12:
+                    day=ints[1]
+                    month=ints[2]
+                else:
+                    day=ints[2]
+                    month=ints[1]
+            if ints[1] > 31:
+                year=ints[1]
+                if ints[0] > 12 and ints[2] <= 12:
+                    day=ints[0]
+                    month=ints[2]
+                elif ints[2] > 12 and ints[0] <= 12:
+                    day=ints[2]
+                    month=ints[0]
+            elif ints[2] > 31:
+                year=ints[2]
+                if ints[0] > 12:
+                    day=ints[0]
+                    month=ints[1]
+                else:
+                    day=ints[1]
+                    month=ints[0]
+            elif ints[0] <= 12:
+                month=ints[0]
+                day=ints[1]
+                year=ints[2]
             del ints[:3]
-        else:
-            raise self.SyntaxError, string
+            
+        if day is None: raise self.SyntaxError, string
 
-
-        if not month: raise SyntaxError,string
-        if month > 12:
-            # using euro format?
-            tmp=month
-            month=day
-            day=tmp
-
-        if year<100: year=year+CENTURY
+        if year < 100: year=year+CENTURY
+        elif year < 1000: raise self.SyntaxError, string
+        
         leap = year%4==0 and (year%100!=0 or year%400==0)
         if not day or day > self._month_len[leap][month]:
             raise self.SyntaxError, string
