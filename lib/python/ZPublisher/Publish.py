@@ -81,50 +81,82 @@ Published objects
 
 Access Control
 
-  Access to an object (and it's sub-objects) may be further restricted
-  by specifying an object attribute named '__allow_groups__'.  If set,
-  this attribute should contain a collection of authorization groups.
-  The '__allow_groups__' attribute may be a mapping object, in which
-  case it is a collection of named groups.  Alternatively, the
-  '__allow_groups__' attribute may be a sequence, in which case it is
-  a collection of unnamed groups.  Each group must be a mapping from
-  name to password.
+  Object access can be further controlled via
+  *roles* and *user databases*.
 
-  The module used to publish an object may contain it's own
-  '__allow_groups__' attribute, thereby limiting access to all of the
-  objects in a module.
+  The Bobo authorization model uses roles to control access to
+  objects.  As Bobo traverses URLs, it checked for '__roles__'
+  attributes in the objects it encounters.  The last value found
+  controls access to the published object.
 
-  If multiple objects in the URL path have '__allow_groups__'
-  attributes, then the '__allow_groups__' attribute from the last
-  object in the path that has this attribute will be used.  The
-  '__allow_groups__' attribute for a subobject overides
-  '__allow_groups__' attributes for containing objects, however, if
-  named groups are used, group data from containing objects may be
-  acquired by contained objects.  If a published object uses named
-  groups, then for each named group in the published object, group
-  data from groups with the same name in container objects will be
-  acquired from container objects.
+  If found, '__roles__' should be None or a sequence of role names.  If
+  '__roles__' is 'None', then the published object is public.  If
+  '__roles__' is not 'None', then the user must provide a user name and
+  password that can be validated by a user database.
 
-  If the name of a group is the python object, 'None', then data from
-  named groups in container objects will be acquired even if the
-  group names don't appear in the acquiring object.
+  User Databases
 
-  When group data are acquired, then acquired data is appended to
-  the existing data.  When groups contain names and passwords,
-  individual user names may have multiple passwords if they appear in
-  multiple groups.
+     If an object has a '__roles__' attribute that is not empty and not
+     'None', Bobo tries to find a user database to authenticate the user.
+     It searches for user databases by looking for an '__allow_groups__'
+     attribute, first in the published object, then in it's container,
+     and so on until a user database is found.  When a user database
+     is found, Bobo attempts to validate the user against the user
+     database.  If validation fails, then Bobo will continue searching
+     for user databases until the user can be validated or until no
+     more user databases can be found.
+   
+     User database objects
+   
+       The user database may be an object that provides a validate method::
+   
+         validate(request, http_authorization, roles)
+   
+       where:
+   
+          'request' -- a mapping object that contains request information,
+   
+          'http_authorization' -- the value of the HTTP Authorization header,
+          and 
+   
+          'roles' -- a list of user role names
+   
+       The validate method returns 'None' if it cannot validate a user and
+       a user object if it can.  Normally, if the validate method returns
+       'None', Bobo will try to use other user databases, however, a user
+       database can prevent this by raising an exception.
 
-  Note that an object may have an '__allow_groups__' attribute that is
-  set to None, in which case the object will be public, even if
-  containing objects are not.
+       If validation succeeds Bobo assigns the user object to the
+       request variable, 'AUTHENTICATED_USER'.  Bobo currently places
+       no restriction on user objects.
 
-  Roles
+     Mapping user databases
 
-      Meaning of __roles__:
+       If the user database is a mapping object, then the keys of the
+       object are role names and values are the associated user groups for
+       the roles.   Bobo attempts to validate the user by searching
+       for a user name and password matching the user name and
+       password given in the HTTP Authorization header in a groups for
+       role names matching the roles in the published object's
+       __roles__ attribute.
 
-         None  -- Public
-         False and not None -- private
-         A sequence of role names.
+
+       If validation succeeds Bobo assigns the user name to the
+       request variable, 'AUTHENTICATED_USER'.
+    
+     Authentication user interface
+
+       When a user first accesses a protected object, Bobo returns an
+       error response to the web browser that causes a password dialog
+       to be. 
+
+     The special management role
+
+       Experience in developing Bobo applications has shown that, by
+       far, the most common non-public role is management.  To
+       simplify management of role information for management objects,
+       Bobo automatically assigns the role 'manage' to objects that do
+       not have direct __roles__ attributes.
 
   Fixed-attribute objects
 
@@ -135,13 +167,6 @@ Access Control
       'object_name__roles__', which
       will be used as surrogates for the object's
       '__role__' attribute.
-
-  Determining the authenticated user name
-
-      If authentication is performed, then the name of the
-      authenticated user is saved in the request with the name
-      'AUTHENTICATED_USER', and will be passed to called objects
-      through the argument name 'AUTHENTICATED_USER'.
 
 Function, method, and class objects
   
@@ -221,7 +246,7 @@ Function, method, and class objects
         tuple -- Python tuple of values, even if there is only one.
 
     For example, if the name of a field in an input
-    form is age:int, then the field value will be passed in argument,
+    form is 'age:int', then the field value will be passed in argument,
     age, and an attempt will be made to convert the argument value to
     an integer.  This conversion also works with file upload, so using
     a file upload field with a name like myfile:string will cause the
@@ -251,15 +276,22 @@ Return types
 
 Base References
 
-  If result of a request is HTML text and the text does not define a
-  'base' tag in the 'head' portion of the HTML, then a base reference
-  will be inserted that is the location of the directory in which the
-  published module was published, such as a cgi-directory.  If the
-  HTML text contains a base reference that begins with a slash, then
-  the server URL will be prepended to the reference.  If the base
-  reference is a relative reference beginning with a dot, then an
-  absolute reference will be constructed from the effective URL used
-  to access the published object and from the relative reference. 
+  In general, in Bobo, relative URL references should be interpreted
+  relative to the parent of the published object, to make it easy for
+  objects to provide links to siblings.
+
+  If 
+
+   - the result of a request is HTML text,
+
+   - the text does not define a 'base' tag in the 'head' portion of
+     the HTML, and
+
+   - The published had an 'index_html' attribute that was not included
+     in the request URL, 
+
+  then a base reference will be inserted that is the URL of the
+  published object.
       
 Exception handling
 
@@ -321,90 +353,6 @@ Pre- and post-call hooks
   acquire and release application locks in applications with
   background threads.
 
-Examples
-
-  Consider the following example:
-  
-        "sample.py -- sample published module"
-
-	# URI: http://some.host/cgi-bin/sample/called
-	_called=0
-	def called():
-	    "Report how many times I've been called"
-	    global _called
-	    _called=_called+1
-	    return _called
-	
-	# URI: http://some.host/cgi-bin/sample/hi
-	def hi():
-	    "say hello"
-	    return "<html><head><base href=spam></head>hi"
-	
-	# URI: http://some.host/cgi-bin/sample/add?x=1&y=2
-	def add(x,y):
-	    "add two numbers"
-	    from string import atof
-	    return atof(x)+atof(y)
-	
-	# Note that doc is not published
-	def doc(m):
-	  d={}
-	  exec "import " + m in d
-	  return d[m].__doc__
-	
-	# URI: http://some.host/cgi-bin/sample/spam
-	class spam:
-	    "spam is good"
-	
-	    __allow_groups__=[{"jim":1, "super":1}]
-	
-	    # URI: http://some.host/cgi-bin/sample/aSpam/hi
-	    def hi(self):
-	      return self.__doc__
-	
-	    __super_group=[{"super":1}]
-
-	    # URI: http://some.host/cgi-bin/sample/aSpam/eat?module_name=foo
-	    # Note that eat requires "super" access.
-	    eat__allow_groups__=__super_group
-	    def eat(self,module_name):
-		"document a module"
-		if not module_name:
-		    raise "BadRequest", "The module name is blank"
-		return doc(module_name)
-
-	    # URI: http://some.host/cgi-bin/sample/aSpam/list
-	    # Here we have a stream output example.
-	    # Note that only jim and super can use this.
-    	    def list(self, RESPONSE):
-		"list some elements"
-		RESPONSE.setCookie("spam","eggs",path="/")
-		RESPONSE.write("<html><head><title>A list</title></head>")
-		RESPONSE.write("list: \\n")
-		for i in range(10): RESPONSE.write("\\telement %d" % i)
-		RESPONSE.write("\\n")
-	
-	
-	# URI: http://some.host/cgi-bin/sample/aSpam
-	aSpam=spam()
-	
-	# We create another spam that paul can use,
-	# but he still can't eat.
-	# URI: http://some.host/cgi-bin/sample/moreSpam
-	moreSpam=spam()
-	moreSpam.__dict__['__allow_groups__']=[{'paul':1}]
-	
-	
-	# URI: http://some.host/cgi-bin/sample/taste
-	def taste(spam):
-	    "a favorable reviewer"
-	    return spam,'yum yum, I like ' + spam
-	
-	# If we uncomment this, then only hi and add can be used, but
-	# with the names greet and addxy.
-	# web_objects={'greet':hi, 'addxy':add}
-
-
 Publishing a module using CGI
 
     o Do not copy the module to be published to the cgi-bin
@@ -422,24 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-Publishing a module using Fast CGI
-
-    o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
-      and newcgi.pyc, to the directory containing the
-      module to be published, or to a directory in the standard
-      (compiled in) Python search path.
-
-    o Copy the file fcgi-module-publisher to the directory containing the
-      module to be published.
-
-    o Create a symbolic link from fcgi-module-publisher (in the directory
-      containing the module to be published) to the module name in some
-      directory accessable to the Fast CGI-enabeled web server.
-	
-    o Configure the Fast CGI-enabled web server to execute this
-      file.
-
-$Id: Publish.py,v 1.56 1997/10/10 19:34:20 jim Exp $"""
+$Id: Publish.py,v 1.57 1997/10/10 21:03:40 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -494,7 +425,7 @@ $Id: Publish.py,v 1.56 1997/10/10 19:34:20 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 
 def main():
@@ -1416,6 +1347,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.57  1997/10/10 21:03:40  jim
+# Updated documentation.
+#
 # Revision 1.56  1997/10/10 19:34:20  jim
 # Various bug fixes made while preparing the Bobo course.
 #
