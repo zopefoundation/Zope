@@ -12,7 +12,7 @@
 ##############################################################################
 import os, sys, unittest
 
-import string, whrandom, cStringIO, time, re
+import string, random, cStringIO, time, re
 import ZODB
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
@@ -37,7 +37,7 @@ def createBigFile():
     file = cStringIO.StringIO()
 
     def addLetter(x, add=file.write, l=string.letters, 
-            c=whrandom.choice):
+            c=random.choice):
         add(c(l))
     filter(addLetter, range(size))
 

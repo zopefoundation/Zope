@@ -27,7 +27,7 @@ from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
 from ZODB.POSException import InvalidObjectReference, ConflictError
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
-import time, threading, whrandom
+import time, threading, random
 from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
@@ -185,7 +185,7 @@ class ReaderThread(BaseReaderWriter):
             data = session_data_manager.getSessionData()
             if not data.has_key(t):
                 self.out.append(1)
-            time.sleep(whrandom.choice(range(3)))
+            time.sleep(random.choice(range(3)))
             get_transaction().commit()
 
 class WriterThread(BaseReaderWriter):
@@ -194,7 +194,7 @@ class WriterThread(BaseReaderWriter):
         for i in range(self.iters):
             data = session_data_manager.getSessionData()
             data[time.time()] = 1
-            n = whrandom.choice(range(3))
+            n = random.choice(range(3))
             time.sleep(n)
             if n % 2 == 0:
                 get_transaction().commit()
