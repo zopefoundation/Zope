@@ -47,7 +47,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.13 2002/08/14 21:50:59 mj Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.14 2003/03/19 20:21:23 zagy Exp $'
 
 ############################################################################
 #     Copyright
@@ -57,7 +57,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.13 2002/08/14 21:50:59 mj Exp $'
 #       rights reserved.
 #
 ############################################################################
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
@@ -123,7 +123,8 @@ class SQLVar:
                 raise ValueError, (
                     'Invalid floating-point value for <em>%s</em>' % name)
         else:
-            v=str(v)
+            if not isinstance(v, (str, unicode)):
+                v=str(v)
             if not v and t=='nb':
                 if args.has_key('optional') and args['optional']:
                     return 'null'
