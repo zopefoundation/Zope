@@ -600,9 +600,6 @@ save_string(ARG(Picklerobject *, self), ARG(PyObject *, args))
   PyObject *py_string_id = 0, *memo_len = 0, *repr = 0;
   char *repr_str, *c_str;
   int size, len, p;
-  long string_id;
-
-  string_id = (long)args;  
 
   if (!self->bin)
   {
@@ -624,6 +621,7 @@ save_string(ARG(Picklerobject *, self), ARG(PyObject *, args))
       free(c_str);
       return NULL;
     }
+    Py_XDECREF(repr);
   }
   else
   {
@@ -673,18 +671,24 @@ save_string(ARG(Picklerobject *, self), ARG(PyObject *, args))
 
   free(c_str);
 
-  UNLESS(py_string_id = PyInt_FromLong(0 /*string_id*/))  
-    goto err;
+  if(args->ob_refcnt > 1)
+    {
+      long string_id;
 
-  UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-    goto err;
+      string_id = (long)args;  
 
-  if (PyDict_SetItem(self->memo, py_string_id, memo_len) == -1)  
-    goto err;
+      UNLESS(py_string_id = PyInt_FromLong(0 /*string_id*/))  
+	goto err;
 
-  Py_DECREF(memo_len);
-  Py_DECREF(py_string_id);
-  Py_XDECREF(repr);
+      UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
+	goto err;
+
+      if (PyDict_SetItem(self->memo, py_string_id, memo_len) == -1)  
+	goto err;
+
+      Py_DECREF(memo_len);
+      Py_DECREF(py_string_id);
+    }
   
   Py_INCREF(Py_None);
   return Py_None;
