@@ -157,6 +157,7 @@ class TALInterpreter:
         text = self.engine.evaluateText(expr)
         if text is None:
             return
+        text = cgi.escape(text)
         self.stream.write(text)
 
     def do_insertStructure(self, expr):
