@@ -160,7 +160,8 @@ class SQLTest:
                         'Invalid floating-point value for <em>%s</em>' % name)
 
             else:
-                v=str(v)
+                if not isinstance(v, (str, unicode)):
+                    v = str(v)
                 v=md.getitem('sql_quote__',0)(v)
                 #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
                 #v="'%s'" % v
