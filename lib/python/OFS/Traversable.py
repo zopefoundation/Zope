@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.23 2003/12/10 17:52:46 evan Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: Traversable.py,v 1.24 2003/12/10 22:46:17 evan Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -202,7 +202,7 @@ class Traversable:
 
     restrictedTraverse__roles__=None # Public
     def restrictedTraverse(self, path, default=_marker):
+        return self.unrestrictedTraverse(path, default, restricted=1)
 
 def path2url(path):
     return '/'.join(map(quote, path))
-        return self.unrestrictedTraverse(path, default, restricted=1)
