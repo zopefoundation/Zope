@@ -11,8 +11,6 @@
 #
 ##############################################################################
 import ExtensionClass
-import string
-from string import strip, lower, upper, join
 from Acquisition import Implicit
 from Record import Record
 
@@ -45,15 +43,15 @@ class Results:
         i=0
         for item in items:
             name=item['name']
-            name=strip(name)
+            name=name.strip()
             if not name:
                 raise ValueError, 'Empty column name, %s' % name
             if schema.has_key(name):
                 raise ValueError, 'Duplicate column name, %s' % name
             schema[name]=i
-            n=lower(name)
+            n=name.lower()
             if n != name: aliases.append((n, SQLAlias(name)))
-            n=upper(name)
+            n=name.upper()
             if n != name: aliases.append((n, SQLAlias(name)))
             dd[name]=item
             names.append(name)
@@ -127,10 +125,9 @@ class Results:
         nstrings=[]
         items=self.__items__
         indexes=range(len(items))
-        join=string.join
         for i in indexes:
             item=items[i]
-            t=lower(item['type'])
+            t=item['type'].lower()
             if t=='s' or t=='t':
                 t=='t'
                 strings.append(i)
@@ -139,23 +136,21 @@ class Results:
             else: r.append(t)
 
 
-        r=[join(self._names, '\t'), join(r,'\t')]
+        r=['\t'.join(self._names), '\t'.join(r)]
         append=r.append
-        find=string.find
-        split=string.split
         row=['']*len(items)
         tostr=str
         for d in self._data:
             for i in strings:
                 v=tostr(d[i])
                 if v:
-                    if find(v,'\\') > 0: v=join(split(v,'\\'),'\\\\')
-                    if find(v,'\t') > 0: v=join(split(v,'\t'),'\\t')
-                    if find(v,'\n') > 0: v=join(split(v,'\n'),'\\n')
+                    if v.find('\\') > 0: v='\\\\'.join(v.split('\\'))
+                    if v.find('\t') > 0: v='\\t'.join(v.split('\t'))
+                    if v.find('\n') > 0: v='\\n'.join(v.split('\n'))
                 row[i]=v
             for i in nstrings:
                 row[i]=tostr(d[i])
-            append(join(row,'\t'))
+            append('\t'.join(row))
         append('')
 
-        return join(r,'\n')
+        return '\n'.join(r)
