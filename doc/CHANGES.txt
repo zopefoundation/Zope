@@ -64,12 +64,17 @@ Zope Changes
 
     Zope 2.1.0
     
-      Features Added
+      Features Changed
       
-        - Added preliminary support for FastCGI to ZServer. This
+        - Enabled preliminary support for FastCGI to ZServer. This
           allows Zope to communicate with web servers that support
           FastCGI. Use z2.py's -F switch to configure FastCGI support
           in ZServer. See WEBSERVER.txt for more information.
+
+      Bugs Fixed
+
+        - Redefining the "views" on a ZClass could incorrectly affect
+          the views available on instances of base classes of the ZClass.
 
     Zope 2.1.0 beta 2
 
