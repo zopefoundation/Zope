@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.17 1997/11/19 15:42:47 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.18 1997/11/25 15:20:30 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -127,9 +127,12 @@ for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
 d['string']=string
 d['math']=math
 
-def test(cond, t, f):
-    if cond: return t
-    return f
+def test(*args):
+    l=len(args)
+    for i in range(1, l, 2):
+	if args[i-1]: return args[i]
+
+    if l%2: return args[-1]
 
 d['test']=test
 
@@ -287,6 +290,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.18  1997/11/25 15:20:30  jim
+# Expanded test function to allow any number of arguments.
+#
 # Revision 1.17  1997/11/19 15:42:47  jim
 # added _ prefix to push and pop methods to make them private
 #
