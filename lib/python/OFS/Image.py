@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -29,7 +29,7 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 		     'action':'index_html', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Security',
-		     'action':'manage_rolesForm', 'target':'manage_main',
+		     'action':'manage_access', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Undo',
 		     'action':'manage_UndoForm', 'target':'manage_main',

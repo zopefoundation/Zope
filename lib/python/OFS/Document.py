@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -31,7 +31,7 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 		     'action':'', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Security',
-		     'action':'manage_rolesForm', 'target':'manage_main',
+		     'action':'manage_access', 'target':'manage_main',
 		    },
 		   )
 
