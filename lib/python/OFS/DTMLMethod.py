@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -308,10 +308,12 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
 
     ## Protocol handlers
 
-    def PUT(self, BODY, REQUEST, RESPONSE):
+    def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests."""
+        self.init_headers(RESPONSE)
+        body=REQUEST.get('BODY', '')
         self._validateProxy(REQUEST)
-        self.munge(BODY)
+        self.munge(body)
         RESPONSE.setStatus(204)
         return RESPONSE
 

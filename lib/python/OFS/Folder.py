@@ -105,15 +105,17 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.65 1999/02/18 22:56:51 amos Exp $"""
+$Id: Folder.py,v 1.66 1999/03/03 22:41:32 brian Exp $"""
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
+from webdav.NullResource import NullResource
+from webdav.Collection import Collection
 from CopySupport import CopyContainer
 from FindSupport import FindSupport
 from Image import Image, File
@@ -141,8 +143,8 @@ def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
     if createPublic: i.manage_addDTMLDocument(id='index_html',title='')
     if REQUEST is not None: return self.manage_main(self,REQUEST,update_menu=1)
 
-class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
-             CopyContainer, FindSupport):
+class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
+             SimpleItem.Item, CopyContainer, FindSupport):
     """
     The basic container object in Principia.  Folders can hold almost all
     other Principia objects.
@@ -220,15 +222,10 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
         return r
 
     def __getitem__(self, key):
-        # Hm, getattr didn't work, maybe this is a put:
-        if key[:19]=='manage_draftFolder-':
-            id=key[19:]
-            if hasattr(self, id): return getattr(self, id).manage_supervisor()
-            raise KeyError, key
-        try:
-            if self.REQUEST['REQUEST_METHOD']=='PUT':
-                return PUTer(self,key).__of__(self)
-        except: pass
+        if hasattr(self, 'REQUEST'):
+            method=self.REQUEST.get('REQUEST_METHOD', 'GET')
+            if not method in ('GET', 'POST'):
+                return NullResource(self, key).__of__(self)
         raise KeyError, key
 
     def folderClass(self):

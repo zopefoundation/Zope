@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -154,24 +154,6 @@ class DTMLDocument(DTMLMethod, PropertyManager):
                 state[k]=v
         return state
 
-    def on_update(self):
-        # This is just experimental!        
-        if 1: return
-        try:    meta=hp(self.raw)
-        except: return
-        for key, val in meta.metavars.items():
-            if not self.hasProperty(key):
-                t=find(key, ':')
-                if t > 0:
-                    type=key[t+1:]
-                    key=key[:t]
-                else: type='string'
-                if type_converters.has_key(type):
-                    val=type_converters[type](val)
-                self._setProperty(key, val, type)
-        if not self.title:
-            self.title=meta.title
-
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
                     dtpref_rows='20',REQUEST=None):
         """
@@ -189,7 +171,6 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         self.title=title
         if type(data) is not type(''): data=data.read()
         self.munge(data)
-        self.on_update()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -200,19 +181,10 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         self._validateProxy(REQUEST)
         if type(file) is not type(''): file=file.read()
         self.munge(file)
-        self.on_update()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
                     action ='manage_main')
-
-    def PUT(self, BODY, REQUEST, RESPONSE):
-        """Handle HTTP PUT requests."""
-        self._validateProxy(REQUEST)
-        self.munge(BODY)
-        self.on_update()
-        RESPONSE.setStatus(204)
-        return RESPONSE
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
@@ -234,54 +206,6 @@ class DTMLDocument(DTMLMethod, PropertyManager):
 
 
 
-class hp(SGMLParser):
-
-    from htmlentitydefs import entitydefs
-
-    def __init__(self, data):
-        SGMLParser.__init__(self, verbose=0)
-        self.metavars={}
-        self.headers={}
-        self.data=None
-        self.title=''
-        try: self.feed(data)
-        except done: pass
-        
-    def handle_data(self, data):
-        if self.data is not None:
-            self.data=self.data + data
-        else: pass
-
-    def save_bgn(self):
-        self.data=''
-
-    def save_end(self):
-        data=self.data
-        self.data=None
-        return data
-    
-    def start_head(self, attrs):
-        pass
-    
-    def end_head(self):
-        # avoid parsing whole file!
-        raise done, done
-
-    def start_title(self, attrs):
-        self.save_bgn()
-
-    def end_title(self):
-        self.title=self.save_end()
-
-    def do_meta(self, attrs):
-        dict={}
-        for key, val in attrs:
-            dict[key]=val
-        if dict.has_key('http-equiv'):
-            self.headers[dict['http-equiv']]=dict['content']
-        elif dict.has_key('name'):
-            self.metavars[dict['name']]=dict['content']
-
 
 
 default_dd_html="""<!--#var standard_html_header-->
@@ -301,7 +225,6 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     if not file: file=default_dd_html
     ob=DTMLDocument(file, __name__=id)
     ob.title=title
-    ob.on_update()
     self._setObject(id, ob)
     if REQUEST is not None:
         u=REQUEST['URL1']
