@@ -8,28 +8,21 @@
 #
 ############################################################################## 
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.4 1997/09/18 20:08:52 brian Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: __init__.py,v 1.5 1997/12/19 21:46:37 jeffrey Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import MailHost
+from ImageFile import ImageFile
 
-__.meta_types=  {'name':'Mail Host',
-                 'action':'manage_addMailHost_form'
-                 },
+meta_types={'name':'Mail Host',
+	    'action':'manage_addMailHost_form'
+	    },
 
-__.methods={
+methods={
     'manage_addMailHost_form': MailHost.addForm,
     'manage_addMailHost':     MailHost.add,
     }
 
-#$Log: __init__.py,v $
-#Revision 1.4  1997/09/18 20:08:52  brian
-#Added meta_type for auto-detection
-#
-#Revision 1.3  1997/09/09 20:49:16  jeffrey
-#Changed Name from MailForm to MailHost
-#Simplified interface -- removed built-in templates (for now)
-#
-#Revision 1.2  1997/09/09 16:09:13  jeffrey
-#minor fixings
-#
+misc_={
+    'MHIcon': ImageFile("www/MailHost_icon.gif", globals())
+    }

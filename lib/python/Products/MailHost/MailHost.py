@@ -7,13 +7,13 @@ import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.20 1997/12/18 16:45:37 jeffrey Exp $ 
-__version__ = "$Revision: 1.20 $"[11:-2]
+#$Id: MailHost.py,v 1.21 1997/12/19 21:46:37 jeffrey Exp $ 
+__version__ = "$Revision: 1.21 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
 addForm=HTMLFile('addMailHost_form', globals(), localhost=gethostname())
-def add(self, id='aMailHost', title='Some mail thing', smtp_host=None, 
+def add(self, id, title='', smtp_host=None, 
         localhost='localhost', smtp_port=25, acl_type='A',acl_roles=[], 
         REQUEST=None):
     ' add a MailHost into the system '
@@ -32,8 +32,7 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
     meta_type='Mail Host'
     manage=manage_main=HTMLFile('manageMailHost', globals())
     index_html=None
-    icon='MHIcon'
-    MHIcon=ImageFile("www/MailHost_icon.gif", globals())
+    icon='misc_/MailHost/MHIcon'
 
     manage_options=({'icon':'', 'label':'Edit',
 		     'action':'manage_main', 'target':'manage_main',
@@ -227,6 +226,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.21  1997/12/19 21:46:37  jeffrey
+#fixees
+#
 #Revision 1.20  1997/12/18 16:45:37  jeffrey
 #changeover to new ImageFile and HTMLFile handling
 #
