@@ -33,6 +33,8 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Collector #426: Inconsistent, undocumented error() method.
+
      - Collector #799: Eliminate improper uses of SCRIPT_NAME.
 
      - Collector #445: Add internal global declaration for Script bindings.

@@ -20,6 +20,13 @@ class ParserBase:
         """Return current line number and offset."""
         return self.lineno, self.offset
 
+    def error(self, message):
+        """Return an error, showing current line number and offset.
+
+        Concrete subclasses *must* override this method.
+        """
+        raise NotImplementedError
+
     # Internal -- update line number and offset.  This should be
     # called for each piece of data exactly once, in order -- in other
     # words the concatenation of all the input strings to this
@@ -302,4 +309,4 @@ class ParserBase:
             return name.lower(), m.end()
         else:
             self.updatepos(declstartpos, i)
-            self.error("expected name token", self.getpos())
+            self.error("expected name token")
