@@ -173,53 +173,81 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         
         # Set up base classes for new class, the meta class prop
         # sheet and the class(/instance) prop sheet.
-        args=[PersistentClass]
-        zsheets_classes=[PersistentClass]
-        csheets_classes=[PersistentClass]
+        base_classes=[PersistentClass]
+        zsheets_base_classes=[PersistentClass]
+        isheets_base_classes=[PersistentClass]
         zbases=[ZStandardSheets]
         for z in bases:
-            args.append(z._zclass_)
+            base_classes.append(z._zclass_)
             zbases.append(z)
-            try: zsheets_classes.append(z.propertysheets.__class__)
+            try: zsheets_base_classes.append(z.propertysheets.__class__)
             except AttributeError: pass
-            try: csheets_classes.append(z._zclass_.propertysheets.__class__)
+            try: isheets_base_classes.append(
+                z._zclass_.propertysheets.__class__)
             except AttributeError: pass
 
-        args.append(OFS.SimpleItem.SimpleItem)
-        zsheets_classes.append(ZClassSheets)
-        csheets_classes.append(Property.ZInstanceSheets)
+        base_classes.append(OFS.SimpleItem.SimpleItem)
+        zsheets_base_classes.append(ZClassSheets)
+        isheets_base_classes.append(Property.ZInstanceSheets)
 
         # Create the meta-class property sheet
-        if len(zsheets_classes) > 2:
-            zsheets_class=type(PersistentClass)(
-                id+'_ZPropertySheetsClass',
-                tuple(zsheets_classes)+(Globals.Persistent,),
-                PersistentClassDict(id+'_ZPropertySheetsClass'))
-        else: zsheets_class=zsheets_classes[1]
+        zsheets_class=type(PersistentClass)(
+            id+'_ZPropertySheetsClass',
+            tuple(zsheets_base_classes)+(Globals.Persistent,),
+            PersistentClassDict(id+'_ZPropertySheetsClass'))
         self.propertysheets=sheets=zsheets_class()
 
         # Create the class
         self._zclass_=c=type(PersistentClass)(
-            id, tuple(args),
+            id, tuple(base_classes),
             PersistentClassDict(title or id))
         c.__ac_permissions__=()
         
         # Create the class(/instance) prop sheet *class*
-        csheets_class=type(PersistentClass)(
+        isheets_class=type(PersistentClass)(
             id+'_PropertySheetsClass',
-            tuple(csheets_classes),
+            tuple(isheets_base_classes),
             PersistentClassDict(id+' Property Sheets'))        
 
         # Record the class property sheet class in the meta-class so
         # that we can manage it:
-        self._zclass_propertysheets_class=csheets_class
+        self._zclass_propertysheets_class=isheets_class
         
         # Finally create the new classes propertysheets by instantiating the
         # propertysheets class.
-        c.propertysheets=csheets_class()
+        c.propertysheets=isheets_class()
 
         # Save base meta-classes:
         self._zbases=zbases
+
+    def _setBasesHoldOnToYourButts(self, bases):
+        # Eeeek
+        copy=self.__class__(self.id, self.title, bases)
+
+        copy._zclass_.__dict__.update(
+            self._zclass_.__dict__)
+        get_transaction().register(
+            copy._zclass_)
+        self._p_jar.exchange(self._zclass_, copy._zclass_)
+        self._zclass_=copy._zclass_
+
+        copy._zclass_propertysheets_class.__dict__.update(
+            self._zclass_propertysheets_class)
+        get_transaction().register(
+            copy._zclass_propertysheets_class)
+        self._p_jar.exchange(self._zclass_propertysheets_class,
+                             copy._zclass_propertysheets_class)
+        self._zclass_propertysheets_class=copy._zclass_propertysheets_class
+
+        if hasattr(self.propertysheets.__class__, '_p_oid'):
+            copy.propertysheets.__class__.__dict__.update(
+                self.propertysheets.__class__.__dict__)
+            get_transaction().register(
+                copy.propertysheets.__class__)
+            self._p_jar.exchange(self.propertysheets.__class__,
+                                 copy.propertysheets.__class__)
+
+        self._zbases=bases
 
     def manage_options(self):
         r=[]
