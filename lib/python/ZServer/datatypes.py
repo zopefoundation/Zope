@@ -137,9 +137,16 @@ class MonitorServerFactory(ServerFactory):
         ServerFactory.__init__(self, section.address)
 
     def create(self):
+        password = self.getPassword()
+        if password is None:
+            msg = ('Monitor server not started because no emergency user '
+                   'exists.')
+            import zLOG
+            zLOG.LOG("Zope", zLOG.ERROR, msg)
+            return
         from ZServer.medusa.monitor import secure_monitor_server
         return secure_monitor_server(hostname=self.host, port=self.port,
-                                     password=self.getPassword())
+                                     password=password)
 
     def getPassword(self):
         # XXX This is really out of place; there should be a better
@@ -151,10 +158,6 @@ class MonitorServerFactory(ServerFactory):
             pw = None
         else:
             pw = emergency_user._getPassword()
-        if pw is None:
-            import zLOG
-            zLOG.LOG("Zope", zLOG.WARNING, 'Monitor server not started'
-                     ' because no emergency user exists.')
         return pw
 
 
