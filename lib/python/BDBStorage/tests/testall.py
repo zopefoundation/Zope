@@ -27,6 +27,10 @@ def suite():
         alltests.addTest(mod.test_suite())
     return alltests
 
+def test_suite():
+    # Just to silence the top-level test.py
+    return None
+
 
 
 if __name__ == '__main__':
