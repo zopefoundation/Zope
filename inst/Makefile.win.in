@@ -36,7 +36,7 @@ COPY=copy
 default: build
 
 build:
-	$(PYTHON) "$(BASE_DIR)\inst\setup.py" \
+	$(PYTHON) "$(BASE_DIR)\setup.py" \
             $(DISTUTILS_OPTS) build $(BUILD_FLAGS)
 	@ echo.
 	@ echo Zope built.  Next, do 'nmake install' (or 'nmake instance'
@@ -44,21 +44,21 @@ build:
 	@ echo.
 
 install: build
-	$(PYTHON) "$(BASE_DIR)\inst\setup.py" $(DISTUTILS_OPTS) install \
+	$(PYTHON) "$(BASE_DIR)\setup.py" $(DISTUTILS_OPTS) install \
            --prefix="$(PREFIX)" $(BUILD_FLAGS) $(INSTALL_FLAGS)
 	@ echo.
 	@ echo Zope binaries installed successfully.
 	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance'
 
 instance: build
-	$(PYTHON) "$(BASE_DIR)\inst\setup.py" $(DISTUTILS_OPTS) build_ext -i
+	$(PYTHON) "$(BASE_DIR)\setup.py" $(DISTUTILS_OPTS) build_ext -i
 	$(PYTHON) "$(BASE_DIR)\bin\mkzopeinstance" .
 
 # testinst makes an instance home in the build directory without asking
 # any questions.  this is useful when testing.  instances made with
 # this can be removed via "make untestinst"
 testinst: build
-	$(PYTHON) "$(BASE_DIR)\inst\setup.py" $(DISTUTILS_OPTS) build_ext -i
+	$(PYTHON) "$(BASE_DIR)\setup.py" $(DISTUTILS_OPTS) build_ext -i
 	$(PYTHON) "$(BASE_DIR)\bin\mkzopeinstance" --user=admin:admin .
 
 # remove the instance files made with testinst (w/ prejudice)

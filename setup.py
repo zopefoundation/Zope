@@ -173,7 +173,7 @@ class ZopeDistribution(distutils.core.Distribution):
         self.cmdclass["install_data"] = ZopeInstallData
         
 # presumes this script lives in the 'inst' subdirectory of the base dir
-BASE_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
+BASE_DIR=os.path.dirname(os.path.abspath(sys.argv[0]))
 
 AUTHOR = 'Zope Corporation and Contributors'
 EXTENSIONCLASS_ROOT = os.path.join(BASE_DIR, 'lib', 'Components',
