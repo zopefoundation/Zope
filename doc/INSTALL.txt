@@ -83,8 +83,7 @@ Building Zope
 
     python wo_pcgi.py
 
-  If you want to use PCGI and an existing web server and you don't
-  want to use ZServer, run w_pcgi::
+  If you want to use PCGI and an existing web server run w_pcgi::
 
     python w_pcgi.py
 
@@ -189,6 +188,12 @@ Using ZServer
   You *must* specify a DNS server in z2.py or via command-line
   options.
 
+  Notes
+
+    * 'start.py' is now depricated, use 'z2.py' instead.
+
+    * 'zinit.py' is now depricated, use 'z2.py' with 'zdeamon.py' instead.
+
 Using Zope with ZopeHTTPServer
 
   ZopeHTTPServer is a simple web server written in Python and it
@@ -204,6 +209,10 @@ Starting Zope with an existing web server
   See the WEBSERVERS.txt file for more information about configuring Zope
   with an existing web server.
 
+  Note
+ 
+    * If you wish to use ZServer with PCGI use z2.py's '-p' switch to specify
+      a PCGI info file.
   
 Accessing Zope through the web
   
