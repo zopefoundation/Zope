@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.160 $'[11:-2]
+__version__='$Revision: 1.161 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -873,19 +873,19 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def _encryptPassword(self, pw):
         return AuthEncoding.pw_encrypt(pw, 'SSHA')
 
-    def domainSpecValidate(self, spec):
+
+    def domainSpecValidate(spec):
+
         for ob in spec:
-            sz=len(ob)
+
             am = addr_match(ob)
             hm = host_match(ob)
-            if am or hm:
-                if am: am = am.end()
-                else: am = -1
-                if hm: hm = hm.end()
-                else: hm = -1
-                if not ( (am == sz) or (hm == sz) ):
-                    return 0
+
+            if am is None and hm is None:
+                return 0
+
         return 1
+
 
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
@@ -1159,14 +1159,15 @@ def rolejoin(roles, other):
     roles.sort()
     return roles
 
-addr_match=re.compile(r'[\d.]*').match
-host_match=re.compile(r'[-\w.]*').match
+addr_match=re.compile(r'((\d{1,3}\.){1,3}\*)|((\d{1,3}\.){3}\d{1,3})').match
+host_match=re.compile(r'(([\_0-9a-zA-Z\-]*\.)*[0-9a-zA-Z\-]*)').match
+
+
 
 def domainSpecMatch(spec, request):
     host=''
     addr=''
 
-    
     # Fast exit for the match-all case
     if len(spec) == 1 and spec[0] == '*':
         return 1
