@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -92,6 +92,7 @@ from DocumentTemplate.DT_Util import html_quote
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
+from App.Common import rfc1123_date
 from webdav.common import urlbase
 from ExtensionClass import Base
 from Globals import Persistent
@@ -699,11 +700,3 @@ def aq_base(ob):
     if hasattr(ob, 'aq_base'):
         return ob.aq_base
     return ob
-
-def rfc1123_date(ts=None):
-    # Return an RFC 1123 format date string, required for
-    # use in HTTP Date headers per the HTTP 1.1 spec.
-    if ts is None: ts=time.time()
-    ts=time.asctime(time.gmtime(ts))
-    ts=string.split(ts)
-    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[3],ts[4])
