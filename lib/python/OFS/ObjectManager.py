@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.122 2001/01/17 16:18:02 brian Exp $"""
+$Id: ObjectManager.py,v 1.123 2001/01/17 18:40:27 shane Exp $"""
 
-__version__='$Revision: 1.122 $'[11:-2]
+__version__='$Revision: 1.123 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -488,7 +488,6 @@ class ObjectManager(
             obj_ids=self.objectIds()
             obj_ids.sort()
             for id in obj_ids:
-            for id in self._objects:
                 o=self._getOb(id)
                 if hasattr(o, 'isPrincipiaFolderish') and \
                    o.isPrincipiaFolderish:
