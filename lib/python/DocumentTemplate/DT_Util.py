@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.26 1998/03/12 20:52:11 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.27 1998/03/26 14:59:29 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -130,8 +130,8 @@ for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
     d[name]=__builtins__[name]
 d['string']=string
 d['math']=math
-d['rand']=math
-d['whrand']=math
+d['rand']=rand
+d['whrand']=whrand
 
 def test(*args):
     l=len(args)
@@ -329,6 +329,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.27  1998/03/26 14:59:29  jim
+# Fixed bug in exporting rand modules.
+#
 # Revision 1.26  1998/03/12 20:52:11  jim
 # Added namespace function to _ module for exprs.
 #
