@@ -18,12 +18,16 @@ from Testing.ZODButil import makeDB, cleanDB
 import SearchIndex.UnTextIndex
 import SearchIndex.GlobbingLexicon
 
+class Dummy:
+
+    def __init__( self, text ):
+        self.text = text
+
 class Tests(unittest.TestCase):
 
     def setUp(self):
         self.index=SearchIndex.UnTextIndex.UnTextIndex('text')
         self.doc=Dummy(text='this is the time, when all good zopes')
-        catch_log_errors()
 
     def dbopen(self):
         db = self.db = makeDB()
@@ -40,7 +44,6 @@ class Tests(unittest.TestCase):
         del self.db
 
     def tearDown(self):
-        ignore_log_errors()
         get_transaction().abort()
         if hasattr(self, 'jar'):
             self.dbclose()
