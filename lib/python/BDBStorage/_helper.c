@@ -16,8 +16,8 @@
 
 /* This helper only works for Python 2.2 and beyond.  If we're using an
  * older version of Python, stop out now so we don't leave a broken, but
- * compiled and importable module laying about.  Full.py has a workaround
- * for when this extension isn't available.
+ * compiled and importable module laying about.  BDBFullStorage.py has a
+ * workaround for when this extension isn't available.
  */
 #if PY_VERSION_HEX < 0x020200F0
 #error "Must be using at least Python 2.2"
