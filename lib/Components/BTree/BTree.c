@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.20 1999/05/07 01:41:40 jim Exp $"
+"\n$Id: BTree.c,v 1.21 1999/05/12 15:49:08 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -1784,7 +1784,7 @@ static PyExtensionClass BucketType = {
   0L,0L,
   "Mapping type implemented as sorted list of items", 
   METHOD_CHAIN(Bucket_methods),
-  EXTENSIONCLASS_BASICNEW_FLAG,
+  EXTENSIONCLASS_BASICNEW_FLAG | PERSISTENT_TYPE_FLAG,
 };
 
 static PyExtensionClass BTreeType = {
@@ -1813,7 +1813,7 @@ static PyExtensionClass BTreeType = {
   0L,0L,
   "Mapping type implemented as sorted list of items", 
   METHOD_CHAIN(BTree_methods),
-  EXTENSIONCLASS_BASICNEW_FLAG,
+  EXTENSIONCLASS_BASICNEW_FLAG | PERSISTENT_TYPE_FLAG,
 };
 
 static struct PyMethodDef module_methods[] = {
@@ -1840,7 +1840,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.20 $";
+  char *rev="$Revision: 1.21 $";
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;

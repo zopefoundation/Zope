@@ -85,7 +85,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.14 1999/05/07 01:42:53 jim Exp $"
+"\n$Id: intSet.c,v 1.15 1999/05/12 15:49:25 jim Exp $"
 ;
 
 #include <limits.h>
@@ -600,7 +600,7 @@ static PyExtensionClass intSetType = {
   0L,0L,
   "A set of integers", 
   METHOD_CHAIN(intSet_methods),
-  EXTENSIONCLASS_BASICNEW_FLAG,
+  EXTENSIONCLASS_BASICNEW_FLAG | PERSISTENT_TYPE_FLAG,
 };
 
 static struct PyMethodDef module_methods[] = {
@@ -611,7 +611,7 @@ void
 initintSet()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.14 $";
+  char *rev="$Revision: 1.15 $";
 
   UNLESS(ExtensionClassImported) return;
 
