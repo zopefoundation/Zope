@@ -176,6 +176,8 @@ class METALCompiler(DOMVisitor):
         # Add namespace declarations for each attribute
         for attr in node.attributes.values():
             if attr.namespaceURI:
+                if not attr.prefix:
+                    continue
                 if self.newNS(attr.prefix, attr.namespaceURI):
                     if attr.prefix == "xmlns":
                         continue
