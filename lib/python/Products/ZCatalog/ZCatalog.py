@@ -29,11 +29,13 @@ from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
 from zLOG import LOG, ERROR
 from ZCatalogIndexes import ZCatalogIndexes
-from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
+from Products.PluginIndexes.common.PluggableIndex \
+     import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
 from Products.PluginIndexes.TextIndex import Splitter
 import urllib, os, sys, time, types
 import string
+from IZCatalog import IZCatalog
 
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
@@ -52,6 +54,8 @@ def manage_addZCatalog(self, id, title,
 
 
 class ZCatalog(Folder, Persistent, Implicit):
+    __implements__ = IZCatalog
+
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
@@ -186,7 +190,8 @@ class ZCatalog(Folder, Persistent, Implicit):
             threshold=int(threshold)
         self.threshold = threshold
 
-        RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
+        RESPONSE.redirect(
+            URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
 
 
     def manage_subbingToggle(self, REQUEST, RESPONSE, URL1):
@@ -196,7 +201,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         else:
             self.threshold = 10000
         
-        RESPONSE.redirect(URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')      
+        RESPONSE.redirect(
+            URL1 +
+            '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')
 
     def manage_catalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
         """ index Zope object(s) that 'urls' point to """
@@ -211,7 +218,9 @@ class ZCatalog(Folder, Persistent, Implicit):
                 if obj is not None: 
                     self.catalog_object(obj, url)
 
-        RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Object%20Cataloged')
+        RESPONSE.redirect(
+            URL1 +
+            '/manage_catalogView?manage_tabs_message=Object%20Cataloged')
 
 
     def manage_uncatalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
@@ -224,7 +233,9 @@ class ZCatalog(Folder, Persistent, Implicit):
             for url in urls:
                 self.uncatalog_object(url)
 
-        RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Object%20Uncataloged')
+        RESPONSE.redirect(
+            URL1 +
+            '/manage_catalogView?manage_tabs_message=Object%20Uncataloged')
 
 
     def manage_catalogReindex(self, REQUEST, RESPONSE, URL1):
@@ -238,11 +249,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
         
-        RESPONSE.redirect(URL1 +
-                          '/manage_catalogAdvanced?manage_tabs_message=' +
-                          urllib.quote('Catalog Updated<br>'
-                                       'Total time: %s<br>'
-                                       'Total CPU time: %s' % (`elapse`, `c_elapse`)))
+        RESPONSE.redirect(
+            URL1 +
+            '/manage_catalogAdvanced?manage_tabs_message=' +
+            urllib.quote('Catalog Updated<br>'
+                         'Total time: %s<br>'
+                         'Total CPU time: %s' % (`elapse`, `c_elapse`)))
         
 
     def refreshCatalog(self, clear=0):
@@ -266,7 +278,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog.clear()
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Cleared')
+            RESPONSE.redirect(
+              URL1 +
+              '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Cleared')
 
 
     def manage_catalogFoundItems(self, REQUEST, RESPONSE, URL2, URL1,
@@ -304,8 +318,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
         
-        RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=' +
-                          urllib.quote('Catalog Updated<br>Total time: %s<br>Total CPU time: %s' % (`elapse`, `c_elapse`)))
+        RESPONSE.redirect(
+            URL1 +
+            '/manage_catalogView?manage_tabs_message=' +
+            urllib.quote(
+            'Catalog Updated<br>Total time: %s<br>Total CPU time: %s' %
+            (`elapse`, `c_elapse`)))
 
 
     def manage_addColumn(self, name, REQUEST=None, RESPONSE=None, URL1=None):
@@ -313,21 +331,27 @@ class ZCatalog(Folder, Persistent, Implicit):
         self.addColumn(name)
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Added')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_catalogSchema?manage_tabs_message=Column%20Added')
 
 
     def manage_delColumns(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ Deprecated method. Use manage_delColumn instead. """
         # log a deprecation warning
         import warnings
-        warnings.warn("The manage_delColumns method of ZCatalog is deprecated"\
-        "since Zope 2.4.2.\n"\
-        "This method is only kept for backwards compatibility for a while\n"\
-        "and will go away in a future release.\n"\
-        "\n"\
-        "Please use instead the manage_delColumn method.\n"\
-        ,DeprecationWarning)
-        self.manage_delColumn(names, REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL1)
+        warnings.warn(
+            "The manage_delColumns method of ZCatalog is deprecated"
+            "since Zope 2.4.2.\n"
+            "This method is only kept for backwards compatibility "
+            "for a while\n"
+            "and will go away in a future release.\n"
+            "\n"
+            "Please use instead the manage_delColumn method.\n"
+            ,DeprecationWarning)
+        
+        self.manage_delColumn(names, REQUEST=REQUEST, RESPONSE=RESPONSE,
+                              URL1=URL1)
 
 
     def manage_delColumn(self, names, REQUEST=None, RESPONSE=None, URL1=None):
@@ -339,15 +363,20 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.delColumn(name)
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
 
 
-    def manage_addIndex(self, name, type, extra=None,REQUEST=None, RESPONSE=None, URL1=None):
-        """ add an index """
+    def manage_addIndex(self, name, type, extra=None,
+                        REQUEST=None, RESPONSE=None, URL1=None):
+        """add an index """
         self.addIndex(name, type,extra)
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
         
 
     def manage_deleteIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -355,14 +384,18 @@ class ZCatalog(Folder, Persistent, Implicit):
         """ Deprecated method. Use manage_delIndex instead. """
         # log a deprecation warning
         import warnings
-        warnings.warn("The manage_deleteIndex method of ZCatalog is deprecated"\
-        "since Zope 2.4.2.\n"\
-        "This method is only kept for backwards compatibility for a while\n"\
-        "and will go away in a future release.\n"\
-        "\n"\
-        "Please use instead the manage_delIndex method.\n"\
-        ,DeprecationWarning)
-        self.manage_delIndex(ids=ids, REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL1)
+        warnings.warn(
+            "The manage_deleteIndex method of ZCatalog is deprecated"
+            "since Zope 2.4.2.\n"
+            "This method is only kept for backwards compatibility for a "
+            "while\n"
+            "and will go away in a future release.\n"
+            "\n"
+            "Please use instead the manage_delIndex method.\n"
+            ,DeprecationWarning)
+        
+        self.manage_delIndex(ids=ids, REQUEST=REQUEST, RESPONSE=RESPONSE,
+                             URL1=URL1)
 
 
     def manage_delIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -380,7 +413,9 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.delIndex(name)
         
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
 
     def manage_clearIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -398,7 +433,9 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.clearIndex(name)
         
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
 
 
     def reindexIndex(self,name,REQUEST):
@@ -413,8 +450,9 @@ class ZCatalog(Folder, Persistent, Implicit):
                 self.catalog_object(obj, p, idxs=[name])             
 
 
-    def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None, URL1=None):
-        """ Reindex indexe(s) from a ZCatalog"""
+    def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
+                            URL1=None):
+        """Reindex indexe(s) from a ZCatalog"""
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
@@ -427,7 +465,10 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.reindexIndex(name, REQUEST)
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Reindexing%20Performed')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_catalogIndexes'
+                '?manage_tabs_message=Reindexing%20Performed')
 
 
     def availableSplitters(self):
@@ -478,22 +519,25 @@ class ZCatalog(Folder, Persistent, Implicit):
                 self._v_total = 0
 
     def uncatalog_object(self, uid):
-        """ wrapper around catalog """
+        """Wrapper around catalog """
         self._catalog.uncatalogObject(uid)
 
     def uniqueValuesFor(self, name):
-        """ returns the unique values for a given FieldIndex """
+        """Return the unique values for a given FieldIndex """
         return self._catalog.uniqueValuesFor(name)
 
     def getpath(self, rid):
-        """
-        Return the path to a cataloged object given a 'data_record_id_'
+        """Return the path to a cataloged object given a 'data_record_id_'
         """
         return self._catalog.paths[rid]
 
-    def getobject(self, rid, REQUEST=None):
+    def getrid(self, path, default=None):
+        """Return 'data_record_id_' the to a cataloged object given a 'path'
         """
-        Return a cataloged object given a 'data_record_id_'
+        return self._catalog.uids.get(path, default)
+
+    def getobject(self, rid, REQUEST=None):
+        """Return a cataloged object given a 'data_record_id_'
         """
         obj = self.aq_parent.unrestrictedTraverse(self.getpath(rid))
         if not obj:
@@ -542,8 +586,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         return r
 
     def searchResults(self, REQUEST=None, used=None, **kw):
-        """
-        Search the catalog according to the ZTables search interface.
+        """Search the catalog according to the ZTables search interface.
+        
         Search terms can be passed in the REQUEST or as keyword
         arguments. 
         """
@@ -783,9 +827,15 @@ class ZCatalog(Folder, Persistent, Implicit):
                     self.addIndex(id,'TextIndex')
 
         if converted:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Indexes%20converted')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_main?manage_tabs_message=Indexes%20converted')
         else:
-            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=No%20indexes%20found%20to%20be%20converted')
+            RESPONSE.redirect(
+                URL1 +
+                '/manage_main?'
+                'manage_tabs_message='
+                'No%20indexes%20found%20to%20be%20converted')
                     
 
     #
@@ -816,10 +866,10 @@ class ZCatalog(Folder, Persistent, Implicit):
         if base is None:
             raise ValueError, "Index type %s does not support addIndex" % type
 
-        # This code is somewhat lame but every index type has its own function
-        # signature *sigh* and there is no common way to pass additional parameters
-        # to the constructor. The suggested way for new index types is to use
-        # an "extra" record.
+        # This code is somewhat lame but every index type has its own
+        # function signature *sigh* and there is no common way to pass
+        # additional parameters to the constructor. The suggested way
+        # for new index types is to use an "extra" record.
 
         if 'extra' in base.__init__.func_code.co_varnames:
             index = apply(base,(name,), {"extra":extra,"caller":self})
