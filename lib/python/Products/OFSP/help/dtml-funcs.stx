@@ -1,4 +1,4 @@
-Functions: DTML Functions
+functions: DTML Functions
 
   DTML utility functions provide some Python built-in functions and
   some DTML-specific functions.
@@ -18,7 +18,7 @@ Functions: DTML Functions
     arguments. See the "DateTime":DateTime.py API reference for more
     information on constructor arguments.
 
-    divmod(number, number) --Take two numbers as arguments and return a
+    divmod(number, number) -- Take two numbers as arguments and return a
     pair of numbers consisting of their quotient and remainder when using
     long division. With mixed operand types, the rules for binary
     arithmetic operators apply. For plain and long integers, the result
@@ -43,7 +43,8 @@ Functions: DTML Functions
     attribute does not exist, default is returned if provided, otherwise
     AttributeError is raised.
 
-    getitem(string, boolean) -- 
+    getitem(variable, render=0) -- Returns the value of a DTML variable.
+    If 'render' is true, the variable is rendered.
 
     hasattr(object, string) -- The arguments are an object and a
     string. The result is 1 if the string is the name of one of the
@@ -68,7 +69,7 @@ Functions: DTML Functions
     may turn up as a large positive number or raise an OverflowError
     exception.
 
-    int(number) --- Convert a string or number to a plain integer. If the
+    int(number) -- Convert a string or number to a plain integer. If the
     argument is a string, it must contain a possibly signed decimal number
     representable as a Python integer, possibly embedded in whitespace;
     this behaves identical to string.atoi(x[, radix]). The radix parameter
@@ -91,8 +92,9 @@ Functions: DTML Functions
     a non-empty sequence (e.g., a string, tuple or list). With more than
     one argument, return the smallest of the arguments.
 
-    namespace() -- Returns a new DTML namespace object.  Keyword argument
-    'name=value' pairs are pushed into the new namespace.
+    namespace([name=value]...) -- Returns a new DTML namespace object.
+    Keyword argument 'name=value' pairs are pushed into the new
+    namespace.
 
     oct(integer) -- Convert an integer number (of any size) to an octal
     string. The result is a valid Python expression. Note: this always
