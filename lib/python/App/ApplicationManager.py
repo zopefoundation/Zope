@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -122,7 +122,6 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         {'label':'Flush Cache', 'action':'manage_cacheGC',
          'help':('OFSP','Database-Management_Flush-Cache.dtml')},
         )
-        +SimpleItem.Item.manage_options
         )
 
 Globals.default__class_init__(DatabaseManager)
@@ -140,7 +139,6 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         {'label':'Version', 'action':'manage_main',
          'help':('OFSP','Version-Management_Version.dtml')},
         )
-        +SimpleItem.Item.manage_options
         )
         
 Globals.default__class_init__(VersionManager)
@@ -152,13 +150,114 @@ Globals.default__class_init__(VersionManager)
 _v_rcs=None
 _v_rst=None
 
+class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
+    """Debug and profiling information"""
+    manage=manage_main=HTMLFile('debug', globals())
+    id        ='DebugInfo'
+    name=title='Debug Information'
+    meta_type = name
+    icon='p_/DebugManager_icon'
+
+    manage_options=(
+        (  {'label':'Debugging Info', 'action':'manage_main',
+            'help':('OFSP','DebugInfo-Debug.dtml')},
+           {'label':'Profiling', 'action':'manage_profile',
+            'help':('OFSP','DebugInfo-Profile.dtml')},
+           )
+        )
+
+    manage_debug=HTMLFile('debug', globals())
+    
+    def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
+        # return class reference info
+        dict={}
+        for m in sys.modules.values():
+            for sym in dir(m):
+                ob=getattr(m, sym)
+                if type(ob) in t:
+                    dict[ob]=sys.getrefcount(ob)
+        pairs=[]
+        append=pairs.append
+        for ob, v in dict.items():
+            if hasattr(ob, '__module__'):
+                name='%s.%s' % (ob.__module__, ob.__name__)
+            else: name='%s' % ob.__name__
+            append((v, name))
+        pairs.sort()
+        pairs.reverse()
+        if n is not None:
+            pairs=pairs[:n]
+        return pairs
+
+    def refdict(self):
+        rc=self.refcount()
+        dict={}
+        for v, n in rc:
+            dict[n]=v
+        return dict
+
+    def rcsnapshot(self):
+        global _v_rcs
+        global _v_rst
+        _v_rcs=self.refdict()
+        _v_rst=DateTime()
+
+    def rcdate(self):
+        return _v_rst
+
+    def rcdeltas(self):
+        if _v_rcs is None:
+            self.rcsnapshot()
+        nc=self.refdict()
+        rc=_v_rcs
+        rd=[]
+        for n, c in nc.items():
+            try:
+                prev=rc[n]
+                if c > prev:
+                    rd.append( (c - prev, (c, prev, n)) )
+            except: pass
+        rd.sort()
+        rd.reverse()
+        return map(lambda n: {'name': n[1][2],
+                              'delta': n[0],
+                              'pc': n[1][1],
+                              'rc': n[1][0]}, rd)
+
+    def dbconnections(self):
+        return Globals.DB.connectionDebugInfo()
+
+
+    # Profiling support
+
+    manage_profile=HTMLFile('profile', globals())
+
+    def manage_profile_stats(self, sort='time', limit=200):
+        """Return profile data if available"""
+        stats=getattr(sys, '_ps_', None)
+        if stats is None:
+            return None
+        output=StringIO()
+        stdout=sys.stdout
+        sys.stdout=output
+        stats.strip_dirs().sort_stats(sort).print_stats(limit)
+        sys.stdout.flush()
+        sys.stdout=stdout
+        return output.getvalue()
+
+Globals.default__class_init__(DebugManager)
+
+
+
+
 class ApplicationManager(Folder,CacheManager):
     """System management"""
 
     __roles__=('Manager',)
     isPrincipiaFolderish=1
-    Database=DatabaseManager()
-    Versions=VersionManager()
+    Database= DatabaseManager()
+    Versions= VersionManager()
+    DebugInfo=DebugManager()
 
     manage=manage_main=HTMLFile('cpContents', globals())
     manage_undoForm=HTMLFile('undo', globals())
@@ -179,6 +278,8 @@ class ApplicationManager(Folder,CacheManager):
          'meta_type': Versions.meta_type},
         {'id': 'Products',
          'meta_type': 'Product Management'},
+        {'id': 'DebugInfo',
+         'meta_type': DebugInfo.meta_type},
         )
 
     manage_options=(
@@ -261,69 +362,6 @@ class ApplicationManager(Folder,CacheManager):
         if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
 
-
-    manage_debug=HTMLFile('debug', globals())
-    
-    def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
-        # return class reference info
-        dict={}
-        for m in sys.modules.values():
-            for sym in dir(m):
-                ob=getattr(m, sym)
-                if type(ob) in t:
-                    dict[ob]=sys.getrefcount(ob)
-        pairs=[]
-        append=pairs.append
-        for ob, v in dict.items():
-            if hasattr(ob, '__module__'):
-                name='%s.%s' % (ob.__module__, ob.__name__)
-            else: name='%s' % ob.__name__
-            append((v, name))
-        pairs.sort()
-        pairs.reverse()
-        if n is not None:
-            pairs=pairs[:n]
-        return pairs
-
-    def refdict(self):
-        rc=self.refcount()
-        dict={}
-        for v, n in rc:
-            dict[n]=v
-        return dict
-
-    def rcsnapshot(self):
-        global _v_rcs
-        global _v_rst
-        _v_rcs=self.refdict()
-        _v_rst=DateTime()
-
-    def rcdate(self):
-        return _v_rst
-
-    def rcdeltas(self):
-        if _v_rcs is None:
-            self.rcsnapshot()
-        nc=self.refdict()
-        rc=_v_rcs
-        rd=[]
-        for n, c in nc.items():
-            try:
-                prev=rc[n]
-                if c > prev:
-                    rd.append( (c - prev, (c, prev, n)) )
-            except: pass
-        rd.sort()
-        rd.reverse()
-
-        return map(lambda n: {'name': n[1][2],
-                              'delta': n[0],
-                              'pc': n[1][1],
-                              'rc': n[1][0]}, rd)
-
-
-    def dbconnections(self):
-        return Globals.DB.connectionDebugInfo()
 
 
     if hasattr(sys, 'ZMANAGED'):
@@ -410,20 +448,3 @@ class ApplicationManager(Folder,CacheManager):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
             
-
-    # Profiling support
-
-    manage_profile=HTMLFile('profile', globals())
-
-    def manage_profile_stats(self, sort='time', limit=200):
-        """Return profile data if available"""
-        stats=getattr(sys, '_ps_', None)
-        if stats is None:
-            return None
-        output=StringIO()
-        stdout=sys.stdout
-        sys.stdout=output
-        stats.strip_dirs().sort_stats(sort).print_stats(limit)
-        sys.stdout.flush()
-        sys.stdout=stdout
-        return output.getvalue()
