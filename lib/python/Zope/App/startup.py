@@ -184,7 +184,8 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             f=getattr(published, 'raise_standardErrorMessage', None)
             if f is None:
                 published=getattr(published, 'aq_parent', None)
-                if published is None: raise
+                if published is None:
+                    raise t, v, traceback
             else:
                 break
 
@@ -193,7 +194,8 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             if getattr(client, 'standard_error_message', None) is not None:
                 break
             client=getattr(client, 'aq_parent', None)
-            if client is None: raise
+            if client is None:
+                raise t, v, traceback
 
         if REQUEST.get('AUTHENTICATED_USER', None) is None:
             REQUEST['AUTHENTICATED_USER']=AccessControl.User.nobody
