@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -356,19 +356,19 @@ def decapitate(html, RESPONSE=None,
     while i < len(headers):
         if not headers[i]:
             del headers[i]
-	    continue
+            continue
 
-	ts_results = space_re.match_group(headers[i], (1,))
-	if ts_results:
+        ts_results = space_re.match_group(headers[i], (1,))
+        if ts_results:
             headers[i-1]="%s %s" % (headers[i-1],
                                     headers[i][len(ts_results[1]):])
             del headers[i]
-	    continue
+            continue
 
-	i=i+1
+        i=i+1
 
     for i in range(len(headers)):
-	ts_results = name_re.match_group(headers[i], (1,2))
+        ts_results = name_re.match_group(headers[i], (1,2))
         if ts_results:
             k, v = ts_results[1]
             v=strip(v)

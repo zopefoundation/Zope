@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.33 1999/07/15 16:38:22 jim Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: Aqueduct.py,v 1.34 1999/07/21 13:31:56 jim Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -353,27 +353,27 @@ def parse(text,
 
     ts_results = parmre.match_group(text, (1,2,3))
     if ts_results:
-	start, grps = ts_results
+        start, grps = ts_results
         name=grps[1]
         value={'default':grps[2]}
         l=len(grps[0])
     else:
-	ts_results = qparmre.match_group(text, (1,2,3))
-	if ts_results:
-	    	start, grps = ts_results
-		name=grps[1]
-		value={'default':grps[2]}
-		l=len(grps[0])
-	else:
-	    ts_results = unparmre.match_group(text, (1,2))
-	    if ts_reults:
-		start, grps = ts_results
-		name=grps[1]
-		l=len(grps[0])
-		value={}
-	    else:
-		if not text or not strip(text): return Args(result,keys)
-		raise InvalidParameter, text
+        ts_results = qparmre.match_group(text, (1,2,3))
+        if ts_results:
+                start, grps = ts_results
+                name=grps[1]
+                value={'default':grps[2]}
+                l=len(grps[0])
+        else:
+            ts_results = unparmre.match_group(text, (1,2))
+            if ts_reults:
+                start, grps = ts_results
+                name=grps[1]
+                l=len(grps[0])
+                value={}
+            else:
+                if not text or not strip(text): return Args(result,keys)
+                raise InvalidParameter, text
 
 
     lt=string.find(name,':')
@@ -427,17 +427,17 @@ def decapitate(html, RESPONSE=None,
     while i < len(headers):
         if not headers[i]:
             del headers[i]
-	else:
-	    ts_results = space_re.match_group(headers[i], (1,))
-	    if ts_reults:
-		headers[i-1]="%s %s" % (headers[i-1],
-					headers[i][len(ts_reults[1]):])
-		del headers[i]
-	    else:
-		i=i+1
+        else:
+            ts_results = space_re.match_group(headers[i], (1,))
+            if ts_reults:
+                headers[i-1]="%s %s" % (headers[i-1],
+                                        headers[i][len(ts_reults[1]):])
+                del headers[i]
+            else:
+                i=i+1
 
     for i in range(len(headers)):
-	ts_results = name_re.match_group(headers[i], (1,2))
+        ts_results = name_re.match_group(headers[i], (1,2))
         if ts_reults:
             k, v = ts_reults[1]
             v=string.strip(v)

@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -728,7 +728,7 @@ class DateTime:
             if i > 0: b=i-1
             else: b=i
 
-	    ts_results = fltpat.match_group(string, (1,), b)
+            ts_results = fltpat.match_group(string, (1,), b)
             if ts_results:
                 #s=ts_results[1][0]
                 s=ts_results[1]
@@ -736,8 +736,8 @@ class DateTime:
                 ints.append(atof(s))
                 continue
             
-	    #TS
-	    ts_results = intpat.match_group(string, (1,), i)
+            #TS
+            ts_results = intpat.match_group(string, (1,), i)
             if ts_results: 
                 #s=ts_results[1][0]
                 s=ts_results[1]
@@ -753,7 +753,7 @@ class DateTime:
                 continue
 
 
-	    ts_results = wordpat.match_group(string, (1,), i)
+            ts_results = wordpat.match_group(string, (1,), i)
             if ts_results:
                 o,s=ts_results[1],lower(ts_results[1])
                 i=i+len(s)

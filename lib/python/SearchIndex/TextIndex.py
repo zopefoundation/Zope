@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -596,24 +596,24 @@ def parens(s, parens_re = regex.compile('(\|)').search):
     index=open_index=paren_count = 0
 
     while 1:
-	index = parens_re(s, index)
-	if index < 0 : break
+        index = parens_re(s, index)
+        if index < 0 : break
     
-	if s[index] == '(':
-	    paren_count = paren_count + 1
-	    if open_index == 0 : open_index = index + 1
-	else:
-	    paren_count = paren_count - 1
+        if s[index] == '(':
+            paren_count = paren_count + 1
+            if open_index == 0 : open_index = index + 1
+        else:
+            paren_count = paren_count - 1
 
-	if paren_count == 0:
-	    return open_index, index
-	else:
-	    index = index + 1
+        if paren_count == 0:
+            return open_index, index
+        else:
+            index = index + 1
 
     if paren_count == 0: # No parentheses Found
-	return None
+        return None
     else:
-	raise QueryError, "Mismatched parentheses"	
+        raise QueryError, "Mismatched parentheses"      
 
 
 
