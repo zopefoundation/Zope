@@ -4,6 +4,13 @@ ZTUtils changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
+    Version XXX
+
+      Bugs Fixed
+
+        - Changed the batch orphan default from 3 to 0. This mirrors
+          the change in the orphan default in dtml-in.
+
     Version 1.1.1
 
       Features Added

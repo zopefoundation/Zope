@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.2 2001/04/27 20:51:20 evan Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Batch.py,v 1.3 2001/10/02 18:34:30 amos Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from ExtensionClass import Base
 
@@ -111,7 +111,7 @@ class Batch(Base):
     next = LazyNextBatch()
     
     def __init__(self, sequence, size, start=0, end=0,
-                 orphan=3, overlap=0):
+                 orphan=0, overlap=0):
 
         start = start + 1
 

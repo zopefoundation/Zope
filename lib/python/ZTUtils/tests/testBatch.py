@@ -30,7 +30,7 @@ class BatchTests(unittest.TestCase):
     def testOrphan(self):
         '''Test orphan collection'''
         for bsize in (6, 7):
-            b = Batch(range(bsize), 5)
+            b = Batch(range(bsize), 5, orphan=3)
             assert b.next is None
             assert len(b) == bsize
         b = Batch(range(8), 5)
