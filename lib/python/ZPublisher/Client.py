@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -220,8 +220,8 @@ class Function:
         except:
             raise NotAvailable, RemoteException(
                 NotAvailable,sys.exc_info()[1],self.url,query)
-
-        if ec==200: return (headers,response)
+        if (ec - (ec % 100)) == 200:
+            return (headers,response)
         self.handleError(query, ec, em, headers, response)
 
 
