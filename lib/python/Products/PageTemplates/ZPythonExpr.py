@@ -89,7 +89,7 @@ Handler for Python expressions, using the pre-Python 2.1 restriction
 machinery from PythonScripts.
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from AccessControl import getSecurityManager
 from Products.PythonScripts.Guarded import _marker, \
@@ -126,9 +126,9 @@ def validate(accessed, container, name, value, dummy):
 def call_with_ns(f, ns, arg=1):
     td = TemplateDict()
     td.validate = validate
-    td.this = None
+    td.this = ns['here']
     td._push(ns['request'])
-    td._push(InstanceDict(ns['here'], td))
+    td._push(InstanceDict(td.this, td))
     td._push(ns)
     try:
         if arg==2:

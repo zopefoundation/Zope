@@ -88,7 +88,7 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
@@ -136,8 +136,9 @@ class Rtd(RestrictedDTML, TemplateDict):
 
 def call_with_ns(f, ns, arg=1):
     td = Rtd()
+    td.this = ns['here']
     td._push(ns['request'])
-    td._push(InstanceDict(ns['here'], td))
+    td._push(InstanceDict(td.this, td))
     td._push(ns)
     try:
         if arg==2:
