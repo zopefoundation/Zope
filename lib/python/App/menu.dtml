@@ -11,10 +11,10 @@
         <font face="Verdana, Arial, Helvetica" color="#ffffff" size="1">
           <strong> &nbsp; <dtml-var AUTHENTICATED_USER> </strong>
         </font>
-        <img src="/p_/sp" width="2" height="1">
+        <img src="<dtml-var BASEPATH1>/p_/sp" width="2" height="1">
       </td>
       <td bgcolor="#003366">
-        <img src="/p_/sp" width="1" height="5">
+        <img src="<dtml-var BASEPATH1>/p_/sp" width="1" height="5">
       </td>
     </tr>
   </table>
