@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #721: Entities in tal:attribute values weren't
+       properly escaped.
+
      - Collector #851: Traversable.py: A bare try..except shadowed
        conflict errors
 

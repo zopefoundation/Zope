@@ -221,7 +221,7 @@ class OutputPresentationTestCase(TestCaseBase):
         self.compare(INPUT, EXPECTED)
 
     def check_entities(self):
-        INPUT = ('<img tal:define="foo nothing" '
+        INPUT = ('<img tal:attributes="alt default" '
                  'alt="&a; &#1; &#x0a; &a &#45 &; &#0a; <>" />')
         EXPECTED = ('<img alt="&a; &#1; &#x0a; '
                     '&amp;a &amp;#45 &amp;; &amp;#0a; &lt;&gt;" />\n')

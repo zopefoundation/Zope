@@ -24,7 +24,7 @@ from cgi import escape
 from StringIO import StringIO
 from DocumentTemplate.DT_Util import ustr
 
-from TALDefs import TAL_VERSION, TALError, METALError
+from TALDefs import TAL_VERSION, TALError, METALError, attrEscape
 from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
 from TranslationContext import TranslationContext
@@ -336,7 +336,7 @@ class TALInterpreter:
         if value is None:
             value = name
         else:
-            value = '%s="%s"' % (name, escape(value, 1))
+            value = '%s="%s"' % (name, attrEscape(value))
         return 1, name, value
 
     def attrAction_tal(self, item):
@@ -369,7 +369,7 @@ class TALInterpreter:
                     value = translated
             if value is None:
                 value = name
-            value = '%s="%s"' % (name, escape(value, 1))
+            value = '%s="%s"' % (name, attrEscape(value))
         return ok, name, value
     bytecode_handlers["<attrAction>"] = attrAction
 
