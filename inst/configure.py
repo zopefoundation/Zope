@@ -120,12 +120,12 @@ Directories:
 
   --build-base=DIR              use DIR to store temporary build files
 
-  --prefix=DIR                  install Zope files in DIR [%(TARGET_DIR)s]
+  --prefix=DIR                  install Zope files in DIR [%(PREFIX)s]
 
 By default, 'make install' will install Zope software files in
-'%(target_dir)s'  You can specify an alternate location for these
+'%(PREFIX)s'  You can specify an alternate location for these
 files by using '--prefix', for example: '--prefix=$HOME/zope'.
-""" % ({'program':sys.argv[0], 'TARGET_DIR':TARGET_DIR})
+""" % ({'program':sys.argv[0], 'PREFIX':PREFIX})
              )
     print usage
 
