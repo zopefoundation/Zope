@@ -84,12 +84,12 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.35 2000/08/18 16:53:44 shane Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: HTTPResponse.py,v 1.36 2000/09/15 15:01:27 brian Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
-from types import StringType, InstanceType
+from types import StringType, InstanceType, LongType
 from BaseResponse import BaseResponse
 
 nl2sp=string.maketrans('\n',' ')
@@ -711,6 +711,16 @@ class HTTPResponse(BaseResponse):
         if not headers.has_key('content-length') and \
                 not headers.has_key('transfer-encoding'):
             self.setHeader('content-length',len(body))
+
+        # ugh - str(content-length) could be a Python long, which will
+        # produce a trailing 'L' :( This can go away when we move to
+        # Python 2.0...
+        content_length= headers.get('content-length', None)
+        if type(content_length) is LongType:
+            str_rep=str(content_length)
+            if str_rep[-1:]=='L':
+                str_rep=str_rep[:-1]
+                self.setHeader('content-length', str_rep)
 
         headersl=[]
         append=headersl.append
