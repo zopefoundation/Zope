@@ -44,7 +44,7 @@ New Password
 </div>
 </TD>
 <TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="confirm" SIZE="30" value="confirm" />
+<INPUT TYPE="PASSWORD" NAME="confirm" SIZE="30" value="pconfirm" />
 </TD>
 </TR>
 </dtml-if>

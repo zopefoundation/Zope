@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.141 $'[11:-2]
+__version__='$Revision: 1.142 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -760,7 +760,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 
     def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
-        if password == 'password' and confirm == 'confirm':
+        if password == 'password' and confirm == 'pconfirm':
             # Protocol for editUser.dtml to indicate unchanged password
             password = confirm = None
         if not name:
