@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Load a Zope site from a collection of files or directories
 """
 
