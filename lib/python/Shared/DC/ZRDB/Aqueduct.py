@@ -84,11 +84,11 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.42 2001/01/12 11:40:54 mj Exp $'''
-__version__='$Revision: 1.42 $'[11:-2]
+$Id: Aqueduct.py,v 1.43 2001/01/12 16:42:49 chrism Exp $'''
+__version__='$Revision: 1.43 $'[11:-2]
 
 import Globals, os
-from Globals import HTMLFile, Persistent
+from Globals import Persistent
 import DocumentTemplate, DateTime, ts_regex,  regex, string
 import binascii, Acquisition
 DateTime.now=DateTime.DateTime
