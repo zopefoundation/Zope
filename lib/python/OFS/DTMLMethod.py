@@ -84,11 +84,12 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
 from SimpleItem import Item_w__name__, pretty_tb
+from OFS.content_types import guess_content_type
 from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
@@ -158,6 +159,9 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
                 
         if RESPONSE is None: return r
         RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
+        # Try to handle content types intelligently...
+        c, e=guess_content_type(self.__name__, r)
+        RESPONSE.setHeader('Content-Type', c)
         return decapitate(r, RESPONSE)
 
     def get_size(self):

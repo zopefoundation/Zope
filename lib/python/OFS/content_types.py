@@ -82,6 +82,9 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""A utility module for content-type handling."""
+__version__='$Revision: 1.4 $'[11:-2]
+
 src="""
 htm, html: text/html
 gif: image/gif
@@ -98,8 +101,8 @@ tar: application/x-tar
 zip: application/x-zip
 """
 
-from string import split, strip
-import regex
+from string import split, strip, lower
+import ts_regex, mimetypes
 
 content_type={}
 for l in filter(lambda s: s and s[:1] != '#', map(strip, split(src,'\n'))):
@@ -107,12 +110,41 @@ for l in filter(lambda s: s and s[:1] != '#', map(strip, split(src,'\n'))):
     t=strip(t)
     for e in map(strip, split(e, ',')):
         content_type[e]=t
-    
-find_binary=regex.compile('[\0-\6\177-\277]').search
-html_re=regex.compile('<html>', regex.casefold)
+
+
+find_binary=ts_regex.compile('[\0-\6\177-\277]').search
+html_re=ts_regex.compile('<html>', ts_regex.casefold)
 def text_type(s):
     return "text/" + (html_re.search(s) >= 0 and 'html' or 'plain')
+
+
+# This gives us a hook to add content types that
+# aren't currently listed in the mimetypes module.
+_addtypes=(
+    ('.css', 'text/css'),
+    ('.xml', 'text/xml'),
+    ('.xsl', 'text/xsl'),
+    ('.xul', 'text/xul'),
+    )
+for name, val in _addtypes:
+    mimetypes.types_map[name]=val
     
+
+def guess_content_type(name='', body=''):
+    # Attempt to determine the content type (and possibly
+    # content-encoding) based on an an object's name and
+    # entity body.
+    type, enc=None, None
+    type, enc=mimetypes.guess_type(name)
+    if (type is None) and body and find_binary(body) >= 0:
+        type='application/octet-stream'
+    elif (type is None) and body:
+        type=text_type(body)
+    elif type is None:
+        type='text/x-unknown-content-type'
+    return lower(type), enc and lower(enc) or None
+
+
 
 if __name__=='__main__':
     items=content_type.items()
