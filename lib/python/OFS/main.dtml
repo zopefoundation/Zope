@@ -30,7 +30,7 @@ click on the item's title and id.
   <th align=left><font size="-1">View</font></th>
 </tr>
 
-  <!--#in objectValues sort=title_or_id-->
+  <!--#in objectValues sort=title_and_id-->
 <tr>
     <td align=center>
     <A HREF="<!--#var URL1-->/<!--#var id-->/manage"
@@ -40,12 +40,20 @@ click on the item's title and id.
     <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->"
          ALT="manage" BORDER="0"></A></td>
     <td>
-    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#var title_and_id--></A></td>
+    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#var title_and_id--></A>
+
+    <!--#if modified_in_session-->
+    <img src="<!--#var SOFTWARE_URL-->/OFS/modified.gif">
+    <!--#/if-->
+
+    </td>
 </tr>
   <!--#/in objectValues-->
 </table>
 
 <!--#/if objectValues-->
+
+
 
 <TABLE>
 <TR>
