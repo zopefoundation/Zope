@@ -1,7 +1,7 @@
 def all():
     import testTALES
     return testTALES.test_suite()
-
+    
 class harness1:
     def __init__(self):
         self.__callstack = []

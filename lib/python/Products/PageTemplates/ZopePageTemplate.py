@@ -337,11 +337,14 @@ def manage_addPageTemplate(self, id, title=None, text=None,
         file = REQUEST.form.get('file')
         headers = getattr(file, 'headers', None)
         if headers is None or not file.filename:
-            zpt = ZopePageTemplate(id)
+            zpt = ZopePageTemplate(id, text)
         else:
             zpt = ZopePageTemplate(id, file, headers.get('content_type'))
 
         self._setObject(id, zpt)
+        if title:
+            ob = getattr(self, id)
+            ob.pt_setTitle(title)
 
         try:
             u = self.DestinationURL()
