@@ -1,5 +1,5 @@
 /*
- * $Id: cPickle.c,v 1.64 1999/02/08 23:16:38 jim Exp $
+ * $Id: cPickle.c,v 1.65 1999/04/13 16:45:41 jim Exp $
  * 
  * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
  * All rights reserved.
@@ -49,7 +49,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.64 1999/02/08 23:16:38 jim Exp $\n"
+"$Id: cPickle.c,v 1.65 1999/04/13 16:45:41 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -2072,6 +2072,10 @@ newPicklerobject(PyObject *file, int bin) {
 
     if (PyFile_Check(file)) {
         self->fp = PyFile_AsFile(file);
+	if (self->fp == NULL) {
+	    PyErr_SetString(PyExc_IOError, "output file closed");
+	    return NULL;
+	}
         self->write_func = write_file;
     }
     else if (PycStringIO_OutputCheck(file)) {
@@ -3291,7 +3295,7 @@ load_mark(Unpicklerobject *self) {
     if ((self->num_marks + 1) >= self->marks_size) {
         s=self->marks_size+20;
         if (s <= self->num_marks) s=self->num_marks + 1;
-        if (self->marks)
+        if (self->marks == NULL)
             self->marks=(int *)malloc(s * sizeof(int));
         else
             self->marks=(int *)realloc(self->marks, s * sizeof(int));
@@ -3897,6 +3901,10 @@ newUnpicklerobject(PyObject *f) {
     /* Set read, readline based on type of f */
     if (PyFile_Check(f)) {
         self->fp = PyFile_AsFile(f);
+	if (self->fp == NULL) {
+	    PyErr_SetString(PyExc_IOError, "input file closed");
+	    return NULL;
+	}
         self->read_func = read_file;
         self->readline_func = readline_file;
     }
@@ -4297,7 +4305,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 DL_EXPORT(void)
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.64 $";
+    char *rev="$Revision: 1.65 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
