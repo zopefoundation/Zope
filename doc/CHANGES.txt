@@ -65,8 +65,16 @@ Zope Changes
 
       Features Changed
 
-        - Logging from ZServer modified to product Common Log Format
-          in a Combined format, where user-agent and refferer are also 
+        - Added the beginnings of internationalization support to Zope.
+          The Zope startup script (z2.py) now supports a "-L" option 
+          that can be used to pass a locale name (such as "en" or "de")
+          to Zope at startup. If specified, Zope will attempt to set the
+          locale using the locale module if it is available. This change
+          will allow Zope to better handle international characters in
+          a number of places such as searching and indexing.
+
+        - Logging from ZServer modified to produce Common Log Format
+          in a Combined format, where user-agent and referer are also 
           logged.
 
       Bugs Fixed
