@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -205,12 +205,8 @@ class PropertySheet(Traversable, Persistent, Implicit):
         return self.v_self()
 
     def valid_property_id(self, id):
-        """Is the given id valid to use as a property id
-
-        Note that this method does not consider 
-        factors other than the actual value of the id, such as 
-        whether the given id is already in use."""
-        if not id or (id[:1]=='_') or (' ' in id):
+        if not id or id[:1]=='_' or (id[:3]=='aq_') \
+           or (' ' in id):
             return 0
         return 1
 
@@ -250,10 +246,6 @@ class PropertySheet(Traversable, Persistent, Implicit):
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid property id, %s.' % id
-
-        # Perform additional validation checks for security.
-        from ObjectManager import checkValidId
-        checkValidId(self, id)
 
         if not self.property_extensible_schema__():
             raise 'Bad Request', (
