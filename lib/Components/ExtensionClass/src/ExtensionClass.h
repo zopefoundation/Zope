@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.6 1997/04/11 21:47:51 jim Exp $
+  $Id: ExtensionClass.h,v 1.7 1997/07/02 17:32:34 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,9 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.7  1997/07/02 17:32:34  jim
+  *** empty log message ***
+
   Revision 1.6  1997/04/11 21:47:51  jim
   Got rid of class attributes.
   Added method hooks.
@@ -350,7 +353,7 @@ if(PyErr_Occurred()) { \
 #define PURE_MIXIN_CLASS(NAME,DOC,METHODS) \
 static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
 	0, # NAME, sizeof(PyPureMixinObject), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-	0, 0, 0, 0, 0, 0, 0, DOC, {METHODS, NULL}};
+	0, 0, 0, 0, 0, 0, 0, DOC, {METHODS, NULL}}
 
 /* The following macros provide limited access to extension-class
    method facilities. */
