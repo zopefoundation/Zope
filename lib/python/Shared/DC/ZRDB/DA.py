@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.78 2000/01/10 23:05:51 amos Exp $'''
-__version__='$Revision: 1.78 $'[11:-2]
+$Id: DA.py,v 1.79 2000/03/14 19:26:32 brian Exp $'''
+__version__='$Revision: 1.79 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -97,6 +97,8 @@ from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split
 import DocumentTemplate, sqlvar, sqltest, sqlgroup
+from AccessControl.User import verify_watermark
+from DocumentTemplate.DT_Util import cDocument
 from time import time
 from zlib import compress, decompress
 from DateTime.DateTime import DateTime
@@ -107,17 +109,26 @@ from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
 
-
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
 
 
-class SQL(DocumentTemplate.HTML):
+class nvSQL(DocumentTemplate.HTML):
+    # Non-validating SQL Template for use by SQLFiles.
     commands={}
     for k, v in DocumentTemplate.HTML.commands.items(): commands[k]=v
     commands['sqlvar' ]=sqlvar.SQLVar
     commands['sqltest']=sqltest.SQLTest
     commands['sqlgroup' ]=sqlgroup.SQLGroup
+
+    _proxy_roles=()
+
+
+class SQL(cDocument, nvSQL):
+    # Validating SQL template for Zope SQL Methods.
+    pass
+
+
 
 
 class DA(
@@ -135,6 +146,7 @@ class DA(
     class_name_=class_file_=''
     _zclass=None
     allow_simple_one_argument_traversal=None
+    template_class=SQL
     
     manage_options=(
         {'label':'Edit', 'action':'manage_main',
@@ -224,7 +236,7 @@ class DA(
         self.arguments_src=arguments
         self._arg=parse(arguments)
         self.src=template
-        self.template=t=SQL(template)
+        self.template=t=self.template_class(template)
         t.cook()
         self._v_cache={}, Bucket()
         if REQUEST:
@@ -412,7 +424,14 @@ class DA(
         argdata=self._argdata(REQUEST)
         argdata['sql_delimiter']='\0'
         argdata['sql_quote__']=dbc.sql_quote__
-        query=apply(self.template, (p,), argdata)
+
+        # Also need the authenticated user.
+        if REQUEST.has_key('AUTHENTICATED_USER'):
+            auth_user=REQUEST['AUTHENTICATED_USER']
+            verify_watermark(auth_user)
+            argdata['AUTHENTICATED_USER']=auth_user
+
+        query=apply(self.template, (p, argdata))
 
         if src__: return query
 
@@ -478,6 +497,8 @@ class DA(
             r.append(x)
             
         return r 
+
+
 
 Globals.default__class_init__(DA)
 
