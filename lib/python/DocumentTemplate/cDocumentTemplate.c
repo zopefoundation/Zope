@@ -53,12 +53,12 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.2 1997/10/27 17:43:28 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.3 1997/10/28 21:52:58 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
 
-static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0;
+static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 
 /* ----------------------------------------------------- */
 
@@ -150,15 +150,31 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
       return PyObject_Str(self->inst);
     }
   
-  /* OK, use getattr */
-  UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
-
-  if(self->validate != Py_None)
+  /* Do explicit acquisition with "roles" rule */
+  if(r=PyObject_GetAttr(self->inst, py_acquire))
     {
-      UNLESS(v=PyObject_CallFunction(self->validate,"OOOO",
-				     self->namespace, self->inst, key, r))
-	return NULL;
-      Py_DECREF(v);
+      if(self->validate != Py_None)
+	{
+	  UNLESS_ASSIGN(r,PyObject_CallFunction(
+		 r, "OOO", key, self->validate, self->namespace))
+	    goto KeyError;
+	}
+      else
+	UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
+    }  
+  else
+    {
+      /* OK, use getattr */
+      UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
+
+      if(self->validate != Py_None)
+	{
+	  UNLESS(v=PyObject_CallFunction(
+	    self->validate,"OOOO",
+	    self->inst, self->inst, key, r, self->namespace))
+	    return NULL;
+	  Py_DECREF(v);
+	}
     }
   
   if(r && PyObject_SetItem(self->cache, key, r) < 0) PyErr_Clear();
@@ -298,12 +314,12 @@ MM_cget(MM *self, PyObject *key, int call)
 	      else PyErr_Clear();
 
 	      /* Try calling the object */
-	      if(dt)
-		ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
-	      else if(call && (rr=PyObject_CallObject(e,NULL)))
-		ASSIGN(e,rr);
-	      else
-		PyErr_Clear();
+	      if(call)
+		{
+		  if(dt) ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
+		  else if((rr=PyObject_CallObject(e,NULL))) ASSIGN(e,rr);
+		  else PyErr_Clear();
+		}
 	    }
 
 	  return e;
@@ -338,7 +354,7 @@ static struct PyMethodDef MM_methods[] = {
    "push(mapping_object) -- Add a data source"},
   {"pop",  (PyCFunction) MM_pop,  0,
    "pop() -- Remove and return the last data source added"}, 
-  {"pop",  (PyCFunction) MM_get,  0,
+  {"get",  (PyCFunction) MM_get,  METH_VARARGS,
    "get(key[,call]) -- Get a value\n\n"
    "Normally, callable objects that can be called without arguments are\n"
    "called during retrieval. This can be suppressed by providing a\n"
@@ -519,10 +535,11 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
+  UNLESS(py_acquire=PyString_FromString("acquire")) return;
   UNLESS(py_=PyString_FromString("")) return;
   UNLESS(join=PyImport_ImportModule("string")) return;
   ASSIGN(join,PyObject_GetAttrString(join,"join"));
@@ -548,6 +565,10 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.3  1997/10/28 21:52:58  jim
+  Fixed bug in get.
+  Added latest validation rules.
+
   Revision 1.2  1997/10/27 17:43:28  jim
   Added some new experimental validation machinery.
   This is, still a work in progress.
