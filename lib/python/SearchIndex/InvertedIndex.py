@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.16 1997/02/21 19:37:01 cici Exp $'''
+$Id: InvertedIndex.py,v 1.17 1997/02/24 16:29:01 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.16 1997/02/21 19:37:01 cici Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.17  1997/02/24 16:29:01  chris
+# *** empty log message ***
+#
 # Revision 1.16  1997/02/21 19:37:01  cici
 # *** empty log message ***
 #
@@ -135,7 +138,7 @@ $Id: InvertedIndex.py,v 1.16 1997/02/21 19:37:01 cici Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 import regex, regsub, string, SingleThreadedTransaction, copy
@@ -488,7 +491,7 @@ class Index(SingleThreadedTransaction.Persistent):
       freq = int(10000 * (len(d[s]) / nwords))
       try:
         index[s].addentry(srckey, freq, d[s])
-      except:
+      except KeyError:
         index[s] = List({srckey : (freq, d[s])})
 
 
@@ -612,8 +615,8 @@ class PersistentResultList(ResultList, SingleThreadedTransaction.Persistent):
   def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
 
-    apply(PersistentResultList.inheritedAttribute('addentry'),
-	  (self, key) + info)
+    t = (self, key) + info
+    apply(PersistentResultList.inheritedAttribute('addentry'), t)
     self.__changed__(1)
 
 
