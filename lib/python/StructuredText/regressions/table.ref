@@ -1,0 +1,47 @@
+<html>
+<body>
+<table border=1 cellpadding=2>
+<tr>
+<th colspan=1 align=left valign=middle><p> Function  </p>
+</th>
+<th colspan=1 align=left valign=middle><p>  Documentation                       </p>
+</th>
+</tr>
+<tr>
+<td colspan=1 align=left valign=top><p> '_<u>str</u>_' </p>
+</td>
+<td colspan=1 align=left valign=middle><p>  This method converts the            
+   the object to a string.            </p>
+
+<ul>
+<li><p>Blah                              </p></li>
+<li><p>Blaf                              <table border=1 cellpadding=2>
+<tr>
+<th colspan=1 align=center valign=top><p>  Name   </p>
+</th>
+<th colspan=1 align=left valign=middle><p>  Favorite       
+  Color          </p>
+</th>
+</tr>
+<tr>
+<td colspan=1 align=left valign=middle><p> Jim     </p>
+</td>
+<td colspan=1 align=center valign=middle><p>   Red           </p>
+</td>
+</tr>
+<tr>
+<td colspan=1 align=left valign=middle><p> John    </p>
+</td>
+<td colspan=1 align=center valign=middle><p>   Blue          </p>
+</td>
+</tr>
+</table>
+</p></li>
+
+</ul>
+</td>
+</tr>
+</table>
+</body>
+</html>
+
