@@ -10,32 +10,31 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""ZCatalog product"""
+""" ZCatalog product
+
+$Id: ZCatalog.py,v 1.128 2003/12/07 16:12:40 yuppie Exp $
+"""
 
 from Globals import DTMLFile, MessageDialog
 import Globals
 
 from OFS.Folder import Folder
-from OFS.FindSupport import FindSupport
 from OFS.ObjectManager import ObjectManager
 from DateTime import DateTime
-from Acquisition import Implicit 
+from Acquisition import Implicit
 from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
 from Catalog import Catalog, CatalogError
-from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permissions import \
     manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
-from zLOG import LOG, ERROR
 from ZCatalogIndexes import ZCatalogIndexes
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
-from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
 from Products.PluginIndexes.TextIndex import Splitter
-import urllib, os, sys, time, types
+import urllib, time, types
 import string
 from IZCatalog import IZCatalog
 
@@ -456,8 +455,19 @@ class ZCatalog(Folder, Persistent, Implicit):
             if obj is not None:
                 # don't update metadata when only reindexing a single
                 # index via the UI
-                self.catalog_object(obj, p, idxs=[name], update_metadata=0)
-
+                try:
+                    self.catalog_object(obj, p, idxs=[name],
+                                        update_metadata=0)
+                except TypeError:
+                    # Fall back to Zope 2.6.2 interface. This is necessary for
+                    # products like CMF 1.4.2 and earlier that subclass from
+                    # ZCatalog and don't support the update_metadata argument.
+                    # May be removed some day.
+                    from warnings import warn
+                    warn('catalog_object interface of %s not up to date'
+                         % self.__class__.__name__,
+                         DeprecationWarning)
+                    self.catalog_object(obj, p, idxs=[name])
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
                             URL1=None):
