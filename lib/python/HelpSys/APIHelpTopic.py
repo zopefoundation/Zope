@@ -135,7 +135,8 @@ class APIHelpTopic(HelpTopic.HelpTopic):
             while 1:
                 line=string.strip(lines[0])
                 if line:
-                    self.title=line
+                    # get rid of anything after a colon in the line
+                    self.title=string.split(line, ':')[0]
                     break
                 lines.pop(0)
                 if not lines:
