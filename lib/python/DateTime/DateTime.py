@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -423,8 +423,9 @@ class DateTime:
             effect of this is as if you had taken the value of time.time()
             at that time on a machine in the specified timezone).
 
-        In all cases, invalid date, time, or timezone components will
-        raise a DateTimeError. 
+        If a string argument passed to the DateTime constructor cannot be
+        parsed, it will raise DateTime.SyntaxError. Invalid date, time, or
+        timezone components will raise a DateTime.DateTimeError. 
 
         The module function Timezones() will return a list of the 
         timezones recognized by the DateTime module. Recognition of 

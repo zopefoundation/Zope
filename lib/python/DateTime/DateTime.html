@@ -210,8 +210,10 @@
 
 </ul>
 
-<p>        In all cases, invalid date, time, or timezone components will
-        raise a DateTimeError. </p>
+<p>
+        If a string argument passed to the DateTime constructor cannot be
+        parsed, it will raise DateTime.SyntaxError. Invalid date, time, or
+        timezone components will raise a DateTime.DateTimeError. </p>
 
 <p>        The module function Timezones() will return a list of the 
         timezones recognized by the DateTime module. Recognition of 
