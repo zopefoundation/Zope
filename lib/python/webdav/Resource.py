@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -339,20 +339,29 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if not hasattr(aq_base(self), 'cb_isCopyable') or \
            not self.cb_isCopyable():
             raise 'Method Not Allowed', 'This object may not be copied.'
+
         depth=REQUEST.get_header('Depth', 'infinity')
         if not depth in ('0', 'infinity'):
             raise 'Bad Request', 'Invalid Depth header.'
+
         dest=REQUEST.get_header('Destination', '')
         while dest and dest[-1]=='/':
             dest=dest[:-1]
         if not dest:
             raise 'Bad Request', 'Invalid Destination header.'
+
+        path, (bad1, bad2, pct) = REQUEST.physicalPathFromURL(dest)
+        if pct < 1 or bad2:
+            raise 'Bad Request', 'Invalid Destination header'
+
+        name = path.pop()
+        parent_path = string.join(path, '/')
+
         oflag=string.upper(REQUEST.get_header('Overwrite', 'F'))
         if not oflag in ('T', 'F'):
             raise 'Bad Request', 'Invalid Overwrite header.'
-        path, name=os.path.split(dest)
-        name=unquote(name)
-        try: parent=REQUEST.resolve_url(path)
+
+        try: parent=self.restrictedTraverse(path)
         except ValueError:
             raise 'Conflict', 'Attempt to copy to an unknown namespace.'
         except 'Not Found':
@@ -423,26 +432,27 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if not hasattr(aq_base(self), 'cb_isMoveable') or \
            not self.cb_isMoveable():
             raise 'Method Not Allowed', 'This object may not be moved.'
+
         dest=REQUEST.get_header('Destination', '')
-        while dest and dest[-1]=='/':
-            dest=dest[:-1]
-        if not dest:
+        path, (bad1, bad2, pct) = REQUEST.physicalPathFromURL(dest)
+        if pct < 1 or bad2:
             raise 'Bad Request', 'No destination given'
         flag=REQUEST.get_header('Overwrite', 'F')
         flag=string.upper(flag)
-        body=REQUEST.get('BODY', '')
-        path, name=os.path.split(dest)
-        name=unquote(name)
-        try: parent=REQUEST.resolve_url(path)
+
+        name = path.pop()
+        parent_path = string.join(path, '/')
+
+        try: parent = self.restrictedTraverse(path)
         except ValueError:
             raise 'Conflict', 'Attempt to move to an unknown namespace.'
         except 'Not Found':
-            raise 'Conflict', 'The resource %s must exist.' % path
+            raise 'Conflict', 'The resource %s must exist.' % parent_path
         except:
             t, v, tb=sys.exc_info()
             raise t, v
         if hasattr(parent, '__null_resource__'):
-            raise 'Conflict', 'The resource %s must exist.' % path
+            raise 'Conflict', 'The resource %s must exist.' % parent_path
         existing=hasattr(aq_base(parent), name)
         if existing and flag=='F':
             raise 'Precondition Failed', 'Resource %s exists.' % dest
