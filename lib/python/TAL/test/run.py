@@ -6,11 +6,13 @@ import utils
 import unittest
 import test_htmlparser
 import test_htmltalparser
+import test_xmlparser
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(test_htmlparser.test_suite())
     suite.addTest(test_htmltalparser.test_suite())
+    suite.addTest(test_xmlparser.test_suite())
     return suite
 
 def main():
