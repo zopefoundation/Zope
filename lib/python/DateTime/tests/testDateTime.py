@@ -2,6 +2,7 @@
 # To run these tests, use:
 #   python unittest.py DateTime.tests.suite
 
+import os
 import unittest
 from DateTime import DateTime
 import string
