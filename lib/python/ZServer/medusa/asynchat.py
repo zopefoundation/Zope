@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.5 1999/01/18 22:43:43 amos Exp $
+#	$Id: asynchat.py,v 1.6 1999/02/05 02:14:39 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -118,7 +118,8 @@ class async_chat (asyncore.dispatcher):
 			# until we have read that much. ac_in_buffer_read tracks
 			# how much data has been read.
 			if type(terminator)==types.IntType:
-				self.ac_in_buffer_read=self.ac_in_buffer_read+len(data)
+				self.ac_in_buffer_read=self.ac_in_buffer_read + \
+					len(self.ac_in_buffer)
 				if self.ac_in_buffer_read < self.terminator:
 					self.collect_incoming_data(self.ac_in_buffer)
 					self.ac_in_buffer=''
@@ -132,8 +133,9 @@ class async_chat (asyncore.dispatcher):
 					self.collect_incoming_data(self.ac_in_buffer[:border])
 					self.ac_in_buffer=self.ac_in_buffer[border:]
 					self.ac_in_buffer_read=0
+					data=''
 					self.found_terminator()
-				break
+				continue	
 				
 			terminator_len = len(terminator)
 			# 4 cases:
