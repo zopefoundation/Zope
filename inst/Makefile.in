@@ -74,7 +74,7 @@ uninstall:
 
 TESTOPTS=-v1 -e -d lib/python
 
-test: build
+test: inplace
 	${PYTHON} "${BASE_DIR}/utilities/testrunner.py" ${TESTOPTS}
 
 clean:
