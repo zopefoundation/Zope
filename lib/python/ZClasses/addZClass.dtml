@@ -99,6 +99,8 @@
 <INPUT TYPE="SUBMIT" NAME="manage_addZClass:method" 
          VALUE=" Add ">
 
+<INPUT TYPE="HIDDEN" NAME="zope_object:default:int" VALUE="0">
+<INPUT TYPE="HIDDEN" NAME="CreateAFactory:default:int" VALUE="0">
 </FORM>
 
 </dtml-with>
