@@ -80,6 +80,13 @@ Zope Changes
 	  of an object.  This is useful for buiding catagorical
 	  hierarchies.
 
+	- Z SQL Methods arguments list is now a TEXTAREA widget to
+	  ease editing long aruments lists.
+
+	- SQL Database Adapters now have a 'test' tab where arbitrary
+	  SQL may be entered and executed immediately through the
+	  connection object.  DTML is not supported in this tab.
+
       Features Changed
 
         - ZCatalog uses subtransactions to keep memory consuption low
