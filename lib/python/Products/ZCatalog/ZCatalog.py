@@ -35,6 +35,7 @@ from AccessControl.Permissions import \
     manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
 from ZCatalogIndexes import ZCatalogIndexes
 from ZODB.POSException import ConflictError
+import transaction
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
@@ -566,7 +567,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         if self.threshold is not None:
             # figure out whether or not to commit a subtransaction.
-            t = id(get_transaction())
+            t = id(transaction.get())
             if t != self._v_transaction:
                 self._v_total = 0
             self._v_transaction = t
@@ -581,7 +582,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             # we should commit a subtransaction if our threshhold is
             # exceeded within the boundaries of the current transaction.
             if self._v_total > self.threshold:
-                get_transaction().commit(1)
+                transaction.commit(1)
                 self._p_jar.cacheGC()
                 self._v_total = 0
                 if pghandler:

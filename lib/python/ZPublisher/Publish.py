@@ -275,13 +275,10 @@ def get_module_info(module_name, modules={},
             transactions_manager=getattr(
                 module,'zpublisher_transactions_manager', None)
             if not transactions_manager:
-                try: get_transaction()
-                except: pass
-                else:
-                    # Create a default transactions manager for use
-                    # by software that uses ZPublisher and ZODB but
-                    # not the rest of Zope.
-                    transactions_manager = DefaultTransactionsManager()
+                # Create a default transactions manager for use
+                # by software that uses ZPublisher and ZODB but
+                # not the rest of Zope.
+                transactions_manager = DefaultTransactionsManager()
 
             info= (bobo_before, bobo_after, object, realm, debug_mode,
                    error_hook, validated_hook, transactions_manager)
@@ -302,13 +299,13 @@ class DefaultTransactionsManager:
     def begin(self):
         transaction.begin()
     def commit(self):
-        get_transaction().commit()
+        transaction.commit()
     def abort(self):
-        get_transaction().abort()
+        transaction.abort()
     def recordMetaData(self, object, request):
         # Is this code needed?
         request_get = request.get
-        T=get_transaction()
+        T= transaction.get()
         T.note(request_get('PATH_INFO'))
         auth_user=request_get('AUTHENTICATED_USER',None)
         if auth_user is not None:

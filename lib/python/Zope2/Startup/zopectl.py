@@ -39,6 +39,8 @@ import os
 import sys
 import signal
 
+import transaction
+
 import zdaemon
 import Zope2.Startup
 
@@ -214,7 +216,7 @@ class ZopeCmd(ZDCmd):
             self.options.python ,
             'import Zope2; app=Zope2.app();'
             'app.acl_users._doAddUser(\'%s\', \'%s\', [\'Manager\'], []);'
-            'get_transaction().commit()'
+            'transaction.commit()'
             ) % (name, password)
         os.system(cmdline)
 

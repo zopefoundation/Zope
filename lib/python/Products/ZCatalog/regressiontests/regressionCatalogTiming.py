@@ -25,6 +25,8 @@ from Products.ZCatalog import ZCatalog
 from unittest import TestCase, TestSuite, JUnitTextTestRunner,\
      VerboseTextTestRunner, makeSuite
 
+import transaction
+
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
 from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
@@ -68,7 +70,7 @@ class TestTimeIndex(TestCase):
         t = time.time()
         loadmail(self.app.catalogtest, 'zopemail',
                  os.path.join(here, 'zope.mbox'), 500)
-        get_transaction().commit()
+        transaction.commit()
         loadtime = time.time() - t
         out("loading data took %s seconds.. " % loadtime)
         t = time.time()
@@ -92,7 +94,7 @@ class TestTimeIndex(TestCase):
         max = 500
         m = loadmail(self.app.catalogtest, 'zopemail',
                      os.path.join(here, 'zope.mbox'), max, c)
-        get_transaction().commit()
+        transaction.commit()
         total = time.time() - t
         out("total time for load and index was %s seconds.. " % total)
         t = time.time()
@@ -118,11 +120,11 @@ class TestTimeIndex(TestCase):
                 self.setUp()
             c = self.app.catalogtest.catalog
             c.threshold = x
-            get_transaction().commit()
+            transaction.commit()
             t = time.time()
             loadmail(self.app.catalogtest, 'zopemail',
                      os.path.join(here, 'zope.mbox'), 500, c)
-            get_transaction().commit()
+            transaction.commit()
             total = time.time() - t
             out("total time with subcommit thresh %s was %s seconds.. "
                 % (x,total))

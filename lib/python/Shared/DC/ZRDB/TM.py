@@ -13,6 +13,7 @@
 """Provide support for linking an external transaction manager with Zope's
 """
 
+import transaction
 
 class TM:
     """Mix-in class that provides transaction management support
@@ -35,7 +36,7 @@ class TM:
     def _register(self):
         if not self._registered:
             try:
-                get_transaction().register(Surrogate(self))
+                transaction.get().register(Surrogate(self))
                 self._begin()
                 self._registered = 1
                 self._finalize = 0

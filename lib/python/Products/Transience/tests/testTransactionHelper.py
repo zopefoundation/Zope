@@ -23,14 +23,14 @@ from Products.Transience.TransactionHelper import PreventTransactionCommit, \
 
 class TestTransactionHelper(TestCase):
     def setUp(self):
-        self.t = get_transaction()
+        self.t = transaction.get()
 
     def tearDown(self):
         self.t = None
 
     def testUncommittable(self):
         makeTransactionUncommittable(self.t, "test")
-        self.assertRaises(PreventTransactionCommit, get_transaction().commit)
+        self.assertRaises(PreventTransactionCommit, transaction.commit)
         transaction.abort()
         
 def test_suite():

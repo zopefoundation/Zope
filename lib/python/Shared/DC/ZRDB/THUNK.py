@@ -13,6 +13,8 @@
 
 import TM, ThreadLock
 from TM import Surrogate
+import transaction
+
 thunk_lock=ThreadLock.allocate_lock()
 
 class THUNKED_TM(TM.TM):
@@ -23,7 +25,7 @@ class THUNKED_TM(TM.TM):
         if not self._registered:
             thunk_lock.acquire()
             try:
-                get_transaction().register(Surrogate(self))
+                transaction.get().register(Surrogate(self))
                 self._begin()
             except:
                 thunk_lock.release()

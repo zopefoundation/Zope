@@ -25,6 +25,8 @@ __version__='$Revision: 1.11 $'[11:-2]
 import string, sys
 from string import strip, split, find, join
 
+import transaction
+
 failures=0
 calls=0
 
@@ -71,7 +73,7 @@ class DB:
 
     def register(self):
         if self._registered: return
-        get_transaction().register(self)
+        transaction.get().register(self)
         self._registered=1
 
 

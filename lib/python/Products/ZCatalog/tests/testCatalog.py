@@ -34,6 +34,7 @@ from Products.ZCatalog.Catalog import Catalog
 from Products.ZCatalog.Catalog import CatalogError
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
+import transaction
 
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
@@ -52,7 +53,7 @@ def createDatabase():
     root = conn.root()
     app = OFS.Application.Application()
     root['Application'] = app
-    get_transaction().commit()
+    transaction.commit()
 
     # Init products
     #OFS.Application.initialize(app)

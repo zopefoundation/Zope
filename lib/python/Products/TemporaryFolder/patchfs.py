@@ -16,6 +16,8 @@
 import ZODB
 import Globals
 from ZODB import FileStorage, DB
+import transaction
+
 import Products.Sessions.BrowserIdManager
 import Products.Sessions.SessionDataManager
 import Products.TemporaryFolder.TemporaryFolder
@@ -45,4 +47,4 @@ app._setObject('browser_id_manager', bid)
 app._setObject('session_data_manager', sdm)
 app._p_changed = 1
 
-get_transaction().commit()
+transaction.commit()

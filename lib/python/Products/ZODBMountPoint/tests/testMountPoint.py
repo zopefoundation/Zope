@@ -19,6 +19,7 @@ import sys
 import unittest
 import Testing
 import ZODB
+import transaction
 from OFS.Application import Application
 from OFS.Folder import Folder
 import App.config
@@ -94,15 +95,15 @@ class DBTabTests (unittest.TestCase):
         root = conn.root()
         root['Application'] = app = Application()
         self.app = app
-        get_transaction().commit()  # Get app._p_jar set
+        transaction.commit()  # Get app._p_jar set
         manage_addMounts(app, ('/mount1', '/mount2'))
-        get_transaction().commit()  # Get the mount points ready
+        transaction.commit()  # Get the mount points ready
 
 
 
     def tearDown(self):
         App.config.setConfiguration(original_config)
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.close()
         del self.app
         del self.db
@@ -123,7 +124,7 @@ class DBTabTests (unittest.TestCase):
         self.assertEqual(app.mount1._p_changed, 1)
         self.assertEqual(app.mount2._p_changed, 1)
         self.assertEqual(app._p_changed, 1)
-        get_transaction().commit()
+        transaction.commit()
         self.assertEqual(app.mount1._p_changed, 0)
         self.assertEqual(app.mount2._p_changed, 0)
         self.assertEqual(app._p_changed, 0)
@@ -173,7 +174,7 @@ class DBTabTests (unittest.TestCase):
         self.app.mount2 = Folder()
         self.app.mount2.id = 'mount2'
         self.assert_(getMountPoint(self.app.mount2) is None)
-        get_transaction().commit()
+        transaction.commit()
         self.assert_(getMountPoint(self.app.mount2) is None)
 
 

@@ -18,6 +18,8 @@ here = os.getcwd()
 
 import Zope2
 import ZODB, ZODB.FileStorage
+import transaction
+
 from Products.ZCatalog import ZCatalog,Vocabulary
 from Products.ZCatalog.Catalog import CatalogError
 import Persistence
@@ -68,7 +70,7 @@ class testZODB:
 
     def write(self,name,obj):
         self.root[name] = obj
-        get_transaction().commit()
+        transaction.commit()
 
 
     def read(self,name):
@@ -462,7 +464,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
                 cat.uncatalog_object(mid)
 
                 if kw.get("commit",1)==1:
-                    get_transaction().commit()
+                    transaction.commit()
                     time.sleep(0.1)
             except ZODB.POSException.ConflictError:
                 uncat_conflicts = uncat_conflicts + 1
@@ -471,14 +473,14 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
                 cat.catalog_object(obj,mid)
 
                 if kw.get("commit",1)==1:
-                    get_transaction().commit()
+                    transaction.commit()
                     time.sleep(0.1)
 
             except ZODB.POSException.ConflictError:
                 cat_conflicts = cat_conflicts + 1
 
         try:
-            get_transaction().commit()
+            transaction.commit()
         except: pass
 
 
@@ -551,7 +553,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
 
             try:
                 cat.catalogObject(obj,mid)
-                get_transaction().commit()
+                transaction.commit()
             except:
                 cat_conflicts = cat_conflicts + 1
 

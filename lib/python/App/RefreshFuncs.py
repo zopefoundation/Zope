@@ -320,7 +320,7 @@ def autoRefresh(jar):
         finishAutoRefresh(jar, auto_refresh_ids)
         from ZODB import Connection
         Connection.resetCaches()
-        get_transaction().commit()
+        transaction.commit()
         jar._resetCache()
         transaction.begin()
 

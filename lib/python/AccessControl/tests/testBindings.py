@@ -104,7 +104,7 @@ class TestBindings(unittest.TestCase):
         from Testing.ZODButil import cleanDB
         from AccessControl.SecurityManagement import noSecurityManager
         noSecurityManager()
-        get_transaction().abort()
+        transaction.abort()
         self.connection.close()
         self.db.close()
         cleanDB()

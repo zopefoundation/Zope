@@ -19,6 +19,7 @@ from AccessControl import getSecurityManager
 from DateTime import DateTime
 import Globals, ExtensionClass
 from ZopeUndo.Prefix import Prefix
+import transaction
 
 class UndoSupport(ExtensionClass.Base):
 
@@ -123,7 +124,7 @@ class UndoSupport(ExtensionClass.Base):
         for tid in transaction_info:
             tid=tid.split()
             if tid:
-                get_transaction().note("Undo %s" % ''.join(tid[1:]))
+                transaction.get().note("Undo %s" % ''.join(tid[1:]))
                 tid=decode64(tid[0])
                 undo(tid)
 

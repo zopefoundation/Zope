@@ -660,7 +660,7 @@ Zope History
        has executed, it has the same effect as the "old" behavior inasmuch
        as no inconsistent state will ever be committed to the database
        as a result of this behavior unless someone really wants to shoot
-       themselves by calling "get_transaction().commit()" during error
+       themselves by calling "transaction.commit()" during error
        handling code.
 
      - TransientObjects (session data objects) may have lost state at
@@ -6538,7 +6538,7 @@ Zope History
     
         - Subtransactions have been added (instead of temporary
           versions). If a true argument is given in a transaction commit
-          or abort call (e.g. 'get_transaction().commit(1)'), then
+          or abort call (e.g. 'transaction.commit(1)'), then
           the commit or abort applies to a subtransaction of the
           current transaction.  This is useful in a number of ways,
           including:

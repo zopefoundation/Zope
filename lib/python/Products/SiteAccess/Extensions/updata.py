@@ -1,6 +1,7 @@
 import Zope2
 from ZPublisher.BeforeTraverse import NameCaller, rewriteBeforeTraverse
 from Products.SiteAccess.AccessRule import AccessRule
+import transaction
 
 def updata(self):
     """Convert SiteAccess objects from 1.x to 2.x"""
@@ -33,5 +34,5 @@ if __name__ == '__main__':
     print "Converting SiteAccess objects from 1.x to 2.x ..."
     app = Zope2.app()
     _cvt_btr(app)
-    get_transaction().commit()
+    transaction.commit()
     print "Done."

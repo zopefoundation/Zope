@@ -100,7 +100,7 @@ class FileTests(unittest.TestCase):
             setattr(self.app, ZCM_MANAGERS, ('dcm',))
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one.
-            get_transaction().commit()
+            transaction.commit()
         except:
             self.connection.close()
             raise
@@ -109,7 +109,7 @@ class FileTests(unittest.TestCase):
 
     def tearDown( self ):
         del self.file
-        get_transaction().abort()
+        transaction.abort()
         self.connection.close()
         del self.app
         del self.responseOut

@@ -57,7 +57,7 @@ class UserFolderTests(unittest.TestCase):
 
     def tearDown(self):
         noSecurityManager()
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.close()
 
     def login(self, name):

@@ -15,6 +15,8 @@
 import os
 from unittest import TestCase, TestSuite, main, makeSuite
 
+import transaction
+
 from BTrees.Length import Length
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.CosineIndex import CosineIndex
@@ -178,7 +180,7 @@ class TestIndexConflict(TestCase):
         self.openDB()
         r1 = self.db.open().root()
         r1['i'] = self.index
-        get_transaction().commit()
+        transaction.commit()
         
         r2 = self.db.open().root()
         copy = r2['i']
@@ -192,10 +194,10 @@ class TestIndexConflict(TestCase):
         self.assertEqual(self.index._p_serial, copy._p_serial)
         
         self.index.index_doc(0, 'The time has come')
-        get_transaction().commit()
+        transaction.commit()
         
         copy.index_doc(1, 'That time has gone')
-        get_transaction().commit()
+        transaction.commit()
 
     def test_reindex_doc_conflict(self):
         self.index = OkapiIndex(Lexicon())
@@ -204,7 +206,7 @@ class TestIndexConflict(TestCase):
         self.openDB()
         r1 = self.db.open().root()
         r1['i'] = self.index
-        get_transaction().commit()
+        transaction.commit()
         
         r2 = self.db.open().root()
         copy = r2['i']
@@ -218,10 +220,10 @@ class TestIndexConflict(TestCase):
         self.assertEqual(self.index._p_serial, copy._p_serial)
         
         self.index.index_doc(0, 'Sometimes change isn\'t bad')
-        get_transaction().commit()
+        transaction.commit()
         
         copy.index_doc(1, 'Then again, who asked you?')
-        get_transaction().commit()
+        transaction.commit()
         
 class TestUpgrade(TestCase):
 

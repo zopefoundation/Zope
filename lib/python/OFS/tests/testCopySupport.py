@@ -87,7 +87,7 @@ class CopySupportTestBase(unittest.TestCase):
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one. We use a subtransaction, which means we can rollback
             # later and pretend we didn't touch the ZODB.
-            get_transaction().commit()
+            transaction.commit()
         except:
             self.connection.close()
             raise
@@ -97,7 +97,7 @@ class CopySupportTestBase(unittest.TestCase):
 
     def _cleanApp( self ):
 
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.sync()
         self.connection.close()
         del self.app

@@ -36,7 +36,7 @@ class VHMRegressions(unittest.TestCase):
             self.tearDown()
 
     def tearDown(self):
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.close()
 
     def testAbsoluteUrl(self):

@@ -13,6 +13,8 @@
 """Provide management of common instance property sheets
 """
 
+import transaction
+
 import OFS.PropertySheets, Globals, OFS.SimpleItem, OFS.PropertyManager
 import Acquisition
 from AccessControl.Permission import pname
@@ -24,13 +26,13 @@ class ClassCaretaker:
         klass=self._k
         setattr(klass, name, v)
         if not getattr(klass,'_p_changed',None):
-            get_transaction().register(klass)
+            transaction.get().register(klass)
             klass._p_changed=1
     def __delattr__(self, name):
         klass=self._k
         delattr(klass, name)
         if not getattr(klass,'_p_changed',None):
-            get_transaction().register(klass)
+            transaction.get().register(klass)
             klass._p_changed=1
 
 
@@ -271,7 +273,7 @@ Globals.default__class_init__(ZInstanceSheet)
 
 def rclass(klass):
     if not getattr(klass, '_p_changed', 0):
-        get_transaction().register(klass)
+        transaction.get().register(klass)
         klass._p_changed=1
 
 class ZInstanceSheetsSheet(OFS.Traversable.Traversable,

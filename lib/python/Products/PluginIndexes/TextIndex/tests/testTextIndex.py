@@ -21,6 +21,8 @@ def log_write(subsystem, severity, summary, detail, error):
 
 import ZODB
 from ZODB.MappingStorage import MappingStorage
+import transaction
+
 from Products.PluginIndexes.TextIndex import TextIndex
 from Products.PluginIndexes.TextIndex import GlobbingLexicon
 
@@ -61,7 +63,7 @@ class Tests(unittest.TestCase):
         self.jar = jar
         if not jar.root().has_key('index'):
             jar.root()['index'] = TextIndex.TextIndex('text')
-            get_transaction().commit()
+            transaction.commit()
         return jar.root()['index']
 
     def dbclose(self):
@@ -69,7 +71,7 @@ class Tests(unittest.TestCase):
         self.jar = None
 
     def tearDown(self):
-        get_transaction().abort()
+        transaction.abort()
         if self.jar is not None:
             self.dbclose()
         if self.db is not None:
@@ -90,11 +92,11 @@ class Tests(unittest.TestCase):
 
         self.doc.text='this is the time, when all good zopes'
         index.index_object(0, self.doc)
-        get_transaction().commit()
+        transaction.commit()
 
         self.doc.text='time waits for no one'
         index.index_object(1, self.doc)
-        get_transaction().commit()
+        transaction.commit()
         self.dbclose()
 
         index=self.dbopen()
@@ -116,19 +118,19 @@ class Tests(unittest.TestCase):
 
         self.doc.text='this is the time, when all good zopes'
         index.index_object(0, self.doc)
-        get_transaction().commit()
+        transaction.commit()
 
         self.doc.text='time waits for no one'
         index.index_object(1, self.doc)
-        get_transaction().commit()
+        transaction.commit()
 
         self.doc.text='the next task is to test'
         index.index_object(3, self.doc)
-        get_transaction().commit()
+        transaction.commit()
 
         self.doc.text='time time'
         index.index_object(2, self.doc)
-        get_transaction().commit()
+        transaction.commit()
         self.dbclose()
 
         index=self.dbopen()
@@ -166,7 +168,7 @@ class Tests(unittest.TestCase):
         for i in range(len(self.sample_texts)):
             self.doc.text=self.sample_texts[i]
             index.index_object(i, self.doc)
-            get_transaction().commit()
+            transaction.commit()
 
         self.dbclose()
 

@@ -80,7 +80,8 @@ ZCatalog
            > cat.refreshCatalog(pghandler=ZLogHandler())
            > 
            > # Don't forget to commit
-           > get_transaction().commit()
+           > import transaction
+           > transaction.commit()
            
 
         The constructor of the handler can be given an optional parameter 

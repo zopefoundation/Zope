@@ -34,6 +34,7 @@ from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.Iterators import filestream_iterator
 from zExceptions import Redirect
 from cgi import escape
+import transaction
 
 StringType=type('')
 manage_addFileForm=DTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
@@ -509,7 +510,7 @@ class File(Persistent, Implicit, PropertyManager,
 
         # Make sure we have an _p_jar, even if we are a new object, by
         # doing a sub-transaction commit.
-        get_transaction().commit(1)
+        transaction.commit(1)
 
         if self._p_jar is None:
             # Ugh
@@ -535,7 +536,7 @@ class File(Persistent, Implicit, PropertyManager,
             data.next = next
 
             # Save the object so that we can release its memory.
-            get_transaction().commit(1)
+            transaction.commit(1)
             data._p_deactivate()
             # The object should be assigned an oid and be a ghost.
             assert data._p_oid is not None

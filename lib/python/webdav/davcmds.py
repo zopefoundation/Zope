@@ -29,6 +29,7 @@ from AccessControl import getSecurityManager
 from zExceptions import BadRequest, Forbidden
 from common import isDavCollection
 from common import PreconditionFailed
+import transaction
 
 def safe_quote(url, mark=r'%'):
     if url.find(mark) > -1:
@@ -288,7 +289,7 @@ class PropPatch:
             return result
         # This is lame, but I cant find a way to keep ZPublisher
         # from sticking a traceback into my xml response :(
-        get_transaction().abort()
+        transaction.abort()
         result=result.replace( '200 OK', '424 Failed Dependency')
         return result
 
@@ -410,7 +411,7 @@ class Lock:
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful locks
             result.write('</d:multistatus>')
-            get_transaction().abort() # This *SHOULD* clear all succesful locks
+            transaction.abort() # This *SHOULD* clear all succesful locks
         return token, result.getvalue()
 
 
@@ -472,7 +473,7 @@ class Unlock:
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful unlocks
             result.write('</d:multistatus>')
-            get_transaction().abort()
+            transaction.abort()
         return result.getvalue()
 
 

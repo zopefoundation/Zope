@@ -167,8 +167,9 @@ ZServer monitor server
   
   Remember if you make changes to Zope objects and want those changes to be
   saved you need to commmit the transaction::
-  
-    >>> get_transaction().commit()
+
+    >>> import transaction
+    >>> transaction.commit()
 	
 ZServer WebDAV support
 

@@ -16,6 +16,7 @@ import os, sys, unittest
 import string, cStringIO, re
 
 import ZODB, Acquisition, transaction
+import transaction
 from Acquisition import aq_base
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
@@ -137,7 +138,7 @@ class TestTraverse( unittest.TestCase ):
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one. We use a subtransaction, which means we can rollback
             # later and pretend we didn't touch the ZODB.
-            get_transaction().commit()
+            transaction.commit()
         except:
             self.connection.close()
             raise
@@ -154,7 +155,7 @@ class TestTraverse( unittest.TestCase ):
         del self.oldPolicy
         del self.policy
         del self.folder1
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.sync()
         self.connection.close()
         del self.app

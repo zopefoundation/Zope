@@ -16,6 +16,7 @@ from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working
 from ZODB.POSException import InvalidObjectReference, ConflictError
 from ZODB.DemoStorage import DemoStorage
+import transaction
 from OFS.DTMLMethod import DTMLMethod
 import Acquisition
 from Acquisition import aq_base
@@ -49,14 +50,14 @@ def _getDB():
         root = conn.root()
         app = Application()
         root['Application']= app
-        get_transaction().commit(1)
+        transaction.commit(1)
         _populate(app)
         stuff['db'] = db
         conn.close()
     return db
 
 def _delDB():
-    get_transaction().abort()
+    transaction.abort()
     del stuff['db']
 
 class Foo(Acquisition.Implicit): pass
@@ -87,14 +88,14 @@ def _populate(app):
     app._setObject(sdm_name, session_data_manager)
 
     app._setObject(tf_name, tf)
-    get_transaction().commit()
+    transaction.commit()
 
     app.temp_folder._setObject(toc_name, toc)
-    get_transaction().commit()
+    transaction.commit()
 
     # index_html necessary for publishing emulation for testAutoReqPopulate
     app._setObject('index_html', DTMLMethod('', __name__='foo'))
-    get_transaction().commit()
+    transaction.commit()
 
 class TestBase(TestCase):
     def setUp(self):
@@ -177,17 +178,19 @@ class TestSessionManager(TestBase):
 
     def testGhostUnghostSessionManager(self):
         sdm = self.app.session_data_manager
-        get_transaction().commit()
+        transaction.commit()
         sd = sdm.getSessionData()
         sd.set('foo', 'bar')
         sdm._p_changed = None
-        get_transaction().commit()
+        transaction.commit()
         self.failUnless(sdm.getSessionData().get('foo') == 'bar')
 
     def testSubcommit(self):
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', 'bar')
-        self.failUnless(get_transaction().commit(1) == None)
+        # TODO: transaction.commit() always returns None.  Is that
+        # all this is trying to test?
+        self.failUnless(transaction.commit(1) == None)
 
     def testForeignObject(self):
         self.assertRaises(InvalidObjectReference, self._foreignAdd)
@@ -201,7 +204,7 @@ class TestSessionManager(TestBase):
         # we want to fail for some other reason:
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', ob)
-        get_transaction().commit()
+        transaction.commit()
 
     def testAqWrappedObjectsFail(self):
         a = Foo()
@@ -209,7 +212,7 @@ class TestSessionManager(TestBase):
         aq_wrapped = a.__of__(b)
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', aq_wrapped)
-        self.assertRaises(TypeError, get_transaction().commit)
+        self.assertRaises(TypeError, transaction.commit)
 
     def testAutoReqPopulate(self):
         self.app.REQUEST['PARENTS'] = [self.app]

@@ -122,6 +122,8 @@ whrandom.seed(1,2,3)
 from string import strip, find, split, lower, atoi
 from urllib import quote
 
+import transaction
+
 VERBOSE = 0
 
 def do(db, f, args, returnf=None):
@@ -192,7 +194,7 @@ def loadmail(dest, name, mbox, max=-1):
             sys.stdout.write(fmt % (i, f.tell()))
             sys.stdout.flush()
         if i and (i%5000 == 0):
-            get_transaction().commit()
+            transaction.commit()
             dest._p_jar._cache.minimize()
 
         loadmessage(dest, message, i)
@@ -201,7 +203,7 @@ def loadmail(dest, name, mbox, max=-1):
 
     dest.number_of_messages=i
     print
-    get_transaction().commit()
+    transaction.commit()
 
 def loadinc(name, mb, f, max=99999999, wait=1):
     from ZODB.POSException import ConflictError
@@ -236,17 +238,17 @@ def loadinc(name, mb, f, max=99999999, wait=1):
         except ConflictError, v:
             # print v.args
             rconflicts=rconflicts+1
-            get_transaction().abort()
+            transaction.abort()
         else:
             try:
-                get_transaction().commit()
+                transaction.commit()
                 i=i+1
                 message=mb.next()
                 body=message.fp.read()
                 headers=list(message.headers)
             except ConflictError:
                 wconflicts=wconflicts+1
-                get_transaction().abort()
+                transaction.abort()
 
         doc=app=mdest=0
         jar.close()
@@ -276,7 +278,7 @@ def indexf(app):
     r=RE()
     r.PARENTS=[0, app.mail]
     app.cat.manage_catalogFoundItems(r,r,'','',['DTML Document'])
-    get_transaction().commit()
+    transaction.commit()
 
 def index():
     os.environ['STUPID_LOG_FILE']=''
@@ -306,7 +308,7 @@ def index():
 
     app.cat.addIndex('PrincipiaSearchSource', 'ZCTextIndex', extra)
 
-    get_transaction().commit()
+    transaction.commit()
     system = AccessControl.SpecialUsers.system
     AccessControl.SecurityManagement.newSecurityManager(None, system)
     r=RE()
@@ -325,7 +327,7 @@ def initmaili(n):
     else:
         Products.BTreeFolder.BTreeFolder.manage_addBTreeFolder(app, n)
 
-    get_transaction().commit()
+    transaction.commit()
     app._p_jar.close()
 
 def hist(n):
@@ -409,7 +411,7 @@ def catdel():
     mem = VmSize()
 
     del app.cat
-    get_transaction().commit()
+    transaction.commit()
     
     t = time.time() - t
     c = time.clock() - c
@@ -635,14 +637,14 @@ def incedit(edits, wait, ndel=20, nins=20):
         except ConflictError, v:
             #print v.args
             rconflicts=rconflicts+1
-            get_transaction().abort()
+            transaction.abort()
         else:
             try:
-                get_transaction().commit()
+                transaction.commit()
                 did=str(edits.pop())
             except ConflictError:
                 wconflicts=wconflicts+1
-                get_transaction().abort()
+                transaction.abort()
 
         doc=app=0
         jar.close()

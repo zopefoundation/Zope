@@ -25,6 +25,8 @@ from App.Dialogs import MessageDialog
 from OFS.ObjectManager import BeforeDeleteException
 from cgi import escape
 
+import transaction
+
 class VersionException(BeforeDeleteException): pass
 
 manage_addVersionForm=Globals.DTMLFile('dtml/versionAdd', globals())
@@ -154,7 +156,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
             s=self.cookie
             d=self._p_jar.getVersion()
             if d==s: d=''
-            get_transaction().note(remark)
+            transaction.get().note(remark)
             db.commitVersion(s, d)
 
         if REQUEST is not None:
@@ -168,7 +170,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
             Globals.VersionBase[self.cookie].abort()
         else:
             # ZODB 3
-            get_transaction().note(remark)
+            transaction.get().note(remark)
             db.abortVersion(self.cookie)
 
         if REQUEST is not None:

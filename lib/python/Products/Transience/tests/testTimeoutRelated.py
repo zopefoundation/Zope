@@ -5,6 +5,7 @@ if __name__=='__main__':
     sys.path.insert(0, '../../..')
 
 import ZODB # in order to get Persistence.Persistent working
+import transaction
 from Testing import makerequest
 import Acquisition
 from Acquisition import aq_base
@@ -34,7 +35,7 @@ def _getApp():
         root = conn.root()
         app = Application()
         root['Application']= app
-        get_transaction().commit()
+        transaction.commit()
         stuff['app'] = app
         stuff['conn'] = conn
         stuff['db'] = db
@@ -47,7 +48,7 @@ def _openApp():
     return conn, app
 
 def _delApp():
-    get_transaction().abort()
+    transaction.abort()
     stuff['conn'].close()
     del stuff['conn']
     del stuff['app']
@@ -68,7 +69,7 @@ class TestBase(TestCase):
         self.app._setObject('sm', sm)
 
     def tearDown(self):
-        get_transaction().abort()
+        transaction.abort()
         _delApp()
         del self.app
         Products.Transience.Transience.time = oldtime

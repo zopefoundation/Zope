@@ -51,6 +51,7 @@ from Persistence import Persistent
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IIBTree
+import transaction
 
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
@@ -552,7 +553,7 @@ class Indexer:
     def commit(self):
         if self.trans_count > 0:
             print "committing..."
-            get_transaction().commit()
+            transaction.commit()
             self.trans_count = 0
             self.pack_count += 1
             if self.pack_count >= self.pack_limit > 0:

@@ -30,6 +30,8 @@ from Testing import ZopeTestCase
 from AccessControl import Unauthorized
 import urllib
 
+import transaction
+
 # Create the error_log object
 ZopeTestCase.utils.setupSiteErrorLog()
 
@@ -73,11 +75,11 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
         self.folder.change_title.changeOwnership(manager)
 
         # Commit so the ZServer threads can see the changes
-        get_transaction().commit()
+        transaction.commit()
 
     def beforeClose(self):
         # Commit after cleanup
-        get_transaction().commit()
+        transaction.commit()
 
     def testAccessPublicObject(self):
         # Test access to a public resource
@@ -177,9 +179,9 @@ class TestSandboxedWebserver(ZopeTestCase.Sandboxed, TestWebserver):
         # Additionally, it allows us to commit transactions without
         # harming the test ZODB.
         self.folder.foo = 1
-        get_transaction().commit()
+        transaction.commit()
         self.folder.foo = 2
-        get_transaction().commit()
+        transaction.commit()
 
 
 def test_suite():

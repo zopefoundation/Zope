@@ -16,6 +16,7 @@ import os, sys
 from unittest import TestCase, TestSuite, main, makeSuite
 
 import ZODB
+import transaction
 
 from Products.ZCTextIndex.Lexicon import Lexicon
 from Products.ZCTextIndex.Lexicon import Splitter, CaseNormalizer
@@ -165,7 +166,7 @@ class TestLexiconConflict(TestCase):
         self.openDB()
         r1 = self.db.open().root()
         r1['l'] = self.l
-        get_transaction().commit()
+        transaction.commit()
         
         r2 = self.db.open().root()
         copy = r2['l']
@@ -177,11 +178,11 @@ class TestLexiconConflict(TestCase):
         self.assertEqual(self.l._p_serial, copy._p_serial)
         
         self.l.sourceToWordIds('mary had a little lamb')
-        get_transaction().commit()
+        transaction.commit()
         
         copy.sourceToWordIds('whose fleece was')
         copy.sourceToWordIds('white as snow')
-        get_transaction().commit()
+        transaction.commit()
         self.assertEqual(copy.length(), 11)
         self.assertEqual(copy.length(), len(copy._words))
 

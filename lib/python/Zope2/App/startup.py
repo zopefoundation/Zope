@@ -213,20 +213,15 @@ class TransactionsManager:
               transaction=transaction):
         transaction.begin()
 
-    def commit(self,
-              # Optimize global var lookups:
-               get_transaction=get_transaction):
-        get_transaction().commit()
+    def commit(self):
+        transaction.commit()
 
-    def abort(self,
-              # Optimize global var lookups:
-              get_transaction=get_transaction):
-        get_transaction().abort()
+    def abort(self):
+        transaction.abort()
 
     def recordMetaData(self, object, request,
                        # Optimize global var lookups:
                        hasattr=hasattr, getattr=getattr,
-                       get_transaction=get_transaction,
                        LOG=LOG, WARNING=WARNING,
                        ):
         request_get = request.get
@@ -260,7 +255,7 @@ class TransactionsManager:
                 # used to retrieve the object.
                 path = request_get('PATH_INFO')
 
-        T=get_transaction()
+        T = transaction.get()
         T.note(path)
         auth_user=request_get('AUTHENTICATED_USER',None)
         if auth_user is not None:

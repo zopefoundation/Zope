@@ -35,6 +35,7 @@ from HelpSys.HelpSys import HelpSys
 from Acquisition import aq_base
 from App.Product import doInstall
 from App.config import getConfiguration
+import transaction
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -82,7 +83,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         cpl=ApplicationManager()
         cpl._init()
         self._setObject('Control_Panel', cpl)
-        get_transaction().note("Created Zope Application")
+        transaction.get().note("Created Zope Application")
 
     def id(self):
         try:    return self.REQUEST['SCRIPT_NAME'][1:]
@@ -289,8 +290,8 @@ class AppInitializer:
         return self.app[0]
 
     def commit(self, note):
-        get_transaction().note(note)
-        get_transaction().commit()
+        transaction.get().note(note)
+        transaction.commit()
 
     def initialize(self):
         app = self.getApp()
@@ -533,13 +534,13 @@ class AppInitializer:
                 did_fixups=1
                 LOG('Zope', INFO,
                     'The global ZClass registry has successfully been rebuilt.')
-                get_transaction().note('Rebuilt global product registry')
-                get_transaction().commit()
+                transaction.get().note('Rebuilt global product registry')
+                transaction.commit()
         except:
             bad_things=1
             LOG('Zope', ERROR, 'The attempt to rebuild the registry failed.',
                 error=sys.exc_info())
-            get_transaction().abort()
+            transaction.abort()
 
         # Now we need to see if any (disk-based) products were installed
         # during intialization. If so (and the registry has no errors),
@@ -566,7 +567,7 @@ class AppInitializer:
                         ('Attempt to fixup ZClass dependencies after '
                          'detecting an updated disk-based product failed.'),
                         error=sys.exc_info())
-                    get_transaction().abort()
+                    transaction.abort()
 
     def install_products(self):
         app = self.getApp()
@@ -588,8 +589,8 @@ def install_products(app):
 
     debug_mode = App.config.getConfiguration().debug_mode
 
-    get_transaction().note('Prior to product installs')
-    get_transaction().commit()
+    transaction.get().note('Prior to product installs')
+    transaction.commit()
 
     products = get_products()
 
@@ -799,16 +800,16 @@ def install_product(app, product_dir, product_name, meta_types,
                     list(Folder.Folder.__ac_permissions__)+new_permissions)
 
             if not doInstall():
-                get_transaction().abort()
+                transaction().abort()
             else:
-                get_transaction().note('Installed product '+product_name)
-                get_transaction().commit()
+                transaction.get().note('Installed product '+product_name)
+                transaction.commit()
 
         except:
             if log_exc:
                 LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
                     error=sys.exc_info())
-            get_transaction().abort()
+            transaction.abort()
             if raise_exc:
                 raise
 
@@ -845,15 +846,15 @@ def install_standards(app):
         #setattr(Application, fn, ob)
     if wrote:
         app._standard_objects_have_been_added = 1
-        get_transaction().note('Installed standard objects')
-        get_transaction().commit()
+        transaction.get().note('Installed standard objects')
+        transaction.commit()
 
 def reinstall_product(app, product_name):
     folder_permissions = get_folder_permissions()
     meta_types=[]
 
-    get_transaction().note('Prior to product reinstall')
-    get_transaction().commit()
+    transaction.get().note('Prior to product reinstall')
+    transaction.commit()
 
     for product_dir in Products.__path__:
         product_names=os.listdir(product_dir)

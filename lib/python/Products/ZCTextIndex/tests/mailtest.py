@@ -42,6 +42,7 @@ index from the database:
 
 import ZODB
 import ZODB.FileStorage
+import transaction
 from Products.ZCTextIndex.Lexicon import \
      Lexicon, CaseNormalizer, Splitter, StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
@@ -92,7 +93,7 @@ def index(rt, mboxfile, db, profiler):
         rt["documents"] = docs = IOBTree()
     else:
         docs = None
-    get_transaction().commit()
+    transaction.commit()
 
     mbox = mailbox.UnixMailbox(open(mboxfile, 'rb'))
     if VERBOSE:
@@ -107,7 +108,7 @@ def index(rt, mboxfile, db, profiler):
     idx_time += itime
     pack_time += ptime
 
-    get_transaction().commit()
+    transaction.commit()
 
     if PACK_INTERVAL and i % PACK_INTERVAL != 0:
         if VERBOSE >= 2:
@@ -148,7 +149,7 @@ def indexmbox(mbox, idx, docs, db):
         if not EXCLUDE_TEXT:
             docs[i] = msg
         if i % TXN_SIZE == 0:
-            get_transaction().commit()
+            transaction.commit()
         i1 = time.clock()
         idx_time += i1 - i0
         if VERBOSE and i % 50 == 0:

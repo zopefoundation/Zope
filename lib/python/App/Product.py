@@ -38,6 +38,8 @@ import os, re, zlib, marshal, cPickle
 from cgi import escape
 from urllib import quote
 
+import transaction
+
 import Globals, OFS.Folder, OFS.SimpleItem,  Acquisition, Products
 import ZClasses, AccessControl.Owned
 from OFS.Folder import Folder
@@ -580,7 +582,7 @@ def initializeProduct(productp, name, home, app):
              'help': ('OFSP','Product_Refresh.stx')},)
 
     if not doInstall():
-        get_transaction().abort()
+        transaction.abort()
         return product
 
     # Give the ZClass fixup code in Application

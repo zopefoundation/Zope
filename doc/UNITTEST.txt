@@ -221,7 +221,7 @@ Zope Unit Testing
      app.acl_users.manage_addUser(<parameters>)
 
    - a transaction will not be committed to the Zope object database
-     until you call the global function "get_transaction().commit()",
+     until you call "transaction.commit()",
      so changes made to the ZODB are not visible to succeeding tests
      unless that function is called explicitly.
 

@@ -73,4 +73,5 @@ Using the Medusa Monitor
   To commit changes you make, before exiting, you may have to do
   another bit of magic:
 
-  >>> get_transaction().commit()
+  >>> import transaction
+  >>> transaction.commit()

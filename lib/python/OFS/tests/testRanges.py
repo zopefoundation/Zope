@@ -14,6 +14,7 @@ import os, sys, unittest
 
 import string, random, cStringIO, time, re
 import ZODB
+import transaction
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
@@ -73,7 +74,7 @@ class TestRequestRange(unittest.TestCase):
             # Hack, we need a _p_mtime for the file, so we make sure that it
             # has one. We use a subtransaction, which means we can rollback
             # later and pretend we didn't touch the ZODB.
-            get_transaction().commit()
+            transaction.commit()
         except:
             self.connection.close()
             raise
@@ -81,7 +82,7 @@ class TestRequestRange(unittest.TestCase):
     def tearDown(self):
         try: self.app._delObject(TESTFOLDER_NAME)
         except AttributeError: pass
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.sync()
         self.connection.close()
         self.app = None

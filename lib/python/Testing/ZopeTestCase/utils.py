@@ -7,6 +7,7 @@
 
 # $Id: utils.py,v 1.21 2005/02/11 09:00:21 shh42 Exp $
 
+import transaction
 
 def setupCoreSessions(app=None):
     '''Sets up the session_data_manager e.a.'''
@@ -47,7 +48,8 @@ def setupCoreSessions(app=None):
         app._setObject('session_data_manager', sdm)
         commit = 1
 
-    if commit: get_transaction().commit()
+    if commit:
+        transaction.commit()
 
 
 def setupZGlobals(app=None):
@@ -59,7 +61,7 @@ def setupZGlobals(app=None):
     if not root.has_key('ZGlobals'):
         from BTrees.OOBTree import OOBTree
         root['ZGlobals'] = OOBTree()
-        get_transaction().commit()
+        transaction.commit()
 
 
 def setupSiteErrorLog(app=None):
@@ -74,7 +76,7 @@ def setupSiteErrorLog(app=None):
             pass
         else:
             app._setObject('error_log', SiteErrorLog())
-            get_transaction().commit()
+            transaction.commit()
 
 
 import os, time
@@ -85,7 +87,7 @@ def importObjectFromFile(container, filename, quiet=0):
     start = time.time()
     if not quiet: _print("Importing %s ... " % os.path.basename(filename))
     container._importObjectFromFile(filename, verify=0)
-    get_transaction().commit()
+    transaction.commit()
     if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
 
 

@@ -16,6 +16,7 @@ if __name__ == "__main__":
     #os.chdir('../../..')
 from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working
+import transaction
 import Acquisition
 from Acquisition import aq_base
 from Products.Sessions.BrowserIdManager import BrowserIdManager, \
@@ -66,13 +67,13 @@ def _getDB():
         app = Application()
         root['Application']= app
         _populate(app)
-        get_transaction().commit()
+        transaction.commit()
         stuff['db'] = db
         conn.close()
     return db
 
 def _delDB():
-    get_transaction().abort()
+    transaction.abort()
     del stuff['db']
 
 class Foo(Acquisition.Implicit): pass
@@ -99,10 +100,10 @@ def _populate(app):
     app._setObject(sdm_name, session_data_manager)
 
     app._setObject(tf_name, tf)
-    get_transaction().commit()
+    transaction.commit()
 
     app.temp_folder._setObject(toc_name, toc)
-    get_transaction().commit()
+    transaction.commit()
 
 class TestMultiThread(TestCase):
     def testOverlappingBrowserIds(self):
@@ -191,17 +192,17 @@ class BaseReaderWriter(threading.Thread):
                 except ConflictError:
                     print "W",
                 except:
-                    get_transaction().abort()
+                    transaction.abort()
                     print log_time()
                     traceback.print_exc()
                     raise
                 
                 i = i + 1
-                get_transaction().abort()
+                transaction.abort()
                 self.conn.close()
                 time.sleep(random.randrange(10) * .1)
         finally:
-            get_transaction().abort()
+            transaction.abort()
             self.conn.close()
             del self.app
             self.finished = 1
@@ -217,11 +218,11 @@ class ReaderThread(BaseReaderWriter):
         data = session_data_manager.getSessionData(create=1)
         t = time.time()
         data[t] = 1
-        get_transaction().commit()
+        transaction.commit()
         for i in range(self.iters):
             data = session_data_manager.getSessionData()
             time.sleep(random.choice(range(3)))
-            get_transaction().commit()
+            transaction.commit()
 
 class WriterThread(BaseReaderWriter):
     def run1(self):
@@ -232,9 +233,9 @@ class WriterThread(BaseReaderWriter):
             n = random.choice(range(3))
             time.sleep(n)
             if n % 2 == 0:
-                get_transaction().commit()
+                transaction.commit()
             else:
-                get_transaction().abort()
+                transaction.abort()
 
 class ValuesGetterThread(BaseReaderWriter):
     def run1(self):
@@ -245,9 +246,9 @@ class ValuesGetterThread(BaseReaderWriter):
             n = random.choice(range(3))
             time.sleep(n)
             if n % 2 == 0:
-                get_transaction().commit()
+                transaction.commit()
             else:
-                get_transaction().abort()
+                transaction.abort()
 
 
 def test_suite():

@@ -27,6 +27,8 @@ from zExceptions import Unauthorized, BadRequest
 from webdav.Lockable import ResourceLockedError
 from cgi import escape
 
+import transaction
+
 CopyError='Copy Error'
 
 copy_re = re.compile('^copy([0-9]*)_of_(.*)')
@@ -443,7 +445,7 @@ class CopySource(ExtensionClass.Base):
         # 1) Make sure the data about to be exported is current
         # 2) Ensure self._p_jar and container._p_jar are set even if
         #    either one is a new object
-        get_transaction().commit(1)
+        transaction.commit(1)
 
         if self._p_jar is None:
             raise CopyError, (

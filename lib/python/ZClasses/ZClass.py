@@ -23,6 +23,8 @@ from Products.PythonScripts.PythonScript import PythonScript
 from zExceptions import BadRequest, Redirect
 import webdav.Collection
 
+import transaction
+
 import marshal
 
 if not hasattr(Products, 'meta_types'):
@@ -301,17 +303,14 @@ class ZClass( Base
                             hasattr(self._zclass_, '_p_deactivate')
                             )
 
-        copy._zclass_.__dict__.update(
-            self._zclass_.__dict__)
-        get_transaction().register(
-            copy._zclass_)
+        copy._zclass_.__dict__.update(self._zclass_.__dict__)
+        transaction.get().register(copy._zclass_)
         self._p_jar.exchange(self._zclass_, copy._zclass_)
         self._zclass_=copy._zclass_
 
         copy._zclass_propertysheets_class.__dict__.update(
             self._zclass_propertysheets_class.__dict__)
-        get_transaction().register(
-            copy._zclass_propertysheets_class)
+        transaction.get().register(copy._zclass_propertysheets_class)
         self._p_jar.exchange(self._zclass_propertysheets_class,
                              copy._zclass_propertysheets_class)
         self._zclass_propertysheets_class=copy._zclass_propertysheets_class
@@ -319,8 +318,7 @@ class ZClass( Base
         if hasattr(self.propertysheets.__class__, '_p_oid'):
             copy.propertysheets.__class__.__dict__.update(
                 self.propertysheets.__class__.__dict__)
-            get_transaction().register(
-                copy.propertysheets.__class__)
+            transaction.get().register(copy.propertysheets.__class__)
             self._p_jar.exchange(self.propertysheets.__class__,
                                  copy.propertysheets.__class__)
 
@@ -520,7 +518,7 @@ class ZClass( Base
         c=self._zclass_
         setattr(c, name, value)
         if not c._p_changed:
-            get_transaction().register(c)
+            transaction.get().register(c)
             c._p_changed=1
 
     delClassAttr__roles__ = ()  # Private
@@ -528,7 +526,7 @@ class ZClass( Base
         c=self._zclass_
         delattr(c, name)
         if not c._p_changed:
-            get_transaction().register(c)
+            transaction.get().register(c)
             c._p_changed=1
 
     def classDefinedPermissions(self):

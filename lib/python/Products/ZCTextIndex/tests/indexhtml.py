@@ -16,6 +16,7 @@ from time import clock
 import ZODB
 from ZODB.FileStorage import FileStorage
 from BTrees.IOBTree import IOBTree
+import transaction
 
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
@@ -58,7 +59,7 @@ def make_old_index():
 def main(db, root, dir):
     rt["index"] = index = INDEX()
     rt["files"] = paths = IOBTree()
-    get_transaction().commit()
+    transaction.commit()
 
     zodb_time = 0.0
     pack_time = 0.0
@@ -83,7 +84,7 @@ def main(db, root, dir):
             f.close()
             if docid % TXN_INTERVAL == 0:
                 z0 = clock()
-                get_transaction().commit()
+                transaction.commit()
                 z1 = clock()
                 zodb_time += z1 - z0
                 if VERBOSE:
@@ -97,7 +98,7 @@ def main(db, root, dir):
                 if VERBOSE:
                     print "pack took", p1 - p0, pack_time
     z0 = clock()
-    get_transaction().commit()
+    transaction.commit()
     z1 = t1 = clock()
     total_time = t1 - t0
     zodb_time += z1 - z0

@@ -28,6 +28,7 @@ $Id$
 import sys
 from optparse import OptionParser
 
+import transaction
 from Products.ZCatalog.ProgressHandler import StdoutHandler
 
 
@@ -71,7 +72,7 @@ def reindexIndexes(optioons, args):
     for id in args:
         print 'Reindexing index %s at %s' % (id, options.catalog)
         catalog.reindexIndex(id, None, handler)
-    get_transaction().commit()
+    transaction.commit()
 
 
 def refreshMetadata(options, args):
@@ -82,7 +83,7 @@ def refreshMetadata(options, args):
 
     print 'Refresh metadata at %s' % options.catalog
     catalog.refreshMetadata(handler)
-    get_transaction().commit()
+    transaction.commit()
 
 
 def reindexAll(options, args):
@@ -93,7 +94,7 @@ def reindexAll(options, args):
 
     print 'Reindexing complete ZCatalog at %s' % options.catalog
     catalog.refreshCatalog(options.clearCatalog, handler)
-    get_transaction().commit()
+    transaction.commit()
 
 
 if __name__ == '__main__':

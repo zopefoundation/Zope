@@ -24,7 +24,7 @@ class ZPTRegressions(unittest.TestCase):
         self.text = 'text of page template'
 
     def tearDown(self):
-        get_transaction().abort()
+        transaction.abort()
         self.app._p_jar.close()
 
     def testAddWithParams(self):
