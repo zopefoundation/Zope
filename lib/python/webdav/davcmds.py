@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix, urlbase
@@ -126,7 +126,7 @@ class PropFind:
         self.allprop=(not len(body))
         if not body: return
         try:    root=XmlParser().parse(body)
-        except: raise 'Bad Request', sys.exc_value
+        except: raise 'Bad Request', sys.exc_info()[1]
         e=root.elements('propfind', ns=dav)
         if not e: raise 'Bad Request', 'Invalid xml request.'
         e=e[0]
@@ -227,7 +227,7 @@ class PropPatch:
     def parse(self, request, dav='DAV:'):
         body=request.get('BODY', '')
         try:    root=XmlParser().parse(body)
-        except: raise 'Bad Request', sys.exc_value
+        except: raise 'Bad Request', sys.exc_info()[1]
         vals=self.values
         e=root.elements('propertyupdate', ns=dav)
         if not e: raise 'Bad Request', 'Invalid xml request.'
@@ -288,12 +288,12 @@ class PropPatch:
                 if propset.hasProperty(name):
                     try: propset._updateProperty(name, val, meta=md)
                     except:
-                        errors.append(str(sys.exc_value))
+                        errors.append(str(sys.exc_info()[1]))
                         status='409 Conflict'
                 else:
                     try: propset._setProperty(name, val, meta=md)
                     except:
-                        errors.append(str(sys.exc_value))
+                        errors.append(str(sys.exc_info()[1]))
                         status='409 Conflict'
             else:
                 name, ns=value

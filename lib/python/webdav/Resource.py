@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -259,20 +259,21 @@ class Resource(ExtensionClass.Base):
             raise 'Conflict', 'Attempt to copy to an unknown namespace.'
         except 'Not Found':
             raise 'Conflict', 'Object ancestors must already exist.'
-        except: raise sys.exc_type, sys.exc_value
+        except:
+            t, v, tb=sys.exc_info()
+            raise t, v
         if hasattr(parent, '__null_resource__'):
             raise 'Conflict', 'Object ancestors must already exist.'
         existing=hasattr(aq_base(parent), name)
         if existing and oflag=='F':
             raise 'Precondition Failed', 'Destination resource exists.'
         try: parent._checkId(name, allow_dup=1)
-        except: raise 'Forbidden', sys.exc_value
+        except: raise 'Forbidden', sys.exc_info()[1]
         try: parent._verifyObjectPaste(self, REQUEST)
         except 'Unauthorized':
-            raise 'Unauthorized', sys.exc_value
-        except: raise 'Forbidden', sys.exc_value
-        #try: self._notifyOfCopyTo(parent, op=0)
-        #except: raise 'Forbidden', sys.exc_value
+            raise 'Unauthorized', sys.exc_info()[1]
+        except: raise 'Forbidden', sys.exc_info()[1]
+
         ob=self._getCopy(parent)
         ob.manage_afterClone(ob)
         ob._setId(name)
@@ -317,18 +318,19 @@ class Resource(ExtensionClass.Base):
             raise 'Conflict', 'Attempt to move to an unknown namespace.'
         except 'Not Found':
             raise 'Conflict', 'The resource %s must exist.' % path
-        except: raise sys.exc_type, sys.exc_value
+        except:
+            t, v, tb=sys.exc_info()
+            raise t, v
         if hasattr(parent, '__null_resource__'):
             raise 'Conflict', 'The resource %s must exist.' % path
         existing=hasattr(aq_base(parent), name)
         if existing and flag=='F':
             raise 'Precondition Failed', 'Resource %s exists.' % dest
         try: parent._checkId(name, allow_dup=1)
-        except: raise 'Forbidden', sys.exc_value
+        except: raise 'Forbidden', sys.exc_info()[1]
         try: parent._verifyObjectPaste(self, REQUEST)
-        except: raise 'Forbidden', sys.exc_value
-        #try: self._notifyOfCopyTo(parent, op=1)
-        #except: raise 'Forbidden', sys.exc_value        
+        except: raise 'Forbidden', sys.exc_info()[1]
+
         ob=aq_base(self._getCopy(parent))
         self.aq_parent._delObject(absattr(self.id))
         ob._setId(name)
