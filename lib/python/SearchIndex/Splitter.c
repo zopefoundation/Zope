@@ -38,7 +38,7 @@ Splitter_length(Splitter *self)
     while(1)
       {
 	UNLESS_ASSIGN(res,next_word(self,NULL,NULL)) return -1;
-	UNLESS(PyString_Check(res = next_word(self,NULL,NULL)))
+	UNLESS(PyString_Check(res))
 	  {
 	    Py_DECREF(res);
 	    break;
@@ -199,6 +199,7 @@ next_word(Splitter *self, char **startpos, char **endpos)
   if (i == 0)
     { 
       /* No words */
+      self->here=here;
       Py_INCREF(Py_None);
       return Py_None;
     }
@@ -208,7 +209,7 @@ next_word(Splitter *self, char **startpos, char **endpos)
   if(endpos) *endpos=here;
   res = check_synstop(self, pyword);
   Py_DECREF(pyword);
-  self->index++;
+  if(PyString_Check(res)) self->index++;
   return res;
 }
 
@@ -387,14 +388,14 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.1 1997/10/31 20:59:08 jim Exp $\n"
+"$Id: Splitter.c,v 1.2 1997/11/03 19:00:44 jim Exp $\n"
 ;
 
 void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
