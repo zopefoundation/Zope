@@ -3,6 +3,7 @@
 # Compare current StructuredText.py processing against prior versions.
 # You should see no output if there's no discrepancies.
 
+differences=""
 for i in *.stx; do
   stx=$i
   base=${i%.stx}
@@ -12,6 +13,10 @@ for i in *.stx; do
   if cmp $ref $new; then
     :
   else
-    echo ... so there are differences in the processing
+    differences="$differences $stx"
   fi
 done
+
+if [ -n "$differences" ]; then
+  echo "Differences encountered processing$differences."
+fi
