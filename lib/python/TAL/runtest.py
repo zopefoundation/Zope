@@ -122,6 +122,7 @@ def main():
     if not args:
         prefix = os.path.join("test", "test*.")
         args = glob.glob(prefix + "xml") + glob.glob(prefix + "html")
+    errors = 0
     for arg in args:
         print arg,
         sys.stdout.flush()
@@ -153,8 +154,11 @@ def main():
             print "OK"
         else:
             print "not OK"
+            errors = 1
             if expected is not None:
                 showdiff(expected, actual)
+    if errors:
+        sys.exit(1)
 
 def readlines(f):
     L = []
