@@ -4,7 +4,7 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-# $Revision: 1.5 $
+# $Revision: 1.6 $
 __version__ = '0.1'
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
@@ -97,7 +97,7 @@ class Minimal(BerkeleyBase):
             # tpc_begin().
             serial = self._serial
             while 1:
-                rec = self._commitlog.next_object()
+                rec = self._commitlog.next()
                 if rec is None:
                     break
                 oid, pickle = rec
@@ -123,14 +123,6 @@ class Minimal(BerkeleyBase):
         # done with our commit log, so we should reset it.
         self._closelog()
 
-    def _closelog(self):
-        self._commitlog.finish()
-        # JF: unlinking might be too inefficient.  JH: might use mmap files.
-        # BAW: maybe just truncate the file, or write a length into the
-        # headers and just zero out the length.
-        self._commitlog.close(unlink=1)
-        self._commitlog = None
-        
     def close(self):
         # BAW: the original implementation also deleted these attributes.  Was
         # that just to reclaim the garbage?
