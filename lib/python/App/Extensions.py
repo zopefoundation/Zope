@@ -86,11 +86,11 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.13 2000/06/26 19:52:46 brian Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Extensions.py,v 1.14 2000/07/05 21:22:00 brian Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 from string import find, split
-import os, zlib, rotor
+import os, zlib, rotor, imp
 import Products
 path_split=os.path.split
 path_join=os.path.join
@@ -183,28 +183,38 @@ def getObject(module, name, reload=0,
 
     if module[-3:]=='.py': p=module[:-3]
     elif module[-4:]=='.pyp': p=module[:-4]
+    elif module[-4:]=='.pyc': p=module[:-4]
     else: p=module
-    p=getPath('Extensions', p, suffixes=('','py','pyp'))
+    p=getPath('Extensions', p, suffixes=('','py','pyp','pyc'))
     if p is None:
         raise "Module Error", (
             "The specified module, <em>%s</em>, couldn't be found." % module)
 
     __traceback_info__=p, module
 
-    if p[-4:]=='.pyp':
+
+    if p[-4:]=='.pyc':
+        file = open(p, 'rb')
+        binmod=imp.load_compiled('Extension', p, file)
+        file.close()
+        m=binmod.__dict__
+
+    elif p[-4:]=='.pyp':
         prod_id=split(module, '.')[0]
         data=zlib.decompress(
             rotor.newrotor(prod_id +' shshsh').decrypt(open(p,'rb').read())
             )
         execsrc=compile(data, module, 'exec')
+        m={}
+        exec execsrc in m
+        
     else:
         try: execsrc=open(p)
         except: raise "Module Error", (
             "The specified module, <em>%s</em>, couldn't be opened."
             % module)
-
-    m={}
-    exec execsrc in m
+        m={}
+        exec execsrc in m
 
     try: r=m[name]
     except KeyError:
