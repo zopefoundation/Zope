@@ -482,14 +482,14 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.103 1998/10/02 19:42:10 jim Exp $"""
+$Id: Publish.py,v 1.104 1998/11/11 22:48:11 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.103 $'[11:-2]
+__version__='$Revision: 1.104 $'[11:-2]
 
 import sys, os, string, cgi, regex
-from string import *
+from string import * # Shame on me. :[
 import CGIResponse
 from CGIResponse import Response
 from urllib import quote, unquote
@@ -720,15 +720,36 @@ class ModulePublisher:
 
         # Get a nice clean path list:
         path=strip(request_get('PATH_INFO'))
-        if path[:1]=='/': path=path[1:]
-        if path[-1:]=='/': path=path[:-1]
+
+        __traceback_info__=path
+
+        if path[:1] != '/': path='/'+path
+        if path[-1:] != '/': path=path+'/'
+        if find(path,'/.') >= 0:
+            path=join(split(path,'/./'),'/')
+            l=find(path,'/../',1)
+            while l > 0:
+                p1=path[:l]
+                path=path[:rfind(p1,'/')+1]+path[l+4:]
+                l=find(path,'/../',1)
+        path=path[1:-1]
+
         path=split(path,'/')
         while path and not path[0]: path = path[1:]
+
+        
 
         method=upper(request_get('REQUEST_METHOD'))
         if method=='GET' or method=='POST': method='index_html'
 
         URL=self.script
+
+        # if the top object has a __bobo_traverse__ method, then use it
+        # to possibly traverse to an alternate top-level object.
+        if hasattr(object,'__bobo_traverse__'):
+            request['URL']=URL
+            try: object=object.__bobo_traverse__(request)
+            except: pass            
 
         # Get default object if no path was specified:
         if not path:
@@ -748,13 +769,6 @@ class ModulePublisher:
         # Traverse the URL to find the object:
         request['PARENTS']=parents=[]
 
-        # if the top object has a __bobo_traverse__ method, then use it
-        # to possibly traverse to an alternate top-level object.
-        if hasattr(object,'__bobo_traverse__'):
-            request['URL']=URL
-            try: object=object.__bobo_traverse__(request)
-            except: pass            
-    
         if hasattr(object, '__of__'): 
             # Try to bind the top-level object to the request
             object=object.__of__(RequestContainer(REQUEST=request))
@@ -783,34 +797,28 @@ class ModulePublisher:
                         try: subobject=object[entry_name]
                         except (KeyError, IndexError,
                                 TypeError, AttributeError):
-                            if entry_name=='.': subobject=object
-                            elif entry_name=='..' and parents:
-                                subobject=parents[-1]
-                            else: self.notFoundError(URL)
+                            self.notFoundError(URL)
 
-                if subobject is object and entry_name=='.':
-                    URL=URL[:rfind(URL,'/')]
+                try:
+                    try: doc=subobject.__doc__
+                    except: doc=getattr(object, entry_name+'__doc__')
+                    if not doc: raise AttributeError, entry_name
+                except: self.notFoundError("%s" % (URL))
+
+                if hasattr(subobject,'__roles__'):
+                    roles=subobject.__roles__
                 else:
-                    try:
-                        try: doc=subobject.__doc__
-                        except: doc=getattr(object, entry_name+'__doc__')
-                        if not doc: raise AttributeError, entry_name
-                    except: self.notFoundError("%s" % (URL))
+                    if not got:
+                        roleshack=entry_name+'__roles__'
+                        if hasattr(object, roleshack):
+                            roles=getattr(object, roleshack)
 
-                    if hasattr(subobject,'__roles__'):
-                        roles=subobject.__roles__
-                    else:
-                        if not got:
-                            roleshack=entry_name+'__roles__'
-                            if hasattr(object, roleshack):
-                                roles=getattr(object, roleshack)
-    
-                    # Promote subobject to object
-                
-                    parents.append(object)
-                    object=subobject
+                # Promote subobject to object
+            
+                parents.append(object)
+                object=subobject
 
-                    steps.append(entry_name)
+                steps.append(entry_name)
     
                 # Check for method:
                 if not path:
@@ -1247,7 +1255,7 @@ class Request:
              else:
                  server_url=server_url+strip(environ['SERVER_NAME'])
                  server_port=environ['SERVER_PORT']
-                 if server_port!='80': server_url=server_url+':'+server_port
+                 if server_port!='80': server_url="%s:%s" % (server_url,server_port)
 
         if server_url[-1:]=='/': server_url=server_url[:-1]
                         
