@@ -89,10 +89,12 @@
 class TM:
     """Mix-in class that provides transaction management support
 
-    A base class should call self._register() whenever it performs
+    A sub class should call self._register() whenever it performs
     any transaction-dependent operations (e.g. sql statements).
 
-    The base class may need to override tpc_finish and tpc_abort.
+    The sub class will need to override _finish, to finallize work,
+    _abort, to roll-back work, and perhaps _begin, if any work is needed
+    at the start of a transaction.
     """
 
     _registered=None
