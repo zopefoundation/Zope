@@ -719,7 +719,7 @@ products $INSTANCE/Products
 #
 # Example:
 #
-# <zodb_db>
+# <zodb_db main>
 #    <filestorage>
 #      path $INSTANCE/var/Data.fs
 #    </filestorage>
