@@ -152,7 +152,10 @@ class TALGenerator:
         for item in attrlist:
             if len(item) > 2:
                 return 0
-            new.append(" %s=%s" % (item[0], quote(item[1])))
+            if item[1] is None:
+                new.append(" %s" % item[0])
+            else:
+                new.append(" %s=%s" % (item[0], quote(item[1])))
         new.append(end)
         collect.extend(new)
         return 1

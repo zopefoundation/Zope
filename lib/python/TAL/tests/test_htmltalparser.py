@@ -114,7 +114,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
     def check_code_attr_syntax(self):
         output = [
             ('setPosition', (1, 0)),
-            ('rawtext', '<a b="v" c="v" d="v" e="e"></a>'),
+            ('rawtext', '<a b="v" c="v" d="v" e></a>'),
             ]
         self._run_check("""<a b='v' c="v" d=v e>""", output)
         self._run_check("""<a  b = 'v' c = "v" d = v e>""", output)

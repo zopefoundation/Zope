@@ -275,7 +275,7 @@ class HTMLParser:
                 break
             attrname, rest, attrvalue = m.group(1, 2, 3)
             if not rest:
-                attrvalue = attrname
+                attrvalue = None
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
@@ -315,7 +315,7 @@ class HTMLParser:
             raise HTMLParseError("bad end tag: %s" % `rawdata[i:j]`,
                                  self.getpos())
         tag = match.group(1)
-        self.handle_endtag(tag)
+        self.handle_endtag(string.lower(tag))
         return j
 
     # Overridable -- finish processing of start+end tag: <tag.../>

@@ -209,6 +209,8 @@ class TALInterpreter:
             if (self.html and not value and
                 string.lower(name) in BOOLEAN_HTML_ATTRS):
                 s = name
+            elif value is None:
+                s = name
             else:
                 s = "%s=%s" % (name, quote(value))
             if (self.wrap and

@@ -99,14 +99,14 @@ class HTMLParserTestCase(unittest.TestCase):
     def check_simple_html(self):
         self._run_check("""
 <!DOCTYPE html PUBLIC 'foo'>
-<html>&entity;&#32;
+<HTML>&entity;&#32;
 <!--comment1a
 -></foo><bar>&lt;<?pi?></foo<bar
 comment1b-->
-<img src='bar' ismap>sample
+<Img sRc='Bar' isMAP>sample
 text
 <!--comment2a-- --comment2b-->
-</html>
+</Html>
 """, [
     ("data", "\n"),
     ("decl", "DOCTYPE html PUBLIC 'foo'"),
@@ -117,7 +117,7 @@ text
     ("data", "\n"),
     ("comment", "comment1a\n-></foo><bar>&lt;<?pi?></foo<bar\ncomment1b"),
     ("data", "\n"),
-    ("starttag", "img", [("src", "bar"), ("ismap", "ismap")]),
+    ("starttag", "img", [("src", "Bar"), ("ismap", None)]),
     ("data", "sample\ntext\n"),
     ("comment", "comment2a-- --comment2b"),
     ("data", "\n"),
@@ -135,8 +135,8 @@ text
 
     def check_attr_syntax(self):
         output = [
-            ("starttag", "a", [("b", "v"), ("c", "v"), ("d", "v"), ("e", "e")])
-            ]
+          ("starttag", "a", [("b", "v"), ("c", "v"), ("d", "v"), ("e", None)])
+          ]
         self._run_check("""<a b='v' c="v" d=v e>""", output)
         self._run_check("""<a  b = 'v' c = "v" d = v e>""", output)
         self._run_check("""<a\nb\n=\n'v'\nc\n=\n"v"\nd\n=\nv\ne>""", output)
