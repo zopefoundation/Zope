@@ -14,9 +14,14 @@ Debug Information - Debugging Information: Online Zope debugging
 
       * The system platform name
 
+      * The filesystem path of the Zope core software, add-on software,
+        and data files.
+
       * The ID number of the Zope process (if available on your platform)
 
       * The length of time Zope has been running
+
+      * The Python module search paths (sys.path).
 
       * The top refcounts, including a table listing the changes since
       * the last snapshot

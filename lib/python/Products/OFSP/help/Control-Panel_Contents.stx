@@ -15,6 +15,14 @@ Control Panel - Contents: Zope system controls
 
       'System Platform' -- The type of machine Zope is running on.
 
+      'SOFTWARE_HOME' -- The filesystem path of the core Zope software.
+
+      'INSTANCE_HOME' -- The filesystem path where Zope loads add-on
+      software.
+
+      'CLIENT_HOME' -- The filesystem path where Zope stores data and
+      log files.
+
       'Process ID' -- The PID of the Zope process.
 
       'Running for' -- How long the Zope process has been running.
