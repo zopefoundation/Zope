@@ -136,6 +136,10 @@ or at least create a Zope Trunk Install HowTo
   At least create a HowTo which summarizes the differences between
   installing 2.6 and installing the trunk.
 
+Windows Installer
+
+   Allow default instance to run as service on NT/2000
+
 ------------------------------
  MAYBE NEVER BUT NICE TO HAVE
 ------------------------------
