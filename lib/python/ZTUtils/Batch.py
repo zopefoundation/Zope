@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.4 2001/10/02 20:54:49 evan Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Batch.py,v 1.5 2001/11/13 19:23:55 evan Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from ExtensionClass import Base
 
@@ -150,22 +150,22 @@ def opt(start,end,size,orphan,sequence):
     if start > 0:
 
         try: sequence[start-1]
-        except: start=len(sequence)
+        except IndexError: start=len(sequence)
 
         if end > 0:
             if end < start: end=start
         else:
             end=start+size-1
             try: sequence[end+orphan-1]
-            except: end=len(sequence)
+            except IndexError: end=len(sequence)
     elif end > 0:
         try: sequence[end-1]
-        except: end=len(sequence)
+        except IndexError: end=len(sequence)
         start=end+1-size
         if start - 1 < orphan: start=1
     else:
         start=1
         end=start+size-1
         try: sequence[end+orphan-1]
-        except: end=len(sequence)
+        except IndexError: end=len(sequence)
     return start,end,size
