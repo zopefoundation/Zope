@@ -36,7 +36,7 @@
             </select></td></tr>
 <tr>	<th align='LEFT'><em>Arguments</em></th>
 	<td align='LEFT'><input name="arguments" size="40"
-             value="<!--#var arguments_src-->"></td>
+             value="<!--#var arguments_src fmt=html-quote-->"></td>
 		</tr>
 <tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
 	    <textarea name="template:text" rows=10 cols=50><!--#var
