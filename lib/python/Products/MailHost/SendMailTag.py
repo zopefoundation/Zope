@@ -82,11 +82,11 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.11 2001/04/27 20:27:42 shane Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.12 2001/06/07 22:34:22 andreas Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 from MailHost import MailBase
-from DocumentTemplate.DT_Util import parse_params
+from DocumentTemplate.DT_Util import parse_params,render_blocks
 from DocumentTemplate.DT_String import String
 from socket import gethostname
 import string
