@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.13 1999/04/29 19:16:03 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: CacheManager.py,v 1.14 1999/07/14 11:41:25 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals, time, sys
 
@@ -127,7 +127,13 @@ class CacheManager:
         "set cache age"
         try:
             v=self._p_jar.getVersion()
-        except: pass
+        except:
+            # BoboPOS2:
+            if self._p_jar.db is not Globals.Bobobase._jar.db:
+                raise 'Version Error', (
+                    '''You may not change the database cache age
+                    while working in a <em>version</em>''')
+            self._cache_age=Globals.Bobobase._jar.cache.cache_age=value
         else:
             if v:
                 self._vcache_age=value
@@ -135,15 +141,8 @@ class CacheManager:
             else:
                 self._cache_age=value
                 self._p_jar.db().setCacheDeactivateAfter(value)
-            return
 
-        # BoboPOS2:
-        if self._p_jar.db is not Globals.Bobobase._jar.db:
-            raise 'Version Error', (
-                '''You may not change the database cache age
-                while working in a <em>version</em>''')
-        self._cache_age=Globals.Bobobase._jar.cache.cache_age=value
-        return self.manage_CacheParameters(self,REQUEST)
+        return self.manage_cacheParameters(self,REQUEST)
 
     def cache_size(self):
         try:
@@ -157,7 +156,13 @@ class CacheManager:
         "set cache size"
         try:
             v=self._p_jar.getVersion()
-        except: pass
+        except: 
+            # BoboPOS2:
+            if self._p_jar.db is not Globals.Bobobase._jar.db:
+                raise 'Version Error', (
+                    '''You may not change the database cache size
+                    while working in a <em>version</em>''')
+            self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
         else:
             if v:
                 self._vcache_size=value
@@ -165,14 +170,7 @@ class CacheManager:
             else:
                 self._cache_size=value
                 self._p_jar.db().setCacheSize(value)
-            return
 
-        # BoboPOS2:
-        if self._p_jar.db is not Globals.Bobobase._jar.db:
-            raise 'Version Error', (
-                '''You may not change the database cache size
-                while working in a <em>version</em>''')
-        self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
         return self.manage_cacheParameters(self,REQUEST)
 
     def cacheStatistics(self):
