@@ -85,7 +85,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import os, sys, Products, string
 from Common import package_home
@@ -114,6 +114,15 @@ except:
         if e=='lib': chome=d or os.getcwd()
     
 sys.modules['__builtin__'].INSTANCE_HOME=INSTANCE_HOME=chome
+
+# CLIENT_HOME allows ZEO clients to easily keep distinct pid and
+# log files. This is currently an *experimental* feature, as I expect
+# that increasing ZEO deployment will cause bigger changes to the
+# way that z2.py works fairly soon.
+try:    CLIENT_HOME = os.environ['CLIENT_HOME']
+except: CLIENT_HOME = path_join(INSTANCE_HOME, 'var')
+
+sys.modules['__builtin__'].CLIENT_HOME=CLIENT_HOME
 
 # If there is a Products package in INSTANCE_HOME, add it to the
 # Products package path
