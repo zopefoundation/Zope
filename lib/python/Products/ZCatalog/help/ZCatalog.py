@@ -224,7 +224,6 @@ class ZCatalog:
 
           results = ( searchResults(title='Elvis Exposed') +
                       searchResults(author='The Great Elvonso') )
-          
 
         This will return all objects that have the specified title OR
         the specified author.
@@ -237,6 +236,32 @@ class ZCatalog:
 
           sort_order -- You can specify 'reverse' or 'descending'.
           Default behavior is to sort ascending.
+
+        There are some rules to consider when querying this method:
+
+            - an empty query mapping (or a bogus REQUEST) returns all
+              items in the
+            catalog.
+
+            - results from a query involving only field/keyword
+              indexes, e.g.  {'id':'foo'} and no 'sort_on' will be
+              returned unsorted.
+
+            - results from a complex query involving a field/keyword
+              index *and* a text index,
+              e.g. {'id':'foo','PrincipiaSearchSource':'bar'} and no
+              'sort_on' will be returned unsorted.
+
+            - results from a simple text index query
+              e.g.{'PrincipiaSearchSource':'foo'} will be returned
+              sorted in descending order by 'score'.  A text index
+              cannot beused as a 'sort_on' parameter, and attempting
+              to do so will raise an error.
+
+        Depending on the type of index you are querying, you may be
+        able to provide more advanced search parameters that can
+        specify range searches or wildcards.  These features are
+        documented in The Zope Book.
 
         """
     
