@@ -174,7 +174,7 @@ class Vocabulary(Item, Persistent, Implicit,
             else:
                 result.append(pattern)
 
-        result.append(r"öfters")
+
         return str(result)
             
 
