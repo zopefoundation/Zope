@@ -397,7 +397,7 @@ class AppInitializer:
                 delNotification = delnotify,
                 limit=limit)
 
-            if timeout_spec:
+            if timeout_spec is not None:
                 toc = TransientObjectContainer('session_data',
                                                'Session Data Container',
                                                timeout_mins = timeout_spec,
