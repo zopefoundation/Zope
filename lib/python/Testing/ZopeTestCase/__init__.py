@@ -33,6 +33,8 @@ from functional import Functional
 from ZODB.tests.warnhook import WarningsHook
 from unittest import main
 
-from ztc_doctest import ZopeDocFileSuite
-from ztc_doctest import FunctionalDocFileSuite
+from zopedoctest import ZopeDocTestSuite
+from zopedoctest import ZopeDocFileSuite
+from zopedoctest import FunctionalDocTestSuite
+from zopedoctest import FunctionalDocFileSuite
 

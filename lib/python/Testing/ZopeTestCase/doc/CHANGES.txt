@@ -1,12 +1,13 @@
 0.9.7 (Zope 2.8 edition)
-- Renamed 'doctest' sub-package to 'ztc_doctest' because of name-shadowing
-  issues uncovered during integration into Zope 2.8. This should not
-  affect existing tests as user code is not expected to import from sub-
-  packages anyway.
+- Renamed 'doctest' package to 'zopedoctest' because of name-shadowing
+  issues discovered during integration into Zope 2.8.
+- Greatly improved the doctest story. ZopeTestCase now implements four test
+  suite factories: ZopeDocTestSuite, ZopeDocFileSuite, FunctionalDocTestSuite,
+  and FunctionalDocFileSuite.
 - Removed warnhook.py, we now use the one from ZODB.tests.
 - Removed doctest.py, we now use the one from zope.testing.
 - Removed dochttp.py + test, we now use the one from zope.app.tests.
-- ZopeLite now takes care not to monkey patch an already running Zope.
+- ZopeLite now takes care not to monkey patch an already started Zope.
 
 0.9.6
 - Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.

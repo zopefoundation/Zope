@@ -2,20 +2,31 @@
 # Example functional doctest
 #
 
-# $Id: testFunctionalDocTest.py,v 1.7 2005/02/16 14:21:59 shh42 Exp $
+# $Id: testFunctionalDocTest.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-from Testing import ZopeTestCase
-ZopeTestCase.installProduct('PythonScripts')
+from unittest import TestSuite
+from Testing.ZopeTestCase import installProduct
+from Testing.ZopeTestCase import FunctionalDocTestSuite
+from Testing.ZopeTestCase import FunctionalDocFileSuite
 
-package = 'Testing.ZopeTestCase.ztc_doctest'
+installProduct('PythonScripts')
 
 
 def setUp(self):
     '''This method will run after the test_class' setUp.
+
+    >>> print http(r"""
+    ... GET /test_folder_1_/index_html HTTP/1.1
+    ... """)
+    HTTP/1.1 200 OK
+    Content-Length: 5
+    Content-Type: text/plain
+    <BLANKLINE>
+    index
     '''
     self.folder.addDTMLDocument('index_html', file='index')
 
@@ -27,11 +38,9 @@ def setUp(self):
 
 
 def test_suite():
-    from unittest import TestSuite
-    from Testing.ZopeTestCase import FunctionalDocFileSuite
-
     return TestSuite((
-        FunctionalDocFileSuite('FunctionalDocTest.txt', package=package, setUp=setUp),
+        FunctionalDocTestSuite(setUp=setUp),
+        FunctionalDocFileSuite('FunctionalDocTest.txt', setUp=setUp),
     ))
 
 if __name__ == '__main__':

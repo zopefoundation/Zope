@@ -30,15 +30,13 @@ infrastructure to set up the necessary environment.
    if __name__ == '__main__':
        execfile(os.path.join(sys.path[0], 'framework.py'))
 
-   from Testing import ZopeTestCase
-
    from unittest import TestSuite
    from Testing.ZopeTestCase import ZopeDocFileSuite
 
    def test_suite():
-       suite = TestSuite()
-       suite.addTest(ZopeDocFileSuite('ZopeDocTest.txt'))
-       return suite
+       return TestSuite((
+           ZopeDocFileSuite('ZopeDocTest.txt'),
+       ))
 
    if __name__ == '__main__':
        framework()

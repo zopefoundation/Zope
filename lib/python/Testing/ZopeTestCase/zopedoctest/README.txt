@@ -1,5 +1,5 @@
-Doctest support for ZopeTestCase
-================================
+Doc test support for ZopeTestCase
+=================================
 
 Backport of functional doc tests from Zope 3 by
 Sidnei da Silva. See 'FunctionalDocTest.txt' for

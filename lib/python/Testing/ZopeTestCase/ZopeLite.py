@@ -110,7 +110,7 @@ if not Zope2._began_startup:
     _apply_patches()
 
 # Allow test authors to install Zope products into the test environment. Note
-# that installProduct() must be called at module level - never from tests.
+# that installProduct() must be called at module level -- never from tests.
 from OFS.Application import get_folder_permissions, get_products, install_product
 from OFS.Folder import Folder
 import Products
@@ -140,7 +140,7 @@ def installProduct(name, quiet=0):
                 if not quiet: _print('done (%.3fs)\n' % (time.time() - start))
                 break
         else:
-            if name != 'SomeProduct':   # Ignore skeleton tests :-P
+            if name != 'SomeProduct':   # Ignore the skeleton tests :-P
                 if not quiet: _print('Installing %s ... NOT FOUND\n' % name)
 
 def _load_control_panel():
@@ -172,7 +172,7 @@ DB = Zope2.DB
 configure = Zope2.configure
 def startup(): pass
 
-# Provide a ZODB sandbox factory
+# ZODB sandbox factory
 from ZODB.DemoStorage import DemoStorage
 
 def sandbox(base=None):
