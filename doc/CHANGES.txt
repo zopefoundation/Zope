@@ -106,6 +106,9 @@ Zope Changes
 
         - Restricted the target of PythonScript print statements.
 
+        - Python 2.1 reopened the old "AttributeError: __call__" bug.
+          Checked in a fix that should finally solve it correctly.
+
     Zope 2.4 alpha 1
 
       Features Added
