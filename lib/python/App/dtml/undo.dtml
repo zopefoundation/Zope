@@ -73,7 +73,7 @@ modified objects that were modified by a selected transaction.
     </td>
     <td align="right" valign="top" colspan="2" nowrap>
     <div class="list-item">
-    <dtml-var time fmt="%Y-%m-%d %I:%M:%S %p">
+    <dtml-var time fmt="%Y-%m-%d %H:%M:%S %p">
     </div>
     </td>
   </tr>
