@@ -6,6 +6,10 @@ Principia Changes
 
       - Added id, single, url, and assume_children attributes to the Tree tag.
 
+      - Added support for expr shorthand, as in:
+
+          <!--#if "x < y"-->
+
     Bugs Fixed
 
       - The folder objectItems method returned all items even when
