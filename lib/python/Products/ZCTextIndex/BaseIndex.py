@@ -122,6 +122,7 @@ class BaseIndex(Persistent):
 
     def search_glob(self, pattern):
         wids = self._lexicon.globToWordIds(pattern)
+        wids = self._remove_oov_wids(wids)
         return mass_weightedUnion(self._search_wids(wids))
 
     def search_phrase(self, phrase):
