@@ -255,6 +255,12 @@ class TestTraverse( unittest.TestCase ):
         SecurityManager.setSecurityPolicy( self.oldPolicy )
         self.assertEqual(
             self.root.restrictedTraverse('happy/happy', 'joy'), 'joy')
+            
+    def testTraverseUp(self):
+        # Test that we can traverse upwards
+        self.failUnless(
+            aq_base(self.root.folder1.file.restrictedTraverse('../..')) is
+            aq_base(self.root))
 
 
 def test_suite():

@@ -127,7 +127,6 @@ class Traversable:
             return self
         
         _getattr = getattr
-        _hasattr = hasattr
         _none = None
         marker = _marker
 

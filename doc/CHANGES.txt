@@ -121,6 +121,9 @@ Zope Changes
        is now installed into the 'bin' folder.
 
     Bugs fixed
+    
+     - unrestrictedTraverse() refactored to remove hasattr calls (which mask
+       conflict errors) and for greater readability and maintainability.
 
      - Zope can now be embedded in C/C++ without exceptions being raised
        in zdoptions.
