@@ -54,8 +54,8 @@
 
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.109 1998/12/02 16:56:55 jim Exp $"""
-__version__='$Revision: 1.109 $'[11:-2]
+$Id: Publish.py,v 1.110 1998/12/02 17:28:04 jim Exp $"""
+__version__='$Revision: 1.110 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -584,7 +584,7 @@ def get_module_info(module_name, modules={},
         if hasattr(module,'__bobo_realm__'):
             realm=module.__bobo_realm__
         elif os.environ.has_key('BOBO_REALM'):
-            realm=request.environ['BOBO_REALM']
+            realm=os.environ['BOBO_REALM']
         else: realm=module_name
 
         # Check for debug mode
