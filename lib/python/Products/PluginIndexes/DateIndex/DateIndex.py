@@ -20,7 +20,7 @@ from types import StringType, FloatType, IntType
 from Globals import DTMLFile
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
-from BTrees.IIBTree import IISet, union, intersection
+from BTrees.IIBTree import IISet, union, intersection, multiunion
 
 _marker = []
 
@@ -134,15 +134,16 @@ class DateIndex(UnIndex):
                 hi = None
 
             if hi:
-                setlist = index.items(lo,hi)
+                setlist = index.values(lo,hi)
             else:
-                setlist = index.items(lo)
+                setlist = index.values(lo)
 
+            #for k, set in setlist:
+                #if type(set) is IntType:
+                    #set = IISet((set,))
+                #r = set_func(r, set) 
             # XXX: Use multiunion!
-            for k, set in setlist:
-                if type(set) is IntType:
-                    set = IISet((set,))
-                r = set_func(r, set) 
+            r = multiunion(setlist)
 
         else: # not a range search
             for key in keys:
