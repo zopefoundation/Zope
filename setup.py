@@ -647,7 +647,9 @@ setup(
     author=AUTHOR,
 
     packages=['zdaemon', 'zdaemon.tests'],
-    data_files=[['zdaemon', ['zdaemon/sample.conf', 'zdaemon/schema.xml']],
+    data_files=[['zdaemon', ['zdaemon/sample.conf',
+                             'zdaemon/component.xml',
+                             'zdaemon/schema.xml']],
                 ['zdaemon/tests', ['zdaemon/tests/donothing.sh']]]
     )
 
