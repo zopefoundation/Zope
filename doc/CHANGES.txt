@@ -78,9 +78,8 @@ Zope Changes
         - Collector #2306:  Fixed broken glossary of Zope Tutorial
         
         - Collector #2305: A comma inside an optional parameter of the
-          parameter string broke the ZScriptHTML_tryParams function.
-
-
+          parameter string broke the ZScriptHTML_tryParams function of
+          PythonScripts.
 
     Zope 2.4 alpha 1
 
