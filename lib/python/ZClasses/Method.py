@@ -188,13 +188,12 @@ class ZClassMethodsSheet(
 
     def _delObject(self, id, dp=1):
         # Ick!  This is necessary to deal with spaces. Waaa!
+        object=self._getOb(id)
+        object.manage_beforeDelete(object, self)
         id=strip(id)
-        if id=='acl_users':
-            if hasattr(self, '__allow_groups__') and \
-               self.__dict__.has_key('__allow_groups__'):
-                delattr(self, '__allow_groups__')
-
-        self._objects=tuple(filter(lambda i,n=id: strip(i['id']) != n, self._objects))
+        self._objects=tuple(filter(lambda i,n=id:
+                                   strip(i['id']) != n,
+                                   self._objects))
         self._delOb(id)
 
     def _getOb(self, id, default=_marker):
