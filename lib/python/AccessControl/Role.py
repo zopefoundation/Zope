@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -462,7 +462,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             return self.manage_access(REQUEST)
 
 
-    def _delRoles(self, roles, REQUEST):
+    def _delRoles(self, roles, REQUEST=None):
         if not roles:
             return MessageDialog(
                    title  ='Incomplete',
