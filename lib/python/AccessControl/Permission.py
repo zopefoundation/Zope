@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: Permission.py,v 1.4 1999/03/10 00:14:49 klm Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Permission.py,v 1.5 1999/03/22 16:49:40 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Globals import HTMLFile, MessageDialog
 from string import join, strip, split, find
@@ -100,6 +100,8 @@ name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                   map(chr,range(256)))
 name_trans=string.maketrans(string.join(name_trans,''), '_'*len(name_trans))
 
+def pname(name, translate=string.translate, name_trans=name_trans):
+    return '_'+translate(name,name_trans)+"_Permission"
 
 class Permission:
     # A Permission maps a named logical permission to a set
