@@ -146,7 +146,7 @@ class RoleManager:
 
         if REQUEST is not None:
             return self.manage_access(
-                self, REQUEST, 
+                REQUEST, 
                 manage_tabs_message='The permission mapping has been updated')
 
     def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
