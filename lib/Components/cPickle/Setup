@@ -3,6 +3,6 @@
 cStringIO cStringIO.c
 cPickle cPickle.c
 
-#install cPickle.so blah
+#install bin-1.4 cPickle
 
 #install copy_reg.py
