@@ -83,7 +83,7 @@
 # 
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.2 2001/05/30 15:57:36 andreas Exp $'
+__version__ = '$Id: util.py,v 1.3 2001/06/01 16:50:06 shane Exp $'
 
 
 import re
@@ -190,13 +190,16 @@ class parseIndexRequest:
             else:
                 self.keys = [keys]
 
-            params = filter(lambda x,id=self.id: x.startswith(id+'_') , \
-                        request.keys())
+            if hasattr(request, 'keys'):
+                # Look through the entire request for extra parameters.
+                # This is expensive!
+                params = filter(lambda x,id=self.id: x.startswith(id+'_'),
+                                request.keys())
 
-            params = map(lambda x,id=self.id: x[len(id)+1:],params)
+                params = map(lambda x,id=self.id: x[len(id)+1:],params)
 
-            for p in params: 
-                setattr(self,p,request[self.id+'_'+p])
+                for p in params: 
+                    setattr(self,p,request[self.id+'_'+p])
 
         if self.keys != None:
             self.keys = filter(lambda x: len(str(x))>0 , self.keys)
