@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -119,6 +119,7 @@ class BaseRequest:
     collection of variable to value mappings.
     """
 
+    maybe_webdav_client = 1
 
     # While the following assignment is not strictly necessary, it
     # prevents alot of unnecessary searches because, without it,
@@ -257,12 +258,15 @@ class BaseRequest:
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method=req_method=upper(request_get('REQUEST_METHOD', 'GET'))
         
-        baseflag=0
+        no_acquire_flag=0
 
         # Set the default method
         if method=='GET' or method=='POST':
             method='index_html'
-        else: baseflag=1
+        else:
+            if self.maybe_webdav_client:
+                # Probably a WebDAV client.
+                no_acquire_flag=1
         URL=request['URL']
         
         parents=request['PARENTS']
@@ -339,7 +343,7 @@ class BaseRequest:
                 else:
                     try:
 
-                        # Note - this is necessary to support
+                        # Note - no_acquire_flag is necessary to support
                         # things like DAV.  We have to make sure
                         # that the target object is not acquired
                         # if the request_method is other than GET
@@ -349,7 +353,7 @@ class BaseRequest:
                         # heirarchy -- you'd always get the
                         # existing object :(
                         
-                        if baseflag and hasattr(object, 'aq_base'):
+                        if no_acquire_flag and hasattr(object, 'aq_base'):
                             if hasattr(object.aq_base, entry_name):
                                 subobject=getattr(object, entry_name)
                             else: raise AttributeError, entry_name

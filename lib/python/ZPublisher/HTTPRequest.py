@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import regex, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -354,6 +354,7 @@ class HTTPRequest(BaseRequest):
                 response=xmlrpc.response(response)
                 other['RESPONSE']=self.response=response
                 other['REQUEST_METHOD']='' # We don't want index_html!
+                self.maybe_webdav_client = 0
             else:
                 self._file=fs.file
         else:
