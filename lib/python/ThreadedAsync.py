@@ -84,7 +84,7 @@
 ##############################################################################
 """Utility module to help manage the asyncore mainloop in a multi-threaded app
 """
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import thread
 import asyncore
@@ -105,7 +105,7 @@ def _start_loop(map):
     try:
         global _looping
         _looping=1
-	while _loop_callbacks:
+        while _loop_callbacks:
             cb, args, kw = _loop_callbacks.pop()
             apply(cb, (map,)+args, kw or {})
 

@@ -368,7 +368,7 @@ def server_info(old, v, offset=0):
     if v == '-': v=''
     l=string.find(v, ':')
     if l >= 0:
-	a=v[:l]
+        a=v[:l]
         v=v[l+1:]
     else:
         a=IP_ADDRESS
@@ -592,24 +592,24 @@ else:
 if HTTP_PORT:
     if type(HTTP_PORT) is type(0): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
     for address, port in HTTP_PORT:
-	hs = zhttp_server(
-	    ip=address,
-	    port=port,
-	    resolver=rs,
-	    logger_object=lg)
+        hs = zhttp_server(
+            ip=address,
+            port=port,
+            resolver=rs,
+            logger_object=lg)
 
-	# Handler for a published module. zhttp_handler takes 3 arguments:
-	# The name of the module to publish, and optionally the URI base
-	# which is basically the SCIRPT_NAME, and optionally a dictionary
-	# with CGI environment variables which override default
-	# settings. The URI base setting is useful when you want to
-	# publish more than one module with the same HTTP server. The CGI
-	# environment setting is useful when you want to proxy requests
-	# from another web server to ZServer, and would like the CGI
-	# environment to reflect the CGI environment of the other web
-	# server.    
-	zh = zhttp_handler(MODULE, '', HTTP_ENV)
-	hs.install_handler(zh)
+        # Handler for a published module. zhttp_handler takes 3 arguments:
+        # The name of the module to publish, and optionally the URI base
+        # which is basically the SCIRPT_NAME, and optionally a dictionary
+        # with CGI environment variables which override default
+        # settings. The URI base setting is useful when you want to
+        # publish more than one module with the same HTTP server. The CGI
+        # environment setting is useful when you want to proxy requests
+        # from another web server to ZServer, and would like the CGI
+        # environment to reflect the CGI environment of the other web
+        # server.    
+        zh = zhttp_handler(MODULE, '', HTTP_ENV)
+        hs.install_handler(zh)
 
 
 # FTP Server
@@ -618,7 +618,7 @@ if FTP_PORT:
     for address, port in FTP_PORT:
         FTPServer(
            module=MODULE,
-	   ip=address,
+           ip=address,
            port=port,
            resolver=rs,
            logger_object=lg)
@@ -659,8 +659,8 @@ if MONITOR_PORT:
         from AccessControl.User import super
         monitor=secure_monitor_server(
             password=super._getPassword(),
-	    hostname=address,
-	    port=port)
+            hostname=address,
+            port=port)
 
 # Try to set uid to "-u" -provided uid.
 # Try to set gid to  "-u" user's primary group. 
@@ -675,7 +675,7 @@ try:
         elif type(UID) == type(1):
             uid = pwd.getpwuid(UID)[2]
             gid = pwd.getpwuid(UID)[3]
-	else:
+        else:
             raise KeyError 
         try:
             if gid is not None:
