@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -100,8 +100,8 @@ class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
 
     manage_findFrame=HTMLFile('findFrame', globals())
-    manage_findForm=HTMLFile('findForm', globals())
-    manage_findAdv=HTMLFile('findAdv', globals())
+    manage_findForm=HTMLFile('findForm', globals(), management_view='Find')
+    manage_findAdv=HTMLFile('findAdv', globals(), management_view='Find')
     manage_findResult=HTMLFile('findResult', globals())
 
     __ac_permissions__=(
