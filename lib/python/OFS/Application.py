@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.166 2001/11/19 19:43:30 amos Exp $'''
-__version__='$Revision: 1.166 $'[11:-2]
+$Id: Application.py,v 1.167 2001/11/20 20:38:55 chrism Exp $'''
+__version__='$Revision: 1.167 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -431,23 +431,54 @@ def initialize(app):
     # b/c: Ensure that there is a transient container in the temp folder
     tf = app.temp_folder
     if not hasattr(tf, 'session_data'):
+        env_has = os.environ.get
         from Products.Transience.Transience import TransientObjectContainer
-        addnotify = os.environ.get('ZSESSION_ADD_NOTIFY', '/session_add')
-        delnotify = os.environ.get('ZSESSION_DEL_NOTIFY', '/session_del')
-        if app.unrestrictedTraverse(addnotify,None) is None: addnotify=None
-        if app.unrestrictedTraverse(delnotify,None) is None: delnotify=None
+        addnotify = env_has('ZSESSION_ADD_NOTIFY', None)
+        delnotify = env_has('ZSESSION_DEL_NOTIFY', None)
+        if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
+            LOG('Zope Default Object Creation', WARNING,
+                ('failed to use nonexistent "%s" script as '
+                 'ZSESSION_ADD_NOTIFY' % addnotify))
+            addnotify=None
+        elif addnotify:
+            LOG('Zope Default Object Creation', INFO,
+                'using %s as add notification script' % addnotify)
+        if delnotify and app.unrestrictedTraverse(delnotify, None) is None:
+            LOG('Zope Default Object Creation', WARNING,
+                ('failed to use nonexistent "%s" script as '
+                 'ZSESSION_DEL_NOTIFY' % delnotify))
+            delnotify=None
+        elif delnotify:
+            LOG('Zope Default Object Creation', INFO,
+                'using %s as delete notification script' % delnotify)
 
         toc = TransientObjectContainer('session_data',
-            'Session Data Container', addNotification=addnotify,
-            delNotification = delnotify)
+              'Session Data Container', addNotification = addnotify,
+              delNotification = delnotify)
+        timeout_spec = env_has('ZSESSION_TIMEOUT_MINS', '')
+        if timeout_spec:
+            try:
+                timeout_spec = int(timeout_spec)
+            except ValueError:
+                LOG('Zope Default Object Creation', WARNING,
+                    ('"%s" is an illegal value for ZSESSION_TIMEOUT_MINS, '
+                     'using default timeout instead.' % timeout_spec))
+            else:
+                LOG('Zope Default Object Creation', INFO,
+                    ('using ZSESSION_TIMEOUT_MINS-specified session timeout '
+                     'value of %s' % timeout_spec))
+                toc = TransientObjectContainer('session_data',
+                      'Session Data Container', timeout_mins = timeout_spec,
+                      addNotification=addnotify, delNotification = delnotify)
         tf._setObject('session_data', toc)
-        get_transaction().note('Added session_data to '
-            'temp_folder')
+        get_transaction().note('Added session_data to temp_folder')
         get_transaction().commit()
         del toc
         del addnotify
         del delnotify
-
+        del timeout_spec
+        del env_has
+        
     del tf
 
     # b/c: Ensure that a browser ID manager exists
