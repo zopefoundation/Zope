@@ -56,6 +56,8 @@ Zope Changes
 
       - Collector #304: several catalog optimisations
         
+      - New implementation of ZODB object cache.
+
     Bugs:
 
       - Fixed bug reported on maillist during EWOULDBLOCK when using FTP server

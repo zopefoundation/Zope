@@ -10,11 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.85 2001/11/28 15:50:55 matt Exp $''' 
-__version__='$Revision: 1.85 $'[11:-2]
+'''$Id: DT_Util.py,v 1.86 2002/03/27 10:14:02 htrd Exp $''' 
+__version__='$Revision: 1.86 $'[11:-2]
 
 import re, os
-from html_quote import html_quote # for import by other modules, dont remove!
+from html_quote import html_quote, ustr # for import by other modules, dont remove!
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
@@ -41,10 +41,9 @@ def int_param(params,md,name,default=0, st=type('')):
 try:
     import ExtensionClass
     from cDocumentTemplate import InstanceDict, TemplateDict, \
-         render_blocks, safe_callable
+         render_blocks, safe_callable, join_unicode
 except: from pDocumentTemplate import InstanceDict, TemplateDict, \
-        render_blocks, safe_callable
-
+        render_blocks, safe_callable, join_unicode
 
 functype = type(int_param)
 class NotBindable:

@@ -13,8 +13,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.23 2002/02/07 17:37:10 andreasjung Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: CacheManager.py,v 1.24 2002/03/27 10:14:00 htrd Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import Globals, time, sys
 
@@ -35,6 +35,12 @@ class CacheManager:
             # BoboPOS2
             return len(Globals.Bobobase._jar.cache)
         else: return db.cacheSize()
+
+    def cache_detail_length(self):
+      try: db=self._p_jar.db()
+      except:
+          return ()
+      else: return db.cacheDetailSize()
 
     def database_size(self):
         try: db=self._p_jar.db()
@@ -156,7 +162,7 @@ class CacheManager:
             response=REQUEST['RESPONSE']
             response.redirect(REQUEST['URL1']+'/manage_cacheGC')
 
-    def manage_minimize(self,value,REQUEST):
+    def manage_minimize(self,value=1,REQUEST=None):
         "Perform a full sweep through the cache"
         try: db=self._p_jar.db()
         except:
@@ -206,7 +212,6 @@ class CacheManager:
             # sort the list.
             lst = map(lambda dict: ((dict['conn_no'], dict['oid']), dict),
                       detail)
-            lst.sort()
             # format as text.
             res = [
                 '# Table shows connection number, oid, refcount, state, '

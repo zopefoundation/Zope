@@ -3,39 +3,6 @@
 
 <br />
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
-<tr class="section-bar">
-  <td colspan="2" align="left">
-  <div class="form-label">
-  Full Sweep
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-text">
-  Make a single pass through the cache, removing any objects that are no
-  longer referenced, and deactivating objects that have not been
-  accessed in the number of seconds given in the input box to the right
-  of this text.
-  </div>
-  </td>
-  <td>
-  <form action="<dtml-var URL1>/manage_full_sweep" method="get">
-  <input type="text" name="value:int" value="<dtml-var 
-   cache_age html_quote>" size="6" />
-  <br />
-  <div class="form-element">
-  <input type="submit" name="submit" value="Full Sweep" />
-  </div>
-  </form>
-  </td>
-</tr>
-
-<tr>
-  <td colspan="2">
-  <br />&nbsp;
-  </td>
-</tr>
 
 <tr class="section-bar">
   <td colspan="2" align="left">
@@ -47,16 +14,10 @@
 <tr>
   <td align="left" valign="top">
   <div class="form-text">
-  Make multiple passes through the cache, removing any objects that are no
-  longer referenced, and deactivating objects that have not been
-  accessed in the number of seconds given in the input box to the right
-  of this text.
+  Remove all objects from the ZODB in-memory cache
   </td>
   <td>
   <form action="<dtml-var URL1>/manage_minimize" method=GET>
-  <input type="text" name="value:int" value="<dtml-var 
-   cache_age html_quote>" size="6" />
-  <br />
   <div class="form-element">
   <input type="submit" name="submit" value="Minimize" />
   </div>

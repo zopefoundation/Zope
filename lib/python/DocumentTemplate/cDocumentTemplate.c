@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.43 2002/03/21 15:48:54 htrd Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.44 2002/03/27 10:14:02 htrd Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -22,7 +22,7 @@ static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_guarded_getattr;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
-static PyObject *py___class__, *html_quote;
+static PyObject *py___class__, *html_quote, *ustr;
 
 /* ----------------------------------------------------- */
 
@@ -41,6 +41,8 @@ typedef struct {
 } InstanceDictobject;
 
 staticforward PyExtensionClass InstanceDictType;
+
+staticforward PyObject *_join_unicode(PyObject *prejoin);
 
 static PyObject *
 InstanceDict___init__(InstanceDictobject *self, PyObject *args)
@@ -685,22 +687,43 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 	      if (PyString_Check(t)) t=PyObject_GetItem(md, t);
 	      else t=PyObject_CallObject(t, mda);
 
-              if (t == NULL || (! PyString_Check(t)))
+              if (t == NULL) return -1;
+
+              if (! ( PyString_Check(t) || PyUnicode_Check(t) ) )
                 {
-                  if (t) ASSIGN(t, PyObject_Str(t));
+                  ASSIGN(t, PyObject_CallFunction(ustr, "O", t));
                   UNLESS(t) return -1;
                 }
 
-              if (PyString_Check(t) 
-                  && PyTuple_GET_SIZE(block) == 3) /* html_quote */
+              if (PyTuple_GET_SIZE(block) == 3) /* html_quote */
                 {
-                  if (strchr(PyString_AS_STRING(t), '&')
-                      || strchr(PyString_AS_STRING(t), '<')
-                      || strchr(PyString_AS_STRING(t), '>')
-                      || strchr(PyString_AS_STRING(t), '"')
-                      )
-                    ASSIGN(t, PyObject_CallFunction(html_quote, "O", t));
-		    if (t == NULL) return -1;
+                  int skip_html_quote;
+                  if (PyString_Check(t))
+                    {
+                      if (strchr(PyString_AS_STRING(t), '&') ||
+                          strchr(PyString_AS_STRING(t), '<') ||
+                          strchr(PyString_AS_STRING(t), '>') ||
+                          strchr(PyString_AS_STRING(t), '"')     )
+                        {
+                          /* string includes html problem characters, so
+                             we cant skip the quoting process */
+                          skip_html_quote = 0;
+                        }
+                      else
+                        {
+                          skip_html_quote = 1;
+                        }
+                    }
+                  else
+                    {
+                      /* never skip the quoting for unicode strings */
+                      skip_html_quote = 0;
+                    }
+                  if (!skip_html_quote)
+                    {
+                      ASSIGN(t, PyObject_CallFunction(html_quote, "O", t));
+                      if (t == NULL) return -1;
+                    }
                 }
                   
               block = t;
@@ -787,7 +810,7 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
               return -1;
             }
         }
-      else if (PyString_Check(block))
+      else if (PyString_Check(block) || PyUnicode_Check(block))
 	{
 	  Py_INCREF(block);
 	}
@@ -830,7 +853,7 @@ render_blocks(PyObject *self, PyObject *args)
   else if (l==1)
     ASSIGN(rendered, PySequence_GetItem(rendered,0));
   else
-    ASSIGN(rendered, PyObject_CallFunction(join,"OO",rendered,py_));
+    ASSIGN(rendered, _join_unicode(rendered));
 
   return rendered;
 
@@ -852,11 +875,65 @@ safe_callable(PyObject *self, PyObject *args)
     return PyInt_FromLong(1);
   else
     return PyInt_FromLong(0);
-}  
+}
+
+static PyObject *
+_join_unicode(PyObject *prejoin)
+{
+    PyObject *joined;
+    joined = PyObject_CallFunction(join,"OO",prejoin,py_);
+    if(!joined && PyErr_ExceptionMatches(PyExc_UnicodeError))
+    {
+        int i,l;
+        PyObject *list;
+        PyErr_Clear();
+        list = PySequence_List(prejoin);
+        if(!list)
+        {
+            return NULL;
+        }
+        l = PyList_Size(list);
+        for(i=0;i<l;++i)
+        {
+            PyObject *item = PyList_GetItem(list,i);
+            if(PyString_Check(item))
+            {
+                PyObject *unicode = PyUnicode_DecodeLatin1(PyString_AsString(item),PyString_Size(item),NULL);
+                if(unicode)
+                {
+                    PyList_SetItem(list,i,unicode);
+                }
+                else
+                {
+                    Py_DECREF(list);
+                    return NULL;
+                }
+           }
+       }
+       joined = PyObject_CallFunction(join,"OO",list,py_);
+       Py_DECREF(list);
+    }
+    return joined;
+}
+
+static PyObject *
+join_unicode(PyObject *self, PyObject *args)
+{
+  PyObject *ob;
+
+  UNLESS(PyArg_ParseTuple(args,"O", &ob)) return NULL;
+  return _join_unicode(ob);
+}
+
 
 static struct PyMethodDef Module_Level__methods[] = {
   {"render_blocks", (PyCFunction)render_blocks,	METH_VARARGS,
    ""},
+  {"join_unicode", (PyCFunction)join_unicode,	METH_VARARGS,
+   "join a list of plain strings into a single plain string,"
+   "a list of unicode strings into a single unicode strings,"
+   "or a list containing a mix into a single unicode string with"
+   "the plain strings converted from latin-1"},
   {"safe_callable", (PyCFunction)safe_callable,	METH_VARARGS,
    "callable() with a workaround for a problem with ExtensionClasses\n"
    "and __call__()."},
@@ -871,6 +948,8 @@ initcDocumentTemplate(void)
   DictInstanceType.ob_type=&PyType_Type;
 
   UNLESS (html_quote = PyImport_ImportModule("html_quote")) return;
+  ASSIGN(ustr, PyObject_GetAttrString(html_quote, "ustr"));
+  UNLESS (ustr) return;
   ASSIGN(html_quote, PyObject_GetAttrString(html_quote, "html_quote"));
   UNLESS (html_quote) return;
 

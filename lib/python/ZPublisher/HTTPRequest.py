@@ -11,9 +11,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
-import re, sys, os,  urllib, time, whrandom, cgi
+import re, sys, os,  urllib, time, whrandom, cgi, codecs
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage, escape
@@ -384,6 +384,7 @@ class HTTPRequest(BaseRequest):
                         item=item.value
 
                 flags=0
+                character_encoding = ''
 
                 # Loop through the different types and set
                 # the appropriate flags
@@ -431,6 +432,8 @@ class HTTPRequest(BaseRequest):
                             flags=flags|RECORDS
                         elif type_name == 'ignore_empty':
                             if not item: flags=flags|EMPTY
+                        elif has_codec(type_name):
+                            character_encoding = type_name
     
                         l=key.rfind(':')
                         if l < 0: break
@@ -456,7 +459,17 @@ class HTTPRequest(BaseRequest):
                     # defer conversion
                     if flags&CONVERTED:
                         try:
-                            item=converter(item)
+                            if character_encoding:
+                                # We have a string with a specified character encoding.
+                                # This gets passed to the converter either as unicode, if it can
+                                # handle it, or crunched back down to latin-1 if it can not.
+                                item = unicode(item,character_encoding)
+                                if hasattr(converter,'convert_unicode'):
+                                    item = converter.convert_unicode(item)
+                                else:
+                                    item = converter(item.encode('latin1'))
+                            else:
+                                item=converter(item)
                         except:
                             if (not item and not (flags&DEFAULT) and
                                 defaults.has_key(key)):
@@ -965,6 +978,13 @@ class HTTPRequest(BaseRequest):
                 return name, password
 
 
+def has_codec(x):
+    try:
+        codecs.lookup(x)
+    except LookupError:
+        return 0
+    else:
+        return 1
 
 
 base64=None

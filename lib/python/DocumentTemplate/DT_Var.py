@@ -145,10 +145,10 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.51 2002/03/18 20:15:27 andreasjung Exp $'
-__version__='$Revision: 1.51 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.52 2002/03/27 10:14:02 htrd Exp $'
+__version__='$Revision: 1.52 $'[11:-2]
 
-from DT_Util import parse_params, name_param, str
+from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
 from urllib import quote, quote_plus
 from cgi import escape
@@ -253,7 +253,7 @@ class Var:
 
         # finally, pump it through the actual string format...
         fmt=self.fmt
-        if fmt=='s': val=str(val)
+        if fmt=='s': val=ustr(val)
         else: val = ('%'+self.fmt) % (val,)
 
         # next, look for upper, lower, etc

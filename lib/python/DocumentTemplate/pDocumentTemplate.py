@@ -13,8 +13,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.34 2002/02/07 17:47:42 andreasjung Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.35 2002/03/27 10:14:02 htrd Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import  sys, types
 
@@ -41,6 +41,7 @@ def safe_callable(ob):
 
 
 StringType=type('')
+UnicodeType=type(u'')
 TupleType=type(())
 
 
@@ -187,7 +188,7 @@ def render_blocks(blocks, md):
                 section=section[0]
                 if type(section) is StringType: section=md[section]
                 else: section=section(md)
-                section=str(section)
+                section=ustr(section)
             else:
                 # if
                 cache={}
@@ -220,7 +221,7 @@ def render_blocks(blocks, md):
 
                 finally: md._pop()
 
-        elif type(section) is not StringType:
+        elif type(section) is not StringType and type(section) is not UnicodeType:
             section=section(md)
 
         if section: rendered.append(section)
@@ -228,5 +229,21 @@ def render_blocks(blocks, md):
     l=len(rendered)
     if l==0: return ''
     elif l==1: return rendered[0]
-    return ''.join(rendered)
-    return rendered
+    return join_unicode(rendered)
+
+def join_unicode(rendered):
+    """join a list of plain strings into a single plain string,
+    a list of unicode strings into a single unicode strings,
+    or a list containing a mix into a single unicode string with
+    the plain strings converted from latin-1
+    """
+    try:
+        return ''.join(rendered)
+    except UnicodeError:
+        # A mix of unicode string and non-ascii plain strings.
+        # Fix up the list, treating normal strings as latin-1
+        rendered = list(rendered)
+        for i in range(len(rendered)):
+            if type(rendered[i]) is StringType:
+                rendered[i] = unicode(rendered[i],'latin-1')
+        return u''.join(rendered)

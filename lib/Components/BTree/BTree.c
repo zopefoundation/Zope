@@ -13,7 +13,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.31 2002/03/21 15:48:53 htrd Exp $"
+"\n$Id: BTree.c,v 1.32 2002/03/27 10:13:59 htrd Exp $"
 ;
 
 #define PERSISTENT
@@ -1105,7 +1105,7 @@ bucket__p___reinit__(Bucket *self, PyObject *args)
 	}
       if(HasInstDict(self) && (dict=INSTANCE_DICT(self))) PyDict_Clear(dict);
       self->len=0;
-      self->state=cPersistent_GHOST_STATE;
+      PER_GHOSTIFY(self);
     }
 
   Py_INCREF(Py_None);
@@ -1163,7 +1163,7 @@ BTree__p___reinit__(BTree *self, PyObject *args)
 
       if(_BTree_clear(self) < 0) return NULL;
       if(HasInstDict(self) && (dict=INSTANCE_DICT(self))) PyDict_Clear(dict);
-      self->state=cPersistent_GHOST_STATE;
+      PER_GHOSTIFY(self);
     }
 
   Py_INCREF(Py_None);

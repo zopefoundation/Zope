@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
@@ -113,6 +113,41 @@ def field2date(v):
 def field2boolean(v):
     return v
 
+class _unicode_converter:
+    def __call__(self,v):
+        # Convert a regular python string. This probably doesnt do what you want,
+        # whatever that might be. If you are getting exceptions below, you
+        # probably missed the encoding tag from a form field name. Use:
+        #       <input name="description:utf8:ustring" .....
+        # rather than
+        #       <input name="description:ustring" .....
+        if hasattr(v,'read'): v=v.read()
+        v = unicode(v)
+        return self.convert_unicode(v)
+
+    def convert_unicode(self,v):
+        raise NotImplementedError('convert_unicode')
+
+class field2ustring(_unicode_converter):
+    def convert_unicode(self,v):
+        return v
+field2ustring = field2ustring()
+
+class field2utokens(_unicode_converter):
+    def convert_unicode(self,v):
+        return v.split()
+field2utokens = field2utokens()
+
+class field2utext(_unicode_converter):
+    def convert_unicode(self,v):
+        return unicode(field2text(v.encode('utf8')),'utf8')
+field2utext = field2utext()
+
+class field2ulines(_unicode_converter):
+    def convert_unicode(self,v):
+        return field2utext.convert_unicode(v).split('\n')
+field2ulines = field2ulines()
+
 type_converters = {
     'float':    field2float,
     'int':      field2int,
@@ -123,7 +158,11 @@ type_converters = {
     'tokens':   field2tokens,
     'lines':    field2lines,
     'text':     field2text,
-    'boolean':     field2boolean,
+    'boolean':  field2boolean,
+    'ustring':  field2ustring,
+    'utokens':  field2utokens,
+    'ulines':   field2ulines,
+    'utext':    field2utext,
     }
 
 get_converter=type_converters.get

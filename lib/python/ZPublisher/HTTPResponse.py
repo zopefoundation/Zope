@@ -12,12 +12,12 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.54 2002/03/15 22:34:17 evan Exp $'''
-__version__='$Revision: 1.54 $'[11:-2]
+$Id: HTTPResponse.py,v 1.55 2002/03/27 10:14:04 htrd Exp $'''
+__version__='$Revision: 1.55 $'[11:-2]
 
 import types, os, sys, re
 from string import translate, maketrans
-from types import StringType, InstanceType, LongType
+from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
 from zExceptions import Unauthorized
 
@@ -241,7 +241,16 @@ class HTTPResponse(BaseResponse):
             if hasattr(body,'asHTML'):
                 body=body.asHTML()
 
-        body=str(body)
+        if type(body) is UnicodeType:
+            body = self._encode_unicode(body)
+        elif type(body) is StringType:
+            pass
+        else:
+            try:
+                body = str(body)
+            except UnicodeError:
+                body = _encode_unicode(unicode(body))
+
         l=len(body)
         if ((l < 200) and body[:1]=='<' and body.find('>')==l-1 and 
             bogus_str_search(body) is not None):
@@ -275,6 +284,16 @@ class HTTPResponse(BaseResponse):
         self.setHeader('content-length', len(self.body))
         self.insertBase()
         return self
+
+    def _encode_unicode(self,body,charset_re=re.compile(r'text/[0-9a-z]+\s*;\s*charset=([-_0-9a-z]+)(?:(?:\s*;)|\Z)',re.IGNORECASE)):
+        # Encode the Unicode data as requested
+        if self.headers.has_key('content-type'):
+            match = charset_re.match(self.headers['content-type'])
+            if match:
+                encoding = match.group(1)
+                return body.encode(encoding)
+        # Use the default character encoding
+        return body.encode('latin1','replace')
 
     def setBase(self,base):
         'Set the base URL for the returned document.'
@@ -594,23 +613,28 @@ class HTTPResponse(BaseResponse):
                 (str(t),
                  'Zope has exited normally.<p>' + self._traceback(t, v, tb)),
                 is_error=1)
-        elif type(b) is not types.StringType or tag_search(b) is None:
-            body = self.setBody(
-                (str(t),
-                'Sorry, a site error occurred.<p>'
-                 + self._traceback(t, v, tb)),
-                 is_error=1)
-        elif b.strip().lower()[:6]=='<html>' or \
-              b.strip().lower()[:14]=='<!doctype html':
-            # error is an HTML document, not just a snippet of html
-            body = self.setBody(b + self._traceback(t, '(see above)', tb),
-                              is_error=1)
         else:
-            body = self.setBody((str(t),
-                               b + self._traceback(t,'(see above)', tb)),
-                              is_error=1)
-        del tb
-        return body
+            try:
+                match = tag_search(b)
+            except TypeError:
+                match = None
+            if match is None:
+                body = self.setBody(
+                    (str(t),
+                    'Sorry, a site error occurred.<p>'
+                     + self._traceback(t, v, tb)),
+                     is_error=1)
+            elif b.strip().lower()[:6]=='<html>' or \
+                  b.strip().lower()[:14]=='<!doctype html':
+                # error is an HTML document, not just a snippet of html
+                body = self.setBody(b + self._traceback(t, '(see above)', tb),
+                                  is_error=1)
+            else:
+                body = self.setBody((str(t),
+                                   b + self._traceback(t,'(see above)', tb)),
+                                  is_error=1)
+            del tb
+            return body
 
     _wrote=None
 
@@ -704,4 +728,5 @@ class HTTPResponse(BaseResponse):
             self.stdout.flush()
 
         self.stdout.write(data)
+
 

@@ -13,7 +13,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.22 2002/03/21 15:48:53 htrd Exp $"
+"\n$Id: intSet.c,v 1.23 2002/03/27 10:13:59 htrd Exp $"
 ;
 
 #include <limits.h>
@@ -368,7 +368,7 @@ intSet__p___reinit__(intSet *self, PyObject *args)
      && HasInstDict(self) && (dict=INSTANCE_DICT(self)))
     {
       PyDict_Clear(dict);
-      self->state=cPersistent_GHOST_STATE;
+      PER_GHOSTIFY(self);
     }
 
   Py_INCREF(Py_None);

@@ -13,7 +13,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.15 2002/02/11 23:40:40 gvanrossum Exp $"
+"\n$Id: Record.c,v 1.16 2002/03/27 10:14:00 htrd Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -150,7 +150,7 @@ Record__p_deactivate(Record *self, PyObject *args)
   Record_deal(self);
   self->schema=NULL;
   self->data=NULL;
-  self->state=cPersistent_GHOST_STATE;
+  PER_GHOSTIFY(self);
   Py_INCREF(Py_None);
   return Py_None;
 }

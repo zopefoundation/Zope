@@ -15,20 +15,25 @@ Properties - Define properties.
 
       'int' -- An integer number, for example, '12'. 
 
-      'lines' -- A list of strings, one per line. 
+      'lines', 'ulines' -- A list of strings, one per line. 
 
       'long' -- A long integer, for example '12232322322323232323423'. 
 
-      'string' -- A string of characters, for example 'This is a string'. 
+      'string', 'ustring' -- A string of characters, for example 'This is a string'. 
 
-      'text' -- A multi-line string, for example a paragraph. 
+      'text', 'utext' -- A multi-line string, for example a paragraph. 
 
-      'tokens' -- A list of strings separated by white space, for example
+      'tokens', 'utokens' -- A list of strings separated by white space, for example
       'one two three'. 
 
       'selection' -- A string selected by a pop-up menu. 
 
       'multiple selection' -- A list of strings selected by a selection list.
+
+      Some of these textual properties come in two forms. The 'u'-prefixed
+      form stores Unicode text. The form without the prefix stores a python
+      plain string object, which is commonly assumed to contain latin-1
+      text.
 
   Controls
 

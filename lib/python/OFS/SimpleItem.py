@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.93 2002/02/07 17:20:59 andreasjung Exp $'''
-__version__='$Revision: 1.93 $'[11:-2]
+$Id: SimpleItem.py,v 1.94 2002/03/27 10:14:03 htrd Exp $'''
+__version__='$Revision: 1.94 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -30,6 +30,7 @@ from ComputedAttribute import ComputedAttribute
 from AccessControl import getSecurityManager
 from Traversable import Traversable
 from Acquisition import aq_base
+from DocumentTemplate.ustr import ustr
 import time
 
 import marshal
@@ -165,16 +166,15 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 raise error_type, error_value, tb
 
             if not error_message:
-                if type(error_value) is InstanceType:
-                    try:
-                        s=str(error_value)
-                    except:
-                        pass
-                    else:
-                        if tagSearch(s) is not None:
-                            error_message=error_value
-                elif (type(error_value) is StringType
-                      and tagSearch(error_value) is not None):
+                try:
+                    s = ustr(error_value)
+                except:
+                    s = error_value
+                try:
+                    match = tagSearch(s)
+                except TypeError:
+                    match = None
+                if match is not None:
                     error_message=error_value
 
             if client is None: client=self
@@ -197,7 +197,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                     v = s(**kwargs)
                 else:
                     v = HTML.__call__(s, client, REQUEST, **kwargs)
-            except: v = error_value or "Sorry, an error occurred"
+            except:
+                v = error_value or "Sorry, an error occurred"
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
