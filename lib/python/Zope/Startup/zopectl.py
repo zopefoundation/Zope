@@ -152,14 +152,25 @@ class ZopeCmd(ZDCmd):
         print "         manually using a Python interactive shell"
 
     def do_run(self, arg):
-        cmdline = self.get_startup_cmd(self.options.python,
-            'import Zope; app=Zope.app(); execfile(\'%s\')' % arg)
+        tup = arg.split(' ')
+        if not arg:
+            print "usage: run <script> [args]"
+            return
+        # remove -c and add script as sys.argv[0]
+        script = tup[0]
+        cmd = 'import sys; sys.argv.pop(); sys.argv.append(\'%s\');'  % script
+        if len(tup) > 1:
+            argv = tup[1:]
+            cmd += '[sys.argv.append(x) for x in %s];' % argv
+        cmd += 'import Zope; app=Zope.app(); execfile(\'%s\')' % script
+        cmdline = self.get_startup_cmd(self.options.python, cmd)
         os.system(cmdline)
 
     def help_run(self):
-        print "run <script> -- run a Python script with the Zope environment"
-        print "                set up.  The script can use the name 'app' to"
-        print "                access the top-level Zope object"
+        print "run <script> [args] -- run a Python script with the Zope "
+        print "                       environment set up.  The script can use "
+        print "                       the name 'app' access the top-level Zope"
+        print "                       object"
 
     def do_adduser(self, arg):
         try:
