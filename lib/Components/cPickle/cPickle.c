@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.53 1998/05/05 15:41:31 jim Exp $
+     $Id: cPickle.c,v 1.54 1998/05/08 14:41:15 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.53 1998/05/05 15:41:31 jim Exp $\n"
+"$Id: cPickle.c,v 1.54 1998/05/08 14:41:15 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -1934,13 +1934,15 @@ find_class(PyObject *py_module_name, PyObject *py_global_name) {
     PyObject *global = 0, *module;
     
     UNLESS(module=PySys_GetObject("modules")) return NULL;
-    UNLESS(module=PyDict_GetItem(module, py_module_name)) {
+    if(module=PyDict_GetItem(module, py_module_name)) {
+      global=PyObject_GetAttr(module, py_global_name);
+    }
+    else {
       PyErr_Clear();
       UNLESS(module=PyImport_Import(py_module_name)) return NULL;
+      global=PyObject_GetAttr(module, py_global_name);
+      Py_DECREF(module);
     }
-
-    global=PyObject_GetAttr(module, py_global_name);
-    Py_DECREF(module);
 
     return global;
 }
@@ -4258,7 +4260,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.53 $";
+    char *rev="$Revision: 1.54 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
