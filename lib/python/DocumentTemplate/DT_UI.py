@@ -1,7 +1,7 @@
 
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.3 1997/10/27 17:37:13 jim Exp $''' 
+$Id: DT_UI.py,v 1.4 1997/11/05 15:11:26 paul Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -55,18 +55,19 @@ $Id: DT_UI.py,v 1.3 1997/10/27 17:37:13 jim Exp $'''
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DT_HTML import HTML
 
 FactoryDefaultString="Factory Default"
 
-HTML.document_template_edit_header='<h2>Document Template Editor</h2>'
+HTML.document_template_edit_header='<h2>Edit Document</h2>'
 HTML.document_template_form_header=''
 HTML.document_template_edit_footer=(
     """<FONT SIZE="-1">
     <I><A HREF="http://www.digicool.com/products/copyright.html">
     &copy; 1997 Digital Creations, L.L.C.</A></I></FONT>""")
+
 HTML.document_template_edit_width=58
 
 HTML._manage_editForm = HTML(
@@ -77,8 +78,6 @@ HTML._manage_editForm = HTML(
     <BODY bgcolor="#FFFFFF">
     <!--#var document_template_edit_header-->
     
-    <em><!--#var PATH_INFO--></em><br>
-
     <FORM name="editform" ACTION="<!--#var PARENT_URL-->/manage_edit" METHOD="POST">
     <!--#var document_template_form_header-->
     Document template source:
@@ -91,7 +90,7 @@ HTML._manage_editForm = HTML(
       <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
       <INPUT NAME=SUBMIT TYPE="RESET"  VALUE="Reset">
       <INPUT NAME="dt_edit_name" TYPE="HIDDEN"
-             VALUE="<!--#var PATH_INFO-->">
+             VALUE="<!--#var URL1-->">
       <!--#if FactoryDefaultString-->
         <INPUT NAME=SUBMIT TYPE="SUBMIT" 
          VALUE="<!--#var FactoryDefaultString-->">
@@ -132,6 +131,9 @@ HTML.editConfirmation=HTML(
 
 ############################################################################
 # $Log: DT_UI.py,v $
+# Revision 1.4  1997/11/05 15:11:26  paul
+# Changed header to be more Principia-compliant in a way that does not break Bobo.
+#
 # Revision 1.3  1997/10/27 17:37:13  jim
 # Removed old validation machinery.
 #
