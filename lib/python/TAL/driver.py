@@ -111,7 +111,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hmnx")
     except getopt.error, msg:
-        sys.stderr.write("%s\n" % str(msg))
+        sys.stderr.write("\n%s\n" % str(msg))
         sys.stderr.write(
             "usage: driver.py [-h|-x] [-m] [-n] [file]\n")
         sys.stderr.write("-h/-x -- HTML/XML input (default auto)\n")

@@ -143,6 +143,8 @@ def main():
                 driver.main()
             finally:
                 sys.stdout, sys.argv = save
+        except SystemExit:
+            raise
         except:
             errors = 1
             if quiet:
