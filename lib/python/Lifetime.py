@@ -7,9 +7,9 @@ _shutdown_timeout = 30 # seconds per phase
 #
 # 0  Not yet terminating. running in main loop
 #
-# 1  Loss of service is imminent. Prepare any front-end proxies for this happening
-#    by stopping any ICP servers, so that they can choose to send requests to other
-#    Zope servers in the cluster.
+# 1  Loss of service is imminent. Prepare any front-end proxies for this
+#    happening by stopping any ICP servers, so that they can choose to send
+#    requests to other Zope servers in the cluster.
 #
 # 2  Stop accepting any new requests.
 #
@@ -17,11 +17,11 @@ _shutdown_timeout = 30 # seconds per phase
 #
 # 4  Already terminated
 #
-# It is up to individual socket handlers to implement these actions, by providing the
-# 'clean_shutdown_control' method. This is called intermittantly during shutdown with
-# two parameters; the current phase number, and the amount of time that it has currently
-# been in that phase. This method should return true if it does not yet want shutdown to
-# proceed to the next phase.
+# It is up to individual socket handlers to implement these actions, by
+# providing the 'clean_shutdown_control' method. This is called intermittantly
+# during shutdown with two parameters; the current phase number, and the amount
+# of time that it has currently been in that phase. This method should return
+# true if it does not yet want shutdown to proceed to the next phase.
 
 def shutdown(exit_code,fast = 0):
     global _shutdown_phase
@@ -32,9 +32,10 @@ def shutdown(exit_code,fast = 0):
         ZServer.exit_code = exit_code
         _shutdown_phase = 1
     if fast:
-        # Someone wants us to shutdown fast. This is hooked into SIGTERM - so possibly
-        # the system is going down and we can expect a SIGKILL within a few seconds.
-        # Limit each shutdown phase to one second. This is fast enough, but still clean.
+        # Someone wants us to shutdown fast. This is hooked into SIGTERM - so
+        # possibly the system is going down and we can expect a SIGKILL within
+        # a few seconds.  Limit each shutdown phase to one second. This is fast
+        # enough, but still clean.
         _shutdown_timeout = 1.0
 
 def loop():
@@ -72,8 +73,8 @@ def graceful_shutdown_loop():
                 except:
                     obj.handle_error()
         if veto and time_in_this_phase<_shutdown_timeout:
-            # Any open socket handler can veto moving on to the next shutdown phase.
-            # (but not forever)
+            # Any open socket handler can veto moving on to the next shutdown
+            # phase.  (but not forever)
             asyncore.poll(timeout, map)
         else:
             # No vetos? That is one step closer to shutting down
