@@ -92,6 +92,9 @@ from AccessControl.PermissionMapping import aqwrap
 class ProductDispatcher(Acquisition.Implicit):
     " "
 
+    # Allow access to factory dispatchers
+    __allow_access_to_unprotected_subobjects__=1
+
     def __getitem__(self, name):
         product=self.aq_acquire('_getProducts')()._product(name)
         dispatcher=FactoryDispatcher(product, self.aq_parent)
