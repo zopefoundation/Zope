@@ -85,11 +85,11 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import string, time, urllib, re
-from Acquisition import aq_base
 from App.Common import iso8601_date, rfc850_date, rfc1123_date
+from App.Common import aq_base
 
 def absattr(attr):
     if callable(attr):
