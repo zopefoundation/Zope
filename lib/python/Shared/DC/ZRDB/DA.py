@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.27 1998/01/22 20:50:53 jim Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: DA.py,v 1.28 1998/01/26 21:40:41 jim Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -172,11 +172,12 @@ class DA(
 	    if k > t:
 		result=r
 		if not compressed: result=decompress(r)
-	else:
-	    result=apply(DB__.query, query)
-	    r=compress(result)
-	    cache[query]= now, r
-	    if compressed: return r
+		return result
+
+	result=apply(DB__.query, query)
+	r=compress(result)
+	cache[query]= now, r
+	if compressed: return r
 
 	return result
 
@@ -348,6 +349,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.28  1998/01/26 21:40:41  jim
+# Fixed bug in caching code.
+#
 # Revision 1.27  1998/01/22 20:50:53  jim
 # Fixed stupid typo in text output form.
 #
