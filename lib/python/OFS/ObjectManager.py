@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.41 1998/04/24 16:11:09 brian Exp $"""
+$Id: ObjectManager.py,v 1.42 1998/05/22 22:30:42 jim Exp $"""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -78,7 +78,7 @@ class ObjectManager(
 	    """The id <em>%s<em>  is invalid - it 
                begins with an underscore character, _.""" % id)
 
-	try: self=self.aq_self
+	try: self=self.aq_base
 	except: return
 
 	if hasattr(self,id): raise 'Bad Request', (
@@ -520,35 +520,17 @@ class ObjectManager(
 	    r.append({'id': n, 'input': imap[t](None,n,t,v)})
 	return r
 
-    def bobobase_modification_time(self):
-	try:
-	    t=self._p_mtime
-	    if t is None: return DateTime()
-	except: t=0
-	return DateTime(t)
-
-    def locked_in_session(self):
-	oid=self._p_oid
-	return (oid and Globals.SessionBase.locks.has_key(oid)
-		and Globals.SessionBase.verify_lock(oid))
-
-    def modified_in_session(self):
-	jar=self._p_jar
-	if jar is None:
-	    if hasattr(self,'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
-		jar=self.aq_parent._p_jar
-	    if jar is None: return 0
-	if not jar.name: return 0
-	try: jar.db[self._p_oid]
-	except: return 0
-	return 1
-
-
 
 
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.42  1998/05/22 22:30:42  jim
+# Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
+# right into Persistent in Globals.
+#
+# Changed aq_self to aq_base.
+#
 # Revision 1.41  1998/04/24 16:11:09  brian
 # Added Cut(Move) support for principia objects.
 #
