@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -1653,8 +1653,8 @@ class DateTime:
         try:
             return self.__parse_iso8601(s)
         except IndexError:
-            raise DateError,'Not an ISO 8601 compliant date string: "%s"' %  s
-
+            raise SyntaxError, (
+                'Not an ISO 8601 compliant date string: "%s"' % s)
 
     def __parse_iso8601(self,s):
         """ parse an ISO 8601 compliant date """
