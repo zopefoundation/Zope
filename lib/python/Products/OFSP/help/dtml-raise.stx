@@ -1,7 +1,7 @@
 raise: Raises an exception 
 
-    The 'raise' tag raises an exception, mirroring the Python 'raise'
-    statement. 
+  The 'raise' tag raises an exception, mirroring the Python 'raise'
+  statement.
 
   Syntax
 

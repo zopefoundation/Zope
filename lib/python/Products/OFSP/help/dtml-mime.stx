@@ -1,7 +1,7 @@
 mime: Formats data with MIME
 
-    The 'mime' tag allows you to create MIME encoded data. It is
-    chiefly used to format email inside the 'sendmail' tag.
+  The 'mime' tag allows you to create MIME encoded data. It is chiefly
+  used to format email inside the 'sendmail' tag.
 
   Syntax
 

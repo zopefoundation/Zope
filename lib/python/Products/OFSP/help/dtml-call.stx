@@ -1,7 +1,7 @@
 call: Call a method
 
-    The 'call' tag lets you call a method without inserting the results
-    into the DTML output.
+  The 'call' tag lets you call a method without inserting the results
+  into the DTML output.
 
   Syntax
 

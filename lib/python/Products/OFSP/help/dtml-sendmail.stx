@@ -1,6 +1,7 @@
 sendmail: Sends email with SMTP
 
-    The 'sendmail' tag sends an email message using SMTP.
+  The 'sendmail' tag sends an email message
+  using SMTP.
 
   Syntax
 

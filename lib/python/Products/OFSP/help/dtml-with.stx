@@ -42,6 +42,6 @@ with: Controls DTML variable look up
 
   See Also
 
-    "let tag"dtml-let.stx
+    "let tag":dtml-let.stx
 
 

@@ -1,7 +1,7 @@
 tree: Inserts a tree widget
 
-    The 'tree' tag displays a dynamic tree widget by querying Zope
-    objects. 
+  The 'tree' tag displays a dynamic tree widget by querying Zope
+  objects.
 
   Syntax
 
@@ -88,7 +88,8 @@ tree: Inserts a tree widget
 
   Tag Control Variables
 
-    You can control the tree tag by setting variables.
+    You can control the tree tag by setting
+    these variables.
 
       expand_all -- If this variable is true then the entire tree is
       expanded. 

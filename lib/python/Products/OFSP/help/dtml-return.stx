@@ -1,7 +1,7 @@
 return: Returns data
 
-    The 'return' tag stops executing DTML and returns data. It mirrors
-    the Python 'return' statement.
+  The 'return' tag stops executing DTML and returns data. It mirrors
+  the Python 'return' statement.
 
   Syntax
 

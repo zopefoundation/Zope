@@ -1,7 +1,7 @@
 sqltest: Formats SQL condition tests
 
-    The 'sqltest' tag inserts a condition test into SQL code. It tests
-    a column against a variable. This tag is used in SQL Methods.
+  The 'sqltest' tag inserts a condition test into SQL code. It tests a
+  column against a variable. This tag is used in SQL Methods.
 
   Syntax
 

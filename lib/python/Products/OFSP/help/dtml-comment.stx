@@ -1,8 +1,7 @@
 comment: Comments DTML
 
-    The comment tag lets you document your DTML with comments. You can
-    also use it to temporarily disable DTML tags by commenting them
-    out.
+  The comment tag lets you document your DTML with comments. You can
+  also use it to temporarily disable DTML tags by commenting them out.
 
   Syntax
 

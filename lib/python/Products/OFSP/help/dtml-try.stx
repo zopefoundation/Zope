@@ -48,7 +48,8 @@ try: Handles exceptions
 
   Tag Variables
 
-    Inside the 'except' block these variables are defined.
+    Inside the 'except' block these variables
+    are defined.
 
       error_type -- The exception type.
 

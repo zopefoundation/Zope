@@ -1,7 +1,7 @@
 sqlvar: Inserts SQL variables
 
-    The 'sqlvar' tag safely inserts variables into SQL code. This tag
-    is used in SQL Methods.
+  The 'sqlvar' tag safely inserts variables into SQL code. This tag is
+  used in SQL Methods.
 
   Syntax
 

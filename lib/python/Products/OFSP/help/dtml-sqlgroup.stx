@@ -1,9 +1,9 @@
 sqlgroup: Formats complex SQL expressions
 
-    The 'sqlgroup' tag formats complex boolean SQL expressions. You
-    can use it along with the 'sqltest' tag to build dynamic SQL
-    queries that tailor themselves to the environment. This tag is
-    used in SQL Methods.
+  The 'sqlgroup' tag formats complex boolean SQL expressions. You can
+  use it along with the 'sqltest' tag to build dynamic SQL queries
+  that tailor themselves to the environment. This tag is used in SQL
+  Methods.
 
   Syntax
 

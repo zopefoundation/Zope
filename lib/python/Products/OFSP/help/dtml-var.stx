@@ -1,6 +1,7 @@
 var: Inserts a variable
 
-  The 'var' tags allows you insert variables into DTML output.
+  The 'var' tags allows you insert variables into
+  DTML output.
 
   Syntax
 
