@@ -222,10 +222,9 @@ class TestTransientObjectContainer(TestBase):
         r = range(10, 1010)
         for x in r:
             self.t[x] = 1
-        assert lsubtract(self.t.keys(), r) == []
-        for x in r:
-            del self.t[x]
-        assert lsubtract(self.t.keys(), []) == [], self.t.keys()
+        assert list(self.t.keys()) == r, (self.t.keys(), r)
+        map(self.t.__delitem__, r)
+        assert list(self.t.keys()) == [], self.t.keys()
 
     def testPathologicalLeftBranching(self):
         r = range(10, 1010)
@@ -233,10 +232,9 @@ class TestTransientObjectContainer(TestBase):
         revr.reverse()
         for x in revr:
             self.t[x] = 1
-        assert lsubtract(self.t.keys(),r) == []
-        for x in revr:
-            del self.t[x]
-        assert lsubtract(self.t.keys(),[]) == [], self.t.keys()
+        assert list(self.t.keys()) == r, (self.t.keys(), r)
+        map(self.t.__delitem__, revr)
+        assert list(self.t.keys()) == [], self.t.keys()
 
     def donttestSuccessorChildParentRewriteExerciseCase(self):
         add_order = [
@@ -285,7 +283,6 @@ class TestTransientObjectContainer(TestBase):
                 if self.t.has_key(x): assert 1==2,"failed to delete %s" % x
 
     def testChangingTimeoutWorks(self):
-        # XXX This test takes nearly 40 seconds on my machine!
         # 1 minute
         for x in range(10, 110):
             self.t[x] = x
