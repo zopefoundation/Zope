@@ -118,6 +118,8 @@ class p_:
 
     ZopeButton=ImageFile('App/www/zope_button.gif')
     Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
+    Methods_icon=ImageFile('ZClasses/methods.gif')
+    Propertysheets_icon=ImageFile('ZClasses/propertysheets.gif')
 
 
 class Misc_:
