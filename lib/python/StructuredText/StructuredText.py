@@ -46,7 +46,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is emphasized.
 
-$Id: StructuredText.py,v 1.1 1996/10/23 14:00:45 jim Exp $'''
+$Id: StructuredText.py,v 1.2 1996/10/28 13:56:02 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,11 @@ $Id: StructuredText.py,v 1.1 1996/10/23 14:00:45 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.2  1996/10/28 13:56:02  jim
+# Fixed bug in ordered lists.
+# Added option for either HTML-style headings or descriptive-list style
+# headings.
+#
 # Revision 1.1  1996/10/23 14:00:45  jim
 # *** empty log message ***
 #
@@ -168,10 +173,11 @@ bullet=regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)')
 example=regex.compile('[\0- ]examples?:[\0- ]*$')
 dl=regex.compile('\([^\n]+\)[ \t]+--[ \t\n]+\([^\0]*\)')
 nl=regex.compile('\n')
-ol=regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)\.\)+[ \t\n]+\([^\0]*\|$\)')
+ol=regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)')
 olp=regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)')
 em=regex.compile("[ \t\n]\*\([^ \t][^\n*]*[^ \t]\)\*\([ \t\n,.:;!?]\)")
 code=regex.compile("[ \t\n(]'\([^ \t']\([^\n']*[^ \t']\)?\)'\([) \t\n,.:;!?]\)")
+#'
 strong=regex.compile("[ \t\n]\*\*\([^ \t][^\n*]*[^ \t]\)\*\*\([ \t\n,.:;!?]\)")
 extra_dl=regex.compile("</dl>\n<dl>")
 extra_ul=regex.compile("</ul>\n<ul>")
@@ -188,7 +194,7 @@ class StructuredText:
     output formatting.
     '''
 
-    def __init__(self,aStructuredString, level=1):
+    def __init__(self,aStructuredString, level=0):
 	'''\
 	Convert a string containing structured text into a structured text object.
 
@@ -209,9 +215,6 @@ class StructuredText:
 	
 def ctag(s):
     if s is None: s=''
-    s=regsub.gsub(extra_dl,'\n',s)
-    s=regsub.gsub(extra_ul,'\n',s)
-    s=regsub.gsub(extra_ol,'\n',s)
     s=regsub.gsub(strong,' <strong>\\1</strong>\\2',s)
     s=regsub.gsub(code,' <code>\\1</code>\\3',s)
     s=regsub.gsub(em,' <em>\\1</em>\\2',s)
@@ -228,7 +231,11 @@ class HTML(StructuredText):
 	Return an HTML string representation of the structured text data.
 
 	'''
-	return self._str(self.structure,self.level)
+	s=self._str(self.structure,self.level)
+	s=regsub.gsub(extra_dl,'\n',s)
+	s=regsub.gsub(extra_ul,'\n',s)
+	s=regsub.gsub(extra_ol,'\n',s)
+	return s
 
     def ul(self, before, p, after):
 	if p: p="<p>%s</p>" % ctag(p)
@@ -245,7 +252,10 @@ class HTML(StructuredText):
 		% (before,ctag(t),ctag(d),after))
 
     def head(self, before, t, level, d):
-	# if level <= 6: t="<h%d>%s</h%d>" % (level,t,level)
+	if level > 0 and level < 6:
+	    return ('%s<h%d>%s</h%d>\n%s\n'
+		    % (before,level,ctag(t),level,d))
+	    
 	t="<p><strong>%s</strong><p>" % t
 	return ('%s<dl><dt>%s\n<dd>%s\n</dl>\n'
 	        % (before,ctag(t),d))
@@ -262,7 +272,7 @@ class HTML(StructuredText):
 		r=self.ul(r,p,self._str(s[1],level))
 	    elif ol.match(s[0]) >= 0:
 		p=ol.group(3)
-		r=self.ul(r,p,self._str(s[1],level))
+		r=self.ol(r,p,self._str(s[1],level))
 	    elif olp.match(s[0]) >= 0:
 		p=olp.group(1)
 		r=self.ol(r,p,self._str(s[1],level))
@@ -278,7 +288,8 @@ class HTML(StructuredText):
 	    elif nl.search(s[0]) < 0 and s[1]:
 		# Treat as a heading
 		t=s[0]
-		r=self.head(r,t,level,self._str(s[1],level+1))
+		r=self.head(r,t,level,
+			    self._str(s[1],level and level+1))
 	    else:
 		r=self.normal(r,s[0],self._str(s[1],level))
 	return r
@@ -298,7 +309,7 @@ class HTML(StructuredText):
 def html_with_references(text):
     import regsub
     text = regsub.gsub(
-	'[\0\n].. \[\([0-9_a-zA-Z]+\)\]',
+	'[\0\n].. \[\([-_0-9_a-zA-Z]+\)\]',
 	'\n  <a name="\\1">[\\1]</a>',
 	text)
     
@@ -311,7 +322,7 @@ def html_with_references(text):
 	'\([\0- ]\)\([a-z]+://[^\0- ]+\)',
 	'\\1<a href="\\2">\\2</a>',
 	text)
-    return HTML(text)
+    return HTML(text,level=1)
     
 
 def main():
