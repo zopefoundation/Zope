@@ -84,16 +84,17 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.51 1999/02/22 20:41:40 jim Exp $"""
+$Id: ObjectManager.py,v 1.52 1999/03/04 14:02:22 brian Exp $"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
-import App.FactoryDispatcher
+import App.FactoryDispatcher, ts_regex
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from urllib import quote
 
+bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match
 
 class ObjectManager(
     App.Management.Navigation,
@@ -152,21 +153,23 @@ class ObjectManager(
             except:  pass
         return self.meta_types+self.dynamic_meta_types+pmt
 
-    def _checkId(self,id):
+    def _checkId(self, id, allow_dup=0):
+        # If allow_dup is false, an error will be raised if an object
+        # with the given id already exists. If allow_dup is true,
+        # only check that the id string contains no illegal chars.
         if not id:
-            raise 'Bad Request', 'No <em>id</em> was specified'
-        if quote(id) != id: raise 'Bad Request', (
-            """The id <em>%s<em>  is invalid - it
-               contains characters illegal in URLs.""" % id)
-        if id[:1]=='_': raise 'Bad Request', (
-            """The id <em>%s<em>  is invalid - it 
-               begins with an underscore character, _.""" % id)
-        if hasattr(self, 'aq_base'):
-            self=self.aq_base
-        if hasattr(self, id):
+            raise 'Bad Request', 'No id was specified'
+        if bad_id(id) != -1:
             raise 'Bad Request', (
-            """The id <em>%s<em>  is invalid - it
-               is already in use.""" % id)
+            'The id %s contains characters illegal in URLs.' % id)
+        if id[0]=='_': raise 'Bad Request', (
+            'The id %s  is invalid - it begins with an underscore.'  % id)
+        if not allow_dup:
+            if hasattr(self, 'aq_base'):
+                self=self.aq_base
+            if hasattr(self, id):
+                raise 'Bad Request', (
+                    'The id %s is invalid - it is already in use.' % id)
 
     def _checkObject(self, object):
         t=object.meta_type

@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -286,7 +286,7 @@ class PropertySheet(Persistent, Implicit):
                 if ns==xml_id:
                     if not propdict.has_key(name):
                         prop='  <ps:%s/>' % name
-                        emsg=errormsg % 'No such property: %s' % name
+                        emsg=errormsg % 'Property not found: %s' % name
                         result.append(propstat % (prop, '404 Not Found', emsg))
                     else:
                         item=propdict[name]
