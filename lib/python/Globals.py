@@ -1,16 +1,16 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 try:
     home=CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL
     CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL = home
 except:
-    CUSTOMER_HOME='../../customer/private'
+    CUSTOMER_HOME='../../customer'
     SOFTWARE_HOME='../..'
     SOFTWARE_URL=''
-    __builtins__['CUSTOMER_HOME']='../../customer/private'
+    __builtins__['CUSTOMER_HOME']='../../customer'
     __builtins__['SOFTWARE_HOME']='../..'
     __builtins__['SOFTWARE_URL']='../..'
 
@@ -44,6 +44,9 @@ from App.Dialogs import MessageDialog
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.7  1997/09/15 17:03:53  jim
+# Got rid of private.
+#
 # Revision 1.6  1997/09/02 21:39:43  jim
 # Moved MessageDialog to end to deal with recursion in module imports.
 #
