@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.79 2000/03/14 19:26:32 brian Exp $'''
-__version__='$Revision: 1.79 $'[11:-2]
+$Id: DA.py,v 1.80 2000/03/17 18:59:27 jim Exp $'''
+__version__='$Revision: 1.80 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -426,8 +426,14 @@ class DA(
         argdata['sql_quote__']=dbc.sql_quote__
 
         # Also need the authenticated user.
-        if REQUEST.has_key('AUTHENTICATED_USER'):
-            auth_user=REQUEST['AUTHENTICATED_USER']
+        auth_user=REQUEST.get('AUTHENTICATED_USER', None)
+        if auth_user is None:
+            auth_user=getattr(self, 'REQUEST', None)
+            if auth_user is not None:
+                try: auth_user=auth_user.get('AUTHENTICATED_USER', None)
+                except: auth_user=None
+                
+        if auth_user is not None:
             verify_watermark(auth_user)
             argdata['AUTHENTICATED_USER']=auth_user
 
