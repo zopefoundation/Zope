@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -170,7 +170,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
             p=Permission(name,value,self)
-            roles=p.getRoles()
+            roles=p.getRoles(default=[])
             d={'name': name,
                'acquire': type(roles) is ListType and 'CHECKED' or '',
                'roles': map(
@@ -183,7 +183,6 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                }
             ip=ip+1
             result.append(d)
-
         return result
 
     manage_roleForm=DTMLFile('dtml/roleEdit', globals(),
