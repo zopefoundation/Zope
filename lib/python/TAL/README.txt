@@ -80,24 +80,13 @@ redistributed under the Zope Public License.
 TO DO
 -----
 
-- Finish implementing insertStructure(): attribute replacement isn't
-  implemented yet.
-
-- TALInterpreter currently always uses an XML parser to parse inserted
-  structure; it should use a parser appropriate to the mode.
-
 - HTMLTALParser.py and TALParser.py are silly names.  Should be
   HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,
   without "TAL"?)
 
 - Should we preserve case of tags and attribute names in HTML?
 
-- Do we still need the HTML mode for TALInterpreter, which tries to
-  generate HTML from an XML template?
-
 - If use-macro fails, it seems to omit the entire macro except for
   slots, instead of leaving the existing text alone.
 
-- Create more unittest testcases.  The XML side has no testcases;
-  neither do TAL and METAL.  Plus many endcases of HTML parsing and
-  TAL intermediate code generation aren't tested properly.
+- Create more unittest testcases.
