@@ -94,7 +94,7 @@ class PropertySheet:
 
     """
 
-    def xml_namespace(self):
+    def xml_namespace():
         """
 
         Return a namespace string usable as an xml namespace
@@ -106,7 +106,7 @@ class PropertySheet:
 
         """
 
-    def getProperty(self, id, d=None):
+    def getProperty(id, d=None):
         """
 
         Get the property 'id', returning the optional second 
@@ -116,7 +116,7 @@ class PropertySheet:
         
         """
 
-    def getPropertyType(self, id):
+    def getPropertyType(id):
         """
         
         Get the type of property 'id'. Returns None if no such
@@ -126,7 +126,7 @@ class PropertySheet:
         
         """
 
-    def hasProperty(self, id):
+    def hasProperty(id):
         """
 
         Returns true if 'self' has a property with the given 'id', 
@@ -136,7 +136,7 @@ class PropertySheet:
 
         """
 
-    def propertyIds(self):
+    def propertyIds():
         """
 
         Returns a list of property ids.
@@ -145,7 +145,7 @@ class PropertySheet:
 
         """
 
-    def propertyValues(self):
+    def propertyValues():
         """
 
         Returns a list of actual property values.
@@ -154,7 +154,7 @@ class PropertySheet:
 
         """
 
-    def propertyItems(self):
+    def propertyItems():
         """
 
         Return a list of (id, property) tuples.
@@ -163,7 +163,7 @@ class PropertySheet:
 
         """
         
-    def propertyMap(self):
+    def propertyMap():
         """
 
         Returns a tuple of mappings, giving meta-data for properties.
@@ -172,7 +172,7 @@ class PropertySheet:
 
         """
 
-    def propertyInfo(self):
+    def propertyInfo():
         """
 
         Returns a mapping containing property meta-data.
@@ -181,7 +181,7 @@ class PropertySheet:
 
         """
 
-    def manage_addProperty(self, id, value, type, REQUEST=None):
+    def manage_addProperty(id, value, type, REQUEST=None):
         """
 
         Add a new property with the given 'id', 'value' and 'type'.
@@ -235,7 +235,7 @@ class PropertySheet:
 
         """
 
-    def manage_changeProperties(self, REQUEST=None, **kw):
+    def manage_changeProperties(REQUEST=None, **kw):
         """
 
         Change existing object properties by passing either a mapping 
@@ -264,7 +264,7 @@ class PropertySheet:
         """
 
 
-    def manage_delProperties(self, ids=None, REQUEST=None):
+    def manage_delProperties(ids=None, REQUEST=None):
         """
 
         Delete one or more properties with the given 'ids'. The 'ids' 

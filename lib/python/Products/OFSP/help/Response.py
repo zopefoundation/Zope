@@ -92,7 +92,7 @@ class Response:
 
     """
 
-    def setStatus(self, status, reason=None):
+    def setStatus(status, reason=None):
         '''
         
         Sets the HTTP status code of the response; the argument may
@@ -120,7 +120,7 @@ class Response:
 
         '''
 
-    def setHeader(self, name, value):
+    def setHeader(name, value):
         '''
         
         Sets an HTTP return header "name" with value "value", clearing
@@ -133,7 +133,7 @@ class Response:
 
         '''
 
-    def addHeader(self, name, value):
+    def addHeader(name, value):
         '''
         
         Set a new HTTP return header with the given value, while
@@ -143,7 +143,7 @@ class Response:
         
         '''
 
-    def setBase(self,base):
+    def setBase(base):
         """
 
         Set the base URL for the returned document.
@@ -152,7 +152,7 @@ class Response:
         
         """
 
-    def appendCookie(self, name, value):
+    def appendCookie(name, value):
         '''
         
         Returns an HTTP header that sets a cookie on cookie-enabled
@@ -165,7 +165,7 @@ class Response:
         '''
 
 
-    def expireCookie(self, name, **kw):
+    def expireCookie(name, **kw):
         '''
         
         Cause an HTTP cookie to be removed from the browser
@@ -182,7 +182,7 @@ class Response:
         
         '''
 
-    def setCookie(self,name,value,**kw):
+    def setCookie(name,value,**kw):
         '''
         
         Set an HTTP cookie on the browser
@@ -196,7 +196,7 @@ class Response:
         
         '''
 
-    def appendHeader(self, name, value, delimiter=","):
+    def appendHeader(name, value, delimiter=","):
         '''
         
         Append a value to a cookie
@@ -209,7 +209,7 @@ class Response:
         
         '''
 
-    def redirect(self, location, lock=0):
+    def redirect(location, lock=0):
         """
 
         Cause a redirection without raising an error. If the "lock"
@@ -222,8 +222,8 @@ class Response:
         
         """
 
-    def write(self, data):
-        """\
+    def write(data):
+        """
         Return data as a stream
 
         HTML data may be returned using a stream-oriented interface.
@@ -236,7 +236,7 @@ class Response:
         Note that published objects must not generate any errors
         after beginning stream-oriented output. 
 
-        Permission -- XXX
+        Permission -- Always available
 
         """
         

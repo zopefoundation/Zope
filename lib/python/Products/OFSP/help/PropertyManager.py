@@ -93,23 +93,23 @@ class PropertyManager:
     read-only and can have default values.
     """
 
-    def getProperty(self, id, d=None):
+    def getProperty(id, d=None):
         """
         Return the value of the property 'id'. If the property is not
         found the optional second argument or None is returned.
         
-        Permission -- Access contents information
+        Permission -- 'Access contents information'
         """
 
-    def getPropertyType(self, id):
+    def getPropertyType(id):
         """
         Get the type of property 'id'. Returns None if no such
         property exists.
         
-        Permission -- Access contents information
+        Permission -- 'Access contents information'
         """
 
-    def hasProperty(self, id):
+    def hasProperty(id):
         """
         Returns a true value if the Property Manager has the property
         'id'. Otherwise returns a false value.
@@ -117,41 +117,32 @@ class PropertyManager:
         Permission -- 'Access contents information'
         """
 
-    def propertyIds(self):
+    def propertyIds():
         """
         Returns a list of property ids.
         
         Permission -- 'Access contents information'
         """
 
-    def propertyValues(self):
+    def propertyValues():
         """
         Returns a list of property values.
         
         Permission -- 'Access contents information'        
         """
 
-    def propertyItems(self):
+    def propertyItems():
         """
         Return a list of (id, property) tuples.
         
         Permission -- 'Access contents information'
         """
 
-    def propertyMap(self):
+    def propertyMap():
         """
         Returns a tuple of mappings, giving meta-data for properties.
         The meta-data includes 'id', 'type', and 'mode'.
         
-        Permission -- Access contents information
+        Permission -- 'Access contents information'
         """
 
-## Removed for now at brian's request
-##        
-##    def propdict(self):
-##        """
-##        Returns the properties as a mapping from property id to
-##        property value.
-        
-##        Permission -- 
-##        """

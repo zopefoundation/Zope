@@ -84,7 +84,7 @@
 ##############################################################################
 
 
-def manage_addFolder(self, id, title):
+def manage_addFolder(id, title):
     """
     Add a Folder to the current ObjectManager
 
@@ -108,3 +108,14 @@ class Folder:
         )
 
     __constructor__ = manage_addFolder
+
+
+
+
+
+
+
+
+
+
+

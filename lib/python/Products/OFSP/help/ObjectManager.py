@@ -109,7 +109,7 @@ class ObjectManager:
       object.
       """
 
-    def objectIds(self, type=None):
+    def objectIds(type=None):
         """
         This method returns a list of the ids of the contained
         objects.
@@ -133,7 +133,7 @@ class ObjectManager:
         Permission -- 'Access contents information'
         """
 
-    def objectValues(self, type=None):
+    def objectValues(type=None):
         """
         This method returns a sequence of contained objects.
         
@@ -156,7 +156,7 @@ class ObjectManager:
         Permission -- 'Access contents information'
         """
 
-    def objectItems(self, type=None):
+    def objectItems(type=None):
         """
         This method returns a sequence of (id, object) tuples.
         
@@ -176,13 +176,13 @@ class ObjectManager:
         Permission -- 'Access contents information'
         """
 
-    def superValues(self, t):
+    def superValues(type):
         """
         This method returns a list of objects of a given meta_type(es)
         contained in the Object Manager and all its parent Object
         Managers.
         
-        The t argument specifies the meta_type(es). It can be a string
+        The type argument specifies the meta_type(es). It can be a string
         specifying one meta_type, or it can be a list of strings to
         specify many.
         

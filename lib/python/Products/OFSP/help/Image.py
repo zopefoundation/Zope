@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-def manage_addImage(self, id, file, title='', precondition='', content_type=''):
+def manage_addImage(id, file, title='', precondition='', content_type=''):
     """
 
     Add a new Image object.
@@ -135,7 +135,7 @@ class Image:
 
     __extends__=('OFSP.File.File',)
 
-    def tag(self, height=None, width=None, alt=None,
+    def tag(height=None, width=None, alt=None,
             scale=0, xscale=0, yscale=0, **args):
         """
         This method returns a string which contains an HTML IMG tag
@@ -152,3 +152,10 @@ class Image:
 
         Permission -- 'View'
         """
+
+
+
+
+
+
+

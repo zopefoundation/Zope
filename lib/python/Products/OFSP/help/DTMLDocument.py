@@ -84,7 +84,7 @@
 ##############################################################################
 
 
-def manage_addDocument(self, id, title):
+def manage_addDocument(id, title):
     """
     Add a DTML Document to the current ObjectManager
     """
@@ -101,7 +101,7 @@ class DTMLDocument:
         'OFSP.PropertyManager.PropertyManager',
         )
     
-    def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+    def __call__(client=None, REQUEST={}, RESPONSE=None, **kw):
         """
 
         Calling a DTMLDocument causes the Document to interpret the DTML
@@ -174,7 +174,7 @@ class DTMLDocument:
 
         """
 
-    def manage_edit(self, data, title):
+    def manage_edit(data, title):
         """
         Change the DTML Document, replacing its contents with 'data'
         and
@@ -185,18 +185,19 @@ class DTMLDocument:
         Permission -- 'Change DTML Documents'
         """
         
-    def document_src(self):
+    def document_src():
         """
         Returns the unrendered source text of the DTML Document.
         
         Permission -- 'View management screens'
         """
         
-    def get_size(self):
+    def get_size():
         """
         Returns the size of the unrendered source text of the DTML
         Document in bytes.
-        
+
+        Permission -- 'View'
         """
 
     __constructor__=manage_addDocument

@@ -280,7 +280,7 @@ class DateTime:
     """
 
 
-    def timeTime(self):
+    def timeTime():
         """
 
         Return the date/time as a floating-point number in UTC, in the
@@ -290,7 +290,7 @@ class DateTime:
 
         """
 
-    def toZone(self, z):
+    def toZone(z):
         """
 
         Return a DateTime with the value as the current object,
@@ -298,7 +298,7 @@ class DateTime:
 
         """
 
-    def isFuture(self):
+    def isFuture():
         """
 
         Return true if this object represents a date/time later than
@@ -306,7 +306,7 @@ class DateTime:
 
         """
 
-    def isPast(self):
+    def isPast():
         """
 
         Return true if this object represents a date/time earlier than
@@ -314,7 +314,7 @@ class DateTime:
 
         """
 
-    def isCurrentYear(self):
+    def isCurrentYear():
         """
 
         Return true if this object represents a date/time that falls
@@ -323,7 +323,7 @@ class DateTime:
 
         """
 
-    def isCurrentMonth(self):
+    def isCurrentMonth():
         """
 
         Return true if this object represents a date/time that falls
@@ -332,7 +332,7 @@ class DateTime:
 
         """
 
-    def isCurrentDay(self):
+    def isCurrentDay():
         """
 
         Return true if this object represents a date/time that falls
@@ -341,7 +341,7 @@ class DateTime:
 
         """
 
-    def isCurrentHour(self):
+    def isCurrentHour():
         """
 
         Return true if this object represents a date/time that falls
@@ -350,7 +350,7 @@ class DateTime:
 
         """
 
-    def isCurrentMinute(self):
+    def isCurrentMinute():
         """
 
         Return true if this object represents a date/time that falls
@@ -359,7 +359,7 @@ class DateTime:
 
         """
 
-    def earliestTime(self):
+    def earliestTime():
         """
 
         Return a new DateTime object that represents the earliest
@@ -368,7 +368,7 @@ class DateTime:
 
         """
 
-    def latestTime(self):
+    def latestTime():
         """
 
         Return a new DateTime object that represents the latest
@@ -449,7 +449,7 @@ class DateTime:
 
         """
 
-    def isLeapYear(self):
+    def isLeapYear():
         """
 
         Return true if the current year (in the context of the
@@ -457,7 +457,7 @@ class DateTime:
 
         """
 
-    def dayOfYear(self):
+    def dayOfYear():
         """
 
         Return the day of the year, in context of the timezone
@@ -466,7 +466,7 @@ class DateTime:
         """
 
     # Component access
-    def parts(self):
+    def parts():
         """
 
         Return a tuple containing the calendar year, month, day, hour,
@@ -474,14 +474,14 @@ class DateTime:
 
         """
 
-    def timezone(self):
+    def timezone():
         """
 
         Return the timezone in which the object is represented.
 
         """
 
-    def year(self):
+    def year():
         """
 
         Return the calendar year of the object
@@ -489,7 +489,7 @@ class DateTime:
         """
 
 
-    def month(self):
+    def month():
         """
 
         Return the month of the object as an integer
@@ -497,7 +497,7 @@ class DateTime:
         """
 
 
-    def Month(self):
+    def Month():
         """
 
         Return the full month name
@@ -505,7 +505,7 @@ class DateTime:
         """
 
 
-    def aMonth(self):
+    def aMonth():
         """
 
         Return the abbreviated month name.
@@ -513,7 +513,7 @@ class DateTime:
         """
 
 
-    def Mon(self):
+    def Mon():
         """
 
         Compatibility: see aMonth
@@ -521,7 +521,7 @@ class DateTime:
         """
 
 
-    def pMonth(self):
+    def pMonth():
         """
 
         Return the abbreviated (with period) month name.
@@ -529,7 +529,7 @@ class DateTime:
         """
 
 
-    def Mon_(self):
+    def Mon_():
         """
 
         Compatibility: see pMonth
@@ -537,7 +537,7 @@ class DateTime:
         """
 
 
-    def day(self):
+    def day():
         """
 
         Return the integer day
@@ -545,7 +545,7 @@ class DateTime:
         """
 
 
-    def Day(self): 
+    def Day(): 
         """
 
         Return the full name of the day of the week
@@ -553,7 +553,7 @@ class DateTime:
         """
 
 
-    def DayOfWeek(self):
+    def DayOfWeek():
         """
 
         Compatibility: see Day
@@ -561,7 +561,7 @@ class DateTime:
         """
 
 
-    def aDay(self):
+    def aDay():
         """
 
         Return the abbreviated name of the day of the week
@@ -569,7 +569,7 @@ class DateTime:
         """
 
 
-    def pDay(self):
+    def pDay():
         """
 
         Return the abbreviated (with period) name of the day of the
@@ -579,7 +579,7 @@ class DateTime:
         """
 
 
-    def Day_(self):
+    def Day_():
         """
 
         Compatibility: see pDay
@@ -587,7 +587,7 @@ class DateTime:
         """
 
 
-    def dow(self):
+    def dow():
         """
 
         Return the integer day of the week, where Sunday is 0
@@ -595,7 +595,7 @@ class DateTime:
         """
 
 
-    def dow_1(self):
+    def dow_1():
         """
 
         Return the integer day of the week, where Sunday is 1
@@ -603,7 +603,7 @@ class DateTime:
         """
 
 
-    def h_12(self):
+    def h_12():
         """
 
         Return the 12-hour clock representation of the hour
@@ -611,7 +611,7 @@ class DateTime:
         """
 
 
-    def h_24(self):
+    def h_24():
         """
 
         Return the 24-hour clock representation of the hour
@@ -619,7 +619,7 @@ class DateTime:
         """
 
 
-    def ampm(self):
+    def ampm():
         """
 
         Return the appropriate time modifier (am or pm)
@@ -627,7 +627,7 @@ class DateTime:
         """
 
 
-    def hour(self):
+    def hour():
         """
 
         Return the 24-hour clock representation of the hour
@@ -635,7 +635,7 @@ class DateTime:
         """
 
 
-    def minute(self):
+    def minute():
         """
 
         Return the minute
@@ -643,7 +643,7 @@ class DateTime:
         """
 
 
-    def second(self):
+    def second():
         """
 
         Return the second
@@ -651,14 +651,14 @@ class DateTime:
         """
 
 
-    def millis(self):
+    def millis():
         """
 
         Return the millisecond since the epoch in GMT.
 
         """
 
-    def strftime(self, format):
+    def strftime(format):
         """
 
         Return date time string formatted according to 'format'
@@ -666,28 +666,28 @@ class DateTime:
         """
 
     # General formats from previous DateTime
-    def Date(self):
+    def Date():
         """
 
         Return the date string for the object.
 
         """
 
-    def Time(self):
+    def Time():
         """
 
         Return the time string for an object to the nearest second.
 
         """
 
-    def TimeMinutes(self): 
+    def TimeMinutes(): 
         """
 
         Return the time string for an object not showing seconds.
 
         """
 
-    def AMPM(self):
+    def AMPM():
         """
 
         Return the time string for an object to the nearest second.
@@ -695,68 +695,68 @@ class DateTime:
         """
 
 
-    def AMPMMinutes(self):
+    def AMPMMinutes():
         """
 
         Return the time string for an object not showing seconds.
 
         """
 
-    def PreciseTime(self):
+    def PreciseTime():
         """
 
         Return the time string for the object.
 
         """
 
-    def PreciseAMPM(self):
+    def PreciseAMPM():
         """Return the time string for the object."""
 
-    def yy(self):
+    def yy():
         """Return calendar year as a 2 digit string"""
 
-    def mm(self):
+    def mm():
         """Return month as a 2 digit string"""
 
-    def dd(self):
+    def dd():
         """Return day as a 2 digit string"""
 
-    def rfc822(self):
+    def rfc822():
         """Return the date in RFC 822 format"""
 
     # New formats
-    def fCommon(self):
+    def fCommon():
         """Return a string representing the object\'s value
            in the format: March 1, 1997 1:45 pm"""
 
-    def fCommonZ(self):
+    def fCommonZ():
         """Return a string representing the object\'s value
            in the format: March 1, 1997 1:45 pm US/Eastern"""
 
-    def aCommon(self):
+    def aCommon():
         """Return a string representing the object\'s value
            in the format: Mar 1, 1997 1:45 pm"""
 
-    def aCommonZ(self):
+    def aCommonZ():
         """Return a string representing the object\'s value
            in the format: Mar 1, 1997 1:45 pm US/Eastern"""
 
-    def pCommon(self):
+    def pCommon():
         """Return a string representing the object\'s value
            in the format: Mar. 1, 1997 1:45 pm"""
 
-    def pCommonZ(self):
+    def pCommonZ():
         """Return a string representing the object\'s value
            in the format: Mar. 1, 1997 1:45 pm US/Eastern"""
 
 
-    def ISO(self):
+    def ISO():
         """Return the object in ISO standard format
 
         Dates are output as: YYYY-MM-DD HH:MM:SS
         """
 
-    def HTML4(self):
+    def HTML4():
         """Return the object in the format used in the HTML4.0 specification,
         one of the standard forms in ISO8601.  See
                http://www.w3.org/TR/NOTE-datetime

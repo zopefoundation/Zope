@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-def manage_addDTMLMethod(self, id, title):
+def manage_addDTMLMethod(id, title):
     """
     Add a DTML Method to the current ObjectManager
     """
@@ -103,7 +103,7 @@ class DTMLMethod:
 
     __extends__=('OFSP.ObjectManagerItem.ObjectManagerItem',)
     
-    def __call__(self, client=None, REQUEST={}, **kw):
+    def __call__(client=None, REQUEST={}, **kw):
         """
 
         Calling a DTMLMethod causes the Method to interpret the DTML
@@ -174,7 +174,7 @@ class DTMLMethod:
         Permission -- 'View'
         """
 
-    def manage_edit(self, data, title):
+    def manage_edit(data, title):
         """
         Change the DTML Method, replacing its contents with 'data' and
         changing its title.
@@ -184,18 +184,19 @@ class DTMLMethod:
         Permission -- 'Change DTML Methods'
         """
         
-    def document_src(self):
+    def document_src():
         """
         Returns the unrendered source text of the DTML Method.
         
         Permission -- 'View management screens'
         """
         
-    def get_size(self):
+    def get_size():
         """
         Returns the size of the unrendered source text of the DTML
         Method in bytes.
-        
+
+        Permission -- 'View'
         """
         
     __constructor__ = manage_addDTMLMethod

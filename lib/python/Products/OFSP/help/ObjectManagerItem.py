@@ -108,7 +108,7 @@ class ObjectManagerItem:
         This object is acquired and should not be set.
     """
 
-    def getId(self):
+    def getId():
         """
         Returns the object's id.
 
@@ -121,7 +121,7 @@ class ObjectManagerItem:
         Permission -- Always available
         """
     
-    def title_or_id(self):
+    def title_or_id():
         """
         If the title is not blank, return it, otherwise
         return the id.
@@ -129,7 +129,7 @@ class ObjectManagerItem:
         Permission -- Always available
         """
 
-    def title_and_id(self):
+    def title_and_id():
         """
         If the title is not blank, the return the title
         followed by the id in parentheses. Otherwise return the id.
@@ -137,7 +137,7 @@ class ObjectManagerItem:
         Permission -- Always available
         """
 
-    def manage_workspace(self):
+    def manage_workspace():
         """
 
         This is the web method that is called when a user selects an
@@ -145,10 +145,9 @@ class ObjectManagerItem:
         Management navigation view.
 
         Permission -- 'View management screens'
-
         """
   
-    def this(self):
+    def this():
         """
         Return the object.
         
@@ -161,10 +160,10 @@ class ObjectManagerItem:
         you are in a method of a non-item subobject of an item and you
         need to get the item outside of the context of the subobject.
 
-        Permission -- XXX
+        Permission -- Always available
         """
 
-    def absolute_url(self, relative=None):
+    def absolute_url(relative=None):
         """
         Return the absolute url to the object.
 
@@ -176,14 +175,14 @@ class ObjectManagerItem:
         Permission -- Always available
         """
 
-    def getPhysicalRoot(self):
+    def getPhysicalRoot():
         """
         Returns the top-level Zope Application object.
         
         Permission -- Python only
         """
 
-    def getPhysicalPath(self):
+    def getPhysicalPath():
         """
         Get the path of an object from the root, ignoring virtual
         hosts.
@@ -192,7 +191,7 @@ class ObjectManagerItem:
 
         """
 
-    def unrestrictedTraverse(self, path, default=None):
+    def unrestrictedTraverse(path, default=None):
         """
         Return the object obtained by traversing the given path from
         the object on which the method was called. This method begins
@@ -205,7 +204,7 @@ class ObjectManagerItem:
         Permission -- Python only
         """
 
-    def restrictedTraverse(self, path, default=None):
+    def restrictedTraverse(path, default=None):
         """
         Return the object obtained by traversing the given path from
         the object on which the method was called, performing security 
@@ -215,7 +214,6 @@ class ObjectManagerItem:
         returned.
 
         Permission -- Python only
-
         """
 
 

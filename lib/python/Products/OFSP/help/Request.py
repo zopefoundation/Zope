@@ -182,7 +182,7 @@ class Request:
         """
 
         
-    def get_header(self, name, default=None):
+    def get_header(name, default=None):
         """
 
         Return the named HTTP header, or an optional default argument
@@ -196,7 +196,7 @@ class Request:
         """
 
 
-    def has_key(self, key):
+    def has_key(key):
         """
 
         Returns a true value if the REQUEST object contains key,
@@ -207,7 +207,7 @@ class Request:
         """
 
 
-    def keys(self):
+    def keys():
         """
 
         Returns a sorted sequence of all keys in the REQUEST object.
@@ -216,7 +216,7 @@ class Request:
         
         """
 
-    def items(self):
+    def items():
         """
 
         Returns a sequence of (key, value) tuples for all the keys in
@@ -226,7 +226,7 @@ class Request:
         
         """
 
-    def values(self):
+    def values():
         """
 
         Returns a sequence of values for all the keys in the REQUEST
@@ -236,7 +236,7 @@ class Request:
         
         """
 
-    def setServerURL(self, protocol=None, hostname=None, port=None):
+    def setServerURL(protocol=None, hostname=None, port=None):
         """
 
         Sets the specified elements of 'SERVER_URL', also affecting
@@ -248,7 +248,7 @@ class Request:
 
         """
 
-    def setVirtualRoot(self, path, hard=0):
+    def setVirtualRoot(path, hard=0):
         """
 
         Alters 'URL', 'URLn', 'URLPATHn', 'BASEn', 'BASEPATHn', and

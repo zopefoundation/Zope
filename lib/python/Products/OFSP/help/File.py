@@ -84,7 +84,7 @@
 ##############################################################################
 
 
-def manage_addFile(self,id,file='',title='',precondition='', content_type=''):
+def manage_addFile(id, file='', title='', precondition='', content_type=''):
     """
 
     Add a new File object.
@@ -136,7 +136,7 @@ class File:
         'OFSP.PropertyManager.PropertyManager',
         )
     
-    def update_data(self, data, content_type=None, size=None):
+    def update_data(data, content_type=None, size=None):
         """
         Updates the contents of the File with 'data'.
         
@@ -147,14 +147,14 @@ class File:
         Permission -- Python only
         """
 
-    def getSize(self):
+    def getSize():
         """
         Returns the size of the file in bytes.
         
         Permission -- 'View'
         """
 
-    def getContentType(self):
+    def getContentType():
         """
         Returns the content type of the file.
         

@@ -104,7 +104,7 @@ class PropertySheets:
 
     """
     
-    def values(self):
+    def values():
         """
 
         Return a sequence of all of the PropertySheet objects for
@@ -114,7 +114,7 @@ class PropertySheets:
         
         """
 
-    def items(self):
+    def items():
         """
 
         Return a sequence containing an '(id, object)' tuple for
@@ -124,7 +124,7 @@ class PropertySheets:
 
         """
 
-    def get(self, name, default=None):
+    def get(name, default=None):
         """
 
         Return the PropertySheet identified by 'name', or the value
