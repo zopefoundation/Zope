@@ -26,26 +26,12 @@ __doc__='''Variable insertion parameters
        In addition to object methods, serveral additional custom
        formats are available:
 
-	   html-quote -- Convert characters that have special meaning
-	     in HTML to HTML character entities.
+           'whole-dollars' -- Show a numeric value with a dollar symbol.
 
-	   url-quote -- Convert characters that have special meaning
-	     in URLS to HTML character entities using decimal values.
-
-	   multi-line -- Convert newlines and carriage-return and
-	     newline combinations to break tags.
-
-           whole-dollars -- Show a numeric value with a dollar symbol.
-
-           dollar-with-commas -- Show a numeric value with a dollar
-             symbol and commas showing thousands, millions, and so on.
-
-           dollars-and-cents -- Show a numeric value with a dollar
+           'dollars-and-cents' -- Show a numeric value with a dollar
              symbol and two decimal places.
 
-           dollar-and-cents-with-commas -- Show a numeric value with a
-	     dollar symbol and two decimal places
-             and commas showing thousands, millions, and so on.
+           'collection-length' -- Get the length of a collection of objects.
 
        Note that when using the EPFS source format, both a
        C-style and a custom format may be provided.  In this case,
@@ -63,8 +49,9 @@ __doc__='''Variable insertion parameters
 
          - Cannot be formatted with the specified format, and
 
-         - Are either the special Python value 'None' or yield an
-           empty string when converted to a string.
+         - Are either the special Python value 'None' or 
+	   are false and yield an empty string when converted to
+	   a string.
 
        For example, when showing a monitary value retrieved from a
        database that is either a number or a missing value, the
@@ -74,29 +61,52 @@ __doc__='''Variable insertion parameters
 
     String manipulation
 
-       The parameters 'lower' and 'upper' may be provided to cause the
-       case of the inserted text to be changed.
+       A number of special attributes are provided to transform the
+       value after formatting has been applied.  These parameters
+       are supplied without arguments.
 
-       The parameter 'capitalize' may be provided to cause the first
-       character of the inserted value to be converted to upper case.
+       'lower' --  cause all upper-case letters to be converted to lower case. 
 
-       The parameter 'spacify' may be provided to cause underscores in
-       the inserted value to be converted to spaces.
+       'upper' --  cause all upper-case letters to be converted to lower case. 
+
+       'capitalize' -- cause the first character of the inserted value
+       to be converted to upper case. 
+
+       'spacify' -- cause underscores in the inserted value to be
+       converted to spaces.
+
+       'thousands_commas' -- cause commas to be inserted every three
+       digits to the left of a decimal point in values containing
+       numbers.  For example, the value, "12000 widgets" becomes
+       "12,000 widgets".
+
+       'html_quote' -- convert characters that have special meaning
+       in HTML to HTML character entities.
+
+       'url_quote' -- convert characters that have special meaning
+       in URLS to HTML character entities using decimal values.
+
+       'sql_quote' -- Convert single quotes to pairs of single
+       quotes. This is needed to safely include values in
+       Standard Query Language (SQL) strings.
+
+       'newline_to_br' -- Convert newlines and carriage-return and
+       newline combinations to break tags.
 
     Truncation
 
-       The parameters 'size' and 'etc'  can be used to truncate long
-       strings.  If the 'size' parameter is specified, the string to
+       The attributes 'size' and 'etc'  can be used to truncate long
+       strings.  If the 'size' attribute is specified, the string to
        be inserted is truncated at the given length.  If a space
        occurs in the second half of the truncated string, then the
        string is further truncated to the right-most space.  After
-       truncation, the value given for the 'etc' parameter is added to
-       the string.  If the 'etc' parameter is not provided, then '...'
+       truncation, the value given for the 'etc' attribute is added to
+       the string.  If the 'etc' attribute is not provided, then '...'
        is used.  For example, if the value of spam is
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.8 1998/01/08 20:57:34 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.9 1998/01/12 16:47:34 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -150,7 +160,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.8 1998/01/08 20:57:34 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DT_Util import *
 
@@ -163,9 +173,16 @@ class Var:
     def __init__(self, args, fmt=''):
 	args = parse_params(args, name='', lower=1, upper=1, expr='',
 			    capitalize=1, spacify=1, null='', fmt='s',
-			    size=0, etc='...')
+			    size=0, etc='...', thousands_commas=1,
+			    html_quote=1, url_quote=1, sql_quote=1,
+			    newline_to_break=1)
 	self.args=args
-	used=args.has_key
+	
+	self.modifiers=tuple(
+	    map(lambda t: t[1],
+		filter(lambda m, args=args, used=args.has_key:
+		       used(m[0]) and args[m[0]],
+		       modifiers)))
 
 	name, expr = name_param(args,'var',1)
 
@@ -188,29 +205,34 @@ class Var:
 	# handle special formats defined using fmt= first
 	if have_arg('fmt'):
 	    fmt=args['fmt']
-	    if hasattr(val, fmt):
-		val = getattr(val,fmt)()
-	    elif special_formats.has_key(fmt):
-		val = special_formats[fmt](val, name, md)
-	    elif fmt=='': val=''
-	    else: val = fmt % val
+	    if have_arg('null') and not val and val != 0:
+		try:
+		    if hasattr(val, fmt):
+			val = getattr(val,fmt)()
+		    elif special_formats.has_key(fmt):
+			val = special_formats[fmt](val, name, md)
+		    elif fmt=='': val=''
+		    else: val = fmt % val
+		except:
+		    t, v = sys.exc_type, sys.exc_value
+		    if val is None or not str(val): return args['null']
+		    raise t, v
 
-	# next, look for upper, lower, etc
-	if have_arg('upper'):
-	    val = upper(val)
-	if have_arg('lower'):
-	    val = lower(val)
-	if have_arg('capitalize'):
-	    val = capitalize(val)
-	if have_arg('spacify'):
-	    val = gsub('_', ' ', val)
-
-	# after this, if it's null and a null= option was given, return that
-	if not val and have_arg('null'):
-	    return args['null']
+	    else:
+		# We duplicate the code here to avoid exception handler
+		# which tends to screw up stack or leak
+		if hasattr(val, fmt):
+		    val = getattr(val,fmt)()
+		elif special_formats.has_key(fmt):
+		    val = special_formats[fmt](val, name, md)
+		elif fmt=='': val=''
+		else: val = fmt % val
 
 	# finally, pump it through the actual string format...
 	val = ('%'+self.fmt) % val
+
+	# next, look for upper, lower, etc
+	for f in self.modifiers: val=f(val)
 
 	if have_arg('size'):
 	    size=args['size']
@@ -246,7 +268,7 @@ def url_quote(v, name='(Unknown name)', md={}):
     import urllib
     return urllib.quote(str(v))
 
-def multi_line(v, name='(Unknown name)', md={},
+def newline_to_br(v, name='(Unknown name)', md={},
 	       nl=regex.compile('\r?\n')):
     return gsub(nl,'<br>\n',str(v))
 
@@ -258,7 +280,7 @@ def dollars_and_cents(v, name='(Unknown name)', md={}):
     try: return "$%.2f" % v
     except: return ''
 
-def commatify(v, name='(Unknown name)', md={},
+def thousands_commas(v, name='(Unknown name)', md={},
 	      thou=regex.compile("\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)")):
     v=str(v)
     while thou.search(v) >= 0:
@@ -268,18 +290,18 @@ def commatify(v, name='(Unknown name)', md={},
 def whole_dollars_with_commas(v, name='(Unknown name)', md={}):
     try: v= "$%d" % v
     except: v=''
-    return commatify(v)
+    return thousands_commas(v)
 
 def dollars_and_cents_with_commas(v, name='(Unknown name)', md={}):
     try: v= "$%.2f" % v
     except: v= ''
-    return commatify(v)
+    return thousands_commas(v)
 
 def len_format(v, name='(Unknown name)', md={}):
     return str(len(v))
 
 def len_comma(v, name='(Unknown name)', md={}):
-    return commatify(str(len(v)))
+    return thousands_commas(str(len(v)))
 
 StructuredText=None
 def structured_text(v, name='(Unknown name)', md={}):
@@ -297,23 +319,35 @@ def sql_quote(v, name='(Unknown name)', md={}):
     return v
 
 special_formats={
-    'html-quote': html_quote,
-    'url-quote': url_quote,
-    'multi-line': multi_line,
-    'comma-numeric': commatify,
     'whole-dollars': whole_dollars,
     'dollars-and-cents': dollars_and_cents,
+    'collection-length': len_format,
+    'structured-text': structured_text,
+
+    # The rest are depricated:
+    'sql-quote': sql_quote,
+    'html-quote': html_quote,
+    'url-quote': url_quote,
+    'multi-line': newline_to_br,
+    'comma-numeric': thousands_commas,
     'dollars-with-commas': whole_dollars_with_commas,
     'dollars-and-cents-with-commas': dollars_and_cents_with_commas,
-    'collection-length': len_format,
-    'collection-length-with-commas': len_comma,
-    'structured-text': structured_text,
-    'sql-quote': sql_quote,
     }
+
+def spacify(val): return gsub('_', ' ', val)
+
+modifiers=(html_quote, url_quote, newline_to_br, lower, upper,
+	   capitalize, spacify, thousands_commas, sql_quote)
+modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.9  1998/01/12 16:47:34  jim
+# Changed a number of custom formats to modifiers, since they can
+# be applies cumulatively.
+# Updated documentation.
+#
 # Revision 1.8  1998/01/08 20:57:34  jim
 # *** empty log message ***
 #
@@ -329,7 +363,7 @@ special_formats={
 # removed a comment burp.
 #
 # Revision 1.4  1997/10/23 14:27:47  jim
-# Added truncation support via size and etc parameters.
+# Added truncation support via size and etc attributes.
 #
 # Revision 1.3  1997/10/23 13:30:16  jim
 # Added comma-numeric format.
