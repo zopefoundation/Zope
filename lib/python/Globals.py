@@ -85,7 +85,12 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
+
+# Global constants: __replaceable__ flags:
+NOT_REPLACEABLE = 0
+REPLACEABLE = 1
+UNIQUE = 2
 
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay, string

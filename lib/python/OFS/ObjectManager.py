@@ -84,15 +84,16 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.143 2001/10/26 15:11:59 andreasjung Exp $"""
+$Id: ObjectManager.py,v 1.144 2001/11/13 19:31:50 evan Exp $"""
 
-__version__='$Revision: 1.143 $'[11:-2]
+__version__='$Revision: 1.144 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
 from OFS.Traversable import Traversable
 from Globals import DTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
+from Globals import REPLACEABLE, NOT_REPLACEABLE, UNIQUE
 from webdav.NullResource import NullResource
 from webdav.Collection import Collection
 from Acquisition import aq_base
@@ -110,11 +111,6 @@ customImporters={
     }
 
 bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# ]').search #TS
-
-# Global constants: __replaceable__ flags:
-NOT_REPLACEABLE = 0
-REPLACEABLE = 1
-UNIQUE = 2
 
 BadRequestException = 'Bad Request'
 
@@ -569,13 +565,23 @@ class ObjectManager(
         software_home = os.path.join(SOFTWARE_HOME, '..%s..' % os.sep)
         software_home = os.path.normpath(software_home)
         
-        
         for impath in (instance_home, software_home):
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break
         else:
             raise BadRequestException, 'File does not exist: %s' % file
+
+        self._importObjectFromFile(filepath, verify=not not REQUEST,
+                                   set_owner=set_owner)
+        
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, 
+                manage_tabs_message='<em>%s</em> sucessfully imported' % id,
+                title = 'Object imported',
+                update_menu=1)
+
+    def _importObjectFromFile(self, filepath, verify=1, set_owner=1):
         # locate a valid connection
         connection=self._p_jar
         obj=self
@@ -585,9 +591,7 @@ class ObjectManager(
             connection=obj._p_jar
         ob=connection.importFile(
             filepath, customImporters=customImporters)
-        if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
-        #id=ob.getId()
-        #can't use above getId() call, it fails on 'old' exported objects
+        if verify: self._verifyObjectPaste(ob, validate_src=0)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()
         self._setObject(id, ob, set_owner=set_owner)
@@ -596,13 +600,6 @@ class ObjectManager(
         # that the object was imported into.
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
-
-        if REQUEST is not None:
-            return self.manage_main(self, REQUEST, 
-                manage_tabs_message='<em>%s</em> sucessfully imported' % id,
-                title = 'Object imported',
-                update_menu=1)
-
 
     # FTP support methods
     
