@@ -141,6 +141,10 @@ Zope Changes
 
         - Fixed colspan counting in tree tag (Collector #913).
 
+        - Logging enabled with the -D option to the z2.py script did
+          not include traceback information and was not performed
+          during Zope startup.  This made finding startup errors
+          difficult.
 
     Zope 2.1.1
 
