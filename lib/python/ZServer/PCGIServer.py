@@ -429,7 +429,7 @@ class PCGIPipe:
             self._channel.push('%010d%s%010d' % (l, data, 0), 0)
             self._channel.push(LoggingProducer(self._channel, l, 'log_request'), 0)        
             self._channel.push(CallbackProducer(
-                lambda t=('E', id(self._channel)): apply(DebugLogger.log,t)))
+                lambda t=('E', id(self._channel)): apply(DebugLogger.log,t)), 0)
 
             if self._shutdown:
                 try: r=self._shutdown[0]
