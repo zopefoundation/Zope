@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.60 1998/04/08 16:55:35 jim Exp $'''
-__version__='$Revision: 1.60 $'[11:-2]
+$Id: Application.py,v 1.61 1998/04/20 16:44:53 jim Exp $'''
+__version__='$Revision: 1.61 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -319,60 +319,49 @@ def lcd(e):
     return dat
 
 
+
 def lic_check(product_name):
+    default_license=0
+
     path_join  =os.path.join
     product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
     package_dir=path_join(product_dir, product_name)
     bobobase   =Globals.Bobobase
     try: f=open(path_join(package_dir,'%s.lic' % product_name), 'rb')
-    except:
-	try:
-	    product=getattr(__import__("Products.%s" % product_name),
+    except: f, val = None, default_license
+
+    if f is not None:
+	dat=lcd(f.read())
+	f.close()
+	if dat is None: name, val = '', default_license
+	else: [name, val]=dat[:2]
+
+	if name != product_name: val=default_license
+	elif val is None: return 1
+
+    if not bobobase.has_key('_t_'): t=bobobase['_t_']={}
+    else: t=bobobase['_t_']
+
+    if not t.has_key(product_name):
+	t[product_name]=time.time()
+	bobobase['_t_']=t
+
+    if (t[product_name] + (86400.0 * val)) <= time.time():
+        # License has expired!
+	product=getattr(__import__("Products.%s" % product_name),
 			product_name)
-	    for s in pgetattr(product, 'classes', ()):
-		p=rfind(s,'.')
-		m='Products.%s.%s' % (product_name, s[:p])
-		c=s[p+1:]
+	for s in pgetattr(product, 'classes', ()):
+	    p=rfind(s,'.')
+	    m='Products.%s.%s' % (product_name, s[:p])
+	    c=s[p+1:]
+	    try: __import__(m)
+	    except:
+		m=s[:p]
 		__import__(m)
-		setattr(sys.modules[m], c, Expired)
-	except: pass
+	    setattr(sys.modules[m], c, Expired)
 	return 0
 
-    dat=f.read()
-    f.close()
-
-    dat=lcd(dat)
-    if dat is None:
-	return 0
-
-    name=dat[0]
-    val =dat[1]
-
-    if name != product_name:
-	return 0
-    if val is None:
-	return 1
-    else:
-	if not bobobase.has_key('_t_'):
-	    bobobase['_t_']={}
-	t=bobobase['_t_']
-	if not t.has_key(product_name):
-	    t[product_name]=time.time()
-	    bobobase['_t_']=t
-	if (t[product_name] + (86400.0 * val)) < time.time():
-	    product=getattr(__import__("Products.%s" % product_name),
-			    product_name)
-	    for s in pgetattr(product, 'classes', ()):
-		p=rfind(s,'.')
-		m='Products.%s.%s' % (product_name, s[:p])
-		c=s[p+1:]
-		try: __import__(m)
-		except:
-		    m=s[:p]
-		    __import__(m)
-		setattr(sys.modules[m], c, Expired)
-	    return 0
-	return 1
+    return 1
 
 
 
@@ -402,6 +391,10 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.61  1998/04/20 16:44:53  jim
+# Simplified and changed lic_check so that a 30-day license is assumed
+# if a license file cannot be read or is for the wrong product.
+#
 # Revision 1.60  1998/04/08 16:55:35  jim
 # Added error type and value as comment in standard error message.
 #
