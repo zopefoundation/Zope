@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.22 1997/03/22 13:02:17 jim Exp $'''
+$Id: InvertedIndex.py,v 1.23 1997/03/22 13:32:23 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,14 @@ $Id: InvertedIndex.py,v 1.22 1997/03/22 13:02:17 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.23  1997/03/22 13:32:23  jim
+# Rearranged index method to update result lists in a separate
+# overridable method.  This is needed to implement a clear method
+# in a subclass that allows an inverted index to be "cleared" without
+# actually updating data records.
+#
+# Made some slight optimizations.
+#
 # Revision 1.22  1997/03/22 13:02:17  jim
 # Finish fixing bug in __or__ that Chris has started to fix.
 #
@@ -156,10 +164,11 @@ $Id: InvertedIndex.py,v 1.22 1997/03/22 13:02:17 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 import regex, regsub, string, copy
+from string import lower
 
 from types import *
 
@@ -477,11 +486,10 @@ class Index:
 
     import math
 
-    List = self.list_class
     index = self._index_object
 
     src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
-    src = filter(None, self.split_words(src))
+    src = map(lower,filter(None, self.split_words(src)))
 
     if (len(src) < 2):
       raise IndexingError, 'cannot index document with fewer than two keywords'
@@ -492,7 +500,6 @@ class Index:
     i = -1
     for s in src:
       i = i + 1
-      s = string.lower(s)
       stopword_flag = 0
 
       while (not stopword_flag):
@@ -515,13 +522,18 @@ class Index:
       except KeyError:
         d[s] = [ i ]
 
-    for s in d.keys():
-      freq = int(10000 * (len(d[s]) / nwords))
-      try:
-        index[s].addentry(srckey, freq, d[s])
-      except KeyError:
-        index[s] = List({srckey : (freq, d[s])})
+    addentry=self.addentry
+    for word,positions in d.items():
+      freq = int(10000 * (len(positions) / nwords))
+      addentry(word,srckey,(freq, positions))
 
+  def addentry(self,word,key,data):
+      index=self._index_object
+      try: rl=index[word]
+      except:
+	  rl=self.list_class()
+	  index[word]=rl
+      rl[key]=data
 
   def __getitem__(self, key):
     '''\
@@ -559,7 +571,7 @@ class Index:
 
       return reduce(lambda x, y: x | y, Lists)
 
-    key = string.lower(key)
+    key = lower(key)
 
     while (type(key) == StringType):
       try:
