@@ -38,7 +38,6 @@ Zope Changes
         was finished.
 
       - Collector #372: tal:attributes failed when combined with tal:replace.
-
       - Don't try to close network connections in the signal handler
         for shutdown.  This hosed ZEO clients.
 
@@ -52,8 +51,6 @@ Zope Changes
 
       - Write pidfiles out with trailing newlines.
       
-      - Collector #411: DateTime.rfc822 is not rfc822 compliant 
-
   Zope 2.6.0 beta 1
 
     Bugs Fixed
