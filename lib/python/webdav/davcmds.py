@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix, urlbase
@@ -213,6 +213,9 @@ class PropFind:
         result.write('</d:response>\n')        
         if depth in ('1', 'infinity') and iscol:
             for ob in obj.objectValues():
+                if hasattr(ob,"meta_type"):
+                    if ob.meta_type=="Broken Because Product is Gone": continue
+
                 dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)
                 if hasattr(ob, '__locknull_resource__'):
                     # Do nothing, a null resource shouldn't show up to DAV
