@@ -619,20 +619,3 @@ class DocumentClass:
             #        start, end)
         else:
             return None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

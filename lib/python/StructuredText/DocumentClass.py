@@ -946,6 +946,3 @@ class DocumentClass:
         else:
             return None
 
-
-
-
