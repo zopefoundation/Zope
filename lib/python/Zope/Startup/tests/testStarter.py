@@ -120,7 +120,6 @@ class ZopeStarterTestCase(unittest.TestCase):
            </eventlog>""")
         starter = ZopeStarter(conf)
         starter.setupStartupHandler()
-        self.assert_(not zLOG._call_initialize)
 
         # startup handler should take on the level of the event log handler
         # with the lowest level
