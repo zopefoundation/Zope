@@ -81,9 +81,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         try: self.__len__.set(0)
         except AttributeError: self.__len__=BTrees.Length.Length()
 
-        for index in self.indexes.values():
-            if hasattr(index, '__of__'): index=index.__of__(self)
-            index.clear()
+        for index in self.indexes.keys():
+            self.getIndex(index).clear()
 
     def _convertBTrees(self, threshold=200):
 
