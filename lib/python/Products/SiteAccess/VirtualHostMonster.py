@@ -84,11 +84,11 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         '''Traversing away'''
         if name in ('manage_main', 'manage_workspace'):
             return self.manage_main
+        parents = request.PARENTS
+        parents.pop() # I don't belong there
         request.setVirtualRoot([])
         stack = request['TraversalRequestNameStack']
         stack.append(name)
-        parents = request.PARENTS
-        parents.pop() # I don't belong there
         return parents.pop() # He'll get put back on
 
 def manage_addVirtualHostMonster(self, id, REQUEST=None, **ignored):
