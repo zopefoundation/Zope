@@ -196,11 +196,11 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         # remember warnings
         pub.settings.warning_stream = Warnings()
 
-        # input
         pub.source = docutils.io.StringInput(
             source=self.source, encoding=self.input_encoding)
 
         # output - not that it's needed
+        pub.settings.output_encoding = self.output_encoding
         pub.destination = docutils.io.StringOutput(
             encoding=self.output_encoding)
 
@@ -281,6 +281,13 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         return ZReST.inheritedAttribute('manage_historyCompare')(
             self, rev1, rev2, REQUEST,
             historyComparisonResults=html_diff(rev1.source, rev2.source))
+
+    def manage_editProperties(self, REQUEST):
+        """ re-render the page after changing the properties (encodings!!!) """
+        result = PropertyManager.manage_editProperties(self, REQUEST)        
+        self.render()
+        return result
+
 
 InitializeClass(ZReST)
 modulesecurity.apply(globals())

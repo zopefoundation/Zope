@@ -142,6 +142,11 @@ Zope Changes
 
     Bugs fixed
 
+     - ZReST: the charset used in the rendered HTML was not set to the 
+       corresponding output_encoding property of the ZReST instance. In addition
+       changing the encodings through the Properties tab did not re-render 
+       the HTML.
+
      - Collector #1234: an exception triple passed to LOG() was not 
        propagated properly to the logging module of Python
 
