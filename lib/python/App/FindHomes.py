@@ -85,7 +85,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import os, sys, Products, string
 from Common import package_home
@@ -105,14 +105,19 @@ except:
 
 sys.modules['__builtin__'].SOFTWARE_HOME=SOFTWARE_HOME=home
 
-try: chome=os.environ['INSTANCE_HOME']
+try:
+    chome=os.environ['INSTANCE_HOME']
 except:
     chome=home
     d,e=path_split(chome)
     if e=='python':
         d,e=path_split(d)
         if e=='lib': chome=d or os.getcwd()
-    
+else:
+    inst_ppath = path_join(chome, 'lib', 'python')
+    if os.path.isdir(inst_ppath):
+        sys.path.insert(0, inst_ppath)
+
 sys.modules['__builtin__'].INSTANCE_HOME=INSTANCE_HOME=chome
 
 # CLIENT_HOME allows ZEO clients to easily keep distinct pid and
