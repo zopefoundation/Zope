@@ -575,7 +575,7 @@ setup(
     name='Zope',
     author=AUTHOR,
 
-    packages=['Zope']
+    packages=['Zope', 'Zope.App']
 )
 
 # webdav
