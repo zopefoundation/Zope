@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.36 1997/03/20 22:31:46 jim Exp $"""
+$Id: Publish.py,v 1.37 1997/03/26 19:05:56 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.36 1997/03/20 22:31:46 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 def main():
@@ -944,7 +944,12 @@ class ModulePublisher:
 	query['PARENT_URL']=URL[:string.rfind(URL,'/')]
 	if parents:
 	    parents.reverse()
-	    query['self']=parents[0]
+	    selfarg=parents[0]
+	    for i in range(len(parents)):
+		try:
+		    p=parents[i].aq_self
+		    parents[i]=p
+		except: pass
 	query['PARENTS']=parents
 	response.setBase(self.base,URL)
 
@@ -956,7 +961,8 @@ class ModulePublisher:
 		v=query[argument_name]
 		args.append(v)
 	    except (KeyError,AttributeError,IndexError):
-		if name_index < nrequired:
+		if argument_name=='self': args.append(selfarg)
+		elif name_index < nrequired:
 		    self.badRequestError(argument_name)
 		else:
 		    args.append(defaults[name_index-nrequired])
@@ -1426,6 +1432,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.37  1997/03/26 19:05:56  jim
+# Added fix to avoid circular references through parents with
+# acquisition.
+#
 # Revision 1.36  1997/03/20 22:31:46  jim
 # Added logic to requote URL components as I re-build URL path.
 #
