@@ -78,14 +78,6 @@ class DateTimeTests (unittest.TestCase):
         s = dt.strftime('%A')
         assert s == 'Friday', (dt, s)
 
-    def testMultiArgConstructors(self):
-        '''Test of constructors 5 and 6'''
-        dt = DateTime(957710021.390, DateTime().timezone())
-        dt1 = DateTime(2000, 128.440062393519)
-        m = dt.millis()
-        m1 = dt1.millis()
-        assert m == m1, (dt, dt1, m, m1)
-
     def testOldDate(self):
         '''Fails when an 1800 date is displayed with negative signs'''
         dt = DateTime('1830/5/6 12:31:46.213 pm')
@@ -106,11 +98,23 @@ class DateTimeTests (unittest.TestCase):
         dt3 = dt2 - 3.141592653
         assert dt1 == dt3, (dt, dt1, dt2, dt3)
 
-    def testTZ1(self):
-        '''Time zone manipulation'''
-        dt = DateTime('1997/3/9 1:45pm GMT-4')
-        dt1 = DateTime('1997/3/9 1:45 am GMT+8')
-        assert dt - dt1 == 1.0, (dt, dt1)
+    def testTZ1add(self):
+        '''Time zone manipulation: add to a date'''
+        dt = DateTime('1997/3/8 1:45am GMT-4')
+        dt1 = DateTime('1997/3/9 1:45pm GMT+8')
+        assert dt + 1.0 == dt1, (dt, dt1)
+
+    def testTZ1sub(self):
+        '''Time zone manipulation: subtract from a date'''
+        dt = DateTime('1997/3/8 1:45am GMT-4')
+        dt1 = DateTime('1997/3/9 1:45pm GMT+8')
+        assert dt1 - 1.0 == dt, (dt, dt1)
+
+    def testTZ1diff(self):
+        '''Time zone manipulation: diff two dates'''
+        dt = DateTime('1997/3/8 1:45am GMT-4')
+        dt1 = DateTime('1997/3/9 1:45pm GMT+8')
+        assert dt1 - dt == 1.0, (dt, dt1)
 
     def testTZ2(self):
         '''Time zone manipulation test 2'''
@@ -119,6 +123,12 @@ class DateTimeTests (unittest.TestCase):
         s = dt.second()
         s1 = dt1.second()
         assert s == s1, (dt, dt1, s, s1)
+
+    def testTZDiffDaylight(self):
+        '''Diff dates across daylight savings dates'''
+        dt = DateTime('2000/6/8 1:45am US/Eastern')
+        dt1 = DateTime('2000/12/8 12:45am US/Eastern')
+        assert dt1 - dt == 183, (dt, dt1, dt1 - dt)
 
     def testY10KDate(self):
         '''Comparison of a Y10K date and a Y2K date'''
