@@ -97,6 +97,8 @@ Zope Changes
         - Added 'urlparam' attribute to tree tag to allow propagation
           of extra parameters through tree URL's (Collector #1045).
 
+        - When renaming objects, the old id is provided as the 
+          default value for the new id.
 
       Bugs Fixed
 
