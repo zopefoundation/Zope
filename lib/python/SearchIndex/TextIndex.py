@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.9 1998/02/05 15:24:22 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: TextIndex.py,v 1.10 1998/02/05 19:02:09 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -222,11 +222,11 @@ class TextIndex(Persistent):
 		else: d[s]=1
 
 	index=self._index
-	indexed=index.has_key
+	get=index.get
 	if un:
 	    for word,score in d.items():
-		if indexed(word):
-		    r=index[word]
+		r=get(word)
+		if r is not None:
 		    if type(r) is tupleType: del index[word]
 		    else:
 			if r.has_key(id): del r[id]
@@ -238,7 +238,8 @@ class TextIndex(Persistent):
 			    else: index[word]=r
 	else:
 	    for word,score in d.items():
-		if indexed(word):
+		r=get(word)
+		if r is not None:
 		    r=index[word]
 		    if type(r) is tupleType:
 			r={r[0]:r[1]}
@@ -274,9 +275,8 @@ class TextIndex(Persistent):
 	if len(src) == 1:
 	    src=src[0]
 	    if src[:1]=='"' and src[-1:]=='"': return self[src]
-	    index=self._index
-	    if index.has_key(word): r=self._index[word]
-	    else: r={}
+	    r=self._index.get(word,None)
+	    if r is None: r={}
 	    return ResultList(r,(word,),self)
 	    
 	r=None
@@ -626,6 +626,9 @@ for word in stop_words: stop_word_dict[word]=None
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.10  1998/02/05 19:02:09  jim
+# Changed to use get method.
+#
 # Revision 1.9  1998/02/05 15:24:22  jim
 # Got rid of most try/excepts.
 #
