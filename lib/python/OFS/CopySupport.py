@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -27,6 +27,7 @@ class CopyContainer:
 	return v
 
     def pasteFromClipboard(self,clip_id='',clip_data='',REQUEST=None):
+	""" """
 	if not clip_data: return eNoData
 
 	try:    moniker=rPickle.loads(unquote(clip_data))

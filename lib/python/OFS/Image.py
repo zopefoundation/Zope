@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -69,7 +69,9 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	RESPONSE['content-type'] =self.content_type
         return self.data
 
-    def view_image_or_file(self, RESPONSE): return self.index_html(RESPONSE)
+    def view_image_or_file(self, RESPONSE):
+	""" """
+	return self.index_html(RESPONSE)
 
     def manage_edit(self,title,content_type,REQUEST=None):
 	""" """
