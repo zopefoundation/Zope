@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""MailHost, a Principia SMTP object"""
+"""SMTP mail objects"""
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from socket import *; from select import select
@@ -93,8 +93,8 @@ import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.44 1999/07/21 14:26:00 jeffrey Exp $ 
-__version__ = "$Revision: 1.44 $"[11:-2]
+#$Id: MailHost.py,v 1.45 1999/11/03 14:42:15 brian Exp $ 
+__version__ = "$Revision: 1.45 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 

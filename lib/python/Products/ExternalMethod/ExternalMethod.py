@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
@@ -102,7 +102,7 @@ manage_addExternalMethodForm=HTMLFile('methodAdd', globals())
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder
   
-    Un addition to the standard Principia object-creation arguments,
+    Un addition to the standard object-creation arguments,
     'id' and title, the following arguments are defined:
 
         function -- The name of the python function. This can be a
@@ -133,13 +133,13 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
     The function is defined in an external file.  This file is treated
     like a module, but is not a module.  It is not imported directly,
     but is rather read and evaluated.  The file must reside in the
-    'Extensions' subdirectory of the Principia installation, or in an
+    'Extensions' subdirectory of the Zope installation, or in an
     'Extensions' subdirectory of a product directory.
 
     Due to the way ExternalMethods are loaded, it is not *currently*
     possible to use Python modules that reside in the 'Extensions'
     directory.  It is possible to load modules found in the
-    'lib/python' directory of the Principia installation, or in
+    'lib/python' directory of the Zope installation, or in
     packages that are in the 'lib/python' directory.
 
     """
