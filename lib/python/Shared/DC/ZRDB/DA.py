@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.77 1999/12/29 15:05:53 petrilli Exp $'''
-__version__='$Revision: 1.77 $'[11:-2]
+$Id: DA.py,v 1.78 2000/01/10 23:05:51 amos Exp $'''
+__version__='$Revision: 1.78 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -137,10 +137,14 @@ class DA(
     allow_simple_one_argument_traversal=None
     
     manage_options=(
-        {'label':'Edit', 'action':'manage_main'},
-        {'label':'Test', 'action':'manage_testForm'},
-        {'label':'Advanced', 'action':'manage_advancedForm'},
-        {'label':'Security', 'action':'manage_access'},
+        {'label':'Edit', 'action':'manage_main',
+         'help':('ZSQLMethods','Z-SQL-Method_Edit.dtml')},
+        {'label':'Test', 'action':'manage_testForm',
+         'help':('ZSQLMethods','Z-SQL-Method_Test.dtml')},
+        {'label':'Advanced', 'action':'manage_advancedForm',
+         'help':('ZSQLMethods','Z-SQL-Method_Advanced.dtml')},
+        {'label':'Security', 'action':'manage_access',
+         'help':('ZSQLMethods','Z-SQL-Method_Security.dtml')},
         )
  
     # Specify how individual operations add up to "permissions":
