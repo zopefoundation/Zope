@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.1 1997/08/27 18:55:47 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.2 1997/09/02 19:02:51 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import regex, string
 
@@ -207,6 +207,9 @@ def render_blocks(self, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.2  1997/09/02 19:02:51  jim
+# *** empty log message ***
+#
 # Revision 1.1  1997/08/27 18:55:47  jim
 # initial
 #
