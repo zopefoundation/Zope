@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.111 $'[11:-2]
+__version__='$Revision: 1.112 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -148,13 +148,16 @@ class File(Persistent,Implicit,PropertyManager,
          'help':('OFSP','File_Edit.stx')},
         {'label':'Upload', 'action':'manage_uploadForm',
          'help':('OFSP','File_Upload.stx')},
+        ) 
+        + PropertyManager.manage_options +
+        (
         {'label':'View', 'action':'',
          'help':('OFSP','File_View.stx')},
         )
-        +PropertyManager.manage_options
-        +Item_w__name__.manage_options
-        +RoleManager.manage_options
+        + RoleManager.manage_options
+        + Item_w__name__.manage_options
         )
+
 
     __ac_permissions__=(
         ('View management screens',
@@ -464,12 +467,14 @@ class Image(File):
          'help':('OFSP','Image_Edit.stx')},
         {'label':'Upload', 'action':'manage_uploadForm',
          'help':('OFSP','File_Upload.stx')},
+        ) 
+        + PropertyManager.manage_options +
+        (
         {'label':'View', 'action':'view_image_or_file',
-         'help':('OFSP','Image_View.stx')}
+         'help':('OFSP','Image_View.stx')},
         )
-        +PropertyManager.manage_options
-        +Item_w__name__.manage_options
-        +RoleManager.manage_options
+        + RoleManager.manage_options
+        + Item_w__name__.manage_options
         )
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')

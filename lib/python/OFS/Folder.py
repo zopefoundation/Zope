@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.90 2000/06/16 19:40:14 srichter Exp $"""
+$Id: Folder.py,v 1.91 2000/07/26 15:43:13 brian Exp $"""
 
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -155,15 +155,16 @@ class Folder(
     _properties=({'id':'title', 'type': 'string'},)
 
     manage_options=(
-        ObjectManager.ObjectManager.manage_options+
-        PropertyManager.PropertyManager.manage_options+
+        (ObjectManager.ObjectManager.manage_options[0],)+
         (
         {'label':'View', 'action':'index_html',
          'help':('OFSP','Folder_View.stx')},
         )+
-        FindSupport.FindSupport.manage_options+
+        PropertyManager.PropertyManager.manage_options+
+        (ObjectManager.ObjectManager.manage_options[1],)+
         AccessControl.Role.RoleManager.manage_options+
-        SimpleItem.Item.manage_options
+        SimpleItem.Item.manage_options+
+        FindSupport.FindSupport.manage_options
         )
 
     __ac_permissions__=()

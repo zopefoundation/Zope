@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -109,8 +109,9 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     icon     ='p_/dtmldoc'
 
     manage_options=(
-        DTMLMethod.manage_options+
-        PropertyManager.manage_options
+        DTMLMethod.manage_options[:2] +
+        PropertyManager.manage_options +
+        DTMLMethod.manage_options[2:]
         )
 
     __ac_permissions__=(
