@@ -83,11 +83,12 @@
 # 
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.4 2001/06/01 18:53:40 andreas Exp $'
+__version__ = '$Id: util.py,v 1.5 2001/06/11 16:04:21 andreas Exp $'
 
 
 import re
 from types import StringType,ListType,TupleType,DictType,InstanceType
+from DateTime import DateTime
 
 class parseIndexRequest:
     """
@@ -145,25 +146,33 @@ class parseIndexRequest:
         keys = request[iid]
 
         if type(keys) == InstanceType:
-            """ query is of type record """
-            record = keys
 
-            if hasattr(record,'query'):           
-                keys = record.query
-            else:
-                raise self.ParserException,\
-                   "record for '%s' *must* contain a 'query' attribute" % self.id
-            
-            if type(keys)== StringType:
-                self.keys = [keys.strip()]
-            elif type(keys) == ListType:
+            if isinstance(keys,DateTime):
+                """query is a DateTime instance"""
+
                 self.keys = keys
 
-            for op in options:
-                if op in ["query"]: continue 
 
-                if hasattr(record,op):
-                    setattr(self,k,getattr(record,k))
+            else:
+                """ query is of type record """
+                record = keys
+
+                if hasattr(record,'query'):           
+                    keys = record.query
+                else:
+                    raise self.ParserException,\
+                       "record for '%s' *must* contain a 'query' attribute" % self.id
+                
+                if type(keys)== StringType:
+                    self.keys = [keys.strip()]
+                elif type(keys) == ListType:
+                    self.keys = keys
+    
+                for op in options:
+                    if op in ["query"]: continue 
+    
+                    if hasattr(record,op):
+                        setattr(self,k,getattr(record,k))
 
 
         elif type(keys)==DictType:
