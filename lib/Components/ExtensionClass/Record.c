@@ -3,57 +3,14 @@
 
        Copyright 1997 Digital Creations, L.L.C., 910 Princess Anne
        Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved.  Copyright in this software is owned by DCLC,
-       unless otherwise indicated. Permission to use, copy and
-       distribute this software is hereby granted, provided that the
-       above copyright notice appear in all copies and that both that
-       copyright notice and this permission notice appear. Note that
-       any product, process or technology described in this software
-       may be the subject of other Intellectual Property rights
-       reserved by Digital Creations, L.C. and are not licensed
-       hereunder.
-
-     Trademarks 
-
-       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-       All other trademarks are owned by their respective companies. 
-
-     No Warranty 
-
-       The software is provided "as is" without warranty of any kind,
-       either express or implied, including, but not limited to, the
-       implied warranties of merchantability, fitness for a particular
-       purpose, or non-infringement. This software could include
-       technical inaccuracies or typographical errors. Changes are
-       periodically made to the software; these changes will be
-       incorporated in new editions of the software. DCLC may make
-       improvements and/or changes in this software at any time
-       without notice.
-
-     Limitation Of Liability 
-
-       In no event will DCLC be liable for direct, indirect, special,
-       incidental, economic, cover, or consequential damages arising
-       out of the use of or inability to use this software even if
-       advised of the possibility of such damages. Some states do not
-       allow the exclusion or limitation of implied warranties or
-       limitation of liability for incidental or consequential
-       damages, so the above limitation or exclusion may not apply to
-       you.
-
-    If you have questions regarding this software,
-    contact:
-   
-      Digital Creations L.L.C.  
-      info@digicool.com
-      (540) 371-6909
+       rights reserved.
 
 ******************************************************************/
 
 
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.1 1997/09/25 22:12:28 jim Exp $"
+"\n$Id: Record.c,v 1.2 1997/09/26 15:05:17 jim Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -82,14 +39,14 @@ typedef struct {
 #endif
   PyObject **data;
   PyObject *schema;
-} Recordobject;
+} Record;
 
 staticforward PyExtensionClass RecordType;
 
 /* ---------------------------------------------------------------- */
 
 static int
-Record_init(Recordobject *self)
+Record_init(Record *self)
 {
   int l;
 
@@ -111,7 +68,7 @@ Record_init(Recordobject *self)
 } 
 
 static PyObject *
-Record___setstate__(Recordobject *self, PyObject *args)
+Record___setstate__(Record *self, PyObject *args)
 {
   PyObject *state=0, **d;
   int l, ls, i;
@@ -145,7 +102,7 @@ Record___setstate__(Recordobject *self, PyObject *args)
 }
 
 static PyObject *
-Record___getstate__( Recordobject *self, PyObject *args)
+Record___getstate__( Record *self, PyObject *args)
 {
   PyObject *r, **d, *v;
   int i, l;
@@ -165,7 +122,7 @@ Record___getstate__( Recordobject *self, PyObject *args)
 }
 
 static void
-Record_deal(Recordobject *self)
+Record_deal(Record *self)
 {
   int l;
   PyObject **d;
@@ -184,7 +141,7 @@ Record_deal(Recordobject *self)
 
 #ifdef PERSISTENCE
 static PyObject *
-Record__p___reinit__(Recordobject *self, PyObject *args)
+Record__p___reinit__(Record *self, PyObject *args)
 {
   Record_deal(self);
   self->schema=NULL;
@@ -216,21 +173,31 @@ static struct PyMethodDef Record_methods[] = {
 /* ---------- */
 
 static void
-Record_dealloc(Recordobject *self)
+Record_dealloc(Record *self)
 {
   Record_deal(self);
   PyMem_DEL(self);
 }
 
 static PyObject *
-Record_getattr(Recordobject *self, PyObject *name)
+Record_getattr(Record *self, PyObject *name)
 {
   int l, i;
   PyObject *io;
 
   if((l=Record_init(self)) < 0) return NULL;
+
+  if(io=Py_FindAttr((PyObject *)self, name)) return io;
+
+  PyErr_Clear();
+
   if(io=PyObject_GetItem(self->schema, name))
     {
+      UNLESS(PyInt_Check(io))
+	{
+	  PyErr_SetString(PyExc_TypeError, "invalid record schema");
+	  return NULL;
+	}
       i=PyInt_AsLong(io);
       if(i >= 0 && i < l)
 	{
@@ -241,13 +208,14 @@ Record_getattr(Recordobject *self, PyObject *name)
       Py_INCREF(io);
       return io;
     }
-  PyErr_Clear();
-	  
-  return Py_FindAttr((PyObject *)self, name);
+
+  PyErr_SetObject(PyExc_AttributeError, name);  
+  
+  return NULL;
 }
 
 static int
-Record_setattr(Recordobject *self, PyObject *name, PyObject *v)
+Record_setattr(Record *self, PyObject *name, PyObject *v)
 {
   int l, i;
   PyObject *io;
@@ -255,24 +223,28 @@ Record_setattr(Recordobject *self, PyObject *name, PyObject *v)
   if((l=Record_init(self)) < 0) return -1;
   if(io=PyObject_GetItem(self->schema, name))
     {
+      UNLESS(PyInt_Check(io))
+	{
+	  PyErr_SetString(PyExc_TypeError, "invalid record schema");
+	  return -1;
+	}
       i=PyInt_AsLong(io);
       Py_DECREF(io);
       if(i >= 0 && i < l)
 	{
-	  Py_INCREF(v);
+	  Py_XINCREF(v);
 	  ASSIGN(self->data[i],v);
 	  return 0;
 	}
     }
-  else
-    PyErr_Clear();
+
   PyErr_SetObject(PyExc_AttributeError, name);
   return -1;
 }
 
 #ifdef PERSISTENCE
 static PyObject *
-pRecord_getattr(Recordobject *self, PyObject *name)
+pRecord_getattr(Record *self, PyObject *name)
 {
   char *c;
   UNLESS(c=PyString_AsString(name)) return NULL;
@@ -281,7 +253,7 @@ pRecord_getattr(Recordobject *self, PyObject *name)
 }
 
 static int
-pRecord_setattr(Recordobject *self, PyObject *name, PyObject *v)
+pRecord_setattr(Record *self, PyObject *name, PyObject *v)
 {
   return cPersistenceCAPI->persetattro(OBJECT(self),name,v,Record_setattr);
 }
@@ -289,7 +261,7 @@ pRecord_setattr(Recordobject *self, PyObject *name, PyObject *v)
 
 
 static int
-Record_compare(Recordobject *v, Recordobject *w)
+Record_compare(Record *v, Record *w)
 {
   int lv, lw, i, c;
   PyObject **dv, **dw;
@@ -313,11 +285,188 @@ Record_compare(Recordobject *v, Recordobject *w)
   return 0;
 }
 
+/* Code to handle accessing Record objects as sequence objects */
+
+static PyObject * 
+Record_concat(Record *self, PyObject *bb)
+{
+  PyErr_SetString(PyExc_TypeError,
+		  "Record objects do not support concatenation");
+  return NULL;
+}
+
+static PyObject *
+Record_repeat(Record *self, int n)
+{
+  PyErr_SetString(PyExc_TypeError,
+		  "Record objects do not support repetition");
+  return NULL;
+}
+
+static PyObject *
+IndexError(int i)
+{
+  PyObject *v;
+
+  if((v=PyInt_FromLong(i)))
+    {
+      PyErr_SetObject(PyExc_IndexError, v);
+      Py_DECREF(v);
+    }
+
+  return NULL;
+}
+
+static PyObject *
+Record_item(Record *self, int i)
+{
+  PyObject *o;
+  int l;
+
+  if((l=Record_init(self)) < 0) return NULL;
+  if(i < 0 || i >= l) return IndexError(i);
+
+  o=self->data[i];
+  UNLESS(o) o=Py_None;
+
+  Py_INCREF(o);
+  return o;
+}
+
+static PyObject *
+Record_slice(Record *self, int ilow, int ihigh)
+{
+  PyErr_SetString(PyExc_TypeError,
+		  "Record objects do not support slicing");
+  return NULL;
+}
+
+static int
+Record_ass_item(Record *self, int i, PyObject *v)
+{
+  int l;
+
+  if((l=Record_init(self)) < 0) return -1;
+  if(i < 0 || i >= l)
+    {
+      IndexError(i);
+      return -1;
+    }
+
+  UNLESS(v)
+    {
+      PyErr_SetString(PyExc_TypeError,"cannot delete record items");
+      return -1;
+    }
+
+  Py_INCREF(v);
+  ASSIGN(self->data[i], v);
+  return 0;
+}
+
+static int
+Record_ass_slice(Record *self, int ilow, int ihigh, PyObject *v)
+{
+  PyErr_SetString(PyExc_TypeError,
+		  "Record objects do not support slice assignment");
+  return -1;
+}
+
+static PySequenceMethods Record_as_sequence = {
+  (inquiry)Record_init,			/*sq_length*/
+  (binaryfunc)Record_concat,		/*sq_concat*/
+  (intargfunc)Record_repeat,		/*sq_repeat*/
+  (intargfunc)Record_item,		/*sq_item*/
+  (intintargfunc)Record_slice,		/*sq_slice*/
+  (intobjargproc)Record_ass_item,	/*sq_ass_item*/
+  (intintobjargproc)Record_ass_slice,	/*sq_ass_slice*/
+};
+
+/* -------------------------------------------------------------- */
+
+static PyObject *
+Record_subscript(Record *self, PyObject *key)
+{
+  int i, l;
+  PyObject *io;
+
+  if((l=Record_init(self)) < 0) return NULL;
+
+  if(PyInt_Check(key))
+    {
+      i=PyInt_AsLong(key);
+      if(i<0) i+=l;
+      return Record_item(self, i);
+    }
+
+  if(io=PyObject_GetItem(self->schema, key))
+    {
+      UNLESS(PyInt_Check(io))
+	{
+	  PyErr_SetString(PyExc_TypeError, "invalid record schema");
+	  return NULL;
+	}
+      i=PyInt_AsLong(io);
+      if(i >= 0 && i < l)
+	{
+	  ASSIGN(io, self->data[i]);
+	  UNLESS(io) io=Py_None;
+	}
+      else ASSIGN(io, Py_None);
+      Py_INCREF(io);
+      return io;
+    }
+  return NULL;
+}
+
+static int
+Record_ass_sub(Record *self, PyObject *key, PyObject *v)
+{
+  int i, l;
+  PyObject *io;
+
+  if((l=Record_init(self)) < 0) return -1;
+
+  if(PyInt_Check(key))
+    {
+      i=PyInt_AsLong(key);
+      if(i<0) i+=l;
+      return Record_ass_item(self, i, v);
+    }
+
+  if(io=PyObject_GetItem(self->schema, key))
+    {
+      UNLESS(PyInt_Check(io))
+	{
+	  PyErr_SetString(PyExc_TypeError, "invalid record schema");
+	  return -1;
+	}
+      i=PyInt_AsLong(io);
+      Py_DECREF(io);
+      if(i >= 0 && i < l)
+	{
+	  Py_XINCREF(v);
+	  ASSIGN(self->data[i],v);
+	  return 0;
+	}
+    }
+
+  return -1;
+}
+
+static PyMappingMethods Record_as_mapping = {
+  (inquiry)Record_init,		/*mp_length*/
+  (binaryfunc)Record_subscript,		/*mp_subscript*/
+  (objobjargproc)Record_ass_sub,	/*mp_ass_subscript*/
+};
+
+/* -------------------------------------------------------- */
+
 static PyExtensionClass RecordType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
   "Record",				/*tp_name*/
-  sizeof(Recordobject),			/*tp_basicsize*/
+  sizeof(Record),			/*tp_basicsize*/
   0,					/*tp_itemsize*/
   /* methods */
   (destructor)Record_dealloc,		/*tp_dealloc*/
@@ -327,8 +476,8 @@ static PyExtensionClass RecordType = {
   (cmpfunc)Record_compare,		/*tp_compare*/
   (reprfunc)0,				/*tp_repr*/
   0,					/*tp_as_number*/
-  0,					/*tp_as_sequence*/
-  0,					/*tp_as_mapping*/
+  &Record_as_sequence,					/*tp_as_sequence*/
+  &Record_as_mapping,					/*tp_as_mapping*/
   (hashfunc)0,				/*tp_hash*/
   (ternaryfunc)0,			/*tp_call*/
   (reprfunc)0,				/*tp_str*/
@@ -363,7 +512,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -402,6 +551,9 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.2  1997/09/26 15:05:17  jim
+  Added sequence and mapping behavior.
+
   Revision 1.1  1997/09/25 22:12:28  jim
   *** empty log message ***
 
