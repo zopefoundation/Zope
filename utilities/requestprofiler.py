@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.1
+#!/usr/bin/env python
 
 ##############################################################################
 #
@@ -15,7 +15,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -256,17 +256,22 @@ def get_earliest_file_data(files):
     return retn
         
 def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
-            resolution='10'):
+            resolution=60):
     beginrequests = {}
     cumulative = {}
     finished = []
     unfinished = {}
     decidelines = {} # filename to filepos
+    computed_start = None
+    computed_end = None
     while 1:
         tup = get_earliest_file_data(files)
         if tup is None:
             break
         code, id, fromepoch, desc = tup
+        if computed_start is None:
+            computed_start = fromepoch
+        computed_end = fromepoch
         if start is not None and fromepoch < start: continue
         if end is not None and fromepoch > end: break
         if code == 'U':
@@ -284,7 +289,11 @@ def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
             for pending_req in unfinished.values():
                 pending_req.active = pending_req.active + 1
             unfinished[id] = request
-        request.put(code, int(fromepoch), desc)
+        t = int(fromepoch)
+        try:
+            request.put(code, t, desc)
+        except:
+            print "Unable to handle entry: %s %s %s"%(code, t, desc)
         if request.isfinished():
             del unfinished[id]
             finished.append(request)
@@ -315,7 +324,14 @@ def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
     if mode=='timed':
         timeDict = {}
         timesort(timeDict,requests)
-        timewrite(timeDict,start,end,resolution)
+        if start and end:
+            timewrite(timeDict,start,end,resolution)
+        if start and not end:
+            timewrite(timeDict,start,computed_end,resolution)
+        if end and not start:
+            timewrite(timeDict,computed_start,end,resolution)
+        if not end and not start:
+            timewrite(timeDict,computed_start,computed_end,resolution)
 
     else:
         dict.sort(sortf)
@@ -359,7 +375,7 @@ def timesort(dict,requests):
             if not dict.has_key(t):
                 dict[t] = 0
 
-            dict[t]+=1 
+            dict[t]=dict[t]+1
 
 
 def timewrite(dict,start,end,resolution):
