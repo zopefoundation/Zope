@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.126 2000/05/31 15:58:11 shane Exp $'''
-__version__='$Revision: 1.126 $'[11:-2]
+$Id: Application.py,v 1.127 2000/06/09 14:54:37 jim Exp $'''
+__version__='$Revision: 1.127 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -315,8 +315,6 @@ def initialize(app):
 
     # Initialize the cache:
     app.Control_Panel.initialize_cache()
-
-    product_dir=os.path.join(SOFTWARE_HOME,'Products')
 
     # The following items marked b/c are backward compatibility hacks
     # which make sure that expected system objects are added to the
