@@ -125,6 +125,7 @@ Zope Changes
         sections.
 
       - Collector #525: Don't mask Unautorized exceptions as XML-RPC faults.
+        Fix based on patch from Brad Clements.
 
       - Collector #465: Allow XML-RPC requests with no <params /> tag.
 
