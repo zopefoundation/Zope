@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.151 2002/06/07 18:10:31 caseman Exp $"""
+$Id: ObjectManager.py,v 1.152 2002/06/07 18:29:39 caseman Exp $"""
 
-__version__='$Revision: 1.151 $'[11:-2]
+__version__='$Revision: 1.152 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -114,9 +114,6 @@ class ObjectManager(
          ('manage_importObject','manage_importExportForm',
           'manage_exportObject')
          ),
-        ('Manage folderish settings',
-         ('manage_settings',)
-        ),
     )
 
 
@@ -128,7 +125,6 @@ class ObjectManager(
 
     manage_main=DTMLFile('dtml/main', globals())
     manage_index_main=DTMLFile('dtml/index_main', globals())
-    manage_settings=DTMLFile('dtml/objectManagerSettings', globals())
 
     manage_options=(
         {'label':'Contents', 'action':'manage_main',
