@@ -26,8 +26,7 @@ from Products.PluginIndexes.common.UnIndex import UnIndex
 
 _marker = []
 
-class KeywordIndex(UnIndex,PluggableIndex.PluggableIndex,Persistent,
-     Implicit,SimpleItem):
+class KeywordIndex(UnIndex,Persistent, Implicit,SimpleItem):
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
 

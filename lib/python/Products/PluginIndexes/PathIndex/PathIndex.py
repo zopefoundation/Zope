@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.18 2002/04/11 19:26:40 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.19 2002/04/24 15:42:16 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -30,8 +30,7 @@ import re,warnings
 _marker = []
 
 
-class PathIndex(PluggableIndex.PluggableIndex, Persistent,
-    Implicit, SimpleItem):
+class PathIndex(Persistent, Implicit, SimpleItem):
     """ A path index stores all path components of the physical 
     path of an object: 
 

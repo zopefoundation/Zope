@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.27 $'[11:-2]
+__version__ = '$Revision: 1.28 $'[11:-2]
 
 
 import  re
@@ -52,8 +52,7 @@ operator_dict = {'andnot': AndNot, 'and': And, 'or': Or,
                  '...': Near, 'near': Near,
                  AndNot: AndNot, And: And, Or: Or, Near: Near}
 
-class TextIndex(PluggableIndex.PluggableIndex, Persistent,
-     Implicit, SimpleItem):
+class TextIndex(Persistent, Implicit, SimpleItem):
     """Full-text index.
 
     There is a ZCatalog UML model that sheds some light on what is

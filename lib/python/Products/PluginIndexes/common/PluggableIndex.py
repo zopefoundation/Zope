@@ -12,21 +12,22 @@
 ##############################################################################
 
 """Pluggable Index Base Class """
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Interface
 
+class PluggableIndexInterface(Interface.Base):
 
-class PluggableIndex:
+    """interface for plugabble indexes"""
 
-    """Base pluggable index class"""
+    def getId():
+        """ return Id of index """
 
-
-    def getEntryForObject(self, documentId, default=None):
+    def getEntryForObject(documentId, default=None):
         """Get all information contained for a specific object by documentId"""
         pass
 
-    def index_object(self, documentId, obj, threshold=None):
+    def index_object(documentId, obj, threshold=None):
         """Index an object:
 
            'documentId' is the integer ID of the document
@@ -38,12 +39,12 @@ class PluggableIndex:
 
         pass
 
-    def unindex_object(self, documentId):
+    def unindex_object(documentId):
         """Remove the documentId from the index"""
         pass
 
 
-    def uniqueValues(self, name=None, withLengths=0):
+    def uniqueValues(name=None, withLengths=0):
         """Returns the unique values for name.
 
         If 'withLengths' is true, returns a sequence of tuples of
@@ -51,7 +52,7 @@ class PluggableIndex:
 
         pass
 
-    def _apply_index(self, request, cid=''):
+    def _apply_index(request, cid=''):
         """Apply the index to query parameters given in the argument, request.
 
         The argument should be a mapping object.
@@ -69,6 +70,3 @@ class PluggableIndex:
 
         pass
 
-PluggableIndexInterface = Interface.impliedInterface(PluggableIndex)
-
-PluggableIndex.__implements__ = PluggableIndexInterface

@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -38,8 +38,7 @@ from OFS.SimpleItem import SimpleItem
 
 _marker = []
 
-class FieldIndex(UnIndex,PluggableIndex.PluggableIndex, Persistent,
-    Implicit, SimpleItem):
+class FieldIndex(UnIndex, Persistent, Implicit, SimpleItem):
     """Field Indexes"""
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)

@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.4 2002/04/15 19:00:45 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.5 2002/04/24 15:42:16 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -25,8 +25,7 @@ import FilteredSet
 
 _marker = []
 
-class TopicIndex(PluggableIndex.PluggableIndex, Persistent,
-    Implicit, SimpleItem):
+class TopicIndex(Persistent, Implicit, SimpleItem):
 
     """ A TopicIndex maintains a set of FilteredSet objects.
     Every FilteredSet object consists of an expression and 
