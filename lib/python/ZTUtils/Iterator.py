@@ -18,8 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id: Iterator.py,v 1.9 2002/10/09 17:33:49 evan Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Iterator.py,v 1.10 2003/10/21 12:21:52 andreasjung Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 class Iterator:
     '''Simple Iterator class'''
@@ -95,6 +95,9 @@ class Iterator:
     def last(self, name=None):
         if self.end: return 1
         return not self.same_part(name, self.item, self._next)
+
+    def length(self):
+        return len(self.seq)
 
     def same_part(self, name, ob1, ob2):
         if name is None:

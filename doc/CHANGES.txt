@@ -16,6 +16,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1087: ZPT: "repeat/item/length" did not work as documented
+       in the Zope Book.
+
      - Collector #721: Entities in tal:attribute values weren't
        properly escaped.
 
