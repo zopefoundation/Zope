@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.11 $'.split()[-2:][0]
+__version__ = '$Revision: 1.12 $'.split()[-2:][0]
 
 
 
@@ -198,9 +198,10 @@ class BerkeleyBase(BaseStorage):
         """Close the storage by closing the databases it uses and by closing
         its environment.
         """
-        self._env.close()
         # BAW: the original implementation also deleted the _env attribute.
         # Was this just to reclaim the garbage?
+        self._env.close()
+        self._closelog()
 
 
 
