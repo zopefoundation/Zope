@@ -107,6 +107,8 @@ The module defines several standard severities:
   PROBLEM=100  -- This isn't causing any immediate problems, but deserves
                   attention.
 
+  WARNING=100  -- A wishy-washy alias for PROBLEM.
+
   ERROR=200    -- This is going to have adverse effects.
 
   PANIC=300    -- We're dead!
@@ -145,12 +147,12 @@ There is a default stupid logging facility that:
     
 
 """
-import time
+import time, sys, string
 
 # Standard severities
 BLATHER=-100
 INFO=0      
-PROBLEM=100             
+PROBLEM=WARNING=100             
 ERROR=200   
 PANIC=300
 
@@ -242,4 +244,51 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
          )
         )
 
+    if error:
+        try:
+            _stupid_dest(format_exception(
+                error[0], error[1], error[2],
+                trailer='\n', limit=100))
+        except:
+            _stupid_dest("%s: %s\n" % error[:2])
+            
+
+
 log_write=stupid_log_write
+
+format_exception_only=None
+def format_exception(etype,value,tb,limit=None, delimiter='\n',
+                     header='', trailer=''):
+    global format_exception_only
+    if format_exception_only is None:
+        import traceback
+        format_exception_only=traceback.format_exception_only
+        
+    result=['Traceback (innermost last):']
+    if header: result.insert(0,header)
+    if limit is None:
+        if hasattr(sys, 'tracebacklimit'):
+            limit = sys.tracebacklimit
+    n = 0
+    while tb is not None and (limit is None or n < limit):
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        co = f.f_code
+        filename = co.co_filename
+        name = co.co_name
+        locals=f.f_locals
+        result.append('  File %s, line %d, in %s'
+                      % (filename,lineno,name))
+        try: result.append('    (Object: %s)' %
+                           locals[co.co_varnames[0]].__name__)
+        except: pass
+        try: result.append('    (Info: %s)' %
+                           str(locals['__traceback_info__']))
+        except: pass
+        tb = tb.tb_next
+        n = n+1
+    result.append(string.join(format_exception_only(etype, value),
+                       ' '))
+    if trailer: result.append(trailer)
+    
+    return string.join(result, delimiter)
