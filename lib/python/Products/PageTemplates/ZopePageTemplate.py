@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -283,10 +283,14 @@ class Src(Acquisition.Explicit):
 
     PUT = document_src = Acquisition.Acquired
     index_html = None
+
+    def __before_publishing_traverse__(self, ob, request):
+        if getattr(request, '_hacked_path', 0):
+            request._hacked_path = 0
     
     def __call__(self, REQUEST, RESPONSE):
         " "
-        return self.document_src(REQUEST, RESPONSE)
+        return self.document_src(REQUEST)
 
 d = ZopePageTemplate.__dict__
 d['source.xml'] = d['source.html'] = Src()
