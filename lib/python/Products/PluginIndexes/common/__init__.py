@@ -13,7 +13,7 @@
 
 # This code is duplicated here from Products/ZCatalog/Catalog.py to avoid a
 # unnecessary dependency on ZCatalog.
-
+import types
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
 except ImportError:
