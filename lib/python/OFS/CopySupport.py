@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -290,7 +290,7 @@ class CopyContainer(ExtensionClass.Base):
         ob=ob._getCopy(self)
         ob._setId(id)
         self._setObject(id, ob)
-        #ob=ob.__of__(self)
+        ob=ob.__of__(self)
         #ob._postCopy(self, op=0)
         return ob
 
