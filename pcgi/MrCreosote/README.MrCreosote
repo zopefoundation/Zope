@@ -1,9 +1,0 @@
-README.MrCreosote - JeffBauer@bigfoot.com - May 21, 1998
-
-MrCreosote is a lightweight message-passing idiom I use
-  to debug multi-processor/multi-user code sometimes.i
-  It's basically just a matter of tossing out datagrams
-  (connectionless sockets).  I'll document it later, in
-  case anyone finds it useful for debugging.  For now,
-  just ignore the contents of this directory.
-

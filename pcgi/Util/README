@@ -1,8 +1,0 @@
-pcgifile.py - JeffBauer@bigfoot.com - May 21, 1998
-
-The pcgifile.py is a sanity tester for pcgi info files and
-can be run as a stand-alone program or a CGI script.  For
-more information, refer to:
-
-  http://starship.skyport.net/crew/jbauer/persistcgi/pcgifile/
-
