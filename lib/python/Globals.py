@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -24,7 +24,10 @@ except:
 
 
 from BoboPOS2 import Persistent, PickleDictionary
+import BoboPOS2.PersistentMapping
+sys.modules['PersistentMapping']=BoboPOS2.PersistentMapping # hack for bw comp
 from BoboPOS2.PersistentMapping import PersistentMapping
+
 import DocumentTemplate, MethodObject
 from AccessControl.PermissionRole import PermissionRole
 
@@ -134,7 +137,9 @@ SessionNameName='Principia-Session'
 
 def package_home(globals_dict):
     __name__=globals_dict['__name__']
-    return sys.modules[__name__].__path__[0]
+    m=sys.modules[__name__]
+    if hasattr(m,'__path__'): return m.__path__[0]
+    return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
     
 # utility stuff
 
