@@ -129,6 +129,9 @@ Zope Changes
 
     Bugs fixed
 
+     - added "version.txt" to setup.py to avoid untrue "unreleased version"
+       messages within the control panel
+
      - Collector #1436: applied patch to fix a memory leak in 
        cAccessControl. 
 

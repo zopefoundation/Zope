@@ -707,7 +707,8 @@ setup(
     name='Top-level',
     author=AUTHOR,
 
-    py_modules=['Globals', 'ImageFile', 'Lifetime']
+    py_modules=['Globals', 'ImageFile', 'Lifetime'],
+    data_files=[['.',['version.txt']]],
     )
 
 # Products base directory
