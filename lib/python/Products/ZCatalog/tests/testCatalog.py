@@ -190,6 +190,9 @@ class TestCatalogObject(unittest.TestCase):
         upper = self.upper
         a = self._catalog({})
         assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        # Queries consisting of empty strings should do the same
+        a = self._catalog({'col1':'', 'col2':'', 'col3':''})
+        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
 
     def testFieldIndexLength(self):
         a = self._catalog(att1='att1')

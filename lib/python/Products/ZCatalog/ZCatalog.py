@@ -541,14 +541,14 @@ class ZCatalog(Folder, Persistent, Implicit):
                   'width': 8})
         return r
 
-    def searchResults(self, REQUEST=None, used=None, optimize=1, **kw):
+    def searchResults(self, REQUEST=None, used=None, **kw):
         """
         Search the catalog according to the ZTables search interface.
         Search terms can be passed in the REQUEST or as keyword
         arguments. 
         """
 
-        return apply(self._catalog.searchResults, (REQUEST,used,optimize), kw)
+        return apply(self._catalog.searchResults, (REQUEST, used), kw)
 
     __call__=searchResults
 

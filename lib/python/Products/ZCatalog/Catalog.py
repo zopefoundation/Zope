@@ -428,33 +428,31 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             result[id] = index.__of__(self).getEntryForObject(rid, "")
         return result
     
-## Searching engine.  You don't really have to worry about what goes
-## on below here...  Most of this stuff came from ZTables with tweaks.
-## But I worry about :-)
+## This is the Catalog search engine. Most of the heavy lifting happens below
 
-    def _indexedSearch(self, request, sort_index, append, used, optimize):
+    def _indexedSearch(self, request, sort_index, append, used):
         """
         Iterate through the indexes, applying the query to each one.
         """
         rs = None             # resultset
         data = self.data
 
-        # We can optimize queries by only calling index._apply_index()
-        # for indexes involved in a search (means the request object
-        # contains the Id of the corresponding index). But we must
-        # take care of two kind of searches:
-        #
-        # - searches through the web (empty input fields means   
-        #   the index should return *all* records). For such queries
-        #   we disable query optimization.
-        #
-        # - application-related searches (search queries are passed as
-        #   dictionary or mapping). Such queries usually define exactly
-        #   what they are looking for (WYGIWYSF - what you get is what
-        #   you search for).
-
-        if hasattr(request, 'environ'):   # we have a request instance
-            optimize = 0
+        # Indexes fulfil a fairly large contract here. We hand each
+        # index the request mapping we are given (which may be composed 
+        # of some combination of web request, kw mappings or plain old dicts)
+        # and the index decides what to do with it. If the index finds work
+        # for itself in the request, it returns the results and a tuple of
+        # the attributes that were used. If the index finds nothing for it
+        # to do then it returns None.
+        
+        # For hysterical reasons, if all indexes return None for a given
+        # request (and no attributes were used) then we append all results
+        # in the Catalog. This generally happens when the search values
+        # in request are all empty strings or do not coorespond to any of
+        # the indexes.
+        
+        # Note that if the indexes find query arguments, but the end result
+        # is an empty sequence, we do nothing
 
         if used is None:
             used = {}
@@ -471,17 +469,18 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     used[name] = 1
                 w, rs = weightedIntersection(rs, r)
 
-        #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
-            # return everything
+            # None of the indexes found anything to do with the request
+            # We take this to mean that the query was empty (an empty filter)
+            # and so we return everything in the catalog
             if sort_index is None:
                 rs = data.items()
                 append(LazyMap(self.instantiate, rs, len(self)))
             else:
                 self._build_sorted_results(data, sort_index, append)
         elif rs:
-            # this is reached by having an empty result set (ie non-None)
-            # XXX Isn't this reached by having a non-empty, non-None set?
+            # We got some results from the indexes
+            # now we need to sort and lazify them
             if sort_index is None and hasattr(rs, 'values'):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
@@ -489,6 +488,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 rset = rs.byValue(0) # sort it by score
                 max = float(rset[0][0])
                 rs = []
+                
+                # XXX Ugh, this is really not as lazy as it could be
+                # XXX This should be changed to a lazily computed 
+                # XXX attribute since it is not always needed
                 for score, key in rset:
                     # compute normalized scores
                     rs.append((int(100. * score / max), score, key))
@@ -501,7 +504,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 append(LazyMap(self.__getitem__, rs))
             else:
                 # sort.  If there are scores, then this block is not
-                # reached, therefor 'sort-on' does not happen in the
+                # reached, therefore 'sort-on' does not happen in the
                 # context of text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
                 self._build_sorted_results(rs,sort_index,append)
@@ -582,25 +585,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             return val
         return kw.get("sort_%s" % attr, None)
 
-    def searchResults(self, REQUEST=None, used=None, optimize=1, **kw):
+    def searchResults(self, REQUEST=None, used=None, **kw):
         # Get search arguments:
-        if kw:
-            if REQUEST:
-                m = MultiMapping()
-                m.push(REQUEST)
-                m.push(kw)
-                kw = m
-        else:
-            if REQUEST is None:
-                try:
-                    REQUEST = self.REQUEST
-                except AttributeError:
-                    pass
-            if REQUEST:
-                kw = REQUEST
+        args = CatalogSearchArgumentsMap(REQUEST, kw)
 
         # Compute "sort_index", which is a sort index, or none:
-        sort_index = self._get_sort_attr("on", kw)
+        sort_index = self._get_sort_attr("on", args)
         if sort_index is not None:
             # self.indexes is always a dict, so get() w/ 1 arg works
             sort_index = self.indexes.get(sort_index)
@@ -615,7 +605,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         
         # Perform searches with indexes and sort_index
         r = []
-        used = self._indexedSearch(kw, sort_index, r.append, used, optimize)
+        used = self._indexedSearch(args, sort_index, r.append, used)
         if not r:
             return LazyCat(r)
 
@@ -630,7 +620,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 r = LazyCat(r, len(r))
             else:
                 r.sort()
-                so = self._get_sort_attr("order", kw)
+                so = self._get_sort_attr("order", args)
                 if (isinstance(so, types.StringType) and
                     so.lower() in ('reverse', 'descending')):
                     r.reverse()
@@ -649,3 +639,44 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
 
 class CatalogError(Exception): pass
+
+class CatalogSearchArgumentsMap:
+    """Multimap catalog arguments coming simultaneously from keywords 
+    and request.
+    
+    Values that are empty strings are treated as non-existent. This is
+    to ignore empty values, thereby ignoring empty form fields to be 
+    consistent with hysterical behavior.
+    """
+    
+    def __init__(self, request, keywords):
+        self.request = request or {}
+        self.keywords = keywords or {}
+        
+    def __getitem__(self, key):
+        marker = []
+        v = self.keywords.get(key, marker)
+        if v is marker or v == '':
+            v = self.request[key]
+        if v == '':
+            raise KeyError(key)
+        return v
+            
+    def get(self, key, default=None):
+        try:
+            v = self[key]
+        except KeyError:
+            return default
+        else:
+            return v
+            
+    def has_key(self, key):
+        try:
+            self[key]
+        except KeyError:
+            return 0
+        else:
+            return 1
+        
+        
+        
