@@ -243,3 +243,7 @@ Lots of discussion!
    %define HOSTNAME `hostname`  (assuming `hostname` resolves to a hostname)
 
    lockfile-name /var/lock/$HOSTNAME-lockfile
+
+ - Give installer an option to put docs in a user-specifiable directory
+   at software home installation time.
+
