@@ -55,7 +55,14 @@ class TestRunner:
         saved_syspath = sys.path[:]
         try:
             sys.path.append(path)       # let module find things in its dir
-            module=imp.load_module(name, file, pathname, desc)
+	    try:
+            	module=imp.load_module(name, file, pathname, desc)
+	    except:
+	    	(tb_t, tb_v, tb_tb) = sys.exc_info()
+		self.report("Module %s failed to load\n%s: %s" % (pathname,
+			tb_t, tb_v))
+		self.report(join( traceback.format_tb(tb_tb)) + '\n')
+		del tb_tb
         finally:
             file.close()
             sys.path.pop()              # Remove module level path
