@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.147 2000/06/02 20:03:25 jim Exp $"""
-__version__='$Revision: 1.147 $'[11:-2]
+$Id: Publish.py,v 1.148 2001/02/23 20:40:45 shane Exp $"""
+__version__='$Revision: 1.148 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -195,13 +195,14 @@ def publish(request, module_name, after_list, debug=0,
                                     sys.exc_info()[2],
                                     )
                 newrequest=request.retry()
+                request.close()  # Free resources held by the request.
                 try:
                     return publish(newrequest, module_name, after_list, debug)
                 finally:
                     newrequest.close()
                     
         else: raise
-            
+
 
 def publish_module(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
