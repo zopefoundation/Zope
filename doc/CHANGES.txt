@@ -52,6 +52,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #816: dtml-sendmail corrupted header if message was
+       left blank.
+
      - Collector #790: WebDAV access is granted by default only
        to Managers and Authenticated users instead to Anonymous users.
        This restricts access to the Control_Panel and especially

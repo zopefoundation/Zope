@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.77 2002/11/27 13:20:52 regebro Exp $"""
-__version__ = "$Revision: 1.77 $"[11:-2]
+$Id: MailHost.py,v 1.78 2003/02/22 15:13:32 andreasjung Exp $"""
+__version__ = "$Revision: 1.78 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -170,7 +170,7 @@ def _encode(body, encode=None):
 def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
     """Sets missing message headers, and deletes Bcc.
        returns fixed message, fixed mto and fixed mfrom"""
-    mfile=StringIO(messageText.strip())
+    mfile=StringIO(messageText.lstrip())
     mo=rfc822.Message(mfile)
 
     # Parameters given will *always* override headers in the messageText.
