@@ -11,7 +11,11 @@
 # 
 ##############################################################################
 
-"""ZCatalog Findable class"""
+"""ZCatalog Findable class
+
+**NOTE**: This module is deprecated, and should only be used for
+  backward-compatibility.  All new code should use CatalogPathAwareness.
+"""
 
 import urllib, string
 from Globals import DTMLFile
