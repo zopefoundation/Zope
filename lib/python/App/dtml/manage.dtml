@@ -11,22 +11,31 @@ function update_menu() {
 //-->
 </script>
 </head>
-<dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')">
-<dtml-if "ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0">
-<frameset rows="40, *">
-<dtml-else>
-<frameset rows="34, *">
-</dtml-if>
-</dtml-let>
+<dtml-let tf="REQUEST.get('zmi_top_frame', '1')"
+          ag="REQUEST.get('HTTP_USER_AGENT', '')">
+
+<dtml-if tf>
+  <dtml-if "ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0">
+  <frameset rows="40, *">
+  <dtml-else>
+  <frameset rows="34, *">
+  </dtml-if>
   <frame src="<dtml-var URL1>/manage_top_frame" name="manage_top_frame"
    marginwidth="0" marginheight="0" scrolling="no"/>
+</dtml-if>
+
   <frameset cols="175,*">
     <frame src="<dtml-var URL1>/manage_menu" name="manage_menu"
      marginwidth="2" marginheight="2" scrolling="auto"/>
     <frame src="<dtml-var URL1>/manage_workspace" name="manage_main"
      marginwidth="2" marginheight="2" scrolling="auto"/>
   </frameset>
-</frameset>
+
+<dtml-if tf>
+  </frameset>
+</dtml-if>
+
+</dtml-let>
 <noframes>
 Management interfaces require the use of a <B>frames-capable</B> web browser.
 </noframes>

@@ -22,6 +22,8 @@ alt="" />
 Logged in as <strong><dtml-var 
 AUTHENTICATED_USER></strong> 
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
+ | <a href="<dtml-var BASEPATH1>/manage_zmi_prefs"
+   target="manage_main">Preferences</a>
  | <a href="<dtml-var BASEPATH1>/manage_logout" target="_top">Logout</a>
 </dtml-if>
 &nbsp;&nbsp;

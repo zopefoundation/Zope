@@ -64,5 +64,28 @@ td {
 </tr>
 </table>
 
+<dtml-unless expr="REQUEST.get('zmi_top_frame', '1')">
+<table width="100%" bgcolor="#6699cc">
+<tr>
+<td valign="top" align="left" colspan="2">
+
+<div align="center">
+<a href="http://www.zope.org/" target="_new"><img src="<dtml-var 
+BASEPATH1>/p_/zopelogo_jpg" height="32" width="90" border="0" 
+alt="" />
+</div>
+<div align="center" class="std-text">
+Logged in as <strong><dtml-var
+AUTHENTICATED_USER></strong>
+<br />
+<dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
+ <a href="<dtml-var BASEPATH1>/manage_zmi_prefs"
+   target="manage_main">Preferences</a>
+ | <a href="<dtml-var BASEPATH1>/manage_logout" target="_top">Logout</a>
+</dtml-if>
+</div>
+</td></tr></table>
+</dtml-unless>
+
 <dtml-var manage_page_footer>
 
