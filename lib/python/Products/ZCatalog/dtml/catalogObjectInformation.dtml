@@ -74,7 +74,7 @@
   <p class="form-help">The following table gives information that is
 contained in the various indexes of the Catalog. In the case of
 Keyword or Text indexes, the results are returned as a tuple, and will 
-be shows a '(one, two, three)', rather than in a more normal way.</p><br />
+show as '(one, two, three)', rather than in a more normal way.</p><br />
   </td>
 </tr>
 <dtml-in expr="getIndexDataForRID(_.int(rid)).items()">
