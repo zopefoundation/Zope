@@ -51,7 +51,7 @@ class HTMLClass:
         return ''.join(r)
 
     def _text(self, doc, level, output):
-        output(doc.getNodeValue().strip())
+        output(doc.getNodeValue())
 
     def document(self, doc, level, output):
         children=doc.getChildNodes()
