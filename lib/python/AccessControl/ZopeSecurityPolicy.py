@@ -2,8 +2,9 @@
 
 from SimpleObjectPolicies import _noroles
 
-import cAccessControl
+if 0: # cAccessControl is not working
+    import cAccessControl
 
-ZopeSecurityPolicy = cAccessControl.ZopeSecurityPolicy
-
-
+    ZopeSecurityPolicy = cAccessControl.ZopeSecurityPolicy
+else:
+    from pZopeSecurityPolicy import ZopeSecurityPolicy

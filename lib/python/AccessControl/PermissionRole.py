@@ -85,14 +85,19 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.10 2001/07/03 19:37:52 matt Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: PermissionRole.py,v 1.11 2001/10/17 22:01:43 tseaver Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
-import cAccessControl
-rolesForPermissionOn=cAccessControl.rolesForPermissionOn
-PermissionRole=cAccessControl.PermissionRole
-imPermisionRole=cAccessControl.imPermissionRole
-_what_not_even_god_should_do= cAccessControl._what_not_even_god_should_do
+if 0: # cAccessControl is not working
+    import cAccessControl
+    rolesForPermissionOn=cAccessControl.rolesForPermissionOn
+    PermissionRole=cAccessControl.PermissionRole
+    imPermissionRole=cAccessControl.imPermissionRole
+    _what_not_even_god_should_do= cAccessControl._what_not_even_god_should_do
+else:
+    import pPermissionRole
+    from pPermissionRole import rolesForPermissionOn, PermissionRole
+    from pPermissionRole import imPermissionRole, _what_not_even_god_should_do
 
 ############################################################################## 
 # Test functions:
