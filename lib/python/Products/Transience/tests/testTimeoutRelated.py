@@ -3,14 +3,12 @@ import sys, os, time, unittest
 if __name__=='__main__':
     sys.path.insert(0, '..')
     sys.path.insert(0, '../../..')
-    #os.chdir('../../..')
 
 import ZODB # in order to get Persistence.Persistent working
 from Testing import makerequest
 import Acquisition
 from Acquisition import aq_base
 from Products.Transience.Transience import TransientObjectContainer
-from Products.Transience.Transience import WRITEGRANULARITY
 import Products.Transience.Transience
 from Products.PythonScripts.PythonScript import PythonScript
 from ZODB.POSException import InvalidObjectReference
@@ -19,7 +17,7 @@ from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
 import time, threading, whrandom
-
+WRITEGRANULARITY = 30
 epoch = time.time()
 stuff = {}
 
@@ -55,39 +53,27 @@ def _delApp():
 
 class TestBase(TestCase):
     def setUp(self):
-
         Products.Transience.Transience.time = fauxtime
-
         self.app = makerequest.makerequest(_getApp())
-
         timeout = self.timeout = 1
-
         sm=TransientObjectContainer(
             id='sm', timeout_mins=timeout, title='SessionThing',
             addNotification=addNotificationTarget,
             delNotification=delNotificationTarget)
-
         self.app._setObject('sm', sm)
 
     def tearDown(self):
         get_transaction().abort()
-        #self.app._p_jar.close()
-        #self.app = None
         _delApp()
         del self.app
 
 class TestLastAccessed(TestBase):
     def testLastAccessed(self):
-
         sdo = self.app.sm.new_or_existing('TempObject')
-
         la1 = sdo.getLastAccessed()
-
         fauxsleep(WRITEGRANULARITY + 1)
-
         sdo = self.app.sm['TempObject']
-
-        assert sdo.getLastAccessed() > la1
+        assert sdo.getLastAccessed() > la1, (sdo.getLastAccessed(), la1)
 
 class TestNotifications(TestBase):
     def testAddNotification(self):
@@ -103,8 +89,7 @@ class TestNotifications(TestBase):
         sdo = self.app.sm.new_or_existing('TempObject')
         timeout = self.timeout * 60
         fauxsleep(timeout + (timeout * .33))
-        try:
-            sdo1 = self.app.sm['TempObject']
+        try: sdo1 = self.app.sm['TempObject']
         except KeyError: pass
         now = fauxtime()
         k = sdo.get('endtime')
@@ -112,11 +97,9 @@ class TestNotifications(TestBase):
         assert k <= now
 
 def addNotificationTarget(item, context):
-    #print "addNotificationTarget called for %s" % item
     item['starttime'] = fauxtime()
 
 def delNotificationTarget(item, context):
-    #print "delNotificationTarget called for %s" % item
     item['endtime'] = fauxtime()
 
 def fauxtime():

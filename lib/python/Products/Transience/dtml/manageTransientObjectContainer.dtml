@@ -7,6 +7,16 @@
 
 <table cellspacing="2">
 <form action="manage_changeTransientObjectContainer" method="post">
+<tr><td>&nbsp;</td></tr>
+<tr>
+<td class="form-help" colspan=2>
+Transient Object Containers are used to store transient data.
+Transient data will persist, but only for a user-specified period of time
+(the "data object timeout") after which it will be flushed.
+</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
@@ -24,11 +34,13 @@
   </div>
   </td>
 </tr>
+
 <tr>
   <td>
    &nbsp;
   </td>
 </tr>
+
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
@@ -36,7 +48,7 @@
     </div>
   </td>
   <td align="left" valign="top">
-    <input type="text" name="title" size=20 value="&dtml-title;">
+    <input type="text" name="title" size=30 value="&dtml-title;">
   </td>
 </tr>
 <tr>
@@ -54,7 +66,7 @@
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
-      Add Notification Target
+      Script to call when objects are added
     </div>
   </td>
   <td align="left" valign="top">
@@ -66,7 +78,7 @@
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
-      Delete Notification Target
+      Script to call when objects are deleted
     </div>
   </td>
   <td align="left" valign="top">
@@ -82,7 +94,7 @@
   </td>
 </tr>
 <tr>
-  <td align="center" valign="top">
+  <td align="center" valign="top" colspan=2>
   <input class="form-element" type=submit name=submit value=" Change ">
   </td>
 </tr>
@@ -92,7 +104,7 @@
   </td>
 </tr>
 <tr>
-  <td align="left" valign="top">
+  <td align="left" valign="top" colspan=2>
   <div class="form-label">
   <font color="red">WARNING!</font>
   The data objects existing in this transient object container

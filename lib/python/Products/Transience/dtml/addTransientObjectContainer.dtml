@@ -24,12 +24,11 @@ undoing ZODB databases.
 </p>
 
 <p>
-Transient Object Containers support <b>Notification Targets</b> which
+Transient Object Containers support <b>Add and Delete Scripts</b> which
 are methods which are invoked when transient objects are added or deleted
-from the container.  A notification target is invoked with the item being
-operated upon, and the transient object container as arguments.  For the add
-and delete notification targets, specify the Zope physical path to the
-method to be invoked to receive the notification
+from the container.  A add/delete script is invoked with the item being
+operated upon and the transient object container as arguments.  Specify
+the Zope physical path to the method to be invoked to receive the notification
 (e.g. '/folder/add_notifier').
 </p>
 </div>
@@ -71,7 +70,7 @@ method to be invoked to receive the notification
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      <em>Add Notification Target</em>
+      <em>Script to call upon object add</em>
    </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -82,7 +81,7 @@ method to be invoked to receive the notification
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      <em>Delete Notification Target</em>
+      <em>Script to call upon object delete</em>
    </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
