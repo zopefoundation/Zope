@@ -198,6 +198,13 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
     <LI>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
         XML-RPC</a>
 </LI>
+
+    <LI>Phillip Eby contributed the DTML <code>let</code> tag and many
+        other useful ideas, including the inspiration for the DTML
+        <code>call</code>, <code>with</code> and <code>return</code>
+        tags.
+
+</LI>
     <LI>All the other Zopistas far and wide that stuck with us during
     the Bobo/Principia days and politely push us to make the best damn
     app server on this or any other planet.
