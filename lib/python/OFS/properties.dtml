@@ -56,6 +56,27 @@ values and click "Save Changes".
   <textarea name="<!--#var id-->:lines" rows="6" cols="35"><!--#in
   "getProperty(id)"--><!--#var sequence-item-->
 <!--#endin--></textarea>
+  <!--#elif "type=='selection'"-->
+    <!--#if "_.has_key(select_variable)"-->
+    <select name="<!--#var id-->">
+      <!--#in "_[select_variable]"-->
+         <option
+          <!--#if "_['sequence-item']==getProperty(id)"-->SELECTED<!--#/if-->
+          ><!--#var sequence-item--></option>
+      <!--#/in-->
+    </select>
+    <!--#else-->
+       No value for <!--#var select_variable-->
+    <!--#/if-->
+  <!--#elif "type=='multiple selection'"-->
+    <!--#if selectvariable-->
+    <select name="<!--#var id-->:list" multiple
+      size="<!--#var "_.max(7, len(_[select_variable]))"-->">
+      <!--#in "_[select_variable]"-->
+         <option><!--#var sequence-item--></option>
+      <!--#/in-->
+    </select>
+    <!--#/if-->
   <!--#else-->
   <em>Unknown property type</em>
   <!--#endif-->
@@ -115,6 +136,8 @@ button.
       <option SELECTED>string</option>
       <option>text</option>
       <option>tokens</option>
+      <option>selection</option>
+      <option>multiple selection</option>
     </select>
   </td>
 </tr>
