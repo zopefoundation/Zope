@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.12 1998/05/13 20:36:02 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.13 1998/05/14 16:27:49 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import regex, string, sys
 from string import join
@@ -154,15 +154,18 @@ class TemplateDict:
 	try: self.keys=m.keys
 	except: pass
 
-    def __getitem__(self,key,call=1):
+    def __getitem__(self,key,call=1,
+                    simple={
+                        type(''): 1, type(0): 1, type(0.0): 1,
+                        type([]): 1, type(()): 1,
+                        }.has_key):
 
         v=self.dicts[key]
-	if call:
-	    try: isDocTemp=v.isDocTemp
-	    except: isDocTemp=None
-	    if isDocTemp: v=v(None,self)
-	    else:
-		try: v=v()
+	if call and not simple(type(v)):
+            if hasattr(v,'isDocTemp') and v.isDocTemp:
+                v=v(None, self)
+            else:
+                try: v=v()
 		except (AttributeError,TypeError): pass
         return v
 
@@ -227,6 +230,11 @@ def render_blocks(blocks, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.13  1998/05/14 16:27:49  jim
+# Optimized TemplateDict __getitem__ by removing some exception usage
+# and by adding test to short circuit rendering of common simple objects
+# like strings and numbers.
+#
 # Revision 1.12  1998/05/13 20:36:02  jim
 # Slightly simpler solution to exception dilema.
 #
