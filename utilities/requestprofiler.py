@@ -86,7 +86,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -460,10 +460,10 @@ If the 'verbose' argument is specified, do not trim url to fit into 80 cols.
 
 If the 'today' argument is specified, limit results to hits received today.
 
-If the 'start' argument is specified in the form 'DD/MM/YYYY HH:MM:SS' (UTC),
+If the 'start' argument is specified in the form 'YYYY/MM/DD HH:MM:SS' (UTC),
 limit results to hits received after this date/time.
 
-If the 'end' argument is specified in the form 'DD/MM/YYYY HH:MM:SS' (UTC),
+If the 'end' argument is specified in the form 'YYYY/MM/DD HH:MM:SS' (UTC),
 limit results to hits received before this date/time.
 
 Examples:
