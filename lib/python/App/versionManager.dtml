@@ -19,7 +19,7 @@
       <td valign=top><input type=checkbox name="versions:list"
 	  value="<!--#var id-->"></td>
       <td valign=top>
-         <a href="<!--#var SCRIPT_NAME-->/<!--#var id-->"><!--#var id--></a>
+         <a href="<!--#var SCRIPT_NAME-->/<!--#var id-->/manage_workspace"><!--#var id--></a>
       </td>
     </tr>
     <!--#/in-->

@@ -142,8 +142,8 @@ import zLOG
 
 #this is a bit of a hack so I dont have to change too much code
 def pstamp(message, sev):
-    zLOG.LOG("zdeamon", sev,
-             ("zdeamon: %s: %s" % (time.ctime(time.time()), message)))
+    zLOG.LOG("zdaemon", sev,
+             ("zdaemon: %s: %s" % (time.ctime(time.time()), message)))
 
 def heartbeat():
     print 'tha-thump'
@@ -174,21 +174,22 @@ def forkit(attempts = FORK_ATTEMPTS):
             return pid
 
 def run(argv, pidfile=''):
-    if os.environ.has_key('ZDEAMON_MANAGED'):
+    if os.environ.has_key('ZDAEMON_MANAGED'):
         # We're the child at this point.  Don't ask. :/
-        sys.stdin.close()
-        sys.stdout.close()
-        sys.stderr.close()
-        try:
-            sys.stdin = open('/dev/null', "r")
-            sys.stdout = open('/dev/null', "r+")
-            sys.stderr = open('/dev/null', "r+")
-        except:
-            zLOG.LOG("z2", zLOG.ERROR, "couldn't close standard files")
+
+##        sys.stdin.close()
+##        sys.stdout.close()
+##        sys.stderr.close()
+##        try:
+##            sys.stdin = open('/dev/null', "r")
+##            sys.stdout = open('/dev/null', "r+")
+##            sys.stderr = open('/dev/null', "r+")
+##        except:
+##            zLOG.LOG("z2", zLOG.ERROR, "couldn't close standard files")
 
         return
     
-    os.environ['ZDEAMON_MANAGED']='TRUE'
+    os.environ['ZDAEMON_MANAGED']='TRUE'
     while 1:
         lastt=time.time()
         try:
@@ -206,7 +207,7 @@ def run(argv, pidfile=''):
                     pf.write(("%s" % os.getpid()))
                     pf.close()
 
-                while 1:
+                while 1: 
                     if not BEAT_DELAY:
                         p,s = os.waitpid(pid, 0)
                     else:
