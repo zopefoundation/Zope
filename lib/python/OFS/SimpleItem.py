@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.80 2000/12/11 15:01:57 brian Exp $'''
-__version__='$Revision: 1.80 $'[11:-2]
+$Id: SimpleItem.py,v 1.81 2000/12/27 16:27:45 brian Exp $'''
+__version__='$Revision: 1.81 $'[11:-2]
 
 import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -238,9 +238,13 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
 
             if not error_message:
                 if type(error_value) is InstanceType:
-                    s=str(error_value)
-                    if tagSearch(s) >= 0:
-                        error_message=error_value
+                    try:
+                        s=str(error_value)
+                    except:
+                        pass
+                    else:
+                        if tagSearch(s) >= 0:
+                            error_message=error_value
                 elif (type(error_value) is StringType
                       and tagSearch(error_value) >= 0):
                     error_message=error_value
