@@ -9,10 +9,10 @@
 ############################################################################## 
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.2 1998/05/21 14:57:45 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1998/11/23 15:48:18 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
-import Globals, ImageFile
+import Globals, ImageFile, os
 
 classes=('DA.Connection',)
 database_type='Gadfly'
@@ -71,29 +71,8 @@ __ac_permissions__=(
       'manage_addAqueductGadflyConnection')),
     )
 
-
-############################################################################## 
-#
-# $Log: __init__.py,v $
-# Revision 1.2  1998/05/21 14:57:45  jim
-# Updated permissions.
-#
-# Revision 1.1  1998/04/15 15:10:39  jim
-# initial
-#
-# Revision 1.4  1998/01/29 16:26:45  brian
-# Added eval support
-#
-# Revision 1.3  1998/01/16 18:35:08  jim
-# Updated with new da protocols.
-#
-# Revision 1.2  1997/11/26 20:04:22  jim
-# New Architecture, note that backward compatibility tools are needed
-#
-# Revision 1.1  1997/07/25 16:52:46  jim
-# initial
-#
-# Revision 1.1  1997/07/25 15:49:41  jim
-# initial
-#
-#
+j=os.path.join
+d=j(j(CUSTOMER_HOME,'var'),'gadfly')
+if not os.path.exists(d):
+    os.mkdir(d)
+    os.mkdir(j(d,'demo'))
