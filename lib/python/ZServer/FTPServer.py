@@ -360,7 +360,7 @@ class zope_ftp_channel(ftp_channel):
             else:
                 for producer in self._response_producers:
                     self.client_dc.push_with_producer(producer)
-                self._response_producers = None
+            self._response_producers = None
             self.client_dc.close_when_done()
             self.respond(
                     "150 Opening %s mode data connection for file '%s'" % (
