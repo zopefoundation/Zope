@@ -138,6 +138,35 @@ header2env={'content-length'    : 'CONTENT_LENGTH',
             'connection'        : 'CONNECTION_TYPE',
             }
 
+class zhttp_collector:
+    def __init__(self, handler, request, size):
+        self.handler = handler
+        self.request = request
+        if size > 524288:
+            # write large upload data to a file
+            from tempfile import TemporaryFile
+            self.data = TemporaryFile('w+b')
+        else:
+            self.data = StringIO()
+        request.channel.set_terminator(size)
+        request.collector=self
+
+    # put and post collection methods
+    #
+    def collect_incoming_data (self, data):
+        self.data.write(data)
+
+    def found_terminator(self):
+        # reset collector
+        self.request.channel.set_terminator('\r\n\r\n')
+        self.request.collector=None
+        # finish request
+        self.data.seek(0)
+        r=self.request
+        d=self.data
+        del self.request
+        del self.data
+        self.handler.continue_request(d,r)
 
 class zhttp_handler:
     "A medusa style handler for zhttp_server"
@@ -186,15 +215,7 @@ class zhttp_handler:
         size=get_header(CONTENT_LENGTH, request.header)
         if size and size != '0':
             size=string.atoi(size)
-            if size > 524288:
-                # write large upload data to a file
-                from tempfile import TemporaryFile
-                self.data = TemporaryFile('w+b')
-            else:
-                self.data = StringIO()
-            self.request = request
-            request.channel.set_terminator(size)
-            request.collector=self
+            zhttp_collector(self, request, size)
         else:
             sin=StringIO()
             self.continue_request(sin,request)
@@ -294,22 +315,6 @@ class zhttp_handler:
             </ul>""" %(self.module_name, self.hits)
             )
 
-    # put and post collection methods
-    #
-    def collect_incoming_data (self, data):
-        self.data.write(data)
-
-    def found_terminator(self):
-        # reset collector
-        self.request.channel.set_terminator('\r\n\r\n')
-        self.request.collector=None
-        # finish request
-        self.data.seek(0)
-        r=self.request
-        d=self.data
-        del self.request
-        del self.data
-        self.continue_request(d,r)
 
 
 class zhttp_channel(http_channel):
