@@ -7,32 +7,21 @@ Building and installing Zope from source
 
 Important notes
 
-   THIS IS AN ALPHA RELEASE!
-
    ZOPE 2.0 REQUIRES PYTHON 1.5.2!
 
    See CHANGES.txt for important notes on Zope 2.0.
-
-Running Zope
-
-  - You can use ZServer, the integration of Zope and Medusa.  You must
-    use ZServer if you want to use multiple concurrent threads.
-    ZServer is currently in beta, so this may not be a good choice for
-    production systems.
-
-  - You can use the PCGI publisher with an existing web server. 
-    This is currently the recommended way to run Zope for production
-    systems, however this will force Zope into single threaded mode.
-    See the WEBSERVER.txt file in the doc/ directory for details on
-    using Zope with an existing webserver.
 
 Quick Start
 
   If you are impatient, the following commands should get you up and
   running with Zope 2 using ZServer and ZODB 3 on Unix::
 
-    python wo_pcgi.py  # Note, this must be Python 1.5.2
-    python z2.py 
+    python w_pcgi.py  # Note, this must be Python 1.5.2
+    ./start
+
+  The first command build and sets up Zope.  Take note of the user
+  name and password output at the end of this command.  You will need
+  these to manage Zope.
 
   If you get errors indicating that addresses are in use,
   then you will have to supply arguments to z2.py to change the ports
@@ -49,11 +38,8 @@ Quick Start
   If you changed the HTTP port with the -w option to z2.py, then use
   it rather than 8080.
 
-  You will be prompted for a user name and password, which may
-  be found in the 'access' file in the Zope installation directory.
-
-  If you wish to enable Zope logging you must specify options on the
-  command line.  See LOGGING.txt in the doc directory.
+  You will be prompted for a user name and password. Use the user name
+  and password output above.
 
   Now you're off and running! You should be looking at the Zope management
   screen which is divided into two frames. On the left you can navigate
@@ -67,18 +53,6 @@ Quick Start
     'http://www.zope.org/'
   
   Have fun!
-
-Running Zope in Debug Mode
-
-  If you wish to run Zope in debug mode, use the -D command line
-  switch.  This will have the following effect::
-
-   o On UNIX, Zope will not detach from the controlling terminal.
-
-   o Zope will print logging information to standard error.
-
-   o The Z_DEBUG_MODE environment variable gets set, which causes some 
-     other cool stuff in Zope to happen.
 
 Building Zope
   
@@ -109,83 +83,41 @@ Building Zope
 
     * You can use PCGI and an existing web server if you use ZServer.
 
-Setting the Zope "super manager" name and password
-
-  Because Zope is managed through the web, user names and passwords must be
-  used to assure that only authorized people can make changes to a Zope
-  installation.  User names and passwords are normally defined by creating
-  and modifying user folders within Zope.
-
-  A special "super manager" user name and password are defined outside
-  the application for two reasons
- 
-    * Some user name and password are needed to enable creation of
-      initial normal managers of your Zope site.
-
-    * The "super manager" provides an all-powerful user that can do
-      anything in the application and whose password cannot be changed
-      through the application user interface.
-
-  This user name and password is defined in the 'access' file located
-  in the Zope directory. It should be readable only by the user
-  as which your web server runs.
-
-  The super manager username and password should only be used when
-  defining the normal management users and passwords and when dealing
-  with unusual situations, like lost (or hacked) manager user names and
-  passwords.
-
-  The access file should consist of a single line of the form:
-
-    name:password
-
-  The build scripts automatically create an 'access' file for you, 
-  using a default username and password of:
-
-    superuser:123
-
-  It is *highly recommended* that you change the default super manager 
-  name and password by editing your 'access' file after running the
-  build script. When you begin managing your Zope installation you
-  will need to enter the superuser name and password when prompted.
-
-  Note that you may also add an optional third component to the line
-  in the access file to restrict super manager access by domain. 
-  For example, the line:
-
-    mario:nintendoRules:*.mydomain.com
- 
-  in your 'access' file will only allow super manager access to your 
-  installation from *.mydomain.com machines. Attempts to access the
-  system from other domains will fail, even if the correct superuser
-  name and password are used.
-
-Setting permissions on the var directory.
-
-  You need to set permissions on the Zope var directory.
-  Zope needs to read and write data from its var directory. Before
-  running Zope you should ensure that you give adequate permissions
-  to the Zope var directory for the userid Zope will run under.
-
-  Depending on how you choose to run Zope you will need to give
-  different permissions to the var directory.  If you use Zope with an
-  existing web server, it will probably run Zope as 'nobody'. In this
-  case 'nobody' needs read and write permissions to the var directory.
-
-  If you change the way you run Zope you may need to modify the permissions
-  of the var directory and the files in it to allow Zope to read and write
-  under its changed userid.
-
 Starting Zope with an existing web server
 
   See the WEBSERVERS.txt file for more information about configuring Zope
   with an existing web server.
 
-  Note
- 
-    * If you wish to use ZServer with PCGI use z2.py's '-p' switch to specify
-      a PCGI info file.
-  
+Running Zope
 
+  There are two ways to run Zope:
+
+  - You can use ZServer, the integration of Zope and Medusa.  You must
+    use ZServer if you want to use multiple concurrent threads.
+    ZServer is a server application that supports multiple protocols:
+
+      o HTTP -- ZServer is a Web server
+
+      o FTP -- ZServer is a file-transfer protocol server.  This
+        allows you to use FTP-enabled publishing systems with Zope.
+
+      o PCGI -- PCGI is a lightweight protocol for forwarding
+	requests from other web servers, like Apache or Netscape, to
+	Zope. This makes it possible to use web server features like
+	connection encryption or logging with Zope.
+
+    With ZServer, you must start Zope manually using the z2.py script.
+    Typically, the command used to run the z2.py script will be put in
+    system startup scripts.
+
+    ZServer is the prefered way to run Zope.
+
+  - If you *only* want to use PCGI and you don't need multi-threaded
+    operation, you can have a special program, the pcgi_publisger,
+    start Zope for you.  See the WEBSERVER.txt file for details on
+    using Zope with an existing webserver.
+
+  If you wish to enable Zope logging you must specify options on the
+  command line.  See LOGGING.txt in the doc directory.
 
 
