@@ -86,7 +86,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -293,7 +293,7 @@ def parsebigmlogline(line):
 def analyze(f, top, sortf, start=None, end=None, mode='cumulative'):
     beginrequests = {}
     cumulative = {}
-    finished = {}
+    finished = []
     unfinished = {}
     
     while 1:
@@ -318,11 +318,11 @@ def analyze(f, top, sortf, start=None, end=None, mode='cumulative'):
         request.put(code, int(fromepoch), desc)
         if request.isfinished():
             del unfinished[id]
-            finished[id] = request
+            finished.append(request)
             request.active = len(unfinished)
             
-    finished.update(unfinished)
-    requests = finished.values()
+    finished.extend(unfinished.values())
+    requests = finished
 
     if mode == 'cumulative':
         for request in requests:
