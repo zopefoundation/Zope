@@ -109,7 +109,8 @@ try:
 
     def log_info(self, message, type='info'):
         if message[:14]=='adding channel' or \
-                message[:15]=='closing channel':
+           message[:15]=='closing channel' or \
+           message == 'Computing default hostname':
             LOG('ZServer', BLATHER, message)
         else:
             LOG('ZServer', severity[type], message)     
