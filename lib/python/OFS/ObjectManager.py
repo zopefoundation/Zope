@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.149 2002/04/12 19:35:30 shane Exp $"""
+$Id: ObjectManager.py,v 1.150 2002/04/15 10:15:26 htrd Exp $"""
 
-__version__='$Revision: 1.149 $'[11:-2]
+__version__='$Revision: 1.150 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -174,49 +174,56 @@ class ObjectManager(
         default__class_init__(self)
 
     def all_meta_types(self, interfaces=None):
+        # A list of products registered elsewhere
+        external_candidates = []
+
+        # Look at _product_meta_types, if there is one
         _pmt=()
         if hasattr(self, '_product_meta_types'): _pmt=self._product_meta_types
         elif hasattr(self, 'aq_acquire'):
             try: _pmt=self.aq_acquire('_product_meta_types')
             except:  pass
+        external_candidates.extend(list(_pmt))
 
-        if interfaces is None:  pmt = list(_pmt)
+        # Look at all globally visible meta types.
+        for entry in Products.meta_types:
+            if ( (interfaces is not None) or (entry.get("visibility", None)=="Global") ):
+                external_candidates.append(entry)
+
+        # Filter the list of external candidates based on the
+        # specified interface constraint
+        if interfaces is None:
+            interface_constrained_meta_types = external_candidates
         else:
-            pmt = []
-
-            for entry in pmt:
+            interface_constrained_meta_types = []
+            for entry in external_candidates:
                 try:
                     eil = entry.get('interfaces',None)
-
                     if eil is not None:
                         for ei in eil:
                             for i in interfaces: 
                                 if ei is i or ei.extends(i):
-                                    pmt.append(entry) 
+                                    interface_constrained_meta_types.append(entry) 
                                     raise BreakoutException # only append 1ce
                 except BreakoutException:   
                     pass
-            
-        gmt = []
 
-        for entry in Products.meta_types:
+        # Meta types specified by this instance are not checked against the
+        # interface constraint. This is as it always has been, but Im not
+        # sure it is correct.
+        interface_constrained_meta_types.extend(list(self.meta_types))
 
-            if interfaces is None:
-                if entry.get("visibility", None) == "Global":
-                    gmt.append(entry)
+        # Filter the list based on each meta-types's container_filter
+        meta_types = []
+        for entry in interface_constrained_meta_types:
+            container_filter = entry.get('container_filter',None)
+            if container_filter is None:
+                meta_types.append(entry)
             else:
-                try:
-                    eil = entry.get("interfaces", None)
-                    if eil is not None:
-                        for ei in eil:
-                            for i in interfaces: 
-                                if ei is i or ei.extends(i):
-                                    gmt.append(entry) 
-                                    raise BreakoutException # only append 1ce
-                except BreakoutException:   
-                    pass
+                if container_filter(self):
+                    meta_types.append(entry)
 
-        return list(self.meta_types)+gmt+pmt
+        return meta_types
 
     def _subobject_permissions(self):
         return (Products.__ac_permissions__+

@@ -44,7 +44,8 @@ class ProductContext:
     def registerClass(self, instance_class=None, meta_type='', 
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
-                      visibility="Global",interfaces=_marker
+                      visibility="Global",interfaces=_marker,
+                      container_filter=None
         ):
         """Register a constructor
 
@@ -88,6 +89,13 @@ class ProductContext:
 
         interfaces -- a list of the interfaces the object supports
 
+        container_filter -- function that is called with an ObjectManager
+           object as the only parameter, which should return a true object
+           if the object is happy to be created in that container. The
+           filter is called before showing ObjectManager's Add list,
+           and before pasting (after object copy or cut), but not
+           before calling an object's constructor.
+ 
         """
         app=self.__app
         pack=self.__pack
@@ -171,6 +179,7 @@ class ProductContext:
               'visibility': visibility,
               'interfaces': interfaces,
               'instance': instance_class,
+              'container_filter': container_filter
               },)
 
         m[name]=initial
@@ -325,3 +334,4 @@ class ProductContext:
                 ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
             
+
