@@ -11,7 +11,7 @@
 #
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.12 2004/01/07 16:44:30 andreasjung Exp $'
+__version__ = '$Id: util.py,v 1.13 2004/01/14 07:11:18 andreasjung Exp $'
 
 
 import re
@@ -74,7 +74,7 @@ class parseIndexRequest:
         usage_param = iid + '_usage'
         if request.has_key(usage_param):
             self.usage = request[usage_param]
-            warn("\nZCatalog query using '%s' detected.\nUsing query parameters ending with '_usage' is deprecated.\nConsider using record-style parameters instead (see lib/python/Products/PluggableIndexes/README.txt for details)" % usage_param, DeprecationWarning)
+            warn("\nZCatalog query using '%s' detected.\nUsing query parameters ending with '_usage' is deprecated.\nConsider using record-style parameters instead (see lib/python/Products/PluginIndexes/README.txt for details)" % usage_param, DeprecationWarning)
 
         param = request[iid]
         keys = None
