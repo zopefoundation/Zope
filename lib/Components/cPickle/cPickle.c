@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.13 1997/01/27 19:04:42 jim Exp $
+     $Id: cPickle.c,v 1.14 1997/01/27 22:00:55 chris Exp $
 
      Copyright 
 
@@ -641,38 +641,33 @@ save_int(Picklerobject *self, PyObject *args) {
 
 static int
 save_long(Picklerobject *self, PyObject *args) {
-    char *c_str;
-    int size;
+    int size, res = -1;
     PyObject *repr = 0;
 
+    static char l = LONG;
+
     UNLESS(repr = PyObject_Repr(args))
-        return -1;
+        goto finally;
 
-    if ((size = PyString_Size(repr)) < 0) {
-        Py_DECREF(repr);
-        return -1;
-    }
+    if ((size = PyString_Size(repr)) < 0)
+        goto finally;
 
-    UNLESS(c_str = (char *)malloc((size + 2) * sizeof(char))) {
-        Py_DECREF(repr);
-        PyErr_NoMemory();
-        return -1;
-    }
+    if ((*self->write_func)(self, &l, 1) < 0)
+        goto finally;
 
-    c_str[0] = LONG;
-    memcpy(c_str + 1, PyString_AS_STRING((PyStringObject *)repr), size);
-    c_str[size + 1] = '\n';
+    if ((*self->write_func)(self, 
+        PyString_AS_STRING((PyStringObject *)repr), size) < 0)
+        goto finally;
 
-    Py_DECREF(repr);
+    if ((*self->write_func)(self, "\n", 1) < 0)
+        goto finally;
 
-    if ((*self->write_func)(self, c_str, size + 2) < 0) {
-        free(c_str);
-        return -1;
-    }
+    res = 0;
 
-    free(c_str);
+finally:
+    Py_XDECREF(repr);
 
-    return 0;
+    return res;
 }
 
 
@@ -698,13 +693,15 @@ save_string(Picklerobject *self, PyObject *args) {
         PyObject *repr;
         char *repr_str;
 
+        static char string = STRING;
+
         UNLESS(repr = PyObject_Repr(args))
             return -1;
 
         repr_str = PyString_AS_STRING((PyStringObject *)repr);
         size = PyString_Size(repr);
 
-        if ((*self->write_func)(self, STRING, 1) < 0)
+        if ((*self->write_func)(self, &string, 1) < 0)
             return -1;
 
         if ((*self->write_func)(self, repr_str, size) < 0)
@@ -917,14 +914,14 @@ save_inst(Picklerobject *self, PyObject *args) {
     PyObject *class = 0, *module = 0, *name = 0, *state = 0, 
              *getinitargs_func = 0, *getstate_func = 0, *class_args = 0;
     char *module_str, *name_str;
-    int module_size, name_size, res = -1;
+    int module_size, name_size, inst_class, res = -1;
 
     static char inst = INST, obj = OBJ, build = BUILD;
     static PyObject *__class__str = 0, *__getinitargs__str = 0, 
                     *__dict__str = 0, *__getstate__str = 0;
 
     if ((*self->write_func)(self, &MARKv, 1) < 0)
-        goto finally;;
+        goto finally;
 
     UNLESS(__class__str)
         UNLESS(__class__str = PyString_FromString("__class__"))
@@ -933,7 +930,9 @@ save_inst(Picklerobject *self, PyObject *args) {
     UNLESS(class = PyObject_GetAttr(args, __class__str))
         goto finally;
 
-    if (self->bin) {
+    class_inst = PyClass_Check(class);
+
+    if (self->bin && class_inst) {
         if (save(self, class, 0) < 0)
             goto finally;
     }
@@ -949,60 +948,75 @@ save_inst(Picklerobject *self, PyObject *args) {
         UNLESS(class_args = PyObject_CallObject(getinitargs_func, empty_tuple))
             goto finally;
 
-        if ((len = PyObject_Length(class_args)) < 0)  
-            goto finally;
-
-        for (i = 0; i < len; i++) {
-            UNLESS(element = PySequence_GetItem(class_args, i)) 
+        if (class_inst)
+        {
+            if ((len = PyObject_Length(class_args)) < 0)  
                 goto finally;
 
-            if (save(self, element, 0) < 0) {
+            for (i = 0; i < len; i++) {
+                UNLESS(element = PySequence_GetItem(class_args, i)) 
+                    goto finally;
+
+                if (save(self, element, 0) < 0) {
+                    Py_DECREF(element);
+                    goto finally;
+                }
+
                 Py_DECREF(element);
-                goto finally;
             }
-
-            Py_DECREF(element);
         }
     }
     else {
         PyErr_Clear();
     }
 
-    if (!self->bin) {
-        UNLESS(name = ((PyClassObject *)class)->cl_name) {
-            PyErr_SetString(PicklingError, "class has no name");
+    if (!class_inst)
+    {
+        if (!class_args)
+            UNLESS(class_args = PyTuple_New(0));
+                goto finally;
+    
+        UNLESS(save_global(class, class_args))
+            goto finally;
+    }
+    else {
+        if (!self->bin) {
+            UNLESS(name = ((PyClassObject *)class)->cl_name) {
+                PyErr_SetString(PicklingError, "class has no name");
+                goto finally;
+            }
+
+            UNLESS(module = whichmodule(class, name))
+                goto finally;
+    
+            module_str = PyString_AS_STRING((PyStringObject *)module);
+            module_size = PyString_Size(module);
+            name_str   = PyString_AS_STRING((PyStringObject *)name);
+            name_size = PyString_Size(name);
+
+            if ((*self->write_func)(self, &inst, 1) < 0)
+                goto finally;
+
+            if ((*self->write_func)(self, module_str, module_size) < 0)
+                goto finally;
+
+            if ((*self->write_func)(self, "\n", 1) < 0)
+                goto finally;
+
+            if ((*self->write_func)(self, name_str, name_size) < 0)
+                goto finally;
+
+             if ((*self->write_func)(self, "\n", 1) < 0)
+                goto finally;
+        }
+        else if ((*self->write_func)(self, &obj, 1) < 0) {
             goto finally;
         }
-
-        UNLESS(module = whichmodule(class, name))
-            goto finally;
-    
-        module_str = PyString_AS_STRING((PyStringObject *)module);
-        module_size = PyString_Size(module);
-        name_str   = PyString_AS_STRING((PyStringObject *)name);
-        name_size = PyString_Size(name);
-
-        if ((*self->write_func)(self, &inst, 1) < 0)
-            goto finally;
-
-        if ((*self->write_func)(self, module_str, module_size) < 0)
-            goto finally;
-
-        if ((*self->write_func)(self, "\n", 1) < 0)
-            goto finally;
-
-        if ((*self->write_func)(self, name_str, name_size) < 0)
-            goto finally;
-
-        if ((*self->write_func)(self, "\n", 1) < 0)
-            goto finally;
     }
-    else if ((*self->write_func)(self, &obj, 1) < 0) {
-        goto finally;
-    }
-
-    if (put(self, args) < 0)
+    else if (put(self, args) < 0)
+    {
          goto finally;
+    }
 
     UNLESS(__getstate__str)
         UNLESS(__getstate__str = PyString_FromString("__getstate__"))
@@ -1051,6 +1065,7 @@ save_global(Picklerobject *self, PyObject *args) {
     char *name_str, *module_str, *c_str; 
     int module_size, name_size, size, res = -1;
 
+    static char global = GLOBAL;
     static PyObject *__name__str = 0;
 
     UNLESS(__name__str)
@@ -1068,25 +1083,20 @@ save_global(Picklerobject *self, PyObject *args) {
     name_str   = PyString_AS_STRING((PyStringObject *)name);
     name_size = PyString_Size(name);
 
-    size = name_size + module_size + 3;
-
-    UNLESS(c_str = (char *)malloc(size * sizeof(char))) {
-        PyErr_NoMemory();
+    if ((*self->write_func)(self, &global, 1) < 0)
         goto finally;
-    }
 
-    c_str[0] = GLOBAL;
-    memcpy(c_str + 1, module_str, module_size);
-    c_str[module_size + 1] = '\n';
-    memcpy(c_str + module_size + 2, name_str, name_size);
-    c_str[module_size + name_size + 2] = '\n';
-
-    if ((*self->write_func)(self, c_str, size) < 0) {
-        free(c_str);
+    if ((*self->write_func)(self, module_str, module_size) < 0)
         goto finally;
-    }
- 
-    free(c_str);
+
+    if ((*self->write_func)(self, "\n", 1) < 0)
+        goto finally;
+
+    if ((*self->write_func)(self, name_str, name_size) < 0)
+        goto finally;
+
+    if ((*self->write_func)(self, "\n", 1) < 0)
+        goto finally;
 
     if (put(self, args) < 0)
         goto finally;
@@ -1103,7 +1113,9 @@ finally:
 save_pers(Picklerobject *self, PyObject *args, PyObject *f) {
     PyObject *pid = 0;
     int size, res = -1;
- 
+
+    static char persid = PERSID, binpersid = BINPERSID;
+
     UNLESS(self->arg)
         UNLESS(self->arg = PyTuple_New(1))
             goto finally;
@@ -1123,7 +1135,7 @@ save_pers(Picklerobject *self, PyObject *args, PyObject *f) {
                 goto finally;
             }
 
-            if ((*self->write_func)(self, PERSID, 1) < 0)
+            if ((*self->write_func)(self, &persid, 1) < 0)
                 goto finally;
 
             if ((size = PyString_Size(pid)) < 0)
@@ -1140,7 +1152,7 @@ save_pers(Picklerobject *self, PyObject *args, PyObject *f) {
             goto finally;
         }
         else if (save(self, pid, 1) >= 0) {
-            if ((*self->write_func)(self, BINPERSID, 1) < 0)
+            if ((*self->write_func)(self, &binpersid, 1) < 0)
                 res = -1;
             else
                 res = 1;
@@ -1160,13 +1172,15 @@ finally:
 
 static int 
 save_reduce(Picklerobject *self, PyObject *callable, PyObject *tup) {
+    static char reduce = REDUCE;
+
     if (save(self, callable, 0) < 0)
         return -1;
 
     if (save(self, tup, 0) < 0)
         return -1;
 
-    return (*self->write_func)(self, REDUCE, 1);
+    return (*self->write_func)(self, &reduce, 1);
 }
 
 
@@ -1367,13 +1381,15 @@ finally:
 
 static PyObject *
 Pickler_dump(Picklerobject *self, PyObject *args) {
+    static char stop = STOP;
+
     UNLESS(PyArg_Parse(args, "O", &args))
         return NULL;
 
     if (save(self, args, 0) < 0)
         return NULL;
 
-    if ((*self->write_func)(self, STOP, 1) < 0)
+    if ((*self->write_func)(self, &stop, 1) < 0)
         return NULL;
 
     if ((*self->write_func)(self, NULL, 0) < 0)
@@ -1386,6 +1402,8 @@ Pickler_dump(Picklerobject *self, PyObject *args) {
 
 static PyObject *
 dump_special(Picklerobject *self, PyObject *args) {
+    static char stop = STOP;
+
     PyObject *callable = 0, *arg_tup = 0;
     
     UNLESS(PyArg_ParseTuple(args, "OO", &callable, &arg_tup))
@@ -1400,7 +1418,7 @@ dump_special(Picklerobject *self, PyObject *args) {
     if (save_reduce(self, callable, arg_tup) < 0)
         return NULL;
 
-    if ((*self->write_func)(self, STOP, 1) < 0)
+    if ((*self->write_func)(self, &stop, 1) < 0)
         return NULL;
 
     if ((*self->write_func)(self, NULL, 0) < 0)
@@ -1591,10 +1609,53 @@ static PyTypeObject Picklertype = {
 };
 
 
+PyObject *
+PyImport_ImportModuleNi(char *module_name)
+{
+    char *import_str;
+    int size, i;
+    PyObject *import;
+
+    static PyObject *eval_dict = 0;
+
+    size = strlen(module_name);
+    for (i = 0; i < size; i++) {
+        if (((module_name[i] < 'A') || (module_name[i] > 'z')) &&
+            (module_name[i] != '_')) {
+            PyErr_SetString(PyExc_ImportError, "module name contains "
+                "invalid characters.");
+            return NULL;
+        }
+    }
+
+    UNLESS(import_str = 
+        (char *)malloc((strlen(module_name) + 15) * sizeof(char))) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+
+    sprintf(import_str, "__import__('%s')", module_name);
+
+    UNLESS(eval_dict)
+        UNLESS(eval_dict = Py_BuildValue("{sO}", "__builtins__", builtins))
+            return NULL;
+
+    if (!(import = PyRun_String(import_str, eval_input, eval_dict, eval_dict)))
+    {
+        free(import_str);
+        return NULL;
+    }
+
+    free(import_str);
+
+    return import;
+}
+
+
 static PyObject *
 find_class(PyObject *py_module_name, PyObject *py_class_name) {
     PyObject *import = 0, *class = 0, *t = 0;
-    char *module_name, *class_name, *import_str;
+    char *module_name, *class_name;
     PyObject *res = NULL;
 
     static PyObject *eval_dict = 0;
@@ -1618,29 +1679,12 @@ find_class(PyObject *py_module_name, PyObject *py_class_name) {
 
     PyErr_Clear();
 
-    UNLESS(import_str = 
-        (char *)malloc((PyString_Size(py_module_name) + 15) * sizeof(char))) {
-        PyErr_NoMemory();
-        goto finally;
-    }
-
-    sprintf(import_str, "__import__('%s')", module_name);
-
-    UNLESS(eval_dict)
-        UNLESS(eval_dict = Py_BuildValue("{sO}", "__builtins__", builtins))
-            goto finally;
- 
-    if (!(import = PyRun_String(import_str, eval_input, eval_dict,eval_dict)) ||
+    if (!(import = PyImport_ImportModuleNi(module_name)) ||    
         !(class = PyObject_GetAttr(import, py_class_name))) {
-        free(import_str);
-	/*
         PyErr_Format(PyExc_SystemError, "Failed to import global %s "
             "from module %s", "ss", class_name, module_name);
-	    */
         goto finally;
     }  
- 
-    free(import_str);
 
     if (PyDict_SetItem(class_map, t, class) < 0)
         goto finally;
