@@ -382,8 +382,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.43 2001/01/08 22:46:57 brian Exp $'
-__version__='$Revision: 1.43 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.44 2001/01/24 16:26:01 brian Exp $'
+__version__='$Revision: 1.44 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
@@ -561,6 +561,10 @@ class InClass:
                     # there are more items, without actually
                     # computing a length:
                     sequence[end]
+                except IndexError:
+                    if self.elses: result=render(self.elses, md)
+                    else: result=''
+                else:
                     pstart,pend,psize=opt(end+1-overlap,0,
                                           sz,orphan,sequence)
                     kw['next-sequence']=1
@@ -568,9 +572,6 @@ class InClass:
                     kw['next-sequence-end-index']=pend-1
                     kw['next-sequence-size']=pend+1-pstart
                     result=render(section,md)
-                except:
-                    if self.elses: result=render(self.elses, md)
-                    else: result=''
             else:
                 result = []
                 append=result.append
