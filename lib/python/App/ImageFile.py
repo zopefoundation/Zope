@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -94,6 +94,7 @@ from DateTime import DateTime
 from time import time
 from os import stat
 import Acquisition
+import string
 
 
 class ImageFile(Acquisition.Explicit):
