@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -9,18 +9,17 @@ from Management import Management
 from Globals import HTMLFile
 
 class ApplicationManager(Acquirer,Management):
-    """Application management component."""
+    """ """
 
     manage_main    =HTMLFile('App/appMain')
     manage_packForm=HTMLFile('App/pack')
     manage_undoForm=HTMLFile('App/undo')
 
     manage_options=(
-    {'icon':'App/arrow.jpg', 'label':'Application Management',
+    {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
      'action':'manage_main',   'target':'manage_main'},
     )
-    title        ='Application Manager'
-    name         ='application manager'
+    name=title   ='Control Panel'
     process_id   =os.getpid()
     process_start=int(time.time())
 

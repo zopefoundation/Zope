@@ -18,10 +18,9 @@
   <!--#/in parentObject-->
 <!--#/if parentObject-->
 <P>
-The application manager allows you to view application status information.
+The Control Panel allows you to view application status information.
 It also allows you to perform maintenance tasks such as process control,
-database packing, and &quot;undoing&quot; previous changes to your
-application's configuration or data.
+database packing, and &quot;undoing&quot; previous changes to your site.
 <P>
 <TABLE CELLPADDING="4" BORDER="1">
 <TR>
