@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateRangeIndex.py,v 1.9 2003/11/04 14:53:28 chrism Exp $
+"""$Id: DateRangeIndex.py,v 1.10 2003/11/04 22:04:09 chrism Exp $
 """
 
 import os
@@ -406,8 +406,8 @@ class DateRangeIndex(UnIndex):
         if isinstance( value, DateTime ):
             value = value.millis() / 1000 / 60 # flatten to minutes
         result = int( value )
-        if isinstance(result, long): # this won't work
-            raise ValueError( '%s is not within the range of dates allowed'
+        if isinstance(result, long): # this won't work (Python 2.3)
+            raise OverflowError( '%s is not within the range of dates allowed'
                               'by a DateRangeIndex' % value)
         return result
 

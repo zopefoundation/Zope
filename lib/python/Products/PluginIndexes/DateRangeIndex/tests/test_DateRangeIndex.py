@@ -113,7 +113,7 @@ class DRI_Tests( unittest.TestCase ):
                 assert work.getEntryForObject( result ) == match.datum()
 
     def test_longdates( self ):
-        self.assertRaises(ValueError, self._badlong )
+        self.assertRaises(OverflowError, self._badlong )
 
     def _badlong(self):
         work = DateRangeIndex ('work', 'start', 'stop' )
