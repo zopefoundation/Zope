@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.34 1998/02/18 23:46:53 jim Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: DA.py,v 1.35 1998/02/20 22:25:35 jim Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -28,6 +28,7 @@ import IOBTree
 from time import time
 from zlib import compress, decompress
 md5new=md5.new
+import ExtensionClass
 
 class DA(
     Aqueduct.Aqueduct.BaseQuery,Acquisition.Implicit,
@@ -257,7 +258,7 @@ class DA(
     def connected(self):
 	return getattr(getattr(self, self.connection_id), 'connected')()
 
-class Traverse:
+class Traverse(ExtensionClass.Base):
     """Helper class for 'traversing' searches during URL traversal
     """
     _r=None
@@ -270,7 +271,7 @@ class Traverse:
 
     def __bobo_traverse__(self, REQUEST, key):
 	name=self._name
-	da=self._da
+	da=self.__dict__['_da']
 	args=self._args
 	if name:
 	    args[name]=key
@@ -296,9 +297,9 @@ class Traverse:
 	return r[key]
 
     def __getattr__(self, name):
-	r=self._r
+	r=self.__dict__['_r']
 	if hasattr(r, name): return getattr(r,name)
-	return getattr(self._da, name)
+	return getattr(self.__dict__['_da'], name)
 
 
 braindir=SOFTWARE_HOME+'/Extensions'    
@@ -340,6 +341,10 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.35  1998/02/20 22:25:35  jim
+# Fixed up traversal machinery to work correctly with acquisition,
+# especially method acquisition.
+#
 # Revision 1.34  1998/02/18 23:46:53  jim
 # Added reparenting magic for NE interface.
 #
