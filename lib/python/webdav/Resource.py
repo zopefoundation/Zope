@@ -85,15 +85,17 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
-import sys, os, string, mimetypes, davcmds, ExtensionClass
-from common import absattr, aq_base, urlfix, rfc1123_date
+import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
+from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
+from common import IfParser
 from urllib import quote, unquote
 from AccessControl import getSecurityManager
+from WriteLockInterface import WriteLockInterface
 import Globals, time
 
-class Resource(ExtensionClass.Base):
+class Resource(ExtensionClass.Base, Lockable.LockableItem):
     """The Resource mixin class provides basic WebDAV support for
     non-collection objects. It provides default implementations
     for most supported WebDAV HTTP methods, however certain methods
@@ -104,7 +106,7 @@ class Resource(ExtensionClass.Base):
 
     __http_methods__=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS',
                       'TRACE', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY',
-                      'MOVE',
+                      'MOVE', 'LOCK', 'UNLOCK',
                       )
 
     __ac_permissions__=(
@@ -112,6 +114,8 @@ class Resource(ExtensionClass.Base):
         ('Access contents information',      ('PROPFIND',)),
         ('Manage properties',                ('PROPPATCH',)),
         ('Delete objects',                   ('DELETE',)),
+        ('WebDAV Lock items',                ('LOCK',)),
+        ('WebDAV Unlock items',              ('UNLOCK',)),
     )
 
     def dav__init(self, request, response):
@@ -145,9 +149,59 @@ class Resource(ExtensionClass.Base):
 
         raise 'Unauthorized', msg
 
+    def dav__simpleifhandler(self, request, response, method='PUT',
+                             col=0, url=None, refresh=0):
+        ifhdr = request.get_header('If', None)
+        if Lockable.wl_isLocked(self) and (not ifhdr):
+            raise "Locked", "Resource is locked."
+        
+        if not ifhdr: return None
+        if not Lockable.wl_isLocked(self): return None
+
+        # Since we're a simple if handler, and since some clients don't
+        # pass in the port information in the resource part of an If
+        # header, we're only going to worry about if the paths compare
+        if url is None: url = urlfix(request['URL'], method)
+        url = urlbase(url)              # Gets just the path information
+        
+        # if 'col' is passed in, an operation is happening on a submember
+        # of a collection, while the Lock may be on the parent.  Lob off
+        # the final part of the URL  (ie '/a/b/foo.html' becomes '/a/b/')
+        if col: url = url[:string.rfind(url, '/')+1]
+
+        havetag = lambda x, self=self: self.wl_hasLock(x)
+        found = 0; resourcetagged = 0
+        taglist = IfParser(ifhdr)
+        for tag in taglist:
+            if not tag.resource:
+                # There's no resource (url) with this tag
+                taglist = map(tokenFinder, tag.list)
+                wehave = filter(havetag, list)
+                if not wehave: continue
+                if tag.NOTTED: continue
+                if refresh:
+                    for token in wehave: self.wl_getLock(token).refresh()
+                resourcetagged = 1
+                found = 1; break
+            elif urlbase(tag.resource) == url:
+                resourcetagged = 1
+                taglist = map(tokenFinder, tag.list)
+                wehave = filter(havetag, taglist)
+                if not wehave: continue
+                if tag.NOTTED: continue
+                if refresh:
+                    for token in wehave: self.wl_getLock(token).refresh()
+                found = 1; break
+
+        if resourcetagged and (not found):
+            raise 'Precondition Failed', 'Condition failed.'
+        elif resourcetagged and found:
+            return 1
+        else:
+            return 0
+
 
     # WebDAV class 1 support
-
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
@@ -171,6 +225,8 @@ class Resource(ExtensionClass.Base):
         if hasattr(self, '_p_mtime'):
             mtime=rfc1123_date(self._p_mtime)
             RESPONSE.setHeader('Last-Modified', mtime)
+        if hasattr(aq_base(self), 'http__etag'):
+            RESPONSE.setHeader('Etag', self.aq_base.http__etag())
         RESPONSE.setStatus(200)
         return RESPONSE
 
@@ -189,7 +245,7 @@ class Resource(ExtensionClass.Base):
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', string.join(self.__http_methods__,', '))
         RESPONSE.setHeader('Content-Length', 0)
-        RESPONSE.setHeader('DAV', '1', 1)
+        RESPONSE.setHeader('DAV', '1,2', 1)
         RESPONSE.setStatus(200)
         return RESPONSE
 
@@ -208,9 +264,29 @@ class Resource(ExtensionClass.Base):
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
         self.dav__init(REQUEST, RESPONSE)
-        url=urlfix(REQUEST['URL'], 'DELETE')
-        name=unquote(filter(None, string.split(url, '/'))[-1])
-        # TODO: add lock checking here
+        ifhdr = REQUEST.get_header('If', '')
+        url = urlfix(REQUEST['URL'], 'DELETE')
+        name = unquote(filter(None, string.split(url, '/'))[-1])
+        parent = self.aq_parent
+        # Lock checking
+        if Lockable.wl_isLocked(self):
+            if ifhdr:
+                self.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE')
+            else:
+                # We're locked, and no if header was passed in, so
+                # the client doesn't own a lock.
+                raise 'Locked', 'Resource is locked.'
+        elif WriteLockInterface.isImplementedBy(parent) and \
+             parent.wl_isLocked():
+            if ifhdr:
+                parent.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
+            else:
+                # Our parent is locked, and no If header was passed in.
+                # When a parent is locked, members cannot be removed
+                raise 'Precondition Failed', 'Resource is locked, and no '\
+                      'condition was passed in.'
+        # Either we're not locked, or a succesful lock token was submitted
+        # so we can delete the lock now.
         self.aq_parent._delObject(name)
         RESPONSE.setStatus(204)
         return RESPONSE
@@ -231,7 +307,14 @@ class Resource(ExtensionClass.Base):
         if not hasattr(aq_base(self), 'propertysheets'):
             raise 'Method Not Allowed', (
                   'Method not supported for this resource.')
-        # TODO: add lock checking here
+        # Lock checking
+        ifhdr = REQUEST.get_header('If', '')
+        if Lockable.wl_isLocked(self):
+            if ifhdr:
+                self.dav__simpleifhandler(REQUEST, RESPONSE, 'PROPPATCH')
+            else:
+                raise 'Locked', 'Resource is locked.'
+
         cmd=davcmds.PropPatch(REQUEST)
         result=cmd.apply(self)
         RESPONSE.setStatus(207)
@@ -287,6 +370,29 @@ class Resource(ExtensionClass.Base):
         except 'Unauthorized':
             raise 'Unauthorized', sys.exc_info()[1]
         except: raise 'Forbidden', sys.exc_info()[1]
+
+        # Now check locks.  The If header on a copy only cares about the
+        # lock on the destination, so we need to check out the destinations
+        # lock status.
+        ifhdr = REQUEST.get_header('If', '')
+        if existing:
+            # The destination itself exists, so we need to check its locks
+            destob = aq_base(parent)._getOb(name)
+            if WriteLockInterface.isImplementedBy(destob) and \
+               destob.wl_isLocked():
+                if ifhdr:
+                    itrue = destob.dav__simpleifhandler(
+                        REQUEST, RESPONSE, 'COPY', refresh=1)
+                    if not itrue: raise 'Preconditon Failed'
+                else:
+                    raise 'Locked', 'Destination is locked.'
+        elif WriteLockInterface.isImplementedBy(parent) and \
+             parent.wl_isLocked():
+            if ifhdr:
+                parent.dav__simpleifhandler(REQUEST, RESPONSE, 'COPY',
+                                            refresh=1)
+            else:
+                raise 'Locked', 'Destination is locked.'
 
         ob=self._getCopy(parent)
         ob.manage_afterClone(ob)
@@ -346,6 +452,41 @@ class Resource(ExtensionClass.Base):
             raise 'Unauthorized', sys.exc_info()[1]
         except: raise 'Forbidden', sys.exc_info()[1]
 
+        # Now check locks.  Since we're affecting the resource that we're
+        # moving as well as the destination, we have to check both.
+        ifhdr = REQUEST.get_header('If', '')
+        if existing:
+            # The destination itself exists, so we need to check its locks
+            destob = aq_base(parent)._getOb(name)
+            if WriteLockInterface.isImplementedBy(destob) and \
+               destob.wl_isLocked():
+                if ifhdr:
+                    itrue = destob.dav__simpleifhandler(
+                        REQUEST, RESPONSE, 'MOVE', url=dest, refresh=1)
+                    if not itrue: raise 'Precondition Failed'
+                else:
+                    raise 'Locked', 'Destination is locked.'
+        elif WriteLockInterface.isImplementedBy(parent) and \
+             parent.wl_isLocked():
+            # There's no existing object in the destination folder, so
+            # we need to check the folders locks since we're changing its
+            # member list
+            if ifhdr:
+                itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'MOVE',
+                                                    col=1, url=dest, refresh=1)
+                if not itrue: raise 'Precondition Failed', 'Condition failed.'
+            else:
+                raise 'Locked', 'Destination is locked.'
+        if Lockable.wl_isLocked(self):
+            # Lastly, we check ourselves
+            if ifhdr:
+                itrue = self.dav__simpleifhandler(REQUEST, RESPONSE, 'MOVE',
+                                                  refresh=1)
+                if not itrue: raise 'Precondition Failed', 'Condition failed.'
+            else:
+                raise 'Precondition Failed', 'Source is locked and no '\
+                      'condition was passed in.'
+
         ob=aq_base(self._getCopy(parent))
         self.aq_parent._delObject(absattr(self.id))
         ob._setId(name)
@@ -361,48 +502,84 @@ class Resource(ExtensionClass.Base):
         return RESPONSE
 
 
-    # WebDAV Class 2  is currently not really supported - the
-    # following merely fakes enough class 2 support to allow
-    # operation with MS O2K.
-
-    _v_dav_lock=None
-
-    def dav__genlocktoken(self):
-        return 'AA9F6414-1D77-11D3-B825-00105A989226:%.03f' % time.time()
+    # WebDAV Class 2, Lock and Unlock
 
     def LOCK(self, REQUEST, RESPONSE):
         """Lock a resource"""
         self.dav__init(REQUEST, RESPONSE)
-        token=self.dav__genlocktoken()
-        self._v_dav_lock=token
-        RESPONSE.setStatus(200)
-        RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
-        RESPONSE.setHeader('Lock-Token', '<locktoken:%s>' % token)
-        RESPONSE.setBody(self.fake_lock_xml % token)
+        security = getSecurityManager()
+        creator = security.getUser()
+        body = REQUEST.get('BODY', '')
+        ifhdr = REQUEST.get_header('If', None)
+        depth = REQUEST.get_header('Depth', 'infinite')
+        alreadylocked = Lockable.wl_isLocked(self)
+
+        if body and alreadylocked:
+            # This is a full LOCK request, and the Resource is
+            # already locked, so we need to raise the alreadylocked
+            # exception.
+            RESPONSE.setStatus(423)
+        elif body:
+            # This is a normal lock request with an XML payload
+            cmd = davcmds.Lock(REQUEST)
+            token, result = cmd.apply(self, creator, depth=depth)
+            if result:
+                # Return the multistatus result (there were multiple
+                # errors.  Note that davcmds.Lock.apply aborted the
+                # transaction already.
+                RESPONSE.setStatus(207)
+                RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+                RESPONSE.setBody(result)
+            else:
+                # Success
+                lock = self.wl_getLock(token)
+                RESPONSE.setStatus(200)
+                RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+                RESPONSE.setBody(lock.asXML())
+        else:
+            # There's no body, so this likely to be a refresh request
+            if not ifhdr: RESPONSE.setStatus(412) # Precondition failed
+            taglist = IfParser(ifhdr)
+            found = 0
+            for tag in taglist:
+                for listitem in tag.list:
+                    token = tokenFinder(listitem)
+                    if token and self.wl_hasLock(token):
+                        lock = self.wl_getLock(token)
+                        timeout = REQUEST.get_header('Timeout', 'Infinite')
+                        lock.setTimeout(timeout) # automatically refreshes
+                        found = 1
+
+                        RESPONSE.setStatus(200)
+                        RESPONSE.setHeader('Content-Type',
+                                           'text/xml; charset="utf-8"')
+                        RESPONSE.setBody(lock.asXML())
+                        break
+                if found: break
+            if not found:
+                RESPONSE.setStatus(412) # Precondition failed
+                    
         return RESPONSE
 
     def UNLOCK(self, REQUEST, RESPONSE):
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
-        self._v_dav_lock=None
-        RESPONSE.setStatus(204)
-        return RESPONSE
+        security = getSecurityManager()
+        user = security.getUser()
+        token = REQUEST.get_header('Lock-Token', '')
+        url = REQUEST['URL']
+        token = tokenFinder(token)
 
-    fake_lock_xml="""<?xml version="1.0" encoding="utf-8" ?>
-<d:prop xmlns:d="DAV:">
-  <d:lockdiscovery>
-    <d:activelock>
-      <d:locktype><d:write/></d:locktype>
-      <d:lockscope><d:exclusive/></d:lockscope>
-      <d:depth>0</d:depth>
-      <d:owner>you</d:owner>
-      <d:timeout>Second-120</d:timeout>
-      <d:locktoken>
-        <d:href>locktoken:%s</d:href>
-      </d:locktoken>
-    </d:activelock>
-  </d:lockdiscovery>
-</d:prop>"""
+        cmd = davcmds.Unlock()
+        result = cmd.apply(self, token, url)
+        
+        if result:
+            RESPONSE.setStatus(207)
+            RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+            RESPONSE.setBody(result)
+        else:
+            RESPONSE.setStatus(204)     # No Content response code
+        return RESPONSE
 
 
 Globals.default__class_init__(Resource)

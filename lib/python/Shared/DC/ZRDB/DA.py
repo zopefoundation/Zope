@@ -85,8 +85,7 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.97 2001/01/24 16:14:54 brian Exp $'''
-__version__='$Revision: 1.97 $'[11:-2]
+__version__='$Revision: 1.98 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -108,6 +107,7 @@ from Results import Results
 from App.Extensions import getBrain
 from AccessControl import getSecurityManager
 from webdav.Resource import Resource
+from webdav.Lockable import ResourceLockedError
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
 
@@ -232,6 +232,9 @@ class DA(
             return self._er(title,connection_id,arguments,template,
                             SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST)
 
+        if self.wl_isLocked():
+            raise ResourceLockedError, 'SQL Method is locked via WebDAV'
+        
         self.title=str(title)
         self.connection_id=str(connection_id)
         arguments=str(arguments)
@@ -338,6 +341,7 @@ class DA(
     def PUT(self, REQUEST, RESPONSE):
         """Handle put requests"""
         self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         body = REQUEST.get('BODY', '')
         m = re.match('\s*<params>(.*)</params>\s*\n', body, re.I)
         if m:

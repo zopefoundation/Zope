@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.124 $'[11:-2]
+__version__='$Revision: 1.125 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -92,6 +92,8 @@ from Globals import DTMLFile, MessageDialog
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
+from webdav.Lockable import ResourceLockedError
+from webdav.WriteLockInterface import WriteLockInterface
 from SimpleItem import Item_w__name__
 from cStringIO import StringIO
 from Globals import Persistent
@@ -135,6 +137,7 @@ class File(Persistent, Implicit, PropertyManager,
            RoleManager, Item_w__name__, Cacheable):
     """A File object is a content object for arbitrary files."""
     
+    __implements__ = (WriteLockInterface,)
     meta_type='File'
 
     
@@ -265,6 +268,9 @@ class File(Persistent, Implicit, PropertyManager,
         """
         Changes the title and content type attributes of the File or Image.
         """
+        if self.wl_isLocked():
+            raise ResourceLockedError, "File is locked via WebDAV"
+
         self.title=str(title)
         self.content_type=str(content_type)
         if precondition: self.precondition=str(precondition)
@@ -280,6 +286,9 @@ class File(Persistent, Implicit, PropertyManager,
 
         The file or images contents are replaced with the contents of 'file'.
         """
+        if self.wl_isLocked():
+            raise ResourceLockedError, "File is locked via WebDAV"
+
         data, size = self._read_data(file)
         content_type=self._get_content_type(file, data, self.__name__,
                                             'application/octet-stream')
@@ -369,6 +378,7 @@ class File(Persistent, Implicit, PropertyManager,
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
         self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         type=REQUEST.get_header('content-type', None)
 
         file=REQUEST['BODYFILE']
@@ -504,6 +514,7 @@ class Image(File):
     as File objects.  Images also have a string representation that
     renders an HTML 'IMG' tag.
     """
+    __implements__ = (WriteLockInterface,)
     meta_type='Image'
 
     

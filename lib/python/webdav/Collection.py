@@ -85,12 +85,14 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
-import sys, os, string, Globals
+import sys, os, string, Globals, davcmds, Lockable
 from common import urlfix, rfc1123_date
 from Resource import Resource
+from AccessControl import getSecurityManager
 from urllib import unquote
+from WriteLockInterface import WriteLockInterface
 
 
 class Collection(Resource):
@@ -143,11 +145,45 @@ class Collection(Resource):
         success, or may return 207 (Multistatus) to indicate partial
         success. Note that in Zope a DELETE currently never returns 207."""
         self.dav__init(REQUEST, RESPONSE)
-        url=urlfix(REQUEST['URL'], 'DELETE')
-        name=unquote(filter(None, string.split(url, '/'))[-1])
-        # TODO: add lock checking here
-        self.aq_parent._delObject(name)
-        RESPONSE.setStatus(204)
+        ifhdr = REQUEST.get_header('If', '')
+        url = urlfix(REQUEST['URL'], 'DELETE')
+        name = unquote(filter(None, string.split(url, '/'))[-1])
+        parent = self.aq_parent
+        user = getSecurityManager().getUser()
+        token = None
+        # Level 1 of lock checking (is the collection or its parent locked?)
+        if Lockable.wl_isLocked(self):
+            if ifhdr:
+                self.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
+            else:
+                raise 'Locked'
+        elif Lockable.wl_isLocked(parent):
+            if ifhdr:
+                parent.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
+            else:
+                raise 'Precondition Failed'
+        # Second level of lock\conflict checking (are any descendants locked,
+        # or is the user not permitted to delete?).  This results in a
+        # multistatus response
+        if ifhdr:
+            tokens = self.wl_lockTokens()
+            for tok in tokens:
+                # We already know that the simple if handler succeeded,
+                # we just want to get the right token out of the header now
+                if string.find(ifhdr, tok) > -1:
+                    token = tok
+        cmd = davcmds.DeleteCollection()
+        result = cmd.apply(self, token, user, REQUEST['URL'])
+
+        if result:
+            # There were conflicts, so we need to report them
+            RESPONSE.setStatus(207)
+            RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+            RESPONSE.setBody(result)
+        else:
+            # There were no conflicts, so we can go ahead and delete
+            self.aq_parent._delObject(name)
+            RESPONSE.setStatus(204)
         return RESPONSE
 
 

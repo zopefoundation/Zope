@@ -69,10 +69,14 @@
 <tr>
   <td align="left" valign="top" colspan="2">
   <div class="form-element">
-  <input class="form-element" type="submit" name="SUBMIT"
-   value="Save Changes"> 
-  <input class="form-element" type="submit" name="SUBMIT"
-   value="Change and Test">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" name="SUBMIT"
+    value="Save Changes"> 
+   <input class="form-element" type="submit" name="SUBMIT"
+    value="Change and Test">
+  </dtml-if wl_isLocked>
   <br />
   <input class="form-element" type="submit" name="SUBMIT" value="Taller">
   <input class="form-element" type="submit" name="SUBMIT" value="Shorter">

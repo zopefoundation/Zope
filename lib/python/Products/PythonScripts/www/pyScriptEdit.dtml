@@ -70,8 +70,12 @@
 <tr>
   <td align="left" valign="top" colspan="2">
   <div class="form-element">
-  <input class="form-element" type="submit" 
-   name="ZPythonScriptHTML_editAction:method" value="Save Changes">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" 
+    name="ZPythonScriptHTML_editAction:method" value="Save Changes">
+  </dtml-if>
   &nbsp;&nbsp;
   <input class="form-element" type="submit" name="height" value="Taller">
   <input class="form-element" type="submit" name="height" value="Shorter">
@@ -108,7 +112,11 @@ to <a href="document_src">view or download</a> the current source.
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input class="form-element" type="submit" value="Upload File">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" value="Upload File">
+  </dtml-if>
   </div>
   </td>
 </tr>

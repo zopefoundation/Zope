@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -94,6 +94,8 @@ from OFS.content_types import guess_content_type
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
+from webdav.Lockable import ResourceLockedError
+from webdav.WriteLockInterface import WriteLockInterface
 from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
 from urllib import quote
@@ -114,6 +116,8 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     _proxy_roles=()
     index_html=None # Prevent accidental acquisition
     _cache_namespace_keys=()
+
+    __implements__ = (WriteLockInterface,)
 
     # Documents masquerade as functions:
     class func_code: pass
@@ -304,6 +308,8 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         self._validateProxy(REQUEST)
         if self._size_changes.has_key(SUBMIT):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
+        if self.wl_isLocked():
+            raise ResourceLockedError, 'This DTML Method is locked via WebDAV'
 
         self.title=str(title)
         if type(data) is not type(''): data=data.read()
@@ -316,6 +322,9 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     def manage_upload(self,file='', REQUEST=None):
         """Replace the contents of the document with the text in file."""
         self._validateProxy(REQUEST)
+        if self.wl_isLocked():
+            raise ResourceLockedError, 'This DTML Method is locked via WebDAV'
+
         if type(file) is not type(''): file=file.read()
         self.munge(file)
         self.ZCacheable_invalidate()
@@ -369,6 +378,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests."""
         self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         body=REQUEST.get('BODY', '')
         self._validateProxy(REQUEST)
         self.munge(body)

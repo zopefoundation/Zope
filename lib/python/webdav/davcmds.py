@@ -85,15 +85,18 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix, urlbase
 from OFS.PropertySheets import DAVProperties
+from LockItem import LockItem
+from WriteLockInterface import WriteLockInterface
+from Acquisition import aq_parent
 from xmltools import XmlParser
 from cStringIO import StringIO
 from urllib import quote
-
+from AccessControl import getSecurityManager
 
 class DAVProps(DAVProperties):
     """Emulate required DAV properties for objects which do
@@ -206,7 +209,10 @@ class PropFind:
         if depth in ('1', 'infinity') and iscol:
             for ob in obj.objectValues():
                 dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)
-                if hasattr(ob, '__dav_resource__'):
+                if hasattr(ob, '__locknull_resource__'):
+                    # Do nothing, a null resource shouldn't show up to DAV
+                    if dflag: ob._p_deactivate()
+                elif hasattr(ob, '__dav_resource__'):
                     uri=os.path.join(url, absattr(ob.id))
                     depth=depth=='infinity' and depth or 0
                     self.apply(ob, uri, depth, result, top=0)
@@ -334,23 +340,220 @@ class PropPatch:
 class Lock:
     """Model a LOCK request."""
     def __init__(self, request):
-        self.request=request
-        data=request.get('BODY', '')
-        self.scope='exclusive'
-        self.type='write'
-        self.owner=''
+        self.request = request
+        data = request.get('BODY', '')
+        self.scope = 'exclusive'
+        self.type = 'write'
+        self.owner = ''
+        timeout = request.get_header('Timeout', 'Infinite')
+        self.timeout = string.strip(string.split(timeout,',')[-1])
         self.parse(data)
 
     def parse(self, data, dav='DAV:'):
-        root=XmlParser().parse(data)
-        info=root.elements('lockinfo', ns=dav)[0]
-        ls=info.elements('lockscope', ns=dav)[0]
-        self.scope=ls.elements()[0].name()
-        lt=info.elements('locktype', ns=dav)[0]
-        self.type=lt.elements()[0].name()
-        lo=info.elements('owner', ns=dav)
-        if lo: self.owner=lo[0].toxml()
+        root = XmlParser().parse(data)
+        info = root.elements('lockinfo', ns=dav)[0]
+        ls = info.elements('lockscope', ns=dav)[0]
+        self.scope = ls.elements()[0].name()
+        lt = info.elements('locktype', ns=dav)[0]
+        self.type = lt.elements()[0].name()
 
+        lockowner = info.elements('owner', ns=dav)
+        if lockowner:
+            # Since the Owner element may contain children in different
+            # namespaces (or none at all), we have to find them for potential
+            # remapping.  Note that Cadaver doesn't use namespaces in the
+            # XML it sends.
+            lockowner = lockowner[0]
+            for el in lockowner.elements():
+                name, elns = el.name(), el.namespace()
+                if not elns:
+                    # There's no namespace, so we have to add one
+                    lockowner.remap({dav:'ot'})
+                    el.__nskey__ = 'ot'
+                    for subel in el.elements():
+                        if not subel.namespace():
+                            el.__nskey__ = 'ot'
+                else:
+                    el.remap({dav:'o'})
+            self.owner = lockowner.strval()
 
+    def apply(self, obj, creator=None, depth='infinity', token=None,
+              result=None, url=None, top=1):
+        """ Apply, built for recursion (so that we may lock subitems
+        of a collection if requested """
+        if result is None:
+            result = StringIO()
+            url = urlfix(self.request['URL'], 'LOCK')
+            url = urlbase(url)
+        iscol = hasattr(obj, '__dav_collection__')
+        if iscol and url[-1] != '/': url = url + '/'
+        errmsg = None
+        lock = None
 
+        try:
+            lock = LockItem(creator, self.owner, depth, self.timeout,
+                            self.type, self.scope, token)
+            if token is None: token = lock.getLockToken()
+        except ValueError, valerrors:
+            errmsg = "412 Precondition Failed"
+        except:
+            errmsg = "403 Forbidden"
 
+        try:
+            if not WriteLockInterface.isImplementedBy(obj):
+                if top:
+                    # This is the top level object in the apply, so we
+                    # do want an error
+                    errmsg = "405 Method Not Allowed"
+                else:
+                    # We're in an infinity request and a subobject does
+                    # not support locking, so we'll just pass
+                    pass
+            elif obj.wl_isLocked():
+                errmsg = "423 Locked"
+            else:
+                method = getattr(obj, 'wl_setLock')
+                vld = getSecurityManager().validate(None, obj, 'wl_setLock',
+                                                    method)
+                if vld and token and (lock is not None):
+                    obj.wl_setLock(token, lock)
+                else:
+                    errmsg = "403 Forbidden"
+        except:
+            errmsg = "403 Forbidden"
+            
+        if errmsg:
+            if top and ((depth in (0, '0')) or (not iscol)):
+                # We don't need to raise multistatus errors
+                raise errmsg[4:]
+            elif not result.getvalue():
+                # We haven't had any errors yet, so our result is empty
+                # and we need to set up the XML header
+                result.write('<?xml version="1.0" encoding="utf-8" ?>\n' \
+                             '<d:multistatus xmlns:d="DAV:">\n')
+            result.write('<d:response>\n <d:href>%s</d:href>\n' % url)
+            result.write(' <d:status>HTTP/1.1 %s</d:status>\n' % errmsg)
+            result.write('</d:response>\n')
+
+        if depth == 'infinity' and iscol:
+            for ob in obj.objectValues():
+                if hasattr(obj, '__dav_resource__'):
+                    uri = os.path.join(url, absattr(ob.id))
+                    self.apply(ob, creator, depth, token, result,
+                               uri, top=0)
+        if not top: return token, result
+        if result.getvalue():
+            # One or more subitems probably failed, so close the multistatus
+            # element and clear out all succesful locks
+            result.write('</d:multistatus>')
+            get_transaction().abort() # This *SHOULD* clear all succesful locks
+        return token, result.getvalue()
+    
+
+class Unlock:
+    """ Model an Unlock request """
+
+    def apply(self, obj, token, url=None, result=None, top=1):
+        if result is None:
+            result = StringIO()
+            url = urlfix(url, 'UNLOCK')
+            url = urlbase(url)
+        iscol = hasattr(obj, '__dav_collection__')
+        if iscol and url[-1] != '/': url = url + '/'
+        errmsg = None
+
+        islockable = WriteLockInterface.isImplementedBy(obj)
+
+        if islockable and obj.wl_hasLock(token):
+            method = getattr(obj, 'wl_delLock')
+            vld = getSecurityManager().validate(None,obj,'wl_delLock',method)
+            if vld: obj.wl_delLock(token)
+            else: errmsg = "403 Forbidden"
+        elif not islockable:
+            # Only set an error message if the command is being applied
+            # to a top level object.  Otherwise, we're descending a tree
+            # which may contain many objects that don't implement locking,
+            # so we just want to avoid them
+            if top: errmsg = "405 Method Not Allowed"
+
+        if errmsg:
+            if top and (not iscol):
+                # We don't need to raise multistatus errors
+                if errmsg[:3] == '403': raise "Forbidden"
+                else: raise "Precondition Failed"
+            elif not result.getvalue():
+                # We haven't had any errors yet, so our result is empty
+                # and we need to set up the XML header
+                result.write('<?xml version="1.0" encoding="utf-8" ?>\n' \
+                             '<d:multistatus xmlns:d="DAV:">\n')
+            result.write('<d:response>\n <d:href>%s</d:href>\n' % url)
+            result.write(' <d:status>HTTP/1.1 %s</d:status>\n' % errmsg)
+            result.write('</d:response>\n')
+
+        if iscol:
+            for ob in obj.objectValues():
+                if hasattr(ob, '__dav_resource__') and \
+                   WriteLockInterface.isImplementedBy(ob):
+                    uri = os.path.join(url, absattr(ob.id))
+                    self.apply(ob, token, uri, result, top=0)
+        if not top: return result
+        if result.getvalue():
+            # One or more subitems probably failed, so close the multistatus
+            # element and clear out all succesful unlocks
+            result.write('</d:multistatus>')
+            get_transaction().abort()
+        return result.getvalue()
+    
+
+class DeleteCollection:
+    """ With WriteLocks in the picture, deleting a collection involves
+    checking *all* descendents (deletes on collections are always of depth
+    infinite) for locks and if the locks match. """
+
+    def apply(self, obj, token, user, url=None, result=None, top=1):
+        if result is None:
+            result = StringIO()
+            url = urlfix(url, 'DELETE')
+            url = urlbase(url)
+        iscol = hasattr(obj, '__dav_collection__')
+        errmsg = None
+        parent = aq_parent(obj)
+
+        islockable = WriteLockInterface.isImplementedBy(obj)
+        if parent and (not user.has_permission('Delete objects', parent)):
+            # User doesn't have permission to delete this object
+            errmsg = "403 Forbidden"
+        elif islockable and obj.wl_isLocked():
+            if token and obj.wl_hasLock(token):
+                # Object is locked, and the token matches (no error)
+                errmsg = ""
+            else:
+                errmsg = "423 Locked"
+
+        if errmsg:
+            if top and (not iscol):
+                err = errmsg[4:]
+                raise err
+            elif not result.getvalue():
+                # We haven't had any errors yet, so our result is empty
+                # and we need to set up the XML header
+                result.write('<?xml version="1.0" encoding="utf-8" ?>\n' \
+                             '<d:multistatus xmlns:d="DAV:">\n')
+            result.write('<d:response>\n <d:href>%s</d:href>\n' % url)
+            result.write(' <d:status>HTTP/1.1 %s</d:status>\n' % errmsg)
+            result.write('</d:response>\n')
+
+        if iscol:
+            for ob in obj.objectValues():
+                dflag = hasattr(ob,'_p_changed') and (ob._p_changed == None)
+                if hasattr(ob, '__dav_resource__'):
+                    uri = os.path.join(url, absattr(ob.id))
+                    self.apply(ob, token, user, uri, result, top=0)
+                    if dflag: ob._p_deactivate()
+        if not top: return result
+        if result.getvalue():
+            # One or more subitems can't be delted, so close the multistatus
+            # element
+            result.write('</d:multistatus>\n')
+        return result.getvalue()
+    

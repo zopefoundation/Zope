@@ -84,9 +84,10 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 import time, string, App.Management, Globals
+from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
 from DocumentTemplate.DT_Util import html_quote
 from Globals import DTMLFile, MessageDialog
@@ -531,6 +532,8 @@ class DAVProperties(Virtual, PropertySheet, View):
         {'id':'getcontenttype',   'mode':'r'},
         {'id':'getcontentlength', 'mode':'r'},
         {'id':'source',           'mode':'r'},
+        {'id':'supportedlock',    'mode':'r'},
+        {'id':'lockdiscovery',    'mode':'r'},
         )
 
     def getProperty(self, id, default=None):
@@ -597,6 +600,17 @@ class DAVProperties(Virtual, PropertySheet, View):
                '  <d:lockscope><d:exclusive/></d:lockscope>\n' \
                '  <d:locktype><d:write/></d:locktype>\n' \
                '  </n:lockentry>\n  '
+
+    def dav__lockdiscovery(self):
+        vself = self.v_self()
+        out = '\n'
+        if WriteLockInterface.isImplementedBy(vself):
+            locks = vself.wl_lockValues(killinvalids=1)
+            for lock in locks:
+                out = '%s\n%s' % (out, lock.asLockDiscoveryProperty('n'))
+            out = '%s\n' % out
+        return out
+
 
 Globals.default__class_init__(DAVProperties)
 

@@ -125,6 +125,11 @@
               (<em><dtml-var locked_in_version></em>)
       </dtml-if>
     </dtml-if>
+    <dtml-if wl_isLocked>
+     <img src="&dtml-BASEPATH1;/p_/davlocked"
+      alt="This item has been locked by WebDAV"
+      title="This item has been locked by WebDAV" />
+    </dtml-if wl_isLocked>
     </div>
     </td>
   <dtml-if "_.has_key('help_topic') and _.has_key('help_product')">

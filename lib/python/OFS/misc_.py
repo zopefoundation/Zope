@@ -101,6 +101,8 @@ class p_:
     locked=ImageFile('www/modified.gif', globals())
     lockedo=ImageFile('www/locked.gif', globals())
 
+    davlocked=ImageFile('webdav/www/davlock.gif')
+
     pl=ImageFile('TreeDisplay/www/Plus_icon.gif')
     mi=ImageFile('TreeDisplay/www/Minus_icon.gif')
     rtab=ImageFile('App/www/rtab.gif')

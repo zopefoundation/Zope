@@ -85,9 +85,9 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
-import string, time, urllib
+import string, time, urllib, re
 from Acquisition import aq_base
 from App.Common import iso8601_date, rfc850_date, rfc1123_date
 
@@ -122,3 +122,69 @@ def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
     type, uri=ftype(url)
     host, uri=fhost(uri)
     return uri or '/'
+
+def generateLockToken():
+    # Generate a lock token
+    # XXX This is simple right now, just lifted from the original shortcut
+    # in Resource.dav__genlocktoken, but should be replaced by something
+    # better.
+    return 'AA9F6414-1D77-11D3-B825-00105A989226:%.03f' % time.time()
+
+def tokenFinder(token):
+    # takes a string like '<opaquelocktoken:afsdfadfadf> and returns the token
+    # part.
+    if not token: return None           # An empty string was passed in
+    if token[0] == '[': return None     # An Etag was passed in
+    if token[0] == '<': token = token[1:-1]
+    return token[string.find(token,':')+1:]
+
+
+### If: header handling support.  IfParser returns a sequence of
+### TagList objects in the order they were parsed which can then
+### be used in WebDAV methods to decide whether an operation can
+### proceed or to raise HTTP Error 412 (Precondition failed)
+IfHdr = re.compile(
+    r"(?P<resource><.+?>)?\s*\((?P<listitem>[^)]+)\)"
+    )
+
+ListItem = re.compile(
+    r"(?P<not>not)?\s*(?P<listitem><[a-zA-Z]+:[^>]*>|\[.*?\])",
+    re.I)
+
+class TagList:
+    def __init__(self):
+        self.resource = None
+        self.list = []
+        self.NOTTED = 0
+
+def IfParser(hdr):
+    out = []
+    i = 0
+    while 1:
+        m = IfHdr.search(hdr[i:])
+        if not m: break
+
+        i = i + m.end()
+        tag = TagList()
+        tag.resource = m.group('resource')
+        if tag.resource:                # We need to delete < >
+            tag.resource = tag.resource[1:-1]
+        listitem = m.group('listitem')
+        tag.NOTTED, tag.list = ListParser(listitem)
+        out.append(tag)
+
+    return out
+
+def ListParser(listitem):
+    out = []
+    NOTTED = 0
+    i = 0
+    while 1:
+        m = ListItem.search(listitem[i:])
+        if not m: break
+
+        i = i + m.end()
+        out.append(m.group('listitem'))
+        if m.group('not'): NOTTED = 1
+
+    return NOTTED, out

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.138 $'[11:-2]
+__version__='$Revision: 1.139 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -536,7 +536,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return None
 
     def authorize(self, user, accessed, container, name, value, roles):
-        newSecurityManager(None, user)
+        newSecurityManager(None, user.__of__(self))
         security = getSecurityManager()
         try:
             try:

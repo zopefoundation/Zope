@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -91,6 +91,7 @@ from Globals import DTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
 from CacheManager import CacheManager
+from DavLockManager import DavLockManager
 from DateTime.DateTime import DateTime
 from OFS import SimpleItem
 from App.Dialogs import MessageDialog
@@ -258,6 +259,7 @@ class ApplicationManager(Folder,CacheManager):
     Database= DatabaseManager()
     Versions= VersionManager()
     DebugInfo=DebugManager()
+    DavLocks = DavLockManager()
 
     manage=manage_main=DTMLFile('dtml/cpContents', globals())
     manage_undoForm=DTMLFile('dtml/undo', globals())
@@ -276,6 +278,8 @@ class ApplicationManager(Folder,CacheManager):
          'meta_type': Database.meta_type},
         {'id': 'Versions',
          'meta_type': Versions.meta_type},
+        {'id': 'DavLocks',
+         'meta_type': DavLocks.meta_type},
         {'id': 'Products',
          'meta_type': 'Product Management'},
         {'id': 'DebugInfo',

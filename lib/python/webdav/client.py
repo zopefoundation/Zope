@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -245,10 +245,11 @@ class Resource:
              '<d:lockinfo xmlns:d="DAV:">\n' \
              '  <d:lockscope><d:%s/></d:lockscope>\n' \
              '  <d:locktype><d:%s/></d:locktype>\n' \
+             '  <d:depth>%s</d:depth>\n' \
              '  <d:owner>\n' \
              '  <d:href>%s</d:href>\n' \
              '  </d:owner>\n' \
-             '</d:lockinfo>' % (scope, type, owner)
+             '</d:lockinfo>' % (scope, type, depth, owner)
         headers['Content-Type']='text/xml; charset="utf-8"'
         headers['Content-Length']=str(len(body))
         headers['Timeout']=timeout

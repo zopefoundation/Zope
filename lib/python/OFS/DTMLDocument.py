@@ -84,7 +84,8 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
+
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -92,6 +93,8 @@ from OFS.content_types import guess_content_type
 from DTMLMethod import DTMLMethod, decapitate
 from PropertyManager import PropertyManager
 from webdav.common import rfc1123_date
+from webdav.Lockable import ResourceLockedError
+from webdav.WriteLockInterface import WriteLockInterface
 from sgmllib import SGMLParser
 from string import find
 from urllib import quote
@@ -106,6 +109,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     """DTML Document objects are DocumentTemplate.HTML objects that act
        as methods whose 'self' is the DTML Document itself."""
 
+    __implements__ = (WriteLockInterface,)
     meta_type='DTML Document'
     icon     ='p_/dtmldoc'
 
@@ -139,6 +143,10 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         self._validateProxy(REQUEST)
         if self._size_changes.has_key(SUBMIT):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
+        if self.wl_isLocked():
+            raise ResourceLockedError, (
+                'This document has been locked via WebDAV.')
+
         self.title=str(title)
         if type(data) is not type(''): data=data.read()
         self.munge(data)
@@ -150,6 +158,9 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     def manage_upload(self,file='', REQUEST=None):
         """Replace the contents of the document with the text in file."""
         self._validateProxy(REQUEST)
+        if self.wl_isLocked():
+            raise ResourceLockedError, (
+                'This document has been locked via WebDAV.')
         if type(file) is not type(''): file=file.read()
         self.munge(file)
         self.ZCacheable_invalidate()

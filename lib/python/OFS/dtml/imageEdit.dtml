@@ -66,8 +66,12 @@ kind>.
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input class="form-element" type="submit" name="submit"
-   value="Save Changes">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" name="submit"
+    value="Save Changes">
+  </dtml-if>
   </div>
   </td>
 </tr>
@@ -95,8 +99,12 @@ kind>.
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input class="form-element" type="submit" name="submit"
-   value="Upload">
+  <dtml-if wl_isLocked>
+   <em>Locked by WebDAV</em>
+  <dtml-else>
+   <input class="form-element" type="submit" name="submit"
+    value="Upload">
+  </dtml-if>
   </div>
   </td>
 </tr>

@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -98,6 +98,8 @@ from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
 from string import join, strip, rstrip, split, replace, lower
 from urllib import quote
+from webdav.Lockable import ResourceLockedError
+from webdav.WriteLockInterface import WriteLockInterface
 from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
@@ -136,6 +138,7 @@ class PythonScript(Script, Historical, Cacheable):
     not attempt to use the "exec" statement or certain restricted builtins.
     """
 
+    __implements__ = (WriteLockInterface,)
     meta_type='Script (Python)'
     _proxy_roles = ()
 
@@ -190,6 +193,8 @@ class PythonScript(Script, Historical, Cacheable):
 
     def ZPythonScript_edit(self, params, body):
         self._validateProxy()
+        if self.wl_isLocked():
+            raise ResourceLockedError, "The script is locked via WebDAV."
         if type(body) is not type(''):
             body = body.read()
         if self._params <> params or self._body <> body:
@@ -198,6 +203,8 @@ class PythonScript(Script, Historical, Cacheable):
 
     def ZPythonScriptHTML_upload(self, REQUEST, file=''):
         """Replace the body of the script with the text in file."""
+        if self.wl_isLocked():
+            raise ResourceLockedError, "The script is locked via WebDAV."
         if type(file) is not type(''): file = file.read()
         self.write(file)
         message = 'Saved changes.'
@@ -376,6 +383,7 @@ class PythonScript(Script, Historical, Cacheable):
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """
         self.dav__init(REQUEST, RESPONSE)
+        self.dav__simpleifhandler(REQUEST, RESPONSE, refresh=1)
         self.write(REQUEST.get('BODY', ''))
         RESPONSE.setStatus(204)
         return RESPONSE        
