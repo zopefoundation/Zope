@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.117 $'[11:-2]
+__version__='$Revision: 1.118 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -453,9 +453,25 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             parent=self.aq_parent
         else: parent=parents[0]
 
-        # If no authorization, only a user with a
-        # domain spec and no passwd or nobody can
-        # match
+        # If no authorization, only a user with a domain spec and no
+        # passwd or nobody can match. We cache reverse DNS before
+        # checking the users, otherwise it can get real slow looking
+        # it up for every user.
+
+        host=request.get('REMOTE_HOST', '')
+        addr=request.get('REMOTE_ADDR', '')
+        if host or addr:
+            if not host:
+                try:
+                    host=socket.gethostbyaddr(addr)[0]
+                    request.set('REMOTE_HOST', host)
+                except: pass
+            if not addr:
+                try:
+                    addr=socket.gethostbyname(host)
+                    request.set('REMOTE_ADDR', addr)
+                except: pass
+
         if not auth:
             for ob in self.getUsers():
                 domains=ob.getDomains()
