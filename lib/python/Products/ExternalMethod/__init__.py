@@ -8,27 +8,31 @@
 #
 ############################################################################## 
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.1 1997/10/09 17:34:53 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1997/12/19 22:18:16 jeffrey Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import ExternalMethod
+from ImageFile import ImageFile
 
-__.meta_types=	{'name':'External Method',
+meta_types=	{'name':'External Method',
 		 'action':'manage_addExternalMethodForm'
 		 },
 
-__.methods={
+methods={
     'manage_addExternalMethodForm': ExternalMethod.addForm,
     'manage_addExternalMethod':     ExternalMethod.add,
     }
 
-
+misc_={'function_icon': ImageFile('function.gif', globals())
 
 
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.2  1997/12/19 22:18:16  jeffrey
+# fixes for icons
+#
 # Revision 1.1  1997/10/09 17:34:53  jim
 # first cut, no testing
 #

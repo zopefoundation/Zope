@@ -30,7 +30,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, AccessControl.Role.RoleMan
     an external function."""
 
     meta_type='External Method'
-    icon='ExternalMethod/function.gif'
+    icon='misc_/ExternalMethod/function_icon'
     func_defaults=()
     func_code=None
 
