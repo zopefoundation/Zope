@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -450,6 +450,10 @@ class DateTime:
             
         elif ac==1:
             arg=args[0]
+            
+            if arg=='':
+                raise self.SyntaxError, arg
+            
             if type(arg)==StringType and lower(arg) in self._tzinfo._zidx:
                 # Current time, exp in specified timezone
                 t,tz=time(),self._tzinfo._zmap[lower(arg)]
