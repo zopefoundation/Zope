@@ -14,7 +14,7 @@
 #
 ##############################################################################
 """
-test.py [-abcdDfgGhLmprtTuv] [modfilter [testfilter]]
+test.py [-abcCdDfgGhLmprtTuv] [modfilter [testfilter]]
 
 Find and run tests written using the unittest module.
 
@@ -49,6 +49,7 @@ named .testinfo, it will not be searched for tests.  Really.)
 -c  
     Use pychecker
 
+-C filename
 --config-file filename
     Configure Zope by loading the specified configuration file (zope.conf).
 
@@ -91,6 +92,7 @@ named .testinfo, it will not be searched for tests.  Really.)
     Search for tests starting in the specified start directory
     (useful for testing components being developed outside the main
     "src" or "build" trees).
+    Note: This directory will be prepended to sys.path.
 
 --keepbytecode
     Do not delete all stale bytecode before running tests
@@ -732,7 +734,7 @@ def process_args(argv=None):
     import_testing = False
 
     try:
-        opts, args = getopt.getopt(argv[1:], "a:bcdDfg:G:hLmprtTuv",
+        opts, args = getopt.getopt(argv[1:], "a:bcC:dDfg:G:hLmprtTuv",
                                    ["all", "help", "libdir=", "times=",
                                     "keepbytecode", "dir=", 
                                     "config-file=", "import-testing"])
@@ -802,7 +804,7 @@ def process_args(argv=None):
                 timesfn = v
         elif k == '--dir':
             test_dir = v
-        elif k == '--config-file':
+        elif k == '--config-file' or k == '-C':
             config_file = v
         elif k == '--import-testing':
             import_testing = True
