@@ -1,9 +1,26 @@
 <html>
 <head>
 <title>Debug Information</title>
+<style type="text/css">
+<!-- 
+.header {
+font-weight: bold;
+font-size: 10pt;
+}
+
+.cell {
+font-size: 10pt;
+}
+
+-->
+</style>
 </head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <!--#var manage_tabs-->
+
+<!--#if update_snapshot-->
+<!--#call rcsnapshot-->
+<!--#endif-->
 
 <h3>Debug Information</h3>
 <form>
@@ -14,13 +31,53 @@
 <li>System Platform: <!--#var sys_platform-->
 <li>Process ID: <!--#var process_id-->
 <li>Running for: <!--#var process_time-->
-<li>Refcounts: <select name="foo"><!--#in 
-    get_refcounts--><option><!--#var 
+<li>Top Refcounts: <select name="foo"><!--#in 
+    "refcount(100)"--><option><!--#var 
     sequence-item-->: <!--#var sequence-key--></option><!--#/in
-    --></select>
+    --></select><br><br>
+
+<table border="1">
+<!--#in rcdeltas mapping-->
+<!--#if sequence-start-->
+<tr>
+<th class="header" align="left" valign="top">
+Class
+</th>
+<th class="header" align="left" valign="top">
+<!--#var rcdate fmt="fCommon"-->
+</th>
+<th class="header" align="left" valign="top">
+<!--#var ZopeTime fmt="fCommon"-->
+</th>
+<th class="header" align="left" valign="top">
+Delta
+</th>
+</tr>
+<!--#/if-->
+<tr>
+<td class="cell" align="left" valign="top">
+<!--#var name-->
+</td>
+<td class="cell" align="left" valign="top">
+<!--#var pc--> 
+</td>
+<td class="cell" align="left" valign="top">
+<!--#var rc-->
+</td>
+<td class="cell" align="left" valign="top">
++<!--#var delta-->
+</td>
+</tr>
+<!--#/in-->
+</table>
+
+<a href="<!--#var URL-->?update_snapshot=1">Update Snapshot</a> | 
+<a href="<!--#var URL-->">Refresh</a>
+
+
+
 </ul>
 </p>
-
 
 </form>
 </body>

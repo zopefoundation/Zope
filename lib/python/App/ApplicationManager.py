@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -91,6 +91,7 @@ from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
 from CacheManager import CacheManager
+from DateTime.DateTime import DateTime
 from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
@@ -126,7 +127,7 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     manage_options=(
         {'label':'Version', 'action':'manage_main'},
         )
-
+        
 
 
 
@@ -240,24 +241,63 @@ class ApplicationManager(Folder,CacheManager):
 
     manage_debug=HTMLFile('debug', globals())
 
-    def get_refcounts(self, n=100, t=(type(Fake), type(Acquisition.Implicit))):
-        # get class refcount info
+    # refcount snapshot info
+    _v_rcs=None
+    _v_rst=None
+    
+    def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
+        # return class reference info
 	dict={}
 	for m in sys.modules.values():
             for sym in dir(m):
                 ob=getattr(m, sym)
                 if type(ob) in t:
                     dict[ob]=sys.getrefcount(ob)
-        pairs = map(lambda x: (x[1], '%s' %  x[0].__name__), dict.items())
+        pairs=[]
+        append=pairs.append
+        for ob, v in dict.items():
+            if hasattr(ob, '__module__'):
+                name='%s.%s' % (ob.__module__, ob.__name__)
+            else: name='%s' % ob.__name__
+            append((v, name))
         pairs.sort()
         pairs.reverse()
-        pairs=pairs[:n]
+        if n is not None:
+            pairs=pairs[:n]
         return pairs
 
+    def refdict(self):
+        rc=self.refcount()
+        dict={}
+        for v, n in rc:
+            dict[n]=v
+        return dict
 
+    def rcsnapshot(self):
+        self._v_rcs=self.refdict()
+        self._v_rst=DateTime()
 
+    def rcdate(self):
+        return self._v_rst
 
+    def rcdeltas(self):
+        if self._v_rcs is None:
+            self.rcsnapshot()
+        nc=self.refdict()
+        rc=self._v_rcs
+        rd=[]
+        for n, c in nc.items():
+            prev=rc[n]
+            if c > prev:
+                rd.append( (c - prev, (c, prev, n)) )
+        rd.sort()
+        rd.reverse()
 
+        return map(lambda n: {'name': n[1][2],
+                              'delta': n[0],
+                              'pc': n[1][1],
+                              'rc': n[1][0]}, rd)
+        
 
 
     if hasattr(sys, 'ZMANAGED'):
