@@ -31,6 +31,9 @@ Zope Changes
         - The ThreadLock module has been changed to reflect changes
           in the Python API in Python 1.5.2.
 
+        - The '_' variable in DTML now has the random module
+          as an attribute and DateTime.DateTime as the attribute DateTime.
+
       Bugs Fixed
  
         - Permissions for manage_clone method were wrong, meaning that
