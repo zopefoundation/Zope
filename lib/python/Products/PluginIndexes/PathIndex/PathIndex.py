@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.5 2001/08/28 01:05:31 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.6 2001/09/26 14:55:51 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -98,7 +98,7 @@ from BTrees.OOBTree import OOBTree,OOSet
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IISet,difference,intersection,union
 from types import StringType
-import re
+import re,warnings
 
 
 class PathIndex(PluggableIndex.PluggableIndex, Persistent,
@@ -345,6 +345,13 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         record = parseIndexRequest(request,self.id,self.query_options)
         if record.keys==None: return None
 
+        if request.has_key('%s_level' % cid):
+            warnings.warn("The usage of the '%s_level' "
+                          "is no longer recommended.\n"
+                          "Please use a mapping object and the "
+                          "'level' key to specify the operator." % cid)
+
+
         # get the level parameter 
         level    = record.get("level",0)
 
@@ -368,11 +375,10 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
 
     
     def uniqueValues(self,name=None,withLength=0):
-        """ need to be consistent with the interface """
+        """ needed to be consistent with the interface """
 
         return self._index.keys()
         
-
 
     index_html = DTMLFile('dtml/index', globals())
     manage_workspace = DTMLFile('dtml/managePathIndex', globals())
