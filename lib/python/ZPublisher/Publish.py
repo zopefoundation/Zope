@@ -136,35 +136,30 @@ def publish(request, module_name, after_list, debug=0,
             if parents:
                 parents=parents[0]
             try:
-                response = err_hook(parents, request,
+                try:
+                    return err_hook(parents, request,
                                     sys.exc_info()[0],
                                     sys.exc_info()[1],
                                     sys.exc_info()[2],
                                     )
-                if transactions_manager:
-                    transactions_manager.abort()
-                return response
-
-            except Retry:
-                if not request.supports_retry():
-                    response = err_hook(parents, request,
+                except Retry:
+                    if not request.supports_retry():
+                        return err_hook(parents, request,
                                         sys.exc_info()[0],
                                         sys.exc_info()[1],
                                         sys.exc_info()[2],
                                         )
-                    if transactions_manager:
-                        transactions_manager.abort()
-                    return response
-
-
+            finally:
                 if transactions_manager:
                     transactions_manager.abort()
-                newrequest=request.retry()
-                request.close()  # Free resources held by the request.
-                try:
-                    return publish(newrequest, module_name, after_list, debug)
-                finally:
-                    newrequest.close()
+
+            # Only reachable if Retry is raised and request supports retry.
+            newrequest=request.retry()
+            request.close()  # Free resources held by the request.
+            try:
+                return publish(newrequest, module_name, after_list, debug)
+            finally:
+                newrequest.close()
 
         else:
             if transactions_manager:
