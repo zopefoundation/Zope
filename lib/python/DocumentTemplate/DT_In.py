@@ -296,7 +296,7 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.23 1998/04/02 17:37:36 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.24 1998/04/08 17:45:59 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -350,7 +350,7 @@ __rcs_id__='$Id: DT_In.py,v 1.23 1998/04/02 17:37:36 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -378,6 +378,7 @@ class InClass:
 	tname, args, section = blocks[0]
 	args=parse_params(args, name='', start='1',end='-1',size='10',
 			  orphan='3',overlap='1',mapping=1,
+			  skip_unauthorized=1,
 			  previous=1, next=1, expr='', sort='')
 	self.args=args
 	has_key=args.has_key
@@ -510,6 +511,7 @@ class InClass:
 	    else:
                 result = []
                 append=result.append
+		validate=md.validate
                 for index in range(first,end):
                     if index==first and index > 0:
                         pstart,pend,psize=opt(None,index+overlap,
@@ -538,6 +540,17 @@ class InClass:
 		    if index==last: kw['sequence-end']=1
 
 		    client=sequence[index]
+
+		    if validate is not None:
+			try: vv=validate(sequence,sequence,index,client,md)
+			except: vv=0
+			if not vv:
+			    if (params.has_key('skip_unauthorized') and
+				params['skip_unauthorized']):
+			        if index==first: kw['sequence-start']=0
+			        continue
+			    raise ValidationError, index
+
 		    kw['sequence-index']=index
 		    if type(client)==TupleType and len(client)==2:
 			client=client[1]
@@ -595,9 +608,21 @@ class InClass:
 	try:
 		result = []
 		append=result.append
+		validate=md.validate
 		for index in range(l):
 		    if index==last: kw['sequence-end']=1
 		    client=sequence[index]
+
+		    if validate is not None:
+			try: vv=validate(sequence,sequence,index,client,md)
+			except: vv=0
+			if not vv:
+			    if (self.args.has_key('skip_unauthorized') and
+				self.args['skip_unauthorized']):
+			        if index==1: kw['sequence-start']=0
+			        continue
+			    raise ValidationError, index
+
 		    kw['sequence-index']=index
 		    if type(client)==TupleType and len(client)==2:
 			client=client[1]
@@ -665,6 +690,9 @@ def int_param(params,md,name,default=0):
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.24  1998/04/08 17:45:59  jim
+# Now check security of items, and new skip_unauthorized attr.
+#
 # Revision 1.23  1998/04/02 17:37:36  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and
