@@ -164,6 +164,13 @@ Access Control
       will be used as surrogates for the object's '__allow_groups__'
       and '__realm__' attributes.
 
+  Determining the authenticated user name
+
+      If authentication is performed, then the name of the
+      authenticated user is saved in the request with the name
+      'AUTHENTICATED_USER', and will be passed to called objects
+      through the argument name 'AUTHENTICATED_USER'.
+
 Function, method, and class objects
   
   If a published object is a function, method, or class, then the
@@ -437,7 +444,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.5 1996/07/08 20:34:11 jfulton Exp $"""
+$Id: Publish.py,v 1.6 1996/07/10 22:53:54 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -490,6 +497,14 @@ $Id: Publish.py,v 1.5 1996/07/08 20:34:11 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.6  1996/07/10 22:53:54  jfulton
+# Fixed bug in use of default realm.
+#
+# If authentication is performed, then the name of the authenticated
+# user is saved in the request with the name 'AUTHENTICATED_USER', and
+# will be passed to called objects through the argument name
+# 'AUTHENTICATED_USER'.
+#
 # Revision 1.5  1996/07/08 20:34:11  jfulton
 # Many changes, including:
 #
@@ -505,7 +520,7 @@ $Id: Publish.py,v 1.5 1996/07/08 20:34:11 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 def main():
@@ -562,13 +577,13 @@ class ModulePublisher:
 	if not realm:
 	    try: realm=self.realm
 	    except:
-		import Realm
 		realm=Realm("%s.%s" %
 				(self.module_name,self.request.SERVER_NAME))
 		self.realm=realm
 	    
 	try:
-	    return realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
+	    user=realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
+	    self.request['AUTHENTICATED_USER']=user
 	except:
 	    try:
 		t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
