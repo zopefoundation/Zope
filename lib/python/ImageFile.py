@@ -1,9 +1,10 @@
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from string import rfind
 from Globals import package_home
+from DateTime import DateTime
 
 class ImageFile:
     """Image object stored in an external file"""
@@ -17,13 +18,23 @@ class ImageFile:
 	self.content_type='image/%s' % path[rfind(path,'.')+1:]
 	self.__name__=path[rfind(path,'/')+1:]
 
+    hmodified=DateTime().toZone('GMT').rfc822()
+
     def index_html(self, RESPONSE):
 	"""Default document"""
 	RESPONSE['content-type']=self.content_type
+	RESPONSE['last-modified']=self.hmodified
 	f=open(self.path,'rb')
 	data=f.read()
 	f.close()
         return data
+
+    HEAD__roles__=None
+    def HEAD(self, REQUEST, RESPONSE):
+	""" """
+	RESPONSE['content-type'] =self.content_type
+	RESPONSE['last-modified']=self.hmodified
+	return ''
 
     def __len__(self):
 	# This is bogus and needed because of the way Python tests truth.
