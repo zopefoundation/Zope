@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.40 1997/04/24 14:18:07 chris Exp $'''
+$Id: InvertedIndex.py,v 1.41 1997/04/24 14:19:16 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.40 1997/04/24 14:18:07 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.41  1997/04/24 14:19:16  chris
+# got rid of copy() in __init__()
+#
 # Revision 1.40  1997/04/24 14:18:07  chris
 # *** empty log message ***
 #
@@ -217,7 +220,7 @@ $Id: InvertedIndex.py,v 1.40 1997/04/24 14:18:07 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 import regex, string, copy
@@ -523,7 +526,9 @@ class Index:
     def __init__(self, index_dictionary = None, synstop = None):
         'Create an inverted index'
         if (synstop is None):
-            synstop = copy.copy(default_stop_words)
+	    synstop = {}
+	    for key, value in default_stop_words:
+	        synstop[key] = value
         
         self.synstop = synstop
 	
