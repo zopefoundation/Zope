@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.22 1998/01/12 20:02:23 jim Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: DA.py,v 1.23 1998/01/16 21:33:48 jim Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -196,7 +196,7 @@ class DA(
 
 	if hasattr(self, '_v_brain'): brain=self._v_brain
 	else: brain=getBrain(self)
-	result=Aqueduct.RDB.File(StringIO(result),brain)
+	result=Aqueduct.RDB.File(StringIO(result),brain,self)
 	columns=result._searchable_result_columns()
 	if columns != self._col: self._col=columns
 	return result
@@ -339,6 +339,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.23  1998/01/16 21:33:48  jim
+# Now pass self to RDB.File so record constructors can acquire.
+#
 # Revision 1.22  1998/01/12 20:02:23  jim
 # Added support for keyword arguments to methods.
 #
