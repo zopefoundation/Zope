@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -79,6 +79,7 @@ class UserFolder(Implicit, Persistent):
     id       ='acl_users'
     title    ='User Folder'
     icon     ='AccessControl/UserFolder_icon.gif'
+    _data    ={}
 
     isAUserFolder=1
 
@@ -226,6 +227,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.9  1997/09/04 20:35:36  brian
+# Fixed truth test bug in UserFolder
+#
 # Revision 1.8  1997/08/29 18:34:54  brian
 # Added basic role management to package.
 #
