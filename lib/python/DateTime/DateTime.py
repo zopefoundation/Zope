@@ -593,6 +593,10 @@ class DateTime:
             the gmt value of the time.time() float represented in
             the local machine's timezone.
 
+          - If the DateTime function is invoked with a single
+            argument that is a DateTime instane, a copy of the 
+            passed object will be created.
+
           - If the function is invoked with two numeric arguments,
             then the first is taken to be an integer year and the
             second argument is taken to be an offset in days from
@@ -688,7 +692,17 @@ class DateTime:
             if arg=='':
                 raise SyntaxError, arg
 
-            if isinstance(arg, (unicode, str)) and arg.lower() in self._tzinfo._zidx:
+            if isinstance(arg, DateTime):
+                """ Construct a new DateTime instance from a given DateTime instance """
+                t = arg.timeTime()
+                lt = safelocaltime(t)
+                tz = self.localZone(lt)
+                ms = (t - math.floor(t))
+                s,d = _calcSD(t)
+                yr,mo,dy,hr,mn,sc=lt[:6]
+                sc=sc+ms
+
+            elif isinstance(arg, (unicode, str)) and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
                 t,tz=time(),self._tzinfo._zmap[arg.lower()]
                 ms=(t-math.floor(t))

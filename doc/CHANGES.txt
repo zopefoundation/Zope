@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+     - DateTime: new DateTime instance can be constructed from a given
+       DateTime instance: d_new = DateTime(d_old)
+
      - ZCatalog: added a new configuration option in the "Advanced" tab
        to provide optional logging of the progress of long running 
        reindexing or recataloging operations.
