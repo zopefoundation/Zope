@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.16 2003/07/15 17:01:56 mj Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: Tree.py,v 1.17 2003/12/11 18:02:15 evan Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -277,16 +277,19 @@ def encodeExpansion(nodes, compress=1):
             result = zresult
     return result
 
-def decodeExpansion(s, nth=None):
+def decodeExpansion(s, nth=None, maxsize=8192):
     '''Decode an expanded node map from a string.
 
     If nth is an integer, also return the (map, key) pair for the nth entry.
     '''
-    if len(s) > 8192: # Set limit to 8K, to avoid DoS attacks.
+    if len(s) > maxsize: # Set limit to avoid DoS attacks.
         raise ValueError('Encoded node map too large')
 
     if s[0] == ':': # Compressed state
-        s = zlib.decompress(a2b(s[1:]))
+        dec = zlib.decompressobj()
+        s = dec.decompress(a2b(s[1:]), maxsize)
+        if dec.decompress('', 1):
+            raise ValueError('Encoded node map too large')
     
     map = m = {}
     mstack = []

@@ -82,6 +82,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1012: A carefully crafted compressed tree state
+       could violate size limit.  Limit is no longer hardcoded.
+
      - Collector #1139: tal:attributes didn't escape double quotes.
 
      - Management interface of TopicIndexes has been completely broken
