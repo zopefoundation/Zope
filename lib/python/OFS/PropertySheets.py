@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -554,23 +554,6 @@ class DAVProperties(Virtual, PropertySheet):
                '  <d:lockscope><d:exclusive/></d:lockscope>\n' \
                '  <d:locktype><d:write/></d:locktype>\n' \
                '  </n:lockentry>\n'
-
-    def dav__lockdiscovery(self):
-        text=['<d:lockdiscovery>\n']
-        for lock in self.dav__get_locks():
-            txt='<d:activelock>\n' \
-            '<d:locktype><d:%(type)s/></d:locktype>\n' \
-            '<d:lockscope><d:%(scope)s/></d:lockscope>\n' \
-            '<d:depth>%(depth)s</d:depth>\n' \
-            '<d:owner>%(owner)s</d:owner>\n' \
-            '<d:timeout>%(timeout)s</d:timeout>\n' \
-            '<d:locktoken>\n' \
-            '<d:href>opaquelocktoken:%(token)s</d:href>\n' \
-            '</d:locktoken>\n' \
-            '</d:activelock>\n' % lock.__dict__
-            text.append(lock.dav__activelock())
-        text.append('</d:lockdiscovery>\n')
-        return string.join(text, '')
 
 
 class PropertySheets(Implicit):

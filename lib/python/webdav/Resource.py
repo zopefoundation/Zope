@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -99,6 +99,7 @@ class Resource:
     the context of the object type."""
 
     __dav_resource__=1
+
     __http_methods__=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS',
                       'TRACE', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY',
                       'MOVE',
@@ -111,39 +112,13 @@ class Resource:
         response.setHeader('Date', rfc1123_date())
         response.setHeader('DAV', '1')
 
-    dav__locks=()
-    
-    def dav__is_locked(self):
-        # Return true if this object is locked via a
-        # session or dav lock.
-        if hasattr(self, 'locked_in_session') and self.locked_in_session():
-            return 1
-        return 0
-
-    def dav__get_locks(self):
-        # Return the current locks on the object.
-        #if hasattr(self, 'locked_in_session') and self.locked_in_session():
-        #    lock=Lock('xxxx', 'xxxx')
-        #    return self.dav__locks + (lock,)
-        return self.dav__locks
-
-    def dav__validate(self, methodname, REQUEST):
-        # Check whether the user is allowed to perform a particular
-        # operation. This is necessary because not all DAV HTTP methods
-        # map cleanly to existing permissions. For example, PUT may be
-        # used to add a new object or change an existing object - this
-        # would usually be handled by two different permissions in Zope.
-        # Since cant know the intention of the PUT until the time of the
-        # call (whether this is an add or change operation), we have to
-        # call dav__validate, passing the name of an existing method that
-        # has the desired protection. This can be thought of as saying
-        # "I should have the same protection as the manage_xxx method".
+    def dav__validate(self, object, methodname, REQUEST):
         msg='<strong>You are not authorized to access this resource.</strong>'
         method=None
-        if hasattr(self, methodname):
-            method=getattr(self, methodname)
+        if hasattr(object, methodname):
+            method=getattr(object, methodname)
         else:
-            try:    method=self.aq_acquire(methodname)
+            try:    method=object.aq_acquire(methodname)
             except: method=None
         if (method is not None) and hasattr(method, '__roles__'):
             roles=method.__roles__
@@ -251,21 +226,22 @@ class Resource:
             raise 'Method Not Allowed', 'This object may not be copied.'
         depth=REQUEST.get_header('Depth', 'infinity')
         dest=REQUEST.get_header('Destination', '')
-        if not dest: raise 'Bad Request', 'No destination given'
+        while dest and dest[-1]=='/':
+            dest=dest[:-1]
+        if not dest:
+            raise 'Bad Request', 'No destination given'
         flag=REQUEST.get_header('Overwrite', 'F')
         flag=string.upper(flag)
         body=REQUEST.get('BODY', '')
-
         path, name=os.path.split(dest)
         try: parent=REQUEST.resolve_url(path)
         except ValueError:
             raise 'Conflict', 'Attempt to copy to an unknown namespace.'
         except 'Not Found':
-            raise 'Conflict', 'The resource %s must exist.' % path
+            raise 'Conflict', 'Object ancestors must already exist.'
         except: raise sys.exc_type, sys.exc_value
         if hasattr(parent, '__dav_null__'):
-            raise 'Conflict', 'The resource %s must exist.' % path
-        
+            raise 'Conflict', 'Object ancestors must already exist.'
         existing=hasattr(aq_base(parent), name)
         if existing and flag=='F':
             raise 'Precondition Failed', 'Resource %s exists.' % dest
@@ -280,12 +256,11 @@ class Resource:
         parent._setObject(name, ob)
         ob=ob.__of__(parent)
         ob._postCopy(parent, op=0)
-
         RESPONSE.setStatus(existing and 204 or 201)
-        if not existing: RESPONSE.setHeader('Location', dest)
+        if not existing:
+            RESPONSE.setHeader('Location', dest)
         RESPONSE.setBody('')
         return RESPONSE
-        
 
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location. Though we may later try to
@@ -293,15 +268,18 @@ class Resource:
         to Apache), MOVE is currently only supported within the Zope
         namespace."""
         self.dav__init(REQUEST, RESPONSE)
+        self.dav__validate(self, 'DELETE', REQUEST)
         if not hasattr(aq_base(self), 'cb_isMoveable') or \
            not self.cb_isMoveable():
             raise 'Method Not Allowed', 'This object may not be moved.'
         dest=REQUEST.get_header('Destination', '')
-        if not dest: raise 'Bad Request', 'No destination given'
+        while dest and dest[-1]=='/':
+            dest=dest[:-1]
+        if not dest:
+            raise 'Bad Request', 'No destination given'
         flag=REQUEST.get_header('Overwrite', 'F')
         flag=string.upper(flag)
         body=REQUEST.get('BODY', '')
-
         path, name=os.path.split(dest)
         try: parent=REQUEST.resolve_url(path)
         except ValueError:
@@ -311,7 +289,6 @@ class Resource:
         except: raise sys.exc_type, sys.exc_value
         if hasattr(parent, '__dav_null__'):
             raise 'Conflict', 'The resource %s must exist.' % path
-        
         existing=hasattr(aq_base(parent), name)
         if existing and flag=='F':
             raise 'Precondition Failed', 'Resource %s exists.' % dest
@@ -324,16 +301,22 @@ class Resource:
         ob=aq_base(self._getCopy(parent))
         self.aq_parent._delObject(absattr(self.id))
         ob._setId(name)
+        if existing:
+            object=getattr(parent, name)
+            self.dav__validate(object, 'DELETE', REQUEST)
+            parent._delObject(name)
+            
         parent._setObject(name, ob)
         ob=ob.__of__(parent)
         ob._postCopy(parent, op=1)
         RESPONSE.setStatus(existing and 204 or 201)
-        if not existing: RESPONSE.setHeader('Location', dest)
+        if not existing:
+            RESPONSE.setHeader('Location', dest)
         RESPONSE.setBody('')
         return RESPONSE
 
 
-    # Class 2 support
+    # WebDAV Class 2 support
 
     def LOCK(self, REQUEST, RESPONSE):
         """A write lock MUST prevent a principal without the lock from
@@ -348,28 +331,3 @@ class Resource:
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
-
-
-
-class Lock:
-    """A WebDAV lock object"""
-    def __init__(self, token, owner, scope='exclusive', type='write',
-                 depth='infinity', timeout='Infinite'):
-        self.token=token
-        self.owner=owner        
-        self.scope=scope
-        self.type=type
-        self.depth=depth
-        self.timeout=timeout
-
-    def dav__activelock(self):
-        txt='<d:activelock>\n' \
-            '<d:locktype><d:%(type)s/></d:locktype>\n' \
-            '<d:lockscope><d:%(scope)s/></d:lockscope>\n' \
-            '<d:depth>%(depth)s</d:depth>\n' \
-            '<d:owner>%(owner)s</d:owner>\n' \
-            '<d:timeout>%(timeout)s</d:timeout>\n' \
-            '<d:locktoken>\n' \
-            '<d:href>opaquelocktoken:%(token)s</d:href>\n' \
-            '</d:locktoken>\n' \
-            '</d:activelock>\n' % self.__dict__
