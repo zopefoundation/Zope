@@ -170,6 +170,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return 0
         if callable(text):
             text = text()
+        if text is None:
+            return 0
         count = self.index.index_doc(docid, text)
         self._p_changed = 1 # XXX
         return count
