@@ -45,49 +45,47 @@ def f6():
             return str(self.value)
     c1 = C()
     c2 = C()
-    # XXX Oops -- it's apparently against the rules to create a new
-    # XXX attribute.  Trying to yields
-    # XXX    TypeError: attribute-less object (assign or del)
-    ## c1.value = 12
-    ## assert getattr(c1, 'value') == 12
-    ## assert c1.display() == '12'
+    c1.value = 12
+    assert getattr(c1, 'value') == 12
+    assert c1.display() == '12'
     assert not hasattr(c2, 'value')
-    ## setattr(c2, 'value', 34)
-    ## assert c2.value == 34
-    ## assert hasattr(c2, 'value')
-    ## del c2.value
+    setattr(c2, 'value', 34)
+    assert c2.value == 34
+    assert hasattr(c2, 'value')
+    del c2.value
     assert not hasattr(c2, 'value')
 
     # OK, if we can't set new attributes, at least verify that we can't.
-    try:
-        c1.value = 12
-    except TypeError:
-        pass
-    else:
-        assert 0, "expected direct attribute creation to fail"
+    #try:
+    #    c1.value = 12
+    #except TypeError:
+    #    pass
+    #else:
+    #    assert 0, "expected direct attribute creation to fail"
 
-    try:
-        setattr(c1, 'value', 12)
-    except TypeError:
-        pass
-    else:
-        assert 0, "expected indirect attribute creation to fail"
+    #try:
+    #    setattr(c1, 'value', 12)
+    #except TypeError:
+    #    pass
+    #else:
+    #    assert 0, "expected indirect attribute creation to fail"
 
     assert getattr(C, "display", None) == getattr(C, "display")
+    delattr(C, "display")
 
-    try:
-        setattr(C, "display", lambda self: "replaced")
-    except TypeError:
-        pass
-    else:
-        assert 0, "expected setattr() attribute replacement to fail"
+    #try:
+    #    setattr(C, "display", lambda self: "replaced")
+    #except TypeError:
+    #    pass
+    #else:
+    #    assert 0, "expected setattr() attribute replacement to fail"
 
-    try:
-        delattr(C, "display")
-    except TypeError:
-        pass
-    else:
-        assert 0, "expected delattr() attribute deletion to fail"
+    #try:
+    #    delattr(C, "display")
+    #except TypeError:
+    #    pass
+    #else:
+    #    assert 0, "expected delattr() attribute deletion to fail"
 f6()
 
 def f7():
@@ -155,3 +153,7 @@ def f9():
     assert same_type(3, 2, 1), 'expected same type'
     assert not same_type(3, 2, 'a'), 'expected not same type'
 f9()
+
+def f10():
+    assert iter(enumerate(iter(iter(range(9))))).next() == (0, 0)
+f10()

@@ -202,12 +202,12 @@ class TestPythonScriptErrors(PythonScriptTestBase):
         self.assertPSRaises(ImportError, body="import mmap")
 
     def testAttributeAssignment(self):
-        # It's illegal to assign to attributes of anything except
-        # list or dict.
+        # It's illegal to assign to attributes of anything that
+        # doesn't has enabling security declared.
+        # Classes (and their instances) defined by restricted code
+        # are an exception -- they are fully readable and writable.
         cases = [("import string", "string"),
-                 ("class Spam: pass", "Spam"),
                  ("def f(): pass", "f"),
-                 ("class Spam: pass\nspam = Spam()", "spam"),
                  ]
         assigns = ["%s.splat = 'spam'",
                    "setattr(%s, '_getattr_', lambda x, y: True)",
@@ -236,7 +236,7 @@ class TestPythonScriptGlobals(PythonScriptTestBase):
 
     def test__name__(self):
         f = self._filePS('class.__name__')
-        self.assertEqual(f(), ('?.foo', "'string'"))
+        self.assertEqual(f(), ("'foo'>", "'string'"))
 
     def test_filepath(self):
         # This test is meant to raise a deprecation warning.

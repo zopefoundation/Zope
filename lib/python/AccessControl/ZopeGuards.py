@@ -72,85 +72,43 @@ def guarded_getitem(object, index):
         return v
     raise Unauthorized, 'unauthorized access to element %s' % `i`
 
-if sys.version_info < (2, 2):
-    # Can't use nested scopes, so we create callable instances
-    class get_dict_get:
-        def __init__(self, d, name):
-            self.d = d
+# Create functions using nested scope to store state
+# This is less expensive then instantiating and calling instances
+def get_dict_get(d, name):
+    def guarded_get(key, default=None):
+        try:
+            return guarded_getitem(d, key)
+        except KeyError:
+            return default
+    return guarded_get
 
-        def __call__(self, key, default=None):
-            try:
-                return guarded_getitem(self.d, key)
-            except KeyError:
+def get_dict_pop(d, name):
+    def guarded_pop(key, default=_marker):
+        try:
+            v = guarded_getitem(d, key)
+        except KeyError:
+            if default is not _marker:
                 return default
-
-    class get_dict_pop:
-        def __init__(self, d, name):
-            self.d = d
-
-        def __call__(self, key, default=_marker):
-            try:
-                v = guarded_getitem(self.d, key)
-            except KeyError:
-                if default is not _marker:
-                    return default
-                raise
-            else:
-                del self.d[key]
-                return v
-
-    # Dict methods not in Python 2.1
-    get_iter = 0
-
-    class get_list_pop:
-        def __init__(self, lst, name):
-            self.lst = lst
-
-        def __call__(self, index=-1):
-            # XXX This is not thread safe, but we don't expect
-            # XXX thread interactions between python scripts <wink>
-            v = guarded_getitem(self.lst, index)
-            del self.lst[index]
+            raise
+        else:
+            del d[key]
             return v
+    return guarded_pop
 
-else:
-    # Python 2.2 or better: Create functions using nested scope to store state
-    # This is less expensive then instantiating and calling instances
-    def get_dict_get(d, name):
-        def guarded_get(key, default=None):
-            try:
-                return guarded_getitem(d, key)
-            except KeyError:
-                return default
-        return guarded_get
+def get_iter(c, name):
+    iter = getattr(c, name)
+    def guarded_iter():
+        return SafeIter(iter(), c)
+    return guarded_iter
 
-    def get_dict_pop(d, name):
-        def guarded_pop(key, default=_marker):
-            try:
-                v = guarded_getitem(d, key)
-            except KeyError:
-                if default is not _marker:
-                    return default
-                raise
-            else:
-                del d[key]
-                return v
-        return guarded_pop
-
-    def get_iter(c, name):
-        iter = getattr(c, name)
-        def guarded_iter():
-            return SafeIter(iter(), c)
-        return guarded_iter
-
-    def get_list_pop(lst, name):
-        def guarded_pop(index=-1):
-            # XXX This is not thread safe, but we don't expect
-            # XXX thread interactions between python scripts <wink>
-            v = guarded_getitem(lst, index)
-            del lst[index]
-            return v
-        return guarded_pop
+def get_list_pop(lst, name):
+    def guarded_pop(index=-1):
+        # XXX This is not thread safe, but we don't expect
+        # XXX thread interactions between python scripts <wink>
+        v = guarded_getitem(lst, index)
+        del lst[index]
+        return v
+    return guarded_pop
 
 # See comment in SimpleObjectPolicies for an explanation of what the
 # dicts below actually mean.
@@ -201,50 +159,50 @@ ContainerAssertions[type([])] = _check_list_access
 # machinery on subsequent calls).  Use of a method on the SafeIter
 # class is avoided to ensure the best performance of the resulting
 # function.
+# The NullIter class skips the guard, and can be used to wrap an
+# iterator that is known to be safe (as in guarded_enumerate).
 
 
-if sys.version_info < (2, 2):
+class SafeIter(object):
+    #__slots__ = '_next', 'container'
+    __allow_access_to_unprotected_subobjects__ = 1
 
-    class SafeIter:
-        def __init__(self, sequence, container=None):
-            if container is None:
-                container = sequence
-            self.container = container
-            self.sequence = sequenece
-            self.next_index = 0
+    def __init__(self, ob, container=None):
+        self._next = iter(ob).next
+        if container is None:
+            container = ob
+        self.container = container
 
-        def __getitem__(self, index):
-            ob = self.sequence[self.next_index]
-            self.next_index += 1
-            guard(self.container, ob, self.next_index - 1)
-            return ob
+    def __iter__(self):
+        return self
 
-    def _error(index):
-        raise Unauthorized, 'unauthorized access to element %s' % `index`
+    def next(self):
+        ob = self._next()
+        guard(self.container, ob)
+        return ob
 
-else:
-    class SafeIter(object):
-        #__slots__ = '_next', 'container'
+class NullIter(SafeIter):
+    def __init__(self, ob):
+        self._next = ob.next
 
-        def __init__(self, ob, container=None):
-            self._next = iter(ob).next
-            if container is None:
-                container = ob
-            self.container = container
+    def next(self):
+        return self._next()
 
-        def __iter__(self):
-            return self
+def _error(index):
+    raise Unauthorized, 'unauthorized access to element'
 
-        def next(self):
-            ob = self._next()
-            guard(self.container, ob)
-            return ob
+def guarded_iter(*args):
+    if len(args) == 1:
+        i = args[0]
+        # Don't double-wrap
+        if isinstance(i, SafeIter):
+            return i
+        if not isinstance(i, xrange):
+            return SafeIter(i)
+    # Other call styles / targets don't need to be guarded
+    return NullIter(iter(*args))
 
-    def _error(index):
-        raise Unauthorized, 'unauthorized access to element'
-
-    safe_builtins['iter'] = SafeIter
-
+safe_builtins['iter'] = guarded_iter
 
 def guard(container, value, index=None):
     if Containers(type(container)) and Containers(type(value)):
@@ -274,23 +232,23 @@ safe_builtins['filter'] = guarded_filter
 
 def guarded_reduce(f, seq, initial=_marker):
     if initial is _marker:
-        return reduce(f, SafeIter(seq))
+        return reduce(f, guarded_iter(seq))
     else:
-        return reduce(f, SafeIter(seq), initial)
+        return reduce(f, guarded_iter(seq), initial)
 safe_builtins['reduce'] = guarded_reduce
 
 def guarded_max(item, *items):
     if items:
         item = [item]
         item.extend(items)
-    return max(SafeIter(item))
+    return max(guarded_iter(item))
 safe_builtins['max'] = guarded_max
 
 def guarded_min(item, *items):
     if items:
         item = [item]
         item.extend(items)
-    return min(SafeIter(item))
+    return min(guarded_iter(item))
 safe_builtins['min'] = guarded_min
 
 def guarded_map(f, *seqs):
@@ -346,11 +304,11 @@ class GuardedDictType:
 safe_builtins['dict'] = GuardedDictType()
 
 def guarded_enumerate(seq):
-    return enumerate(SafeIter(seq))
+    return NullIter(enumerate(guarded_iter(seq)))
 safe_builtins['enumerate'] = guarded_enumerate
 
 def guarded_sum(sequence, start=0):
-    return sum(SafeIter(sequence), start)
+    return sum(guarded_iter(sequence), start)
 safe_builtins['sum'] = guarded_sum
 
 def load_module(module, mname, mnameparts, validate, globals, locals):
@@ -406,6 +364,13 @@ def builtin_guarded_apply(func, args=(), kws={}):
 
 safe_builtins['apply'] = builtin_guarded_apply
 
+# This metaclass supplies the security declarations that allow all
+# attributes of a class and its instances to be read and written.
+def _metaclass(name, bases, dict):
+    ob = type(name, bases, dict)
+    ob.__allow_access_to_unprotected_subobjects__ = 1
+    ob._guarded_writes = 1
+    return ob
 
 # AccessControl clients generally need to set up a safe globals dict for
 # use by restricted code.  The get_safe_globals() function returns such
@@ -420,9 +385,10 @@ safe_builtins['apply'] = builtin_guarded_apply
 # dict themselves, with key '_getattr_'.
 
 _safe_globals = {'__builtins__': safe_builtins,
+                 '__metaclass__': _metaclass,
                  '_apply_':      guarded_apply,
                  '_getitem_':    guarded_getitem,
-                 '_getiter_':    SafeIter,
+                 '_getiter_':    guarded_iter,
                  '_print_':      RestrictedPython.PrintCollector,
                  '_write_':      full_write_guard,
                  # The correct implementation of _getattr_, aka

@@ -31,6 +31,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1656: Fixed enumeration within untrusted code
+        (forward-port from 2.7 branch).
+
       - Collector #1721: Fixed handling of an empty indexed_attrs parameter
 
 
