@@ -84,37 +84,38 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
 from Acquisition import Implicit
-import Globals
+import Globals, ExtensionClass
 from Permission import Permission
 from Common import aq_base
 
 ListType=type([])
 
-class RoleManager:
+class RoleManager(ExtensionClass.Base):
     """An obect that has configurable permissions"""
 
     __ac_permissions__=(
         ('Change permissions',
-         ('permission_settings',
+         ('manage_access', 'permission_settings',
+          'ac_inherited_permissions',
           'manage_roleForm', 'manage_role',
           'manage_acquiredForm', 'manage_acquiredPermissions',
           'manage_permissionForm', 'manage_permission',
           'manage_changePermissions', 'permissionsOfRole',
           'rolesOfPermission', 'acquiredRolesAreUsedBy',
-          'manage_defined_roles',
+          'manage_defined_roles', 'userdefined_roles',
           'manage_listLocalRoles', 'manage_editLocalRoles',
           'manage_setLocalRoles',  'manage_delLocalRoles',
           )),
-        ('View management screens', ('manage_access',)),
+#        ('View management screens', ('manage_access',)),
         )
    
-    __ac_roles__=('Manager', 'Anonymous')
+    __ac_roles__=('Manager', 'Owner', 'Anonymous')
 
 
 
