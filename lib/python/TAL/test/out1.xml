@@ -3,7 +3,7 @@
 
   <head>dadada</head>
 
-  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo as python:1">
+  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
 
     <h1 z:insert="str:This Is The Replaced Title">This Is The Replaced Title</h1>
 
@@ -11,27 +11,29 @@
 
     <span z:insert="str:here/id">here/id</span>
 
-    <p z:define="x as str:template/title; global five as python:2+3" z:insert="text var:x">template/title</p>
+    <p z:define="x str:template/title; global five python:2+3" z:insert="text var:x">template/title</p>
 
-    <p z:replace="for car in python:['honda', 'subaru', 'acura']">
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
       honda
-    </p><p z:replace="for car in python:['honda', 'subaru', 'acura']">
+    </p><p z:repeat="car python:['honda', 'subaru', 'acura']">
       subaru
-    </p><p z:replace="for car in python:['honda', 'subaru', 'acura']">
+    </p><p z:repeat="car python:['honda', 'subaru', 'acura']">
       acura
     </p>
 
   <!-- more examples -->
 
-    <ul z:insert="for car in python:['honda', 'subaru', 'acura']">
+    <ul>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">honda</li>
-    
+    </span><span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">subaru</li>
-    
+    </span><span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">acura</li>
+    </span>
     </ul>
 
-    <a href="http://python.org" z:attributes="href = python:'http://python.org' ">python</a>
+    <a href="http://python.org" z:attributes="href python:'http://python.org' ">python</a>
 
   </body>
 

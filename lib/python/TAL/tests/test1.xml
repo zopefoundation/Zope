@@ -3,28 +3,29 @@
 
   <head>dadada</head>
 
-  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo as python:1">
+  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
 
-    <h1 z:insert="str:This Is The Replaced Title">Title</h1><span
-    z:omit="">This stuff is omitted</span>
+    <h1 z:insert="str:This Is The Replaced Title">Title</h1>
 
   <!-- examples adapted from TemplateAttributeLanguageSyntax -->
 
     <span z:insert="str:here/id"/>
 
-    <p z:define="x as str:template/title; global five as python:2+3" z:insert="text var:x"/>
+    <p z:define="x str:template/title; global five python:2+3" z:insert="text var:x"/>
 
-    <p z:replace="for car in python:['honda', 'subaru', 'acura']">
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
       <span z:replace="var:car"/>
     </p>
 
   <!-- more examples -->
 
-    <ul z:insert="for car in python:['honda', 'subaru', 'acura']">
+    <ul>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">Car Name</li>
+    </span>
     </ul>
 
-    <a href="foo" z:attributes="href = python:'http://python.org' ">python</a>
+    <a href="foo" z:attributes="href python:'http://python.org' ">python</a>
 
   </body>
 
