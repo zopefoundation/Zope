@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -134,11 +134,16 @@ class File(Persistent,Implicit,PropertyManager,
     manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='File',kind='file')
     manage=manage_main=manage_editForm
 
-    manage_options=({'label':'Edit', 'action':'manage_main'},
-                    {'label':'Upload', 'action':'manage_uploadForm'},
-                    {'label':'Properties', 'action':'manage_propertiesForm'},
-                    {'label':'View', 'action':''},
-                    {'label':'Security', 'action':'manage_access'},
+    manage_options=({'label':'Edit', 'action':'manage_main',
+                     'help':('OFSP','File_Edit.dtml')},
+                    {'label':'Upload', 'action':'manage_uploadForm',
+                     'help':('OFSP','File_Upload.dtml')},
+                    {'label':'Properties', 'action':'manage_propertiesForm',
+                     'help':('OFSP','File_Properties.dtml')},
+                    {'label':'View', 'action':'',
+                     'help':('OFSP','File_View.dtml')},
+                    {'label':'Security', 'action':'manage_access',
+                     'help':('OFSP','File_Security.dtml')},
                    )
 
     __ac_permissions__=(
@@ -362,7 +367,7 @@ class File(Persistent,Implicit,PropertyManager,
 
     def __str__(self): return str(self.data)
     def __len__(self): return 1
-	
+    
     manage_FTPget=index_html
 
 
@@ -406,11 +411,16 @@ class Image(File):
                  {'id':'width', 'type':'string'},
                  )
     
-    manage_options=({'label':'Edit', 'action':'manage_main'},
-                    {'label':'Upload', 'action':'manage_uploadForm'},
-                    {'label':'Properties', 'action':'manage_propertiesForm'},
-                    {'label':'View', 'action':'view_image_or_file'},
-                    {'label':'Security', 'action':'manage_access'},
+    manage_options=({'label':'Edit', 'action':'manage_main',
+                     'help':('OFSP','Image_Edit.dtml')},
+                    {'label':'Upload', 'action':'manage_uploadForm',
+                     'help':('OFSP','Image_Upload.dtml')},
+                    {'label':'Properties', 'action':'manage_propertiesForm',
+                     'help':('OFSP','Image_Properties.dtml')},
+                    {'label':'View', 'action':'view_image_or_file',
+                     'help':('OFSP','Image_View.dtml')},
+                    {'label':'Security', 'action':'manage_access',
+                     'help':('OFSP','Image_Security.dtml')},
                    )
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
