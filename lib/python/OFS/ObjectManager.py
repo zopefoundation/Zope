@@ -567,6 +567,18 @@ class ObjectManager(
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
 
+    def list_imports(self):
+        listing = []
+        cfg = getConfiguration()
+        paths = [cfg.zopehome]
+        if not cfg.instancehome in paths:
+            paths.append(cfg.instancehome)
+        for impath in paths:
+            directory = os.path.join(impath, 'import')
+            listing += [f for f in os.listdir(directory) 
+                        if f.endswith('.zexp') or f.endswith('.xml')]
+        return listing
+        
     # FTP support methods
 
     def manage_FTPlist(self, REQUEST):

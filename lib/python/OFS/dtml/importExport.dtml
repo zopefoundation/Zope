@@ -88,11 +88,14 @@ ownership information".
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="file" size="25" value="" />
+  <select name="file">
+  <dtml-in "list_imports()">
+    <option value="<dtml-var sequence-item>"><dtml-var sequence-item></option>
+  </dtml-in>
+  </select>
   </td>
 </tr>
 <tr>
-
   <td align="left" valign="top">
   <div class="form-label">
   Ownership
