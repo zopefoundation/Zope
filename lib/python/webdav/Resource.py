@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -248,6 +248,8 @@ class Resource:
         try: parent._checkId(name, allow_dup=1)
         except: raise 'Forbidden', sys.exc_value
         try: parent._verifyObjectPaste(self, REQUEST)
+        except 'Unauthorized':
+            raise 'Unauthorized', sys.exc_value
         except: raise 'Forbidden', sys.exc_value
         try: self._notifyOfCopyTo(parent, op=0)
         except: raise 'Forbidden', sys.exc_value
