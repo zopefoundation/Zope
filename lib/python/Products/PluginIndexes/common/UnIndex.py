@@ -4,7 +4,6 @@
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
@@ -144,13 +143,13 @@ class UnIndex(SimpleItem):
                 indexRow.remove(documentId)
                 if not indexRow:
                     del self._index[entry]
-                    try: self._length.change(-1)
-                    except AttributeError: pass # pre-BTrees-module instance
+                    self._length.change(-1)
+                    
             except AttributeError:
                 # index row is an int
                 del self._index[entry]
-                try: self._length.change(-1)
-                except AttributeError: pass # pre-BTrees-module instance
+                self._length.change(-1)
+                
             except:
                 LOG.error('%s: unindex_object could not remove '
                           'documentId %s from index %s.  This '
@@ -176,8 +175,7 @@ class UnIndex(SimpleItem):
         # an IntSet and stuff it in first.
         if indexRow is _marker:
             self._index[entry] = documentId
-            try:  self._length.change(1)
-            except AttributeError: pass # pre-BTrees-module instance
+            self._length.change(1)
         else:
             try: indexRow.insert(documentId)
             except AttributeError:
