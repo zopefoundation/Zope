@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -122,7 +122,31 @@ class ImageFile(Acquisition.Explicit):
 
     def index_html(self, REQUEST, RESPONSE):
         """Default document"""
+        # HTTP If-Modified-Since header handling. This is duplicated
+        # from OFS.Image.Image - it really should be consolidated
+        # somewhere...
+        header=REQUEST.get_header('If-Modified-Since', None)
+        if header is not None:
+            header=string.split(header, ';')[0]
+            # Some proxies seem to send invalid date strings for this
+            # header. If the date string is not valid, we ignore it
+            # rather than raise an error to be generally consistent
+            # with common servers such as Apache (which can usually
+            # understand the screwy date string as a lucky side effect
+            # of the way they parse it).
+            try:    mod_since=long(DateTime(header).timeTime())
+            except: mod_since=None
+            if mod_since is not None:
+                if self._p_mtime:
+                    last_mod = long(self._p_mtime)
+                else:
+                    last_mod = long(0)
+                if last_mod > 0 and last_mod <= mod_since:
+                    RESPONSE.setStatus(304)
+                    return ''
+
         RESPONSE.setHeader('Content-Type', self.content_type)
+        RESPONSE.setHeader('Last-Modified', self.lmh)
         f=open(self.path,'rb')
         data=f.read()
         f.close()
