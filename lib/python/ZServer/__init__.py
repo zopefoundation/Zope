@@ -13,7 +13,6 @@
 
 import sys
 import utils
-from App.config import getConfiguration
 
 #########################################################
 ### declarations used by external packages
