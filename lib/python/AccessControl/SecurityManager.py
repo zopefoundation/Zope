@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.5 2001/07/02 16:29:55 evan Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: SecurityManager.py,v 1.6 2001/10/01 21:03:15 matt Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
 
@@ -147,6 +147,35 @@ class SecurityManager:
         if policy is None: policy=_defaultPolicy
         return policy.validate(accessed, container, name, value,
                                self._context, roles)
+
+    def DTMLValidate(self, accessed=None, container=None, name=None,
+                    value=None,md=None):
+
+        """Validate access.
+        * THIS EXISTS FOR DTML COMPATIBILITY *
+
+        Arguments:
+        
+        accessed -- the object that was being accessed
+        
+        container -- the object the value was found in
+        
+        name -- The name used to access the value
+        
+        value -- The value retrieved though the access.
+
+        md -- multidict for DTML (ignored)
+
+        The arguments may be provided as keyword arguments. Some of these
+        arguments may be ommitted, however, the policy may reject access
+        in some cases when arguments are ommitted.  It is best to provide
+        all the values possible.
+
+        """
+        policy=self._policy
+        if policy is None: policy=_defaultPolicy
+        return policy.validate(accessed, container, name, value,
+                               self._context, _noroles)
 
     def validateValue(self, value, roles=_noroles):
         """Convenience for common case of simple value validation.
