@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -137,5 +137,6 @@ manage_addFieldIndexForm = DTMLFile('dtml/addFieldIndex', globals())
 
 def manage_addFieldIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a field index"""
-    return self.manage_addIndex(id, 'FieldIndex', REQUEST, RESPONSE, URL3)
+    return self.manage_addIndex(id, 'FieldIndex', extra=None, \
+             REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)
 

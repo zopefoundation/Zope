@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.3 $'[11:-2]
+__version__ = '$Revision: 1.4 $'[11:-2]
 
 
 import string, re
@@ -150,7 +150,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
          'help': ('TextIndex','TextIndex_Settings.stx')},
     )
  
-    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None):
+    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,extra=None):
         """Create an index
 
         The arguments are:
@@ -168,9 +168,9 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
           index will use a private lexicon."""
 
         
-        self.id = id
-        self.ignore_ex = ignore_ex
-        self.call_methods = call_methods
+        self.id             = id
+        self.ignore_ex      = ignore_ex
+        self.call_methods   = call_methods
 
 
         # Default text index operator (should be visible to ZMI)
@@ -180,7 +180,9 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         self.clear()
 
-        self.vocabulary_id = "Vocabulary"
+        if extra:   self.vocabulary_id = extra.vocabulary
+        else:       self.vocabulary_id = "Vocabulary"
+
         self._lexicon = None
 
         if lexicon is not None:
@@ -795,7 +797,7 @@ def quotes(s, ws=(string.whitespace,)):
 
 manage_addTextIndexForm = DTMLFile('dtml/addTextIndex', globals())
 
-def manage_addTextIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
+def manage_addTextIndex(self, id, extra=None, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a text index"""
-    return self.manage_addIndex(id, 'TextIndex', REQUEST, RESPONSE, URL3)
+    return self.manage_addIndex(id, 'TextIndex', extra, REQUEST, RESPONSE, URL3)
 

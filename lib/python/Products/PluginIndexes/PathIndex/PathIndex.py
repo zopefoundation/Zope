@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.2 2001/05/30 15:57:32 andreas Exp $'
+__version__ = '$Id: PathIndex.py,v 1.3 2001/05/31 12:22:52 andreas Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -369,7 +369,8 @@ manage_addPathIndexForm = DTMLFile('dtml/addPathIndex', globals())
 
 def manage_addPathIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
     """Add a path index"""
-    return self.manage_addIndex(id, 'PathIndex', REQUEST, RESPONSE, URL3)
+    return self.manage_addIndex(id, 'PathIndex', extra=None, \
+                REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)
 
 
 

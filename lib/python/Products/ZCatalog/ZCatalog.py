@@ -405,9 +405,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
 
-    def manage_addIndex(self, name, type, REQUEST=None, RESPONSE=None, URL1=None):
+    def manage_addIndex(self, name, type, extra=None,REQUEST=None, RESPONSE=None, URL1=None):
         """ add an index """
-        self.addIndex(name, type)
+        self.addIndex(name, type,extra)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Added')
@@ -791,7 +791,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     # Indexing methods 
     #
 
-    def addIndex(self, name, type):
+    def addIndex(self, name, type,extra=None):
 
         # Convert the type by finding an appropriate product which supports
         # this interface by that name.  Bleah

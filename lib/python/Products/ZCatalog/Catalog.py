@@ -333,8 +333,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if self.indexes.has_key(name):
             raise 'Index Exists', 'The index specified already exists'
 
-        if name[0] == '_':
+        if name.startswith('_'):
             raise 'Invalid Index Name', 'Cannot index fields beginning with "_"'
+    
+        if not name:
+            raise 'Invalid Index Name', 'Name of index is empty'
 
         # this is currently a succesion of hacks.  Indexes should be
         # pluggable and managable

@@ -26,7 +26,6 @@ from the most relevant to the lest relevant.
     </td>
   </tr>
 
-<dtml-comment>
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
@@ -35,7 +34,7 @@ from the most relevant to the lest relevant.
     </td>
     <td>
 
-    <select name="vocabulary">  
+    <select name="extra.vocabulary:record">  
       <dtml-in "this().aq_parent.objectItems('Vocabulary')">
         <option value="&dtml-sequence-key;">&dtml-sequence-key; (<dtml-var "_['sequence-item'].title">)
       </dtml-in>
@@ -43,7 +42,6 @@ from the most relevant to the lest relevant.
     
     </td> 
   </tr>
-</dtml-comment>
 
 
   <tr>
