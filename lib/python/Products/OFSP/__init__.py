@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Object system core
-$Id: __init__.py,v 1.32 1999/11/03 14:40:12 brian Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: __init__.py,v 1.33 1999/12/09 23:43:18 amos Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, ZClasses.ObjectManager
@@ -177,4 +177,5 @@ def initialize(context):
     #    )
 
     context.registerZClass(ZClasses.ObjectManager.ZObjectManager)
-                           
+
+    context.registerHelp()
