@@ -13,7 +13,10 @@ import os
 os.environ['NO_SECURITY'] = 'true'
 
 import sys, time
-import setpath
+
+if __name__ == "__main__":
+    import setpath
+
 from DocumentTemplate.DT_HTML import HTMLFile
 from HTMLTALParser import HTMLTALParser
 from TALInterpreter import TALInterpreter
