@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.6 $'[11:-2]
+__version__ = '$Revision: 1.7 $'[11:-2]
 
 
 import string, re
@@ -270,7 +270,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         This takes the objects record ID as it's main argument."""
 
-        wordMap = self.getLexicon()._lexicon.items()
         results = self._unindex.get(rid, None)
 
         if results is None:
@@ -287,8 +286,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         the number of entries as follows:
 
             1      tuple
-            2-4    dictionary
-            5+     bucket.
+            2-3    dictionary
+            4+     bucket.
         """
 
         index=self._index
@@ -333,7 +332,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         """ Index an object:
         'documentId' is the integer id of the document
         
-        'obj' is the objects to be indexed
+        'obj' is the object to be indexed
 
         'threshold' is the number of words to process between
         commiting subtransactions.  If 'None' subtransactions are
