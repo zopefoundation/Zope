@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.14 2001/11/08 21:03:48 matt Exp $
+$Id: Transience.py,v 1.15 2001/11/08 21:15:28 matt Exp $
 """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -222,7 +222,7 @@ class TransientObjectContainer(SimpleItem):
     def new(self, key, wrap_with=None):
         if type(key) is not type(''):
             raise TypeError, (key, "key is not a string type")
-        if self.has_key(key):
+        if self.get(key,None) is not None:
             if self[key].isValid():
                 raise KeyError, key         # Not allowed to dup keys
             del self[key]      
@@ -520,7 +520,9 @@ class TransientObjectContainer(SimpleItem):
     def has_key(self, k):
         self._getCurrentBucket()
         index = self._ring._index
-        return index.get(k, _notfound) is not _notfound
+        v = index.get(k, _notfound) 
+        if v is _notfound or not v.isValid(): return 0
+        return 1
 
     def values(self):
         return map(lambda k, self=self: self[k], self.keys())
