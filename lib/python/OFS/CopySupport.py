@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -144,7 +144,8 @@ class CopyContainer(ExtensionClass.Base):
         if REQUEST is not None:
             resp=REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
-            return self.manage_main(self, REQUEST, cb_dataValid=1)
+            REQUEST['__cp'] = cp
+            return self.manage_main(REQUEST)
         return cp
     
     def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
@@ -168,7 +169,8 @@ class CopyContainer(ExtensionClass.Base):
         if REQUEST is not None:
             resp=REQUEST['RESPONSE']
             resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
-            return self.manage_main(self, REQUEST, cb_dataValid=1)
+            REQUEST['__cp'] = cp
+            return self.manage_main(REQUEST)
         return cp
 
     def _get_id(self, id):
