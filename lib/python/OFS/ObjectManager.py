@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.55 1999/03/24 18:44:51 jim Exp $"""
+$Id: ObjectManager.py,v 1.56 1999/03/24 18:46:55 jim Exp $"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher, ts_regex
@@ -118,12 +118,8 @@ class ObjectManager(
 
 
     manage_options=(
-    {'icon':icon,              'label':'Objects',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
-     'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-     'action':'manage_help',   'target':'_new'},
+        {'label':'Objects', 'action':'manage_main'},
+        {'label':'Properties', 'action':'manage_propertiesForm'},
     )
 
     isAnObjectManager=1
