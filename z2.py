@@ -550,21 +550,32 @@ if MONITOR_PORT:
         hostname='127.0.0.1',
         port=MONITOR_PORT)
 
-# Try to set uid to server's uid. 
+# Try to set uid to "-u" -provided uid.
+# Try to set gid to  "-u" user's primary group. 
 # This will only work if this script is run by root.
 try:
     import pwd
     try:
-        try:
-            uid=string.atoi(UID)
-        except:
-            pass
+        gid = None
         if type(UID) == type(""):
             uid = pwd.getpwnam(UID)[2]
-        os.setuid(uid)
+            gid = pwd.getpwnam(UID)[3]
+        elif type(UID) == type(1):
+            uid = pwd.getpwuid(UID)[2]
+            gid = pwd.getpwuid(UID)[3]
+	else:
+            raise KeyError 
+        try:
+            if gid is not None:
+                try:
+                    os.setgid(gid)
+                except OSError:
+                    pass
+            os.setuid(uid)
+        except OSError:
+            pass
     except KeyError:
         zLOG.LOG("z2", zLOG.ERROR, ("can't find UID %s" % UID))
-    
 except:
     pass
 
