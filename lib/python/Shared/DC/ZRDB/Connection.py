@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.25 2000/05/30 15:46:55 brian Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: Connection.py,v 1.26 2000/07/26 15:44:05 brian Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -110,8 +110,8 @@ class Connection(
         {'label':'Properties', 'action':'manage_properties'},
         {'label':'Test', 'action':'manage_testForm'},
         )
-        +OFS.SimpleItem.Item.manage_options
         +AccessControl.Role.RoleManager.manage_options
+        +OFS.SimpleItem.Item.manage_options
         )
  
     # Specify how individual operations add up to "permissions":
