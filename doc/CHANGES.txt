@@ -39,6 +39,8 @@ Zope Changes
      - Objects locked through WebDAV are now marked with a lock icon
        inside the ZMI.
 
+     - Collector #741: Applied patch to provide better FTP error messages.
+
     Bugs Fixed
 
      - Collector #771: ZCatalog failed to index DTML Document if the name
