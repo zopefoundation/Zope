@@ -6,6 +6,7 @@ from ZODB import POSException
 
 import BerkeleyTestBase
 from ZODB.tests.BasicStorage import BasicStorage
+from ZODB.tests.RevisionStorage import RevisionStorage
 from ZODB.tests.VersionStorage import VersionStorage
 from ZODB.tests.TransactionalUndoStorage import TransactionalUndoStorage
 from ZODB.tests.TransactionalUndoVersionStorage import \
@@ -21,7 +22,7 @@ class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
     def checkLoadSerial(self):
         # This storage doesn't support versions, so we should get an exception
         self.assertRaises(POSException.Unsupported,
-                          BasicStorage.checkLoadSerial,
+                          RevisionStorage.checkLoadSerial,
                           self)
 
     def checkVersionedStoreAndLoad(self):
