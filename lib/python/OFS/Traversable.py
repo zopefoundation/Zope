@@ -12,13 +12,14 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.16 2002/09/12 21:20:52 shane Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: Traversable.py,v 1.17 2002/09/18 15:48:59 shane Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
+from AccessControl.ZopeGuards import guarded_getattr
 from urllib import quote
 
 _marker=[]
@@ -134,21 +135,11 @@ class Traversable:
                             raise Unauthorized, name
 
                 else:
-                    o=get(object, name, M)
-                    if o is not M:
-                        if restricted:
-                            # waaaa
-                            if hasattr(aq_base(object), name):
-                                # value wasn't acquired
-                                if not securityManager.validate(
-                                    object, object, name, o):
-                                    raise Unauthorized, name
-                            else:
-                                if not securityManager.validate(
-                                    object, N, name, o):
-                                    raise Unauthorized, name
-
+                    if restricted:
+                        o = guarded_getattr(object, name, M)
                     else:
+                        o = get(object, name, M)
+                    if o is M:
                         o=object[name]
                         if (restricted and not securityManager.validate(
                             object, object, N, o)):
