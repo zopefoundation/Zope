@@ -10,4 +10,5 @@
 # install imageEdit.dtml
 # install main.dtml
 # install properties.dtml
+# install rolesForm.dtml
 # install www www/%(package)s

@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.13 1997/09/24 22:16:43 brian Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Application.py,v 1.14 1997/09/25 14:04:56 brian Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -21,9 +21,10 @@ from AccessControl.User import UserFolder
 
 
 class Application(Folder.Folder):
+    title    ='Principia'
+    id       =title
+    __roles__=None
     web__form__method='GET'
-    title='Principia'
-    id   =title
 
     manage_options=(
     {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
@@ -40,6 +41,8 @@ class Application(Folder.Folder):
 #     'action':'manage_help',   'target':'_new'},
     )
 
+    manage_rolesForm=Globals.HTMLFile('OFS/rolesForm')
+
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
 		     'acl_users')
@@ -55,8 +58,6 @@ class Application(Folder.Folder):
 				'Standard Html Footer',
 				'</BODY></HTML>')
 	self._setObject('acl_users', self.__allow_groups__)
-
-
 
     def folderClass(self): return Folder.Folder
 
@@ -165,6 +166,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.14  1997/09/25 14:04:56  brian
+# Added default __roles__ of None, custom roles form
+#
 # Revision 1.13  1997/09/24 22:16:43  brian
 # Style update
 #

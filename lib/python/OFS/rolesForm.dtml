@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>Access Control</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<H2>Access Control</H2>
+<P>
+You may restrict access to <EM><!--#var title--></EM> using the form 
+below. To add or remove roles, select or deselect 
+the desired role names and click &quot;Change&quot;.
+<P>
+<FORM ACTION="<!--#var PARENT_URL-->/manage_editRoles" METHOD="POST">
+<TABLE>
+<TR>
+<TD VALIGN="TOP">
+<INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"<!--#var aclEChecked-->>
+Allow users with selected roles
+<BR>
+<INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"<!--#var aclPChecked-->> 
+Allow all users
+</TD>
+<TD VALIGN="TOP">
+<SELECT NAME="acl_roles:list" SIZE="4" MULTIPLE>
+<!--#in selectedRoles-->
+<!--#var sequence-item-->
+<!--#/in selectedRoles-->
+</SELECT>
+<BR>
+<INPUT TYPE="SUBMIT" VALUE="Change">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+
+<P>
+<FORM ACTION="<!--#var PARENT_URL-->/manage_addRole" METHOD="POST">
+To add a new, user-defined role to this object, enter the name of 
+the new role and click &quot;Add&quot;.
+<BR>
+<INPUT TYPE="TEXT" NAME="role" SIZE="20">
+<BR>
+<INPUT TYPE="SUBMIT" VALUE=" Add ">
+</FORM>
+</BODY>
+</HTML>
