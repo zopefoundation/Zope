@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.95 2001/01/12 16:47:25 chrism Exp $'''
-__version__='$Revision: 1.95 $'[11:-2]
+$Id: DA.py,v 1.96 2001/01/12 17:50:32 chrism Exp $'''
+__version__='$Revision: 1.96 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -400,9 +400,9 @@ class DA(
         
         finally: tb=None
 
-    def index_html(self, URL1):
-        " "
-        raise 'Redirect', ("%s/manage_testForm" % URL1)
+    def index_html(self, REQUEST):
+        """ """
+        REQUEST.RESPONSE.redirect("%s/manage_testForm" % REQUEST['URL1'])
 
     def _searchable_arguments(self): return self._arg
 
