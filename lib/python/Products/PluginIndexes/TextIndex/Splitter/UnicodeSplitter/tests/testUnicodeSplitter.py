@@ -30,12 +30,14 @@ class UnicodeSplitterTests(unittest.TestCase):
     def testStopwords(self):
         """ testing splitter with stopwords """
 
-        text = 'The quick brown fox jumps over the lazy dog'
-        expected = [ u'quick',u'brown',u'fox',u'jumps',u'over',u'lazy',u'fox']
-        sw_dict = {'the':None,'dog':'fox'}
+        text = 'The quick brown fox jumps over The lazy dog'
+        expected = [ u'quick',u'brown',u'fox',u'jumps',u'over',u'lazy',u'cat']
+        sw_dict = {'the':None,'dog':'cat'}
 
-        fields = list(UnicodeSplitter(text,sw_dict))
-        self.assertEquals( fields, expected )
+        splitter = UnicodeSplitter(text,sw_dict)
+        fields = list(splitter)
+        self.assertEquals(fields, expected)
+        self.assertEquals(splitter.indexes('jumps'), [3])
         
 
 def test_suite():
