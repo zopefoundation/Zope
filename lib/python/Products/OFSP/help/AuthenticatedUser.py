@@ -88,55 +88,56 @@ class AuthenticatedUser:
     This interface needs to be supported by objects that
     are returned by user validation and used for access control.
     """
-    
 
     def getUserName():
         """
-
         Return the name of a user
 
         Permission -- Always available
-        
         """
 
-    def hasRole(object, roles):
+    def has_role(roles, object=None):
         """
-
-        Return a value that is true if the user has the given roles on
-        the given object and return false otherwise.
+        Return true if the user has at least one role from a list of
+        roles, optionally in the context of an object.
 
         Permission -- Always available
-        
         """
 
-    def getRoles(object):
+    def has_permission(permission, object):
         """
-
-        Returns a list of the roles the user has on the given object
-        (in the current context?)
+        Return true if the user has a permission on an object.
 
         Permission -- Always available
+        """
 
+    def getRoles():
+        """
+        Return a list of the user's roles.
+
+        Permission -- Always available
+        """
+
+    def getRolesInContext(object):
+        """
+        Return the list of roles assigned to the user, including local
+        roles assigned in context of an object.
+
+        Permission -- Always available
         """
 
     def getId():
         """
+        Get the ID of the user. The ID can be used from
+        Python to get the user from the user's UserDatabase.
 
-        Get the ID of the user. The ID can be used, at least from
-        Python, to get the user from the user's UserDatabase.
-
-        Permission -- Python only
-
+        Permission -- Always available
         """
 
-    def getDatabasePath():
+    def getDomains():
         """
-
-        Get a physical path to the user's UserDatabase.  A Traversal
-        facility can be used to get the user database from the path
-        returned by this method.
-
-        Permission -- Python only
-
+        Return the list of domain restrictions for a user.
+        
+        Permission -- Always available
         """
 
