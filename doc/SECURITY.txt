@@ -1,4 +1,3 @@
-
 Setting the Zope "super manager" name and password
 
   Because Zope is managed through the web, user names and passwords must be
@@ -25,19 +24,21 @@ Setting the Zope "super manager" name and password
   with unusual situations, like lost (or hacked) manager user names and
   passwords.
 
+  In order to provide a somewhat higher level of security, various
+  encoding schemes are supported which provide access to either SHA-1
+  encryption or the standard UNIX crypt facility if it's been compiled
+  into Python.  Unless you have some special requirements (see below), 
+  you should use the SHA-1 facility, which is the default.
+
   The access file should consist of a single line of the form:
 
     name:password
 
   The build scripts automatically create an 'access' file for you, 
-  using a default username and password of:
-
-    superuser:123
-
-  It is *highly recommended* that you change the default super manager 
-  name and password by editing your 'access' file after running the
-  build script. When you begin managing your Zope installation you
-  will need to enter the superuser name and password when prompted.
+  using a default username and a randomly generated password which
+  will be given at the end of the build script.  The default is to
+  encode this with SHA, so please remember this password as there is no
+  way to recover it.
 
   Note that you may also add an optional third component to the line
   in the access file to restrict super manager access by domain. 
@@ -49,6 +50,13 @@ Setting the Zope "super manager" name and password
   installation from *.mydomain.com machines. Attempts to access the
   system from other domains will fail, even if the correct superuser
   name and password are used.
+
+  Note that there is now a program to change the password,
+  'zpasswd.py', which if run will explain how to use it, and if run it
+  its most basic form will prompt for all information.
+
+  Please note that if you use the ZServer monitor capability, you will 
+  need to run with a clear text password in this beta release.
 
 Setting permissions on the var directory.
 
