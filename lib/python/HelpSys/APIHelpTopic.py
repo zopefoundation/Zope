@@ -78,7 +78,9 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         "The full text of the Help Topic, for indexing purposes"
         text="%s %s" % (self.title, self.doc)
         for api in self.apis + self.funcs:
-            text="%s %s" % (text, api.SearchableText())
+            try:  # not all api's provide SearchableText()
+                text="%s %s" % (text, api.SearchableText())
+            except AttributeError: pass
         return text
 
 
