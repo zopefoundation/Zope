@@ -18,18 +18,19 @@
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    REQUEST Variables
+    REQUEST variables
     </div>
     </td>
     <td align="left" valign="top">
     <textarea name="request_vars:lines" rows="5" cols="30"><dtml-in
-     request_vars>&dtml-sequence-item;</dtml-in></textarea>
+     request_vars>&dtml-sequence-item;
+</dtml-in></textarea>
     </td>
   </tr>
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Threshold Entries
+    Threshold entries
     </div>
     </td>
     <td align="left" valign="top">
@@ -40,7 +41,18 @@
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Cleanup Interval (Seconds)
+    Maximum age of a cache entry (seconds)
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="max_age" size="40"
+     value="&dtml-max_age;" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Cleanup interval (seconds)
     </div>
     </td>
     <td align="left" valign="top">

@@ -127,6 +127,7 @@ class CacheEntry:
             self.size = len(dumps(index)) + len(dumps(data))
         except:
             raise CacheException('The data for the cache is not pickleable.')
+        self.created = time.time()
         self.data = data
         self.view_name = view_name
         self.access_count = 0
@@ -142,7 +143,7 @@ class ObjectCacheEntries:
 
     def __init__(self, path):
         self.physical_path = path
-        self.lastmod = 0
+        self.lastmod = 0  # Mod time of the object, class, etc.
         self.entries = {}
 
     def aggregateIndex(self, view_name, req, req_names, local_keys):
@@ -180,6 +181,10 @@ class ObjectCacheEntries:
     def setEntry(self, lastmod, index, data, view_name):
         self.lastmod = lastmod
         self.entries[index] = CacheEntry(index, data, view_name)
+
+    def delEntry(self, index):
+        try: del self.entries[index]
+        except KeyError: pass
 
 
 class RAMCache (Cache):
@@ -258,10 +263,27 @@ class RAMCache (Cache):
         finally:
             self.writelock.release()
 
+    def deleteStaleEntries(self):
+        """
+        Deletes entries that have expired.
+        """
+        self.writelock.acquire()
+        try:
+            min_created = time.time() - self.max_age
+            for p, oc in self.cache.items():
+                for agindex, entry in oc.entries.items():
+                    if entry.created < min_created:
+                        del oc.entries[agindex]
+                if len(oc.entries) < 1:
+                    del self.cache[p]
+        finally:
+            self.writelock.release()
+
     def cleanup(self):
         '''
         Removes cache entries.
         '''
+        self.deleteStaleEntries()
         new_count = self.countAllEntries()
         if new_count > self.threshold:
             counters = self.countAccesses()
@@ -334,6 +356,14 @@ class RAMCache (Cache):
         entry = oc.getEntry(lastmod, index)
         if entry is _marker:
             return default
+        if entry.created < time.time() - self.max_age:
+            # Expired.
+            self.writelock.acquire()
+            try:
+                oc.delEntry(index)
+            finally:
+                self.writelock.release()
+            return default
         oc.hits = oc.hits + 1
         entry.access_count = entry.access_count + 1
         return entry.data
@@ -389,7 +419,9 @@ class RAMCacheManager (CacheManager, SimpleItem):
         self._settings = {
             'threshold': 1000,
             'cleanup_interval': 300,
-            'request_vars': ('AUTHENTICATED_USER',)}
+            'request_vars': ('AUTHENTICATED_USER',),
+            'max_age': 3600,
+            }
         self.__cacheid = '%s_%f' % (id(self), time.time())
 
     def getId(self):
@@ -423,7 +455,9 @@ class RAMCacheManager (CacheManager, SimpleItem):
         self._settings = {
             'threshold': int(settings['threshold']),
             'cleanup_interval': int(settings['cleanup_interval']),
-            'request_vars': tuple(request_vars)}
+            'request_vars': tuple(request_vars),
+            'max_age': int(settings['max_age']),
+            }
         cache = self.ZCacheManager_getCache()
         cache.initSettings(self._settings)
         if REQUEST is not None:
