@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -159,6 +159,14 @@ safebin['setattr'] = __careful_setattr__
 def __careful_delattr__(object, name):
     delattr(WriteGuard(object), name)
 safebin['delattr'] = __careful_delattr__
+
+def __careful_hasattr__(object, name):
+    try:
+        __careful_getattr__(object, name)
+    except (AttributeError, ValidationError):
+        return 0
+    return 1
+safebin['hasattr'] = __careful_hasattr__
 
 def __careful_filter__(f, seq, skip_unauthorized=0):
     if type(seq) is type(''):
