@@ -54,14 +54,20 @@ Changes to Indexes:
     Vocabulary through the ZMI of the ZCatalog. After creating the vocabulary you
     can choose the vocabulary on the ZMI management screen for the text index.
 
-  - internal support for user-provided splitters
-
   - the default operator might be overridden by specifying a new one
     as 'operator' (see below)
 
+  - removed direct dependancy from Splitter module. Splitter is now
+    aquired from used vocabulary
+    
   - usage of the 'textindex_operator' is deprecated
 
   - lots of internal rework
+
+
+Changes to Vocabulary:
+
+  - added Splitter selection on the add formular
 
 
 Changes to ZCatalog
@@ -112,3 +118,10 @@ Changes to ZCatalog
 Backward compatibility:
   
   - any existing pre-2.4 ZCatalog should work under 2.4
+
+  - pre-2.4 indexes of a ZCatalog are marked as 'pre-2.4 Index' in the Index view of the
+    ZCatalog
+
+  - '# objects' is set to 'not available' for pre-2.4 indexes
+
+
