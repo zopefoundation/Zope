@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.156 $'[11:-2]
+__version__='$Revision: 1.157 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -497,6 +497,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         ('Manage users',
          ('manage_users','getUserNames', 'getUser', 'getUsers',
           'getUserById', 'user_names', 'setDomainAuthenticationMode',
+          'manage_addUser', 'manage_editUser', 'manage_delUsers',
           )
          ),
         )
@@ -526,16 +527,45 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
            if default is _marker: raise
            return default
 
-    def _doAddUser(self, name, password, roles, domains):
-        """Create a new user"""
+    # As of Zope 2.5, manage_addUser, manage_editUser and manage_delUsers
+    # form the official API for user management. The old grotesque way of
+    # using manage_users is now deprecated. Note that not all user folder
+    # implementations support adding, changing and deleting user objects.
+
+    # The default implementation of these API methods simply call the
+    # _doXXX versions of the methods that user folder authors have already
+    # implemented, which means that these APIs will work for current user
+    # folder implementations without any action on the part of the author.
+
+    # User folder authors that implement the new manage_XXX API can get
+    # rid of the old _doXXX versions of the methods, which are no longer
+    # required (we only use them if the new api is not directly implemented).
+
+    def manage_addUser(self, name, password, roles, domains):
+        """API method for creating a new user object. Note that not all
+           user folder implementations support dynamic creation of user
+           objects. Implementations that do not support dynamic creation
+           of user objects should raise NotImplemented for this method."""
+        if hasattr(self, '_doAddUser'):
+            return self._doAddUser(name, password, roles, domains)
         raise NotImplemented
 
-    def _doChangeUser(self, name, password, roles, domains):
-        """Modify an existing user"""
+    def manage_editUser(self, name, password, roles, domains):
+        """API method for changing user object attributes. Note that not
+           all user folder implementations support changing of user object
+           attributes. Implementations that do not support changing of user
+           object attributes should raise NotImplemented for this method."""
+        if hasattr(self, '_doChangeUser'):
+            return self._doChangeUser(name, password, roles, domains)
         raise NotImplemented
 
-    def _doDelUsers(self, names):
-        """Delete one or more users"""
+    def manage_delUsers(self, names):
+        """API method for deleting one or more user objects. Note that not
+           all user folder implementations support deletion of user objects.
+           Implementations that do not support deletion of user objects
+           should raise NotImplemented for this method."""
+        if hasattr(self, '_doDelUsers'):
+            return self._doDelUsers(names)
         raise NotImplemented
 
 
@@ -776,8 +806,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 pw = u._getPassword()
                 if not self._isPasswordEncrypted(pw):
                     pw = self._encryptPassword(pw)
-                    self._doChangeUser(u.getUserName(), pw, u.getRoles(),
-                                       u.getDomains())
+                    self.manage_editUser(u.getUserName(), pw, u.getRoles(),
+                                         u.getDomains())
                     changed = changed + 1
             if REQUEST is not None:
                 if not changed:
@@ -847,7 +877,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    action ='manage_main')
         if self.encrypt_passwords:
             password = self._encryptPassword(password)
-        self._doAddUser(name, password, roles, domains)
+        self.manage_addUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
 
@@ -887,7 +917,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    action ='manage_main')
         if password is not None and self.encrypt_passwords:
             password = self._encryptPassword(password)
-        self._doChangeUser(name, password, roles, domains)
+        self.manage_editUser(name, password, roles, domains)
         if REQUEST: return self._mainUser(self, REQUEST)
 
     def _delUsers(self,names,REQUEST=None):
@@ -896,11 +926,14 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    title  ='Illegal value', 
                    message='No users specified',
                    action ='manage_main')
-        self._doDelUsers(names)
+        self.manage_delUsers(names)
         if REQUEST: return self._mainUser(self, REQUEST)
 
     def manage_users(self,submit=None,REQUEST=None,RESPONSE=None):
-        """ """
+        """This method handles operations on users for the web based forms
+           of the ZMI. Use of this method by application code is deprecated.
+           Use the manage_addUser, manage_editUser and manage_delUsers APIs
+           instead."""
         if submit=='Add...':
             return self._add_User(self, REQUEST)
 
@@ -1012,18 +1045,20 @@ class UserFolder(BasicUserFolder):
         """Return the named user object or None"""
         return self.data.get(name, None)
 
-    def _doAddUser(self, name, password, roles, domains):
-        """Create a new user"""
+    def manage_addUser(self, name, password, roles, domains):
+        """API method used to create a new user object."""
         self.data[name]=User(name,password,roles,domains)
 
-    def _doChangeUser(self, name, password, roles, domains):
+    def manage_editUser(self, name, password, roles, domains):
+        """API method used to change the attributes of a user."""
         user=self.data[name]
         if password is not None:
             user.__=password
         user.roles=roles
         user.domains=domains
 
-    def _doDelUsers(self, names):
+    def manage_delUsers(self, names):
+        """API method used to delete one or more user objects."""
         for name in names:
             del self.data[name]
 
@@ -1041,8 +1076,8 @@ class UserFolder(BasicUserFolder):
             info = readUserAccessFile('inituser')
             if info:
                 name, password, domains, remote_user_mode = info
-                self._doDelUsers(self.getUserNames())
-                self._doAddUser(name, password, ('Manager',), domains)
+                self.manage_delUsers(self.getUserNames())
+                self.manage_addUser(name, password, ('Manager',), domains)
                 try:
                     os.remove(os.path.join(INSTANCE_HOME, 'inituser'))
                 except:
