@@ -88,6 +88,14 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
         return r
 
+    def om_icons(self):
+        """Return a list of icon URLs to be displayed by an ObjectManager"""
+        return ({'path': 'misc_/OFSP/version.gif',
+                  'alt': self.meta_type, 'title': self.meta_type},
+                 {'path': 'misc_/PageTemplates/exclamation.gif',
+                          'alt': 'Deprecated object',
+                          'title': 'Version objects are deprecated and should not be used anyore.'},)
+
     def manage_edit(self, title, REQUEST=None):
         """ """
         self.title=title

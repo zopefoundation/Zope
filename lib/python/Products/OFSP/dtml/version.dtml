@@ -1,6 +1,8 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
+<h3 style="color:red;">Version objects are deprecated and should not be used anymore!</h3>
+
 <dtml-if Zope-Version>
 
   <dtml-if expr="_vars['Zope-Version'] != cookie">

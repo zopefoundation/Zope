@@ -46,6 +46,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Removed Version objects from the add menu. Versions are agreed to be a
+        feature that should not be used as it is not well implemented and
+        allows for data loss.
+
       - Collector #1510: Allow encoding of application/xhtml+xml pages
         according to the charset specified in the Content-Type header
         (thanks to Jacek Konieczny for the patch).

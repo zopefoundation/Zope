@@ -22,6 +22,7 @@ import ZClasses.ObjectManager
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import add_folders
 from ZClasses import createZClassForBase
+from ImageFile import ImageFile
 
 createZClassForBase( OFS.DTMLMethod.DTMLMethod, globals()
                    , 'ZDTMLMethod', 'DTML Method' )
@@ -38,6 +39,10 @@ createZClassForBase( AccessControl.User.UserFolder, globals()
                    , 'ZUserFolder', 'User Folder' )
 createZClassForBase( AccessControl.User.User, globals()
                    , 'ZUser', 'User' )
+
+misc_={
+    'version.gif':ImageFile('images/version.gif', globals())
+    }
 
 # This is the new way to initialize products.  It is hoped
 # that this more direct mechanism will be more understandable.
@@ -105,13 +110,17 @@ def initialize(context):
         legacy=(AccessControl.User.manage_addUserFolder,),
         )
 
+    ## Those both classes are relicts. We only withdraw them from the Add menu.
+    ## This way people will stop using them. They are undocumented anyway. 
+    ## People also have the chance to softly migrate their data and stop using the
+    ## versions they still use.
 
-    context.registerClass(
-        Version.Version,
-        constructors=(Version.manage_addVersionForm,
-                      Version.manage_addVersion),
-        icon='images/version.gif'
-        )
+    #context.registerClass(
+    #    Version.Version,
+    #    constructors=(Version.manage_addVersionForm,
+    #                  Version.manage_addVersion),
+    #    icon='images/version.gif'
+    #    )
 
     #context.registerClass(
     #    Draft.Draft,

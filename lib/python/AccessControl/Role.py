@@ -341,13 +341,15 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         """Set local roles for a user."""
         if not roles:
             raise ValueError, 'One or more roles must be given!'
-        dict=self.__ac_local_roles__ or {}
+        dict=self.__ac_local_roles__
+        if dict is None:
+            self.__ac_local_roles__ = dict = {}
         local_roles = list(dict.get(userid, []))
         for r in roles:
             if r not in local_roles:
                 local_roles.append(r)
         dict[userid] = local_roles
-        self.__ac_local_roles__=dict
+        self._p_changed=True
         if REQUEST is not None:
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
@@ -356,20 +358,24 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         """Set local roles for a user."""
         if not roles:
             raise ValueError, 'One or more roles must be given!'
-        dict=self.__ac_local_roles__ or {}
+        dict=self.__ac_local_roles__
+        if dict is None:
+            self.__ac_local_roles__ = dict = {}
         dict[userid]=roles
-        self.__ac_local_roles__=dict
+        self._p_changed=True
         if REQUEST is not None:
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
-        dict=self.__ac_local_roles__ or {}
+        dict=self.__ac_local_roles__
+        if dict is None:
+            self.__ac_local_roles__ = dict = {}
         for userid in userids:
             if dict.has_key(userid):
                 del dict[userid]
-        self.__ac_local_roles__=dict
+        self._p_changed=True
         if REQUEST is not None:
             stat='Your changes have been saved.'
             return self.manage_listLocalRoles(self, REQUEST, stat=stat)
