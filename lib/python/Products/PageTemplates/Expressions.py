@@ -308,7 +308,7 @@ def restrictedTraverse(object, path, securityManager,
                 raise Unauthorized, name
         else:
             # Try an attribute.
-            o = guarded_getattr(object, name, M)
+            o = guarded_getattr(object, str(name), M) # failed on u'aq_parent'
             if o is M:
                 # Try an item.
                 try:
