@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.39 $'[11:-2]
+__version__ = '$Revision: 1.40 $'[11:-2]
 
 import string, regex, regsub, ts_regex
 import operator
@@ -139,8 +139,7 @@ class UnTextIndex(Persistent, Implicit):
     meta_type = 'Text Index'
 
 
-    def __init__(self, id, ignore_ex=None,
-                 call_methods=None, lexicon=None):
+    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None):
         """Create an index
 
         The arguments are:
@@ -167,7 +166,9 @@ class UnTextIndex(Persistent, Implicit):
             ## if no lexicon is provided, create a default one
             self._lexicon = Lexicon()
         else:
-            self._lexicon = lexicon
+            # We need to hold a reference to the lexicon, since we can't
+            # really change lexicons.
+            self._lexicon = self.getLexicon(lexicon)
 
 
     def getLexicon(self, vocab_id):
@@ -180,10 +181,6 @@ class UnTextIndex(Persistent, Implicit):
 
         if type(vocab_id) is not StringType:
             vocab = vocab_id # we already havd the lexicon
-
-            # Through some sick hysterical accident, some lexicons
-            # simply wrap other lexicons, unless they don't. Waaaaaa.
-            vocab = getattr(vocab, 'lexicon', vocab)
             return vocab
         else:
             vocab = getattr(self, vocab_id)
@@ -204,6 +201,11 @@ class UnTextIndex(Persistent, Implicit):
         self._unindex = IOBTree()
 
     def _convertBTrees(self, threshold=200):
+
+        if type(self._lexicon) is type(''):
+            # Turn the name reference into a hard reference. 
+            self._lexicon=self.getLexicon(self._lexicon)
+
         if type(self._index) is IOBTree: return
 
         from BTrees.convert import convert
