@@ -71,6 +71,22 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 beta 4
+    
+      Features added
+
+
+      Bugs fixed
+
+        - This release fixes a socket listen-queue depth problem on
+          Win32 systems that caused poor performance and connection
+          refusals in ZServer.
+
+        - Fixes to the win32 installation were made to prevent a
+          potential conflict on systems that have an existing
+          installation of the Python win32 extensions.
+
+
     Zope 2.0 beta 3
     
       Features added
