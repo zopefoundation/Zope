@@ -202,7 +202,9 @@
               datatype=".mount_point">
       <description>
        The mount point is the slash-separated path to which this database
-       will be mounted within the Zope application server.
+       will be mounted within the Zope application server. If the path 
+       on the ZEO server is different from the path of the mount point then
+       you can use a notation "path_on_client:path_on_zeo_server".
       </description>
     </multikey>
 
