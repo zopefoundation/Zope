@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.138 2001/01/19 20:12:21 brian Exp $'''
-__version__='$Revision: 1.138 $'[11:-2]
+$Id: Application.py,v 1.139 2001/01/19 20:19:36 brian Exp $'''
+__version__='$Revision: 1.139 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -442,11 +442,17 @@ def initialize(app):
 
     install_products(app)
 
+    # Note that the code from here on only runs if we are not a ZEO
+    # client.
+    if os.environ.get('ZEO_CLIENT',''):
+        return
+
     # Check for dangling pointers (broken zclass dependencies) in the
     # global class registry. If found, rebuild the registry. Note that
     # if the check finds problems but fails to successfully rebuild the 
     # registry we abort the transaction so that we don't leave it in an
     # indeterminate state.
+
     did_fixups=0
     bad_things=0
     try:
@@ -489,6 +495,7 @@ def initialize(app):
                     'an updated disk-based product failed.',
                     error=sys.exc_info())
                 get_transaction().abort()
+
 
 
 def import_products(_st=type('')):
