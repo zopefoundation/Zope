@@ -104,7 +104,7 @@ class TreeTests(unittest.TestCase):
 
             self.assertEqual(node.size, len(node.flat()))
 
-    def testExpandsionMap(self):
+    def testExpansionMap(self):
         treeroot = self.tm.tree(self.root, self.expansionmap)
 
         self.assertEqual(treeroot.size, 5)
