@@ -84,12 +84,13 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.20 2000/05/11 18:54:14 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Undo.py,v 1.21 2000/06/02 20:09:37 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
-from string import atof, find, atoi, split, rfind
+from string import atof, find, atoi, split, rfind, join
+from AccessControl import getSecurityManager
 
 class UndoSupport(ExtensionClass.Base):
 
@@ -123,14 +124,9 @@ class UndoSupport(ExtensionClass.Base):
             else: v=default
             return v
 
-    def undoable_transactions(self, AUTHENTICATION_PATH=None,
-                              first_transaction=None,
+    def undoable_transactions(self, first_transaction=None,
                               last_transaction=None,
                               PrincipiaUndoBatchSize=None):
-
-        if AUTHENTICATION_PATH is None:
-            path=self.REQUEST['AUTHENTICATION_PATH']
-        else: path=AUTHENTICATION_PATH
 
         if first_transaction is None:
             first_transaction=self.get_request_var_or_attr(
@@ -145,9 +141,24 @@ class UndoSupport(ExtensionClass.Base):
                 'last_transaction',
                 first_transaction+PrincipiaUndoBatchSize)
 
+        spec={}
+        
+        # A user is allowed to undo transactions that were initiated
+        # by any member of a user folder in the place where the user
+        # is defined.        
+        user = getSecurityManager().getUser()
+        if hasattr(user, 'aq_parent'):
+            path = join(user.aq_parent.getPhysicalPath()[1:-1], '/')
+        else:
+            path=''
+        if path: spec['user_name']=Prefix(path)
+
+        # We also only want to undo things done here
+        opath=join(self.getPhysicalPath(),'/')
+        if opath: spec['description']=Prefix(opath)
+
         r=Globals.UndoManager.undoInfo(
-            first_transaction, last_transaction,
-            {'user_name': Prefix(path)})
+            first_transaction, last_transaction, spec)
 
         for d in r: d['time']=DateTime(d['time'])
 
@@ -164,16 +175,19 @@ class UndoSupport(ExtensionClass.Base):
         REQUEST['RESPONSE'].redirect("%s/manage_main" % REQUEST['URL1'])
         return ''
                  
-Globals.default__class_init__(UndoSupport)               
+Globals.default__class_init__(UndoSupport)
+
 
 class Prefix:
     
     __no_side_effects__=1
 
-    def __init__(self, v):
-        self.value=len(v), v
+    def __init__(self, path):
+        self.value = len(path), path
         
     def __cmp__(self, o):
-        l,v=self.value
-        return cmp(o[:l],v)
+        l,v = self.value
+        rval = cmp(o[:l],v)
+        return rval
+            
 
