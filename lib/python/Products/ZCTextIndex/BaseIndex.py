@@ -61,11 +61,13 @@ class BaseIndex(Persistent):
         # of a docid-to-weight map.
         # There are two kinds of OOV words:  wid 0 is explicitly OOV,
         # and it's possible that the lexicon will return a non-zero wid
-        # for a word *we've* never seen (e.g., lexicons can be shared
-        # across indices, and a query can contain a word some other
-        # index knows about but we don't).  A word is in-vocabulary for
-        # this index if and only if _wordinfo.has_key(wid).  Note that
-        # wid 0 must not be a key in _wordinfo.
+        # for a word we don't currently know about.  For example, if we
+        # unindex the last doc containing a particular word, that wid
+        # remains in the lexicon, but is no longer in our _wordinfo map;
+        # lexicons can also be shared across indices, and some other index
+        # may introduce a lexicon word we've never seen.
+        # A word is in-vocabulary for this index if and only if
+        # _wordinfo.has_key(wid).  Note that wid 0 must not be a key.
         self._wordinfo = IOBTree()
 
         # docid -> weight
