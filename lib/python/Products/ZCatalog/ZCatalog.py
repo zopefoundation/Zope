@@ -850,8 +850,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     #
 
     def addIndex(self, name, type,extra=None):
-
-
         # Convert the type by finding an appropriate product which supports
         # this interface by that name.  Bleah
 
@@ -883,17 +881,14 @@ class ZCatalog(Folder, Persistent, Implicit):
         else:
             index = base(name,self)
         
-
         self._catalog.addIndex(name,index)
 
 
     def delIndex(self, name ):
-
         self._catalog.delIndex(name)
 
     def clearIndex(self, name):
-
-        self._catalog.indexes[name].clear()
+        self._catalog.getIndex(name).clear()
 
 
     def addColumn(self, name, default_value=None):
