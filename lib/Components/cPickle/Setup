@@ -1,9 +1,6 @@
 *shared*
 
 cStringIO cStringIO.c
-
-#install cStringIO.so
-
 cPickle cPickle.c
 
 #install cPickle.so blah
