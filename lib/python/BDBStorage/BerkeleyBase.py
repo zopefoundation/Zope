@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.31 $'.split()[-2:][0]
+__version__ = '$Revision: 1.32 $'.split()[-2:][0]
 
 import os
 import time
@@ -211,7 +211,7 @@ class BerkeleyBase(BaseStorage):
         else:
             self._autopacker = None
 
-    def _make_autopacker(self, poll):
+    def _make_autopacker(self, event):
         raise NotImplementedError
 
     def _setupDB(self, name, flags=0, dbtype=db.DB_BTREE, reclen=None):
