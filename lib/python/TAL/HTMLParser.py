@@ -44,14 +44,20 @@ declstringlit = re.compile(r'(\'[^\']*\'|"[^"]*")\s*')
 
 class HTMLParseError(Exception):
     """Exception raised for all parse errors."""
-    def __init__(self, msg, pos=(None, None)):
+
+    def __init__(self, msg, position=(None, None)):
+        assert msg != ""
         self.msg = msg
-        self.lineno = pos[0]
-        self.offset = pos[1]
+        self.lineno = position[0]
+        self.offset = position[1]
 
     def __str__(self):
-        return ("%s (line %s, offset %s)"
-                % (self.msg, self.lineno, self.offset))
+        result = self.msg
+        if self.lineno is not None:
+            result = result + ", at line %d" % self.lineno
+        if self.offset is not None:
+            result = result + ", column %d" % (self.offset + 1)
+        return result
 
 
 # HTML parser class -- find tags and call handler functions.
@@ -337,10 +343,11 @@ class HTMLParser:
             raise HTMLParseError("junk characters in start tag: %s"
                                  % `rawdata[k:endpos][:20]`,
                                  (lineno, offset))
-        self.finish_starttag(tag, attrs)
         if end[-2:] == '/>':
             # XHTML-style empty tag: <span attr="value" />
-            self.finish_endtag(tag)
+            self.finish_startendtag(tag, attrs)
+        else:
+            self.finish_starttag(tag, attrs)
         return endpos
 
     # Internal -- parse endtag
@@ -354,7 +361,12 @@ class HTMLParser:
         self.finish_endtag(tag)
         return j + 1
 
-    # Internal -- finish processing of start tag
+    # Overridable -- finish processing of start+end tag: <tag.../>
+    def finish_startendtag(self, tag, attrs):
+        self.finish_starttag(tag, attrs)
+        self.finish_endtag(tag)
+
+    # Overridable -- finish processing of start tag
     # Return -1 for unknown tag, 0 for open-only tag, 1 for balanced tag
     def finish_starttag(self, tag, attrs):
         try:
@@ -364,16 +376,13 @@ class HTMLParser:
                 method = getattr(self, 'do_' + tag)
             except AttributeError:
                 self.unknown_starttag(tag, attrs)
-                return -1
             else:
                 self.handle_starttag(tag, method, attrs)
-                return 0
         else:
             self.stack.append(tag)
             self.handle_starttag(tag, method, attrs)
-            return 1
 
-    # Internal -- finish processing of end tag
+    # Overridable -- finish processing of end tag
     def finish_endtag(self, tag):
         if not tag:
             found = len(self.stack) - 1
