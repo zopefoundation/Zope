@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.47 1997/12/07 14:25:53 jim Exp $
+     $Id: cPickle.c,v 1.48 1997/12/07 14:37:39 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.47 1997/12/07 14:25:53 jim Exp $\n"
+"$Id: cPickle.c,v 1.48 1997/12/07 14:37:39 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -155,7 +155,7 @@ typedef struct {
      PyObject *class_map;
 } Picklerobject;
 
-static PyTypeObject Picklertype;
+staticforward PyTypeObject Picklertype;
 
 typedef struct {
      PyObject_HEAD
@@ -180,7 +180,7 @@ typedef struct {
      PyObject *class_map;
 } Unpicklerobject;
  
-static PyTypeObject Unpicklertype;
+staticforward PyTypeObject Unpicklertype;
 
 int 
 cPickle_PyMapping_HasKey(PyObject *o, PyObject *key) {
@@ -4307,7 +4307,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.47 $";
+    char *rev="$Revision: 1.48 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
