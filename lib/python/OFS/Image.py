@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -435,6 +435,18 @@ class Image(File):
             except: pass
             
         # handle PNGs
+
+        # Someone says this is the right thing:
+
+        # Re: PNG v1.2 spec (http://www.cdrom.com/pub/png/spec/)
+        # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
+        # and finally the 4-byte width, height
+        elif (size >= 24) and (data[:8] == '\211PNG\r\n\032\n') \
+           and (data[12:16] == 'IHDR'):
+           w, h = struct.unpack(">LL", data[16:24])
+
+        # But we had this before. I have no clue, so I'll keep both. :)
+        # Maybe this is for an older PNG version.
         elif (size >= 16) and (data[:8] == '\x89PNG\r\n\x1a\n'):
             w, h = struct.unpack(">LL", data[8:16])
             self.width=str(int(w))
