@@ -24,7 +24,7 @@ such as database and product management.
   <tr>
     <td ALIGN="center">
 	    <FONT COLOR="#FF5060">
-	 <INPUT TYPE="SUBMIT" VALUE="Shutdown">
+	 <INPUT TYPE="SUBMIT" VALUE="Shutdown" STYLE="color: #ff5060;">
 	    </FONT>
     </td>
     <td> Click &quot;Shutdown&quot; to shutdown the <em>Zope</em>
@@ -42,7 +42,7 @@ such as database and product management.
   <tr>
     <td ALIGN="center">
 	    <FONT COLOR="#FF5060">
-	 <INPUT TYPE="SUBMIT" VALUE="Restart">
+	 <INPUT TYPE="SUBMIT" VALUE="Restart" STYLE="color: #ff5060;">
 	    </FONT>
     </td>
     <td> Click &quot;Restart&quot; to restart the <em>Zope</em>
