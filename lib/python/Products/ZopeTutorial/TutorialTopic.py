@@ -91,7 +91,7 @@ import StructuredText
 import string, re
 
 
-pre_pat=re.compile(r'<PRE>(.+?)</PRE>', re.DOTALL)
+pre_pat=re.compile(r'<PRE>(.+?)</PRE>', re.IGNORECASE|re.DOTALL)
 tutorialExamplesFile='ZopeTutorialExamples.zexp'
 
 class TutorialTopic(TextTopic):
