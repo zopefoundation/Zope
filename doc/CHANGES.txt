@@ -2,6 +2,16 @@ Principia Changes
 
   Principia 1.8.0
 
+    To-Do before release
+
+      - Test/Fix lever/product/release machinery.
+
+      - TARGET search and destroy!
+
+      - Turn on now-wrap on text areas!
+
+      - DOCUMENTATION!
+
     Features Added
 
       - Added Draft objects.  Draft objects allow you to delagate authority 
