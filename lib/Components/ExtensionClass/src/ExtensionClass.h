@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.7 1997/07/02 17:32:34 jim Exp $
+  $Id: ExtensionClass.h,v 1.8 1997/07/02 20:18:20 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,11 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.8  1997/07/02 20:18:20  jim
+  Added stupid parens and other changes to make 'gcc -Wall -pedantic'
+  and Barry happy.  Renamed PyCObject_Import to avoid conflict with
+  version in 1.5.
+
   Revision 1.7  1997/07/02 17:32:34  jim
   *** empty log message ***
 
@@ -425,15 +430,18 @@ typedef struct {
   PyObject     *meth;
 } PyECMethodObject;
 
+/* The following is to avoid whining from 1.5 :-) */
+#define PyCObject_Import PyCObject_Import14
+
 static void *
-PyCObject_Import(char *module_name, char *name)
+PyCObject_Import14(char *module_name, char *name)
 {
   PyObject *m, *c;
   void *r=NULL;
   
-  if(m=PyImport_ImportModule(module_name))
+  if((m=PyImport_ImportModule(module_name)))
     {
-      if(c=PyObject_GetAttrString(m,name))
+      if((c=PyObject_GetAttrString(m,name)))
 	{
 	  r=PyCObject_AsVoidPtr(c);
 	  Py_DECREF(c);
