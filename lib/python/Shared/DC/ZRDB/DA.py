@@ -85,17 +85,17 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.92 2000/12/12 15:36:03 brian Exp $'''
-__version__='$Revision: 1.92 $'[11:-2]
+$Id: DA.py,v 1.93 2000/12/20 16:42:37 brian Exp $'''
+__version__='$Revision: 1.93 $'[11:-2]
 
-import OFS.SimpleItem, Aqueduct, RDB
+import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
 from Aqueduct import decodestring, parse
 from Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
-from string import atoi, find, join, split
+from string import atoi, find, join, split, rstrip
 import DocumentTemplate, sqlvar, sqltest, sqlgroup
 from time import time
 from zlib import compress, decompress
@@ -107,7 +107,7 @@ from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
 from AccessControl import getSecurityManager
-
+from webdav.Resource import Resource
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
 
@@ -134,6 +134,7 @@ class DA(
     Globals.Persistent,
     AccessControl.Role.RoleManager,
     OFS.SimpleItem.Item,
+    Resource
     ):
     'Database Adapter'
 
@@ -164,11 +165,11 @@ class DA(
         ('View management screens',
          (
         'manage_main', 'index_html',
-        'manage_advancedForm', 'PrincipiaSearchSource'
+        'manage_advancedForm', 'PrincipiaSearchSource', 'document_src'
         )),
         ('Change Database Methods',
          ('manage_edit','manage_advanced', 'manage_testForm','manage_test',
-          'manage_product_zclass_info')),
+          'manage_product_zclass_info', 'PUT', 'manage_FTPput')),
         ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
         )
    
@@ -317,7 +318,41 @@ class DA(
     def PrincipiaSearchSource(self):
         """Return content for use by the Find machinery."""
         return '%s\n%s' % (self.arguments_src, self.src)
-    
+
+
+    # WebDAV / FTP support
+
+    default_content_type = 'text/plain'
+
+    def document_src(self, REQUEST=None, RESPONSE=None):
+        """Return unprocessed document source."""
+        if RESPONSE is not None:
+            RESPONSE.setHeader('Content-Type', 'text/plain')
+        return '<params>%s</params>\n%s' % (self.arguments_src, self.src)
+
+    def manage_FTPget(self):
+        """Get source for FTP download"""
+        self.REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
+        return '<params>%s</params>\n%s' % (self.arguments_src, self.src)
+
+    def PUT(self, REQUEST, RESPONSE):
+        """Handle put requests"""
+        self.dav__init(REQUEST, RESPONSE)
+        body = REQUEST.get('BODY', '')
+        m = re.match('\s*<params>(.*)</params>\s*\n', body, re.I)
+        if m:
+            self.arguments_src = m.group(1)
+            self._arg=parse(self.arguments_src)
+            body = body[m.end():]
+        template = body
+        self.src = template
+        self.template=t=self.template_class(template)
+        t.cook()
+        self._v_cache={}, Bucket()
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
+
     def manage_testForm(self, REQUEST):
         " "
         input_src=default_input_form(self.title_or_id(),
