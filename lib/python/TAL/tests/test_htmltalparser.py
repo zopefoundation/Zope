@@ -100,6 +100,17 @@ class HTMLTALParserTestCases(TestCaseBase):
             self._run_check("<a><b></a></b>", [])
         self.assertRaises(HTMLTALParser.NestingError, check)
 
+    def check_cdata_mode(self):
+        """This routine should NOT detect an error with an end tag </a> not
+           matching the start <script> tag.  The contents are within a
+           HTML comment, and should be ignored.
+        """
+        s = """<script>\n<!--\ndocument.write("</a>");\n// -->\n</script>"""
+        output = [
+            rawtext(s),
+            ]
+        self._run_check(s, output)
+
     def check_code_attr_syntax(self):
         output = [
             rawtext('<a b="v" c="v" d="v" e></a>'),
