@@ -50,13 +50,15 @@ TIGHTEN_IMPLICIT_CLOSE_TAGS = (PARA_LEVEL_HTML_TAGS
 class NestingError(Exception):
     """Exception raised when elements aren't properly nested."""
 
-    def __init__(self, tag, tagstack):
+    def __init__(self, tag, lineno, offset):
         self.tag = tag
-        self.tagstack = tagstack[:]
+        self.lineno = lineno
+        self.offset = offset
 
     def __str__(self):
-        return ("could not locate <%s> in tag stack:\n\t%s"
-                % (self.tag, self.tagstack))
+        s = "line %d, offset %d: unmatched </%s>" % (
+            self.lineno, self.offset, self.tag)
+        return s
 
 
 class HTMLTALParser(SGMLParser):
@@ -79,30 +81,12 @@ class HTMLTALParser(SGMLParser):
         self.feed(data)
         self.close()
         while self.tagstack:
-            self.finish_endtag(None)
-        assert self.tagstack == [], self.tagstack
+            self.finish_endtag(self.tagstack[-1])
         assert self.nsstack == [], self.nsstack
         assert self.nsdict == {}, self.nsdict
 
     def getCode(self):
         return self.gen.program, self.gen.macros
-
-    # Internal thingies
-
-    def scan_xmlns(self, attrs):
-        nsnew = {}
-        for key, value in attrs:
-            if key[:6] == "xmlns:":
-                nsnew[key[6:]] = value
-        if nsnew:
-            self.nsstack.append(self.nsdict)
-            self.nsdict = self.nsdict.copy()
-            self.nsdict.update(nsnew)
-        else:
-            self.nsstack.append(self.nsdict)
-
-    def pop_xmlns(self):
-        self.nsdict = self.nsstack.pop()
 
     # Overriding SGMLParser methods
 
@@ -119,7 +103,7 @@ class HTMLTALParser(SGMLParser):
                     close_to = i
                 elif t in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
-                    self._close_to_level(close_to)
+                    self.close_to_level(close_to)
             self.tagstack.append(tag)
         elif tag in PARA_LEVEL_HTML_TAGS + BLOCK_LEVEL_HTML_TAGS:
             close_to = -1
@@ -129,45 +113,19 @@ class HTMLTALParser(SGMLParser):
                 elif self.tagstack[i] in PARA_LEVEL_HTML_TAGS:
                     if close_to == -1:
                         close_to = i
-            self._close_to_level(close_to)
+            self.close_to_level(close_to)
             self.tagstack.append(tag)
         else:
             self.tagstack.append(tag)
-        attrlist, taldict, metaldict = self.extractattrs(attrs)
+        attrlist, taldict, metaldict = self.extract_attrs(attrs)
         self.gen.emitStartElement(tag, attrlist, taldict, metaldict)
-
-    def extractattrs(self, attrs):
-        attrlist = []
-        taldict = {}
-        metaldict = {}
-        for item in attrs:
-            key, value = item
-            if ':' in key:
-                prefix, suffix = string.split(key, ':', 1)
-                nsuri = self.nsdict.get(prefix)
-                if nsuri == ZOPE_METAL_NS:
-                    item = (key, value)
-                    metaldict[suffix] = value
-                    if suffix == "define-macro":
-                        item = (key,value,"macroHack")
-                elif nsuri == ZOPE_TAL_NS:
-                    item = (key, value)
-                    taldict[suffix] = value
-            attrlist.append(item)
-        return attrlist, taldict, metaldict
-
-    def _close_to_level(self, close_to):
-        if close_to > -1:
-            closing = self.tagstack[close_to:]
-            closing.reverse()
-            for t in closing:
-                self.finish_endtag(t, implied=1)
 
     def finish_endtag(self, tag, implied=0):
         if tag in EMPTY_HTML_TAGS:
             return
         if tag not in self.tagstack:
-            raise NestingError(tag, self.tagstack)
+            lineno, offset = self.getpos()
+            raise NestingError(tag, lineno, offset)
         while self.tagstack[-1] != tag:
             self.finish_endtag(self.tagstack[-1], implied=1)
         self.tagstack.pop()
@@ -204,3 +162,47 @@ class HTMLTALParser(SGMLParser):
 
     def handle_pi(self, data):
         self.gen.emitRawText("<?%s>" % data)
+
+    # Internal thingies
+
+    def scan_xmlns(self, attrs):
+        nsnew = {}
+        for key, value in attrs:
+            if key[:6] == "xmlns:":
+                nsnew[key[6:]] = value
+        if nsnew:
+            self.nsstack.append(self.nsdict)
+            self.nsdict = self.nsdict.copy()
+            self.nsdict.update(nsnew)
+        else:
+            self.nsstack.append(self.nsdict)
+
+    def pop_xmlns(self):
+        self.nsdict = self.nsstack.pop()
+
+    def extract_attrs(self, attrs):
+        attrlist = []
+        taldict = {}
+        metaldict = {}
+        for item in attrs:
+            key, value = item
+            if ':' in key:
+                prefix, suffix = string.split(key, ':', 1)
+                nsuri = self.nsdict.get(prefix)
+                if nsuri == ZOPE_METAL_NS:
+                    item = (key, value)
+                    metaldict[suffix] = value
+                    if suffix == "define-macro":
+                        item = (key,value,"macroHack")
+                elif nsuri == ZOPE_TAL_NS:
+                    item = (key, value)
+                    taldict[suffix] = value
+            attrlist.append(item)
+        return attrlist, taldict, metaldict
+
+    def close_to_level(self, close_to):
+        if close_to > -1:
+            closing = self.tagstack[close_to:]
+            closing.reverse()
+            for t in closing:
+                self.finish_endtag(t, implied=1)
