@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -371,16 +371,19 @@ class BaseRequest:
                                     "Cannot locate object at: %s" % URL) 
                             else:
                                 return response.notFoundError(URL)
-    
-                try:
-                    try: doc=subobject.__doc__
-                    except: doc=getattr(object, entry_name+'__doc__')
-                    if not doc: raise AttributeError, entry_name
-                except:
-                    if debug_mode:
-                        return response.debugError(
-                            "Missing doc string at: %s" % URL)
-                    else: return response.notFoundError("%s" % URL)
+
+                # Ensure that the object has a docstring, or that the parent
+                # object has a pseudo-docstring for the object. Objects that
+                # have an empty or missing docstring are not published.
+                doc = getattr(subobject, '__doc__', None)
+                if doc is None:
+                    doc = getattr(object, '%s__doc__' % entry_name, None)
+                if not doc:
+                    return response.debugError(
+                        "The object at %s has an empty or missing " \
+                        "docstring. Objects must have a docstring to be " \
+                        "published." % URL
+                        )
 
                 r = getattr(subobject, '__roles__', UNSPECIFIED_ROLES)
                 if r is not UNSPECIFIED_ROLES:
