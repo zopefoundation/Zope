@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.129 1999/06/16 15:56:20 jim Exp $"""
-__version__='$Revision: 1.129 $'[11:-2]
+$Id: Publish.py,v 1.130 1999/06/16 18:58:25 jim Exp $"""
+__version__='$Revision: 1.130 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -250,9 +250,9 @@ def publish_module(module_name,
                     stdout=response.stdout
                 if request is None:
                     request=Request(stdin, environ, response)
-                    response=request.response # could have changed!
             finally:
                 pass
+            response=request.response # could have changed!
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:
             if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
