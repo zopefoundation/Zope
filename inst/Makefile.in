@@ -32,7 +32,7 @@ CP=cp
 TAR=tar
 MKDIR=mkdir -p
 
-.PHONY : clean install uninstall instance untestinst testinst build unbuild
+.PHONY : clean install instance untestinst testinst build unbuild
 .PHONY : default
 
 # default:     The default step (invoked when make is called without a target)
@@ -59,10 +59,6 @@ install: build
 	@echo
 	@echo Zope binaries installed successfully.
 	@echo Now run \'${PREFIX}/bin/mkzopeinstance.py\'
-
-# uninstall:   Uninstall a software home.
-uninstall:
-	${RMRF} "${PREFIX}"
 
 # inplace:     Install a software home into to the source directory.
 #

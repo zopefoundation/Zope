@@ -31,7 +31,7 @@ CD=cd
 XCOPY=xcopy /i /s /e /y
 COPY=copy
 
-.PHONY: clean install uninstall build unbuild
+.PHONY: clean install build unbuild
 .PHONY: default
 
 default: build
@@ -57,9 +57,6 @@ install: build
 	@ echo Zope binaries installed successfully.
 	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance.py'
 
-# uninstall:   Uninstall a software home.
-uninstall:
-	$(RMRF) "$(PREFIX)"
 
 # clean:       Delete the build files and any binaries/bytecode files in
 #              the source directory for good measure.
