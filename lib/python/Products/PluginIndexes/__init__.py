@@ -87,16 +87,12 @@ import common.PluggableIndex as PluggableIndex
 import common.ResultList     as ResultList
 import common.UnIndex        as UnIndex
 
-
 import PathIndex.PathIndex 
 import TextIndex.TextIndex 
 import FieldIndex.FieldIndex
 import KeywordIndex.KeywordIndex
 
-
 _indexes =  ['TextIndex','KeywordIndex','FieldIndex','PathIndex']
-
-from TextIndex.Splitter import ZopeSplitter as ZS
 
 def initialize(context):
 
