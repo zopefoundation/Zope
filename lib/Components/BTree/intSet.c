@@ -85,14 +85,13 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.12 1999/03/10 00:14:35 klm Exp $"
+"\n$Id: intSet.c,v 1.13 1999/05/01 20:35:22 jeffrey Exp $"
 ;
 
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-#include <malloc.h>
 #include <time.h>
 #include "cPersistence.h"
 
@@ -612,7 +611,7 @@ void
 initintSet()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.12 $";
+  char *rev="$Revision: 1.13 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -648,6 +647,9 @@ initintSet()
   Revision Log:
 
   $Log: intSet.c,v $
+  Revision 1.13  1999/05/01 20:35:22  jeffrey
+  Removed use of importing malloc
+
   Revision 1.12  1999/03/10 00:14:35  klm
   Committing with version 1.0 of the license.
 
