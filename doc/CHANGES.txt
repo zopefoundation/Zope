@@ -24,6 +24,10 @@ Zope Changes
 
       - Collector #79: Don't swallow App.FindHomes exceptions.
 
+      - The set operation difference(X, None) was returning None
+        instead of returning X, contradicting the docs and common
+        sense.  difference(None, X) continues to return None.
+
   Zope 2.6.0 alpha 1
 
     Features Added
