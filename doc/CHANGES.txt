@@ -8,6 +8,12 @@ Zope Changes
 
     Features added
 
+     - Added a "mime-types" configuration value which names a file
+       giving additional MIME type to filename extension mappings.
+       The "mime-types" setting may be given more than once in the
+       configuration file; the files have the same format at the
+       mime.types file distributed with Apache.
+
      - Changed the ZEO server and control process to work with a
        single configuration file; this is now the default way to
        configure these processes.  (It's still possible to use

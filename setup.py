@@ -393,7 +393,8 @@ setup(
     author=AUTHOR,
 
     packages=['OFS', 'OFS.tests'],
-    data_files=[['OFS/dtml', ['OFS/dtml/*']],
+    data_files=[['OFS', ['OFS/mime.types']],
+                ['OFS/dtml', ['OFS/dtml/*']],
                 ['OFS/standard', ['OFS/standard/*']],
                 ['OFS/www', ['OFS/www/*']]],
     )
