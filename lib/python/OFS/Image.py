@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.146 $'[11:-2]
+__version__='$Revision: 1.147 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -163,11 +163,11 @@ class File(Persistent, Implicit, PropertyManager,
                     self.ZCacheable_set(None)
                     return ''
 
-        if self.precondition and hasattr(self,self.precondition):
+        if self.precondition and hasattr(self, str(self.precondition)):
             # Grab whatever precondition was defined and then
             # execute it.  The precondition will raise an exception
             # if something violates its terms.
-            c=getattr(self,self.precondition)
+            c=getattr(self, str(self.precondition))
             if hasattr(c,'isDocTemp') and c.isDocTemp:
                 c(REQUEST['PARENTS'][1],REQUEST)
             else:
