@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.52 2001/08/13 14:57:55 andreasjung Exp $'''
-__version__='$Revision: 1.52 $'[11:-2]
+$Id: Aqueduct.py,v 1.53 2001/10/31 18:49:57 michel Exp $'''
+__version__='$Revision: 1.53 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -285,6 +285,8 @@ def default_input_form(id,arguments,action='query',
 
 custom_default_report_src=DocumentTemplate.File(
     os.path.join(dtml_dir,'customDefaultReport.dtml'))
+custom_default_zpt_report_src=DocumentTemplate.File(
+    os.path.join(dtml_dir,'customDefaultZPTReport.dtml'))
 
 def custom_default_report(id, result, action='', no_table=0,
                           goofy=re.compile('\W').search
@@ -315,6 +317,38 @@ def custom_default_report(id, result, action='', no_table=0,
 
     return custom_default_report_src(
         id=id,heading=heading,row=row,action=action,no_table=no_table)
+
+def custom_default_zpt_report(id, result, action='', no_table=0,
+                          goofy=re.compile('\W').search
+                          ):
+    columns=result._searchable_result_columns()
+    __traceback_info__=columns
+    heading=('<tr>\n%s        </tr>' %
+                 string.joinfields(
+                     map(lambda c:
+                         '          <th>%s</th>\n' % nicify(c['name']),
+                         columns),
+                     ''
+                     )
+                 )
+
+    if no_table: tr, _tr, td, _td, delim = '<p>', '</p>', '', '', ',\n'
+    else: tr, _tr, td, _td, delim = '<tr>', '</tr>', '<td>', '</td>', '\n'
+
+    row=[]
+    for c in columns:
+        n=c['name']
+# ugh! what the hell is goofy?
+#        if goofy(n) is not None:
+#            n='expr="_[\'%s]"' % (`'"'+n`[2:])
+        row.append('          %s<span tal:replace="result/%s">%s goes here</span>%s'
+                   % (td,n,n,_td))
+
+    row=('     %s\n%s\n        %s' % (tr,string.joinfields(row,delim), _tr))
+
+    return custom_default_zpt_report_src(
+        id=id, heading=heading, row=row, action=action, no_table=no_table)
+
 
 def detypify(arg):
     l=string.find(arg,':')

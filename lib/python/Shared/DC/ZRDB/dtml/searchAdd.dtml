@@ -99,6 +99,26 @@ report and search form objects that will be created.
   </td>
   <td align="left" valign="top">
   <div class="form-element">
+  <input class="form-element" type="radio" name="object_type" 
+   value="dtml_methods">Generate DTML Methods
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="radio" name="object_type" 
+   value="page_templates">Generate Page Templates
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
   <input class="form-element" type="submit" name="submit" 
    value="Add">
   </div>

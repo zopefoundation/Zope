@@ -1,4 +1,4 @@
-<dtml-in %(id)s size=50 start=query_start>
+<dtml-in %(id)s size=20 start=query_start>
    <dtml-if sequence-start>
 
       <dtml-if previous-sequence>

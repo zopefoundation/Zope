@@ -84,16 +84,17 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.16 2001/01/12 17:52:28 chrism Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: Search.py,v 1.17 2001/10/31 18:49:57 michel Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Globals import DTMLFile
-from Aqueduct import custom_default_report, nicify, Args
+from Aqueduct import custom_default_report, custom_default_zpt_report, nicify, Args
 from string import join
+from AccessControl import getSecurityManager
 
 addForm=DTMLFile('dtml/searchAdd', globals())
 def manage_addZSearch(self, report_id, report_title, report_style,
-        input_id, input_title, queries=[],
+        input_id, input_title, object_type, queries=[],
         REQUEST=None):
     'add a report'
 
@@ -109,6 +110,9 @@ def manage_addZSearch(self, report_id, report_title, report_style,
     qs=map(lambda q, self=self: _getquery(self, q), queries)
     arguments={}
     keys=[]
+
+    checkPermission=getSecurityManager().checkPermission    
+
     for q in qs:
         url=q.absolute_url()
         if input_id:
@@ -127,21 +131,53 @@ def manage_addZSearch(self, report_id, report_title, report_style,
                 try out the query, <a href="%s">click here</a>.
                 """ % (q.title_and_id(), url))
 
-    if input_id:
-        arguments=Args(arguments, keys)
+    if object_type == 'dtml_methods':
+
+        if not checkPermission('Add DTML Methods', self):
+            raise Unauthorized, (
+                  'You are not authorized to add DTML Methods.'
+                  )
+
+        if input_id:
+            arguments=Args(arguments, keys)
+            self.manage_addDocument(
+                input_id,input_title,
+                default_input_form(arguments, report_id))
+
         self.manage_addDocument(
-            input_id,input_title,
-            default_input_form(arguments, report_id))
+            report_id,report_title,
+            ('<dtml-var standard_html_header>\n%s\n'
+             '<dtml-var standard_html_footer>' % 
+             join(map(lambda q, report_style=report_style:
+                      custom_default_report(q.id, q, no_table=report_style), qs),
+                  '\n<hr>\n')))
 
-    self.manage_addDocument(
-        report_id,report_title,
-        ('<dtml-var standard_html_header>\n%s\n'
-         '<dtml-var standard_html_footer>' % 
-         join(map(lambda q, report_style=report_style:
-                  custom_default_report(q.id, q, no_table=report_style), qs),
-              '\n<hr>\n')))
+        if REQUEST: return self.manage_main(self,REQUEST)
 
-    if REQUEST: return self.manage_main(self,REQUEST)
+    elif object_type == 'page_templates':
+
+        if not checkPermission('Add Page Templates', self):
+            raise Unauthorized, (
+                  'You are not authorized to add Page Templates.'
+                  )
+
+        if input_id:
+            arguments = Args(arguments, keys)
+            self.manage_addProduct['PageTemplates'].manage_addPageTemplate(
+                input_id, input_title,
+                default_input_zpt_form(arguments, report_id))
+
+
+        self.manage_addProduct['PageTemplates'].manage_addPageTemplate(
+            report_id,report_title,
+            ('<html><body>\n%s\n'
+             '</body></html>' % 
+             join(map(lambda q, report_style=report_style:
+                      custom_default_zpt_report(q.id, q, no_table=report_style), qs),
+                  '\n<hr>\n')))
+
+        if REQUEST: return self.manage_main(self,REQUEST)
+        
 
 def ZQueryIds(self):
     # Note that report server configurations will expend on this
@@ -238,3 +274,64 @@ def default_input_form(arguments,action='query',
             '<dtml-var standard_html_footer>\n'
             % (tabs, action)
             )
+
+
+
+def default_input_zpt_form(arguments,action='query',
+                       tabs=''):
+    if arguments:
+        items=arguments.items()
+        return (
+            "%s\n%s%s" % (
+                '<html><body>\n%s\n'
+                '<form action="%s" method="get">\n'
+                '<h2><dtml-var document_title></h2>\n'
+                'Enter query parameters:<br>'
+                '<table>\n'
+                % (tabs,action),
+                join(
+                    map(
+                        lambda a:
+                        ('<tr><th>%s</th>\n'
+                         '    <td><input name="%s"\n'
+                         '               width=30 value="%s">'
+                         '</td></tr>'
+                         % (nicify(a[0]),
+                            (
+                                a[1].has_key('type') and
+                                ("%s:%s" % (a[0],a[1]['type'])) or
+                                a[0]
+                                ),
+                            a[1].has_key('default') and a[1]['default'] or ''
+                            ))
+                        , items
+                        ),
+                '\n'),
+                '\n<tr><td colspan=2 align=center>\n'
+                '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
+                '</td></tr>\n</table>\n</form>\n'
+                '</body></html>\n'
+                )
+            )
+    else:
+        return (
+            '<html><body>\n%s\n'
+            '<form action="%s" method="get">\n'
+            '<h2><dtml-var document_title></h2>\n'
+            'This query requires no input.<p>\n'
+            '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
+            '</td></tr>\n</table>\n</form>\n'
+            '</body></html>\n'
+            % (tabs, action)
+            )
+
+
+
+
+
+
+
+
+
+
+
