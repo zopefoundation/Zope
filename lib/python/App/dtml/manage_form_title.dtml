@@ -1,4 +1,4 @@
-<dtml-with keyword_args>
+<dtml-with keyword_args mapping>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
 <tr class="location-bar">
   <td align="left" valign="top">
