@@ -115,63 +115,64 @@
 from DT_Util import render_blocks, str, Eval, expr_globals, Eval, ParseError, regex, strip
 
 class Let:
-	blockContinuations=()
-	name='let'
+    blockContinuations=()
+    name='let'
     
-	def __init__(self, blocks):
-		tname, args, section = blocks[0]
-		self.__name__ = args
-		self.section = section.blocks
-		self.args = args = parse_let_params(args)
+    def __init__(self, blocks):
+        tname, args, section = blocks[0]
+        self.__name__ = args
+        self.section = section.blocks
+        self.args = args = parse_let_params(args)
 
-		for i in range(len(args)):
-			name,expr = args[i]
-			if expr[:1]=='"' and expr[-1:]=='"' and len(expr) > 1: # expr shorthand
-				expr=expr[1:-1]
-				try: args[i] = name, Eval(expr, expr_globals).eval
-				except SyntaxError, v:
-					m,(huh,l,c,src) = v
-					raise ParseError, (
-						'<strong>Expression (Python) Syntax error</strong>:'
-						'\n<pre>\n%s\n</pre>\n' % v[0],
-						'let')
-	def render(self, md):
-		d={}; md._push(d)
-		try:
-			for name,expr in self.args:
-				if type(expr) is type(''): d[name]=md[expr]
-				else: d[name]=expr(md)
-			return render_blocks(self.section, md)
-		finally: md._pop(1)
+        for i in range(len(args)):
+            name,expr = args[i]
+            if expr[:1]=='"' and expr[-1:]=='"' and len(expr) > 1:
+				# expr shorthand
+                expr=expr[1:-1]
+                try: args[i] = name, Eval(expr, expr_globals).eval
+                except SyntaxError, v:
+                    m,(huh,l,c,src) = v
+                    raise ParseError, (
+                        '<strong>Expression (Python) Syntax error</strong>:'
+                        '\n<pre>\n%s\n</pre>\n' % v[0],
+                        'let')
+    def render(self, md):
+        d={}; md._push(d)
+        try:
+            for name,expr in self.args:
+                if type(expr) is type(''): d[name]=md[expr]
+                else: d[name]=expr(md)
+            return render_blocks(self.section, md)
+        finally: md._pop(1)
 
-	__call__ = render
+    __call__ = render
 
 def parse_let_params(text,
-			result=None,
-			tag='let',
-			parmre=regex.compile(
-				'\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-			qparmre=regex.compile(
-				'\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
-			**parms):
+            result=None,
+            tag='let',
+            parmre=regex.compile(
+                '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
+            qparmre=regex.compile(
+                '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
+            **parms):
 
-	result=result or []
+    result=result or []
 
-	if parmre.match(text) >= 0:
-		name=parmre.group(2)
-		value=parmre.group(3)
-		l=len(parmre.group(1))
-	elif qparmre.match(text) >= 0:
-		name=qparmre.group(2)
-		value='"%s"' % qparmre.group(3)
-		l=len(qparmre.group(1))
-	else:
-		if not text or not strip(text): return result
-		raise ParseError, ('invalid parameter: "%s"' % text, tag)
+    if parmre.match(text) >= 0:
+        name=parmre.group(2)
+        value=parmre.group(3)
+        l=len(parmre.group(1))
+    elif qparmre.match(text) >= 0:
+        name=qparmre.group(2)
+        value='"%s"' % qparmre.group(3)
+        l=len(qparmre.group(1))
+    else:
+        if not text or not strip(text): return result
+        raise ParseError, ('invalid parameter: "%s"' % text, tag)
     
-	result.append((name,value))
+    result.append((name,value))
 
-	text=strip(text[l:])
-	if text: return apply(parse_let_params,(text,result,tag),parms)
-	else: return result
+    text=strip(text[l:])
+    if text: return apply(parse_let_params,(text,result,tag),parms)
+    else: return result
 
