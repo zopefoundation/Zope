@@ -436,7 +436,9 @@ def initializeProduct(productp, name, home, app):
         f=fver and (" (%s)" % fver)
         product=Product(name, 'Installed product %s%s' % (name,f))
 
-    if old is not None: products._delObject(name)
+    if old is not None:
+        app._manage_remove_product_meta_type(product)
+        products._delObject(name)
     products._setObject(name, product)
     product.__of__(products)._postCopy(products)
     product.manage_options=Folder.manage_options
