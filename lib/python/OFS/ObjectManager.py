@@ -664,10 +664,10 @@ class ObjectManager(
                     ):
                     mode=mode | 0770
             except: pass
+
             if nobody.allowed(
-                self.manage_FTPlist,
-                getRoles(self, 'manage_FTPlist', self.manage_FTPlist, ()),
-                self.manage_FTPlist.__roles__):
+                self,
+                getRoles(self, 'manage_FTPlist', self.manage_FTPlist, ())):
                 mode=mode | 0007
         mtime=self.bobobase_modification_time().timeTime()
         # get owner and group

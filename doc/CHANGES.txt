@@ -22,8 +22,6 @@ Zope Changes
 
    - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-   - Fix the FTP server: Collector #1628
-
    - check if ExtendedPathIndex might be a reasonable replacement for PathIndex
 
   after Zope 2.8a1
@@ -59,6 +57,9 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
+
+      - Collector #1628: FTP server has been broken (directory
+        listings did not work)
 
       - Collector #1705: CopySource._postCopy is never called
 
