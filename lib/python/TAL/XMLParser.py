@@ -132,11 +132,14 @@ class XMLParser:
                     sys.stderr.write("Can't set expat handler %s\n" % name)
 
     def createParser(self, encoding=None):
+        global XMLParseError
         try:
             from Products.ParsedXML.Expat import pyexpat
+            XMLParseError = pyexpat.ExpatError
             return pyexpat.ParserCreate(encoding, ' ')
         except ImportError:
             from xml.parsers import expat
+            XMLParseError = expat.ExpatError
             return expat.ParserCreate(encoding, ' ')
 
     def parseFile(self, filename):
@@ -151,3 +154,6 @@ class XMLParser:
 
     def parseStream(self, stream):
         self.parser.ParseFile(stream)
+
+    def parseFragment(self, s, end=0):
+        self.parser.Parse(s, end)
