@@ -290,6 +290,12 @@ HTTP_PORT=8080
 # HTTP enivornment settings.
 HTTP_ENV={}
 
+
+# Should we close all HTTP connections, ignoring the (usually absent)
+# 'Connection:' header?
+FORCE_HTTP_CONNECTION_CLOSE=0
+
+
 # Port for the special "WebDAV source view" HTTP handler.  There is no
 # standard port for this handler, which is disabled by default.
 WEBDAV_SOURCE_PORT=[]
