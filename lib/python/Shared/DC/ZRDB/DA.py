@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.24 1998/01/21 20:56:55 brian Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: DA.py,v 1.25 1998/01/21 22:59:34 jim Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -60,7 +60,9 @@ class DA(
 				     'manage_properties', 'manage_advancedForm',
 				     )),
 	('Change permissions',      ('manage_access',)            ),
-	('Change',                  ('manage_edit',)              ),
+	('Change',                  ('manage_edit','manage_advanced')  ),
+	('Test',                  ('manage_testForm','manage_test')  ),
+	('Shared permission', ['',]),
 	)
    
     # Define pre-defined types of access:
@@ -339,6 +341,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.25  1998/01/21 22:59:34  jim
+# Updated for latest security model.
+#
 # Revision 1.24  1998/01/21 20:56:55  brian
 # Changed Access Control tab to Security
 #

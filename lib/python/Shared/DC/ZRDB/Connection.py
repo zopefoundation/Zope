@@ -10,8 +10,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.5 1998/01/16 19:12:54 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Connection.py,v 1.6 1998/01/21 22:59:00 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
 from DateTime import DateTime
@@ -40,6 +40,7 @@ class Connection(
 	('Change',                  ('manage_edit',)              ),
 	('Open/Close',              ('manage_open_connection',
 				     'manage_close_connection')),
+	('Shared permission', ['',]),
 	)
    
     # Define pre-defined types of access:
@@ -134,6 +135,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.6  1998/01/21 22:59:00  jim
+# Updated for latest security model.
+#
 # Revision 1.5  1998/01/16 19:12:54  jim
 # Changed so failure to connect to the database does not prevent
 # activation.
