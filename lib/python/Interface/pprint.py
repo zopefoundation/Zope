@@ -19,7 +19,7 @@ def trim_doc_string(text):
                 min_indent=indent
         for line in lines[1:]:
             nlines.append(line[min_indent:])
-    return '\n'.join(nlines, '\n')
+    return '\n'.join(nlines)
 
 
 

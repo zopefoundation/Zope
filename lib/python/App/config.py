@@ -93,3 +93,4 @@ class DefaultConfiguration:
         self.rest_input_encoding = default_enc
         self.rest_output_encoding = default_enc
         self.rest_header_level = 3
+        self.rest_language_code = 'en'

@@ -117,7 +117,7 @@ def raw(name, arguments, options, content, lineno,
                   nodes.literal_block(block_text, block_text), line=lineno)
             return [severe]
         text = raw_file.read()
-        raw_file.close()        
+        raw_file.close()
         attributes['source'] = options['file']
     else:
         error = state_machine.reporter.warning(
@@ -185,28 +185,18 @@ def unicode_directive(name, arguments, options, content, lineno,
     element = nodes.Element()
     for code in codes:
         try:
-            if code.isdigit():
-                element += nodes.Text(unichr(int(code)))
-            else:
-                match = unicode_pattern.match(code)
-                if match:
-                    value = match.group(1) or match.group(2)
-                    element += nodes.Text(unichr(int(value, 16)))
-                else:
-                    element += nodes.Text(code)
-        except (ValueError, OverflowError), err:
+            decoded = directives.unicode_code(code)
+        except ValueError, err:
             error = state_machine.reporter.error(
                 'Invalid character code: %s\n%s: %s'
                 % (code, err.__class__.__name__, err),
                 nodes.literal_block(block_text, block_text), line=lineno)
             return [error]
+        element += nodes.Text(decoded)
     return element.children
 
 unicode_directive.arguments = (1, 0, 1)
-unicode_pattern = re.compile(
-    r'(?:0x|x|\\x|U\+?|\\u)([0-9a-f]+)$|&#x([0-9a-f]+);$', re.IGNORECASE)
 unicode_comment_pattern = re.compile(r'( |\n|^).. ')
-
 
 def class_directive(name, arguments, options, content, lineno,
                        content_offset, block_text, state, state_machine):
@@ -259,7 +249,7 @@ def role(name, arguments, options, content, lineno,
             return messages + [error]
     else:
         base_role = roles.generic_custom_role
-    assert not hasattr(base_role, 'arguments'), ( 
+    assert not hasattr(base_role, 'arguments'), (
         'Supplemental directive arguments for "%s" directive not supported'
         '(specified by "%r" role).' % (name, base_role))
     try:

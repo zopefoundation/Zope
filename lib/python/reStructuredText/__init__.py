@@ -15,6 +15,19 @@
 This implementation requires docutils 0.3.4+ from http://docutils.sf.net/
 """
 
+try:
+    import docutils
+except ImportError:
+    raise ImportError, 'Please install docutils 0.3.3+ from http://docutils.sourceforge.net/#download.'
+
+version = docutils.__version__.split('.')
+if version < ['0', '3', '3']:
+    raise ImportError, """Old version of docutils found:
+Got: %(version)s, required: 0.3.3+
+Please remove docutils from %(path)s and replace it with a new version. You
+can download docutils at http://docutils.sourceforge.net/#download.
+""" % {'version' : docutils.__version__, 'path' : docutils.__path__[0] }
+
 import sys, os, locale
 from App.config import getConfiguration
 from docutils.core import publish_parts
@@ -28,10 +41,10 @@ default_input_encoding = getConfiguration().rest_input_encoding or default_enc
 default_level = 3
 initial_header_level = getConfiguration().rest_header_level or default_level
 
-# default language
-default_lang = getConfiguration().locale or locale.getdefaultlocale()[0]
-if default_lang and '_' in default_lang:
-    default_lang = default_lang[:default_lang.index('_')]
+# default language used for internal translations and language mappings for DTD
+# elements
+default_lang = 'en'
+default_language_code = getConfiguration().rest_language_code or default_language
 
 
 class Warnings:
@@ -48,7 +61,7 @@ def render(src,
            stylesheet='default.css',
            input_encoding=default_input_encoding,
            output_encoding=default_output_encoding,
-           language_code=default_lang,
+           language_code=default_language_code,
            initial_header_level = initial_header_level,
            settings = {}):
     """get the rendered parts of the document the and warning object
@@ -60,7 +73,7 @@ def render(src,
     settings['stylesheet'] = stylesheet
     settings['language_code'] = language_code
     # starting level for <H> elements:
-    settings['initial_header_level'] = initial_header_level
+    settings['initial_header_level'] = initial_header_level + 1
     # set the reporting level to something sane:
     settings['report_level'] = report_level
     # don't break if we get errors:
@@ -80,7 +93,7 @@ def HTML(src,
          stylesheet='default.css',
          input_encoding=default_input_encoding,
          output_encoding=default_output_encoding,
-         language_code=default_lang,
+         language_code=default_language_code,
          initial_header_level = initial_header_level,
          warnings = None,
          settings = {}):
@@ -119,17 +132,23 @@ def HTML(src,
                                    initial_header_level = initial_header_level,
                                    settings = settings)
 
-    output = ('<h%(level)s class="title">%(title)s</h%(level)s>\n'
-              '%(docinfo)s%(body)s' % {
+    header = '<h%(level)s class="title">%(title)s</h%(level)s>\n' % {
                   'level': initial_header_level,
                   'title': parts['title'],
+             }
+
+    body = '%(docinfo)s%(body)s' % {
                   'docinfo': parts['docinfo'],
-                  'body': parts['body']
-              }).encode(output_encoding)
+                  'body': parts['body'],
+             }
+
+    if parts['title']:
+        output = header + body
+    else:
+        output = body
 
     warnings = ''.join(warning_stream.messages)
 
-    return output
-
+    return output.encode(output_encoding)
 
 __all__ = ("HTML", 'render')

@@ -556,14 +556,19 @@ class Inliner:
     # Valid URI characters (see RFC 2396 & RFC 2732);
     # final \x00 allows backslash escapes in URIs:
     uric = r"""[-_.!~*'()[\];/:@&=+$,%a-zA-Z0-9\x00]"""
+    # Delimiter indicating the end of a URI (not part of the URI):
+    uri_end_delim = r"""[>]"""
     # Last URI character; same as uric but no punctuation:
-    urilast = r"""[_~/a-zA-Z0-9]"""
+    urilast = r"""[_~*/=+a-zA-Z0-9]"""
+    # End of a URI (either 'urilast' or 'uric followed by a
+    # uri_end_delim'):
+    uri_end = r"""(?:%(urilast)s|%(uric)s(?=%(uri_end_delim)s))""" % locals()
     emailc = r"""[-_!~*'{|}/#?^`&=+$%a-zA-Z0-9\x00]"""
     email_pattern = r"""
           %(emailc)s+(?:\.%(emailc)s+)*   # name
           @                               # at
           %(emailc)s+(?:\.%(emailc)s*)*   # host
-          %(urilast)s                     # final URI char
+          %(uri_end)s                     # final URI char
           """
     parts = ('initial_inline', start_string_prefix, '',
              [('start', '', non_whitespace_after,  # simple start-strings
@@ -642,15 +647,15 @@ class Inliner:
                       (                       # either:
                         (//?)?                  # hierarchical URI
                         %(uric)s*               # URI characters
-                        %(urilast)s             # final URI char
+                        %(uri_end)s             # final URI char
                       )
                       (                       # optional query
                         \?%(uric)s*
-                        %(urilast)s
+                        %(uri_end)s
                       )?
                       (                       # optional fragment
                         \#%(uric)s*
-                        %(urilast)s
+                        %(uri_end)s
                       )?
                     )
                   )
@@ -954,9 +959,7 @@ class Inliner:
         else:                   # not a valid scheme
             raise MarkupMismatch
 
-    pep_url_local = 'pep-%04d.html'
-    pep_url_absolute = 'http://www.python.org/peps/pep-%04d.html'
-    pep_url = pep_url_absolute
+    pep_url = 'pep-%04d.html'
 
     def pep_reference(self, match, lineno):
         text = match.group(0)
@@ -966,17 +969,17 @@ class Inliner:
             pepnum = int(match.group('pepnum2'))
         else:
             raise MarkupMismatch
-        ref = self.pep_url % pepnum
+        ref = self.document.settings.pep_base_url + self.pep_url % pepnum
         unescaped = unescape(text, 0)
         return [nodes.reference(unescape(text, 1), unescaped, refuri=ref)]
 
-    rfc_url = 'http://www.faqs.org/rfcs/rfc%d.html'
+    rfc_url = 'rfc%d.html'
 
     def rfc_reference(self, match, lineno):
         text = match.group(0)
         if text.startswith('RFC'):
             rfcnum = int(match.group('rfcnum'))
-            ref = self.rfc_url % rfcnum
+            ref = self.document.settings.rfc_base_url + self.rfc_url % rfcnum
         else:
             raise MarkupMismatch
         unescaped = unescape(text, 0)
@@ -2542,9 +2545,10 @@ class Text(RSTState):
             indented.trim_end()
         if not indented:
             return self.quoted_literal_block()
-        nodelist = []
         data = '\n'.join(indented)
-        nodelist.append(nodes.literal_block(data, data))
+        literal_block = nodes.literal_block(data, data)
+        literal_block.line = offset + 1
+        nodelist = [literal_block]
         if not blank_finish:
             nodelist.append(self.unindent_warning('Literal block'))
         return nodelist

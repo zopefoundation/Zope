@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1.2.1 $
-:Date: $Date: 2004/05/12 19:57:53 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2004/03/23 23:21:11 $
 :Copyright: This module has been placed in the public domain.
 
 """

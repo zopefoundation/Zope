@@ -1,11 +1,14 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.3.2.1.8.1 $
-# Date: $Date: 2004/05/12 19:57:53 $
+# Revision: $Revision: 1.7 $
+# Date: $Date: 2004/07/25 01:45:26 $
 # Copyright: This module has been placed in the public domain.
 
 """
 This package contains the Python Source Reader modules.
+
+It requires Python 2.2 or higher (`moduleparser` depends on `compiler` and
+`tokenizer` modules).
 """
 
 __docformat__ = 'reStructuredText'

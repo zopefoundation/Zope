@@ -418,7 +418,6 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append(self.starttag(node, 'table', CLASS='citation',
                                        frame="void", rules="none"))
         self.body.append('<colgroup><col class="label" /><col /></colgroup>\n'
-                         '<col />\n'
                          '<tbody valign="top">\n'
                          '<tr>')
         self.footnote_backrefs(node)
@@ -1143,7 +1142,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append(
               # "border=None" is a boolean attribute;
               # it means "standard border", not "no border":
-              self.starttag(node, 'table', CLASS="table", border=None))
+              self.starttag(node, 'table', CLASS="table", border="1"))
 
     def depart_table(self, node):
         self.body.append('</table>\n')

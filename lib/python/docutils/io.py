@@ -121,13 +121,32 @@ class Output(TransformSpec):
                 % (self.__class__, self.destination, self.destination_path))
 
     def write(self, data):
+        """`data` is a Unicode string, to be encoded by `self.encode`."""
         raise NotImplementedError
 
     def encode(self, data):
         if self.encoding and self.encoding.lower() == 'unicode':
             return data
         else:
-            return data.encode(self.encoding, self.error_handler)
+            try:
+                return data.encode(self.encoding, self.error_handler)
+            except ValueError:
+                # ValueError is raised if there are unencodable chars
+                # in data and the error_handler isn't found.
+                if self.error_handler == 'xmlcharrefreplace':
+                    # We are using xmlcharrefreplace with a Python
+                    # version that doesn't support it (2.1 or 2.2), so
+                    # we emulate its behavior.
+                    return ''.join([self.xmlcharref_encode(char) for char in data])
+                else:
+                    raise
+
+    def xmlcharref_encode(self, char):
+        """Emulate Python 2.3's 'xmlcharrefreplace' encoding error handler."""
+        try:
+            return char.encode(self.encoding, 'strict')
+        except UnicodeError:
+            return '&#%i;' % ord(char)
 
 
 class FileInput(Input):
@@ -172,7 +191,9 @@ class FileInput(Input):
                 pass
 
     def read(self):
-        """Read and decode a single file and return the data."""
+        """
+        Read and decode a single file and return the data (Unicode string).
+        """
         data = self.source.read()
         if self.autoclose:
             self.close()

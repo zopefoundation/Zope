@@ -344,6 +344,10 @@ class StateMachine:
         finally:
             self.notify_observers()
 
+    def get_source(self, line_offset):
+        """Return source of line at absolute line offset `line_offset`."""
+        return self.input_lines.source(line_offset - self.input_offset)
+
     def abs_line_offset(self):
         """Return line offset of current line, from beginning of file."""
         return self.line_offset + self.input_offset

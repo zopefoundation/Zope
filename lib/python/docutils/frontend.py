@@ -43,7 +43,7 @@ from optparse import Values, SUPPRESS_HELP
 def store_multiple(option, opt, value, parser, *args, **kwargs):
     """
     Store multiple values in `parser.values`.  (Option callback.)
-    
+
     Store `None` for each attribute named in `args`, and store the value for
     each key (attribute name) in `kwargs`.
     """
@@ -77,10 +77,10 @@ def validate_encoding_error_handler(setting, value, option_parser,
     try:
         codecs.lookup_error(value)
     except AttributeError:              # prior to Python 2.3
-        if value not in ('strict', 'ignore', 'replace'):
+        if value not in ('strict', 'ignore', 'replace', 'xmlcharrefreplace'):
             raise (LookupError(
                 'unknown encoding error handler: "%s" (choices: '
-                '"strict", "ignore", or "replace")' % value),
+                '"strict", "ignore", "replace", or "xmlcharrefreplace")' % value),
                    None, sys.exc_info()[2])
     except LookupError:
         raise (LookupError(
@@ -142,6 +142,15 @@ def validate_colon_separated_string_list(
         last = value.pop()
         value.extend(last.split(':'))
     return value
+
+def validate_url_trailing_slash(
+    setting, value, option_parser, config_parser=None, config_section=None):
+    if not value:
+        return './'
+    elif value.endswith('/'):
+        return value
+    else:
+        return value + '/'
 
 def make_paths_absolute(pathdict, keys, base_path=None):
     """
@@ -311,8 +320,9 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           ['--quiet', '-q'], {'action': 'store_const', 'const': 'none',
                               'dest': 'report_level'}),
          ('Set the threshold (<level>) at or above which system messages are '
-          'converted to exceptions, halting execution immediately.  Levels '
-          'as in --report.  Default is 4 (severe).',
+          'converted to exceptions, halting execution immediately by '
+          'exiting (or propagating the exception if --traceback set).  '
+          'Levels as in --report.  Default is 4 (severe).',
           ['--halt'], {'choices': threshold_choices, 'dest': 'halt_level',
                        'default': 4, 'metavar': '<level>',
                        'validator': validate_threshold}),
@@ -323,9 +333,10 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           'system messages (at or above <level>) were generated.  Levels as '
           'in --report.  Default is 5 (disabled).  Exit status is the maximum '
           'system message level plus 10 (11 for INFO, etc.).',
-          ['--exit'], {'choices': threshold_choices, 'dest': 'exit_level',
-                       'default': 5, 'metavar': '<level>',
-                       'validator': validate_threshold}),
+          ['--exit-status'], {'choices': threshold_choices,
+                              'dest': 'exit_status_level',
+                              'default': 5, 'metavar': '<level>',
+                              'validator': validate_threshold}),
          ('Report debug-level system messages and generate diagnostic output.',
           ['--debug'], {'action': 'store_true', 'validator': validate_boolean}),
          ('Do not report debug-level system messages or generate diagnostic '
@@ -333,7 +344,9 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           ['--no-debug'], {'action': 'store_false', 'dest': 'debug'}),
          ('Send the output of system messages (warnings) to <file>.',
           ['--warnings'], {'dest': 'warning_stream', 'metavar': '<file>'}),
-         ('Enable Python tracebacks when an error occurs.',
+         ('Enable Python tracebacks when halt-level system messages and '
+          'other exceptions occur.  Useful for debugging, and essential for '
+          'issue reports.',
           ['--traceback'], {'action': 'store_true', 'default': None,
                             'validator': validate_boolean}),
          ('Disable Python tracebacks when errors occur; report just the error '
@@ -343,23 +356,31 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           ['--input-encoding', '-i'],
           {'metavar': '<name>', 'validator': validate_encoding}),
          ('Specify the text encoding for output.  Default is UTF-8.  '
-          'Optionally also specify the encoding error handler for unencodable '
-          'characters (see "--error-encoding"); default is "strict".',
+          'Optionally also specify the error handler for unencodable '
+          'characters, after a colon (":"); default is "strict".  (See '
+          '"--output-encoding-error-encoding".)',
           ['--output-encoding', '-o'],
           {'metavar': '<name[:handler]>', 'default': 'utf-8',
            'validator': validate_encoding_and_error_handler}),
-         (SUPPRESS_HELP,                # usually handled by --output-encoding
+         ('Specify the error handler for unencodable characters in '
+          'the output.  Acceptable values include "strict", "ignore", '
+          '"replace", "xmlcharrefreplace", and '
+          '"backslashreplace" (in Python 2.3+).  Default is "strict".  '
+          'Usually specified as part of --output-encoding.',
           ['--output-encoding-error-handler'],
           {'default': 'strict', 'validator': validate_encoding_error_handler}),
          ('Specify the text encoding for error output.  Default is ASCII.  '
-          'Optionally also specify the encoding error handler for unencodable '
-          'characters, after a colon (":").  Acceptable values are the same '
-          'as for the "error" parameter of Python\'s ``encode`` string '
-          'method.  Default is "%s".' % default_error_encoding_error_handler,
+          'Optionally also specify the error handler for unencodable '
+          'characters, after a colon (":"); default is "%s".  (See '
+          '"--output-encoding-error-encoding".'
+          % default_error_encoding_error_handler,
           ['--error-encoding', '-e'],
           {'metavar': '<name[:handler]>', 'default': 'ascii',
            'validator': validate_encoding_and_error_handler}),
-         (SUPPRESS_HELP,                # usually handled by --error-encoding
+         ('Specify the error handler for unencodable characters in '
+          'error output.  See --output-encoding-error-handler for acceptable '
+          'values.  Default is "%s".  Usually specified as part of '
+          '--error-encoding.' % default_error_encoding_error_handler,
           ['--error-encoding-error-handler'],
           {'default': default_error_encoding_error_handler,
            'validator': validate_encoding_error_handler}),
@@ -386,7 +407,9 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
     ends.  Setting specs specific to individual Docutils components are also
     used (see `populate_from_components()`)."""
 
-    settings_defaults = {'_disable_config': None}
+    settings_defaults = {'_disable_config': None,
+                         '_source': None,
+                         '_destination': None}
     """Defaults for settings that don't have command-line option equivalents."""
 
     relative_path_settings = ('warning_stream',)
@@ -425,16 +448,13 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         self.relative_path_settings = list(self.relative_path_settings)
         self.components = (self,) + tuple(components)
         self.populate_from_components(self.components)
-        defaults = defaults or {}
+        self.set_defaults(**(defaults or {}))
         if read_config_files and not self.defaults['_disable_config']:
             try:
                 config_settings = self.get_standard_config_settings()
             except ValueError, error:
                 self.error(error)
-            defaults.update(config_settings.__dict__)
-        # Internal settings with no defaults from settings specifications;
-        # initialize manually:
-        self.set_defaults(_source=None, _destination=None, **defaults)
+            self.set_defaults(**config_settings.__dict__)
 
     def populate_from_components(self, components):
         """
@@ -446,11 +466,10 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         for component in components:
             if component is None:
                 continue
-            i = 0
             settings_spec = component.settings_spec
             self.relative_path_settings.extend(
                 component.relative_path_settings)
-            while i < len(settings_spec):
+            for i in range(0, len(settings_spec), 3):
                 title, description, option_spec = settings_spec[i:i+3]
                 if title:
                     group = optparse.OptionGroup(self, title, description)
@@ -472,7 +491,6 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
                         self.lists[option.dest] = 1
                 if component.settings_defaults:
                     self.defaults.update(component.settings_defaults)
-                i += 3
         for component in components:
             if component and component.settings_default_overrides:
                 self.defaults.update(component.settings_default_overrides)
@@ -552,8 +570,8 @@ class ConfigParser(CP.ConfigParser):
     old_warning = """
 The "[option]" section is deprecated.  Support for old-format configuration
 files may be removed in a future Docutils release.  Please revise your
-configuration files.  See <http://docutils.sf.net/docs/config.html>, section
-"Old-Format Configuration Files".
+configuration files.  See <http://docutils.sf.net/docs/user/config.html>,
+section "Old-Format Configuration Files".
 """
 
     def read(self, filenames, option_parser):

@@ -20,43 +20,43 @@ labels = {
       # fixed: language-dependent
       'author': u'Autor',
       'authors': u'Autores',
-      'organization': unicode('Organização', 'latin1'),
-      'address': unicode('Endereço', 'latin1'),
+      'organization': u'Organiza\u00E7\u00E3o',
+      'address': u'Endere\u00E7o',
       'contact': u'Contato',
-      'version': unicode('Versão', 'latin1'),
-      'revision': unicode('Revisão', 'latin1'),
+      'version': u'Vers\u00E3o',
+      'revision': u'Revis\u00E3o',
       'status': u'Estado',
       'date': u'Data',
       'copyright': u'Copyright',
-      'dedication': unicode('Dedicatória', 'latin1'),
+      'dedication': u'Dedicat\u00F3ria',
       'abstract': u'Resumo',
-      'attention': unicode('Attenção!', 'latin1'),
+      'attention': u'Atten\u00E7\u00E3o!',
       'caution': u'Cuidado!',
       'danger': u'PERIGO!',
       'error': u'Erro',
-      'hint': unicode('Sugestão', 'latin1'),
+      'hint': u'Sugest\u00E3o',
       'important': u'Importante',
       'note': u'Nota',
       'tip': u'Dica',
       'warning': u'Aviso',
-      'contents': unicode('Sumário', 'latin1')}
+      'contents': u'Sum\u00E1rio'}
 """Mapping of node class name to label text."""
 
 bibliographic_fields = {
       # language-dependent: fixed
       u'autor': 'author',
       u'autores': 'authors',
-      unicode('organização', 'latin1'): 'organization',
-      unicode('endereço', 'latin1'): 'address',
+      u'organiza\u00E7\u00E3o': 'organization',
+      u'endere\u00E7o': 'address',
       u'contato': 'contact',
-      unicode('versão', 'latin1'): 'version',
-      unicode('revisão', 'latin1'): 'revision',
+      u'vers\u00E3o': 'version',
+      u'revis\u00E3o': 'revision',
       u'estado': 'status',
       u'data': 'date',
       u'copyright': 'copyright',
-      unicode('dedicatória', 'latin1'): 'dedication',
+      u'dedicat\u00F3ria': 'dedication',
       u'resumo': 'abstract'}
-"""English (lowcased) to canonical name mapping for bibliographic fields."""
+"""Brazilian Portuguese (lowcased) to canonical name mapping for bibliographic fields."""
 
 author_separators = [';', ',']
 """List of separator strings for the 'Authors' bibliographic field. Tried in

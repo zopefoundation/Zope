@@ -36,13 +36,15 @@ class Writer(Component):
     """The document to write (Docutils doctree); set by `write`."""
 
     output = None
-    """Final translated form of `document`; set by `translate`."""
+    """Final translated form of `document` (Unicode string);
+    set by `translate`."""
 
     language = None
     """Language module for the document; set by `write`."""
 
     destination = None
-    """`docutils.io` IO object; where to write the document.  Set by `write`."""
+    """`docutils.io` Output object; where to write the document.
+    Set by `write`."""
 
     def __init__(self):
 
@@ -73,8 +75,8 @@ class Writer(Component):
 
     def translate(self):
         """
-        Do final translation of `self.document` into `self.output`.
-        Called from `write`.  Override in subclasses.
+        Do final translation of `self.document` into `self.output` (Unicode
+        string).  Called from `write`.  Override in subclasses.
 
         Usually done with a `docutils.nodes.NodeVisitor` subclass, in
         combination with a call to `docutils.nodes.Node.walk()` or

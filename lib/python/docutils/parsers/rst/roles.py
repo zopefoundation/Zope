@@ -263,7 +263,7 @@ def pep_reference_role(role, rawtext, text, lineno, inliner,
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     # Base URL mainly used by inliner.pep_reference; so this is correct:
-    ref = inliner.pep_url % pepnum
+    ref = inliner.document.settings.pep_base_url + inliner.pep_url % pepnum
     return [nodes.reference(rawtext, 'PEP ' + text, refuri=ref, **options)], []
 
 register_canonical_role('pep-reference', pep_reference_role)
@@ -281,7 +281,7 @@ def rfc_reference_role(role, rawtext, text, lineno, inliner,
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     # Base URL mainly used by inliner.rfc_reference, so this is correct:
-    ref = inliner.rfc_url % rfcnum
+    ref = inliner.document.settings.rfc_base_url + inliner.rfc_url % rfcnum
     node = nodes.reference(rawtext, 'RFC ' + text, refuri=ref, **options)
     return [node], []
 

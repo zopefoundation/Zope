@@ -35,11 +35,12 @@ directives = {
       u'epigraph (translation required)': 'epigraph',
       u'highlights (translation required)': 'highlights',
       u'pull-quote (translation required)': 'pull-quote',
-      u'table (translation required)': 'table',
       # u'fr\u00e5gor': 'questions',
       # NOTE: A bit long, but recommended by http://www.nada.kth.se/dataterm/:
       # u'fr\u00e5gor-och-svar': 'questions',
       # u'vanliga-fr\u00e5gor': 'questions',  
+      u'table (translation required)': 'table',
+      u'csv-table (translation required)': 'csv-table',
       u'meta': 'meta',
       # u'bildkarta': 'imagemap',   # FIXME: Translation might be too literal.
       u'bild': 'image',

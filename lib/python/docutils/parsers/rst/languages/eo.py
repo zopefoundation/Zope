@@ -40,10 +40,12 @@ directives = {
       u'elstara\u0135oj': 'highlights',
       u'ekstera-citajxo': 'pull-quote',
       u'ekstera-cita\u0135o': 'pull-quote',
-      u'tabelo': 'table',
       #'questions': 'questions',
       #'qa': 'questions',
       #'faq': 'questions',
+      u'tabelo': 'table',
+      u'tabelo-vdk': 'csv-table', # "valoroj disigitaj per komoj"
+      u'tabelo-csv': 'csv-table',
       u'meta': 'meta',
       #'imagemap': 'imagemap',
       u'bildo': 'image',

@@ -118,7 +118,9 @@ class Headers(Transform):
                 for refpep in re.split(',?\s+', body.astext()):
                     pepno = int(refpep)
                     newbody.append(nodes.reference(
-                          refpep, refpep, refuri=self.pep_url % pepno))
+                        refpep, refpep,
+                        refuri=(self.document.settings.pep_base_url
+                                + self.pep_url % pepno)))
                     newbody.append(space)
                 para[:] = newbody[:-1] # drop trailing space
             elif name == 'last-modified':
@@ -128,7 +130,7 @@ class Headers(Transform):
                     para[:] = [nodes.reference('', date, refuri=cvs_url)]
             elif name == 'content-type':
                 pep_type = para.astext()
-                uri = self.pep_url % 12
+                uri = self.document.settings.pep_base_url + self.pep_url % 12
                 para[:] = [nodes.reference('', pep_type, refuri=uri)]
             elif name == 'version' and len(body):
                 utils.clean_rcs_keywords(para, self.rcs_keyword_substitutions)
@@ -266,7 +268,8 @@ class PEPZeroSpecial(nodes.SparseNodeVisitor):
                 text = p.astext()
                 try:
                     pep = int(text)
-                    ref = self.pep_url % pep
+                    ref = (self.document.settings.pep_base_url
+                           + self.pep_url % pep)
                     p[0] = nodes.reference(text, text, refuri=ref)
                 except ValueError:
                     pass

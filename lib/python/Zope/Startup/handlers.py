@@ -83,6 +83,14 @@ def rest_output_encoding(value):
     value and _setenv('REST_OUTPUT_ENCODING' , value)
     return value
 
+def rest_header_level(value):
+    value and _setenv('REST_DEFAULT_LEVEL' , value)
+    return value
+
+def rest_language_code(value):
+    value and _setenv('REST_LANGUAGE_CODE' , value)
+    return value
+
 # server handlers
 
 def root_handler(config):
