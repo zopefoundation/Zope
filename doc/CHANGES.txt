@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #586:  Generated 'start' scripts had a nonsensical
+        export of an "INST_HOME" environment variable.
+
       - Collector #538: Hybrid path expressions no longer attempt to call
         a value returned by the final, non-path alternate.
 
