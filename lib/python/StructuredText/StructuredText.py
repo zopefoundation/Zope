@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.17 1999/03/12 23:21:39 klm Exp $'''
+$Id: StructuredText.py,v 1.18 1999/03/24 00:03:18 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,21 @@ $Id: StructuredText.py,v 1.17 1999/03/12 23:21:39 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.18  1999/03/24 00:03:18  klm
+# Provide for relative links, eg <a href="file_in_same_dir">whatever</a>,
+# as:
+#
+#   "whatever", :file_in_same_dir
+#
+# or
+#
+#   "whatever"::file_in_same_dir
+#
+# .__init__(): relax the second gsub, using a '*' instead of a '+', so
+# the stuff before the ':' can be missing, and also do postprocessing so
+# any resulting '<a href=":file_in_same_dir">'s have the superfluous ':'
+# removed.  *Seems* good!
+#
 # Revision 1.17  1999/03/12 23:21:39  klm
 # Gratuituous checkin to test my cvs *update* logging hook.
 #
@@ -315,7 +330,7 @@ $Id: StructuredText.py,v 1.17 1999/03/12 23:21:39 klm Exp $'''
 
 import regex, regsub
 from regsub import gsub
-from string import split, join, strip
+from string import split, join, strip, find
 
 indent_tab  =regex.compile('\(\n\|^\)\( *\)\t')
 indent_space=regex.compile('\n\( *\)')
@@ -446,12 +461,17 @@ class StructuredText:
 
         aStructuredString = gsub(
             '\"\([^\"\0]+\)\",[\0- ]+'            # title: <"text", >
-            + ('\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=@#]*%s\)'
+            + ('\([a-zA-Z]*:[-:a-zA-Z0-9_,./?=@#]*%s\)'
                % not_punctuation_or_whitespace)
             + optional_trailing_punctuation
             + trailing_space,
             '<a href="\\2">\\1</a>\\4\\5\\6',
             aStructuredString)
+
+        protoless = find(aStructuredString, '<a href=":')
+        if protoless != -1:
+            aStructuredString = gsub('<a href=":', '<a href="',
+                                     aStructuredString)
 
         self.level=level
         paragraphs=regsub.split(untabify(aStructuredString),paragraph_divider)
@@ -613,7 +633,7 @@ def main():
         s=sys.stdin.read()
 
     if opts:
-        import regex, string, regsub
+        import regex, regsub
 
         if filter(lambda o: o[0]=='-w', opts):
             print 'Content-Type: text/html\n'
@@ -626,7 +646,7 @@ def main():
             s=s[len(r.group(1)):]
         s=str(html_with_references(s))
         if s[:4]=='<h1>':
-            t=s[4:string.find(s,'</h1>')]
+            t=s[4:find(s,'</h1>')]
             s='''<html><head><title>%s</title>
             </head><body>
             %s
