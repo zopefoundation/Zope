@@ -1,5 +1,7 @@
 <dtml-var manage_page_header>
+<dtml-with "_(management_view='Basic')">
 <dtml-var manage_tabs>
+</dtml-with>
 
 <p class="form-help">
 Instance Icons are displayed with images in management interfaces.

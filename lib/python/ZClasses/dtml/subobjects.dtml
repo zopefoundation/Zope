@@ -1,5 +1,7 @@
 <dtml-var manage_page_header>
+<dtml-with "_(management_view='Subobjects')">
 <dtml-var manage_tabs>
+</dtml-with>
 
 <form action="manage_edit" method="post">
 <table cellspacing="0" cellpadding="2" border="0">

@@ -1,5 +1,9 @@
 <dtml-var manage_page_header>
-<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
+<dtml-if manage_tabs>
+<dtml-with "_(management_view='Permissions')">
+<dtml-var manage_tabs>
+</dtml-with>
+</dtml-if manage_tabs>
 
 <p class="form-help">
 Use this view to select permissions used by this class.
