@@ -3,9 +3,11 @@ from socket import *; from select import select
 from AccessControl.Role import RoleManager
 import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
+import Globals
+from Scheduler.OneTimeEvent import OneTimeEvent
 
-#$Id: MailHost.py,v 1.13 1997/09/17 15:40:09 jeffrey Exp $ 
-__version__ = "$Revision: 1.13 $"[11:-2]
+#$Id: MailHost.py,v 1.14 1997/09/17 16:20:48 jim Exp $ 
+__version__ = "$Revision: 1.14 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -68,17 +70,16 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         
-        SendMail(trueself.smtpHost, trueself.smtpPort, 
-                 trueself.localHost).send( 
-                        mfrom=headers['from'], mto=headers['to'],
-                        subj=headers['subject'], body=messageText
-                        )
+	Globals.Scheduler.schedule(OneTimeEvent(
+	    Send,
+	    (trueself.smtpHost, trueself.smtpPort, 
+	     trueself.localHost,
+	     headers['from'], headers['to'],
+	     headers['subject'], messageText
+	     )
+	    ))
 
-        if statusTemplate:
-            return getattr(self,statusTemplate)(self, self.REQUEST, 
-                                                messageText=message)
-        else:
-            return "SEND OK"
+	return "SEND OK"
         
     def send(self, messageText, mto=None, mfrom=None):
         headers, message = newDecapitate(messageText)
@@ -97,6 +98,9 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
         body="subject: %s\n\n%s" % (subject, body)
         SendMail(self.smtpHost, self.smtpPort, self.localHost).send( 
                         mfrom=mfrom, mto=mto, subj=subject, body=body)
+
+def Send(host, port, localhost, from_, to, subject, body):
+    SendMail(host, port, localhost).send(from_, to, subject, body)
         
 class SendMail:     
     def __init__(self, smtpHost, smtpPort, localHost="localhost"):
@@ -189,6 +193,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.14  1997/09/17 16:20:48  jim
+#Added use of scheduler.
+#
 #Revision 1.13  1997/09/17 15:40:09  jeffrey
 #Further SMTP and socket improvements
 #
