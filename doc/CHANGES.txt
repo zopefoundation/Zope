@@ -27,6 +27,10 @@ Zope changes
         - Hardened ZMI contents view against subobjects w/ flaky
           'get_size' (Collector #1900).
 
+        - Fixed OFS.CopySupport's _verifyObjectPaste to utilize the
+          permission stored in the metatype registry, if available
+          (Collector #1975).
+
     Zope 2.3.0 beta 3
 
       Features Added
