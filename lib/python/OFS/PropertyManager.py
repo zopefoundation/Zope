@@ -84,9 +84,9 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
-
+import ExtensionClass
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split
@@ -97,7 +97,7 @@ from DateTime import DateTime
 
 from PropertySheets import vps
 
-class PropertyManager:
+class PropertyManager(ExtensionClass.Base):
     """
     The PropertyManager mixin class provides an object with
     transparent property management. An object which wants to
@@ -159,6 +159,18 @@ class PropertyManager:
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
     _reserved_names=()
+
+    __ac_permissions__=(
+        ('Manage properties', ('manage_addProperty',
+                               'manage_editProperties',
+                               'manage_delProperties',
+                               'manage_changeProperties',
+                               )),
+        ('Access contents information',
+         ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',''),
+         ('Anonymous', 'Manager'),
+         ),
+        )
 
     __propsets__=()
     propertysheets=vps()

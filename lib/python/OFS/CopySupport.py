@@ -83,9 +83,9 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
-import sys, string, Globals, Moniker, tempfile
+import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
@@ -94,8 +94,15 @@ from App.Dialogs import MessageDialog
 
 CopyError='Copy Error'
 
-class CopyContainer:
+class CopyContainer(ExtensionClass.Base):
     """Interface for containerish objects which allow cut/copy/paste"""
+
+    __ac_permissions__=(
+        ('View management screens',
+         ('manage_cutObjects', 'manage_copyObjects', 'manage_pasteObjects',
+          'manage_renameForm', 'manage_renameObject',)),
+        )
+    
 
     def manage_cutObjects(self, ids, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
