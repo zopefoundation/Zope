@@ -111,12 +111,6 @@ Zope Changes
 
         There are still a number of things to get working:
 
-        - Multiple database support isn't done yet,
-
-        - OPTIMIZATION: FileStorage will get a more efficient data
-          structure for maintaining index information and key methods
-          in the ZODB framework will move to C.
-
         - Zope needs to be updated to be thread-safe.  This is not as
           hard as it sounds, since persistent objects are always
           thread-safe. (Well, only one thread accesses any particular
@@ -137,6 +131,16 @@ Zope Changes
 
           This is only a problem when running Zope 2 with multiple
           threads.
+
+      ZODB 3 Futures
+
+        These are features that are lkely to wait for releases after 2.0. 
+
+        - Multiple database support
+
+        - OPTIMIZATION: FileStorage will get a more efficient data
+          structure for maintaining index information and key methods
+          in the ZODB framework will move to C.
 
     ZClasses
 
@@ -172,58 +176,202 @@ Zope Changes
 
     Zope 2.0 alpha 4
 
+      Backward incompatibility
+
+        - The old ZopeHTTPServer is no longer supported or included.
+          Use ZServer.
+
       Features added
 
         - The let and return tags were added to DTML.
 
-        - The startup script, z2.py, has additional documentation on
-          providing empty strings as arguments.
+        - Several new inpt form types were added:
 
-        - Added a -P option to the startup script, z2.py, to specify a
-          base port for the various servers. For example::
+            :default -- allows you to specify default values
 
-            python z2.py -P8000 
+            :record -- allows you to combine multiple form variables
+                       into a single inot variable.
+ 
+                For example::
 
-          is equivalent to:
+                   <input name="date.year:record:int">
+                   <input name="date.month:record:int">
+                   <input name="date.day:record:int">
 
-            python z2.py -w8080 -f8021 -m8099
+                will result in a single variable, 'date', with
+		attributes 'year', 'month', and 'day'.
 
-          This is a convenient short-hand for systes with many zserver
-          instances running.
+            :records -- allows you to input a list of records (ie a
+                        table)
 
-        - Added an -l option to the startup script, z2.py, to specify
-          the location of the ZServer hit log. If the location is a
-          relative path, then it is assumed to be rooted in the 'var'
-          directory.
+	    :ignore-empty -- Immit the field if the value is an empty
+	    string.
+
+          For more information, see the section on "Form variable
+          types" in http://www.zope.org/Documentation/Reference/Trinkets.
+
+        - In the startup script, z2.py:
+
+	    - The startup script, z2.py, has additional documentation on
+	      providing empty strings as arguments.
+    
+	    - Added a -P option to the startup script, z2.py, to specify a
+	      base port for the various servers. For example::
+    
+		python z2.py -P8000 
+    
+	      is equivalent to:
+    
+		python z2.py -w8080 -f8021 -m8099
+    
+	      This is a convenient short-hand for systes with many zserver
+	      instances running.
+    
+	    - Added an -l option to the startup script, z2.py, to specify
+	      the location of the ZServer hit log. If the location is a
+	      relative path, then it is assumed to be rooted in the 'var'
+	      directory.
 
         - A progress indicator was added to the database conversion
           utility, utilities/bbb.py.
 
+        - The PCGI installer now writes the PCGI info file to use ZODB 3
+          rather than ZODB 2.
+    
+        - The default content is provided in both ZODB 2 and ZODB 3
+          format.
+
+        - There is a new logging framework for reporting errors from
+          Python-level code.  See the module zLOG.py for details.
+
+          For the time being, to turn on logging, set the environment
+          variable STUPID_LOG_FILE to a file name or to an empty
+          string to log to standard error.  We will eventually provide
+          a more formal and functional logging configuration
+          interface.
+
+        - The hooks used by objects that modify their environment were
+          changed.  The new hooks are:
+
+            manage_addHook -- called after an object has been added
+
+            manage_beforeDelete -- called before an object is deleted
+
+            manage_afterClone -- called after an object has been
+               copied. This should only be used by object that 
+               capture their identity is some way other than their 
+               id attribute or persistent id. (It's really for
+               ZClasses, which have global ids.)
+ 
+        - Pack is now supported for ZODB3 File Storages.
+
+	- The header output by manage_tabs now shows whether the
+	  current object has been modified or locked by a version and
+	  shows the version if the version isn't the current working
+	  version. 
+
+        - The locked-in-version decoration in the object management
+          contents view shows the locking version if the version isn't
+          the current working version.
+
+        - Several demonstration ZODB Storage implementations have been
+          added. See lib/python/ZODB/DemoStorage.py and
+          lib/python/ZODB/dbmStorage.py.
+
+	- Subtransactions have been added (instead of temporary
+	  versions). If a true argument is given in a transaction commit
+	  or abort call (e.g. 'get_transaction().commit(1)'), then
+	  the commit or abort applies to a subtransaction of the
+	  current transaction.  This is useful in a number of ways,
+	  including:
+
+            o Subtransaction commits on requests that work with lots
+              of data can reduce memory usage because data can be
+              removed from memory after changes are saved in a
+              subtransaction, 
+
+            o You can rollback changes due to a local error without
+              rolling back *all* of the changes made in a long
+              transaction. 
+
+        - There is an advanced interface for specifying alternate
+          storages for Zope.  Zope will try to import the module
+          'custom_zodb' from INSTANCE_HOME and use it's Storage
+          attribute. 
+
+	  For example, to use a Demo storage based on the standard
+          File storage, yo might define a 'custom_zodb' module with::
+
+            import Globals, ZODB.FileStorage, ZODB.DemoStorage
+
+            name='%s/Data.fs' % Globals.data_dir
+
+	    base=ZODB.FileStorage.FileStorage(name, read_only=1)
+	    Storage=ZODB.DemoStorage.DemoStorage("Demo (%s)" % name, base)
+
+        - Find can now search text of SQL methods.
+
+        - DTML tree tags now have a reverse option.
+
+        - ZClasses now have class ids.  These class ids are registered
+          in a central registry and are used when unpicking instances.
+
+        - Database connections now have a sync method for
+	  synchronizing the connection with saved data.  This is
+	  useful for interactive connections to see database changes
+	  made by other threads.
+
+        - Errors encountered when trying to unpickle object state are
+          now logged, if logging is enabled.
+
+        - Added an extra checkpoint to ZODB 3 FileStorage Transaction
+          commit to better handle system crashes.
+
+        - ZPublisher request objects now have a BODYFILE key to get
+          the request body as a file for non-form non-GET requests.
+
         - Cookie support was added to the ZServer FTP server to make
           FTP access compatible with cookie-based authentication.
 
-        - ZServer now includes a NT Server, 'ZServer.py' This service
-		  requires the Python win32 extensions. It is not yet complete
-		  and not yet integrated with the Zope installer. It does however
-		  include a large doc string.
+        - ZServer now includes a NT Service, 'ZServer.py' This service
+	  requires the Python win32 extensions. It is not yet complete
+	  and not yet integrated with the Zope installer. It does however
+	  include a large doc string.
 
-		- ZServer is offically using the z2.py start script now. The old
-		  start.py and zinit.py were removed. Note: z2.py will call zdaemon.py
-		  for you, if you want to use ZServer in daemon mode.
+	- ZServer is offically using the z2.py start script now. The old
+	  start.py and zinit.py were removed. Note: z2.py will call zdaemon.py
+	  for you, if you want to use ZServer in daemon mode on Unix.
 
-		- Added a 'has_permission' method to user objects. This facilitates
-		  finding out if a user has access to a given object. For example::
-		  
-		    <!--#if "AUTHENTICATED_USER.has_permissions('View',someObject)"-->
+	- Added a 'has_permission' method to user objects. This facilitates
+	  finding out if a user has access to a given object. For example::
+	  
+	    <!--#if "AUTHENTICATED_USER.has_permissions('View',someObject)"-->
 
-		- The product add list is now filtered. This should keep objects out of
-		  the product add list for which the user does not have adequite
-		  permissions. This is implemented with a new method,
-		  'filtered_meta_types' which returns all the meta_types for which a
-		  given user has permissions. Note: Right now ZClasses do not associate
-		  permissions with Products. Thus all Control Panel Products appear in
-		  the product add list, no matter what roles the user has.
+	- The product add list is now filtered. This should keep objects out of
+	  the product add list for which the user does not have adequite
+	  permissions. This is implemented with a new method,
+	  'filtered_meta_types' which returns all the meta_types for which a
+	  given user has permissions. Note: Right now ZClasses do not associate
+	  permissions with Products. Thus all Control Panel Products appear in
+	  the product add list, no matter what roles the user has.
 		
+        - HTTP REQUEST objects now use HTML in their string representation.
+
+        - The REQUEST keys of the form BASEx and URLx, where x is an integer
+          now allow x to be greater than 9.
+
+	- index_html is not longer used automatically for XML-RPC
+  	  requests.
+
+        - ZPublisher debugger, 'ZPublisher.test' now accepts a 'extra'
+          keyword argument with a dictionary giving extra variables to
+          be added to the request. This is handy for testing methods
+          that require large amounts of input data, such as file uploads.
+
+        - The load_site utility ('utilities/load_site.py') now accepts
+          a '-9' switch to make it work with Zope (and Principia)
+          sites at revisions 1.9 and lower. 
+
       Bugs fixed
 
         - Got rid of some DOS line-endings in xmlrpclib.py that caused
@@ -239,12 +387,108 @@ Zope Changes
 
         - ZServer crashed when the number of simultaneous connections
           exceeded a system limit, especially on Windows. ZServer now
-          figures out what the system limit is and stops accepting new
-          connections when the number of active connections exceeds the
-          limit.
+          stops accepting new connections when the number of active
+          connections exceeds a threshold.
+
+	- Accessing cached results of items() (or values() or keys())
+	  calls on BTrees caused core dumps if affected elements were
+	  deleted.  For example::
+
+             for k in abtree.keys(): 
+                del abtree[k]
+
+          Note that this code is still incorrect due to the fact that
+          the objects returned from abtree.items()  (or values() or
+          keys()) have reference, rather than copy semantics.
+ 
+        - Compiling Acquisition.c caused (bogus) compiler errors on
+          SGI.
+
+        - zdeemun wus mispeled
+
+        - Local roles were not handled correctly when filtering
+          management views.
+
+        - Copying and pasting ZClass instances copied and pasted their
+          ZClasses too, effectively disconnecting them from their
+          managed ZClasses. The same thing happened when ZClass
+          instances were exported and imported.
+
+        - The Database area in the control panel was broken.
+
+        - Copy and paste of multiple objects was broken.
+
+        - Copy and paste of ZClass methods was broken.
+
+        - Copy and paste of ZClass properysheets was enabled and
+          broken. It is now disabled.
+
+        - Accidential import of BoboPOS in processes using ZODB (3)
+          caused strange errors.
+
+        - A bug in batch processing caused batch processing to hang or
+          give incorrect results.
+
+        - DocumentTemplate-based classes, like DTMLDocument and
+          DTMLMethod could not be subclassed correctly. 
+
+        - There was a memeory leak in the DTML try tag.
+
+        - When adding folders with user databases, no check was made
+          to make sure the user was permitted to add a user database.
+
+        - Broken objects weren't created for objects whos class could
+          not be found when using ZODB 3.
+
+        - The 'self' argument wasn't properly passed to external
+          methods used in ZClasses.
+
+        - The Setup file in the SearchIndex package had an uneeded -I
+          option that caused compilation errors on some platforms.
+
+        - ZGadflyDA transactions were not committed.
+
+        - ZClasses didn't provide an interface to edit their titles.
+
+        - Propertysheets were broken for ZClasses that inherited from
+          built-in classes, like Folder and DTMLDocument.
+
+        - Propertysheets were disabled for instances by default.  Now,
+          propertysheets have the "manage properties" permission by
+          default.
+
+        - The navigation pane wasn't updated when classes were added.
+
+        - Changes in ZClasses were not properly propigated to all
+          database connections using ZODB3.
+
+        - Databse connections were not closed correctly under heavy
+          load when the number of application threads exceeded the
+          number of database connections in the connection pool. This
+          lead to Zope locking up under load if the application thread
+          count was increased using the z2.py -t option.
+
+        - undo in ZODB 3 didn't properly refresh objects.
+ 
+        - export and import was broken for ZODB 3.
           
         - Fixed ZServer HTTP zombie killing. Now hung connections are
           successfully closed.
+
+        - A bug in handling the case when a file was created on open
+	  without the create flag caused weird errors on windows.
+
+        - The REQUEST BASE1 key was not computed correctly when
+          SCRIPT_NAME was an empty string.
+
+        - It was impossible to return an empty list or dictionary to
+          an XML-RPC request. 
+ 
+        - The database conversion script failes when the first record
+          in the input file lacked peoperly-formatted transaction
+          data.  The conversion script also didn't work on some
+          systems due to an incorrect 'flush' call on the *input*
+          file. 
 
     Zope 2.0 alpha 3
 
