@@ -1,40 +1,26 @@
 ZServer Installation
 --------------------
 
-Requirement
+Requirements
 
-  You must have a very recent copy of Zope or at least ZPublisher
-  installed.
-  
-  ZServer *does not* work with Zope 1.10.2. It requires some newer
-  features of Zope. You can either use the lastest Zope from CVS or
-  else get the latest ZPublisher package from CVS and use it with
-  your current Zope installation. Zope CVS information is available
-  at::
-  
-    http://www.zope.org/Community/CVS_public_access
-  
-  If this doesn't make sense to you, then wait until the next Zope
-  release to use ZServer. This release is still for hackers, sorry.
-
-Installation
-
-  Untar and ungzip the ZServer tarball in your Zope directory. This
-  will create a 'ZServer' directory in your Zope directory.
+  ZServer comes with Zope 2. Though ZServer can be used with earlier
+  versions of Zope, this is not supported and not covered by this
+  document.
 
 Configuration
 
-  To run ZServer you need to edit the start script to set your
-  configuration. In the future will will probably provide a customized
-  start script as part of the Zope installtion process.
+  To run ZServer you simply execute the z2.py start script which is
+  located in your Zope directory. You can pass commandline arguments
+  to the start script in order to run Zope with different options. In
+  order to see a list of options use the '-h' help option.
   
-  To edit the start up script, open 'ZServer/start.py' in your
-  favorite editor and change the configuration variables. If you
-  understand Medusa, you can also change the rest of the script.
+  Here's an example of use::
   
-  Finally make sure the shebang line is right on the 'start.py'
-  script. You can use your own copy of Python, or the copy that came
-  with Zope (if you are using a binary distribution).
+    $ python1.5.2 z2.py -w 8888 -f "" -p "" -m "" &
+    
+  This example starts Zope using a web server on port 8888. It does
+  not start and FTP server, or a PCGI server, or a Monitor server. It
+  also starts the server running in the backaground.
   
 Shell scripts and batch files  
   
@@ -48,7 +34,7 @@ Shell scripts and batch files
     export ZOPE_DEBUG_MODE
     PYTHONHOME=/home/Zope
     export PYTHONHOME
-    /home/Zope/bin/python /home/Zope/Zserver/start.py &
+    /home/Zope/bin/python /home/Zope/z2.py -w 9673 &
   
   Note: If ZServer fails because it can't find some standard Python
   libaries there's a good bet that you need to set the PYTHONHOME as
@@ -57,7 +43,8 @@ Shell scripts and batch files
   Here's an example batch file::
   
     set ZOPE_DEBUG_MODE=1
-    "\Program Files\Zope\bin\python"  "\Program Files\Zope\ZServer\start.py"
+    "\Program Files\Zope\bin\python"  "\Program Files\Zope\z2.py -w
+    8888 -f 8021"
   
   Now you're ready to go.  
 
@@ -65,14 +52,15 @@ Starting ZServer
 
   To start ZServer run the start script::
   
-    ./start.py
+    $ python1.5.2 z2.py
     
   To stop the server type 'control-c'.
 
   Note: If you've created a shell script or batch file to run ZServer
   use that instead.
 
-  You should see some Medusa information come up on the screen.
+  You should see some Medusa information come up on the screen as Zope
+  starts.
   
   A log file will be written to the 'var' directory, named
   'ZServer.log' by default.
@@ -88,15 +76,15 @@ Using ZServer
   This assumes that you have chosen to put HTTP on port 9673 and that
   you are publishing a module named whose URL prefix is set to ''.
   
-  Note: to publish Zope normally you publish the 'lib/python/Main.py'
+  Note: to publish Zope normally you publish the 'lib/python/Zope.py'
   module.
 
   To access Zope via FTP you need to FTP to it at the port you set FTP
   to run on. For example::
   
-    ftp www.example.com 8021
+    ftp www.example.com 9221
 
-  This opens a FTP session to your machine on port 8021, ZServer's
+  This opens a FTP session to your machine on port 9221, ZServer's
   default FTP port. When you are prompted to log in you should supply
   a Zope username and password. (Probably you should use an account
   with the 'Manager' role, unless you have configured Zope to allow
@@ -111,15 +99,18 @@ Using ZServer
   to a directory where you have permissions before you can do
   anything. See above for more information about logging into FTP.
 
-Advanced Usage: zinit.py
+Advanced Usage: zdeamon.py and the Zope NT service.
 
   One problem you may notice with ZServer is that once the server is
   shutdown, either through the web management interface, or by some
-  other means, it will not automatically be restarted. If you are used
-  to PCGI's process activation, this may seem annoying to you. One
-  solution to the problem of keeping ZServer running is zinit.py This
-  script allows for automatic restarting of ZServer under Unix. See
-  the source for more details.
+  other means, it will not automatically be restarted.
+  
+  On windows you can use zdeamon.py to keep Zope running. Specifying
+  the '-Z' switch when starting Zope runs zdeamon.py on Unix. Zdeamon
+  will restart Zope when it Zope is restarted through the web, and in
+  case of an unexpected error.
+  
+  On NT, use the Zope service for the same functionality.
 
 Where to go from here
 

@@ -6,13 +6,45 @@ ZServer Changes
 
   Releases
 
+    Zope 2.0 ?
+
+      New Features
+
+        ZServer is now part of the standard Zope distribution.
+        
+        ZServer is now a Python package. The change in the ZServer
+        package structure may break old ZServer start.py scripts. The
+        solution is to migrate to the new start script z2.py
+        
+        The start script has significantly changed. start.py is now
+        deprecated. Use z2.py in the top level Zope directory instead.
+        
+        z2.py provides lots more features than start.py and its easier
+        to use. Try z2.py -h for more information.
+    
+        zinit.py is deprecated, and is replaced by zdeamon.py In
+        addition, z2.py will start zdeamon.py for you, so there is no
+        need to run zdeamon.py directly.
+        
+        You no longer need to specify a DNS server to use ZServer.
+        
+        ZServer now includes a secure monitor server. This server
+        provides you with a secure, remote python prompt!
+        
+        ZServer now can be set to run as any uid, not just 'nobody'.
+        
+      Bugs Fixed    
+        
+        ZServer should work better on win95 boxes without a network
+        connection now.
+
     ZServer 1.0b1
     
       New Features
       
         Major code reorganization. Major architecture changes. Future
-        producers are gone. Use of special request and response objects
-        to do most of the heavy lifting. 
+        producers are gone. Use of special request and response
+        objects to do most of the heavy lifting. 
 
         ZServer can now handle multiple HTTP requests per connection.
 
@@ -32,7 +64,8 @@ ZServer Changes
         
         Fixed FTP passive mode response message IP address.
         
-        Fixed multiple file upload problem where response gets out of synch.
+        Fixed multiple file upload problem where response gets out of
+        synch.
 
         The log file is now not overwritten each time Zope starts.
         
@@ -40,9 +73,10 @@ ZServer Changes
 
       Known Bugs
       
-        PCGI under IIS 4.0 is broken with respect to file uploads, and binary
-        data in general. IIS seems to convert \n to \r\n in binary data :-(
-        This seems to be an IIS/PCGI issue, not a ZServer issue.
+        PCGI under IIS 4.0 is broken with respect to file uploads, and
+        binary data in general. IIS seems to convert \n to \r\n in
+        binary data :-( This seems to be an IIS/PCGI issue, not a
+        ZServer issue.
 
       TODO
       

@@ -1,9 +1,5 @@
-ZServer Release 1.0b1
----------------------
-
-Welcome to the first Zope ZServer beta release. This release
-provides a first look at Zope/Medusa integration, and introduces FTP
-support in Zope.
+ZServer README
+--------------
 
 What is ZServer?
   
@@ -13,9 +9,9 @@ What is ZServer?
   
     http://www.zope.org/Documentation/Reference/ZServer
     
-  ZServer gives you HTTP, FTP, WebDAV, and PCGI access. In later
-  releases it will probably offer more protocols such as FastCGI,
-  etc.
+  ZServer gives you HTTP, FTP, WebDAV, PCGI, and remote interactive
+  Python access. In later releases it will probably offer more
+  protocols such as FastCGI, etc.
 
 What is Medusa?
 
@@ -51,10 +47,10 @@ ZServer FTP support
   Using FTP
   
     To FTP into Zope, ZServer must be configured to serve FTP. By
-    default ZServer serves FTP on port 8021. So to connect to Zope you
+    default ZServer serves FTP on port 9221. So to connect to Zope you
     would issue a command like so::
     
-      ftp localhost 8021
+      ftp localhost 9221
       
     When logging in to FTP, you have some choices. You can connect
     anonymously by using a username of 'anonymous' and any password.
@@ -131,12 +127,17 @@ ZServer PCGI support
   ZServer by setting the PCGI_PORT, PCGI_SOCKET_FILE, and PCGI_NAME.
   The other PCGI settings are currently ignored by ZServer.
 
+  ZServer's PCGI support will work with mod_pcgi.
+
 ZServer WebDAV support
 
   WebDAV is a new protocol for managing web resources. WebDAV operates
   over HTTP. Since WebDAV uses HTTP, ZServer doesn't really have to do
   anything special, except stay out of Zope's way when handling WebDAV
   requests.
+  
+  The only major WebDAV client at this time is Internet Explorer 5. It
+  works with Zope.
 
 Differences between ZopeHTTPServer and ZServer
 
@@ -151,20 +152,8 @@ Differences between ZopeHTTPServer and ZServer
   
   ZServer on the other hand is more complex and supports publishing
   multiple modules, thread pools, and it uses a new threaded
-  architecture for accessing ZPublisher. Right now the thread pool is
-  limited to one thread, since the object database cannot yet support
-  concurrent access. This should change within the next few months.
-
-Who should use ZServer?
-
-  This release is *beta* quality. It should be used by Zope hackers.
-  If you are not inquisitive and self-reliant, this release may
-  frustrate you.
+  architecture for accessing ZPublisher.
   
-  In later Zope releases, ZServer installation and stability will
-  improve and eventually ZServer will probably supplant
-  ZopeHTTPServer.
-
 Running ZServer as nobody
 
   Normally ZServer will run with the userid of the user who starts
