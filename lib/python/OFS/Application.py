@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.37 1998/01/12 21:31:13 jim Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
+$Id: Application.py,v 1.38 1998/01/13 23:04:54 brian Exp $'''
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -131,30 +131,6 @@ class Application(Folder.Folder):
 	"""Utility function to return current date/time"""
 	return DateTime()
 
-
-#     def manage_addRole(self,REQUEST,role):
-# 	""" """
-#         roles=list(self.__defined_roles__)
-# 	if role not in roles:
-# 	    roles.append(role)
-#             roles.sort()
-# 	    self.__defined_roles__=tuple(roles)
-# 	try:    roles=self.__roles__
-# 	except: roles=[]
-# 	if roles is None: roles=[]
-#         roles.append(role)
-# 	self.__roles__=roles
-# 	return self.manage_rolesForm(self, REQUEST)
-
-#     def manage_deleteRole(self,REQUEST,role):
-# 	""" """
-# 	roles=list(self.__defined_roles__)
-# 	if role in roles:
-# 	    del roles[roles.index(role)]
-# 	    self.__defined_roles__=tuple(roles)
-
-#     def validRoles(self):
-# 	return self.__defined_roles__
 
 
 
@@ -283,6 +259,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.38  1998/01/13 23:04:54  brian
+# Removed __ac_types__
+#
 # Revision 1.37  1998/01/12 21:31:13  jim
 # Made application default Manager, Anonymous
 #

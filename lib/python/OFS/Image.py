@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from Globals import HTMLFile, MessageDialog
 from AccessControl.Role import RoleManager
@@ -40,9 +40,6 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     ('Shared permission', ['',]),
     )
    
-    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-		  ('View Access', ['View',]),
-		 )
 
     def __init__(self,id,title,file,content_type=''):
 	try:    headers=file.headers

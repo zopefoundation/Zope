@@ -9,8 +9,8 @@ import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.24 1998/01/05 19:34:12 jeffrey Exp $ 
-__version__ = "$Revision: 1.24 $"[11:-2]
+#$Id: MailHost.py,v 1.25 1998/01/13 23:06:10 brian Exp $ 
+__version__ = "$Revision: 1.25 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -48,8 +48,6 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     ('Use mailhost services',['']),
     )
    
-    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-		 )
 
 
     def __init__(self):
@@ -246,6 +244,9 @@ def decapitate(message, **kw):
 ####################################################################
 #
 #$Log: MailHost.py,v $
+#Revision 1.25  1998/01/13 23:06:10  brian
+#Removed __ac_types__
+#
 #Revision 1.24  1998/01/05 19:34:12  jeffrey
 #split out the SendMail tag machinery into new module
 #

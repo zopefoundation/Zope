@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.34 1998/01/12 21:31:58 jim Exp $"""
+$Id: Folder.py,v 1.35 1998/01/13 23:04:55 brian Exp $"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -108,8 +108,6 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     ('Shared permission', ['']),
     )
    
-    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-		 )
 
     def tpValues(self):
 	r=[]
