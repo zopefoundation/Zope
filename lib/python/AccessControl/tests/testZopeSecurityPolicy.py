@@ -13,8 +13,8 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.8 2003/11/28 16:44:07 jim Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.9 2004/01/27 16:59:23 tseaver Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 import os, sys, unittest
 
@@ -47,6 +47,9 @@ class PublicMethod (Method):
     def __call__(*args, **kw):
         return args, kw
 
+    def getWrappedOwner(self):
+        return None
+
     __roles__ = None
 
 
@@ -59,6 +62,11 @@ class OwnedMethod (PublicMethod):
 
     def getOwner(self):
         return self.aq_parent.aq_parent.acl_users.getUserById('theowner')
+
+    def getWrappedOwner(self):
+        acl_users = self.aq_parent.aq_parent.acl_users
+        user = acl_users.getUserById('theowner')
+        return user.__of__(acl_users)
 
 
 class setuidMethod (PublicMethod):

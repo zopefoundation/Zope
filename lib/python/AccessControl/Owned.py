@@ -10,21 +10,18 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Support for owned objects
+"""Support for owned objects
 
-
-$Id: Owned.py,v 1.20 2003/11/28 16:45:32 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Owned.py,v 1.21 2004/01/27 16:59:23 tseaver Exp $
+"""
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
 from Acquisition import aq_get, aq_parent, aq_base
 
 UnownableOwner=[]
-def ownableFilter(self,
-                  aq_get=aq_get,
-                  UnownableOwner=UnownableOwner):
-    _owner=aq_get(self, '_owner', None, 1)
+def ownableFilter(self):
+    _owner = aq_get(self, '_owner', None, 1)
     return _owner is not UnownableOwner
 
 # Marker to use as a getattr default.
@@ -52,8 +49,11 @@ class Owned(ExtensionClass.Base):
     def owner_info(self):
         """Get ownership info for display
         """
-        owner=self.getOwner(1)
-        if owner is None or owner is UnownableOwner: return owner
+        owner=self.getOwnerTuple()
+
+        if owner is None or owner is UnownableOwner:
+            return owner
+
         d={'path': '/'.join(owner[0]), 'id': owner[1],
            'explicit': hasattr(self, '_owner'),
            'userCanChangeOwnershipType':
@@ -62,43 +62,71 @@ class Owned(ExtensionClass.Base):
         return d
 
     getOwner__roles__=()
-    def getOwner(self, info=0,
-                 aq_get=aq_get,
-                 UnownableOwner=UnownableOwner,
-                 getSecurityManager=getSecurityManager,
-                 ):
+    def getOwner(self, info=0):
         """Get the owner
 
         If a true argument is provided, then only the owner path and id are
         returned. Otherwise, the owner object is returned.
         """
-        owner=aq_get(self, '_owner', None, 1)
-        if info or (owner is None): return owner
+        if info:
+            import warnings
+            warnings.warn('Owned.getOwner(1) is deprecated; '
+                          'please use getOwnerTuple() instead.',
+                          DeprecationWarning)
 
-        if owner is UnownableOwner: return None
+            return self.getOwnerTuple()
 
-        udb, oid = owner
+        return aq_base(self.getWrappedOwner()) # ugh, backward compat.
 
-        root=self.getPhysicalRoot()
-        udb=root.unrestrictedTraverse(udb, None)
+    getOwnerTuple__roles__=()
+    def getOwnerTuple(self):
+        """Return a tuple, (userdb_path, user_id) for the owner.
+
+        o Ownership can be acquired, but only from the containment path.
+
+        o If unowned, return None.
+        """
+        return aq_get(self, '_owner', None, 1)
+
+    getWrappedOwner__roles__=()
+    def getWrappedOwner(self):
+        """Get the owner, modestly wrapped in the user folder.
+
+        o If the object is not owned, return None.
+
+        o If the owner's user database doesn't exist, return Nobody.
+
+        o If the owner ID does not exist in the user database, return Nobody.
+        """
+        owner = self.getOwnerTuple()
+
+        if owner is None:
+            return None
+
+        udb_path, oid = owner
+
+        root = self.getPhysicalRoot()
+        udb = root.unrestrictedTraverse(udb_path, None)
+
         if udb is None:
-            user = SpecialUsers.nobody
-        else:
-            user = udb.getUserById(oid, None)
-            if user is None: user = SpecialUsers.nobody
-        return user
+            return SpecialUsers.nobody
+
+        user = udb.getUserById(oid, None)
+
+        if user is None:
+            return SpecialUsers.nobody
+
+        return user.__of__(udb)
 
     changeOwnership__roles__=()
-    def changeOwnership(self, user, recursive=0,
-                        aq_get=aq_get,
-                        ):
+    def changeOwnership(self, user, recursive=0):
         """Change the ownership to the given user.  If 'recursive' is
         true then also take ownership of all sub-objects, otherwise
         sub-objects retain their ownership information."""
 
         new=ownerInfo(user)
         if new is None: return # Special user!
-        old=aq_get(self, '_owner', None, 1)
+        old = self.getOwnerTuple()
         if old==new: return
         if old is UnownableOwner: return
 
@@ -117,7 +145,7 @@ class Owned(ExtensionClass.Base):
         user=security.getUser()
         info=ownerInfo(user)
         if info is None: return 0
-        owner=self.getOwner(1)
+        owner=self.getOwnerTuple()
         if owner == info: return 0
         return security.checkPermission('Take ownership', self)
 
@@ -147,7 +175,7 @@ class Owned(ExtensionClass.Base):
         old=getattr(self, '_owner', None)
         if explicit:
             if old is not None: return
-            owner=aq_get(self, '_owner', None, 1)
+            owner = self.getOwnerTuple()
             if owner is not None and owner is not UnownableOwner:
                 self._owner=owner
         else:
