@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE
@@ -128,7 +128,7 @@ def render(ob):
             else:
                 ob = ob()
         except AttributeError, n:
-            if n != '__call__':
+            if str(n) != '__call__':
                 raise
     return ob
 
