@@ -705,7 +705,7 @@ class Connection(ExportImport, object):
         self._storage = self._tmp
         self._tmp = None
 
-        # Note: If we invalidate a non-justifiable object (i.e. a
+        # Note: If we invalidate a non-ghostifiable object (i.e. a
         # persistent class), the object will immediately reread it's
         # state.  That means that the following call could result in a
         # call to self.setstate, which, of course, must succeed.  In
@@ -722,7 +722,11 @@ class Connection(ExportImport, object):
         # It's really not worth the effort to pursue this.
 
         self._cache.invalidate(src._index.keys())
-        self._invalidate_creating(src._creating)
+
+        # Note that we don't bother to invalidate objects created in
+        # the subtransactions because they are (or should be :)
+        # unreachable.
+
 
     def _invalidate_creating(self, creating=None):
         """Dissown any objects newly saved in an uncommitted transaction."""
