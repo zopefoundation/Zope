@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -141,7 +141,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource."""
         self.init_headers(RESPONSE)
-        self.dav__validate('manage_addFolder', REQUEST)
+#        self.dav__validate('manage_addFolder', REQUEST)
         if REQUEST.get('BODY', ''):
             raise 'Unsupported Media Type', 'Unknown request body.'
         parent=self.__parent__

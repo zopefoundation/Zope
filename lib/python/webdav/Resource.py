@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -192,7 +192,7 @@ class Resource:
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
         self.init_headers(RESPONSE)
-        self.dav__validate('manage_delObjects', REQUEST)
+#        self.dav__validate('manage_delObjects', REQUEST)
         url=urlfix(REQUEST['URL'], 'DELETE')
         name=filter(None, string.split(url, '/'))[-1]
         # TODO: add lock checking here
