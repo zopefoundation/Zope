@@ -87,24 +87,18 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.76 1999/04/01 16:12:02 jim Exp $"""
+$Id: Folder.py,v 1.77 1999/04/06 19:16:11 brian Exp $"""
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
-import Globals, SimpleItem, Acquisition, mimetypes, content_types
-from Globals import HTMLFile
+import Globals, SimpleItem
 from ObjectManager import ObjectManager
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
-from webdav.NullResource import NullResource
 from webdav.Collection import Collection
 from FindSupport import FindSupport
-from Image import Image, File
-from App.Dialogs import MessageDialog
-from string import find, rfind, lower
-import marshal
-from cStringIO import StringIO
-import os
+
+
 
 manage_addFolderForm=HTMLFile('folderAdd', globals())
 
@@ -145,3 +139,5 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
 
     __ac_permissions__=()
 
+
+Globals.default__class_init__(Folder)

@@ -1,81 +1,142 @@
 <!--#if manage_options-->
-<TABLE WIDTH="100%" BORDER="1" CELLSPACING="0" CELLPADDING="0">
-<TR>
-
+<!--#call "REQUEST.set('n_', _.len(manage_options))"-->
+<!--#call "REQUEST.set('a_', 0)"-->
 <!--#in manage_options mapping-->
-
-<!--#if sequence-item-->
-  <!--#if expr="URL[-(_.len(action)):]==action or
+<!--#if expr="URL[-(_.len(action)):]==action or
                 URL[-17:]=='/manage_workspace' and _['sequence-start']"-->
-  <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#FFFFFF">
-  <FONT SIZE="-1">
-  <IMG ALIGN="LEFT" HSPACE="0"  SRC="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
-  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab" ALT="">
-  <STRONG>
-    <!--#if action-->
-    <A HREF="<!--#var action-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
-    <!--#else action-->
-    <A HREF="<!--#var URL1-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
-    <!--#/if action-->
-  </STRONG>
-  </FONT>
-  </TD>
-  <!--#else-->
-  <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
-  <FONT SIZE="-1">
-  <IMG ALIGN="LEFT"  HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
-  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab" ALT="">
-  <!--#if action-->
-    <A HREF="<!--#var action-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
-    <!--#else action-->
-    <A HREF="<!--#var URL1-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
-    <!--#/if action-->
-  </FONT>
-  </TD>
-  <!--#/if-->
-<!--#/if sequence-item-->
-<!--#/in manage_options-->
+<!--#call "REQUEST.set('a_', _['sequence-index'])"-->
+<!--#endif-->
+<!--#endin-->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
 
-  <td align="center" valign="top" bgcolor="#efefef">
-  <font size="-1">
-  <img align="left"  hspace="0" src="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
-  <img align="right" hspace="0" src="<!--#var SCRIPT_NAME-->/p_/rtab" ALT="">
-  <a href="<!--#var SCRIPT_NAME-->/HelpSys/hs_index" target="z_help_wnd">
-  Help</a>
-  </font>
+<tr>
+  <td bgcolor="#003366" rowspan="5" width="10%" valign="bottom" 
+   align="left"><font face="Verdana, Arial, Helvetica" color="#ffffff" 
+   size="1">&nbsp;&nbsp;<strong>Zope </strong></font><img 
+   src="<!--#var SCRIPT_NAME-->/p_/sp" width="2" height="1">
   </td>
+  <td bgcolor="#003366" colspan="<!--#var "4 * (n_ + 1)"-->"><img 
+   src="<!--#var SCRIPT_NAME-->/p_/sp" width="1" height="5"></td>
+</tr>
 
-</TR>
-</TABLE>
-<!--#/if manage_options-->
+<tr>
+<!--#in manage_options-->
+<!--#if "_['sequence-index']==a_"-->
+  <td bgcolor="#ffffff" rowspan="2" valign="top" 
+   align="left"><img src="<!--#var SCRIPT_NAME-->/p_/ltab" width="5" 
+   height="5"></td>
+  <td bgcolor="#ffffff"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="1" height="2"></td>
+  <td bgcolor="#ffffff" rowspan="2" valign="top" 
+   align="right"><img src="<!--#var SCRIPT_NAME-->/p_/rtab" width="5" 
+   height="5"></td>
+  <td bgcolor="#003366" rowspan="4"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+<!--#else-->
+  <td bgcolor="#efefef" rowspan="2" valign="top" 
+   align="left"><img src="<!--#var SCRIPT_NAME-->/p_/ltab" width="5" 
+   height="5"></td>
+  <td bgcolor="#efefef"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="1" height="2"></td>
+  <td bgcolor="#efefef" rowspan="2" valign="top" 
+   align="right"><img src="<!--#var SCRIPT_NAME-->/p_/rtab" width="5" 
+   height="5"></td>
+  <td bgcolor="#003366" rowspan="4"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+<!--#endif-->
+<!--#endin-->
+  <td bgcolor="#efefef" rowspan="2" valign="top" 
+   align="left"><img src="<!--#var SCRIPT_NAME-->/p_/ltab" width="5" 
+   height="5"></td>
+  <td bgcolor="#efefef"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="1" height="2"></td>
+  <td bgcolor="#efefef" rowspan="2" valign="top" 
+   align="right"><img src="<!--#var SCRIPT_NAME-->/p_/rtab" width="5" 
+   height="5"></td>
+  <td bgcolor="#003366" rowspan="4"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+</tr>
+<tr>
+<!--#in manage_options mapping-->
+<!--#if "_['sequence-index']==a_"-->
+  <td bgcolor="#ffffff" valign="bottom" 
+   align="center"><font face="Verdana, Arial, Helvetica" 
+   size="1">&nbsp;<a 
+   href="<!--#var action-->"><font 
+   color="#000000"><strong><!--#var 
+   label--></strong></font></a>&nbsp;</font></td>
+<!--#else-->
+  <td bgcolor="#efefef" valign="bottom" 
+   align="center"><font face="Verdana, Arial, Helvetica" 
+   size="1">&nbsp;<a 
+   href="<!--#var action-->"><font 
+   color="#000000"><strong><!--#var 
+   label--></strong></font></a>&nbsp;</font></td>
+<!--#endif-->
+<!--#endin-->
+  <td bgcolor="#efefef" valign="bottom" 
+   align="center"><font face="Verdana, Arial, Helvetica" 
+   size="1">&nbsp;<a 
+   href="<!--#var SCRIPT_NAME-->/HelpSys/hs_index" target="z_help_wnd"><font 
+   color="#000000"><strong>Help</strong></font></a>&nbsp;</font></td>
+</tr>
+<tr>
+<!--#in manage_options-->
+<!--#if "_['sequence-index']==a_"-->
+  <td colspan="3" bgcolor="#ffffff"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+<!--#else-->
+  <td colspan="3" bgcolor="#efefef"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+<!--#endif-->
+<!--#endin-->
+  <td colspan="3" bgcolor="#efefef"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+</tr>
+<tr>
+<!--#in manage_options-->
+<!--#if "_['sequence-index']==a_"-->
+  <td colspan="3" bgcolor="#ffffff"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+<!--#else-->
+  <td colspan="3" bgcolor="#c0c0c0"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+<!--#endif-->
+<!--#endin-->
+  <td colspan="3" bgcolor="#c0c0c0"><img src="<!--#var 
+   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
+</tr>
+</table>
+<!--#endif-->
 
 <!--#if manage_tabs_message-->
 <hr>
 <!--#var manage_tabs_message--><br>
 <!--#var ZopeTime-->
 <hr>
-<!--#/if-->
-
-<BR>
-<TABLE WIDTH="100%" BORDER="0" CELLSPACING="0" CELLPADDING="2">
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
+<!--#endif-->
+<br>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top">
   <!--#if icon-->
-  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" 
-       ALT="<!--#var meta_type-->" BORDER="0">
-  <STRONG>
-  <!--#/if-->
+  <img src="<!--#var SCRIPT_NAME-->/<!--#var icon-->" 
+       alt="<!--#var meta_type-->" border="0">
+  <strong>
+  <!--#endif-->
   <!--#if meta_type-->
   <!--#var meta_type-->
   <!--#else-->
   Object
-  <!--#/if--> 
+  <!--#endif--> 
   at /<!--#var 
   expr="tabs_path_info(SCRIPT_NAME, PATH_INFO)"-->
-  </STRONG>
-  </TD>
-</TR>
-</TABLE>
+  </strong>
+  </td>
+</tr>
+</table>
 <!--#if Zope-Version-->
-<P><EM>You are currently working in version <!--#var Zope-Version--></EM>
-<!--#/if Zope-Version-->
+<p>
+<em>You are currently working in version <!--#var Zope-Version--></em>
+</p>
+<!--#endif-->

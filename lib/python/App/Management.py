@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.18 1999/03/31 15:02:46 brian Exp $"""
+$Id: Management.py,v 1.19 1999/04/06 19:11:43 brian Exp $"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -102,6 +102,7 @@ class Tabs(ExtensionClass.Base):
         )
 
     manage_tabs     =HTMLFile('manage_tabs', globals())
+    
     manage_options  =()
     def tabs_path_info(self, script, path):
         url=script

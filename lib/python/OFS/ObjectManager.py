@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.61 1999/04/02 02:09:52 amos Exp $"""
+$Id: ObjectManager.py,v 1.62 1999/04/06 19:16:11 brian Exp $"""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -113,7 +113,7 @@ class ObjectManager(
     """
 
     __ac_permissions__=(
-        ('View management screens', ('manage_main',)),
+        ('View management screens', ('manage_main','manage_menu')),
         ('Access contents information',
          ('objectIds', 'objectValues', 'objectItems',''),
          ('Anonymous', 'Manager'),
@@ -478,6 +478,8 @@ class ObjectManager(
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
+
+Globals.default__class_init__(ObjectManager)
 
 class PUTer(Acquisition.Explicit):
     """Class to support the HTTP PUT protocol."""

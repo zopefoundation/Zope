@@ -104,6 +104,7 @@ class p_:
     mi=ImageFile('TreeDisplay/www/Minus_icon.gif')
     rtab=ImageFile('App/www/rtab.gif')
     ltab=ImageFile('App/www/ltab.gif')
+    sp  =ImageFile('App/www/sp.gif')
     ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
     ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
     DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
