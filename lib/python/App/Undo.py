@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.14 1999/05/18 15:40:21 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Undo.py,v 1.15 1999/08/18 14:55:19 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -97,8 +97,8 @@ class UndoSupport(ExtensionClass.Base):
     __ac_permissions__=(
         ('Undo changes', (
             'manage_undo_transactions', 'undoable_transactions',
+            'manage_UndoForm',
             )),
-        ('View management screens', ('manage_UndoForm',)),
         )
 
     manage_UndoForm=Globals.HTMLFile(
@@ -142,37 +142,12 @@ class UndoSupport(ExtensionClass.Base):
                 first_transaction+PrincipiaUndoBatchSize)
 
         db=self._p_jar.db
-        try:
-            r=db().undoLog(first_transaction, last_transaction)
-        except:
-            # BoboPOS2
-            r=[]
-            add=r.append
-            h=['','']
-            try:
-                if Globals.Bobobase.has_key('_pack_time'):
-                    since=Globals.Bobobase['_pack_time']
-                else: since=0
-                trans_info=db.transaction_info(
-                    first_transaction,last_transaction,path,since=since)
-
-            except: trans_info=[]
-
-            for info in trans_info:
-                while len(info) < 4: info.append('')
-                t=info[1]
-                l=find(t,' ')
-                if l >= 0: t=t[l:]
-                add(
-                    {'time': DateTime(atof(t)),
-                     'id': "%s %s" % (info[1], info[0]),
-                     'user_name': info[2],
-                     'description': info[3],
-                     })
-
-        else:
-            # ZODB 3
-            for d in r: d['time']=DateTime(d['time'])
+        print 'path', path
+        r=db().undoLog(first_transaction, last_transaction,
+                       lambda d, p=path:
+                       find(d['user_name'], p)==0
+                       )
+        for d in r: d['time']=DateTime(d['time'])
 
         return r
     
@@ -181,17 +156,8 @@ class UndoSupport(ExtensionClass.Base):
         """
         jar=self._p_jar
         db=jar.db
-        try: undo=db().undo
-        except:
-            # BoboPOS 2
-            for i in transaction_info:
-                l=rfind(i,' ')
-                oids=db.Toops( (i[:l],), atoi(i[l:]))
-                jar.reload_oids(oids)
-
-        else:
-            # ZODB 3
-            for i in transaction_info: undo(i)
+        undo=db().undo
+        for i in transaction_info: undo(i)
             
             
         if REQUEST is None: return
