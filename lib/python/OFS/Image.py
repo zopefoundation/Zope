@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -9,6 +9,7 @@ from SimpleItem import Item_w__name__
 from Persistence import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
+import string
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
@@ -16,6 +17,7 @@ def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
 
     Creates a new file object 'id' with the contents of 'file'"""
 
+    id, title = cookId(id, title, file)
     self._setObject(id, File(id,title,file,precondition))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
@@ -51,6 +53,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
     def __init__(self,id,title,file,
 		 precondition='',content_type='application/octet-stream'):
+            
 	try:    headers=file.headers
 	except: headers=None
 	if headers is None:
@@ -171,6 +174,7 @@ def manage_addImage(self,id,file,title='',REQUEST=None):
 
     Creates a new Image object 'id' with the contents of 'file'.
     """
+    id, title = cookId(id, title, file)
     self._setObject(id, Image(id,title,file))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
@@ -196,6 +200,16 @@ class Image(File):
 
     def __str__(self):
 	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
+
+def cookId(id, title, file):
+    if not id and hasattr(file,'filename'):
+        filename=file.filename
+        title=title or filename
+        id=filename[max(string.rfind(filename, '/'),
+                        string.rfind(filename, '\\'),
+                        string.rfind(filename, ':'),
+                        )+1:]                  
+    return id, title
 
 class Pdata(Persistent, Implicit):
     # Wrapper for possibly large data
