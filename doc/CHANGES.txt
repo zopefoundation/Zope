@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+     - The SiteErrorLog allows you to acknowledge (or delete) exceptions,
+       so you can reduce or clear the list without restarting your
+       Zope server. Additionally the SiteErrorLog is covered by unit tests
+       now.
+
      - UI improvement for the ZCatalog. The "catalog contents" allow
        you to filter the cataloged objects by path now.
 

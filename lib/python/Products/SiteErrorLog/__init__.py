@@ -17,6 +17,11 @@ $Id$
 """
 
 import SiteErrorLog
+from ImageFile import ImageFile
+
+misc_={
+    'ok.gif': ImageFile('www/ok.gif', globals()),
+}
 
 def initialize(context):
     context.registerClass(SiteErrorLog.SiteErrorLog,

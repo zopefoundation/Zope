@@ -61,6 +61,27 @@ class SiteErrorLogTests(unittest.TestCase):
         # Now look at the SiteErrorLog, it has one more log entry
         self.assertEquals(len(sel_ob.getLogEntries()), previous_log_length+1)
 
+    def testForgetException(self):
+        elog = self.app.error_log
+
+
+        # Create a predictable error
+        try:
+            raise AttributeError, "DummyAttribute"
+        except AttributeError:
+            info = sys.exc_info()
+            elog.raising(info)
+        previous_log_length = len(elog.getLogEntries())
+
+        entries = elog.getLogEntries()
+        self.assertEquals(entries[0]['value'], "DummyAttribute")
+
+        # Kick it
+        elog.forgetEntry(entries[0]['id'])
+
+        # Really gone?
+        self.assertEquals(len(elog.getLogEntries()), previous_log_length-1)
+
     def testIgnoredException(self):
         # Grab the Site Error Log
         sel_ob = self.app.error_log

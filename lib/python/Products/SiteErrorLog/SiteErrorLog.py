@@ -120,6 +120,22 @@ class SiteErrorLog (SimpleItem):
     # Exceptions that happen all the time, so we dont need
     # to log them. Eventually this should be configured
     # through-the-web.
+    security.declareProtected(use_error_logging, 'forgetEntry')
+    def forgetEntry(self, id, REQUEST=None):
+        """Removes an entry from the error log."""
+        log = self._getLog()
+        cleanup_lock.acquire()
+        i=0
+        for entry in log:
+            if entry['id'] == id:
+                del log[i]
+            i += 1
+        cleanup_lock.release()
+        if REQUEST is not None:
+           return Globals.MessageDialog(title='Entry removed',
+                message='Error log entry was removed.',
+                action='./manage_main',)
+
     _ignored_exceptions = ( 'Unauthorized', 'NotFound', 'Redirect' )
 
     security.declarePrivate('raising')

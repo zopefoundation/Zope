@@ -69,6 +69,7 @@ No exceptions logged.
   <th align="left">Time</th>
   <th align="left">Username (User Id)</th>
   <th align="left">Exception</th>
+  <th></th>
  </tr>
  <tr tal:repeat="entry entries">
   <td valign="top" nowrap="nowrap">
@@ -88,6 +89,7 @@ No exceptions logged.
       Application object has no attribute "zzope"</span>
    </a>
   </td>
+  <td><a href="#" tal:attributes="href string:${here/absolute_url}/forgetEntry?id=${entry/id}"><img title="Forget this entry" src="/misc_/SiteErrorLog/ok.gif" border="0"></a></td>
  </tr>
 </table>
 
