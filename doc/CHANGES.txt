@@ -7,6 +7,10 @@ Zope Changes
         - Collector #2390: Objects of type 'Help Image' were not properly
           re-registered inside registerHelp().
 
+        - Fixed broken FTP download for larger files.
+
+        - Collector # 2396: StructuredText did not allow URLs containing "%"
+
 
     Zope 2.4 beta 2
 
