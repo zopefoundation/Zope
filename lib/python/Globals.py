@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys, os
 from string import atof, rfind
@@ -24,6 +24,22 @@ except:
 from SingleThreadedTransaction import PickleDictionary, Persistent
 import DocumentTemplate, MethodObject
 
+def default__class_init__(self):
+    dict=self.__dict__
+    have=dict.has_key
+    ft=type(default__class_init__)
+    for name, v in dict.items():
+	if hasattr(v,'_need__name__') and v._need__name__:
+	    v.__dict__['__name__']=name
+	    if name=='manage' or name[:7]=='manage_':
+		name=name+'__roles__'
+		if not have(name): dict[name]='Manager',
+	elif name=='manage' or name[:7]=='manage_' and type(v) is ft:
+	    name=name+'__roles__'
+	    if not have(name): dict[name]='Manager',
+
+Persistent.__dict__['__class_init__']=default__class_init__
+
 class HTML(DocumentTemplate.HTML,Persistent,):
     "Persistent HTML Document Templates"
 
@@ -37,6 +53,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     func_code=func_code()
     func_code.co_varnames='trueself', 'self', 'REQUEST'
     func_code.co_argcount=3
+    _need__name__=1
 
     def __init__(self,name,_prefix=None, **kw):
 	if _prefix is None: _prefix=SOFTWARE_HOME+'/lib/python'
@@ -73,6 +90,15 @@ else:
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.12  1998/01/08 17:38:03  jim
+# Added class initialization machinery to:
+#
+#   - Make sure HTMLFile instances got a __name__ that matched the name
+#     they were assigned to in the class, and
+#
+#   - Give HTMLFile and Python methods whos names are 'manage' or
+#     begin with 'manage_' a __roles__ of ('Manager',)
+#
 # Revision 1.11  1997/12/23 15:08:20  jim
 # Changed HTMLFile to use method protocol rather than acquisition
 # protocol.
