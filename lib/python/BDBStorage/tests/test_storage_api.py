@@ -30,6 +30,9 @@ class StorageAPI(test_create.BaseFramework):
             raise
         self._transaction = Transaction()
 
+    def _close(self):
+        self._storage.close()
+
     def checkBasics(self):
         self._storage.tpc_begin(self._transaction)
         # This should simply return
