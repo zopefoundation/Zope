@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.1 1996/10/22 22:25:43 jim Exp $
+  $Id: ExtensionClass.h,v 1.2 1996/11/08 22:07:26 jim Exp $
 
   Extension Class Definitions
 
@@ -56,6 +56,9 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.2  1996/11/08 22:07:26  jim
+  Added parens in if to make -Wall happy.
+
   Revision 1.1  1996/10/22 22:25:43  jim
   *** empty log message ***
 
@@ -133,7 +136,7 @@ typedef struct {
 
 #define PyExtensionClass_Export(D,N,T) { \
   PyObject *_ExtensionClass_module; \
-  if(_ExtensionClass_module=PyImport_ImportModule("ExtensionClass")) { \
+  if((_ExtensionClass_module=PyImport_ImportModule("ExtensionClass"))) { \
       if(PyObject_CallMethod(_ExtensionClass_module, \
 			     "ExtensionClassType", "Oi", &T, 42)) \
 	PyMapping_SetItemString(D,N,(PyObject*)&T); \
