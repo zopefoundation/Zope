@@ -63,6 +63,9 @@ Zope Changes
 
     Bugs fixed
  
+      - 'setup.py' did not install the new 'Zope' compatibility module
+        (the 'Zope' package has been renamedd to 'Zope2').
+
       - Collector #1507: Zope now binds again to all available IP addresses if
         ip-address is unset
 

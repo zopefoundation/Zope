@@ -608,6 +608,7 @@ setup(
     name='Zope',
     author=AUTHOR,
 
+    py_modules=['Zope'],
     packages=['Zope2', 'Zope2.App', 'Zope2.Startup', 'Zope2.Startup.misc',
               'Zope2.Startup.nt', 'Zope2.Startup.tests'],
     data_files=[ ['Zope2/Startup', ['Zope2/Startup/*.xml']] ],
