@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -652,7 +652,7 @@ class HTTPRequest(BaseRequest):
         # (which is usually the default when the exception
         # method is called on the response).
         try: object=req.traverse(path)
-        except: rsp.exception(abort=0)
+        except: rsp.exception()
         if object is None:
             req.close()
             raise rsp.errmsg, sys.exc_info()[1]
