@@ -199,7 +199,8 @@ class ProductContext:
         Products.meta_types=Products.meta_types+(
             { 'name': meta_type or instance_class.meta_type,
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
-              'product': pid                
+              'product': pid,
+              'permission': permission,                
               },)
 
         m[name]=initial
