@@ -215,7 +215,7 @@ class HTMLClass:
             else:
                 getattr(self, self.element_types[c.getNodeName()])(
                     c, level, output)
-        output('</p>')
+        output('</p>\n')
 
     def link(self, doc, level, output):
         output('<a href="%s">' % doc.href)

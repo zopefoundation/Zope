@@ -7,8 +7,9 @@ try:
 except:
     pass    
 
-
 import string
-letters = string.letters
 
+letters     = string.letters
+punctuations = string.punctuation 
 
+lettpunc    = letters + punctuations

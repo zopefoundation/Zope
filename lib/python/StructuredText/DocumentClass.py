@@ -85,7 +85,7 @@
 
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find, rstrip
-from STletters import letters
+from STletters import *
 
 
 StringType=type('')
@@ -867,7 +867,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile(r'\s*\*([ \n%s0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
+        expr = re.compile(r'\s*\*([ \n%s0-9]+)\*(?!\*|-)' % lettpunc).search
         ):
 
         r=expr(s)
@@ -914,7 +914,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile(r"\s+\_([%s0-9\s\.,\?]+)\_" % letters).search):
+                      expr=re.compile(r"\s+\_([%s0-9\s]+)\_" % lettpunc).search):
         
         result = expr(s)
         if result:
@@ -926,7 +926,7 @@ class DocumentClass:
     
     def doc_strong(self, 
                    s,
-        expr = re.compile(r'\s*\*\*([ \n%sZ0-9.:/;\-,!\?\'\"]+)\*\*' % letters).search
+        expr = re.compile(r'\s*\*\*([ \n%s0-9]+)\*\*' % lettpunc).search
         ):
 
         r=expr(s)

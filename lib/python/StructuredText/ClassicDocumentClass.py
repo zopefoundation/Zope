@@ -85,7 +85,7 @@
 
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find
-from STletters import letters
+from STletters import letters,lettpunc,punctuations
 
 StringType=type('')
 ListType=type([])
@@ -584,7 +584,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile('\s*\*([ \n%s0-9.:/;,\'\"\?\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
+        expr = re.compile('\s*\*([ \n%s0-9]+)\*(?!\*|-)' % lettpunc).search
         ):
 
         r=expr(s)
@@ -632,7 +632,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile("\s+\_([%s0-9\s\.,\?\/]+)\_" % letters).search):
+                      expr=re.compile("\s+\_([0-9%s ]+)\_" % lettpunc).search):
         
         result = expr(s)
         if result:
@@ -644,7 +644,7 @@ class DocumentClass:
     
     def doc_strong(self, 
                    s,
-        expr = re.compile('\s*\*\*([ \n%s0-9.:/;\-,!\?\'\"]+)\*\*' % letters).search
+        expr = re.compile('\s*\*\*([ \n%s0-9]+)\*\*' % lettpunc).search
         ):
 
         r=expr(s)
@@ -657,19 +657,9 @@ class DocumentClass:
     def doc_href(
         
         self, s,
-        expr1 = re.compile("(\"[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\:\/\.\~\-]+)([,]*\s*)" % letters).search,
-        expr2 = re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#]+)(\s*)' % letters).search):
+        expr1 = re.compile("(\"[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)([,]*\s*)" % letters).search,
+        expr2 = re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)(\s*)' % letters).search):
         
-        #expr1=re.compile('\"([ a-zA-Z0-9.:/;,\n\~\(\)\-]+)\"'
-        #                  ':'
-        #                  '([a-zA-Z0-9.:/;,\n\~]+)(?=(\s+|\.|\!|\?))'
-        #                  ).search,
-        #expr2=re.compile('\"([ a-zA-Z0-9./:]+)\"'
-        #                  ',\s+'
-        #                  '([ a-zA-Z0-9@.:/;]+)(?=(\s+|\.|\!|\?))'
-        #                  ).search,
-        
-        punctuation = re.compile("[\,\.\?\!\;]+").match
         r=expr1(s) or expr2(s)
 
         if r:
@@ -679,19 +669,16 @@ class DocumentClass:
             start,e = r.span(1)
             name    = s[start:e]
             name    = replace(name,'"','',2)
-            #start   = start + 1
             st,end   = r.span(3)
-            if punctuation(s[end-1:end]):
-                end = end -1
-            link    = s[st:end]
-            #end     = end - 1                        
             
+            if s[end-1:end] in punctuations: end-=1
+            link    = s[st:end]
+           
             # name is the href title, link is the target
             # of the href
             return (StructuredTextLink(name, href=link),
                     start, end)
             
-            #return (StructuredTextLink(s[start:end], href=s[start:end]),
-            #        start, end)
+
         else:
             return None
