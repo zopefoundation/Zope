@@ -114,4 +114,4 @@ def test_suite():
     return unittest.makeSuite(TALESTests)
 
 if __name__=='__main__':
-    main()
+    unittest.main(defaultTest='test_suite')
