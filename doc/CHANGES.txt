@@ -142,6 +142,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1267: applied patch to fix segmentation faults on 
+       x86_64 systems
+
      - ZReST: the charset used in the rendered HTML was not set to the 
        corresponding output_encoding property of the ZReST instance. In addition
        changing the encodings through the Properties tab did not re-render 

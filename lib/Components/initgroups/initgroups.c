@@ -23,10 +23,13 @@ static PyObject *
 initgroups_initgroups(PyObject *self, PyObject *args)
 {
 	char *username;
+	unsigned int igid;
 	gid_t gid;
 
-	if (!PyArg_ParseTuple(args, "sl:initgroups", &username, &gid))
+	if (!PyArg_ParseTuple(args, "sI:initgroups", &username, &igid))
 		return NULL;
+
+	gid = igid;
 
 	if (initgroups(username, gid) == -1)
 		return PyErr_SetFromErrno(PyExc_OSError);
