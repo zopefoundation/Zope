@@ -4,6 +4,521 @@ Zope History
   Zope. Change information for the current release can be found
   in the file CHANGES.txt.
 
+
+  Zope 2.5.1 beta 1
+    
+    Bugs Fixed
+
+      - Fixed failed incref in cAccessControl that caused problems when
+        ghosting occured.
+
+
+  Zope 2.5.1
+
+    New Features
+
+      - Added the fsIndex feature.  This adds a new BTree variant,
+        fsBTree, a module fsIndex.py that uses it, and some changes
+        to FileStorage.py to use fsIndex if it exists so that the
+        oid-to-offset index (pindex) is a BTree rather than a straight
+        dict.
+
+      - ZODB changes necessary to support StandaloneZODB were merged
+
+      - requestprofiler: added new --daysago option and added
+        support for reading gzipped detailed logfiles
+
+      - HTTP_TRACEBACK_STYLE environment variable controls the
+        appearance of error tracebacks when not in debug
+        mode. Recognized values are 'none' (no traceback), 'js'
+        (&sect; that expands into traceback when clicked), and
+        'plain' (plain text).  The default is to include the traceback
+        in an HTML comment.
+
+    Bugs Fixed
+
+      - A fix for the issue addressed by Hotfix 2002-04-15 was 
+        incorporated into the core.
+
+      - Fixed table regex parsing bug in ClassicStructuredText
+        thanks to Albert Ting via Zope maillist.
+
+      - Register CatalogPathAware as a ZClass base class in response
+        to Collector #33.
+
+      - Fix for Collector #319: filtered_manage_options didn't
+        correctly filter tabs based on permission.
+
+      - Fix for Collector # 275: setPermissionDefault was not being 
+        propagated to actual security settings.
+
+      - Fixed bug where TTW code that called:
+
+          del REQUEST.SESSION['key']
+
+        Would fail with a slice error (due to the security machinery).
+        Assigning __garded_delitem__ to __delitem__ solves this problem,
+        and allows del to be called against a SESSION key value.
+
+      - Fixed a bug that could cause spurious AttributeErrors and other
+        strange failures when trying to work with methods acquired
+        from within the context of a transient object obtained via
+        REQUEST.SESSION.
+
+      - A last modified attribute has been added to transient objects.
+        The conflict resolution method of transient objects now uses the
+        last_modified time when deciding which if any of the three states
+        to return.  Objects with a later last modified time are preferred.
+        Thanks to Tres for finding a corner case that identified the
+        problem with the "old" conflict resolution machinery and
+        suggesting this fix.
+
+      - Collector #236: recursive ownership changes could be
+        short-circuited prematurely if a user already owned a
+        subobject.
+
+      - Page templates will now not expand if expand=0 is passed to them.
+
+      - ZTUtils.Zope.Batch now has the same default orphan parameter
+        as ZTUtils.Batch.Batch.  Calculation of previous batches with
+        non-zero orphans is fixed.
+
+      - Python-based Scripts that need to be recompiled for efficiency
+        now emit a single, much more explanatory log entry, per run.
+        The recompile() utility function works properly now.
+
+      - Caused sqltest implementation to match help system docs
+        Expression tags now work. "multiple" attribute now works.
+        type="nb" attr now works.  (thanks to Christian Theune for
+        the patch)
+
+      - Fixed cAccessControl to incref __roles__ in imPermissionRole_of
+
+      - Fixed long standing bug in PythonScript where get_size returned
+        the incorrect length. This broke editing using EMACS via FTP or
+        WebDAV. Thanks to John Glavin at South River Technologies for
+        help finding the bug.
+
+      - Collector #207: fixed problem with inner links in STXNG
+        
+      - Collector #210: HTML() function of StructuredText produced wrong
+        <h0> tags. 
+
+      - Collector #227: improved handling of unicode string in TextIndex.py
+        with unmodified default encoding in site.py.
+
+      - Collector #166: ObjectManger.all_meta_types() implemented only
+        an incomplete filter based on interfaces.
+
+      - FTP: Downloading files through FTP has been broken since 2.4.0
+        because the downloaded file has been stored with a HTTP 
+        header at the beginning of the file. Fixed!
+
+      - FTP: Spaces in usernames inside a FTP file listing are now
+        replaced by underscores to avoid confusion with some FTP clients.
+
+      - Added UnicodeSplitter to Windows build process
+  
+      - STXNG: underlined text at the end of line has not been recognized
+        properly
+
+      - Collector #250: applied several patches for TextIndex for better
+        unicode support for the GlobbingLexicon
+
+      - Fixed compatibility of the Interface package with newer versions
+        of Python.
+
+      - Collector #259: walkandscrub.py did not delete all .pyc and .pyo
+        files during installation. Fixed.
+
+      - Collector #254, make getOwner wrap the owner object in its context
+
+      - DTML: unicode conversion inside DTML to other character sets
+        has been broken (workaround added to z2.py)
+
+      - Collector #278: DocumentWithImages could not handle URLs with
+        underscores
+
+      - WebDAV: removing an non-existing property now returns a HTTP
+        200-OK response instead of 404 (now compliant with RFC 2518)
+
+      - Updated to zlib 1.1.4.
+
+      - Fixed a bug in TM.py that would cause database adapters to hang
+        on errors in the second phase of the two-phase commit.
+
+      - Collector #17: Fixed broken links in StandardCacheManagers help
+
+      - Collector #303: Properties of type 'long' got truncated 
+
+      - Collector #325: adding a new TextIndex to an existing Catalog
+        cleared the standard Vocabulary.
+
+      - Collector #343: The ZCatalogs 'Indexes' view showed the 
+        wrong number of indexed objects for FieldIndexes.
+
+      - FTP server: replaced 'System_Process' by 'Sysproc' to 
+        avoid breaking some FTP clients and the output format
+        with overlong usernames.
+
+      - Propertysheets: Ids like 'values','keys' and 'values' are
+        now forbidden as they break WebDAV functionality. Existing
+        Propertysheets are not affected
+
+      - FTP: some passive FTP connections were blocking.  Fixed.
+
+      - Fix potential segfault with cAccessControl's permission role
+        deallocator when the permisson role is constructed with a non-tuple
+        argument.
+
+      - Collector #185, 341: PCGIServer and FCGIServer logs corrected
+        and now output extended information like HTTPServer does.
+
+      - Collector #167: superValues() now includes items with duplicate
+        IDs
+
+
+  Zope 2.5.1 beta 1
+    
+    Bugs Fixed
+
+      - Fixed failed incref in cAccessControl that caused problems when
+        ghosting occured.
+
+
+  Zope 2.5.0
+
+    Bugs Fixed
+
+      - Btree module and UnicodeSplitter could potentially 
+        fail to incref Py_None on return
+
+      - Setting proxy roles on DTMLMethods and Documents has been broken
+
+      - Collector #99: items(), keys() and values() methods
+        of IIBucket objects has been broken when called with
+        min/max parameters.
+
+      - WebDAV: The long outstanding read-only problem with WinWord
+        and .html is finally solved. Zope sends now an additional ETag
+        header for DTMLMethods and DTMLDocuments. Many thanks to
+        Joachim Schmitz for this hint. 
+
+      - PathIndex: fixed minor bugs, enhanced testsuite
+
+      - DTML-MIME tag: creates now a 'Mime-Version: 1.0' to make
+        some fussy email programs happy
+
+      - utilities/requestprofiler - fixed bugs in timed mode which could
+        show nonsensical results.
+
+    Features Added
+
+      - TextIndex/Splitters: the constructor of all three splitters
+        has now three new optional parameters:
+
+        'maxlen'=(1-256) -  to specify the maximum length of 
+                            splitted words
+
+        'singlechar'=(1|0) - allows single characters to be indexed
+
+        'indexnumbers'=(1|0)- allows numbers to be indexed
+
+        The default values of all parameters reflect the standard
+        behaviour.
+
+      - Enhancements to utilites/requestprofiler.py:
+
+        Added readstats and writestats features which allow for saves and
+        reuse of profile stats between runs of the requestprofiler.
+
+        Added urlfocus mode.  Urlfocus mode presents a summary of
+        activity within a period of time before and after the
+        invocation of a particular URL as it was recorded in the big M
+        log.  This can be useful when trying to track down a problem
+        which you believe is related to some series of URL invocations
+        as opposed to a single URL invocation.
+
+      - added doc/ENVIRONMENT.txt to document all used environment
+        variables Zope is using
+
+      - Provided a much more robust tool for recovering data from
+        damaged FileStorage files:
+
+        Allow recovery of data when:
+
+          - either transaction or data records are damaged and when
+
+          - multiple parts of a file are damaged
+
+        The interface has changed to not modify in place.
+
+        Other features:
+
+          - Progress indicator
+
+          - Verbose output
+
+          - optional packing
+
+          - index creation
+
+      - The last entry in the breadcrumb path in the ZMI is now an
+        underlined hyperlink.
+
+      - Added a new script "utitilies/check_catalog.py" to perform
+        some consistency checks on a ZCatalog instance
+
+      - Added the following new products related to sessioning:
+        
+	- browser id manager
+
+	- session data manager
+
+	- transient object container
+
+	- temporary folder
+
+      - Zope will create default sessioning objects on startup
+
+      - Zope will create an Examples folder on startup. This folder
+      contains a collection of simple example applications.
+  
+    Bugs Fixed
+    
+      - STXNG: added '+' as allowed character inside URLs
+
+      - enhanced the checks for 'Domains' field in the UserFolder
+
+      - Webdav: fixed broken MOVE and COPY commands
+
+      - Updated DTMLMethod validation support patch with version
+        by Steve Alexander
+
+      - <dtml-var "..." fmt="structured-text"> did not work 
+        properly under some acquisition related reaons.
+
+      - pre-2.5 installation could not properly migrated to 2.5 because
+        of changes in the Splitter API
+
+      - ZODB conflict errors were logged at a severity that caused
+        tracebacks to be logged to the stupid log file "out of the box".
+        Because conflict errors happen under normal operations, and
+        their appearance in the log frequently alarms folks, typical conflict
+        error logging verbiage has been reduced, and traceback logging
+        has been changed to happen only at BLATHER log level, which
+        means that conflict tracebacks will only be logged if
+        STUPID_LOG_SEVERITY is set to -100 or lower.
+
+
+  Zope 2.5 Alpha 2
+
+    Bugs Fixed
+    
+      - New accelerated security management bugfix in App/Manager.py,
+        changing calling sequence to positional parameters.
+
+      - STXNG: re-enabled inner now work also through DTML
+        and not only when using STXNG standalone
+
+      - STXNG: generated HTML is now more HTML4/XHTML compliant
+        (quoted attributes, inner links)
+
+
+  Zope 2.5 Alpha 1
+
+    Features Added
+
+      - re-enabled inner links for STXNG documents.
+
+      - Zope installations upgraded from pre-2.4 installations
+        did not show the WebDAV LockManager entry in the control panel.
+
+      - "requestprofiler.py" script in utilities now does better analysis,
+        including:
+
+        "active" in detailed output is now slightly more meaningful.
+        It is > 0 only if other requests started after it started
+        but before it finished.  The greater the active count, the
+        more likely it is that something was going on at the time
+        in which the request ran that caused a slowdown.
+
+        Multiple files may be analyzed at the same time.
+
+        Also, script recognizes "U" opcode in big M logs as meaning a restart.
+
+      - Added a "preview" field to the edit form for Image
+        objects. This provides a preview of the actual image data on 
+        the form to make it easier to know what you are working
+        on. The preview image is scaled if necessary to be useful
+        without being obtrusive.
+
+      - Added the ability to edit File object content in a
+        textarea. If the content of a File is a text type and the size
+        is less than 64K (the max size for text area data in some Web
+        browsers), then you can edit the content as you would a DTML
+        or other text-based object.
+
+      - New user management API for user folder objects was implemented.
+
+        As of Zope 2.5, manage_addUser, manage_editUser and manage_delUsers
+        form the official API for user management. The old grotesque way of
+        using manage_users is now deprecated. 
+
+        The default implementation of these API methods simply call the
+        _doXXX versions of the methods that user folder authors have already
+        implemented, which means that these APIs will work for current user
+        folder implementations without any action on the part of the author.
+
+        User folder authors that implement the new manage_XXX API can get
+        rid of the old _doXXX versions of the methods, which are no longer
+        required (we only use them if the new api is not directly implemented).
+
+        API documentation for the User Folder API was also added to
+        the help system.
+
+      - Python compiler in RestrictedPython brought in sync with
+        main distribution.  Made to be compatible with Python 2.2.
+
+      - Added links in the "debugging information" control panel
+        for viewing the contents of the ZODB cache.
+
+      - Added user password encryption capability, fulfilling the
+        needs described in the proposal at:
+        http://dev.zope.org/Wikis/DevSite/Proposals/EncryptedUserfolderPasswords
+        There is now a "properties" tab in user folders where you
+        can select whether passwords are stored encrypted.
+
+      - Locale support in STXNG has been broken (since 2.4.0)
+
+      - Added SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME to the
+        control panel to make it easer to tell what configuration of
+        Zope is running.
+
+      - Re-applied Medusa patch to allow proxy-like HTTP requests
+        (GET http://hostname:port/ HTTP/1.0)
+
+      - Objects indexed by the PathIndex can now provide a hook or an 
+        attribute with the same name as the index name to provide
+        a customized path information other than using getPhysicalPath().
+
+      - Selecting "Clear Catalog" from the ZCatalog "Advanced" did not clear
+        the vocabulary associated with a TextIndex. 
+
+      - Added updated and enhanced testsuite for STXNG.
+
+      - added getEntryForObject() for PathIndexes. Reworked PathIndex's
+        internal inverse index.
+
+      - API help topics can now document functions as well as classes.
+
+      - Security accelerations in c
+
+      - Accelerated C Document Template handling; Document Templates
+        can now do additional rendering in C, improving performance.
+
+      - Unicode support for ZCatalog: 
+
+        - added new UnicodeSplitter
+
+        - ZCatalog now allows unicode strings as attributes
+          of objects to be indexed using a TextIndex
+          (see lib/python/ZCatalog/README.txt)
+     
+
+    Bugs fixed
+
+      - WebDAV: Zope escaped nested object properties derived from
+        internal dav__* functions in PropertySheets.py although they
+        are considered to be safe and do not need any escaping. This 
+        caused Zope to be completely incomplete with Windows XP. Fixed !
+
+      - WebDAV: '(' and ')' are now allowed in Ids for Zope objects.
+        This is needed when one tries to duplicate files using cut&paste
+        through Microsoft webfolders.
+
+      - Collector #2532: ZCatalog.availableSplitters is now protected
+        by security mechanism.
+
+      - Collector #2412: a read-only FileStorage has not been closed
+        properly.
+
+      - Collector #2390: Objects of type 'Help Image' were not properly
+        re-registered inside registerHelp().
+
+      - Fixed broken FTP download for larger files.
+
+      - Collector # 2396: StructuredText did not allow URLs containing "%"
+
+      - Collector # 2397: StructuredText could not handle underlined text
+        properly. Also <dtml-var stxdoc fmt="structured-text"> will no longer
+        produce <html>..<body>  and </body>..</html>
+
+      - Collector #2438:  Using a slice operation like [30:] on a 
+        ZCatalog search result caused a MemoryError because 
+        the __getslice__ implementation used  range() instead
+        of xrange().
+
+      - Collector #2423: Searching a FieldIndexes for documents
+        with a blank string has been broken.
+
+      - WebDAV Lockmanager was not working due to a Python 2.1 
+        incompatibility.
+
+      - Collector #2482: A COPY operation through WebDAV on a locked
+        resource left the destination resource in a locked state
+        so any WebDAV client  was unable to unlock the destination 
+        object. Locks are now cleared from the destination object.
+
+      - Error message AttributeError/_v_blocks when a DTMLfile is
+        not present or could not be read replaced by a more
+        informative message.
+
+      - Collector #2497: SERVER_PROTOCOL variable is now compliant
+        with the CGI specification and looks like "HTTP/1.1" instead
+        of "1.1"
+
+      - Creation of a TextIndex ignored the vocabulary setting.
+
+      - Fixed broken aquisition of vocabularies from a Catalog
+        by a TextIndex.
+
+      - Collector #2504: level parameter has not been passed to HTMLClass
+        constructor
+
+      - default for 'orphan' attribute of <dtml-in> is now 0 instead 3.
+
+      - Fixed conflict resolution problem in BTrees (BTreeTemplace/
+        _p_resolveConflict)
+
+      - Fixed many subtle bugs in the BTrees, including some that
+        could silently corrupt the BTree and render some data
+        inaccessible. 
+
+      - Collector #2524: Medusa sent "HTTP/None..." as response header when
+        then HTTP version could not be determined from the HTTP request.
+        Now sending "HTTP/1.0..."
+
+      - queries for the PathIndex can now specified as tuple (path,level).
+        the level parameter inside a query overrides the optional 
+        'level' parameter for a complete search request.
+
+      - Collector #2561: XXBucket.values() returned keys instead of values 
+
+      - Fixed the API docs for user objects.
+
+      - Fixed bad interaction between ZCatalog and dtml-in (submitted by
+        Steve Alexander)
+   
+      - Multiple links in a paragraph with mixed link notation
+        (quotation+colon+URL or quotation+comma+whitespace+URL) did not
+        work properly (thanks to Alastair Burt for reporting and submitting 
+        the patch).
+
+      - Fixed case where DTMLMethod.py complained when it tried to remove
+        the accelerated DTML security validation routine after recursive
+	entry.
+
     Zope 2.4
 
       Bugs fixed
