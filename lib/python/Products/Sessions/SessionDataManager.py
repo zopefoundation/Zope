@@ -1,5 +1,5 @@
 ############################################################################
-#
+# 
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -25,10 +25,10 @@ import SessionInterfaces
 from SessionPermissions import *
 from types import StringType
 from common import DEBUG
+from BrowserIdManager import isAWellFormedBrowserId, getNewBrowserId,\
+     BROWSERID_MANAGER_NAME
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse
-
-BID_MGR_NAME = 'browser_id_manager'
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
 
@@ -103,19 +103,20 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     security.declareProtected(ARBITRARY_SESSIONDATA_PERM,'getSessionDataByKey')
     def getSessionDataByKey(self, key):
         return self._getSessionDataObjectByKey(key)
-
+    
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdManager')
     def getBrowserIdManager(self):
         """ """
-        mgr = getattr(self, BID_MGR_NAME, None)
+        mgr = getattr(self, BROWSERID_MANAGER_NAME, None)
         if mgr is None:
             raise SessionDataManagerErr,(
-                'No browser id manager named %s could be found.' % BID_MGR_NAME
+                'No browser id manager named %s could be found.' %
+                BROWSERID_MANAGER_NAME
                 )
         return mgr
 
     # END INTERFACE METHODS
-
+    
     def __init__(self, id, path=None, title='', requestName=None):
         self.id = id
         self.setContainerPath(path)
@@ -160,14 +161,14 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             self.obpath = list(path) # sequence
         else:
             raise SessionDataManagerErr, ('Bad path value %s' % path)
-
+            
     security.declareProtected(MGMT_SCREEN_PERM, 'getContainerPath')
     def getContainerPath(self):
         """ """
         if self.obpath is not None:
             return string.join(self.obpath, '/')
         return '' # blank string represents undefined state
-
+    
     def _hasSessionDataObject(self, key):
         """ """
         c = self._getSessionDataContainer()
@@ -251,6 +252,12 @@ class SessionDataManagerTraverser(Persistent):
         self._sessionDataManager = sessionDataManagerName
 
     def __call__(self, container, request, StringType=StringType):
+        """
+        This method places a session data object reference in
+        the request.  It is called on each and every request to Zope in
+        Zopes after 2.5.0 when there is a session data manager installed
+        in the root.
+        """
         try:
             sdmName = self._sessionDataManager
             if not isinstance(sdmName, StringType):
@@ -268,7 +275,10 @@ class SessionDataManagerTraverser(Persistent):
             msg = 'Session automatic traversal failed to get session data'
             LOG('Session Tracking', WARNING, msg, error=sys.exc_info())
             return
+
+        # set the getSessionData method in the "lazy" namespace
         if self._requestSessionName is not None:
             request.set_lazy(self._requestSessionName, getSessionData)
+
 
 Globals.InitializeClass(SessionDataManager)

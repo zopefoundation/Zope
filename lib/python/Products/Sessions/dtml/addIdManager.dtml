@@ -6,7 +6,6 @@
 	   )">
 
 <FORM ACTION="constructBrowserIdManager" METHOD="POST">
-<input type=hidden name="id" value="browser_id_manager">
 <TABLE CELLSPACING="2">
 <tr>
 <td>&nbsp;</td>
@@ -60,29 +59,24 @@ by interacting with the Zope sessioning machinery.
 </tr>
 <tr>
 <td>
-<div align=left class="form-label">Look for Browser Id Name in</th>
+<div align=left class="form-label">Look for Browser Id in</th>
 </td>
 <td>
 <table border=0>
 <tr>
    <td align=left>
-    <input type="radio" name="location" value="cookiesonly"> Cookies only
+    <input type="checkbox" name="location:list" value="cookies" CHECKED> Cookies
    </td>
 </tr>
 <tr>
    <td align=left>
-    <input type="radio" name="location" value="cookiesthenform" CHECKED> Cookies then form
+    <input type="checkbox" name="location:list" value="form" CHECKED> Forms and Query Strings
    </td>
 </tr>
 <tr>
    <td align=left>
-    <input type="radio" name="location" value="formonly"> Form only
+    <input type="checkbox" name="location:list" value="url" CHECKED> URLs
    </td> 
-</tr>
-<tr>
-   <td align=left>
-    <input type="radio" name="location" value="formthencookies"> Form then cookies
-   </td>
 </tr>
 </table>
 </td>
@@ -93,6 +87,16 @@ by interacting with the Zope sessioning machinery.
 <td>&nbsp;</td>
 </tr>
 
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Automatically Encode Zope-Generated<br>URLs With A Browser Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="auto_url_encoding" SIZE="20">
+  </TD>
+</TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">

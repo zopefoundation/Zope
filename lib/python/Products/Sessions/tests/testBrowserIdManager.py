@@ -13,30 +13,41 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.11 2002/08/14 22:25:10 mj Exp $
+$Id: testBrowserIdManager.py,v 1.12 2002/08/19 19:50:18 chrism Exp $
 """
-__version__ = "$Revision: 1.11 $"[11:-2]
+__version__ = "$Revision: 1.12 $"[11:-2]
 
 import sys
 import ZODB
-from Products.Sessions.BrowserIdManager import BrowserIdManager, BrowserIdManagerErr
+from Products.Sessions.BrowserIdManager import BrowserIdManager, \
+     BrowserIdManagerErr, BrowserIdManagerTraverser, \
+     isAWellFormedBrowserId
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
+from ZPublisher.BeforeTraverse import queryBeforeTraverse
 from sys import stdin
 from os import environ
+from OFS.Application import Application
 
 class TestBrowserIdManager(TestCase):
     def setUp(self):
-        self.m = BrowserIdManager('foo')
+        self.app = Application()
+        self.app.id = 'App'
+        mgr = BrowserIdManager('browser_id_manager')
+        self.app._setObject('browser_id_manager', mgr)
+        self.m = self.app.browser_id_manager
         resp = HTTPResponse()
         environ['SERVER_NAME']='fred'
         environ['SERVER_PORT']='80'
-        req = HTTPRequest(stdin, environ, resp)
-        self.m.REQUEST = req
+        self.req = HTTPRequest(stdin, environ, resp)
+        self.req['TraversalRequestNameStack'] = ['foo', 'bar']
+        self.app.REQUEST = self.req
 
     def tearDown(self):
         del self.m
+        self.app.REQUEST = None
+        del self.app
 
     def testSetBrowserIdName(self):
         self.m.setBrowserIdName('foo')
@@ -49,29 +60,15 @@ class TestBrowserIdManager(TestCase):
                           lambda self=self: self.m.setBrowserIdName(1))
 
     def testSetBadNamespaces(self):
-        d = {1:'gummy', 2:'froopy'}
+        d = ('gummy', 'froopy')
         self.assertRaises(BrowserIdManagerErr,
                           lambda self=self,d=d:
                           self.m.setBrowserIdNamespaces(d))
 
     def testSetGoodNamespaces(self):
-        d = {1:'cookies', 2:'form'}
+        d = ('cookies', 'url', 'form')
         self.m.setBrowserIdNamespaces(d)
         self.failUnless(self.m.getBrowserIdNamespaces() == d)
-
-    def testSetNamespacesByLocation(self):
-        self.m.setBrowserIdLocation('cookiesonly')
-        self.failUnless(self.m.getBrowserIdNamespaces() == {1:'cookies'})
-        self.failUnless(self.m.getBrowserIdLocation() == 'cookiesonly')
-        self.m.setBrowserIdLocation('cookiesthenform')
-        self.failUnless(self.m.getBrowserIdNamespaces()=={1:'cookies',2:'form'})
-        self.failUnless(self.m.getBrowserIdLocation() == 'cookiesthenform')
-        self.m.setBrowserIdLocation('formonly')
-        self.failUnless(self.m.getBrowserIdNamespaces() == {1:'form'})
-        self.failUnless(self.m.getBrowserIdLocation() == 'formonly')
-        self.m.setBrowserIdLocation('formthencookies')
-        self.failUnless(self.m.getBrowserIdNamespaces()=={1:'form',2:'cookies'})
-        self.failUnless(self.m.getBrowserIdLocation() == 'formthencookies')
 
     def testSetBadCookiePath(self):
         path = '/;'
@@ -148,33 +145,13 @@ class TestBrowserIdManager(TestCase):
         a = self.m.getBrowserId()
         self.failUnless( self.m.isBrowserIdNew() )
 
-    def testIsBrowserIdFromCookieFirst(self):
-        token = self.m.getBrowserId()
-        self.m.REQUEST.browser_id_ = token
-        self.m.REQUEST.browser_id_ns_ = 'cookies'
-        tokenkey = self.m.getBrowserIdName()
-        self.m.REQUEST.cookies[tokenkey] = token
-        self.m.setBrowserIdNamespaces({1:'cookies', 2:'form'})
-        a = self.m.getBrowserId()
-        self.failUnless( self.m.isBrowserIdFromCookie() )
-
-    def testIsBrowserIdFromFormFirst(self):
-        token = self.m.getBrowserId()
-        self.m.REQUEST.browser_id_ = token
-        self.m.REQUEST.browser_id_ns_ = 'form'
-        tokenkey = self.m.getBrowserIdName()
-        self.m.REQUEST.form[tokenkey] = token
-        self.m.setBrowserIdNamespaces({1:'form', 2:'cookies'})
-        a = self.m.getBrowserId()
-        self.failUnless( self.m.isBrowserIdFromForm() )
-
     def testIsBrowserIdFromCookieOnly(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
         self.m.REQUEST.browser_id_ns_ = 'cookies'
         tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.form[tokenkey] = token
-        self.m.setBrowserIdNamespaces({1:'cookies'})
+        self.m.setBrowserIdNamespaces(('cookies',))
         a = self.m.getBrowserId()
         self.failUnless( self.m.isBrowserIdFromCookie() )
         self.failUnless( not self.m.isBrowserIdFromForm() )
@@ -185,10 +162,19 @@ class TestBrowserIdManager(TestCase):
         self.m.REQUEST.browser_id_ns_ = 'form'
         tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.form[tokenkey] = token
-        self.m.setBrowserIdNamespaces({1:'form'})
+        self.m.setBrowserIdNamespaces(('form',))
         a = self.m.getBrowserId()
         self.failUnless( not self.m.isBrowserIdFromCookie() )
         self.failUnless( self.m.isBrowserIdFromForm() )
+
+    def testIsBrowserIdFromUrlOnly(self):
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'url'
+        self.m.setBrowserIdNamespaces(('url',))
+        a = self.m.getBrowserId()
+        self.failUnless( not self.m.isBrowserIdFromCookie() )
+        self.failUnless( self.m.isBrowserIdFromUrl() )
 
     def testFlushBrowserIdCookie(self):
         token = self.m.getBrowserId()
@@ -226,6 +212,8 @@ class TestBrowserIdManager(TestCase):
         u = 'http://www.zope.org/Members/mcdonc?foo=bar&spam=eggs'
         r = self.m.encodeUrl(u)
         self.failUnless( r == '%s&amp;%s=%s' % (u, keystring, key) )
+        r = self.m.encodeUrl(u, style='inline')
+        self.failUnless( r == 'http://www.zope.org/%s/%s/Members/mcdonc?foo=bar&spam=eggs' % (keystring, key))
 
     def testGetHiddenFormField(self):
         keystring = self.m.getBrowserIdName()
@@ -234,6 +222,47 @@ class TestBrowserIdManager(TestCase):
         expected = ('<input type="hidden" name="%s" value="%s">' %
                     (keystring, key))
         self.failUnless( html == expected )
+
+    def testAutoUrlEncoding(self):
+        self.m.setAutoUrlEncoding(1)
+        self.m.setBrowserIdNamespaces(('url',))
+        self.m.updateTraversalData()
+        traverser = BrowserIdManagerTraverser()
+        traverser(self.app, self.req)
+        self.failUnless(isAWellFormedBrowserId(self.req.browser_id_))
+        print self.req.browser_id_
+        self.failUnless(self.req.browser_id_ns_ == None)
+        self.failUnless(self.req._script[-1] == self.req.browser_id_)
+        self.failUnless(self.req._script[-2] == '_ZopeId')
+
+    def testUrlBrowserIdIsFound(self):
+        bid = '43295340A0bpcu4nkCI'
+        name = '_ZopeId'
+        resp = HTTPResponse()
+        environ['SERVER_NAME']='fred'
+        environ['SERVER_PORT']='80'
+        self.req = HTTPRequest(stdin, environ, resp)
+        self.req['TraversalRequestNameStack'] = ['foo', 'bar', bid, name]
+        self.app.REQUEST = self.req
+        self.m.setAutoUrlEncoding(1)
+        self.m.setBrowserIdNamespaces(('url',))
+        self.m.updateTraversalData()
+        traverser = BrowserIdManagerTraverser()
+        traverser(self.app, self.req)
+        self.failUnless(isAWellFormedBrowserId(self.req.browser_id_))
+        self.failUnless(self.req.browser_id_ns_ == 'url')
+        self.failUnless(self.req._script[-1] == self.req.browser_id_)
+        self.failUnless(self.req._script[-2] == '_ZopeId')
+        self.failUnless(self.req['TraversalRequestNameStack'] == ['foo','bar'])
+
+    def testUpdateTraversalData(self):
+        self.m.setBrowserIdNamespaces(('url',))
+        self.m.updateTraversalData()
+        self.failUnless(self.m.hasTraversalHook(self.app))
+        self.failUnless(queryBeforeTraverse(self.app, 'BrowserIdManager'))
+        self.m.setBrowserIdNamespaces(('cookies', 'form'))
+        self.m.updateTraversalData()
+        self.failUnless(not queryBeforeTraverse(self.app,'BrowserIdManager'))
 
 def test_suite():
     testsuite = makeSuite(TestBrowserIdManager, 'test')

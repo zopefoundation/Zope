@@ -18,7 +18,7 @@ from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working
 import Acquisition
 from Acquisition import aq_base
-from Products.Sessions.BrowserIdManager import BrowserIdManager
+from Products.Sessions.BrowserIdManager import BrowserIdManager, getNewBrowserId
 from Products.Sessions.SessionDataManager import \
     SessionDataManager, SessionDataManagerErr
 from Products.Transience.Transience import \
@@ -149,7 +149,7 @@ class BaseReaderWriter(threading.Thread):
         self.conn = db.open()
         self.app = self.conn.root()['Application']
         self.app = makerequest.makerequest(self.app)
-        token = self.app.browser_id_manager._getNewBrowserId()
+        token = getNewBrowserId()
         self.app.REQUEST.browser_id_ = token
         self.iters = iters
         self.sdm_name = sdm_name

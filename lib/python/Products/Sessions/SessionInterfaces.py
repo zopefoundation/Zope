@@ -12,7 +12,7 @@
 ############################################################################
 """
 
-Sessioning-related Object APIs
+Session APIs
 
   See Also
 
@@ -32,12 +32,24 @@ class BrowserIdManagerInterface(
     visitors, and for servicing requests from Session Data Managers
     related to the browser id.
     """
-    def encodeUrl(url):
+    def encodeUrl(url, style='querystring'):
         """
         Encodes a provided URL with the current request's browser id
-        and returns the result.  For example, the call
-        encodeUrl('http://foo.com/amethod') might return
-        'http://foo.com/amethod?_ZopeId=as9dfu0adfu0ad'.
+        and returns the result.  Two forms of URL-encoding are supported:
+        'querystring' and 'inline'.  'querystring' is the default.
+
+        If the 'querystring' form is used, the browser id name/value pair
+        are postfixed onto the URL as a query string.  If the 'inline'
+        form is used, the browser id name/value pair are prefixed onto
+        the URL as the first two path segment elements.
+
+        For example:
+
+         The call encodeUrl('http://foo.com/amethod', style='querystring')
+         might return 'http://foo.com/amethod?_ZopeId=as9dfu0adfu0ad'.
+
+         The call encodeUrl('http://foo.com/amethod, style='inline')
+         might return 'http://foo.com/_ZopeId/as9dfu0adfu0ad/amethod'.
 
         Permission required: Access contents information
 
