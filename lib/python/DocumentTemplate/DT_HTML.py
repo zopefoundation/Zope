@@ -1,18 +1,64 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.4 1997/09/25 18:56:37 jim Exp $"""
+$Id: DT_HTML.py,v 1.5 1997/10/27 17:35:32 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_Doc, DT_String, regex
 from DT_Util import *
 from regsub import gsub
-from string import strip
+from string import strip, find
+
+class dtml_re_class:
+
+    def search(self, text, start=0,
+	       name_match=regex.compile('[a-zA-Z]+[\0- ]*').match):
+	s=find(text,'<!--#',start)
+	if s < 0: return s
+	e=find(text,'-->',s)
+	if e < 0: return e
+	n=s+5
+	if text[n:n+1]=='/':
+	    end=text[n:n+1]
+	    n=n+1
+	elif text[n:n+3]=='end':
+	    end=text[n:n+3]
+	    n=n+3
+	else:
+	    end=''
+
+	l=name_match(text,n)
+	if l < 0: return l
+	a=n+l
+	name=strip(text[n:a])
+
+	args=strip(text[a:e])
+
+	d=self.__dict__
+	d[0]=text[s:e+3]
+	d[1]=end
+	d['end']= end
+	d[2]=name
+	d['name']=name
+	d[3]=args
+	d['args']=args
+
+	return s
+
+    def group(self,*args):
+	g=self.__dict__
+	if len(args)==1: return g[args[0]]
+	r=[]
+	for arg in args:
+	    r.append(g[arg])
+	return tuple(r)
+	
 
 class HTML(DT_String.String):
     __doc__=DT_Doc.HTML__doc__
 
     def tagre(self):
+	return dtml_re_class()
 	return regex.symcomp(
 	    '<!--#'                                 # beginning
 	    '\(<end>/\|end\)?'                      # end tag marker
@@ -67,15 +113,18 @@ class HTML(DT_String.String):
 	if REQUEST: return self.editConfirmation(self,REQUEST)
 
     def quotedHTML(self,
+		   text=None,
 		   character_entities=(
 		       (regex.compile('&'), '&amp;'),
 		       (regex.compile("<"), '&lt;' ),
 		       (regex.compile(">"), '&gt;' ),
 		       (regex.compile('"'), '&quot;'))): #"
-        text=self.read_raw()
+        if text is None: text=self.read_raw()
 	for re,name in character_entities:
 	    text=gsub(re,name,text)
 	return text
+
+    errQuote=quotedHTML
 
     def __str__(self):
 	return self.quotedHTML()
@@ -88,20 +137,14 @@ class HTML(DT_String.String):
     def manage_editForm(self, PARENT_URL, REQUEST):
 	'''Display doc template editing form''' #"
 	
-	self._manage_editForm.validator(self.validate)
 	return self._manage_editForm(
 	    self,
 	    mapping=REQUEST,
 	    __str__=str(self),
-	    vars=self._names.items(),
 	    PARENT_URL=PARENT_URL
 	    )
 
     manage_editDocument=manage=manage_editForm
-
-    def validate(self, key, value=None):
-	if os.environ.has_key(key): return 1
-	return 0
 
 class HTMLDefault(HTML):
     '''\
@@ -114,8 +157,7 @@ class HTMLDefault(HTML):
 
     def manage_edit(self,data,PARENTS,URL1,REQUEST):
 	'edit a template'
-	newHTML=self.copy_class(data,self.globals,self.__name__,
-				self._names, self._validator)
+	newHTML=self.copy_class(data,self.globals,self.__name__)
 	setattr(PARENTS[1],URL1[rfind(URL1,'/')+1:],newHTML)
 	return self.editConfirmation(self,REQUEST)
 
@@ -139,9 +181,8 @@ class HTMLFile(FileMixin, HTML):
 	if REQUEST: return self.editConfirmation(self,REQUEST)
 
     def manage_editForm(self, PARENT_URL, REQUEST):
-	'''Display doc template editing form''' #"
+	'''Display doc template editing form'''
 
-	self._manage_editForm.validator(self.validate)
 	return self._manage_editForm(mapping=REQUEST,
 				     document_template_edit_width=
 				     self.document_template_edit_width,
@@ -153,7 +194,6 @@ class HTMLFile(FileMixin, HTML):
 				     self.document_template_edit_footer,
 				     PARENT_URL=PARENT_URL,
 				     __str__=str(self),
-				     vars=self._names.items(),
 				     FactoryDefaultString=FactoryDefaultString,
 				     )
     manage_editDocument=manage=manage_editForm
@@ -178,6 +218,14 @@ class HTMLFile(FileMixin, HTML):
 ##########################################################################
 #
 # $Log: DT_HTML.py,v $
+# Revision 1.5  1997/10/27 17:35:32  jim
+# Removed old validation machinery.
+#
+# Added a regex-like parser that doesn't have regex's tendency to hang
+# the process.  Maybe I'll be able to use re in the future. ;-)
+#
+# Added errQuote to aid in parse error message generation.
+#
 # Revision 1.4  1997/09/25 18:56:37  jim
 # fixed problem in reporting errors
 #
