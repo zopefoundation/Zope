@@ -559,7 +559,8 @@ setup(
     name='ZODB',
     author=AUTHOR,
 
-    packages=['Persistence', 'persistent', 'ZODB', 'ZODB.tests'],
+    packages=['Persistence', 'persistent', 'ZODB', 'ZODB.tests',
+              'ZODB.FileStorage'],
     data_files=[['ZODB', ['ZODB/component.xml']]],
     ext_modules=[
         Extension(name='persistent.cPersistence',
