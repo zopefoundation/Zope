@@ -150,14 +150,6 @@ Access Control
        error response to the web browser that causes a password dialog
        to be. 
 
-     The special management role
-
-       Experience in developing Bobo applications has shown that, by
-       far, the most common non-public role is management.  To
-       simplify management of role information for management objects,
-       Bobo automatically assigns the role 'manage' to objects that do
-       not have direct __roles__ attributes.
-
   Fixed-attribute objects
 
       For some interesting objects, such as functions, and methods,
@@ -370,7 +362,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.70 1997/12/31 17:28:39 jim Exp $"""
+$Id: Publish.py,v 1.71 1998/01/05 19:42:30 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +417,7 @@ $Id: Publish.py,v 1.70 1997/12/31 17:28:39 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 
 def main():
@@ -734,7 +726,7 @@ class ModulePublisher:
     	    if not path: path = ['help']
 
 	# Traverse the URL to find the object:
-	parents=[]
+	request['PARENTS']=parents=[]
 
 	# if the top object has a __bobo_traverse__ method, then use it
 	# to possibly traverse to an alternate top-level object.
@@ -780,10 +772,6 @@ class ModulePublisher:
 			roleshack=entry_name+'__roles__'
 			if hasattr(object, roleshack):
 			    roles=getattr(object, roleshack)
-			else:
-			    if (entry_name=='manage' or
-				entry_name[:7]=='manage_'):
-				roles='manage',
     
 		# Promote subobject to object
 		parents.append(object)
@@ -800,7 +788,6 @@ class ModulePublisher:
 	if entry_name != method and method != 'index_html':
 	    self.notFoundError(method)
 	
-	parents.append(object)
 	parents.reverse()
 
 	# Do authorization checks
@@ -809,13 +796,24 @@ class ModulePublisher:
 	if roles is not None:
 
 	    last_parent_index=len(parents)
-	    for i in range(last_parent_index):
-		if hasattr(parents[i],'__allow_groups__'):
-		    groups=parents[i].__allow_groups__
-		else: continue
+	    if hasattr(object, '__allow_groups__'):
+		groups=object.__allow_groups__
+		inext=0
+	    else:
+		inext=None
+		for i in range(last_parent_index):
+		    if hasattr(parents[i],'__allow_groups__'):
+			groups=parents[i].__allow_groups__
+			inext=i+1
+			break
+
+	    if inext is not None:
+		i=inext
 
 		if hasattr(groups, 'validate'): v=groups.validate
 		else: v=old_validation
+
+		auth=self.HTTP_AUTHORIZATION
 
 		if v is old_validation and roles is UNSPECIFIED_ROLES:
 		    # No roles, so if we have a named group, get roles from
@@ -827,9 +825,10 @@ class ModulePublisher:
 			try: roles=groups.keys()
 			except: pass
 
-		    if groups is None: break # Public group
-
-		auth=self.HTTP_AUTHORIZATION
+		    if groups is None:
+			# Public group, hack structures to get it to validate
+			roles=None
+			auth=''
 
 		if v is old_validation:
 		    if auth is None: self.unauthorized(realm)
@@ -850,8 +849,6 @@ class ModulePublisher:
 			user=old_validation(groups, auth, roles)
 		    elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
 		    else: user=v(request, auth, roles)
-
-		break
 		    
 	    if user is None and roles != UNSPECIFIED_ROLES:
 		self.unauthorized(realm)
@@ -860,7 +857,6 @@ class ModulePublisher:
 	if user is not None:
 	    request['AUTHENTICATED_USER']=user
 	    request['AUTHENTICATION_PATH']=steps
-	del parents[0]
    
 	# Attempt to start a transaction:
 	try: transaction=get_transaction()
@@ -899,14 +895,6 @@ class ModulePublisher:
 
 	request['URL']=URL
 	request['PARENT_URL']=URL[:rfind(URL,'/')]
-	if parents:
-	    selfarg=parents[0]
-	    for i in range(len(parents)):
-		parent=parents[i]
-		if hasattr(parent,'aq_self'):
-		    p=parent.aq_self
-		    parents[i]=p
-	request['PARENTS']=parents
 
 	args=[]
 	nrequired=len(argument_names) - (len(defaults or []))
@@ -914,16 +902,14 @@ class ModulePublisher:
 	    argument_name=argument_names[name_index]
 	    v=request_get(argument_name, args)
 	    if v is args:
-		if argument_name=='self': args.append(selfarg)
-		elif name_index < nrequired:
-		    self.badRequestError(argument_name)
-		else:
-		    args.append(defaults[name_index-nrequired])
-	    else:
-		args.append(v)
+		if argument_name=='self': args.append(parents[0])
+		elif name_index < nrequired: self.badRequestError(argument_name)
+		else: args.append(defaults[name_index-nrequired])
+	    else: args.append(v)
 
-	if debug: result=self.call_object(object,tuple(args))
-	else:     result=apply(object,tuple(args))
+	args=tuple(args)
+	if debug: result=self.call_object(object,args)
+	else:     result=apply(object,args)
 
 	if result and result is not response: response.setBody(result)
 
@@ -1071,10 +1057,6 @@ type_converters = {
     'date':	field2date,
     'list':	field2list,
     'tuple':	field2tuple,
-    #'regex':	field2regex,
-    #'Regex':	field2Regex,
-    #'regexs':	field2regexs,
-    #'Regexs':	field2Regexs,
     'required':	field2required,
     'tokens':	field2tokens,
     'lines':	field2lines,
@@ -1182,7 +1164,7 @@ class Request:
 		)
 	    
 	return "%s\n%s\n" % (
-	    str(self,'other'),str(self,'environ'))
+	    str(self,'form'),str(self,'environ'))
 
     __repr__=__str__
 
@@ -1305,7 +1287,9 @@ def old_validation(groups, HTTP_AUTHORIZATION, roles=UNSPECIFIED_ROLES):
     global base64
     if base64 is None: import base64
 
-    if lower(HTTP_AUTHORIZATION[:6]) != 'basic ': return None
+    if lower(HTTP_AUTHORIZATION[:6]) != 'basic ':
+	if roles is None: return ''
+	return None
     [name,password] = string.splitfields(
 	    base64.decodestring(
 		split(HTTP_AUTHORIZATION)[-1]), ':')
@@ -1351,7 +1335,9 @@ def publish_module(module_name,
 	publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
 				    environ=environ)
 	response = publisher.response
-	response = publisher.publish(module_name,after_list,debug=debug)
+	request=publisher.request
+	try: response = publisher.publish(module_name,after_list,debug=debug)
+	finally: del request.other
     except SystemExit:
 	must_die=1
 	response.exception(must_die)
@@ -1374,3 +1360,4 @@ def publish_module(module_name,
 	raise sys.exc_type, sys.exc_value, sys.exc_traceback
     sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
     return status
+
