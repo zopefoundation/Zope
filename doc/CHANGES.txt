@@ -167,6 +167,10 @@ Zope Changes
       - Collector #373: content_type property for Image objects
         are no longer deletable to prevent malfunction.
 
+      - Collector #343: The ZCatalogs 'Indexes' view showed the 
+        wrong number of indexed objects for FieldIndexes.
+      
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

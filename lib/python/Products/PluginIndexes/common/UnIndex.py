@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -254,7 +254,7 @@ class UnIndex(Persistent, Implicit):
 
     def numObjects(self):
         """ return number of indexed objects """
-        return len(self._index)
+        return len(self._unindex)
 
 
     def unindex_object(self, documentId):
