@@ -248,6 +248,32 @@ class PCGIChannel(asynchat.async_chat):
     def __repr__(self):
         return "<PCGIChannel at %x>" % id(self)
 
+    def handle_close(self):
+        while self.producer_fifo:
+            self.producer_fifo.pop()
+        self.close()
+
+    def handle_error (self):
+        (file,fun,line), t, v, tbinfo = compact_traceback()
+
+        # sometimes a user repr method will crash.
+        try:
+            self_repr = repr (self)
+        except:
+            self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
+
+        self.log_info (
+            'uncaptured python exception, closing channel %s (%s:%s %s)' % (
+                    self_repr,
+                    t,
+                    v,
+                    tbinfo
+                    ),
+            'error'
+            )
+        self.handle_close()
+           
+
 
 class PCGIServer(asyncore.dispatcher):
     """Accepts PCGI requests and hands them off to the PCGIChannel for

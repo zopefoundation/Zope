@@ -318,7 +318,7 @@ class zhttp_channel(http_channel):
         http_channel.__init__(self, server, conn, addr)
         self.queue=[]
         self.working=0
-    
+        
     def push(self, producer, send=1):
         # this is thread-safe when send is false
         # note, that strings are not wrapped in 
@@ -336,7 +336,35 @@ class zhttp_channel(http_channel):
                 try: module_name, request, response=self.queue.pop(0)
                 except: return
                 handle(module_name, request, response)
-        
+
+    def handle_close(self):
+        if self.current_request is not None:
+            self.current_request.channel=None # break circ refs
+            self.current_request=None
+        while self.producer_fifo:
+            self.producer_fifo.pop()
+        self.close()
+
+    def handle_error (self):
+        (file,fun,line), t, v, tbinfo = compact_traceback()
+
+        # sometimes a user repr method will crash.
+        try:
+            self_repr = repr (self)
+        except:
+            self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
+
+        self.log_info (
+            'uncaptured python exception, closing channel %s (%s:%s %s)' % (
+                self_repr,
+                t,
+                v,
+                tbinfo
+                ),
+            'error'
+            )
+        self.handle_close()
+
     def done(self):
         "Called when a publishing request is finished"
         self.working=0
