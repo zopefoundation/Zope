@@ -39,6 +39,9 @@ Zope Changes
         - The #! line in the ZopeHTTPServer was hidden by the copyright
           statement and didn't have the right path.
 
+        - A bug in pcgi_publisher.py caused file uploads larger than 1 MB
+          to fail.
+
     Zope 1.9 beta 1
 
       Bugs fixed:
