@@ -4,23 +4,196 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  Zope 2.7.0 alpha 1
+  Zope 2.6.1 beta 1
+
+    Bugs Fixed
+
+      - Deadlock prevention code added.
+
+        It was possible for earlier versions of ZODB to deadlock when
+        using multiple storages.  If multiple transactions committed
+        concurrently and both transactions involved two or more shared
+        storages, deadlock was possible.  This problem has been fixed
+        by introducing a sortKey() method to the transaction and
+        storage APIs that is used to define an ordering on transaction
+        participants.  This solution will prevent deadlocks provided
+        that all transaction participants that use locks define a
+        valid sortKey() method.  A warning is raised if a participant
+        does not define sortKey().  For backwards compatibility,
+        BaseStorage provides a sortKey() that uses __name__.
+
+      - Fixed bug in FileStorage related to object uncreation.  An
+        attempt to load an uncreated object now raises KeyError.
+
+      - Fixed a couple bugs in FileStorage recover() that wrote
+        incorrect backpointers.
+
+      - Fixed data_txn attribute of iterator data records to use
+        the transaction id of the previous transaction, even if it
+        also has a data_txn field.
+
+      - Fixed conflict resolution bug that raised a NameError when a
+        class involved in a conflict could not be loaded.
+
+      - Fixed C extensions that included standard header files before
+        Python.h, which is not allowed.
+
+      - Added code to ThreadedAsync/LoopCallback.py to work around a
+        bug in asyncore.py: a handled signal can cause unwanted reads
+        to happen.
     
+      - Collector #651: WebDAV Lock Manager was broken.
+
+      - Collector #646: metal:slot was lost during the I18n merge.
+
+      - Collector #640: Fix security assertion on ZCTextIndex query method.
+
+      - Delayed opening the ZODB until after the "Zope" module has
+        been imported, fixing a deadlock issue involving ZEO.  The
+        "Zope" module now has a "startup()" function.
+
+      - Fixed a NameError in the recent change to DateTime.rfc822().
+
+      - Made DateTime.rfc822() simpler and independent of local timezone.
+
+      - Fixed bug in Transience reported by kedai which caused spurious
+        KeyErrors under heavy sessioning usage.
+
+      - Fixed bug in the Interface Verify package; base interfaces were not
+        included in an interface compliancy test.
+
+      - Collector #650: Fixed implicit list marshalling for lists where the
+        first two values are tainted.
+
+      - Collector #671: HTTP Ranges were broken for files and images whose
+        length wasn't exactly divisible by 2**16.
+
+      - ModuleSecurityInfo declarations could be lost if further declarations
+        were made after the Info object already had been applied. Such
+        additional declarations could take place in Python trusted code run
+        after Zope strartup or during a Product refresh.
+
+      - Collector #699: MailHosts created in 2.5 breaks in 2.6.
+
+      - Collector #694: dtml-sendmail mailto specification replaces "To:" header. 
+      - Collector #702: DateTime.rfc822() fails without daylight saving
+
+      - Collector #703: KeyErrors raised when unindexing a PathIndex should
+        be swallowed and logged.
+
+  Zope 2.6.0
+
+    Bugs Fixed
+
+      - Caused many places throughout the code base to use
+        calls to user.getId() rather than user.getUserName().  With
+        most (all?) user folder implementations today, this will have
+        no behavioral change, as getId is always alised to getUserName.
+        However, this makes it possible to write user folder
+        implementations which make the distinction between the user's
+        id and the user's name.  These user folders will allow users
+        to change names independent of their identity.
+
+      - WebDAV Lock Manager actually gives the user a chance to
+        specify a starting path **before** searching for locks,
+        shortening query times and memory usage in large Zope
+        instances.
+
+      - PageTemplateFiles were previously owned by whatever object
+        contained them.  This resulted in very hard bugs if the user who
+        owned the container was removed.  Since PageTemplateFiles come
+        from the filesystem, they are now "unowned", similar to
+        DTMLFiles.  Security is still applied, but now it is applied
+        correctly.
+
+      - Collector #411: DateTime.rfc822 is not rfc822 compliant 
+
+  Zope 2.6.0 beta 2
+
+
+    Bugs Fixed
+
+      - The ability to add multiple select properties to
+        PropertyManagers was broken (issue 612).
+
+      - Removed the signal handler hung off USR1 for packing the database. 
+        This feature proved dangerous as the pack operation would happen in
+        the main thread, causing all asyncore operations to stop until it 
+        was finished.
+
+      - Collector #372: tal:attributes failed when combined with tal:replace.
+
+      - Don't try to close network connections in the signal handler
+        for shutdown.  This hosed ZEO clients.
+
+      - Collector #292: PythonScript.write() didn't properly refresh bindings.
+
+      - Dumb bug in zdaemon fixed in which it would try to kill
+        process numbers 1, 2, 3, 10, 12, and 15 when it caught a
+        signal related to any of these signal numbers.   Instead, it
+        actually tries now to kill its child process with the same
+        signal.
+
+      - Write pidfiles out with trailing newlines.
+
+      - Fix setVirtualRoot in the face of unicode paths (such as occur
+        during an XML-RPC request.
+
+      - Collector #539: Fixed rendering of TAL namespace tags with an
+        'on-error' statement.
+
+      - Collector #586:  Generated 'start' scripts had a nonsensical
+        export of an "INST_HOME" environment variable.
+
+      - Collector #580: TALES evaluateBoolean() was squishing 'default'.
+
+      - Collector #581: TALES Path traversal should not special-case a blank
+        string in the second element position.  It now skips directly
+        to item access when a path element is blank or has a leading '_'.
+
+      - Fixed inconsistent attribute access in TALES Paths.
+
+      - Deprecated hasRole alias failed to return result.
+
+      - Collector #538: Hybrid path expressions no longer attempt to call
+        a value returned by the final, non-path alternate.
+
+      - Collector #573: ZTUtils Iterator didn't catch AttributeError.
+
+      - Collector #517: The properties page incorrectly rendered properties
+        with non-latin1 values if there were no unicode properties defined,
+        and incorrectly processed properties with non-ascii names.
+
+      - ZTUtils.SimpleTree could not build a tree with a root other than the
+        ZODB root object. Also, filter functions didn't work at all, let
+        alone in accordance with the documentation in the code.
+
+      - Collector #603: ZTUtils.Tree.encodeExpansion encoded depth with '.'
+        characters, but decodeExpansion could possibly see an encoded node
+        id as an encoded depth when that encoded id started with a '.'.
+
+      - Collector #605: ZTUtils.Tree.decodeExpansion set no limits on the
+        string to be decoded, allowing for a DoS attack with very large
+        strings.
+
+      - The fix for issue #144 broke the ability to create an empty Image or
+        File object. This functionality is now reenabled again.
+
+      - ZTUtils.Zope.TreeSkipMixin allows you to skip unauthorized objects in
+        the tree, but the filter wasn't applied when trying to filter candidate
+        child nodes through a custom setChildAccess filter.
+
+      - Emails sent through MailHost now automatically include a Date header if
+        not already present, in compliance with RFC822 and RFC2822.
+      
     Features Added
 
-      - The zLOG package is now backed by Vinay Sajip's "PEP 282" logger
-        which has been included in lib/python/logging.  As a result,
-    the ZLogger package was removed (as its only real duty was to
-    handle syslog-based logging).
+      - Add optional 'relative' argument to getURL the method in CatalogBrains.
+        This allows it to generate site relative URLs like absolute_url can.
 
-      - Zope's shutdown process is now more careful and clean. It
-        avoids sending half-complete responses to clients, particularly
-        when running in a cluster using ICP.
-        http://dev.zope.org/Wikis/DevSite/Proposals/CleanShutdown 
-
-      - ZTUtils.Iterator now handles any object that has a Python
-        iterator, resolving Collector #385 and #577.  The
-        implementation is somwhat simpler, as well.
+      - ZTUtils.Tree.encodeExpansion now will use zlib compression by default,
+        allowing for a far larger number of open tree states to be encoded.
+        decodeExpansion handles compressed expansion states automatically.
 
       - ZTUtils.Tree.TreeMaker now has additional methods for setting
         various flags and attributes that influence how the tree is built,
@@ -40,65 +213,10 @@ Zope Changes
         boolean.  -Z1 means use a daemon.  -Z0 means dont.  The
         default is -Z1.
 
-      - Collector #670: applied patch from Dieter Maurer to enhance
-        the Zope profiling support
-
-    Bugs Fixed
-
-      - Collector #699: MailHosts created in 2.5 breaks in 2.6.
-
-      - Collector #694: dtml-sendmail mailto specification replaces "To:" header. 
-
-      - Collector #651: WebDAV Lock Manager was broken.
-
-      - Collector #646: metal:slot was lost during the I18n merge.
-
-      - Removed the signal handler hung off USR1 for packing the database.
-        This feature proved dangerous as the pack operation would happen in
-        the main thread, causing all asyncore operations to stop until it
-        was finished.
-
-      - Collector #372: tal:attributes failed when combined with tal:replace.
-      - Don't try to close network connections in the signal handler
-        for shutdown.  This hosed ZEO clients.
-
-      - Collector #292: PythonScript.write() didn't properly refresh bindings.
-
-      - Dumb bug in zdaemon fixed in which it would try to kill
-        process numbers 1, 2, 3, 10, 12, and 15 when it caught a
-        signal related to any of these signal numbers.   Instead, it
-        actually tries now to kill its child process with the same
-        signal.
-
-      - Write pidfiles out with trailing newlines.
-      
   Zope 2.6.0 beta 1
 
     Bugs Fixed
-
-      - Collector #449: PathIndex did not index the last part of path.
-
-      - Collector #539: Fixed rendering of TAL namespace tags with an
-        'on-error' statement.
-
-      - Collector #586:  Generated 'start' scripts had a nonsensical
-        export of an "INST_HOME" environment variable.
-
-      - Collector #538: Hybrid path expressions no longer attempt to call
-        a value returned by the final, non-path alternate.
-
-      - Collector #573: ZTUtils Iterator didn't catch AttributeError.
-
-      - Deprecated hasRole alias in User.py failed to return result.
-
-      - Collector #580: TALES evaluateBoolean() was squishing 'default'.
-
-      - Collector #581: TALES Path traversal should not special-case a blank
-        string in the second element position.  It now skips directly
-        to item access when a path element is blank or has a leading '_'.
-
-      - Fixed inconsistent attribute access in TALES Paths.
-
+    
       - Collector #587: fixed wrong migration to string methods in 
         DTMLMethod.py
 
@@ -111,8 +229,6 @@ Zope Changes
       - Collector #574: Fixed write on HEAD requests caused by overzealous
         ETag support.
 
-      - Fixed broken management form for TopicIndexes.
-    
       - Fixed bug in z2.py where it would eat certain socket error exceptions
         at startup.
     
@@ -250,9 +366,6 @@ Zope Changes
 
     Features Added
     
-      - Add optional 'relative' argument to getURL the method in CatalogBrains.
-        This allows it to generate site relative URLs like absolute_url can.
-    
       - Browser ids can now be encoded in the URL and Zope can be
         instructed to automatically include the browser id in its
         generated URLs.
@@ -334,8 +447,14 @@ Zope Changes
         support for the Expat parser for unmarshalling data, which speeds up
         things considerably.
 
-      - Added i18n support in TAL processing
+      - Binary builds for Linux are now built against glibc 2.1.3 with large
+        file support enabled.
 
+      - Binary builds for Solaris are now built against Solaris 8 with large
+        file support enabled.
+
+      - Added i18n support in TAL processing
+      
   Zope 2.6.0 alpha 1
 
     Features Added
