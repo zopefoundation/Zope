@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.2 1997/07/25 16:49:31 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DA.py,v 1.3 1997/07/28 21:31:04 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -22,14 +22,7 @@ from Aqueduct.Aqueduct import default_report_src
 from Globals import Persistent, ManageHTMLFile, MessageDialog
 from cStringIO import StringIO
 log_file=None
-
-def manage_addDAFolder(self,name,description,REQUEST):
-    """Add a new Folder object"""
-    i=Folder()
-    i.name=name
-    i.description=description
-    self._setObject(name,i)
-    return self.manage_main(self,REQUEST)
+import sys, traceback
 
 class Folder(OFS.Folder.Folder):    
 
@@ -201,20 +194,11 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	    RESPONSE.setBody(serial)
 	
 ############################################################################## 
-# Test functions:
-#
-
-def main():
-    # The "main" program for this module
-    import sys
-    print sys.argv[0]+" is a pure module and doesn't do anything by itself."
-
-
-if __name__ == "__main__": main()
-
-############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.3  1997/07/28 21:31:04  jim
+# Get rid of add method here and test scaffolding.
+#
 # Revision 1.2  1997/07/25 16:49:31  jim
 # Added manage_addDAFolder, which can be shared by various DAs.
 #
