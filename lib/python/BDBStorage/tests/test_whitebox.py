@@ -251,7 +251,7 @@ def test_suite():
         WhiteboxHighLevelMinimal,
         WhiteboxLowLevelFull,
         WhiteboxHighLevelFull,
-        )    
+        )
 
 
 if __name__ == '__main__':

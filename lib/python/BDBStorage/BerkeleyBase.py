@@ -246,7 +246,7 @@ class BerkeleyBase(BaseStorage):
         else:
             self._autopacker = None
         self.log('ready')
-        
+
     def _version_check(self, txn):
         raise NotImplementedError
 

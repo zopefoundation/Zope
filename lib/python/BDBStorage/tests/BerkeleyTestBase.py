@@ -91,6 +91,5 @@ def makeSuite(*args,**kw):
             suite.addTest(unittest.makeSuite(klass, prefix))
     else:
         sys.stderr.write("BDBStorage not available, tests disabled\n")
-        
+
     return suite
-    
