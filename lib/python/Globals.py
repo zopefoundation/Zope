@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay, string
@@ -102,7 +102,7 @@ from App.ImageFile import ImageFile
 DevelopmentMode=None
 VersionNameName='Zope-Version'
 
-data_dir     = INSTANCE_HOME+'/var'
+data_dir = os.path.join(INSTANCE_HOME, 'var')
 
 for n in 'Z', 'BOBO':
     if os.environ.has_key('%s_DEBUG_MODE' % n):

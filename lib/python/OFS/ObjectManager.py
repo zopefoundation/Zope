@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.130 2001/03/27 03:32:14 brian Exp $"""
+$Id: ObjectManager.py,v 1.131 2001/03/29 14:24:20 evan Exp $"""
 
-__version__='$Revision: 1.130 $'[11:-2]
+__version__='$Revision: 1.131 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -519,7 +519,7 @@ class ObjectManager(
                 'inline;filename=%s.%s' % (id, suffix))
             return f.getvalue()
 
-        f=Globals.data_dir+'/%s.%s' % (id, suffix)
+        f = os.path.join(CLIENT_HOME, '%s.%s' % (id, suffix))
         if toxml:
             XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
         else:
