@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.45 1998/12/04 20:15:34 jim Exp $'''
-__version__='$Revision: 1.45 $'[11:-2]
+$Id: Response.py,v 1.46 1999/01/13 15:15:20 brian Exp $'''
+__version__='$Revision: 1.46 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -600,13 +600,12 @@ class Response:
                     body='<html><head></head>\n' + body
                 self.setBody(body)
                 body=self.body
-                    
-            if not headers.has_key('content-length'):
-                self.setHeader('content-length',len(body))
-                
 
         if not headers.has_key('content-type') and self.status == 200:
             self.setStatus('nocontent')
+
+        if not headers.has_key('content-length'):
+            self.setHeader('content-length',len(body))
 
         headersl=[]
         append=headersl.append
