@@ -7,6 +7,14 @@ Zope Changes
   after Zope 2.5.1
 
     new Features:
+    
+      - added browser_default hook to ZPublisher. This allows objects to 
+        specify the path to the default method that the publisher calls
+        when the object is published. The default for objects not defining
+        browser_default is still 'index_html' for bw compatibility.
+        A ZMI configurable browser_default implementation has been added
+        to ObjectManager. You can configure browser_default for OMs via
+        a new "settings" management tab.
 
       - added TopicIndexes: a TopicIndex is a container for
         so-called FilteredSet. A FilteredSet consists of an
