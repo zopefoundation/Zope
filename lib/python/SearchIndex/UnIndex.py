@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 
@@ -173,10 +173,10 @@ class UnIndex(Persistent, Implicit):
         return self._unindex.keys()
 
 
-    def getEntryForObject(self, documentId, default=None):
+    def getEntryForObject(self, documentId, default=MV):
         """Takes a document ID and returns all the information we have
         on that specific object."""
-        if default is None:
+        if default is not MV:
             return self._unindex.get(documentId, default)
         else:
             return self._unindex.get(documentId)
