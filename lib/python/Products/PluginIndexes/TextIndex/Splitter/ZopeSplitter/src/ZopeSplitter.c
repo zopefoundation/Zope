@@ -101,10 +101,11 @@ check_synstop(Splitter *self, PyObject *word)
     char *cword;
     int len;
 
-    cword = PyString_AsString(word);
-    len = PyString_Size(word);
+    cword = PyString_AS_STRING(word);
+    len = PyString_GET_SIZE(word);
 
-    if(len < 2 && ! self->allow_single_chars)	/* Single-letter words are stop words! */
+    if (len < 2 && !self->allow_single_chars)	
+    /* Single-letter words are stop words! */
     {
         Py_INCREF(Py_None);
         return Py_None;
@@ -114,7 +115,6 @@ check_synstop(Splitter *self, PyObject *word)
       Test whether a word has any letters.                       *
                                                                  */
     for (; --len >= 0 && ! isalpha((unsigned char)cword[len]); )
-
         ;
     if (len < 0 && ! self->index_numbers) {
         Py_INCREF(Py_None);
@@ -130,11 +130,13 @@ check_synstop(Splitter *self, PyObject *word)
     if (self->synstop == NULL)
         return word;
 
+    len = 0;
     while ((value = PyObject_GetItem(self->synstop, word)) &&
             PyString_Check(value)) {
-        ASSIGN(word,value);
+	Py_DECREF(word);
+	word = value;
 
-        if(len++ > 100)
+        if (len++ > 100)
             break;	/* Avoid infinite recurssion */
     }
 
@@ -177,64 +179,52 @@ next_word(Splitter *self, char **startpos, char **endpos)
             c = (unsigned char) *here;
 
         /* Check to see if this character is part of a word */
+        if (isalnum((unsigned char)c) || c == '/' || c == '_') { 
+            /* Found a word character */
 
-        if(isalnum((unsigned char)c) || c=='/' || c=='_') { /* Found a word character */
+            if (startpos && i == 0)
+                *startpos = here;
 
-            if(startpos && i==0)
-                *startpos=here;
-
-            if(i++ < self->max_len)
+            if (i++ < self->max_len)
                 *b++ = c;
-
         } else if (i != 0) { /* We've found the end of a word */
-
-            if(i >= self->max_len)
-                i=self->max_len; /* "stem" the long word */
+            if (i >= self->max_len)
+                i =self->max_len; /* "stem" the long word */
 
             UNLESS(pyword = PyString_FromStringAndSize(wbuf, i)) {
-                self->here=here;
+                self->here = here;
                 return NULL;
             }
 
             UNLESS(res = check_synstop(self, pyword)) {
-                self->here=here;
+                self->here = here;
                 Py_DECREF(pyword);
                 return NULL;
             }
 
             if (res != Py_None) {
-                if(endpos)
-                    *endpos=here;
-
-                self->here=here;
-
+                if (endpos)
+                    *endpos = here;
+                self->here = here;
                 Py_DECREF(pyword);
-
                 self->index++;
-
                 return res;
             }
 
             /* The word is a stopword, so ignore it */
-
             Py_DECREF(res);
-
             Py_DECREF(pyword);
-
             i = 0;
-
-            b=wbuf;
+            b = wbuf;
         }
-
         here++;
     }
-
     self->here=here;
 
     /* We've reached the end of the string */
 
-    if(i >= self->max_len)
-        i=self->max_len; /* "stem" the long word */
+    if (i >= self->max_len)
+        i = self->max_len; /* "stem" the long word */
 
     if (i == 0) {
         /* No words */
@@ -249,10 +239,9 @@ next_word(Splitter *self, char **startpos, char **endpos)
         *endpos=here;
 
     res = check_synstop(self, pyword);
-
     Py_DECREF(pyword);
 
-    if(PyString_Check(res))
+    if (PyString_Check(res))
         self->index++;
 
     return res;
@@ -295,7 +284,7 @@ Splitter_split(Splitter*self)
     while (1) {
         Py_XDECREF(word);
 
-        UNLESS(word = next_word(self,NULL,NULL)) return NULL;
+        UNLESS(word = next_word(self, NULL, NULL)) return NULL;
 
         if (word == Py_None) {
             return list;
@@ -453,7 +442,7 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject * keywds)
     int max_len= 64;
     int casefolding = 1;
 
-    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiiii",splitter_args, \
+    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiiii",splitter_args,
                                        &doc,
                                        &synstop,
                                        &encoding,
@@ -495,9 +484,9 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject * keywds)
 
     UNLESS(self->text = PyObject_Str(doc)) goto err;
 
-    UNLESS(self->here=PyString_AsString(self->text)) goto err;
+    UNLESS(self->here = PyString_AS_STRING(self->text)) goto err;
 
-    self->end = self->here + PyString_Size(self->text);
+    self->end = self->here + PyString_GET_SIZE(self->text);
 
     self->index = -1;
     self->allow_single_chars = single_char;
@@ -527,23 +516,14 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ZopeSplitter.c,v 1.8 2002/03/21 15:48:54 htrd Exp $\n"
+    "$Id: ZopeSplitter.c,v 1.9 2002/04/30 04:15:12 jeremy Exp $\n"
     ;
 
 
 void
 initZopeSplitter(void)
 {
-    PyObject *m, *d;
-
     /* Create the module and add the functions */
-    m = Py_InitModule4("ZopeSplitter", Splitter_module_methods,
-                       Splitter_module_documentation,
-                       (PyObject*)NULL,PYTHON_API_VERSION);
-
-    /* Add some symbolic constants to the module */
-    d = PyModule_GetDict(m);
-
-    if (PyErr_Occurred())
-        Py_FatalError("can't initialize module Splitter");
+    Py_InitModule4("ZopeSplitter", Splitter_module_methods,
+		   Splitter_module_documentation, NULL, PYTHON_API_VERSION);
 }
