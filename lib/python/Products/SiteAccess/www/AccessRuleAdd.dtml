@@ -3,10 +3,15 @@
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <h2>Set the Access Rule</h2>
 
-<p>In the form below <em>Method Id</em> is the Id of a method in the Zope
-root which will be called at the start of each request.  It can implement
-rewrite rules, preload request variables, etc.
+<h4>WARNING: Access Rules are powerful, and can temporarily disable
+Zope access! Don't use them unless you have read all about them and
+know how to recover from mistakes!</h4>
+
+<p>In the form below <em>Rule Id</em> is the Id of an object in this
+Zope Folder which will be called whenever the Folder is published.  It
+can implement rewrite rules, preload request variables, etc.
 </p>
+
 <dtml-if "manage_getAccessRule(this())">
 <p>The current Access Rule is
 <a href="<dtml-var "'%s/%s/manage_workspace' % (this().absolute_url(), manage_getAccessRule(this()))">">
@@ -18,7 +23,7 @@ rewrite rules, preload request variables, etc.
 <form action="manage_addAccessRule" method="post">
 
 <table>     
-<tr>	<th align='LEFT'><em>Method Id<em></th>
+<tr>	<th align='LEFT'><em>Rule Id<em></th>
         <td align='LEFT'><input name="method_id" size="80">
 </td></tr>
 <tr><td colspan=2>
