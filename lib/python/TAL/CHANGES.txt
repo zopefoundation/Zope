@@ -13,3 +13,6 @@ TAL changes
         - TAL and METAL attributes with blank values were ignored.
 
         - METAL statement nesting was not enforced.
+
+        - METAL expansion didn't always do the right thing to nested
+          METAL attributes.
