@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.119 $'[11:-2]
+__version__='$Revision: 1.120 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -167,7 +167,7 @@ class BasicUser(Implicit):
                     local[r]=1
             inner = getattr(object, 'aq_inner', object)
             parent = getattr(inner, 'aq_parent', None)
-            if parent:
+            if parent is not None:
                 object = parent
                 continue
             if hasattr(object, 'im_self'):
