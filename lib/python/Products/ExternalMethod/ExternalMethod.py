@@ -88,12 +88,12 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
 from string import split, join, find, lower
-import AccessControl.Role, sys, os, regex, traceback
+import AccessControl.Role, sys, os, traceback
 from OFS.SimpleItem import pretty_tb
 from App.Extensions import getObject, getPath, FuncCode
 from Globals import DevelopmentMode

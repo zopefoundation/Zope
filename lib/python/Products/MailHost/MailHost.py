@@ -88,13 +88,13 @@ from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from socket import *; from select import select
 from AccessControl.Role import RoleManager
 from operator import truth
-import Acquisition, sys, ts_regex, string, types, mimetools
+import Acquisition, sys, string, types, mimetools
 import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.42 1999/04/29 19:21:31 jim Exp $ 
-__version__ = "$Revision: 1.42 $"[11:-2]
+#$Id: MailHost.py,v 1.43 1999/07/15 16:28:50 jim Exp $ 
+__version__ = "$Revision: 1.43 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
