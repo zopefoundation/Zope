@@ -84,7 +84,7 @@ Setting the Zope "super manager" name and password
   system from other domains will fail, even if the correct superuser
   name and password are used.
 
-Setting permissions ons on the var directory.
+Setting permissions on the var directory.
 
   You need to set permissions on the Zope var directory.
   Zope needs to read and write data from its var directory. Before
