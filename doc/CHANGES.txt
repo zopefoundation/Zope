@@ -13,8 +13,8 @@ Zope changes
           release. Change information for older versions is now in 
           the file HISTORY.txt.
 
-        - Added support for mountable databases. A separate product
-          will still be required to make use of this ability.
+        - Added basic internal support for mountable databases. A separate 
+          product will still be required to make use of this ability.
 
       Bugs Fixed
 
@@ -51,5 +51,16 @@ Zope changes
         - A problem that caused the query template for an SQL method to
           be rendered twice when used from the "test" tab has been fixed.
 
+        - Fix for bug #1270: Netscape Image Problems. Added casts to long 
+          to avoid an overflow error caused when trying to convert dates 
+          sent by certain versions of Netscape in the If-Modified-Since 
+          header.
+
         - Corrected DateTime.py to recognize years specified as 00 through
           69 as 2000 through 2069.
+
+        - A bug that made objects named in dtml namespaces always fail 
+          security validation was fixed. This was noticed by folks trying
+          to use manage_tabs from ZClasses who hit the bug because the
+          manage_tags document uses a namespace: 
+          <dtml-with "_(manage_options=...">

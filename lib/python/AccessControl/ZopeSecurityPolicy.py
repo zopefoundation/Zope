@@ -85,13 +85,14 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.3 2000/05/24 20:53:33 shane Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.4 2000/05/25 18:34:08 brian Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import SimpleObjectPolicies
 _noroles=[]
 
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
+
 
 class ZopeSecurityPolicy:
     
@@ -100,6 +101,7 @@ class ZopeSecurityPolicy:
                  getattr=getattr, _noroles=_noroles, StringType=type(''),
                  Containers=SimpleObjectPolicies.Containers,
                  valid_aq_=('aq_parent','aq_explicit')):
+
 
         ############################################################
         # Provide special rules for the acquisition attributes
