@@ -1019,7 +1019,7 @@ class FieldStorage:
             if not line:
                 self.done = -1
                 break
-            self.lines.append(line)
+#            self.lines.append(line)
             self.file.write(line)
 
     def read_lines_to_outerboundary(self):
@@ -1032,7 +1032,7 @@ class FieldStorage:
             if not line:
                 self.done = -1
                 break
-            self.lines.append(line)
+#            self.lines.append(line)
             if line[:2] == "--":
                 strippedline = string.strip(line)
                 if strippedline == next:
@@ -1062,7 +1062,7 @@ class FieldStorage:
             if not line:
                 self.done = -1
                 break
-            self.lines.append(line)
+#            self.lines.append(line)
             if line[:2] == "--":
                 strippedline = string.strip(line)
                 if strippedline == next:
