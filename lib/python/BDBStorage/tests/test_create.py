@@ -28,7 +28,7 @@ from BDBStorage.tests import BerkeleyTestBase
 
 
 class TestMixin:
-    def checkDBHomeExists(self):
+    def testDBHomeExists(self):
         self.failUnless(os.path.isdir(BerkeleyTestBase.DBHOME))
 
 
@@ -42,7 +42,7 @@ class FullCreateTest(BerkeleyTestBase.FullTestBase, TestMixin):
 
 
 class FullOpenExistingTest(BerkeleyTestBase.FullTestBase):
-    def checkOpenWithExistingVersions(self):
+    def testOpenWithExistingVersions(self):
         version = 'test-version'
         oid = self._storage.new_oid()
         revid = self._dostore(oid, data=7, version=version)
@@ -51,7 +51,7 @@ class FullOpenExistingTest(BerkeleyTestBase.FullTestBase):
         self._storage = self.ConcreteStorage(BerkeleyTestBase.DBHOME)
         self.assertEqual(self._storage.modifiedInVersion(oid), version)
 
-    def checkOpenAddVersion(self):
+    def testOpenAddVersion(self):
         eq = self.assertEqual
         version1 = 'test-version'
         oid1 = self._storage.new_oid()
@@ -74,6 +74,8 @@ class FullOpenExistingTest(BerkeleyTestBase.FullTestBase):
 
 
 class FullOpenCloseTest(BerkeleyTestBase.FullTestBase):
+    level = 2
+
     def _mk_dbhome(self, dir):
         config = BerkeleyConfig
         config.interval = 10
@@ -84,7 +86,7 @@ class FullOpenCloseTest(BerkeleyTestBase.FullTestBase):
             self._zap_dbhome(dir)
             raise
 
-    def checkCloseWithCheckpointingThread(self):
+    def testCloseWithCheckpointingThread(self):
         # All the interesting stuff happens in the setUp and tearDown
         time.sleep(20)
 
@@ -94,7 +96,7 @@ class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
     def _mk_dbhome(self, dir):
         self._dir = dir
 
-    def checkOpenWithBogusConfig(self):
+    def testOpenWithBogusConfig(self):
         class C: pass
         c = C()
         # This instance won't have the necessary attributes, so the creation
@@ -110,11 +112,11 @@ class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
 def test_suite():
     suite = unittest.TestSuite()
     if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
-        suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
-        suite.addTest(unittest.makeSuite(FullOpenExistingTest, 'check'))
-        suite.addTest(unittest.makeSuite(FullOpenCloseTest, 'check'))
-        suite.addTest(unittest.makeSuite(OpenRecoveryTest, 'check'))
+        suite.addTest(unittest.makeSuite(MinimalCreateTest))
+        suite.addTest(unittest.makeSuite(FullCreateTest))
+        suite.addTest(unittest.makeSuite(FullOpenExistingTest))
+        suite.addTest(unittest.makeSuite(FullOpenCloseTest))
+        suite.addTest(unittest.makeSuite(OpenRecoveryTest))
     return suite
 
 
