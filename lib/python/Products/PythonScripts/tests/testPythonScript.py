@@ -121,6 +121,11 @@ class TestPythonScriptNoAq(TestCase):
         empty = self._newPS('')()
         assert empty is None, empty
 
+    def testIndented(self):
+        # This failed to compile in Zope 2.4.0b2.
+        res = self._newPS('if 1:\n return 2')()
+        assert res == 2, res
+
     def testReturn(self):
         return1 = self._newPS('return 1')()
         assert return1 == 1, return1
