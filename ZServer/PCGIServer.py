@@ -306,7 +306,7 @@ class PCGIServer(asyncore.dispatcher):
                 os.chmod(self.socket_file,0777)
             except os.error:
                 pass
-        self.listen(5)
+        self.listen(256)
 
     def read_info(self,info_file):
         "read configuration information from a PCGI info file"
@@ -345,7 +345,12 @@ class PCGIServer(asyncore.dispatcher):
     def writable (self):
         return 0
     
-
+    def listen(self, num):
+        # override asyncore limits for nt's listen queue size
+        self.accepting = 1
+        return self.socket.listen (num)
+        
+        
 class PCGIResponse(HTTPResponse):
     
     def _finish(self):

@@ -185,7 +185,7 @@ class zhttp_handler:
         size=get_header(CONTENT_LENGTH, request.header)
         if size and size != '0':
             size=string.atoi(size)
-            if size > 1048576:
+            if size > 524288:
                 # write large upload data to a file
                 from tempfile import TemporaryFile
                 self.data = TemporaryFile('w+b')
@@ -351,4 +351,9 @@ class zhttp_server(http_server):
     def readable(self):
         return self.accepting and \
                 len(asyncore.socket_map) < CONNECTION_LIMIT
+
+    def listen(self, num):
+        # override asyncore limits for nt's listen queue size
+        self.accepting = 1
+        return self.socket.listen (num)
 

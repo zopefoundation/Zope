@@ -622,3 +622,7 @@ class FTPServer(ftp_server):
     def readable(self):
         return len(asyncore.socket_map) < CONNECTION_LIMIT
 
+    def listen(self, num):
+        # override asyncore limits for nt's listen queue size
+        self.accepting = 1
+        return self.socket.listen (num)
