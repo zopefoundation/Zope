@@ -112,7 +112,8 @@ def runner(struct,top,level,numbers):
    for x in numbers:
       if level > x:
          tmp.append(x)
-   numbers = tmp   
+
+   numbers = tmp
    numbers.append(level)
 
    if len(numbers) == 1:
@@ -178,7 +179,7 @@ def StructuredText(paragraphs):
    StructuredText accepts paragraphs, which is a list of 
    lines to be parsed. StructuredText creates a structure
    which mimics the structure of the paragraphs.
-   Structure => [raw_paragraph,parsed_paragraph,[sub-paragraphs]]
+   Structure => [paragraph,[sub-paragraphs]]
    """
 
    current_level     = 0
@@ -194,36 +195,36 @@ def StructuredText(paragraphs):
    if not paragraphs:
       result = ["",[]]
       return result
-         
+
    for paragraph in paragraphs:
       if paragraph == '\n':
          ind.append([-1, paragraph])
-      else :
+      else:
          ind.append([indention(paragraph), strip(paragraph)+"\n"])
 
    current_indent = indention(paragraphs[0])
    levels[0]      = current_indent
 
    for indent,paragraph in ind :
-      if indent == 0:         
+      if indent == 0:
          struct.append([paragraph,[]])
          current_level  = 0
          current_indent = 0
          numbers        = [0]
          levels         = {0:0}
          top            = top + 1
-      elif indent == current_indent:         
-         run,numbers = runner(struct,top,current_level,numbers)
+      elif indent == current_indent:
          run.append([paragraph,[]])
-      elif indent > current_indent:         
+      elif indent > current_indent:
          current_level  = current_level + 1
          current_indent = indent
+         numbers.append(current_level)
          levels[current_level] = indent
          run,numbers = runner(struct,top,current_level,numbers)
          run.append([paragraph,[]])
          levels[current_level] = indent
       elif indent < current_indent:
-         l = parent_level(levels,current_level)         
+         l = parent_level(levels,current_level)
          if indent > 0 and indent < levels[0]:
             levels[0]      = indent
             current_indent = indent
@@ -253,8 +254,8 @@ def StructuredText(paragraphs):
                   current_level  = i
                   current_indent = indent
                   run,numbers    = runner(struct,top,current_level,numbers)
-            levels = tmp         
-         run.append([paragraph,[]])         
+            levels = tmp
+         run.append([paragraph,[]])
    return struct
 
 class doc_text:
@@ -288,7 +289,7 @@ class doc_header:
    """
    
    def __init__(self,str=''):
-      self.expr   = re.compile('[ a-zA-Z0-9.:/,-_*<>?]+').match
+      self.expr   = re.compile('[ a-zA-Z0-9.:/,-_*<>\?\'\"]+').match
       self.str    = [str]      # list things within this instance
       self.typ    = "header"   # what type is this expresion
       self.start  = 0          # start position of expr
@@ -482,7 +483,7 @@ class doc_examples:
 
 class doc_emphasize:
    def __init__(self,str=''):
-      self.expr   = re.compile('\s*\*[ \na-zA-Z0-9.:/;,]+\*(?!\*|-)').search
+      self.expr   = re.compile('\s*\*[ \na-zA-Z0-9.:/;,\'\"\?]+\*(?!\*|-)').search
       self.str    = [str]
       self.typ    = "emphasize"
          
@@ -518,7 +519,7 @@ class doc_emphasize:
 
 class doc_strong:
    def __init__(self,str=''):
-      self.expr   = re.compile('\s*\*\*[ \na-zA-Z0-9.:/;\-,!]+\*\*').search
+      self.expr   = re.compile('\s*\*\*[ \na-zA-Z0-9.:/;\-,!\?\'\"]+\*\*').search
       self.str    = [str]
       self.typ    = "strong"
       
@@ -554,7 +555,7 @@ class doc_strong:
 
 class doc_underline:
    def __init__(self,str=''):
-      self.expr   = re.compile('\s*_[ \na-zA-Z0-9.:/;,]+_').search
+      self.expr   = re.compile('\s*_[ \na-zA-Z0-9.:/;,\'\"\?]+_').search
       self.str    = [str]
       self.typ    = "underline"
 
@@ -590,7 +591,7 @@ class doc_underline:
 
 class doc_href1:
    def __init__(self,str=''):
-      self.expr   = re.compile('\"[ a-zA-Z0-9.:/;,\n]+\":[a-zA-Z0-9.:/;,\n]+(?=(\s+|\.|\!|\?))').search
+      self.expr   = re.compile('\"[ a-zA-Z0-9.:/;,\n\~]+\":[a-zA-Z0-9.:/;,\n\~]+(?=(\s+|\.|\!|\?))').search
       self.str    = [str]
       self.typ    = "href1"
 
@@ -793,8 +794,8 @@ class DOC:
                      doc_header(),
                      doc_examples(),
                      doc_example(),
-                     doc_emphasize(),
                      doc_strong(),
+                     doc_emphasize(),
                      doc_underline(),
                      doc_href1(),
                      doc_href2(),
