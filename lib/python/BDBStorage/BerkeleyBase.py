@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.35 $'.split()[-2:][0]
+__version__ = '$Revision: 1.36 $'.split()[-2:][0]
 
 import os
 import time
@@ -195,6 +195,7 @@ class BerkeleyBase(BaseStorage):
         if env is None:
             env = name
 
+        self.log('Creating Berkeley environment')
         if env == '':
             raise TypeError, 'environment name is empty'
         elif isinstance(env, StringType):
@@ -206,6 +207,7 @@ class BerkeleyBase(BaseStorage):
         # This should be enough of a guarantee that sortKey() -- which via
         # BaseStorage uses the name -- is globally unique.
         envdir = os.path.abspath(self._env.db_home)
+        self.log('Berkeley environment dir: %s', envdir)
         BaseStorage.__init__(self, envdir)
         self._is_read_only = config.read_only
 
@@ -221,6 +223,7 @@ class BerkeleyBase(BaseStorage):
         # Initialize the object id counter.
         self._init_oid()
         # Set up the checkpointing thread
+        self.log('setting up threads')
         if config.interval > 0:
             self._checkpointstop = event = threading.Event()
             self._checkpointer = _Checkpoint(self, event, config.interval)
@@ -234,6 +237,7 @@ class BerkeleyBase(BaseStorage):
             self._autopacker.start()
         else:
             self._autopacker = None
+        self.log('ready')
 
     def _make_autopacker(self, event):
         raise NotImplementedError
@@ -376,6 +380,7 @@ class BerkeleyBase(BaseStorage):
                 self._closed = True
         finally:
             self._lock_release()
+        self.log('finished closing the database')
 
     def _doclose(self):
         # Close all the tables
@@ -441,7 +446,7 @@ class BerkeleyBase(BaseStorage):
 
     def cleanup(self):
         """Remove the entire environment directory for this storage."""
-        cleanup(self._env.db_home)
+        cleanup(self.getName())
 
 
 
