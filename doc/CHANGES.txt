@@ -24,7 +24,7 @@ Zope Changes
   
         o The Python pyexpat extension, which provides access to the
           widely used expat XML parsing library, is included in the
-          distribution.	
+          distribution. 
   
         o DOM interface on Zope objects (initially this is limited to
           read-only access).
@@ -82,12 +82,12 @@ Zope Changes
           people considered this to be a bug.
 
         - Permission objects are automatically created for new ZClass
-          objects. 
+          objects as part of the ZClass wizard. 
 
         - For Python programmers, there is a new convenience function for
           debugging in the Zope package. 
 
-          For example, to debug methof spam in the Zope debugger::
+          For example, to debug method spam in the Zope debugger::
 
             python
             import Zope
@@ -147,9 +147,19 @@ Zope Changes
         
         - Fixed a ZServer kill_zombies bug which kept ZServer from killing
           hung connections.
+          
+        - Improved ZServer's handling of slightly broken HTTP requests.
+
+        - Fixed a properties setting permission bug.
       
         - Fixed a product permissions registration bug that allowed
           product permission data to get lost.
+
+        - Updated the MailHost product to use the new product initialization
+          procedure. This fixed a MailHost adding permissions bug.
+          
+        - Made Z Class icons visible to everyone. This way you can view a
+          Z Class icon without having and permissions on the Z Class.
 
         - Objects were sometimes incorrectly acquired do a bug in
           detecting attribte errors during acquisition. This led to
@@ -195,11 +205,11 @@ Zope Changes
         - Temporary files were created for file storages that were
           opened in read-only mode.
 
-	- A bug in FileStorage and DemoStorage didn't show you more
-	  than the first 20 previous transactions in the Undo log.
+        - A bug in FileStorage and DemoStorage didn't show you more
+          than the first 20 previous transactions in the Undo log.
 
         - An incorrect contents view was returned after adding a File
-	  object.
+          object.
 
         - On the cache parameters page, the number of bytes, rather
           than the number of objects in the database was shown.
