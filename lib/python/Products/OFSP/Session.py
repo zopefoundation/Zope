@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.11 1997/12/31 19:34:57 jim Exp $'''
+$Id: Session.py,v 1.12 1997/12/31 20:34:05 brian Exp $'''
 
 import time, OFS.SimpleItem, AccessControl.Role
 import Persistence, Acquisition, Globals
@@ -30,7 +30,7 @@ def add(self, id, title, REQUEST=None):
 
 class Session(Persistence.Persistent,
 	      AccessControl.Role.RoleManager,
-	      SimpleItem.Item,
+	      OFS.SimpleItem.Item,
 	      Acquisition.Implicit):
 
     '''Model sessions as drop-in objects
@@ -120,7 +120,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 
@@ -128,6 +128,9 @@ __version__='$Revision: 1.11 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.12  1997/12/31 20:34:05  brian
+# Fix bad ref to SimpleItem caused by moving
+#
 # Revision 1.11  1997/12/31 19:34:57  jim
 # Brians changes.
 #
