@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.5 1999/07/20 16:53:49 amos Exp $
+# 	$Id: asyncore.py,v 1.6 1999/07/26 07:06:36 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -324,7 +324,7 @@ class dispatcher:
 		self.log_info ('unhandled exception', 'warning')
 
 	def handle_read (self):
-		self.log_info ('unhandled read event', 'waring')
+		self.log_info ('unhandled read event', 'warning')
 
 	def handle_write (self):
 		self.log_info ('unhandled write event', 'warning')
