@@ -16,6 +16,7 @@
 
 from BTrees.IIBTree import difference
 
+from Products.ZCTextIndex.IQueryParseTree import IQueryParseTree
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
@@ -26,6 +27,8 @@ class ParseError(Exception):
     pass
 
 class ParseTreeNode:
+
+    __implements__ = IQueryParseTree
 
     _nodeType = None
 

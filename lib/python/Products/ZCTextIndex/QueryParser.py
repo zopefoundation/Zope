@@ -57,7 +57,8 @@ Summarizing the default operator rules:
 
 import re
 
-import ParseTree # relative import
+from Products.ZCTextIndex.IQueryParser import IQueryParser
+from Products.ZCTextIndex import ParseTree
 
 # Create unique symbols for token types.
 _AND    = intern("AND")
@@ -93,6 +94,8 @@ _tokenizer_regex = re.compile(r"""
 """, re.VERBOSE)
 
 class QueryParser:
+
+    __implements__ = IQueryParser
 
     # This class is not thread-safe;
     # each thread should have its own instance

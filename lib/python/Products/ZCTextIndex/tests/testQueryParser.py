@@ -14,12 +14,30 @@
 
 from unittest import TestCase, TestSuite, main, makeSuite
 
-from Products.ZCTextIndex.QueryParser import QueryParser
+from Interface import verify_class_implementation
 
+from Products.ZCTextIndex.IQueryParser import IQueryParser
+from Products.ZCTextIndex.IQueryParseTree import IQueryParseTree
+
+from Products.ZCTextIndex.QueryParser import QueryParser
 from Products.ZCTextIndex.ParseTree import ParseError, ParseTreeNode
 from Products.ZCTextIndex.ParseTree import OrNode, AndNode, NotNode
 from Products.ZCTextIndex.ParseTree import AtomNode, PhraseNode, GlobNode
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
+
+
+class TestInterfaces(TestCase):
+
+    def testInterfaces(self):
+        verify_class_implementation(IQueryParser, QueryParser)
+        verify_class_implementation(IQueryParseTree, ParseTreeNode)
+        verify_class_implementation(IQueryParseTree, OrNode)
+        verify_class_implementation(IQueryParseTree, AndNode)
+        verify_class_implementation(IQueryParseTree, NotNode)
+        verify_class_implementation(IQueryParseTree, AtomNode)
+        verify_class_implementation(IQueryParseTree, PhraseNode)
+        verify_class_implementation(IQueryParseTree, GlobNode)
+
 
 class TestQueryParserBase(TestCase):
 
@@ -66,6 +84,7 @@ class TestQueryParserBase(TestCase):
             self.assertEqual(len(list1), len(list2), msg)
             for i in range(len(list1)):
                 self.compareParseTrees(list1[i], list2[i], msg)
+
 
 class TestQueryParser(TestQueryParserBase):
 
@@ -216,6 +235,7 @@ class TestQueryParser(TestQueryParserBase):
     def test122(self):
         self.failure("foo AND -bar")
 
+
 class StopWordTestQueryParser(TestQueryParserBase):
 
     def setUp(self):
@@ -259,6 +279,7 @@ class StopWordTestQueryParser(TestQueryParserBase):
     def test306(self):
         self.failure('stop AND NOT foo')
 
+
 class FakeStopWordRemover:
 
     def process(self, list):
@@ -268,7 +289,9 @@ class FakeStopWordRemover:
 def test_suite():
     return TestSuite((makeSuite(TestQueryParser),
                       makeSuite(StopWordTestQueryParser),
+                      makeSuite(TestInterfaces),
                     ))
+
 
 if __name__=="__main__":
     main(defaultTest='test_suite')
