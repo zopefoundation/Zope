@@ -173,7 +173,13 @@ class Response:
             # Marshall our body as an XML-RPC response. Strings will be sent
             # strings, integers as integers, etc. We do *not* convert
             # everything to a string first.
-            body = xmlrpclib.dumps((body,), methodresponse=1)
+            if body is None:
+                body=xmlrpclib.False # Argh, XML-RPC doesn't handle null
+            try:
+                body = xmlrpclib.dumps((body,), methodresponse=1)
+            except:
+                self.exception()
+                return
         # Set our body to the XML-RPC message, and fix our MIME type.
         self._real.setBody(body)
         self._real.setHeader('content-type', 'text/xml')
