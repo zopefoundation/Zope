@@ -8,6 +8,9 @@
 <dtml-with expr="manage_CopyContainerFirstItem(REQUEST)">
 <dtml-if cb_isMoveable>
 <H2>Rename <dtml-var meta_type></H2>
+
+<dtml-var "HelpSys.HelpButton('Folder_Rename.dtml')">
+
 <P>
 <FORM ACTION="." METHOD="POST">
 <TABLE CELLSPACING="0">

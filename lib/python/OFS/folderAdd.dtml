@@ -6,6 +6,8 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add Folder</H2>
 
+<dtml-var "HelpSys.HelpButton('Folder_Add.dtml')">
+
 <P>
 A Folder contains other objects. Use Folders to organize your
 web objects in to logical groups.
