@@ -175,6 +175,9 @@ class ProductContext:
         OM=OFS.ObjectManager.ObjectManager
 
         if permissions:
+            if type(permissions) is type(''): # You goofed it!
+                raise TypeError, ('Product context permissions should be a '
+                    'list of permissions not a string', permissions)
             for p in permissions:
                 if type(p) is tt:
                     p, default= p
