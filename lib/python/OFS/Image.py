@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.94 $'[11:-2]
+__version__='$Revision: 1.95 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -97,6 +97,9 @@ from cStringIO import StringIO
 from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
+
+from FileInterface import FileInterface
+from ImageInterface import ImageInterface
 
 StringType=type('')
 
@@ -127,6 +130,9 @@ class File(Persistent,Implicit,PropertyManager,
     """A File object is a content object for arbitrary files."""
     
     meta_type='File'
+
+    __implements__=(FileInterface,)
+    
     precondition=''
     size=None
 
@@ -402,6 +408,9 @@ class Image(File):
     renders an HTML 'IMG' tag.
     """
     meta_type='Image'
+
+    __implements__=(ImageInterface,)
+    
     height=''
     width=''
 
