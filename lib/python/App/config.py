@@ -70,6 +70,7 @@ def setConfiguration(cfg):
         Globals.INSTANCE_HOME = cfg.instancehome
         Globals.SOFTWARE_HOME = cfg.softwarehome
         Globals.ZOPE_HOME = cfg.zopehome
+        Globals.DevelopmentMode = cfg.debug_mode
 
 class DefaultConfiguration:
     """

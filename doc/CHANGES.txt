@@ -102,6 +102,9 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+    
+     - App.config.setConfiguration() did not update the legacy source
+       for debug_mode, Globals.DevelopmentMode.
 
      - Script (Python) objects now have a _filepath attribute, also
        used as the '__file__' global at runtime.  This prevents an
