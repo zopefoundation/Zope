@@ -94,6 +94,11 @@ Zope Changes
 
         - Improved FCGI support in ZServer.
 
+        - Improved ZServer streaming, including fixing chunking and
+          keep-alive support. Chunking is now done by default with
+          HTTP 1.1 clients. Fixed possible problems with large responses.
+          Thanks to Toby Dickenson.
+
         - Fixed a bug which caused File objects of type 'text/html' be
           have the wrong Content-Length set.
 
