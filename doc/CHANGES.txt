@@ -83,6 +83,10 @@ Zope Changes
 
       Bugs Fixed
 
+        - Added some logic to the win32 binary installer to fix some
+          dll loading problems people were getting on international
+          versions of NT.
+
         - Fixed a bug in cDocumentTemplate that could cause AttributeError
           instances to be leaked in certain situations.
 
