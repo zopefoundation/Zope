@@ -15,7 +15,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import string, sys, time, getopt, tempfile, math, cPickle
 
@@ -741,7 +741,7 @@ if __name__ == '__main__':
             if opt=='--resolution':
                 resolution=int(val)
             if opt=='--today':
-                now = time.gmtime(time.time())
+                now = time.localtime(time.time())
                 # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
                 start = list(now)
                 start[3] = start[4] = start[5] = 0
