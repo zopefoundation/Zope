@@ -7,6 +7,7 @@ import os,sys, unittest
 import ZODB, OFS.Application
 from ZODB.DemoStorage import DemoStorage
 from ZODB.DB import DB
+from Products import ZCatalog
 from Products.ZCatalog import ZCatalog,Vocabulary
 from Products.ZCatalog.Catalog import Catalog, CatalogError
 import ExtensionClass
@@ -124,6 +125,38 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
 
 # Removed unittests dealing with catalog instantiation and vocabularies
 # since catalog no longer creates/manages vocabularies automatically (Casey)
+
+# Test of the ZCatalog object, as opposed to Catalog
+
+class TestZCatalog(unittest.TestCase):
+    def setUp(self):
+        self._catalog = ZCatalog.ZCatalog('Catalog')
+        self._catalog.addIndex('title', 'KeywordIndex')
+        self._catalog.addColumn('title')
+        
+        self.upper = 10
+
+        class dummy(ExtensionClass.Base):
+            def __init__(self, num):
+                self.num = num
+    
+            def title(self):
+                return '%d' % self.num
+
+        for x in range(0, self.upper):
+            # make uid a string of the number
+            self._catalog.catalog_object(dummy(x), str(x))
+
+
+    def testGetMetadataForUID(self):
+        testNum = str(self.upper - 3) # as good as any..
+        data = self._catalog.getMetadataForUID(testNum)
+        assert data['title'] == testNum
+
+    def testGetIndexDataForUID(self):
+        testNum = str(self.upper - 3) 
+        data = self._catalog.getIndexDataForUID(testNum)
+        assert data['title'][0] == testNum
 
 class TestCatalogObject(unittest.TestCase):
     def setUp(self):
@@ -314,7 +347,6 @@ class TestCatalogObject(unittest.TestCase):
         a = self._catalog(sort_on='att1')
         self.assertEqual(len(a), self.upper)
 
-
 class objRS(ExtensionClass.Base):
 
     def __init__(self,num):
@@ -354,9 +386,11 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
     suite.addTest( unittest.makeSuite( TestAddDelIndexes ) )
+    suite.addTest( unittest.makeSuite( TestZCatalog ) )
     suite.addTest( unittest.makeSuite( TestCatalogObject ) )
     suite.addTest( unittest.makeSuite( testRS ) )
     return suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
+    
