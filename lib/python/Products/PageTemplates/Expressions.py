@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -171,7 +171,7 @@ class PathExpr:
         dp.reverse()
         return base, path, dp
 
-    def _eval(self, (base, path, dp), econtext,
+    def _eval(self, (base, path, dp), econtext, securityManager,
               list=list, isinstance=isinstance, StringType=type('')):
         path = list(path) # Copy!
         contexts = econtext.contexts
@@ -193,14 +193,18 @@ class PathExpr:
                 has, ob = var.has_get(base)
                 if not has:
                     ob = contexts[base]
-            return restrictedTraverse(ob, path)
+            if path:
+                return restrictedTraverse(ob, path, securityManager)
+            else:
+                return ob
         except (AttributeError, KeyError, TypeError, IndexError,
                 'Unauthorized'), e:
             return Undefined(self._s, sys.exc_info())
 
     def __call__(self, econtext):
+        securityManager = getSecurityManager()
         for pathinfo in self._paths:
-            ob = self._eval(pathinfo, econtext)
+            ob = self._eval(pathinfo, econtext, securityManager)
             exists = not isinstance(ob, Undefined)
             
             if exists:
@@ -271,13 +275,9 @@ class NotExpr:
         return '<NotExpr %s>' % `self._s`
 
 
-def restrictedTraverse(self, path,
+def restrictedTraverse(self, path, securityManager,
                        get=getattr, has=hasattr, N=None, M=[]):
 
-    if not path: return self
-
-    securityManager = getSecurityManager()
-    
     i = 0
     if not path[0]:
         # If the path starts with an empty string, go to the root first.
