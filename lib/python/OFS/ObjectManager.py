@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.91 2000/05/16 19:34:43 brian Exp $"""
+$Id: ObjectManager.py,v 1.92 2000/05/17 18:50:29 brian Exp $"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -182,16 +182,14 @@ class ObjectManager(
 
 
     def filtered_meta_types(self, user=None):
-        "Those meta types for which a user has adequite permissions."
-
+        # Return a list of the types for which the user has
+        # adequate permission to add that type of object.
         user=getSecurityManager().getUser()
-        
         meta_types=[]
         if callable(self.all_meta_types):
             all=self.all_meta_types()
         else:
             all=self.all_meta_types
-
         for meta_type in all:
             if meta_type.has_key('permission'):
                 if user.has_permission(meta_type['permission'],self):
@@ -299,11 +297,9 @@ class ObjectManager(
         self._delOb(id)
 
     def objectIds(self, spec=None):
-        """Return a list of subobject ids.
-
-        Returns a list of subobject ids of the current object.  If 'spec' is
-        specified, returns objects whose meta_type matches 'spec'.
-        """
+        # Returns a list of subobject ids of the current object.
+        # If 'spec' is specified, returns objects whose meta_type
+        # matches 'spec'.
         if spec is not None:
             if type(spec)==type('s'):
                 spec=[spec]
@@ -315,20 +311,15 @@ class ObjectManager(
         return map(lambda i: i['id'], self._objects)
 
     def objectValues(self, spec=None):
-        """Return a list of the actual subobjects.
-
-        Returns a list of actual subobjects of the current object.  If
-        'spec' is specified, returns only objects whose meta_type match 'spec'
-        """
+        # Returns a list of actual subobjects of the current object.
+        # If 'spec' is specified, returns only objects whose meta_type
+        # match 'spec'
         return map(self._getOb, self.objectIds(spec))
 
     def objectItems(self, spec=None):
-        """Return a list of (id, subobject) tuples.
-
-        Returns a list of (id, subobject) tuples of the current object.
-        If 'spec' is specified, returns only objects whose meta_type match
-        'spec'
-        """
+        # Returns a list of (id, subobject) tuples of the current object.
+        # If 'spec' is specified, returns only objects whose meta_type match
+        # 'spec'
         r=[]
         a=r.append
         g=self._getOb
@@ -370,10 +361,8 @@ class ObjectManager(
         return r
 
     def superValues(self,t):
-        """Return all of the objects of a given type
-
-        The search is performed in this folder and in folders above.
-        """
+        # Return all of the objects of a given type located in
+        # this object and containing objects.
         if type(t)==type('s'): t=(t,)
         obj=self
         seen={}
@@ -429,7 +418,7 @@ class ObjectManager(
 
 
     def tpValues(self):
-        """Returns a list of the folder's sub-folders, used by tree tag."""
+        # Return a list of subobjects, used by tree tag.
         r=[]
         if hasattr(self.aq_base,'tree_ids'):
             for id in self.aq_base.tree_ids:
@@ -525,7 +514,7 @@ class ObjectManager(
 
     # FTP support methods
     
-    def manage_FTPlist(self,REQUEST):
+    def manage_FTPlist(self, REQUEST):
         "Directory listing for FTP"
         out=()
         

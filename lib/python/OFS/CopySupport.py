@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -288,7 +288,7 @@ class CopyContainer(ExtensionClass.Base):
     # Because it's still a "management" function.
     manage_clone__roles__=None
     def manage_clone(self, ob, id, REQUEST=None):
-        """Clone an object, creating a new object with the given id."""
+        # Clone an object, creating a new object with the given id.
         if not ob.cb_isCopyable():
             raise CopyError, eNotSupported % absattr(ob.id)            
         try: self._checkId(id)
@@ -310,13 +310,13 @@ class CopyContainer(ExtensionClass.Base):
         return ob
 
     def cb_dataValid(self):
-        "Return true if clipboard data seems valid."
+        # Return true if clipboard data seems valid.
         try:    cp=_cb_decode(self.REQUEST['__cp'])
         except: return 0
         return 1
 
     def cb_dataItems(self):
-        "List of objects in the clip board"
+        # List of objects in the clip board
         try:    cp=_cb_decode(self.REQUEST['__cp'])
         except: return []
         oblist=[]
@@ -404,7 +404,7 @@ class CopySource:
         self.id=id
 
     def cb_isCopyable(self):
-        """Is object copyable? Returns 0 or 1"""
+        # Is object copyable? Returns 0 or 1
         if not (hasattr(self, '_canCopy') and self._canCopy(0)):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
@@ -412,7 +412,7 @@ class CopySource:
         return 1
 
     def cb_isMoveable(self):
-        """Is object moveable? Returns 0 or 1"""
+        # Is object moveable? Returns 0 or 1
         if not (hasattr(self, '_canCopy') and self._canCopy(1)):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
@@ -440,8 +440,6 @@ def sanity_check(c, ob):
 def absattr(attr):
     if callable(attr): return attr()
     return attr
-
-
 
 def _cb_encode(d):
     return quote(compress(dumps(d), 9))

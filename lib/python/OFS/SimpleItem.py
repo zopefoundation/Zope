@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.69 2000/05/11 18:54:14 jim Exp $'''
-__version__='$Revision: 1.69 $'[11:-2]
+$Id: SimpleItem.py,v 1.70 2000/05/17 18:50:29 brian Exp $'''
+__version__='$Revision: 1.70 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -188,17 +188,17 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         return title and ("%s (%s)" % (title,id)) or id
     
     def this(self):
-        "Handy way to talk to ourselves in document templates."
+        # Handy way to talk to ourselves in document templates.
         return self
 
     def tpURL(self):
-        "My URL as used by tree tag"
+        # My URL as used by tree tag
         url=self.id
         if hasattr(url,'im_func'): url=url()
         return url
 
     def tpValues(self):
-        "My sub-objects as used by the tree tag"
+        # My sub-objects as used by the tree tag
         return ()
 
     _manage_editedDialog=Globals.HTMLFile('editedDialog', globals())
