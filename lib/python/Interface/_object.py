@@ -13,7 +13,7 @@
 ##############################################################################
 """Provide a halfway believable rendition of Python 2.2's object
 
-$Id: _object.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: _object.py,v 1.3 2002/06/10 20:15:14 shane Exp $
 """
 
 class _x:
@@ -22,41 +22,38 @@ class _x:
 
 ClassTypes  = (type(_x), )
 MethodTypes = (type(_x.m), )
-
 isInstance = isinstance
+
 
 try:
     object
-    
 except NameError:
     # Python 2.1
-    
     try:
         from ExtensionClass import Base as object
     except ImportError:
-        
-        # Python 2.1 wo ExtensionClass
         class object: pass
-
-    else:
-
-        # Python 2.1 w ExtensionClass
-
-        def isInstance(ob, klass):
-            if type(type(ob)) is type(klass):
-                return isinstance(ob, klass)
-            return 0
-
-        class _x(object):
-            def m(self): pass
-
-        ClassTypes  += (type(_x), )
-        MethodTypes += (type(_x.m), )            
-
 else:
     # Python 2.2
     ClassTypes += (type, )
     object = object
-    isinstance = isinstance
 
+
+try:
+    import ExtensionClass
+except ImportError:
+    # ExtensionClass is not present
+    pass
+else:
+    # ExtensionClass is present
+    def isInstance(ob, klass):
+        if type(type(ob)) is type(klass):
+            return isinstance(ob, klass)
+        return 0
+
+    class _x(ExtensionClass.Base):
+        def m(self): pass
+
+    ClassTypes  += (type(_x), )
+    MethodTypes += (type(_x.m), )            
 
