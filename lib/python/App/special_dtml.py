@@ -104,8 +104,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
         if _prefix is None: _prefix=SOFTWARE_HOME
         elif type(_prefix) is not type(''):
             _prefix=Common.package_home(_prefix)
-
-        args=(self, '%s/%s.dtml' % (_prefix,name))
+        args=(self, os.path.join(_prefix, name + '.dtml'))
         if not kw.has_key('__name__'): kw['__name__']=name
         apply(HTMLFile.inheritedAttribute('__init__'),args,kw)
 
