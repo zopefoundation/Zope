@@ -161,8 +161,3 @@ class Component(SettingsSpec, TransformSpec):
         a certain input context or output format.
         """
         return format in self.supported
-
-import sys, os
-home = os.path.dirname(__file__)
-if not home in sys.path:
-    sys.path.append(home) 
