@@ -88,12 +88,12 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
 from string import split, join, find, lower
-import AccessControl.Role, sys, os, traceback
+import AccessControl.Role, sys, os, stat, traceback
 from OFS.SimpleItem import pretty_tb
 from App.Extensions import getObject, getPath, FuncCode
 from Globals import DevelopmentMode
@@ -231,9 +231,10 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
         """
 
         if DevelopmentMode:
-            ts=os.stat(self.filepath())
-            if not hasattr(self, '_v_last_read') or \
-               (ts != self._v_last_read):
+            # If the file has been modified since last loaded, force a reload.
+            ts=os.stat(self.filepath())[stat.ST_MTIME]
+            if (not hasattr(self, '_v_last_read') or 
+                (ts != self._v_last_read)):
                 self._v_f=self.getFunction(1,1)
                 self._v_last_read=ts
 
