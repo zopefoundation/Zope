@@ -13,7 +13,7 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -311,9 +311,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
             value=self.getProperty(name)
 
             if type=='tokens':
-                value=' '.join(str(value))
+                value=' '.join(map(str, value))
             elif type=='lines':
-                value='\n'.join(str(value))
+                value='\n'.join(map(str, value))
             # check for xml property
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
@@ -363,9 +363,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
             name, type=item['id'], item.get('type','string')
             value=self.getProperty(name)
             if type=='tokens':
-                value=' '.join(str(value))
+                value=' '.join(map(str, value))
             elif type=='lines':
-                value='\n'.join(str(value))
+                value='\n'.join(map(str, value))
             # allow for xml properties
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
