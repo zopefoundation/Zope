@@ -4,7 +4,7 @@ Zope changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-    Zope 2.3.0
+    Zope 2.3.0 alpha 1
     
       Features Added
 
@@ -50,6 +50,13 @@ Zope changes
           override webdav.NullResource's guess at the type of object
           to create when PUT is done to an unknown ID).
 
+        - Added testrunner.py to the utilities directory. The testrunner 
+          is a basic utility for running PyUnit based unit tests. It can 
+          be used to run all tests found in the Zope tree, all test suites
+          in a given directory or in specific files. The testrunner will 
+          be used to ensure that all checked in tests pass before releases 
+          are made. For more information, see the docstring of the actual
+          testrunner.py module.
 
       Bugs Fixed
 
