@@ -167,7 +167,22 @@ class HTMLTests(unittest.TestCase):
       expect = open('output/CheckNothing.html').read()
       out = t()
       util.check_html(expect, out)
-              
+
+   def checkWithXMLHeader(self):
+      t = self.folder.t
+      t.write(open('input/CheckWithXMLHeader.html').read())
+      expect = open('output/CheckWithXMLHeader.html').read()
+      out = t()
+      util.check_html(expect, out)
+
+   def checkNotExpression(self):
+      t = self.folder.t
+      t.write(open('input/CheckNotExpression.html').read())
+      expect = open('output/CheckNotExpression.html').read()
+      out = t()
+      util.check_html(expect, out)
+      
+
 def test_suite():
    return unittest.makeSuite(HTMLTests, 'check')
 
