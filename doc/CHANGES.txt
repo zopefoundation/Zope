@@ -14,6 +14,12 @@ Principia Changes
         even though it makes no sense to assign the "Anonymous" role
         to a user.
 
+      - Packing failed on Windows.
+
+      - Index files were not updated during packing, which could cause
+        problems if a process exited abnormally after a pack.
+
+
   Principia 1.6.0
 
     Features Added
