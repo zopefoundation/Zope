@@ -162,7 +162,7 @@ class ClassSecurityInfo(SecurityInfo):
         ac_permissions = {}
         for name, access in self.names.items():
             if access in (ACCESS_PRIVATE, ACCESS_PUBLIC, ACCESS_NONE):
-                dict['%s__roles__' % name] = access
+                setattr(classobj, '%s__roles__' % name, access)
             else:
                 if not ac_permissions.has_key(access):
                     ac_permissions[access] = []
@@ -182,12 +182,13 @@ class ClassSecurityInfo(SecurityInfo):
             else:
                 entry = (permission_name, tuple(names))
             __ac_permissions__.append(entry)
-        dict['__ac_permissions__'] = tuple(__ac_permissions__)
+        setattr(classobj, '__ac_permissions__', tuple(__ac_permissions__))
 
         # Take care of default attribute access policy
         access = getattr(self, 'access', _marker)
         if access is not _marker:
-            dict['__allow_access_to_unprotected_subobjects__'] = access
+            setattr(classobj, '__allow_access_to_unprotected_subobjects__',
+                    access)
 
         if getattr(self, '_warnings', None):
             LOG('SecurityInfo', WARNING, 'Class "%s" had conflicting '
