@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.2 1996/10/23 18:36:56 jim Exp $
+  $Id: ExtensionClass.c,v 1.3 1996/10/24 21:07:49 jim Exp $
 
   Extension Class
 
@@ -56,6 +56,10 @@
       (540) 371-6909
 
   $Log: ExtensionClass.c,v $
+  Revision 1.3  1996/10/24 21:07:49  jim
+  Fixed bug in returning __bases__ for base classes.
+  Added missing PyErr_Clear() call.
+
   Revision 1.2  1996/10/23 18:36:56  jim
   Changed a bunch of single quotes to double and got rid of
   some superfluous semicolns that caused warning on SGI.
@@ -80,7 +84,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.2 1996/10/23 18:36:56 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.3 1996/10/24 21:07:49 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -942,13 +946,13 @@ CCL_getattr(self, name)
 	}
       if(strcmp(n,"bases__")==0)
 	{
-	  if(self->based)
+	  if(self->bases)
 	    {
 	      Py_INCREF(self->bases);
 	      return self->bases;
 	    }
 	  else
-	    return PyTuple_New(0)
+	    return PyTuple_New(0);
 	}
     }
   
@@ -1196,6 +1200,8 @@ dictionary_setattr:
     }	
 
 default_setattr:
+
+  PyErr_Clear();
 
   UNLESS(-1 != PyMapping_SetItemString(INSTANCE_DICT(self),name,v))
     return -1;
