@@ -409,7 +409,7 @@ def initializeProduct(productp, name, home, app):
 
     products=app.Control_Panel.Products
 
-    if hasattr(productp, 'import_error_'): ie=productp.import_error_
+    if hasattr(productp, '__import_error__'): ie=productp.__import_error__
     else: ie=None
 
     try: fver=strip(open(home+'/version.txt').read())
@@ -421,7 +421,7 @@ def initializeProduct(productp, name, home, app):
             if (ihasattr(old,'version') and old.version==fver and
                 hasattr(old, 'import_error_') and
                 old.import_error_==ie):
-                return
+                return old
     except: pass
     
     try:
@@ -455,7 +455,8 @@ def initializeProduct(productp, name, home, app):
         product.manage_options=product.manage_options+(
             {'label':'README', 'action':'manage_readme'},
             )
-        
+
+    return product
 
 def ihasattr(o, name):
     return hasattr(o, name) and o.__dict__.has_key(name)
