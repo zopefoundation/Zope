@@ -85,10 +85,22 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
+
+
+
+import exceptions
+
+class error(exceptions.Exception):
+    def __init__(self, msg):
+        self.msg=msg
+    html='<html>\n<head>\n<title></title>\n</head>\n<body>\n' \
+         '%s\n</body></html>'
+    def __str__(self, fmt=html):
+        return fmt % self.msg
 
 
 class Resource:
@@ -240,7 +252,7 @@ class Resource:
         except 'Not Found':
             raise 'Conflict', 'Object ancestors must already exist.'
         except: raise sys.exc_type, sys.exc_value
-        if hasattr(parent, '__dav_null__'):
+        if hasattr(parent, '__null_resource__'):
             raise 'Conflict', 'Object ancestors must already exist.'
         existing=hasattr(aq_base(parent), name)
         if existing and oflag=='F':
@@ -294,7 +306,7 @@ class Resource:
         except 'Not Found':
             raise 'Conflict', 'The resource %s must exist.' % path
         except: raise sys.exc_type, sys.exc_value
-        if hasattr(parent, '__dav_null__'):
+        if hasattr(parent, '__null_resource__'):
             raise 'Conflict', 'The resource %s must exist.' % path
         existing=hasattr(aq_base(parent), name)
         if existing and flag=='F':

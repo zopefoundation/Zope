@@ -83,9 +83,13 @@
 # 
 ##############################################################################
 
-"""WebDAV XML parsing tools."""
+"""WebDAV XML parsing tools. Note that this module does just
+   enough for the purposes of DAV - it is not intended as a
+   general xml toolkit, and will probably eventually go away
+   in favor of a standard xml package once some issues are
+   worked out."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, string, xmllib
 from Acquisition import Implicit
@@ -311,7 +315,6 @@ class Text(Node):
     def toxml(self):
         return escape(self.__value__)
 
-
 class CData(Node):
     __type__=type_cdata
     __name__='#cdata'
@@ -320,27 +323,19 @@ class CData(Node):
     def toxml(self):
         return '<![CDATA[%s]]>' % self.__value__
 
-
-
 class EntityRef(Node):
     __name__='#entityref'
     __type__=type_entityref
-
     def __init__(self, val):
-        self.__value__=val
-        
+        self.__value__=val        
     def toxml(self):
         return '&%s;' % self.__value__
-
 
 class Entity(Node):
     __name__='#entity'
     __type__=type_entity
-
     def __init__(self, name, pubid, sysid, nname):
-        
         self.__value__=val
-        
     def toxml(self):
         return ''
 
@@ -349,18 +344,14 @@ class ProcInst(Node):
     def __init__(self, name, val):
         self.__name__=name
         self.__value__=val
-        
     def toxml(self):
         return '<?%s %s?>' % (self.__name__, self.__value__)
-
 
 class Comment(Node):
     __name__='#comment'
     __type__=type_comment
-    
     def __init__(self, val):
         self.__value__=val
-
     def toxml(self):
         return '<!--%s-->' % self.__value__
 
@@ -425,26 +416,15 @@ class XmlParser(xmllib.XMLParser):
 
 
 
-def escape(data, entities={}):
-    # snarfed from xml.util...
-    data = string.replace(data, "&", "&amp;")
-    data = string.replace(data, "<", "&lt;")
-    data = string.replace(data, ">", "&gt;")
-    for chars, entity in entities.items():
-        data = string.replace(data, chars, entity)        
+def escape(data, rmap={}, replace=string.replace):
+    data=replace(data, "&", "&amp;")
+    data=replace(data, "<", "&lt;")
+    data=replace(data, ">", "&gt;")
+    for key, val in rmap.items():
+        data=replace(data, key, val)
     return data
 
-def remap(data):
+def remap(data, dict={'DAV:': 'd'}):
     root=XmlParser().parse(data)
-    dict={'DAV:':'d', 'http://www.zope.org/propsets/default':'z'}
     root.elements()[0].remap(dict, 0)
     return root.toxml()
-
-def remap_test():
-    file=open('big.xml','r')
-    data=file.read()
-    file.close()
-    data=remap(data)
-    file=open('new.xml','w')
-    file.write(data)
-    file.close()

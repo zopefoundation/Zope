@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -99,7 +99,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
 
-    __dav_null__=1
+    __null_resource__=1
 
     __ac_permissions__=(
         ('View',                             ('HEAD',)),
@@ -169,7 +169,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         if hasattr(aq_base(parent), name):
             raise 'Method Not Allowed', 'The name %s is in use.' % name
         if not hasattr(parent, '__dav_collection__'):
-            raise 'Forbidden', 'Unable to create collection resource.'
+            raise 'Forbidden', 'Cannot create collection at this location.'
         parent.manage_addFolder(name)
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')

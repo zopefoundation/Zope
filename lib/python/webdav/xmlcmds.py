@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -96,7 +96,9 @@ from cStringIO import StringIO
 
 class DAVProps(DAVProperties):
     """Emulate required DAV properties for objects which do
-       not themselves support properties."""
+       not themselves support properties. This is mainly so
+       that non-PropertyManagers can appear to support DAV
+       PROPFIND requests."""
     def __init__(self, obj):
         self.__obj__=obj
     def v_self(self):
