@@ -85,15 +85,44 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.13 1999/03/10 00:15:31 klm Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
-from ImageFile import ImageFile
+$Id: __init__.py,v 1.14 1999/03/30 19:33:47 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 import Shared.DC.ZRDB.RDB
 import Shared.DC.ZRDB.sqlvar, Shared.DC.ZRDB.sqlgroup, Shared.DC.ZRDB.sqltest
 
 
-classes=('SQL.SQL',)
+# This is the new way to initialize products.  It is hoped
+# that this more direct mechanism will be more understandable.
+def initialize(context):
+
+    context.registerClass(
+        SQL.SQL,
+        permission='Add Database Methods',
+        constructors=(SQL.manage_addZSQLMethodForm, SQL.manage_addZSQLMethod),
+        icon='sqlmethod.gif',
+        )
+
+    context.registerClass(
+        meta_type='Z Search Interface',
+        permission='Add Documents, Images, and Files',
+        constructors=(Shared.DC.ZRDB.Search.addForm,
+                      Shared.DC.ZRDB.Search.manage_addZSearch),
+        )
+
+methods={
+    # We still need this one, at least for now, for both editing and
+    # adding.  Ugh.
+    'SQLConnectionIDs': SQL.SQLConnectionIDs,
+
+    # Oh please!
+    'ZQueryIds':             Shared.DC.ZRDB.Search.ZQueryIds,
+    }
+
+__ac_permissions__=(
+    # Ugh.  We should get rid of this, but we'll have to revisit connections
+    ('Open/Close Database Connections',   ()),
+    )
 
 __module_aliases__=(
     ('Products.AqueductSQLMethods','Products.ZSQLMethods'),
@@ -106,37 +135,4 @@ __module_aliases__=(
     ('AqueductDA.sqlvar',     Shared.DC.ZRDB.sqlvar),
     ('AqueductDA.sqltest',     Shared.DC.ZRDB.sqltest),
     ('AqueductDA.sqlgroup',     Shared.DC.ZRDB.sqlgroup),
-    )
-
-meta_types=(
-    {'name':SQL.SQL.meta_type,
-     'action':'manage_addZSQLMethodForm',
-     },
-    {'name':'Z Search Interface',
-     'action':'manage_addZSearchForm'
-     },
-    )
-
-methods={
-    'manage_addZSQLMethod': SQL.manage_addZSQLMethod,
-    'manage_addZSQLMethodForm': SQL.manage_addZSQLMethodForm,
-    'SQLConnectionIDs': SQL.SQLConnectionIDs,
-
-    
-    'manage_addZSearchForm': Shared.DC.ZRDB.Search.addForm,
-    'manage_addZSearch':     Shared.DC.ZRDB.Search.add,
-    'ZQueryIds':             Shared.DC.ZRDB.Search.ZQueryIds,
-    }
-
-misc_={
-    'icon': ImageFile('Shared/DC/ZRDB/www/DBAdapter_icon.gif'),
-    }
-
-__ac_permissions__=(
-    ('Add Database Methods',
-     ('manage_addZSQLMethodForm', 'manage_addZSQLMethod')),
-    ('Open/Close Database Connections',   ()),
-    ('Change Database Methods',           ()),
-    ('Change Database Connections',           ()),
-    ('Use Database Methods', ()),
     )

@@ -83,31 +83,19 @@
 # 
 ##############################################################################
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.10 1999/03/10 00:15:21 klm Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: __init__.py,v 1.11 1999/03/30 19:26:19 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import ExternalMethod
-from ImageFile import ImageFile
 
-classes=('ExternalMethod.ExternalMethod',)
+# This is the new way to initialize products.  It is hoped
+# that this more direct mechanism will be more understandable.
+def initialize(context):
 
-meta_types=     {'name':'External Method',
-                 'action':'manage_addExternalMethodForm'
-                 },
+    context.registerClass(
+        ExternalMethod.ExternalMethod,
+        constructors=(ExternalMethod.manage_addExternalMethodForm,
+                       ExternalMethod.manage_addExternalMethod),
+        icon='extmethod.gif',
+        )
 
-methods={
-    'manage_addExternalMethodForm':
-    ExternalMethod.manage_addExternalMethodForm,
-    'manage_addExternalMethod':
-    ExternalMethod.manage_addExternalMethod,
-    }
-
-misc_={'function_icon':
-       ImageFile('www/function.gif', globals())}
-
-
-__ac_permissions__=(
-    ('Add External Methods',
-     ('manage_addExternalMethodForm', 'manage_addExternalMethod')),
-    ('Change External Methods', ()),
-    )

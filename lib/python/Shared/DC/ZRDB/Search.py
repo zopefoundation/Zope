@@ -84,15 +84,15 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.9 1999/03/10 00:15:44 klm Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Search.py,v 1.10 1999/03/30 19:31:09 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify, Args
 from string import join
 
 addForm=HTMLFile('searchAdd', globals())
-def add(self, report_id, report_title, report_style,
+def manage_addZSearch(self, report_id, report_title, report_style,
         input_id, input_title, queries=[],
         REQUEST=None):
     'add a report'
