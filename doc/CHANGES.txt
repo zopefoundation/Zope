@@ -187,6 +187,9 @@ Zope Changes
           object deactivation that prevented deactivation of BTrees
           was fixed.
 
+        - A problem in BTrees that caused unintended db writes on 
+          Catalog searches was fixed.
+
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
