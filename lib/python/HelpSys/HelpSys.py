@@ -1,14 +1,12 @@
 """Help system and documentation support"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import sys, os, string, ts_regex
-import Globals, Acquisition
-from HelpUtil import classobject, methodobject, is_class, is_module
-from App.Dialogs import MessageDialog
+import Globals, Acquisition, StructuredText
+from HelpUtil import classobject, is_class, is_module
 from ImageFile import ImageFile
-from StructuredText import HTML
 from Globals import HTMLFile
 
 
@@ -61,11 +59,14 @@ class ObjectItem(classobject):
 
 class ObjectRef(Acquisition.Implicit):
     """Object reference"""
+    __names__=None
     __roles__=None
     
     index_html=HTMLFile('objectref_index', globals())
 
-    def __init__(self):
+    def deferred__init__(self):
+        # This is necessary because we want to wait until all
+        # products have been installed (imported).
         dict={}
         for k, v in sys.modules.items():
             if v is not None and k != '__builtins__':
@@ -74,19 +75,23 @@ class ObjectRef(Acquisition.Implicit):
         keys.sort()
         for key in keys:
             setattr(self, key, dict[key])
-        self._ids_=keys
+        self.__names__=keys
 
     objectValues__roles__=None
     def objectValues(self):
+        if self.__names__ is None:
+            self.deferred__init__()
         items=[]
-        for id in self._ids_:
+        for id in self.__names__:
             items.append(getattr(self, id))
         return items
 
     def search_mod(self, mod, dict):
+        hidden=('Control Panel', 'Principia Draft', 'simple item')
         for k, v in mod.__dict__.items():
             if is_class(v) and hasattr(v, 'meta_type') and \
-               hasattr(v, '__ac_permissions__'):
+               hasattr(v, '__ac_permissions__') and \
+               (v.meta_type not in hidden):
                 dict[v.meta_type]=ObjectItem(k, v)
             if is_module(v) and hasattr(v, '__path__'):
                 dict=self.search_mod(v, dict)

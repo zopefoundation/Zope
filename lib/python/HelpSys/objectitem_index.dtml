@@ -14,11 +14,10 @@ Object Reference
 
 <h3><!--#if icon--><img src="<!--#var SCRIPT_NAME-->/<!--#var icon-->" height="16" width="16" alt=""><!--#endif--> <!--#var meta_type--></h3>
 
-<p>
 <code>
-<!--#var get_docstring-->
+<!--#var get_docstring_html-->
 </code>
-</p>
+
 
 <h3><!--#var meta_type--> methods</h3>
 
@@ -56,14 +55,15 @@ Object Reference
     </code>
 </dt>
 <dd><code>
-    <!--#if permission-->
+<!--#if permission-->
     <strong>Permission:</strong> <!--#var permission--><br><br>
-    <!--#endif-->
+<!--#endif-->
 
-    <!--#if get_docstring--><!--#var get_docstring--><!--#
-    else-->No documentation for this method<!--#
-    endif-->
-    <br>
+<!--#if get_docstring_html-->
+    <!--#var get_docstring_html-->
+<!--#else-->
+    <p>No documentation for this method</p>
+<!--#endif-->
     <a href="#top"><img src="<!--#var SCRIPT_NAME-->/HelpSys/u_arrow" height="9" width="9" border="0" valign="bottom" alt=""> top</a><br><br>
     </code>
 </dd>

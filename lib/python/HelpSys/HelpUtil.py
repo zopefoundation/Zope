@@ -1,13 +1,14 @@
 """Help system and documentation support"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import Globals, Acquisition
+import StructuredText.StructuredText
 import sys, os, string, ts_regex
-from StructuredText import HTML
 
 
+stx_class=StructuredText.StructuredText.HTML
 
 
 class object(Acquisition.Implicit):
@@ -40,6 +41,16 @@ class object(Acquisition.Implicit):
             if not doc: doc=''
             return doc
         return ''
+
+    def get_docstring_html(self):
+        doc=self.get_docstring()
+        if string.find(doc, '\n\n') > -1:
+            doc=string.split(doc, '\n\n')
+            if len(doc) > 1:
+                doc[1]=string.strip(doc[1])
+            doc=string.join(doc, '\n\n')
+        
+        return str(stx_class(doc))
 
     def version(self):
         if hasattr(self._obj_, '__version__'):
@@ -177,6 +188,7 @@ pre_match=ts_regex.compile('[A-Za-z0-9_]*([^)]*)[ -]*').match
 sig_match=ts_regex.compile('[A-Za-z0-9_]*([^)]*)').match
 
 class methodobject(object):
+
     def get_class(self):
         return self._obp_
 
