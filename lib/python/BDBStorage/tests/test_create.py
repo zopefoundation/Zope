@@ -93,8 +93,8 @@ class FullOpenCloseTest(BerkeleyTestBase.FullTestBase):
 
 
 class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
-    def _mk_dbhome(self, dir):
-        self._dir = dir
+    def open(self):
+        self._storage = None
 
     def testOpenWithBogusConfig(self):
         class C: pass
@@ -102,9 +102,10 @@ class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
         # This instance won't have the necessary attributes, so the creation
         # will fail.  We want to be sure that everything gets cleaned up
         # enough to fix that and create a proper storage.
-        self.assertRaises(AttributeError, BDBFullStorage, self._dir, config=c)
+        dir = self._envdir()
+        self.assertRaises(AttributeError, BDBFullStorage, dir, config=c)
         c = BerkeleyConfig()
-        s = BDBFullStorage(self._dir, config=c)
+        s = BDBFullStorage(dir, config=c)
         s.close()
 
 
