@@ -54,8 +54,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.18 1998/09/14 22:19:57 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.19 1998/09/16 20:19:12 jim Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -161,8 +161,24 @@ class TemplateDict:
             if hasattr(v,'isDocTemp') and v.isDocTemp:
                 v=v(None, self)
             else:
-                try: v=v()
-                except (AttributeError,TypeError): pass
+                try: return v()
+                except AttributeError, ev:
+                    try:
+                        tb=sys.exc_traceback
+                        if hasattr(sys, 'exc_info'): tb=sys.exc_info()[2]
+                        if isFunctionType(type(v)):
+                            raise AttributeError, ev, tb
+                        if hasattr(v,'__call__'):
+                            raise AttributeError, ev, tb
+                    finally: tb=None
+                except TypeError, ev:
+                    try:
+                        tb=sys.exc_traceback
+                        if hasattr(sys, 'exc_info'): tb=sys.exc_info()[2]
+                        if isFunctionType(type(v)):
+                            raise AttributeError, ev, tb
+                    finally: tb=None
+                        
         return v
 
     def has_key(self,key):
