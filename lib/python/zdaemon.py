@@ -1,4 +1,4 @@
-#!/usr/local/bin/python1.5.1
+#!/usr/bin/env python
 ##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
