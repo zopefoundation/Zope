@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.5 2002/04/15 10:52:30 htrd Exp $
+$Id: SiteErrorLog.py,v 1.6 2002/04/26 16:17:21 htrd Exp $
 """
 
 import os
@@ -35,6 +35,24 @@ from zLOG import LOG, ERROR
 use_error_logging = 'Log Site Errors'
 log_to_event_log = 'Log to the Event Log'
 
+# We want to restrict the rate at which errors are sent to the Event Log
+# because we know that these errors can be generated quick enough to
+# flood some zLOG backends. zLOG is used to notify someone of a problem,
+# not to record every instance.
+# This dictionary maps exception name to a value which encodes when we
+# can next send the error with that name into the event log. This dictionary
+# is shared between threads and instances. Concurrent access will not
+# do much harm.
+_rate_restrict_pool = {}
+
+# The number of seconds that must elapse on average between sending two
+# exceptions of the same name into the the Event Log. one per minute. 
+_rate_restrict_period = 60
+
+# The number of exceptions to allow in a burst before the above limit
+# kicks in. We allow five exceptions, before limiting them to one per
+# minute.
+_rate_restrict_burst = 5
 
 _www = os.path.join(os.path.dirname(__file__), 'www')
 
@@ -168,9 +186,17 @@ class SiteErrorLog (SimpleItem):
                     error=sys.exc_info())
             else:
                 if self.copy_to_zlog:
-                    LOG('SiteError', ERROR, str(url), error=info)
+                    self._do_copy_to_zlog(now,strtype,str(url),info)
         finally:
             info = None
+
+    def _do_copy_to_zlog(self,now,strtype,url,info):
+        when = _rate_restrict_pool.get(strtype,0)
+        if now>when:
+            next_when = max(when, now-_rate_restrict_burst*_rate_restrict_period)
+            next_when += _rate_restrict_period
+            _rate_restrict_pool[strtype] = next_when
+            LOG('SiteError', ERROR, str(url), error=info)
 
     security.declareProtected(use_error_logging, 'getProperties')
     def getProperties(self):
