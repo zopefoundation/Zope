@@ -221,6 +221,19 @@ class TALGenerator:
             else:
                 self.emit("setGlobal", name, cexpr)
 
+    def emitOnError(self, name, onError, position):
+        block = self.popProgram()
+        key, expr = parseSubstitution(onError, position)
+        cexpr = self.compileExpression(expr)
+        if key == "text":
+            self.emit("insertText", cexpr, [])
+        else:
+            assert key == "structure"
+            self.emit("insertStructure", cexpr, attrDict, [])
+        self.emitEndTag(name)
+        handler = self.popProgram()
+        self.emit("onError", block, handler)
+
     def emitCondition(self, expr):
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
@@ -236,9 +249,7 @@ class TALGenerator:
         self.emit("loop", name, cexpr, program)
 
     def emitSubstitution(self, arg, attrDict={}, position=(None, None)):
-        key, expr = parseSubstitution(arg)
-        if not key:
-            raise TALError("Bad syntax in content/replace: " + `arg`, position)
+        key, expr = parseSubstitution(arg, position)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
         if key == "text":
@@ -346,12 +357,13 @@ class TALGenerator:
         useMacro = metaldict.get("use-macro")
         defineSlot = metaldict.get("define-slot")
         fillSlot = metaldict.get("fill-slot")
-        defines = taldict.get("define")
+        define = taldict.get("define")
         condition = taldict.get("condition")
         content = taldict.get("content")
         replace = taldict.get("replace")
         repeat = taldict.get("repeat")
         attrsubst = taldict.get("attributes")
+        onError = taldict.get("on-error")
         if len(metaldict) > 1:
             raise METALError("at most one METAL attribute per element",
                              position)
@@ -383,10 +395,16 @@ class TALGenerator:
         if fillSlot:
             self.pushProgram()
             todo["fillSlot"] = fillSlot
-        if defines:
+        if define:
             self.emit("beginScope")
-            self.emitDefines(defines, position)
-            todo["define"] = defines
+        if onError:
+            self.pushProgram() # handler
+            self.emitStartTag(name, attrlist)
+            self.pushProgram() # block
+            todo["onError"] = onError
+        if define:
+            self.emitDefines(define, position)
+            todo["define"] = define
         if condition:
             self.pushProgram()
             todo["condition"] = condition
@@ -417,7 +435,7 @@ class TALGenerator:
         if isend:
             self.emitEndElement(name, isend)
 
-    def emitEndElement(self, name, isend=0):
+    def emitEndElement(self, name, isend=0, implied=0):
         todo = self.todoPop()
         if not todo:
             # Shortcut
@@ -434,8 +452,19 @@ class TALGenerator:
         repeat = todo.get("repeat")
         replace = todo.get("replace")
         condition = todo.get("condition")
+        onError = todo.get("onError")
         define = todo.get("define")
         repldict = todo.get("repldict", {})
+
+        if implied > 0:
+            if defineMacro or useMacro or defineSlot or fillSlot:
+                exc = METALError
+                what = "METAL"
+            else:
+                exc = TALError
+                what = "TAL"
+            raise exc("%s attributes on <%s> require explicit </%s>" %
+                      (what, name, name), position)
 
         if content:
             self.emitSubstitution(content, {}, position)
@@ -448,6 +477,8 @@ class TALGenerator:
             self.emitSubstitution(replace, repldict, position)
         if condition:
             self.emitCondition(condition)
+        if onError:
+            self.emitOnError(name, onError, position)
         if define:
             self.emit("endScope")
         if defineMacro:

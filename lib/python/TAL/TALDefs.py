@@ -108,9 +108,11 @@ KNOWN_TAL_ATTRIBUTES = [
     "replace",
     "repeat",
     "attributes",
+    "on-error",
     ]
 
 class TALError(Exception):
+
     def __init__(self, msg, position=(None, None)):
         assert msg != ""
         self.msg = msg
@@ -127,6 +129,24 @@ class TALError(Exception):
 
 class METALError(TALError):
     pass
+
+class TALESError(TALError):
+
+    # This exception can carry around another exception + traceback
+
+    def __init__(self, msg, position=(None, None), info=(None, None, None)):
+        t, v, tb = info
+        if t:
+            if issubclass(t, Exception) and t.__module__ == "exceptions":
+                err = t.__name__
+            else:
+                err = str(t)
+            v = v is not None and str(v)
+            if v:
+                err = "%s: %s" % (err, v)
+            msg = "%s: %s" % (msg, err)
+        TALError.__init__(self, msg, position)
+        self.info = info
 
 import re
 _attr_re = re.compile(r"\s*([^\s]+)\s*(.*)\Z", re.S)
@@ -147,11 +167,11 @@ def parseAttributeReplacements(arg):
         dict[name] = expr
     return dict
 
-def parseSubstitution(arg):
+def parseSubstitution(arg, position=(None, None)):
     m = _subst_re.match(arg)
     if not m:
-        print "Bad syntax in replace/content:", `arg`
-        return None, None
+        raise TALError("Bad syntax in substitution text: " + `onError`,
+                       position)
     key, expr = m.group(1, 2)
     if not key:
         key = "text"

@@ -91,8 +91,13 @@ import string
 import getopt
 import cgi
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 from XMLParser import XMLParser
-from TALDefs import TALError, quote
+from TALDefs import TALError, TALESError, quote
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
@@ -129,6 +134,17 @@ class TALInterpreter:
         self.slots = {}
         self.currentMacro = None
         self.position = None, None  # (lineno, offset)
+        self.col = 0
+        self.level = 0
+
+    def saveState(self):
+        return (self.position, self.col, self.stream)
+
+    def restoreState(self, state):
+        (self.position, self.col, self.stream) = state
+
+    def restoreOutputState(self, state):
+        (dummy, self.col, self.stream) = state
 
     def __call__(self):
         if self.html:
@@ -139,8 +155,6 @@ class TALInterpreter:
         if self.col > 0:
             self.stream_write("\n")
 
-    col = 0
-
     def stream_write(self, s):
         self.stream.write(s)
         i = string.rfind(s, '\n')
@@ -148,8 +162,6 @@ class TALInterpreter:
             self.col = self.col + len(s)
         else:
             self.col = len(s) - (i + 1)
-
-    level = 0
 
     def interpret(self, program):
         self.level = self.level + 1
@@ -297,6 +309,21 @@ class TALInterpreter:
             self.interpret(compiledSlot)
         else:
             self.interpret(block)
+
+    def do_onError(self, block, handler):
+        if not self.tal:
+            self.interpret(block)
+            return
+        state = self.saveState()
+        self.stream = stream = StringIO()
+        try:
+            self.interpret(block)
+        except TALESError, err:
+            self.restoreState(state)
+            self.interpret(handler)
+        else:
+            self.restoreOutputState(state)
+            self.stream_write(stream.getvalue())
 
 def test():
     from driver import FILE, parsefile

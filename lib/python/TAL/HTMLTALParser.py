@@ -204,10 +204,10 @@ class HTMLTALParser(HTMLParser):
         self.close_para_tags(tag)
         self.scan_xmlns(attrs)
         attrlist, taldict, metaldict = self.extract_attrs(attrs)
-        if taldict.get("replace") or taldict.get("content"):
+        if taldict.get("content"):
             self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
                                       self.getpos())
-            self.gen.emitEndElement(tag)
+            self.gen.emitEndElement(tag, implied=-1)
         else:
             self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
                                       self.getpos(), isend=1)
@@ -261,11 +261,11 @@ class HTMLTALParser(HTMLParser):
                 # Pick out trailing whitespace from the program, and
                 # insert the close tag before the whitespace.
                 white = self.gen.unEmitWhitespace()
-                self.gen.emitEndElement(tag)
+                self.gen.emitEndElement(tag, implied=implied)
                 if white:
                     self.gen.emitRawText(white)
             else:
-                self.gen.emitEndElement(tag)
+                self.gen.emitEndElement(tag, implied=implied)
         self.tagstack.pop()
         self.pop_xmlns()
 
