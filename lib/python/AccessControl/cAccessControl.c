@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.13 2002/01/11 17:14:27 evan Exp $
+  $Id: cAccessControl.c,v 1.14 2002/02/01 18:08:10 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1703,6 +1703,7 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 		Py_DECREF(r);
 		r = self->__roles__;
 		if (r == NULL) goto err;
+		Py_INCREF(r);
 	}
 
 	/*|
@@ -2076,7 +2077,7 @@ static struct PyMethodDef dtml_methods[] = {
 void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.13 $";
+	char *rev = "$Revision: 1.14 $";
         PURE_MIXIN_CLASS(RestrictedDTMLMixin,
                          "A mix-in for derivatives of DT_String.String "
                          "that adds Zope security."
@@ -2097,7 +2098,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.13 2002/01/11 17:14:27 evan Exp $\n");
+		"$Id: cAccessControl.c,v 1.14 2002/02/01 18:08:10 matt Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
