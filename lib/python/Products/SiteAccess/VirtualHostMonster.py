@@ -5,9 +5,8 @@ Defines the VirtualHostMonster class
 
 from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
-from Acquisition import Implicit, ImplicitAcquisitionWrapper
-from ExtensionClass import Base
-from string import split, strip, join
+from Acquisition import Implicit, aq_inner, aq_parent
+from string import split, strip, join, find, lower, replace
 from ZPublisher import BeforeTraverse
 import os
 
@@ -21,12 +20,79 @@ class VirtualHostMonster(Persistent, Item, Implicit):
     priority = 25
 
     title = ''
+    lines = ()
+    have_map = 0
 
-    __ac_permissions__=(('View', ('manage_main',)),)
+    __ac_permissions__=(('View', ('manage_main',)),('Add Site Roots', ('manage_edit', 'set_map')))
 
-    manage_options=({'label':'View', 'action':'manage_main'},)
+    manage_options=({'label':'About', 'action':'manage_main'},
+                    {'label':'Mappings', 'action':'manage_edit'})
 
-    manage_main = DTMLFile('www/VirtualHostMonster', globals())
+    manage_main = DTMLFile('www/VirtualHostMonster', globals(),
+                           __name__='manage_main')
+    manage_edit = DTMLFile('www/manage_edit', globals())
+
+    def set_map(self, map_text, RESPONSE=None):
+        "Set domain to path mappings."
+	lines = split(map_text, '\n')
+        self.fixed_map = fixed_map = {}
+        self.sub_map = sub_map = {}
+        new_lines = []
+        for line in lines:
+            line = strip(split(line, '#!')[0])
+            if not line:
+                continue
+            try:
+                # Drop the protocol, if any
+                line = split(line, '://')[-1]
+                try:
+                    host, path = map(strip, split(line, '/', 1))
+                except:
+                    raise 'LineError', 'Needs a slash between host and path'
+	        pp = filter(None, split(path, '/'))
+                if not pp:
+                    raise 'LineError', 'Empty path'
+
+                obpath = pp[:]
+                if obpath[0] == 'VirtualHostBase':
+                    obpath = obpath[3:]
+                if 'VirtualHostRoot' in obpath:
+                    i1 = obpath.index('VirtualHostRoot')
+                    i2 = i1 + 1
+                    while i2 < len(obpath) and obpath[i2][:4] == '_vh_':
+                        i2 = i2 + 1
+                    del obpath[i1:i2]
+                try:
+                    ob = self.unrestrictedTraverse(obpath)
+                except:
+                    raise 'LineError', 'Path not found'
+                if not getattr(ob.aq_base, 'isAnObjectManager', 0):
+                    raise 'LineError', 'Path must lead to an Object Manager'
+
+                try:
+                    int(replace(host,'.',''))
+                    raise 'LineError',  'IP addresses are not mappable'
+                except ValueError:
+                    pass
+                if 'VirtualHostRoot' not in pp:
+                    pp.append('/')
+                pp.reverse()
+                if host[:2] == '*.':
+                    host_map = sub_map
+                    host = host[2:]
+                else:
+                    host_map = fixed_map
+                if not host_map.has_key(host):
+                    host_map[host] = {}
+                hostname, port = (split(host, ':', 1) + [None])[:2]
+                host_map[hostname][port] = pp
+            except 'LineError', msg:
+                line = '%s #! %s' % (line, msg)
+            new_lines.append(line)
+        self.lines = tuple(new_lines)
+        self.have_map = not not (fixed_map or sub_map) # booleanize
+        if RESPONSE is not None:
+            RESPONSE.redirect('manage_edit?manage_tabs_message=Changes%20Saved.')
 
     def addToContainer(self, container):
         container._setObject(self.id, self)
@@ -54,48 +120,83 @@ class VirtualHostMonster(Persistent, Item, Implicit):
             BeforeTraverse.registerBeforeTraverse(container, hook,
                                                   self.meta_type,
                                                   self.priority)
-    def _setId(self, id):
-        id = str(id)
-        if id != self.id:
-            BeforeTraverse.unregisterBeforeTraverse(container,
-            self.meta_type)
-            hook = BeforeTraverse.NameCaller(id)
-            BeforeTraverse.registerBeforeTraverse(container, hook,
-                                                  self.meta_type,
-                                                  self.priority)
 
     def __call__(self, client, request, response=None):
         '''Traversing at home'''
+        vh_used = 0
         stack = request['TraversalRequestNameStack']
-        if stack and stack[-1] == 'VirtualHostBase':
-            stack.pop()
-            protocol = stack.pop()
-            host = stack.pop()
-            if ':' in host:
-                host, port = split(host, ':')
-                request.setServerURL(protocol, host, port)
-            else:
-                request.setServerURL(protocol, host)
-        # Find and convert VirtualHostRoot directive
-        # If it is followed by one or more path elements that each
-        # start with '_vh_', use them to construct the path to the
-        # virtual root.
-        vh = -1
-        for ii in range(len(stack)):
-            if stack[ii] == 'VirtualHostRoot':
-                if vh >= 0:
-                    pp = ['']
-                    for jj in range(vh, ii):
-                        pp.insert(1, stack[jj][4:])
-                    stack[vh:ii + 1] = [join(pp, '/'), self.id]
-                elif ii > 0 and stack[ii - 1][:1] == '/':
-                    stack[ii] = self.id
+        while 1:
+            if stack and stack[-1] == 'VirtualHostBase':
+                vh_used = 1
+                stack.pop()
+                protocol = stack.pop()
+                host = stack.pop()
+                if ':' in host:
+                    host, port = split(host, ':')
+                    request.setServerURL(protocol, host, port)
                 else:
-                    stack[ii] = self.id
-                    stack.insert(ii, '/')
-                break
-            elif vh < 0 and stack[ii][:4] == '_vh_':
-                vh = ii
+                    request.setServerURL(protocol, host)
+
+            # Find and convert VirtualHostRoot directive
+            # If it is followed by one or more path elements that each
+            # start with '_vh_', use them to construct the path to the
+            # virtual root.
+            vh = -1
+            for ii in range(len(stack)):
+                if stack[ii] == 'VirtualHostRoot':
+                    vh_used = 1
+                    pp = ['']
+                    at_end = (ii == len(stack) - 1)
+                    if vh >= 0:
+                        for jj in range(vh, ii):
+                            pp.insert(1, stack[jj][4:])
+                        stack[vh:ii + 1] = [join(pp, '/'), self.id]
+                    elif ii > 0 and stack[ii - 1][:1] == '/':
+                        pp = split(stack[ii - 1], '/')
+                        stack[ii] = self.id
+                    else:
+                        stack[ii] = self.id
+                        stack.insert(ii, '/')
+                    # If the directive is on top of the stack, go ahead
+                    # and process it right away.
+                    if at_end:
+                        if pp == [''] or pp == ['', '']:
+                            pp = []
+                        request.setVirtualRoot(pp)
+                        del stack[-2:]
+                    break
+                elif vh < 0 and stack[ii][:4] == '_vh_':
+                    vh = ii
+
+            if vh_used or not self.have_map:
+                return
+            vh_used = 1 # Only retry once.
+            # Try to apply the host map if one exists, and if no
+            # VirtualHost directives were found.
+            host = lower(split(request['SERVER_URL'], '://')[1])
+            hostname, port = (split(host, ':', 1) + [None])[:2]
+            ports = self.fixed_map.get(hostname, 0)
+            if not ports and self.sub_map:
+                get = self.sub_map.get
+                while hostname:
+                    ports = get(hostname, 0)
+                    if ports:
+                        break
+                    if '.' not in hostname:
+                        return
+                    hostname = split(hostname, '.', 1)[1]
+            if ports:
+                pp = ports.get(port, 0)
+                if not pp and port is not None:
+                    # Try default port
+                    pp = ports.get(None, 0)
+                if not pp:
+                    return
+                # If there was no explicit VirtualHostRoot, add one at the end
+                if pp[0] == '/':
+                    pp = pp[:]
+                    pp.insert(1, self.id)
+                stack.extend(pp)
 
     def __bobo_traverse__(self, request, name):
         '''Traversing away'''
