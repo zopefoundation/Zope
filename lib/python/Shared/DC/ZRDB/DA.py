@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.48 1998/06/26 21:51:28 jim Exp $'''
-__version__='$Revision: 1.48 $'[11:-2]
+$Id: DA.py,v 1.49 1998/07/12 21:01:20 jim Exp $'''
+__version__='$Revision: 1.49 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -21,13 +21,15 @@ from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role, Persistence
-from string import atoi, find
+from string import atoi, find, join, split
 import IOBTree, DocumentTemplate, sqlvar, sqltest, sqlgroup
 from time import time
 from zlib import compress, decompress
 md5new=md5.new
 import ExtensionClass
 import DocumentTemplate.DT_Util
+from cPickle import dumps, loads
+from Aqueduct.Results import Results
 
 class SQL(DocumentTemplate.HTML):
     commands={}
@@ -207,8 +209,12 @@ class DA(
 	result=()
 	try:
 	    src=self(REQUEST, src__=1)
+            if find(src,'\0'): src=join(split(src,'\0'),'\n'+'-'*60+'\n')
 	    result=self(REQUEST)
-	    r=custom_default_report(self.id, result)
+            if result._searchable_result_columns():
+                r=custom_default_report(self.id, result)
+            else:
+                r='This was not a query.'
 	except:
 	    r=(
 		'<strong>Error, <em>%s</em>:</strong> %s'
@@ -231,7 +237,7 @@ class DA(
 
     def _searchable_result_columns(self): return self._col
 
-    def _cached_result(self, DB__, query, compressed=0):
+    def _cached_result(self, DB__, query):
 
 	# Try to fetch from cache
 	if hasattr(self,'_v_cache'): cache=self._v_cache
@@ -252,15 +258,12 @@ class DA(
 		
 	if cache.has_key(query):
 	    k, r = cache[query]
-	    if k > t:
-		result=r
-		if not compressed: result=decompress(r)
-		return result
+	    if k > t: return r
 
 	result=apply(DB__.query, query)
-	r=compress(result)
-	if self.cache_time_ > 0: cache[query]= now, r
-	if compressed: return r
+	if self.cache_time_ > 0:
+            tcache[int(now)]=query
+            cache[query]= now, result
 
 	return result
 
@@ -302,13 +305,16 @@ class DA(
 
 	if src__: return query
 
-	if self.cache_time_:
+	if self.cache_time_ > 0 and self.self.max_cache_ > 0:
 	    result=self._cached_result(DB__, (query, self.max_rows_))
 	else: result=DB__.query(query, self.max_rows_)
 
 	if hasattr(self, '_v_brain'): brain=self._v_brain
 	else: brain=getBrain(self)
-	result=Aqueduct.RDB.File(StringIO(result),brain,self)
+        if type(result) is type(''): 
+            result=Aqueduct.RDB.File(StringIO(result),brain,self)
+        else:
+            result=Results(result, brain, self)
 	columns=result._searchable_result_columns()
 	if columns != self._col: self._col=columns
 	return result
@@ -332,29 +338,32 @@ class DA(
 	    if md5new(argdata).digest() != digest:
 		raise 'Bad Request', 'Corrupted Data'
 	    argdata=marshal.loads(argdata)
-	    
-	    if hasattr(REQUEST,'PARENTS'): p=REQUEST['PARENTS'][1]
-	    elif hasattr(self, 'aq_parent'): p=self.aq_parent
-	    else: p=None
+
+            if hasattr(self, 'aq_parent'): p=self.aq_parent
+            else: p=None
 
 	    argdata['sql_delimiter']='\0'
 	    argdata['sql_quote__']=dbc.sql_quote__
 	    query=apply(self.template,(p,),argdata)
 
 	    if self.cache_time_:
-		result=self._cached_result(DB__, query, 1)
+		result=self._cached_result(DB__, query)
 	    else:
 		result=DB__.query(query, self.max_rows_)
-		result=compress(result,1)
+
+            if type(result) is not type(''):
+                result=Results(result).asRDB()
+
 	except:
 	    RESPONSE.setStatus(500)
 	    result="%s:\n%s\n" % (sys.exc_type, sys.exc_value)
-	    result=compress(result,1)
 
+        result=compress(result,1)
 	result=md5new(result).digest()+result
 	result=self.rotor.encrypt(result)
 	result=base64.encodestring(result)
-	RESPONSE['content-type']='text/X-PyDB'
+	#RESPONSE['content-type']='application/x-principia-network'
+	RESPONSE['content-type']='text/x-pydb'
 	RESPONSE['Content-Length']=len(result)
 	RESPONSE.setBody(result)
 
@@ -465,6 +474,13 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.49  1998/07/12 21:01:20  jim
+# Added support for DA's that return data directly as list of item descriptions
+# (i.e. schema) and list of rows.
+#
+# Began adding support for pickle-based network protocol that, alas, may
+# fall by the wayside. Waaaa.
+#
 # Revision 1.48  1998/06/26 21:51:28  jim
 # Added resize buttons.
 #
