@@ -47,10 +47,10 @@ class Interface:
                 raise Exceptions.InvalidInterface(
                     "Concrete attribute, %s" % k)
 
-    def defered(self):
-        """Return a defered class corresponding to the interface
+    def deferred(self):
+        """Return a defrered class corresponding to the interface
         """
-        if hasattr(self, "_defered"): return self._defered
+        if hasattr(self, "_deferred"): return self._deferred
 
         klass={}
         exec "class %s: pass" % self.__name__ in klass
@@ -58,7 +58,7 @@ class Interface:
         
         self.__d(klass.__dict__)
 
-        self._defered=klass
+        self._deferred=klass
 
         return klass
 

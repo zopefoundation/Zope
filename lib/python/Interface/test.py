@@ -28,7 +28,7 @@ class I3(Interface.Base): pass
 
 class I4(Interface.Base): pass
 
-class A(I1.defered()):
+class A(I1.deferred()):
     __implements__=I1
 
 class B:

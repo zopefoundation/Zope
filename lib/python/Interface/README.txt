@@ -30,7 +30,7 @@ Basic assumptions:
     o You cannot mix interfaces and classes in base-class lists.
     
   There are utilities and methods for computing implied interfaces
-  from classes and for computing "defered" classes from interfaces.
+  from classes and for computing "deferred" classes from interfaces.
 
   Why aren't interface classes?  Interfaces perform a different
   function that classes.  Classes are for sharing implementation.
@@ -219,10 +219,10 @@ Details
     It is my expectation that Attribute objects will eventually be
     able to provide all sorts of interesting meta-data.  
 
-  Defered classes
+  Deferred classes
 
     You cannot use interfaces as base classes.  You can, however, 
-    create "defered" classes from an interface:
+    create "deferred" classes from an interface:
 
       class StackInterface(Interface.Base):
 
@@ -232,12 +232,12 @@ Details
          def pop(self):
             "Remove and return an object from the top of the stack"
 
-      class Stack(StackInterface.defered()):
+      class Stack(StackInterface.deferred()):
          "This is supposed to implement a stack"
 
          __implements__=StackInterface
 
-    Attempts to call methods inherited from a defered class will
+    Attempts to call methods inherited from a deferred class will
     raise Interface.BrokenImplementation exceptions.
 
   Trial baloon: abstract implementations
@@ -248,8 +248,8 @@ Details
     interface.  
 
     Perhaps if a method definition has a body (other than a doc
-    string) then the corresponding method in the defered class
-    will not be defered. This would not be hard to do in CPython
+    string) then the corresponding method in the deferred class
+    will not be deferred. This would not be hard to do in CPython
     if I cheat and sniff at method bytecodes.
 
     For example:
@@ -263,7 +263,7 @@ Details
            "add a value to the end of the object"
            self.append(v)
 
-      ListBase=ListInterface.defered()
+      ListBase=ListInterface.deferred()
 
       class ListImplementer(Listbase):
          def append(self, v): ...
