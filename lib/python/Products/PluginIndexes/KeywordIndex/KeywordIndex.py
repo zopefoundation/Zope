@@ -12,8 +12,7 @@
 ##############################################################################
 
 from types import StringType, UnicodeType
-
-from zLOG import LOG, ERROR
+from logging import getLogger
 from BTrees.OOBTree import OOSet, difference
 
 from Globals import DTMLFile
@@ -21,6 +20,8 @@ from Products.PluginIndexes import PluggableIndex
 
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common import safe_callable
+
+LOG = getLogger('Zope.KeywordIndex')
 
 class KeywordIndex(UnIndex):
 
@@ -121,8 +122,8 @@ class KeywordIndex(UnIndex):
         try:
             del self._unindex[documentId]
         except KeyError:
-            LOG('UnKeywordIndex', ERROR, 'Attempt to unindex nonexistent'
-                ' document id %s' % documentId)
+            LOG.error('Attempt to unindex nonexistent'
+                      ' document id %s' % documentId)
 
 
     index_html = DTMLFile('dtml/index', globals())

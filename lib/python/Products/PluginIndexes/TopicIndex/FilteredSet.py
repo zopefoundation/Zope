@@ -11,16 +11,19 @@
 #
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.7 2004/01/15 23:17:17 tseaver Exp $'
+__version__ = '$Id: FilteredSet.py,v 1.8 2004/04/20 14:30:45 andreasjung Exp $'
+
+import sys
+from logging import getLogger
 
 from ZODB.POSException import ConflictError
 from BTrees.IIBTree import IITreeSet
 from Persistence import Persistent
 from Globals import DTMLFile
-from zLOG import WARNING,LOG
-from RestrictedPython.Eval import RestrictionCapableEval
-import sys
 
+from RestrictedPython.Eval import RestrictionCapableEval
+
+LOG = getLogger('Zope.TopicIndex.FilteredSet')
 
 class FilteredSetBase(Persistent):
 
@@ -29,19 +32,15 @@ class FilteredSetBase(Persistent):
         self.expr = expr
         self.clear()
 
-
     def clear(self):
         self.ids  = IITreeSet()
-
 
     def index_object(self, documentId, obj):
         raise RuntimeError,'index_object not defined'
 
-
     def unindex_object(self,documentId):
         try: self.ids.remove(documentId)
         except KeyError: pass
-
 
     def getId(self):
         return self.id
@@ -63,7 +62,6 @@ class FilteredSetBase(Persistent):
     __str__ = __repr__
 
 
-
 class PythonFilteredSet(FilteredSetBase):
 
     meta_type = 'PythonFilteredSet'
@@ -80,10 +78,8 @@ class PythonFilteredSet(FilteredSetBase):
         except ConflictError:
             raise
         except:
-            LOG('FilteredSet',WARNING,'eval() failed',\
-                'Object: %s, expr: %s' % (o.getId(),self.expr),\
-                sys.exc_info())
-
+            LOG.warn('eval() failed Object: %s, expr: %s' %\
+                     (o.getId(),self.expr), exc_info=sys.exc_info())
 
 
 def factory(f_id, f_type, expr):

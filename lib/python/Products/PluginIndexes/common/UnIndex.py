@@ -13,15 +13,15 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys
 from cgi import escape
+from logging import getLogger
 from types import StringType, ListType, IntType, TupleType
 
 from Globals import Persistent
 from Acquisition import Implicit
-from zLOG import LOG, ERROR
 
 from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
@@ -32,8 +32,8 @@ import BTrees.Length
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
 
-
 _marker = []
+LOG = getLogger('Zope.UnIndex')
 
 class UnIndex(Persistent, Implicit, SimpleItem):
     """UnIndex object interface"""
@@ -202,17 +202,16 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                 try: self.__len__.change(-1)
                 except AttributeError: pass # pre-BTrees-module instance
             except:
-                LOG(self.__class__.__name__, ERROR,
-                    ('unindex_object could not remove '
-                     'documentId %s from index %s.  This '
-                     'should not happen.'
-                     % (str(documentId), str(self.id))), '',
-                    sys.exc_info())
+                LOG.error('%s: unindex_object could not remove '
+                          'documentId %s from index %s.  This '
+                          'should not happen.' % (self.__class__.__name__, 
+                           str(documentId), str(self.id)), 
+                           exc_info=sys.exc_info())
         else:
-            LOG(self.__class__.__name__, ERROR,
-                ('unindex_object tried to retrieve set %s '
-                 'from index %s but couldn\'t.  This '
-                 'should not happen.' % (repr(entry), str(self.id))))
+            LOG.error('%s: unindex_object tried to retrieve set %s '
+                      'from index %s but couldn\'t.  This '
+                      'should not happen.' % (self.__class__.__name__, 
+                      repr(entry), str(self.id)))
 
 
     def insertForwardIndexEntry(self, entry, documentId):
@@ -269,9 +268,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                     try:
                         del self._unindex[documentId]
                     except:
-                        LOG('UnIndex', ERROR,
-                            'Should not happen: oldDatum was there, now its not,'
-                            'for document with id %s' % documentId)
+                        LOG.error('Should not happen: oldDatum was there, now its not,'
+                                  'for document with id %s' % documentId)
 
             if datum is not _marker:
                 self.insertForwardIndexEntry(datum, documentId)
@@ -312,8 +310,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         try:
             del self._unindex[documentId]
         except:
-            LOG('UnIndex', ERROR, 'Attempt to unindex nonexistent document'
-                ' with id %s' % documentId)
+            LOG.error('Attempt to unindex nonexistent document'
+                      ' with id %s' % documentId)
 
     def _apply_index(self, request, cid='', type=type):
         """Apply the index to query parameters given in the request arg.

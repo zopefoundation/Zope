@@ -11,9 +11,10 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.40 2004/01/24 15:48:38 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.41 2004/04/20 14:30:44 andreasjung Exp $'
 
 from types import StringType, ListType, TupleType
+from logging import getLogger
 
 from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
@@ -21,13 +22,13 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IITreeSet, IISet, intersection, union
 from BTrees.Length import Length
-from zLOG import LOG, ERROR
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
 
 _marker = []
+LOG = getLogger('Zope.PathIndex')
 
 class PathIndex(Persistent, SimpleItem):
     """ A path index stores all path components of the physical
@@ -124,9 +125,8 @@ class PathIndex(Persistent, SimpleItem):
         """ hook for (Z)Catalog """
 
         if not self._unindex.has_key(docid):
-            LOG(self.__class__.__name__, ERROR,
-                'Attempt to unindex nonexistent document'
-                ' with id %s' % docid)
+            LOG.error('Attempt to unindex nonexistent document'
+                     ' with id %s' % docid)
             return
 
         comps =  self._unindex[docid].split('/')

@@ -11,11 +11,12 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.17 2003/12/31 22:32:21 poster Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.18 2004/04/20 14:30:45 andreasjung Exp $'
+
+from logging import getLogger
 
 from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
-from zLOG import ERROR, LOG
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IITreeSet,intersection,union
 
@@ -24,6 +25,7 @@ from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 
 _marker = []
+LOG = getLogger('Zope.TopicIndex')
 
 class TopicIndex(Persistent, SimpleItem):
 
@@ -69,9 +71,8 @@ class TopicIndex(Persistent, SimpleItem):
             try:
                 fs.unindex_object(docid)
             except KeyError:
-                LOG(self.__class__.__name__, ERROR,
-                    'Attempt to unindex document'
-                    ' with id %s failed' % docid)
+                LOG.error('Attempt to unindex document'
+                          ' with id %s failed' % docid)
         return 1
 
     def numObjects(self):
