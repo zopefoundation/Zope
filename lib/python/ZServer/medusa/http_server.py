@@ -1,4 +1,4 @@
-#! /usr/local/bin/python
+#!/usr/bin/env python
 # -*- Mode: Python; tab-width: 4 -*-
 #
 #	Author: Sam Rushing <rushing@nightmare.com>
@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.35 2003/03/18 21:15:17 fdrake Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.36 2003/07/22 16:29:53 chrism Exp $'
 
 # python modules
 import os

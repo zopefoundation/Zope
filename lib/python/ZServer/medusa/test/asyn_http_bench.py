@@ -1,4 +1,4 @@
-#! /usr/local/bin/python1.4
+#!/usr/bin/env python
 # -*- Mode: Python; tab-width: 4 -*-
 
 import asyncore

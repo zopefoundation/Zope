@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 """python lint using kwParsing
 
 The goal of this module/filter is to help find
