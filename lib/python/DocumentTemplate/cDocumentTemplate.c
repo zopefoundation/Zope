@@ -53,7 +53,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.1 1997/08/27 18:55:47 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.2 1997/10/27 17:43:28 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -72,6 +72,7 @@ typedef struct {
   PyObject *inst;
   PyObject *cache;
   PyObject *namespace;
+  PyObject *validate;
 } InstanceDictobject;
 
 staticforward PyExtensionClass InstanceDictType;
@@ -79,10 +80,14 @@ staticforward PyExtensionClass InstanceDictType;
 static PyObject *
 InstanceDict___init__( InstanceDictobject *self, PyObject *args)
 {
-  UNLESS(PyArg_ParseTuple(args, "OO", &(self->inst), &(self->namespace)))
+  UNLESS(PyArg_ParseTuple(args, "OOO",
+			  &(self->inst),
+			  &(self->namespace),
+			  &(self->validate)))
     return NULL;
   Py_INCREF(self->inst);
   Py_INCREF(self->namespace);
+  Py_INCREF(self->validate);
   UNLESS(self->cache=PyDict_New()) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
@@ -103,6 +108,7 @@ InstanceDict_dealloc(InstanceDictobject *self)
   Py_XDECREF(self->inst);
   Py_XDECREF(self->cache);
   Py_XDECREF(self->namespace);
+  Py_XDECREF(self->validate);
   PyMem_DEL(self);
 }
 
@@ -129,7 +135,7 @@ InstanceDict_length( InstanceDictobject *self)
 static PyObject *
 InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
 {
-  PyObject *r;
+  PyObject *r, *v;
   char *name;
   
   /* Try to get value from the cache */
@@ -146,6 +152,14 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
   
   /* OK, use getattr */
   UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
+
+  if(self->validate != Py_None)
+    {
+      UNLESS(v=PyObject_CallFunction(self->validate,"OOOO",
+				     self->namespace, self->inst, key, r))
+	return NULL;
+      Py_DECREF(v);
+    }
   
   if(r && PyObject_SetItem(self->cache, key, r) < 0) PyErr_Clear();
   
@@ -207,14 +221,16 @@ static PyExtensionClass InstanceDictType = {
 
 typedef struct {
   PyObject_HEAD
+  int level;
+  PyObject *dict;
   PyObject *data;
-} MMobject;
+} MM;
 
 staticforward PyExtensionClass MMtype;
 
 static PyObject *
 MM_push(self, args)
-	MMobject *self;
+	MM *self;
 	PyObject *args;
 {
   PyObject *src;
@@ -226,7 +242,7 @@ MM_push(self, args)
 
 static PyObject *
 MM_pop(self, args)
-	MMobject *self;
+	MM *self;
 	PyObject *args;
 {
   int i=1, l;
@@ -245,62 +261,19 @@ err:
 
 static PyObject *
 MM__init__(self, args)
-     MMobject *self;
+     MM *self;
      PyObject *args;
 {
   UNLESS(PyArg_Parse(args, "")) return NULL;
   UNLESS(self->data=PyList_New(0)) return NULL;
+  self->dict=NULL;
+  self->level=0;
   Py_INCREF(Py_None);
   return Py_None;
 }
 
-static struct PyMethodDef MM_methods[] = {
-  {"__init__", (PyCFunction)MM__init__, 0,
-   "__init__() -- Create a new empty multi-mapping"},
-  {"push", (PyCFunction) MM_push, 0,
-   "push(mapping_object) -- Add a data source"},
-  {"pop",  (PyCFunction) MM_pop,  0,
-   "pop() -- Remove and return the last data source added"}, 
-  {NULL,		NULL}		/* sentinel */
-};
-
-static void
-MM_dealloc(self)
-     MMobject *self;
-{
-  Py_XDECREF(self->data);
-  PyMem_DEL(self);
-}
-
 static PyObject *
-MM_getattr(self, name)
-	MMobject *self;
-	char *name;
-{
-  return Py_FindMethod(MM_methods, (PyObject *)self, name);
-}
-
-static int
-MM_length(self)
-	MMobject *self;
-{
-  long l=0, el, i;
-  PyObject *e=0;
-
-  UNLESS(-1 != (i=PyList_Size(self->data))) return -1;
-  while(--i >= 0)
-    {
-      e=PyList_GetItem(self->data,i);
-      UNLESS(-1 != (el=PyObject_Length(e))) return -1;
-      l+=el;
-    }
-  return l;
-}
-
-static PyObject *
-MM_subscript(self, key)
-	MMobject *self;
-	PyObject *key;
+MM_cget(MM *self, PyObject *key, int call)
 {
   long i;
   int dt=0;
@@ -327,7 +300,7 @@ MM_subscript(self, key)
 	      /* Try calling the object */
 	      if(dt)
 		ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
-	      else if(rr=PyObject_CallObject(e,NULL))
+	      else if(call && (rr=PyObject_CallObject(e,NULL)))
 		ASSIGN(e,rr);
 	      else
 		PyErr_Clear();
@@ -349,6 +322,105 @@ MM_subscript(self, key)
   return NULL;
 }
 
+static PyObject *
+MM_get(MM *self, PyObject *args)
+{
+  PyObject *key, *call=Py_None;
+
+  UNLESS(PyArg_ParseTuple(args,"O|O",&key,&call)) return NULL;
+  return MM_cget(self, key, PyObject_IsTrue(call));
+}
+
+static struct PyMethodDef MM_methods[] = {
+  {"__init__", (PyCFunction)MM__init__, 0,
+   "__init__() -- Create a new empty multi-mapping"},
+  {"push", (PyCFunction) MM_push, 0,
+   "push(mapping_object) -- Add a data source"},
+  {"pop",  (PyCFunction) MM_pop,  0,
+   "pop() -- Remove and return the last data source added"}, 
+  {"pop",  (PyCFunction) MM_get,  0,
+   "get(key[,call]) -- Get a value\n\n"
+   "Normally, callable objects that can be called without arguments are\n"
+   "called during retrieval. This can be suppressed by providing a\n"
+   "second argument that is false.\n"
+  }, 
+  {NULL,		NULL}		/* sentinel */
+};
+
+static void
+MM_dealloc(self)
+     MM *self;
+{
+  Py_XDECREF(self->data);
+  Py_XDECREF(self->dict);
+  PyMem_DEL(self);
+}
+
+static PyObject *
+MM_getattro(MM *self, PyObject *name)
+{
+  if(PyString_Check(name))
+    {
+      if(strcmp(PyString_AsString(name),"level")==0)
+	return PyInt_FromLong(self->level);
+    }
+  
+  if(self->dict)
+    {
+      PyObject *v;
+
+      if(v=PyDict_GetItem(self->dict, name))
+	{
+	  Py_INCREF(v);
+	  return v;
+	}
+    }
+  
+  return Py_FindAttr((PyObject *)self, name);
+}
+
+static int
+MM_setattro(MM *self, PyObject *name, PyObject *v)
+{
+  if(v && PyString_Check(name))
+    {
+      if(strcmp(PyString_AsString(name),"level")==0)
+	{
+	  self->level=PyInt_AsLong(v);
+	  if(PyErr_Occurred()) return -1;
+	  return 0;
+	}
+    }
+
+  if(! self->dict && ! (self->dict=PyDict_New())) return -1;
+  
+  if(v) return PyDict_SetItem(self->dict, name, v);
+  else  return PyDict_DelItem(self->dict, name);
+}
+
+static int
+MM_length(self)
+	MM *self;
+{
+  long l=0, el, i;
+  PyObject *e=0;
+
+  UNLESS(-1 != (i=PyList_Size(self->data))) return -1;
+  while(--i >= 0)
+    {
+      e=PyList_GetItem(self->data,i);
+      UNLESS(-1 != (el=PyObject_Length(e))) return -1;
+      l+=el;
+    }
+  return l;
+}
+
+static PyObject *
+MM_subscript(MM *self, PyObject *key)
+{
+  return MM_cget(self, key, 1);
+}
+
 static PyMappingMethods MM_as_mapping = {
 	(inquiry)MM_length,		/*mp_length*/
 	(binaryfunc)MM_subscript,      	/*mp_subscript*/
@@ -365,12 +437,12 @@ static PyExtensionClass MMtype = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/*ob_size*/
 	"TemplateDict",			/*tp_name*/
-	sizeof(MMobject),		/*tp_basicsize*/
+	sizeof(MM),			/*tp_basicsize*/
 	0,				/*tp_itemsize*/
 	/* methods */
 	(destructor)MM_dealloc,		/*tp_dealloc*/
 	(printfunc)0,			/*tp_print*/
-	(getattrfunc)MM_getattr,	/*tp_getattr*/
+	(getattrfunc)0,			/*tp_getattr*/
 	(setattrfunc)0,			/*tp_setattr*/
 	(cmpfunc)0,			/*tp_compare*/
 	(reprfunc)0,			/*tp_repr*/
@@ -380,9 +452,11 @@ static PyExtensionClass MMtype = {
 	(hashfunc)0,			/*tp_hash*/
 	(ternaryfunc)0,			/*tp_call*/
 	(reprfunc)0,			/*tp_str*/
+	(getattrofunc)MM_getattro,	/*tp_getattro*/
+	(setattrofunc)MM_setattro,	/*tp_setattro*/
 
 	/* Space for future expansion */
-	0L,0L,0L,0L,
+	0L,0L,
 	MMtype__doc__, /* Documentation string */
 	METHOD_CHAIN(MM_methods)
 };
@@ -445,7 +519,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
@@ -474,6 +548,14 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.2  1997/10/27 17:43:28  jim
+  Added some new experimental validation machinery.
+  This is, still a work in progress.
+
+  Added level attribute used in preventing excessive recursion.
+
+  Added get method.
+
   Revision 1.1  1997/08/27 18:55:47  jim
   initial
 
