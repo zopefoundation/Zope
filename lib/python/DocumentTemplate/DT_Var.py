@@ -167,6 +167,10 @@ __doc__='''Variable insertion parameters
        'url_quote' -- convert characters that have special meaning
        in URLS to HTML character entities using decimal values.
 
+       'url_quote_plus' -- like url_quote but also replace blank
+       space characters with '+'. This is needed for building
+       query strings in some cases.
+
        'sql_quote' -- Convert single quotes to pairs of single
        quotes. This is needed to safely include values in
        Standard Query Language (SQL) strings.
@@ -198,12 +202,13 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.31 1999/10/22 17:32:25 jim Exp $'
-__version__='$Revision: 1.31 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.32 1999/10/28 19:11:23 brian Exp $'
+__version__='$Revision: 1.32 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
 from string import find, split, join, atoi, rfind
+from urllib import quote, quote_plus
 
 class Var: 
     name='var'
@@ -215,6 +220,7 @@ class Var:
                             capitalize=1, spacify=1, null='', fmt='s',
                             size=0, etc='...', thousands_commas=1,
                             html_quote=1, url_quote=1, sql_quote=1,
+                            url_quote_plus=1,
                             newline_to_br=1, url=1)
         self.args=args
         
@@ -320,8 +326,11 @@ class Call:
 
 
 def url_quote(v, name='(Unknown name)', md={}):
-    import urllib
-    return urllib.quote(str(v))
+    return quote(str(v))
+
+def url_quote_plus(v, name='(Unknown name)', md={}):
+    return quote_plus(str(v))
+
 
 def newline_to_br(v, name='(Unknown name)', md={}):
     v=str(v)
@@ -404,8 +413,9 @@ def spacify(val):
     if find(val,'_') >= 0: val=join(split(val,'_'))
     return val
 
-modifiers=(html_quote, url_quote, newline_to_br, string.lower, string.upper,
-           string.capitalize, spacify, thousands_commas, sql_quote)
+modifiers=(html_quote, url_quote, url_quote_plus, newline_to_br,
+           string.lower, string.upper, string.capitalize, spacify,
+           thousands_commas, sql_quote)
 modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 class Comment:
