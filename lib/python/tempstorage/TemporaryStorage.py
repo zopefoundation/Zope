@@ -71,6 +71,10 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         self._recently_gc_oids = [None for x in range (RECENTLY_GC_OIDS_LEN)]
         self._oid = '\0\0\0\0\0\0\0\0'
 
+    def lastTransaction(self):
+        """ Return tid for last committed transaction (for ZEO) """
+        return self._ltid
+
     def __len__(self):
         return len(self._index)
 
@@ -173,6 +177,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         serial=self._tid
         index=self._index
         opickle=self._opickle
+        self._ltid = tid
 
         # iterate over all the objects touched by/created within this
         # transaction
