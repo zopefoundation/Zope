@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.69 1997/12/03 21:39:53 jim Exp $"""
+$Id: Publish.py,v 1.70 1997/12/31 17:28:39 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.69 1997/12/03 21:39:53 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 
 def main():
@@ -435,11 +435,15 @@ def main():
 
 if __name__ == "__main__": main()
 
-import sys, os, string, types, cgi, regex, regsub, base64
+import sys, os, string, cgi, regex, regsub
 from string import *
 from CGIResponse import Response
 from urllib import quote, unquote
 from cgi import FieldStorage, MiniFieldStorage
+
+ListType=type([])
+StringType=type('')
+TupleType=type(())
 
 UNSPECIFIED_ROLES=''
 
@@ -460,6 +464,8 @@ except:
 
 class ModulePublisher:
 
+    HTTP_AUTHORIZATION=None
+    
     def __init__(self,
 		 stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
 		 environ=os.environ):
@@ -469,25 +475,22 @@ class ModulePublisher:
 	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
 	except: pass
 
-	try:
+	if environ.has_key('HTTP_AUTHORIZATION'):
 	    self.HTTP_AUTHORIZATION=environ['HTTP_AUTHORIZATION']
-	    del environ['HTTP_AUTHORIZATION']
-	except:
-	    try:
-		self.HTTP_AUTHORIZATION=environ['HTTP_CGI_AUTHORIZATION']
-		del environ['HTTP_CGI_AUTHORIZATION']
+	    try: del environ['HTTP_AUTHORIZATION']
+	    except: pass
+	elif environ.has_key('HTTP_CGI_AUTHORIZATION'):
+	    self.HTTP_AUTHORIZATION=environ['HTTP_CGI_AUTHORIZATION']
+	    try: del environ['HTTP_CGI_AUTHORIZATION']
 	    except: pass
 
 	form={}
 	form_has=form.has_key
 	other={}
 	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
-	try: fslist=fs.list
-	except: fslist=None
-	if fslist is None:
-	    form['BODY']=fs.value
-	    other['BODY']=fs.value
+	if not hasattr(fs,'list'): form['BODY']=other['BODY']=fs.value
 	else:
+	    fslist=fs.list
 	    tuple_items={}
 
 	    type_re=regex.compile(':[a-zA-Z][a-zA-Z0-9_]+')
@@ -496,8 +499,9 @@ class ModulePublisher:
 	    CGI_name=isCGI_NAME
 	    for item in fslist:
 		key=unquote(item.name)
-		
-		try:
+
+		if (hasattr(item,'file') and hasattr(item,'filename')
+		    and hasattr(item,'headers')):
 		    if (item.file and
 			(item.filename is not None or
 			 'content-type' in map(lower,
@@ -505,7 +509,6 @@ class ModulePublisher:
 		        item=FileUpload(item)
 		    else:
 			item=item.value
-		except: pass
 
 		seqf=None
 
@@ -616,38 +619,38 @@ class ModulePublisher:
 
 	realm="%s.%s" % (module_name,server_name)
 		
-	try: bobo_before=module.__bobo_before__
-	except: bobo_before=None
-
-	try: bobo_after=module.__bobo_after__
-	except: bobo_after=None
+	if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
+	else: bobo_before=None
+		
+	if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
+	else: bobo_after=None
 
 	# Get request data from outermost environment:
-	try: request_params=module.__request_data__
-	except: request_params=None
+	if hasattr(module,'__request_data__'):
+	    request_params=module.__request_data__
+	else: request_params=None
 
 	# Get initial group data:
 	inherited_groups=[]
-	try:
+	if hasattr(module,'__allow_groups__'):
 	    groups=module.__allow_groups__
 	    inherited_groups.append(groups)
-	except: groups=None
+	else: groups=None
 
 	web_objects=None
 	roles=UNSPECIFIED_ROLES
-	try:
+	if hasattr(module,'bobo_application'):
 	    object=module.bobo_application
-	    try:
+	    if hasattr(object,'__allow_groups__'):
 		groups=object.__allow_groups__
 		inherited_groups.append(groups)
-	    except: groups=None
-	    try: roles=object.__roles__
-	    except: pass
-	except: 
-	    try:
+	    else: groups=None
+	    if hasattr(object,'__roles__'): roles=object.__roles__
+	else:
+	    if hasattr(module,'web_objects'):
 		web_objects=module.web_objects
 		object=web_objects
-	    except: object=module
+	    else: object=module
 	published=web_objects
 
 	try: doc=module.__doc__
@@ -663,33 +666,33 @@ class ModulePublisher:
     def publish(self, module_name, after_list, published='web_objects',
 		imported_modules={}, module_dicts={},debug=0):
 
+	request=self.request
+        request_get=request.get
+	response=self.response
+
         # First check for "cancel" redirect:
 	cancel=''
-	try:
-	    if lower(self.request['SUBMIT'])=='cancel':
-		cancel=self.request['CANCEL_ACTION']
-	except: pass
-	if cancel:
-	    raise 'Redirect', cancel
+	if request_get('SUBMIT','')=='cancel':
+	    cancel=request_get('CANCEL_ACTION','')
+	    if cancel: raise 'Redirect', cancel
 
 	if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 	self.module_name=module_name
-	request=self.request
-	response=self.response
 	server_name=request.SERVER_NAME
 
-	try:
+	info_key=server_name, module_name
+	if module_dicts.has_key(info_key): 
 	    (bobo_before, bobo_after, request_params,
 	     inherited_groups, groups, roles,
 	     object, doc, published, realm
-	     ) = info = module_dicts[server_name, module_name]
-	except:
+	     ) = info = module_dicts[info_key]
+	else:
 	    info={}
 	    try:
 		exec 'import %s' % module_name in info
 		info=self.get_module_info(server_name, module_name,
 					  info[module_name])
-		module_dicts[server_name, module_name]=info
+		module_dicts[info_key]=info
 		(bobo_before, bobo_after, request_params,
 		 inherited_groups, groups, roles,
 		 object, doc, published, realm
@@ -704,13 +707,13 @@ class ModulePublisher:
 	if request_params: self.get_request_data(request_params)
 
 	# Get a nice clean path list:
-	path=strip(request['PATH_INFO'])
+	path=strip(request_get('PATH_INFO'))
 	if path[:1]=='/': path=path[1:]
 	if path[-1:]=='/': path=path[:-1]
 	path=split(path,'/')
 	while path and not path[0]: path = path[1:]
 
-	method=upper(request['REQUEST_METHOD'])
+	method=upper(request_get('REQUEST_METHOD'))
 	if method=='GET' or method=='POST': method='index_html'
 
 	URL=self.script
@@ -740,9 +743,9 @@ class ModulePublisher:
 	    try: object=object.__bobo_traverse__(request)
 	    except: pass	    
     
-	try:  # Try to bind the top-level object to the request
-	    object=object.__of__(RequestContainer(REQUEST=self.request))
-	except: pass
+	if hasattr(object, '__of__'): 
+	    # Try to bind the top-level object to the request
+	    object=object.__of__(RequestContainer(REQUEST=request))
 
 	steps=[]
 	while path:
@@ -770,12 +773,14 @@ class ModulePublisher:
 		    except: doc=getattr(object, entry_name+'__doc__')
 		    if not doc: raise AttributeError, entry_name
 		except: self.notFoundError("%s" % (entry_name))
-		
-		try: roles=subobject.__roles__
-		except:
+
+		if hasattr(subobject,'__roles__'): roles=subobject.__roles__
+		else:
 		    if not got:
-			try: roles=getattr(object, entry_name+'__roles__')
-			except:
+			roleshack=entry_name+'__roles__'
+			if hasattr(object, roleshack):
+			    roles=getattr(object, roleshack)
+			else:
 			    if (entry_name=='manage' or
 				entry_name[:7]=='manage_'):
 				roles='manage',
@@ -805,18 +810,18 @@ class ModulePublisher:
 
 	    last_parent_index=len(parents)
 	    for i in range(last_parent_index):
-		try: groups=parents[i].__allow_groups__
-		except: groups=-1
-		if groups == -1: continue
+		if hasattr(parents[i],'__allow_groups__'):
+		    groups=parents[i].__allow_groups__
+		else: continue
 
-		try: v=groups.validate
-		except: v=old_validation
+		if hasattr(groups, 'validate'): v=groups.validate
+		else: v=old_validation
 
 		if v is old_validation and roles is UNSPECIFIED_ROLES:
 		    # No roles, so if we have a named group, get roles from
 		    # group keys
-		    try: roles=groups.keys()
-		    except AttributeError:
+		    if hasattr(groups,'keys'): roles=groups.keys()
+		    else:
 			try: groups=groups()
 			except: pass
 			try: roles=groups.keys()
@@ -824,29 +829,32 @@ class ModulePublisher:
 
 		    if groups is None: break # Public group
 
-		try: auth=self.HTTP_AUTHORIZATION
-		except: self.unauthorized(realm)
+		auth=self.HTTP_AUTHORIZATION
 
 		if v is old_validation:
+		    if auth is None: self.unauthorized(realm)
 		    user=old_validation(groups, auth, roles)
 		elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
 		else: user=v(request, auth, roles)
 
 		while user is None and i < last_parent_index:
-		    try: groups=parents[i].__allow_groups__
-		    except: groups=-1
+		    parent=parents[i]
 		    i=i+1
-		    if groups == -1: continue
-		    try: v=groups.validate
-		    except: v=old_validation
+		    if hasattr(parent, '__allow_groups__'): 
+			groups=parent.__allow_groups__
+		    else: continue
+		    if hasattr(groups,'validate'): v=groups.validate
+		    else: v=old_validation
 		    if v is old_validation:
+			if auth is None: self.unauthorized(realm)
 			user=old_validation(groups, auth, roles)
 		    elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
 		    else: user=v(request, auth, roles)
 
 		break
 		    
-	    if user is None: self.unauthorized(realm)
+	    if user is None and roles != UNSPECIFIED_ROLES:
+		self.unauthorized(realm)
 
 	steps=join(steps[:-i],'/')
 	if user is not None:
@@ -858,66 +866,61 @@ class ModulePublisher:
 	try: transaction=get_transaction()
 	except: transaction=None
 	if transaction is not None:
-	    info="\t" + request['PATH_INFO']
-	    try: info=("%s %s" % (steps,request['AUTHENTICATED_USER']))+info
-	    except: pass
+	    info="\t" + request_get('PATH_INFO')
+       
+	    auth_user=request_get('AUTHENTICATED_USER',None)
+	    if auth_user is not None:
+		info=("%s %s" % (steps,auth_user))+info
 	    transaction.begin(info)
 
 	# Now get object meta-data to decide if and how it should be
 	# called:
-	object_as_function=object	
-	if type(object_as_function) is types.ClassType:
-	    if hasattr(object_as_function,'__init__'):
-		object_as_function=object_as_function.__init__
-	    else:
-		def function_with_empty_signature(): pass
-		object_as_function=function_with_empty_signature
+	object_as_function=object
 		
 	# First, assume we have a method:
-	try:
-	    defaults=object_as_function.im_func.func_defaults
-	    argument_names=(
-		object_as_function.im_func.
-		func_code.co_varnames[
-		    1:object_as_function.im_func.func_code.co_argcount])
-	except:
+	if hasattr(object_as_function,'im_func'):
+	    f=object_as_function.im_func
+	    c=f.func_code
+	    defaults=f.func_defaults
+	    argument_names=c.co_varnames[1:c.co_argcount]
+	else:
 	    # Rather than sniff for FunctionType, assume its a
 	    # function and fall back to returning the object itself:	    
-	    try:
+	    if hasattr(object_as_function,'func_defaults'):
 		defaults=object_as_function.func_defaults
-		argument_names=object_as_function.func_code.co_varnames[
-		    :object_as_function.func_code.co_argcount]
-	    except:
-		return response.setBody(object)
+		c=object_as_function.func_code
+		argument_names=c.co_varnames[:c.co_argcount]
+
+		# Make sure we don't have a class that smells like a func
+		if hasattr(object_as_function, '__bases__'):
+		    self.forbiddenError(entry_name)
+		
+	    else: return response.setBody(object)
 
 	request['URL']=URL
 	request['PARENT_URL']=URL[:rfind(URL,'/')]
 	if parents:
 	    selfarg=parents[0]
 	    for i in range(len(parents)):
-		try:
-		    p=parents[i].aq_self
+		parent=parents[i]
+		if hasattr(parent,'aq_self'):
+		    p=parent.aq_self
 		    parents[i]=p
-		except: pass
 	request['PARENTS']=parents
 
 	args=[]
 	nrequired=len(argument_names) - (len(defaults or []))
 	for name_index in range(len(argument_names)):
 	    argument_name=argument_names[name_index]
-	    try:
-		v=request[argument_name]
-		args.append(v)
-	    except (KeyError,AttributeError,IndexError):
+	    v=request_get(argument_name, args)
+	    if v is args:
 		if argument_name=='self': args.append(selfarg)
 		elif name_index < nrequired:
 		    self.badRequestError(argument_name)
 		else:
 		    args.append(defaults[name_index-nrequired])
-	    except:
-		raise 'BadRequest', (
-		    '<strong>Invalid entry for <em>%s</em> </strong>'
-		    % argument_name)
+	    else:
+		args.append(v)
 
 	if debug: result=self.call_object(object,tuple(args))
 	else:     result=apply(object,tuple(args))
@@ -933,18 +936,14 @@ class ModulePublisher:
 	return result
 
 def str_field(v):
-    if type(v) is types.ListType:
+    if type(v) is ListType:
 	return map(str_field,v)
 
-    if type(v) is types.InstanceType and v.__class__ is FieldStorage:
+    if hasattr(v,'__class__') and v.__class__ is FieldStorage:
         v=v.value
-    elif type(v) is not types.StringType:
-	try:
-	    if v.file:
-		v=v.file
-	    else:
-		v=v.value
-	except: pass
+    elif type(v) is not StringType:
+	if hasattr(v,'file') and v.file: v=v.file
+	elif hasattr(v,'value'): v=v.value
     return v
 
 
@@ -964,102 +963,103 @@ class FileUpload:
     def __init__(self, aFieldStorage):
 
 	file=aFieldStorage.file
-	try: methods=file.__methods__
-	except: methods= ['close', 'fileno', 'flush', 'isatty',
-			  'read', 'readline', 'readlines', 'seek',
-			  'tell', 'truncate', 'write', 'writelines']
+	if hasattr(file, '__methods__'): methods=file.__methods__
+	else: methods= ['close', 'fileno', 'flush', 'isatty',
+			'read', 'readline', 'readlines', 'seek',
+			'tell', 'truncate', 'write', 'writelines']
+
+	d=self.__dict__
 	for m in methods:
-	    try: self.__dict__[m]=getattr(file,m)
-	    except: pass
+	    if hasattr(file,m): d[m]=getattr(file,m)
 
 	self.headers=aFieldStorage.headers
 	self.filename=aFieldStorage.filename
     
 
 def field2string(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     return v
 
 def field2text(v, nl=regex.compile('\r\n\|\n\r'), sub=regsub.gsub):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     v=sub(nl,'\n',v)
     return v
 
 def field2required(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     if strip(v): return v
     raise ValueError, 'No input for required field<p>'
 
 def field2int(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
     if v: return atoi(v)
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2float(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
     if v: return atof(v)
     raise ValueError, (
 	'Empty entry when <strong>floating-point number</strong> expected')
 
 def field2long(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
     if v: return atol(v)
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2Regex(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     if v: return regex.compile(v)
 
 def field2regex(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     if v: return regex.compile(v,regex.casefold)
 
 def field2Regexs(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     v= map(lambda v: regex.compile(v), split(v))
     if v: return v
 
 def field2regexs(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     v= map(lambda v: regex.compile(v, regex.casefold), split(v))
     if v: return v
 
 def field2tokens(v):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     return split(v)
 
 def field2lines(v, crlf=regex.compile('\r\n\|\n\r')):
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     v=regsub.gsub(crlf,'\n',v)
     return split(v,'\n')
 
 def field2date(v):
     from DateTime import DateTime
-    try: v=v.read()
-    except: v=str(v)
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
     return DateTime(v)
 
 def field2list(v):
-    if type(v) is not types.ListType: v=[v]
+    if type(v) is not ListType: v=[v]
     return v
 
 def field2tuple(v):
-    if type(v) is not types.ListType: v=(v,)
+    if type(v) is not ListType: v=(v,)
     return tuple(v)
 
 
@@ -1086,22 +1086,24 @@ class Request:
     """\
     Model HTTP request data.
     
-    This object provides access to request data.  This includes, the input headers,
-    form data, server data, and cookies.
+    This object provides access to request data.  This includes, the
+    input headers, form data, server data, and cookies.
 
     Request objects are created by the object publisher and will be
     passed to published objects through the argument name, REQUEST.
 
-    The request object is a mapping object that represents a collection of variable
-    to value mappings.  In addition, variables are divided into four categories:
+    The request object is a mapping object that represents a
+    collection of variable to value mappings.  In addition, variables
+    are divided into four categories:
 
       - Environment variables
 
         These variables include input headers, server data, and other
-        request-related data.  The variable names are as 
-        <a href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
-        in the
-	<a href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI specification</a>
+        request-related data.  The variable names are as <a
+        href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
+        in the <a
+        href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
+        specification</a>
 
       - Form data
 
@@ -1131,6 +1133,7 @@ class Request:
 	self.environ=environ
 	self.other=form
 	self.stdin=stdin
+	have_env=environ.has_key
 
 	b=script=strip(environ['SCRIPT_NAME'])
 	while b and b[-1]=='/': b=b[:-1]
@@ -1138,13 +1141,14 @@ class Request:
 	if p >= 0: b=b[:p+1]
 	else: b=''
 	while b and b[0]=='/': b=b[1:]
-	try:
-	    try:
-		server_url="http://%s" % strip(environ['HTTP_HOST'])
-	    except:
-		server_url=strip(environ['SERVER_URL'])
+	
+	if have_env('HTTP_HOST'):
+	    server_url="http://%s" % strip(environ['HTTP_HOST'])
 	    if server_url[-1:]=='/': server_url=server_url[:-1]
-	except:
+	elif have_env('SERVER_URL'):
+	    server_url=strip(environ['SERVER_URL'])
+	    if server_url[-1:]=='/': server_url=server_url[:-1]
+	else:
 	    server_port=environ['SERVER_PORT']
 	    if server_port=='80': server_port=''
 	    server_url=('http://'+
@@ -1182,13 +1186,8 @@ class Request:
 
     __repr__=__str__
 
-    def has_key(self,key):
-	try:
-	    self[key]
-	    return 1
-	except: return 0
-
     def __getitem__(self,key,
+		    default=field2list, # Any special internal marker will do
 		    URLmatch=regex.compile('URL[0-9]$').match,
 		    BASEmatch=regex.compile('BASE[0-9]$').match,
 		    ):
@@ -1202,10 +1201,9 @@ class Request:
 	""" #"
 
 	other=self.other
-	try: return other[key]
-	except: pass
+	if other.has_key(key): return other[key]
 
-	if URLmatch(key) >= 0 and other.has_key('URL'):
+	if key[:1]=='U' and URLmatch(key) >= 0 and other.has_key('URL'):
 	    n=ord(key[3])-ord('0')
 	    URL=other['URL']
 	    for i in range(0,n):
@@ -1216,12 +1214,13 @@ class Request:
 	    return URL
 
 	if isCGI_NAME(key) or key[:5] == 'HTTP_':
-	    try: return self.environ[key]
-	    except: return ''
+	    environ=self.environ
+	    if environ.has_key(key): return environ[key]
+	    return ''
 
 	if key=='REQUEST': return self
 
-        if BASEmatch(key) >= 0 and other.has_key('URL'):
+	if key[:1]=='B' and BASEmatch(key) >= 0 and other.has_key('URL'):
             n=ord(key[4])-ord('0')
             URL=other['URL']
             baselen=len(self.base)
@@ -1235,10 +1234,14 @@ class Request:
             other[key]=base
             return base
 
+	if default is not field2list: return default
+
 	raise KeyError, key
 
-    __getattr__=__getitem__
+    __getattr__=get=__getitem__
 
+    def has_key(self,key):
+	return self.get(key, field2tuple) is not field2tuple
 
 isCGI_NAME = {
 	'SERVER_SOFTWARE' : 1, 
@@ -1297,7 +1300,11 @@ def parse_cookie(text,
 
     return apply(parse_cookie,(text[l:],result))
 
+base64=None
 def old_validation(groups, HTTP_AUTHORIZATION, roles=UNSPECIFIED_ROLES):
+    global base64
+    if base64 is None: import base64
+
     if lower(HTTP_AUTHORIZATION[:6]) != 'basic ': return None
     [name,password] = string.splitfields(
 	    base64.decodestring(
@@ -1349,7 +1356,7 @@ def publish_module(module_name,
 	must_die=1
 	response.exception(must_die)
     except ImportError, v:
-	if type(v)==types.TupleType and len(v)==3:
+	if type(v)==TupleType and len(v)==3:
 	    sys.exc_type, sys.exc_value, sys.exc_traceback = v
 	must_die=1
 	response.exception(must_die)
@@ -1367,276 +1374,3 @@ def publish_module(module_name,
 	raise sys.exc_type, sys.exc_value, sys.exc_traceback
     sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
     return status
-
-#
-# $Log: Publish.py,v $
-# Revision 1.69  1997/12/03 21:39:53  jim
-# Fixed bug in cookie handling so now most specific cookie is used.
-# Later we should allow multiple values for the same name.
-#
-# Revision 1.68  1997/11/21 17:08:55  brian
-# Changed Request logic so that server_url will use www.foo.com rather than
-# www.foo.com:80 if the server uses the default port of 80.
-#
-# Revision 1.67  1997/11/20 20:39:50  jim
-# Changed to give unauthorized error if no user database.
-#
-# Revision 1.66  1997/11/11 19:37:27  jim
-# Minor change to speed form processing slightly.
-#
-# Revision 1.65  1997/11/11 19:31:18  jim
-# Moved setting of RESPONSE key in REQUEST to be ealier in the process.
-#
-# Revision 1.64  1997/11/07 15:01:30  jim
-# Updated bobo traverse machinery and fixed bug in setting return status
-# when exceptions occur.
-#
-# Revision 1.63  1997/11/05 14:48:07  jim
-# Fixed bug that broke cookies.
-#
-# Revision 1.62  1997/10/30 19:35:38  jim
-# Fixed bug in cookie handling. :-(
-#
-# Revision 1.61  1997/10/29 18:50:29  jim
-# - Brought back .form and .cookies
-# - Changed user exceptions to include HTML markup.
-# - Got rid of regular expression input types.
-#
-# Revision 1.60  1997/10/28 19:29:57  brian
-# Fixed evil MSIE cookie handling.
-#
-# Revision 1.59  1997/10/22 22:49:20  jim
-# Fixed bug in handling of container.spam__doc__.
-#
-# Revision 1.58  1997/10/22 14:49:06  jim
-# Changed str method to use repr on dictionary keys.
-#
-# Revision 1.57  1997/10/10 21:03:40  jim
-# Updated documentation.
-#
-# Revision 1.56  1997/10/10 19:34:20  jim
-# Various bug fixes made while preparing the Bobo course.
-#
-# Revision 1.55  1997/09/26 19:15:47  jim
-# Added url unquoting of form field names.
-#
-# Revision 1.54  1997/09/24 18:47:18  jim
-# Fixed bug in handling of case with body and no form data.
-#
-# Revision 1.53  1997/09/23 10:32:57  jim
-# Added machinery to compute AUTHENTICATION_PATH, which is used, with
-# AUTHENTICATED_USER to label transactions.
-#
-# Revision 1.52  1997/09/11 21:27:45  jim
-# *** empty log message ***
-#
-# Revision 1.51  1997/09/09 23:00:55  brian
-# Fixed cookie error: cookies should not be appended to explicit form
-# values (thus possibly changing the expected type and causing havoc).
-# Form values now override cookie-based values.
-#
-# Revision 1.50  1997/09/09 20:56:12  jim
-# *** empty log message ***
-#
-# Revision 1.49  1997/09/09 20:25:21  jim
-# Hopefully fixed cookie parsing.
-#
-# Revision 1.48  1997/09/08 14:47:11  jim
-# Got cookies out of request str.
-#
-# Revision 1.47  1997/09/02 21:18:53  jim
-# Implemented new authorization model.
-# No longer use Realm module.
-#
-# Revision 1.46  1997/07/28 22:01:58  jim
-# Tries to get rid of base ref.
-#
-# Revision 1.45  1997/07/28 21:46:17  jim
-# Added roles.
-# Tries to get rid of base ref.
-# Added check for groups function that doesn't return dict.
-#
-# Revision 1.44  1997/06/13 16:02:10  jim
-# Fixed bug in computation of transaction info that made user
-# authentication required.
-#
-# Revision 1.43  1997/05/14 15:07:22  jim
-# Added session domain to user id, for generating session info.
-#
-# Revision 1.42  1997/04/23 20:04:46  brian
-# Fixed change that got around HTTP_CGI_AUTHORIZATION hack.
-#
-# Revision 1.41  1997/04/11 22:46:26  jim
-# Several changes related to traversal.
-#
-# Revision 1.40  1997/04/09 21:06:20  jim
-# Changed the way allow groups are composed to avoid unnecessary
-# composition.
-#
-# Added a little value caching in requests.
-#
-# Changed the way cookies are parsed to support quoted cookie values.
-#
-# Revision 1.39  1997/04/04 15:32:11  jim
-# *Major* changes to:
-#
-#   - Improve speed,
-#   - Reduce stuttering,
-#   - Add request meta-data to transactions.
-#
-# Revision 1.38  1997/03/26 22:11:52  jim
-# Added support for OM's HTTP_HOST variable to get base ref.  This seems
-# to make authentication slightly less annoying.
-#
-# Revision 1.37  1997/03/26 19:05:56  jim
-# Added fix to avoid circular references through parents with
-# acquisition.
-#
-# Revision 1.36  1997/03/20 22:31:46  jim
-# Added logic to requote URL components as I re-build URL path.
-#
-# Revision 1.35  1997/02/14 21:53:34  jim
-# Added logic to make REQUEST and RESPONSE available for acquisition
-# by published objects.
-#
-# Revision 1.34  1997/02/07 18:42:34  jim
-# Changed to use standard cgi module. Yey!!!
-# This incorprates fixed binary data handling and get's rid of newcgi.
-# Note that we need a new fix for windows. :-(
-#
-# Revision 1.33  1997/02/07 16:00:46  jim
-# Made "method" check more general by trying to get im_func rather than
-# by testing for type.MethodType. Du.
-#
-# Revision 1.32  1997/02/07 14:41:32  jim
-# Fixed bug in 'lines' conversion and fixed documentation for
-# 'required'.
-#
-# Revision 1.31  1997/01/30 00:50:18  jim
-# Added has_key method to Request
-#
-# Revision 1.30  1997/01/28 23:04:10  jim
-# *** empty log message ***
-#
-# Revision 1.29  1997/01/28 23:02:49  jim
-# Moved log.
-# Added new data type conversion options.
-#
-# Revision 1.28  1997/01/08 23:22:45  jim
-# Added code to overcome Python 1.3 bug in string conversion functions.
-#
-# Revision 1.27  1996/12/30 14:36:12  jim
-# Fixed a spelling error.
-#
-# Revision 1.26  1996/11/26 22:06:18  jim
-# Added support for __bobo_before__ and __bobo_after__.
-#
-# Revision 1.25  1996/11/06 14:27:09  jim
-# Added logic to return status code from publish method.
-# This is needed by the Bobo server.
-#
-# Revision 1.24  1996/10/29 19:21:43  jim
-# Changed rule (and terminology) for acquiring authorization data
-# so that a subobject can aquire data from a container even if an
-# intervening object does not use named groups.
-#
-# Added better string formating of requests.
-#
-# Revision 1.23  1996/10/28 22:13:45  jim
-# Fixed bug in last fix.
-#
-# Revision 1.22  1996/10/25 19:34:27  jim
-# Fixed bug in handling of import errors.
-#
-# Revision 1.21  1996/10/15 15:45:35  jim
-# Added tuple argument type and enhances error handling.
-#
-# Revision 1.20  1996/09/16 14:43:27  jim
-# Changes to make shutdown methods work properly.  Now shutdown methods
-# can simply sys.exit(0).
-#
-# Added on-line documentation and debugging support to bobo.
-#
-# Revision 1.19  1996/09/13 22:51:35  jim
-# *** empty log message ***
-#
-# Revision 1.18  1996/08/30 23:40:40  jfulton
-# Fixed bug in argument marshalling!!!
-#
-# Revision 1.17  1996/08/30 17:08:53  jfulton
-# Disallowed index_html/index_html.
-#
-# Revision 1.16  1996/08/29 22:20:26  jfulton
-# *** empty log message ***
-#
-# Revision 1.15  1996/08/07 19:37:54  jfulton
-# Added:
-#
-#   - Regex, regex input types,
-#   - New rule for acquiring allow groups,
-#   - Support for index_html attribute,
-#   - Support for relative base refs
-#   - Added URL as magic variable
-#   - Added error checking of typed fields
-#
-# Revision 1.14  1996/08/05 11:33:54  jfulton
-# Added first cut at group composition.
-#
-# Revision 1.13  1996/07/25 16:42:48  jfulton
-# - Added FileUpload objects.
-# - Added logic to check for non-file fields in forms with file upload.
-# - Added new type conversion types: string (esp for use with file-upload)
-#   and date.
-#
-# Revision 1.12  1996/07/25 12:39:09  jfulton
-# Added support for __allow_groups__ method.
-# Made auto-generation of realms smarter about realm names.
-#
-# Revision 1.11  1996/07/23 20:56:40  jfulton
-# Updated the documentation.
-#
-# Revision 1.10  1996/07/23 20:48:55  jfulton
-# Changed authorization model so that sub-object allow_groups override,
-# rather than augment (tighten) parent groups.
-#
-# Note that now a valid group is None, which makes a subobject public,
-# even a parent is protected.
-#
-# Revision 1.9  1996/07/23 19:59:29  jfulton
-# Fixed bugs:
-#
-#   - object[entryname] can fail with attribute as well as type error
-#   - flatten didn't work with multiple values\
-#   - inserted base was not absolute
-#
-# Added transaction support.
-#
-# Revision 1.8  1996/07/18 14:59:54  jfulton
-# Fixed bug in getting web_objects.
-#
-# Revision 1.7  1996/07/11 19:39:07  jfulton
-# Fixed bug in new feature: 'AUTHENTICATED_USER'
-#
-# Revision 1.6  1996/07/10 22:53:54  jfulton
-# Fixed bug in use of default realm.
-#
-# If authentication is performed, then the name of the authenticated
-# user is saved in the request with the name 'AUTHENTICATED_USER', and
-# will be passed to called objects through the argument name
-# 'AUTHENTICATED_USER'.
-#
-# Revision 1.5  1996/07/08 20:34:11  jfulton
-# Many changes, including:
-#
-#   - Better realm management
-#   - Automatic type conversion
-#   - Improved documentation
-#   - ...
-#
-# Revision 1.4  1996/07/04 22:57:20  jfulton
-# Added lots of documentation.  A few documented features have yet to be
-# implemented.  The module needs to be retested after adding some new
-# features.
-#
-#
-# 
