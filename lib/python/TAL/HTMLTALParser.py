@@ -276,7 +276,7 @@ class HTMLTALParser(HTMLParser):
         self.gen.emitRawText("&%s;" % name)
 
     def handle_data(self, data):
-        self.gen.emitText(data)
+        self.gen.emitRawText(data)
 
     def handle_comment(self, data):
         self.gen.emitRawText("<!--%s-->" % data)
