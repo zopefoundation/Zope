@@ -141,10 +141,10 @@ class BaseObjectWriter:
         >>> jar = DummyJar()
         >>> writer = BaseObjectWriter(jar)
 
-        Normally, object references include the oid and a cached
-        reference to the class.  Having the class available allows
-        fast creation of the ghost, avoiding requiring an additional
-        database lookup.
+        Normally, object references include the oid and a cached named
+        reference to the class.  Having the class information
+        available allows fast creation of the ghost, avoiding
+        requiring an additional database lookup.
 
         >>> bob = P('bob')
         >>> oid, cls = writer.persistent_id(bob)
@@ -276,7 +276,15 @@ class BaseObjectWriter:
             # It's possible that __getnewargs__ is degenerate and
             # returns (), but we don't want to have to deghostify
             # the object to find out.
+
+            # Note that this has the odd effect that, if the class has
+            # __getnewargs__ of its own, we'll lose the optimization
+            # of caching the class info.
+
             return oid
+
+        # Note that we never get here for persistent classes.
+        # We'll use driect refs for normal classes.
 
         return oid, klass
 
@@ -285,13 +293,19 @@ class BaseObjectWriter:
         # We don't want to be fooled by proxies.
         klass = type(obj)
 
-        newargs = getattr(obj, "__getnewargs__", None)
-        if newargs is None:
-            meta = klass
-        else:
-            meta = klass, newargs()
+        # We want to serialize persistent classes by name if they have
+        # a non-None non-empty module so as not to have a direct
+        # ref. This is important when copying.  We probably want to
+        # revisit this in the future.
+        if (isinstance(getattr(klass, '_p_oid', 0), _oidtypes)
+            and klass.__module__):
+            klass = klass.__module__, klass.__name__
 
-        return self._dump(meta, obj.__getstate__())
+        newargs = getattr(obj, "__getnewargs__", None)
+        if newargs is not None:
+            newargs = newargs()
+
+        return self._dump((klass, newargs), obj.__getstate__())
 
     def _dump(self, classmeta, state):
         # To reuse the existing cStringIO object, we must reset
@@ -303,6 +317,8 @@ class BaseObjectWriter:
         self._p.dump(state)
         self._file.truncate()
         return self._file.getvalue()
+
+_oidtypes = str, type(None)
 
 class ObjectWriter(BaseObjectWriter):
 
