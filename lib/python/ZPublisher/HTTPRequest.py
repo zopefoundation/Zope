@@ -11,9 +11,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
-import re, sys, os,  urllib, time, whrandom, cgi, codecs
+import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage, escape
@@ -114,7 +114,7 @@ class HTTPRequest(BaseRequest):
     retry_max_count=3
     def supports_retry(self):
         if self.retry_count < self.retry_max_count:
-            time.sleep(whrandom.uniform(0, 2**(self.retry_count)))
+            time.sleep(random.uniform(0, 2**(self.retry_count)))
             return 1
 
     def retry(self):

@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-import sys, os, time, whrandom, unittest
+import sys, os, time, random, unittest
 
 if __name__ == "__main__":
     sys.path.insert(0, '../../..')
@@ -165,7 +165,7 @@ class TestTransientObjectContainer(TestCase):
         added = {}
         r = range(10, 110)
         for x in r:
-            k = whrandom.choice(r)
+            k = random.choice(r)
             if not added.has_key(k):
                 self.t[k] = x
                 added[k] = 1
@@ -177,7 +177,7 @@ class TestTransientObjectContainer(TestCase):
         added = {}
         r = range(10, 110)
         for x in r:
-            k = whrandom.choice(r)
+            k = random.choice(r)
             self.t[k] = x
             added[k] = 1
         addl = added.keys()
@@ -188,12 +188,12 @@ class TestTransientObjectContainer(TestCase):
         r = range(10, 1010)
         added = []
         for x in r:
-            k = whrandom.choice(r)
+            k = random.choice(r)
             self.t[k] = x
             added.append(k)
         deleted = []
         for x in r:
-            k = whrandom.choice(r)
+            k = random.choice(r)
             if self.t.has_key(k):
                 del self.t[k]
                 deleted.append(k)
@@ -208,7 +208,7 @@ class TestTransientObjectContainer(TestCase):
     def testTargetedDeletes(self):
         r = range(10, 1010)
         for x in r:
-            k = whrandom.choice(r)
+            k = random.choice(r)
             self.t[k] = x
         for x in r:
             try:
@@ -372,7 +372,7 @@ class TestTransientObjectContainer(TestCase):
         added = {}
         r = range(10, 1010)
         for x in r:
-            k = whrandom.choice(r)
+            k = random.choice(r)
             self.t[k] = x
             added[k] = x
         addl = added.keys()

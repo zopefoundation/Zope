@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, os,  time, types,re
 import socket, httplib, mimetools
@@ -9,7 +9,7 @@ from mimetypes import guess_type
 from base64 import encodestring
 from common import rfc1123_date
 from cStringIO import StringIO
-from whrandom import random
+from random import random
 from urllib import quote
 
 
