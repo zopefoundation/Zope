@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.11 1997/02/12 18:11:54 cici Exp $'''
+$Id: InvertedIndex.py,v 1.12 1997/02/12 18:35:21 cici Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.11 1997/02/12 18:11:54 cici Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.12  1997/02/12 18:35:21  cici
+# added apply() to Transactional and Persistent addentry() methods.
+#
 # Revision 1.11  1997/02/12 18:11:54  cici
 # *** empty log message ***
 #
@@ -122,7 +125,7 @@ $Id: InvertedIndex.py,v 1.11 1997/02/12 18:11:54 cici Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -564,7 +567,7 @@ class PersistentResultList(ResultList, PickleDictionary.Persistent):
   def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
 
-    ResultList.addentry(self, key, info)
+    apply(ResultList.addentry, (self, key) + info)
     self.__changed__(1)
 
 
@@ -573,7 +576,7 @@ class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
   def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
 
-    ResultList.addentry(self, key, info)
+    apply(ResultList.addentry, (self, key) + info)
     self.__changed__(1)
 
 
