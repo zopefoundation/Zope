@@ -13,7 +13,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import sys, os,  mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -24,6 +24,7 @@ from WriteLockInterface import WriteLockInterface
 import Globals, time
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 from zExceptions import Unauthorized
+from common import isDavCollection
 
 class Resource(ExtensionClass.Base, Lockable.LockableItem):
     """The Resource mixin class provides basic WebDAV support for
@@ -357,7 +358,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         ob.wl_clearLocks()
 
         ob._setId(name)
-        if depth=='0' and hasattr(ob, '__dav_collection__'):
+        if depth=='0' and isDavCollection(ob):
             for id in ob.objectIds():
                 ob._delObject(id)
         if existing:

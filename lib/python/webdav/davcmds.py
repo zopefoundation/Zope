@@ -13,7 +13,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, os
 from common import absattr, aq_base, urlfix, urlbase
@@ -25,6 +25,7 @@ from xmltools import XmlParser
 from cStringIO import StringIO
 from urllib import quote
 from AccessControl import getSecurityManager
+from common import isDavCollection
 
 def safe_quote(url, mark=r'%'):
     if url.find(mark) > -1:
@@ -90,7 +91,7 @@ class PropFind:
             url=urlbase(url)
             result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
                          '<d:multistatus xmlns:d="DAV:">\n')
-        iscol=hasattr(obj, '__dav_collection__')
+        iscol=isDavCollection(obj)
         if iscol and url[-1] != '/': url=url+'/'
         result.write('<d:response>\n<d:href>%s</d:href>\n' % safe_quote(url))
         if hasattr(aq_base(obj), 'propertysheets'):
@@ -209,7 +210,7 @@ class PropPatch:
 
     def apply(self, obj):
         url=urlfix(self.request['URL'], 'PROPPATCH')
-        if hasattr(obj, '__dav_collection__'):
+        if isDavCollection(obj):
             url=url+'/'
         result=StringIO()
         errors=[]
@@ -323,7 +324,7 @@ class Lock:
             result = StringIO()
             url = urlfix(self.request['URL'], 'LOCK')
             url = urlbase(url)
-        iscol = hasattr(obj, '__dav_collection__')
+        iscol = isDavCollection(obj)
         if iscol and url[-1] != '/': url = url + '/'
         errmsg = None
         lock = None
@@ -397,7 +398,7 @@ class Unlock:
             result = StringIO()
             url = urlfix(url, 'UNLOCK')
             url = urlbase(url)
-        iscol = hasattr(obj, '__dav_collection__')
+        iscol = isDavCollection(obj)
         if iscol and url[-1] != '/': url = url + '/'
         errmsg = None
 
@@ -455,7 +456,7 @@ class DeleteCollection:
             result = StringIO()
             url = urlfix(url, 'DELETE')
             url = urlbase(url)
-        iscol = hasattr(obj, '__dav_collection__')
+        iscol = isDavCollection(obj)
         errmsg = None
         parent = aq_parent(obj)
 

@@ -13,7 +13,7 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import  time, urllib, re
 from App.Common import iso8601_date, rfc850_date, rfc1123_date
@@ -59,7 +59,9 @@ def generateLockToken():
     return '%s-%s-00105A989226:%.03f' %  \
          (_randGen.random(),_randGen.random(),time.time())
 
-    
+def isDavCollection(object):
+    """Return true if object is a DAV collection."""
+    return getattr(object, '__dav_collection__', 0)
 
 def tokenFinder(token):
     # takes a string like '<opaquelocktoken:afsdfadfadf> and returns the token

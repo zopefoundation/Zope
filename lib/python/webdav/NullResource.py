@@ -13,7 +13,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, os,  mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -25,7 +25,7 @@ from Globals import Persistent, DTMLFile
 from WriteLockInterface import WriteLockInterface
 import OFS.SimpleItem
 from zExceptions import Unauthorized
-
+from common import isDavCollection
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
@@ -137,7 +137,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
         if hasattr(aq_base(parent), name):
             raise 'Method Not Allowed', 'The name %s is in use.' % name
-        if not hasattr(parent, '__dav_collection__'):
+        if not isDavCollection(parent):
             raise 'Forbidden', 'Cannot create collection at this location.'
 
         ifhdr = REQUEST.get_header('If', '')
