@@ -13,6 +13,8 @@
 
 #include "Python.h"
 
+#if defined(__unix__) || defined(unix)
+
 #include <grp.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -39,6 +41,16 @@ static PyMethodDef InitgroupsMethods[] = {
 	{"initgroups",	initgroups_initgroups,	METH_VARARGS},
 	{NULL,		NULL}
 };
+
+#else
+
+/* This module is empty on non-UNIX systems. */
+
+static PyMethodDef InitgroupsMethods[] = {
+	{NULL,		NULL}
+};
+
+#endif /* defined(__unix__) || defined(unix) */
 
 void
 initinitgroups()
