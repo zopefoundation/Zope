@@ -18,7 +18,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.39 $'.split()[-2:][0]
+__version__ = '$Revision: 1.40 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -1152,35 +1152,40 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # values which are a list of revisions (oid+tid) that can be packed.
         packablerevs = {}
         c = self._metadata.cursor()
-        # BAW: can two threads be packing at the same time?  If so, we need to
-        # handle that.  If not, we should enforce that with a pack-lock.
-        for oid in self._serials.keys():
-            try:
-                rec = c.set_range(oid+packtid)
-                # The one just before this should be the largest record less
-                # than or equal to the key, i.e. the object revision just
-                # before the given pack time.
-                rec = c.prev()
-            except db.DBNotFoundError:
-                # Perhaps the last record in the database is the last one
-                # containing this oid?
-                rec = c.last()
-            # Now move backwards in time to look at all the revisions of this
-            # object.  All but the current one are packable, unless the object
-            # isn't reachable from the root, in which case, all its revisions
-            # are packable.
-            while rec:
-                key, data = rec
-                rec = c.prev()
-                # Make sure we're still looking at revisions for this object
-                if oid <> key[:8]:
-                    break
-                if not reachables.has_key(oid):
-                    packablerevs.setdefault(oid, []).append(key)
-                # Otherwise, if this isn't the current revision for this
-                # object, then it's packable.
-                elif self._serials[oid] <> key[8:]:
-                    packablerevs.setdefault(oid, []).append(key)
+        try:
+            # BAW: can two threads be packing at the same time?  If so, we
+            # need to handle that.  If not, we should enforce that with a
+            # pack-lock.
+            for oid in self._serials.keys():
+                try:
+                    rec = c.set_range(oid+packtid)
+                    # The one just before this should be the largest record
+                    # less than or equal to the key, i.e. the object revision
+                    # just before the given pack time.
+                    rec = c.prev()
+                except db.DBNotFoundError:
+                    # Perhaps the last record in the database is the last one
+                    # containing this oid?
+                    rec = c.last()
+                # Now move backwards in time to look at all the revisions of
+                # this object.  All but the current one are packable, unless
+                # the object isn't reachable from the root, in which case, all
+                # its revisions are packable.
+                while rec:
+                    key, data = rec
+                    rec = c.prev()
+                    # Make sure we're still looking at revisions for this
+                    # object
+                    if oid <> key[:8]:
+                        break
+                    if not reachables.has_key(oid):
+                        packablerevs.setdefault(oid, []).append(key)
+                    # Otherwise, if this isn't the current revision for this
+                    # object, then it's packable.
+                    elif self._serials[oid] <> key[8:]:
+                        packablerevs.setdefault(oid, []).append(key)
+        finally:
+            c.close()
         # We now have all the packable revisions we're going to handle.  For
         # each object with revisions that we're going to pack away, acquire
         # the storage lock so we can do that without fear of trampling by
