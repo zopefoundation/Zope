@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Version.py,v 1.2 1997/11/07 17:43:19 jim Exp $'''
+$Id: Version.py,v 1.3 1997/11/07 18:51:13 jim Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -40,7 +40,7 @@ def add(self, id, title, acl_type='A',acl_roles=[], REQUEST=None):
 class Session(Persistence.Persistent,
 	      AccessControl.Role.RoleManager,
 	      SimpleItem.Item,
-	      Acquisition.Explicit):
+	      Acquisition.Implicit):
 
     '''Model sessions as drop-in objects
     '''
@@ -104,7 +104,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 
@@ -112,6 +112,9 @@ __version__='$Revision: 1.2 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.3  1997/11/07 18:51:13  jim
+# Made an implicit acquirer.
+#
 # Revision 1.2  1997/11/07 17:43:19  jim
 # Added a feature to exit another session.
 #
