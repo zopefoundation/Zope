@@ -1,7 +1,7 @@
 # Basic test framework class for both the Full and Minimal Berkeley storages
 
 import os
-from StorageTestBase import StorageTestBase
+from ZODB.tests.StorageTestBase import StorageTestBase
 
 DBHOME = 'test-db'
 
