@@ -217,17 +217,15 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.40 2001/04/27 20:59:34 shane Exp $'
-__version__='$Revision: 1.40 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.41 2001/06/18 18:12:22 chrism Exp $'
+__version__='$Revision: 1.41 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
 from string import find, split, join, atoi, rfind
 from urllib import quote, quote_plus
 from cgi import escape
-
-def html_quote(v, name='(Unknown name)', md={}):
-    return escape(str(v), 1)
+from html_quote import html_quote # for import by other modules, dont remove!
 
 class Var: 
     name='var'
