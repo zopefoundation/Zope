@@ -19,6 +19,10 @@ from Persistence import Persistent
 import Acquisition
 from OFS.SimpleItem import SimpleItem
 
+from Globals import DTMLFile, InitializeClass
+from Interface import verify_class_implementation
+from AccessControl.SecurityInfo import ClassSecurityInfo
+
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -29,9 +33,6 @@ from Products.ZCTextIndex.Lexicon \
      import Lexicon, Splitter, CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
-from Globals import DTMLFile, InitializeClass
-from Interface import verify_class_implementation
-from AccessControl.SecurityInfo import ClassSecurityInfo
 
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     """Persistent TextIndex"""
@@ -76,23 +77,21 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         self._p_changed = 1 # XXX
 
     def _apply_index(self, request, cid=''):
-        """Apply the query specified by request which is a mapping
-           containing the query 
+        """Apply query specified by request, a mapping containing the query.
            
-           Returns two object on success, the resultSet containing the
-           matching record numbers and a tuple containing the names of the
-           fields used
+        Returns two object on success, the resultSet containing the
+        matching record numbers and a tuple containing the names of
+        the fields used
 
-           Returns None if request is not valid for this index.
+        Returns None if request is not valid for this index.
         """
         record = parseIndexRequest(request, self.id, self.query_options)
-        if record.keys==None: 
+        if record.keys is None: 
             return None
         query_str = ' '.join(record.keys)
         tree = self.parser.parseQuery(query_str)
         results = tree.executeQuery(self.index)
         return  results, (self._fieldname,)
-        
 
     def query(self, query, nbest=10):
         # returns a mapping from docids to scores
