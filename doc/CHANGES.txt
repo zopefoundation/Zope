@@ -6,6 +6,14 @@ Zope Changes
 
   HEAD only
 
+    Features added
+
+     - ZConfig was updated to version 2.0.  The new version includes
+       two new ways to perform schema extension; of particular
+       interest in Zope is the ability for a configuration file to
+       "import" new schema components to allow 3rd-party components
+       (such as storages, databases, or logging handlers) to be used.
+
     Bugs fixed
 
      - Collector #721: Entities in tal:attribute values weren't
