@@ -117,8 +117,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.7 1998/01/14 18:03:25 jim Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.8 1998/01/14 18:23:42 jim Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -166,10 +166,10 @@ class If:
 			if ev is not name:
 			    raise KeyError, name, sys.exc_traceback
 			v=None
+		    cache[name]=v
 		else:
 		    v=expr.eval(md)
     
-		cache[name]=v
 		if v: return section(None,md)
     
 	    if self.elses: return self.elses(None, md)
@@ -186,21 +186,27 @@ class Unless:
 
     def __init__(self, blocks):
 	tname, args, section = blocks[0]
-	args=parse_params(args, name='')
-	name=name_param(args)
+	args=parse_params(args, name='', expr='')
+	name,expr=name_param(args,'unless',1)
 	self.__name__ = name
 	self.section=section
+	self.expr=expr
 
     def render(self,md):
 	name=self.__name__
-	try: v=md[name]
-	except KeyError, ev:
-	    if ev is not name: raise KeyError, name, sys.exc_traceback
-	    v=None
-	if not v:
-	    md._push({name:v})
-	    try: return self.section(None,md)
-	    finally: md._pop(1)
+	expr=self.expr
+	if expr is None:
+	    try: v=md[name]
+	    except KeyError, ev:
+		if ev is not name: raise KeyError, name, sys.exc_traceback
+		v=None
+	    if not v:
+		md._push({name:v})
+		try: return self.section(None,md)
+		finally: md._pop(1)
+	else:
+	    if not expr.eval(md): return self.section(None,md)
+	    
 	return ''
 
     __call__=render
@@ -213,6 +219,9 @@ class Else(Unless):
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.8  1998/01/14 18:23:42  jim
+# Added expr to unless.
+#
 # Revision 1.7  1998/01/14 18:03:25  jim
 # Added Unless tag as replacement for else tag.
 #
