@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -153,14 +153,14 @@ class FindSupport(ExtensionClass.Base):
             base=obj.aq_base
 
         if hasattr(base, 'objectItems'):
-	    try:    items=obj.objectItems()
-	    except: return result
+            try:    items=obj.objectItems()
+            except: return result
         else:
             if getattr(base, 'meta_type', None) == 'Z Class':
-		try:    items=obj.propertysheets.methods.objectItems()
-		except: return result
+                try:    items=obj.propertysheets.methods.objectItems()
+                except: return result
             else:
-		return result
+                return result
 
         try: add_result=result.append
         except:
