@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.10 2001/12/21 17:09:13 evan Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: __init__.py,v 1.11 2002/02/15 16:29:17 evan Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import PythonScript
 try:
@@ -48,7 +48,8 @@ def initialize(context):
 def recompile(self):
     '''Recompile all Python Scripts'''
     base = self.this()
-    scripts = base.ZopeFind(base, obj_metatypes=('Script (Python)',))
+    scripts = base.ZopeFind(base, obj_metatypes=('Script (Python)',),
+                            search_sub=1)
     names = []
     for name, ob in scripts:
         if ob._v_change:
