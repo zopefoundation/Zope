@@ -3,14 +3,8 @@
 <TITLE><!--#var title_or_id--></TITLE>
 <SCRIPT LANGUAGE="javascript">
 <!--
-function update(target)
-{   window.focus();
-    if((target=="l") || (target=="b"))
-    {   window.manage_menu.history.go(0);
-    }
-    if((target=="r") || (target=="b"))
-    {   window.manage_main.history.go(0);
-    }
+function update_menu()
+{   window.manage_menu.location.href=window.manage_menu.location.href;
 }
 //-->
 </SCRIPT>
