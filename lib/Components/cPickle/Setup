@@ -1,0 +1,5 @@
+*shared*
+
+cStringIO cStringIO.c
+
+cPickle cPickle.c
