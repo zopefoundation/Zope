@@ -108,7 +108,7 @@ if not os.path.exists(data_dir):
     print 'creating data directory'
     os.mkdir('var')
 
-for suffix in 'bbb', 'fs':
+for suffix in 'fs':
     db_path=os.path.join(data_dir, 'Data.%s' % suffix)
     dd_path=os.path.join(data_dir, 'Data.%s.in' % suffix)
     if not os.path.exists(db_path) and os.path.exists(dd_path):
