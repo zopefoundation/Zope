@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -190,7 +190,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         RESPONSE.setCookie(
             Globals.VersionNameName,'No longer active',
             expires="Mon, 25-Jan-1999 23:59:59 GMT",
-            path=REQUEST['SCRIPT_NAME'],
+            path=(REQUEST['BASEPATH1'] or '/'),
             )
         if (REQUEST.has_key('SERVER_SOFTWARE') and
             REQUEST['SERVER_SOFTWARE'][:9]=='Microsoft'):
