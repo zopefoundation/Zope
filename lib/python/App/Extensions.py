@@ -14,8 +14,8 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.19 2002/08/14 21:31:40 mj Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Extensions.py,v 1.20 2003/02/10 18:26:03 fdrake Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import os, zlib, rotor, imp
 import Products
@@ -102,16 +102,15 @@ def getObject(module, name, reload=0,
     # update the cache, then one will have simply worked a little
     # harder than need be.  So, in this case, we won't incur
     # the expense of a lock.
-    if modules.has_key(module):
-        old=modules[module]
-        if old.has_key(name) and not reload: return old[name]
-    else:
-        old=None
+    old = modules.get(module)
+    if old is not None and name in old and not reload:
+        return old[name]
 
-    if module[-3:]=='.py': p=module[:-3]
-    elif module[-4:]=='.pyp': p=module[:-4]
-    elif module[-4:]=='.pyc': p=module[:-4]
-    else: p=module
+    base, ext = os.path.splitext(module)
+    if ext in ('py', 'pyp', 'pyc'):
+        p = base
+    else:
+        p = module
     p=getPath('Extensions', p, suffixes=('','py','pyp','pyc'))
     if p is None:
         raise "Module Error", (
@@ -120,14 +119,15 @@ def getObject(module, name, reload=0,
     __traceback_info__=p, module
 
 
-    if p[-4:]=='.pyc':
+    base, ext = os.path.splitext(p)
+    if ext=='.pyc':
         file = open(p, 'rb')
         binmod=imp.load_compiled('Extension', p, file)
         file.close()
         m=binmod.__dict__
 
-    elif p[-4:]=='.pyp':
-        prod_id=module.split('.')[0]
+    elif ext=='.pyp':
+        prod_id=module.split('.', 1)[0]
         data=zlib.decompress(
             rotor.newrotor(prod_id +' shshsh').decrypt(open(p,'rb').read())
             )
@@ -143,17 +143,17 @@ def getObject(module, name, reload=0,
         m={}
         exec execsrc in m
 
-    try: r=m[name]
+    if old is not None:
+        old.update(m)
+    else:
+        modules[module] = m
+
+    try:
+        return m[name]
     except KeyError:
         raise 'Invalid Object Name', (
             "The specified object, <em>%s</em>, was not found in module, "
             "<em>%s</em>." % (name, module))
-
-    if old:
-        for k, v in m.items(): old[k]=v
-    modules[module]=m
-
-    return r
 
 class NoBrains: pass
 
