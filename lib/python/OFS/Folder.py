@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.75 1999/03/30 18:09:33 jim Exp $"""
+$Id: Folder.py,v 1.76 1999/04/01 16:12:02 jim Exp $"""
 
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -133,11 +133,6 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
     meta_type='Folder'
 
     _properties=({'id':'title', 'type': 'string'},)
-
-    meta_types=()
-    dynamic_meta_types=(
-        # UserFolderHandler.meta_types_
-        )
 
     manage_options=(
         {'label':'Contents', 'action':'manage_main'},

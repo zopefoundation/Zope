@@ -84,12 +84,12 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.59 1999/03/29 14:31:17 brian Exp $"""
+$Id: ObjectManager.py,v 1.60 1999/04/01 16:13:26 jim Exp $"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
-import os, App.FactoryDispatcher, ts_regex
+import os, App.FactoryDispatcher, ts_regex, Products
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
@@ -127,7 +127,9 @@ class ObjectManager(
 
 
     meta_type  ='ObjectManager'
-    meta_types = dynamic_meta_types = ()
+
+    meta_types=() # Sub-object types that are specific to this object
+    
     _objects   =()
 
     manage_main=HTMLFile('main', globals())
@@ -160,7 +162,7 @@ class ObjectManager(
         elif hasattr(self, 'aq_acquire'):
             try: pmt=self.aq_acquire('_product_meta_types')
             except:  pass
-        return self.meta_types+self.dynamic_meta_types+pmt
+        return self.meta_types+Products.meta_types+pmt
 
     def _checkId(self, id, allow_dup=0):
         # If allow_dup is false, an error will be raised if an object

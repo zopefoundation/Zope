@@ -129,3 +129,4 @@ class Misc_:
 
     def __str__(self): return self.__name__
     def __getitem__(self, name): return self._d[name]
+    def __setitem__(self, name, v): self._d[name]=v
