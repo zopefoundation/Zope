@@ -13,8 +13,8 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.13 2001/11/28 15:51:09 matt Exp $''' % database_type
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: DA.py,v 1.14 2002/05/27 12:27:25 chrisw Exp $''' % database_type
+__version__='$Revision: 1.14 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -36,7 +36,6 @@ def manage_addZGadflyConnection(
     self._setObject(id, Connection(
         id, title, connection, check))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
-    return self.manage_main(self,REQUEST)       
 
 class Connection(DABase.Connection):
     " "
