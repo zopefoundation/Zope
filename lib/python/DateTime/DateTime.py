@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -184,6 +184,7 @@ class _cache:
 
 
     _zmap={'aest':'GMT+1000', 'aedt':'GMT+1100',
+           'aus eastern standard time':'GMT+1000',
            'brazil/acre':'Brazil/Acre',
            'brazil/denoronha':'Brazil/Denoronha',
            'brazil/east':'Brazil/East','brazil/west':'Brazil/West',
