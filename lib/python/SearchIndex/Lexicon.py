@@ -155,7 +155,6 @@ class Lexicon(Persistent, Implicit):
                 hits.append(x)
         return hits
 
-
 AndNot    = 'andnot'
 And       = 'and'
 Or        = 'or'
@@ -289,8 +288,8 @@ def get_operands(q, i, index, ListType=type([]), StringType=type('')):
 
 def evaluate(q, index, ListType=type([])):
     '''Evaluate a parsed query'''
-    import pdb
-    pdb.set_trace()
+##    import pdb
+##    pdb.set_trace()
 
     if (len(q) == 1):
         if (type(q[0]) is ListType):
