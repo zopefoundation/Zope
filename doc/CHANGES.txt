@@ -82,6 +82,10 @@ Zope Changes
         Added freshness information to ImageFile, to improve
         cacheability of management interface
 
+      - Collector 258: added a new parameter no_push_item to
+        dtml-in, to inhibit automatically pushing sequence-item
+        onto the namespace stack.
+
     Bugs:
     
       - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
