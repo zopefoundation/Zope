@@ -161,6 +161,9 @@ class ZServerHTTPResponse(HTTPResponse):
         append("HTTP/%s %s" % (self._http_version or '1.0' , status))
         if headers.has_key('status'):
             del headers['status']
+
+        if not headers.has_key("etag"):
+            self.setHeader('ETAG','')
         
         # add zserver headers
         append('Server: %s' % self._server_version) 
