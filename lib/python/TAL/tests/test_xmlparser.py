@@ -4,7 +4,7 @@
 import string
 import sys
 
-import utils
+from TAL.tests import utils
 import unittest
 
 from TAL import XMLParser

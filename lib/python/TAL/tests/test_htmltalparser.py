@@ -4,7 +4,7 @@
 import pprint
 import sys
 
-import utils
+from TAL.tests import utils
 import unittest
 
 from string import rfind
