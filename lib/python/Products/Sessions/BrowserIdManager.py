@@ -75,7 +75,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -218,6 +218,15 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
                                        'browser id namespace, thus the '
                                        'browserid cookie cannot be flushed.')
         self._setCookie('deleted', self.REQUEST, remove=1)
+
+    security.declareProtected(ACCESS_CONTENTS_PERM,'setBrowserIdCookieByForce')
+    def setBrowserIdCookieByForce(self, bid):
+        """ """
+        if 'cookies' not in self.browserid_namespaces:
+            raise BrowserIdManagerErr,('Cookies are not now being used as a '
+                                       'browser id namespace, thus the '
+                                       'browserid cookie cannot be forced.')
+        self._setCookie(bid, self.REQUEST)
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdFromCookie')
     def isBrowserIdFromCookie(self):

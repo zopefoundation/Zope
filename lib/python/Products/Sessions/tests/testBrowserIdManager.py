@@ -85,9 +85,9 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.3 2001/11/17 16:07:41 chrism Exp $
+$Id: testBrowserIdManager.py,v 1.4 2001/11/20 16:08:10 chrism Exp $
 """
-__version__ = "$Revision: 1.3 $"[11:-2]
+__version__ = "$Revision: 1.4 $"[11:-2]
 
 import sys
 if __name__ == "__main__":
@@ -258,12 +258,12 @@ class TestBrowserIdManager(TestCase):
         b = self.m.REQUEST.RESPONSE.cookies[tokenkey]
         assert a == b['value'], (a, b)
 
-    def testHasToken(self):
+    def testHasBrowserId(self):
         assert not self.m.hasBrowserId()
         a = self.m.getBrowserId()
         assert self.m.hasBrowserId()
         
-    def testTokenIsNew(self):
+    def testBrowserIdIsNew(self):
         a = self.m.getBrowserId()
         assert self.m.isBrowserIdNew()
 
@@ -287,7 +287,7 @@ class TestBrowserIdManager(TestCase):
         a = self.m.getBrowserId()
         assert self.m.isBrowserIdFromForm()
 
-    def testIsTokenFromCookieOnly(self):
+    def testIsBrowserIdFromCookieOnly(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
         self.m.REQUEST.browser_id_ns_ = 'cookies'
@@ -298,7 +298,7 @@ class TestBrowserIdManager(TestCase):
         assert self.m.isBrowserIdFromCookie()
         assert not self.m.isBrowserIdFromForm()
  
-    def testIsTokenFromFormOnly(self):
+    def testIsBrowserIdFromFormOnly(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
         self.m.REQUEST.browser_id_ns_ = 'form'
@@ -309,7 +309,7 @@ class TestBrowserIdManager(TestCase):
         assert not self.m.isBrowserIdFromCookie()
         assert self.m.isBrowserIdFromForm()
 
-    def testFlushTokenCookie(self):
+    def testFlushBrowserIdCookie(self):
         token = self.m.getBrowserId()
         self.m.REQUEST.browser_id_ = token
         self.m.REQUEST.browser_id_ns_ = 'cookies'
@@ -322,6 +322,20 @@ class TestBrowserIdManager(TestCase):
         c = self.m.REQUEST.RESPONSE.cookies[tokenkey]
         assert c['value'] == 'deleted', c
         
+    def testSetBrowserIdCookieByForce(self):
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'cookies'
+        tokenkey = self.m.getBrowserIdName()
+        self.m.REQUEST.cookies[tokenkey] = token
+        a = self.m.getBrowserId()
+        assert a == token, repr(a)
+        assert self.m.isBrowserIdFromCookie()
+        token = 'abcdefghijk'
+        self.m.setBrowserIdCookieByForce(token)
+        c = self.m.REQUEST.RESPONSE.cookies[tokenkey]
+        assert c['value'] == token, c
+
     def testEncodeUrl(self):
         keystring = self.m.getBrowserIdName()
         key = self.m.getBrowserId()

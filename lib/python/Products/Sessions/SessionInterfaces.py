@@ -184,6 +184,18 @@ class BrowserIdManagerInterface(
         a browser id namespace at the time of the call.
         """
 
+    def setBrowserIdCookieByForce(self, bid):
+        """
+        Sets the browser id cookie to browser id 'bid' by force.
+        Useful when you need to 'chain' browser id cookies across domains
+        for the same user (perhaps temporarily using query strings).
+        
+        Permission required: Access contents information
+
+        Raises:  BrowserIdManagerErr.  If the 'cookies' namespace isn't
+        a browser id namespace at the time of the call.
+        """
+
 class SessionDataManagerInterface(
     Interface.Base
     ):
