@@ -21,7 +21,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.59 2003/07/28 02:12:23 kiko Exp $\n"
+"$Id: ExtensionClass.c,v 1.60 2003/08/15 17:27:58 tim_one Exp $\n"
 ;
 
 #include "ExtensionClass.h"
@@ -2299,7 +2299,7 @@ subclass_compare(PyObject *self, PyObject *v)
   UNLESS(m=subclass_getspecial(self,py__cmp__))
     {
       PyErr_Clear();
-      return self-v;
+      return self < v ? -1 : (self != v);
     }
 
   if (UnboundCMethod_Check(m)
