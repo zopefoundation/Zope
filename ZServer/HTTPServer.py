@@ -109,6 +109,7 @@ import string
 import os
 import types
 import thread
+import time
 from cStringIO import StringIO
 
 from PubCore import handle
@@ -323,6 +324,13 @@ class zhttp_channel(http_channel):
         "Called when a pushing request is finished"
         self.working=0
         self.work()
+
+    def kill_zombies(self):
+        now = int (time.time())
+        for channel in asyncore.socket_map.keys():
+            if channel.__class__ == self.__class__:
+                if (now - channel.creation_time) > channel.zombie_timeout:
+                    channel.close()
 
 
 class zhttp_server(http_server):    
