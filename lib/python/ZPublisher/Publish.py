@@ -444,7 +444,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.6 1996/07/10 22:53:54 jfulton Exp $"""
+$Id: Publish.py,v 1.7 1996/07/11 19:39:07 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -497,6 +497,9 @@ $Id: Publish.py,v 1.6 1996/07/10 22:53:54 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.7  1996/07/11 19:39:07  jfulton
+# Fixed bug in new feature: 'AUTHENTICATED_USER'
+#
 # Revision 1.6  1996/07/10 22:53:54  jfulton
 # Fixed bug in use of default realm.
 #
@@ -520,7 +523,7 @@ $Id: Publish.py,v 1.6 1996/07/10 22:53:54 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 def main():
@@ -584,6 +587,7 @@ class ModulePublisher:
 	try:
 	    user=realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
 	    self.request['AUTHENTICATED_USER']=user
+	    return user
 	except:
 	    try:
 		t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
