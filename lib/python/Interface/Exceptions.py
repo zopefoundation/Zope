@@ -1,3 +1,16 @@
+##############################################################################
+#
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+# 
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+# 
+##############################################################################
 
 class DoesNotImplement(Exception):
     """ This object does not implement """
@@ -27,15 +40,25 @@ class BrokenMethodImplementation(Exception):
     """An method is not completely implemented.
     """
 
-    def __init__(self, method):
+    def __init__(self, method, mess):
         self.method=method
+        self.mess=mess
 
     def __str__(self):
-        return """An object has failed to implement the method %(method)s
-
-        The signature is incorrect.
+        return """The implementation of %(method)s violates it's contract
+        because %(mess)s.
         """ % self.__dict__
 
-class InvalidInterface(Exception): pass
+class InvalidInterface(Exception):
+    """The interface has invalid contents
+    """
 
+
+
+class BadImplements(TypeError):
+    """An implementation assertion is invalid
+
+    because it doesn't contain an interface or a sequence of valid
+    implementation assertions.
+    """
 

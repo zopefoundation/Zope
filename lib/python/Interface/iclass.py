@@ -14,15 +14,7 @@ from Attr import Attribute
 from types import FunctionType, ClassType
 import Exceptions
 from InterfaceBase import InterfaceBase
-
-try:
-    from ExtensionClass import Base
-except ImportError:
-    ClassTypes = (ClassType,)
-else:
-    class dummy (Base): pass
-    ClassTypes = (type(dummy), ClassType)
-
+from _object import ClassTypes, isInstance
 
 _typeImplements={}
 
@@ -34,7 +26,7 @@ class Interface(InterfaceBase):
         """Create a new interface
         """        
         for b in bases:
-            if not isinstance(b, Interface):
+            if not isInstance(b, Interface):
                 raise TypeError, 'Expected base interfaces'
         self.__bases__=bases
         self.__name__=name
@@ -54,12 +46,12 @@ class Interface(InterfaceBase):
             self.__doc__ = ""
 
         for k, v in attrs.items():
-            if isinstance(v, Method):
+            if isInstance(v, Method):
                 v.interface=name
                 v.__name__=k
-            elif isinstance(v, FunctionType):
+            elif isInstance(v, FunctionType):
                 attrs[k]=Method.fromFunction(v, name)
-            elif not isinstance(v, Attribute):
+            elif not isInstance(v, Attribute):
                 raise Exceptions.InvalidInterface(
                     "Concrete attribute, %s" % k)
 
@@ -91,7 +83,7 @@ class Interface(InterfaceBase):
             implements=tiget(t, None)
             if implements is None: return 0
     
-        if isinstance(implements,Interface):
+        if isInstance(implements,Interface):
             return implements is self or implements.extends(self)
         else:
             return self.__any(implements)
@@ -112,7 +104,7 @@ class Interface(InterfaceBase):
 
         if implements is None: return 0
         
-        if isinstance(implements,Interface):
+        if isInstance(implements,Interface):
             return implements is self or implements.extends(self)
         else:
             return self.__any(implements)
@@ -150,7 +142,7 @@ class Interface(InterfaceBase):
     def __d(self, dict):
 
         for k, v in self.__attrs.items():
-            if isinstance(v, Method) and not dict.has_key(k):
+            if isInstance(v, Method) and not dict.has_key(k):
                 dict[k]=v
 
         for b in self.__bases__: b.__d(dict)
@@ -158,7 +150,7 @@ class Interface(InterfaceBase):
 
     def __any(self, interfaces):
         for i in interfaces:
-            if isinstance(i,Interface):
+            if isInstance(i,Interface):
                 if i is self or i.extends(self): return 1
             else:
                 if self.__any(i): return 1
@@ -173,7 +165,7 @@ Base=Interface("Interface")
 class Named(Base):
     "Objects that have a name."
 
-    __name__=Attribute("The name of the object")
+    __name__ = Attribute("The name of the object")
 
 class Class(Named):
     """Implement shared instance behavior and create instances

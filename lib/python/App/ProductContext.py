@@ -23,7 +23,7 @@ import os.path, re
 import stat
 from DateTime import DateTime
 from types import ListType, TupleType
-from Interface import instancesOfObjectImplements
+from Interface.Implements import instancesOfObjectImplements
 
 import ZClasses # to enable 'PC.registerBaseClass()'
 

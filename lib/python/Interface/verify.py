@@ -1,6 +1,7 @@
 from Exceptions import BrokenImplementation, DoesNotImplement, BrokenMethodImplementation
 from Method import Method
-import types
+from types import FunctionType
+from _object import MethodTypes
 
 def verify_class_implementation(iface, klass):
     """
@@ -23,9 +24,9 @@ def verify_class_implementation(iface, klass):
             raise BrokenImplementation(iface, n)
 
         attr = getattr(klass, n)
-        if type(attr) is types.FunctionType:
+        if type(attr) is FunctionType:
             meth = Method().fromFunction(attr, n)
-        elif type(attr) is types.MethodType:
+        elif type(attr) in MethodTypes:
             meth = Method().fromMethod(attr, n)
         else:
             continue # must be an attribute...
