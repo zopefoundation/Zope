@@ -118,6 +118,10 @@ class TALGenerator:
         output = []
         collect = []
         rawseen = cursor = 0
+        if self.xml:
+            endsep = "/>"
+        else:
+            endsep = " />"
         for cursor in xrange(len(program)+1):
             try:
                 item = program[cursor]
@@ -133,7 +137,7 @@ class TALGenerator:
                 if self.optimizeStartTag(collect, item[1], item[2], ">"):
                     continue
             if item[0] == "startEndTag":
-                if self.optimizeStartTag(collect, item[1], item[2], "/>"):
+                if self.optimizeStartTag(collect, item[1], item[2], endsep):
                     continue
             text = string.join(collect, "")
             if text:
