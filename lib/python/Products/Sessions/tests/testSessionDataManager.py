@@ -95,14 +95,18 @@ from Products.Sessions.SessionDataManager import \
     SessionDataManager, SessionDataManagerErr
 from Products.Transience.Transience import \
     TransientObjectContainer, TransientObject
-from ZODB.POSException import InvalidObjectReference
+from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
+from ZODB.POSException import InvalidObjectReference, ConflictError
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 import time, threading, whrandom
 from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
+import sys
+sys.setcheckinterval(200)
 
+tf_name = 'temp_folder'
 idmgr_name = 'browser_id_manager'
 toc_name = 'temp_transient_container'
 
@@ -113,19 +117,29 @@ def _getApp():
     app = stuff.get('app', None)
     if not app:
         ds = DemoStorage(quota=(1<<20))
-        conn = ZODB.DB(ds).open()
+        db = ZODB.DB(ds, pool_size=60)
+        conn = db.open()
         root = conn.root()
         app = Application()
         root['Application']= app
+        get_transaction().commit()
         stuff['app'] = app
         stuff['conn'] = conn
+        stuff['db'] = db
     return app
+
+def _openApp():
+    conn = stuff['db'].open()
+    root = conn.root()
+    app = root['Application']
+    return conn, app
 
 def _delApp():
     get_transaction().abort()
     stuff['conn'].close()
     del stuff['conn']
     del stuff['app']
+    del stuff['db']
 
 def f(sdo):
     pass
@@ -142,22 +156,30 @@ class TestBase(TestCase):
         if 1 and __name__ is not '__main__':
 
             bidmgr = BrowserIdManager(idmgr_name)
+
+            tf = MountedTemporaryFolder(tf_name, title="Temporary Folder")
+
             toc = TransientObjectContainer(toc_name, title='Temporary '
                 'Transient Object Container', timeout_mins=20)
+
             session_data_manager=SessionDataManager(id='session_data_manager',
-                path='/'+toc_name, title='Session Data Manager')
+                path='/'+tf_name+'/'+toc_name, title='Session Data Manager')
 
             try: self.app._delObject(idmgr_name)
             except AttributeError: pass
 
-            try: self.app._delObject(toc_name)
+            try: self.app._delObject(tf_name)
             except AttributeError: pass
             
             try: self.app._delObject('session_data_manager')
             except AttributeError: pass
 
             self.app._setObject(idmgr_name, bidmgr)
-            self.app._setObject(toc_name, toc)
+            self.app._setObject(tf_name, tf)
+
+            get_transaction().commit()
+
+            self.app.temp_folder._setObject(toc_name, toc)
             self.app._setObject('session_data_manager', session_data_manager)
             get_transaction().commit()
 
@@ -276,19 +298,20 @@ class TestMultiThread(TestBase):
         writeout = []
         numreaders = 20
         numwriters = 5
-        rlock = threading.Lock()
-        session_data_managername = 'session_data_manager'
+        #rlock = threading.Lock()
+        rlock = DumboLock()
+        sdm_name = 'session_data_manager'
         for i in range(numreaders):
             mgr = getattr(self.app, idmgr_name)
             sid = mgr._getNewToken()
             app = aq_base(self.app)
-            thread = ReaderThread(sid, app, readiters, session_data_managername)
+            thread = ReaderThread(sid, app, readiters, sdm_name, rlock)
             readers.append(thread)
         for i in range(numwriters):
             mgr = getattr(self.app, idmgr_name)
             sid = mgr._getNewToken()
             app = aq_base(self.app)
-            thread = WriterThread(sid, app, readiters, session_data_managername)
+            thread = WriterThread(sid, app, writeiters, sdm_name, rlock)
             writers.append(thread)
         for thread in readers:
             thread.start()
@@ -311,17 +334,18 @@ class TestMultiThread(TestBase):
         writeout = []
         numreaders = 20
         numwriters = 5
-        rlock = threading.Lock()
-        session_data_managername = 'session_data_manager'
+        #rlock = threading.Lock()
+        rlock = DumboLock()
+        sdm_name = 'session_data_manager'
         mgr = getattr(self.app, idmgr_name)
         sid = mgr._getNewToken()
         for i in range(numreaders):
             app = aq_base(self.app)
-            thread = ReaderThread(sid, app, readiters, session_data_managername)
+            thread = ReaderThread(sid, app, readiters, sdm_name, rlock)
             readers.append(thread)
         for i in range(numwriters):
             app = aq_base(self.app)
-            thread = WriterThread(sid, app, readiters, session_data_managername)
+            thread = WriterThread(sid, app, writeiters, sdm_name, rlock)
             writers.append(thread)
         for thread in readers:
             thread.start()
@@ -336,49 +360,132 @@ class TestMultiThread(TestBase):
             assert thread.out == [], thread.out
 
 class ReaderThread(threading.Thread):
-    def __init__(self, sid, app, iters, session_data_managername):
+    def __init__(self, sid, app, iters, sdm_name, rlock):
         self.sid = sid
-        self.app = app
+        self.conn, self.app = _openApp()
         self.iters = iters
-        self.session_data_managername = session_data_managername
+        self.sdm_name = sdm_name
         self.out = []
+        self.rlock = rlock
+        #print "Reader SID %s" % sid
         threading.Thread.__init__(self)
 
-    def run(self):
-        self.app = makerequest.makerequest(self.app)
-        self.app.REQUEST.session_token_ = self.sid
-        session_data_manager = getattr(self.app, self.session_data_managername)
-        data = session_data_manager.getSessionData(create=1)
-        t = time.time()
-        data[t] = 1
-        get_transaction().commit()
-        for i in range(self.iters):
-            data = session_data_manager.getSessionData()
-            if not data.has_key(t): self.out.append(1)
-            time.sleep(whrandom.choice(range(3)))
+    def run1(self):
+        try:
+            self.rlock.acquire("Reader 1")
+            self.app = self.conn.root()['Application']
+            self.app = makerequest.makerequest(self.app)
+            self.app.REQUEST.session_token_ = self.sid
+            session_data_manager = getattr(self.app, self.sdm_name)
+            data = session_data_manager.getSessionData(create=1)
+            t = time.time()
+            data[t] = 1
             get_transaction().commit()
+            self.rlock.release("Reader 1")
+            for i in range(self.iters):
+                self.rlock.acquire("Reader 2")
+                try:
+                    data = session_data_manager.getSessionData()
+                except KeyError:  # Ugh
+                    raise ConflictError
+                if not data.has_key(t): self.out.append(1)
+                self.rlock.release("Reader 2")
+                time.sleep(whrandom.choice(range(3)))
+                self.rlock.acquire("Reader 3")
+                get_transaction().commit()
+                self.rlock.release("Reader 3")
+        finally:
+            self.rlock.release("Reader catchall")
+            try:
+                self.conn.close()
+            except AttributeError: pass     # ugh
+
+    def run(self):
+
+        i = 0
+
+        while 1: 
+            try:
+                self.run1()
+                return
+            except ConflictError:
+                i = i + 1
+                #print "conflict %d" % i
+                if i > 3: raise
+                pass
             
 class WriterThread(threading.Thread):
-    def __init__(self, sid, app, iters, session_data_managername):
+    def __init__(self, sid, app, iters, sdm_name, rlock):
         self.sid = sid
-        self.app = app
+        self.conn, self.app = _openApp()
         self.iters = iters
-        self.session_data_managername = session_data_managername
+        self.sdm_name = sdm_name
+        self.rlock = rlock
+        #print "Writer SID %s" % sid
         threading.Thread.__init__(self)
 
+    def run1(self):
+        try:
+            self.rlock.acquire("Writer 1")
+            self.app = self.conn.root()['Application']
+            self.app = makerequest.makerequest(self.app)
+            self.app.REQUEST.session_token_ = self.sid
+            session_data_manager = getattr(self.app, self.sdm_name)
+            self.rlock.release("Writer 1")
+            for i in range(self.iters):
+                self.rlock.acquire("Writer 2")
+                try:
+                    data = session_data_manager.getSessionData()
+                except KeyError:  # Ugh
+                    raise ConflictError
+                data[time.time()] = 1
+                n = whrandom.choice(range(8))
+                self.rlock.release("Writer 2")
+                time.sleep(n)
+                self.rlock.acquire("Writer 3")
+                if n % 2 == 0:
+                    get_transaction().commit()
+                else:
+                    get_transaction().abort()
+                self.rlock.release("Writer 3")
+        finally:
+            self.rlock.release("Writer Catchall")
+            try:
+                self.conn.close()
+            except AttributeError: pass     # ugh
+
     def run(self):
-        self.app = makerequest.makerequest(self.app)
-        self.app.REQUEST.session_token_ = self.sid
-        session_data_manager = getattr(self.app, self.session_data_managername)
-        for i in range(self.iters):
-            data = session_data_manager.getSessionData()
-            data[time.time()] = 1
-            n = whrandom.choice(range(8))
-            time.sleep(n)
-            if n % 2 == 0:
-                get_transaction().commit()
-            else:
-                get_transaction().abort()
+
+        i = 0
+
+        while 1: 
+            try:
+                self.run1()
+                return
+            except ConflictError:
+                i = i + 1
+                #print "conflict %d" % i
+                if i > 3: raise
+                pass
+        
+
+class DumboLock:
+    def __init__(self):
+        self.lock = threading.Lock()
+        self._locked_ = 0
+    def acquire(self, msg):
+        #print "Acquiring lock %s" % msg
+        #self.lock.acquire()
+        #if self._locked_ == 1:
+        #    print "already locked?!"
+        self._locked_ = 1
+    def release(self, msg):
+        #print "Releasing lock %s" % msg
+        #if self._locked_ == 0:
+        #    print "already released?!"
+        #    return
+        #self.lock.release()
+        self._locked_ = 0
                 
 def test_suite():
     test_datamgr = makeSuite(TestSessionManager, 'test')
