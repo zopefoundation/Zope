@@ -15,6 +15,19 @@ categories:
   BEFORE RELEASE OF ZOPE 2.7A
 --------------------------------
 
+Provide more intuitive command line option overrides
+
+  Currently, you can override config file options by using the
+  -X command line switch to runzope.py, followed by key/value
+  pairs separated by an equal sign.
+
+  This isn't explained anywhere and I'm not sure what limitations
+  it has (can you change any value in the config file this way?).
+
+  Zope-specific command-line options that don't require the -X
+  (e.g. --event-log-file=something) should be provided to the
+  user via changes to Zope/Startup/options/ZopeOptions.
+
 Make 'runzope -h' work and give better error messages when a configuration
 fails to make the grade.
 
