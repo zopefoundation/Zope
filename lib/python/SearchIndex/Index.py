@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.12 1997/12/02 19:34:39 jeffrey Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Index.py,v 1.13 1998/02/05 19:02:37 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -51,6 +51,7 @@ class Index:
 	"""Recompute index data for data with ids >= start."""
 
 	index=self._index
+	get=index.get
 	
 	if not start: index.clear()
 
@@ -65,11 +66,9 @@ class Index:
 	    k=f(row,id)
 
 	    if k is None or k == MV: continue
-	    
-	    try: set=index[k]
-	    except KeyError:
-		set=intSet()
-		index[k]=set
+
+	    set=get(k)
+	    if set is None: index[k]=set=intSet()
 	    set.insert(i)
 
     def index_item(self,i):
@@ -89,10 +88,8 @@ class Index:
 
 	if k is None or k == MV: return
 
-	try: set=index[k]
-	except KeyError:
-	    set=intSet()
-	    index[k]=set
+	set=index.get(k)
+	if set is None: index[k]=set=intSet()
 	set.insert(i)
 
     def unindex_item(self,i):
@@ -109,10 +106,9 @@ class Index:
 
 	row=self._data[i]
 	k=f(row,id)
-	try:
-	    set=index[k]
-	    set.remove(i)
-	except KeyError: pass
+	
+	set=index.get(k)
+	if set is not None: set.remove(i)
 
     def _apply_index(self, request, cid=''):
 	"""Apply the index to query parameters given in the argument, request
@@ -134,10 +130,11 @@ class Index:
 	"""
 	id=self.id		#name of the column
 
-	try: keys=request["%s/%s" % (cid,id)]
-	except:
-	    try: keys=request[id]
-	    except: return None
+	cidid="%s/%s" % (cid,id)
+	has_key=request.has_key
+	if has_key(cidid): keys=request[cidid]
+	elif has_key(id): keys=request[id]
+	else: return None
 
 	if type(keys) is not ListType: keys=[keys]
 	index=self._index
@@ -148,10 +145,7 @@ class Index:
 	if request.has_key(id+'_usage'):
 	    # see if any usage params are sent to field
 	    opr=string.split(string.lower(request[id+"_usage"]),':')
-	    try:
-		opr, opr_args=opr[0], opr[1:]
-	    except IndexError:
-		opr, opr_args=opr[0], []
+	    opr, opr_args=opr[0], opr[1:]
 
 	if opr=="range":
 	    if 'min' in opr_args: lo=min(keys)
@@ -168,13 +162,13 @@ class Index:
 		    else: r=r.union(set)
 	    except KeyError: pass
 	else:		#not a range
+	    get=index.get
 	    for key in keys:
 		if key: anyTrue=1
-		try:
-		    set=index[key]
+		set=get(key)
+		if set is not None:
 		    if r is None: r=set
 		    else: r = r.union(set)
-		except KeyError: pass
 
 	if r is None:
 	    if anyTrue: r=intSet()
@@ -186,6 +180,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.13  1998/02/05 19:02:37  jim
+# Replaced try/except with get
+#
 # Revision 1.12  1997/12/02 19:34:39  jeffrey
 # fixed buglet in .clear() method
 #
