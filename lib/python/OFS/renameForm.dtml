@@ -30,6 +30,7 @@
 <TD></TD>
 <TD>
   <INPUT TYPE="HIDDEN" NAME="id" VALUE="<!--#var id-->">
+  <INPUT TYPE="HIDDEN" NAME=":default_method" VALUE="manage_renameObject">
   <INPUT TYPE="submit" NAME="manage_renameObject:method" VALUE=" Ok ">
   <INPUT TYPE="submit" NAME="manage_main:method" VALUE="Cancel">
 </TD>
