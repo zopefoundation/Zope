@@ -23,61 +23,61 @@ class Interface:
     def __init__(self, name, bases=(), attrs=None, __doc__=None):
         """Create a new interface
         """        
-	for b in bases:
-	    if not isinstance(b, Interface):
-		raise TypeError, 'Expected base interfaces'
-	self.__bases__=bases
-	self.__name__=name
+        for b in bases:
+            if not isinstance(b, Interface):
+                raise TypeError, 'Expected base interfaces'
+        self.__bases__=bases
+        self.__name__=name
 
         if attrs is None: attrs={}
         if attrs.has_key('__doc__'):
             if __doc__ is None: __doc__=attrs['__doc__']
             del attrs['__doc__']
-	self.__attrs=attrs
+        self.__attrs=attrs
 
         if __doc__ is not None: self.__doc__=__doc__
 
-	for k, v in attrs.items():
-	    if isinstance(v, Method):
-		v.interface=name
-		v.__name__=k
-	    elif isinstance(v, FunctionType):
-		attrs[k]=Method.fromFunction(v, name)
+        for k, v in attrs.items():
+            if isinstance(v, Method):
+                v.interface=name
+                v.__name__=k
+            elif isinstance(v, FunctionType):
+                attrs[k]=Method.fromFunction(v, name)
             elif not isinstance(v, Attribute):
                 raise Exceptions.InvalidInterface(
                     "Concrete attribute, %s" % k)
 
     def defered(self):
-	"""Return a defered class corresponding to the interface
-	"""
-	if hasattr(self, "_defered"): return self._defered
+        """Return a defered class corresponding to the interface
+        """
+        if hasattr(self, "_defered"): return self._defered
 
-	klass={}
-	exec "class %s: pass" % self.__name__ in klass
-	klass=klass[self.__name__]
-	
-	self.__d(klass.__dict__)
+        klass={}
+        exec "class %s: pass" % self.__name__ in klass
+        klass=klass[self.__name__]
+        
+        self.__d(klass.__dict__)
 
-	self._defered=klass
+        self._defered=klass
 
-	return klass
+        return klass
 
     def __d(self, dict):
 
-	for k, v in self.__dict__.items():
-	    if isinstance(v, Method) and not dict.has_key(k):
-		dict[k]=v
+        for k, v in self.__dict__.items():
+            if isinstance(v, Method) and not dict.has_key(k):
+                dict[k]=v
 
-	for b in self.__bases__: b.__d(dict)
-	    
+        for b in self.__bases__: b.__d(dict)
+            
 
     def extends(self, other):
         """Does an interface extend another?
         """
-	for b in self.__bases__:
+        for b in self.__bases__:
             if b is other: return 1
-	    if b.extends(other): return 1
-	return 0
+            if b.extends(other): return 1
+        return 0
 
     def implementedBy(self, object,
                       tiget=_typeImplements.get):
@@ -94,10 +94,10 @@ class Interface:
             implements=tiget(t, None)
             if implements is None: return 0
     
-	if isinstance(implements,Interface):
+        if isinstance(implements,Interface):
             return implements is self or implements.extends(self)
-	else:
-	    return self.__any(implements)
+        else:
+            return self.__any(implements)
 
     def implementedByInstancesOf(self, klass,
                                  tiget=_typeImplements.get):
@@ -115,10 +115,10 @@ class Interface:
 
         if implements is None: return 0
         
-	if isinstance(implements,Interface):
+        if isinstance(implements,Interface):
             return implements is self or implements.extends(self)
-	else:
-	    return self.__any(implements)
+        else:
+            return self.__any(implements)
 
     def names(self):
         """Return the attribute names defined by the interface
