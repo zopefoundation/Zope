@@ -16,7 +16,7 @@ $Id$"""
 import sys
 from cgi import escape
 from logging import getLogger
-from types import IntType
+from types import IntType, StringTypes
 
 from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
@@ -65,10 +65,12 @@ class UnIndex(SimpleItem):
           You will also need to pass in an object in the index and
           uninded methods for this to work.
 
-          'extra' -- a record-style object that keeps additional 
-          index-related parameters
+          'extra' -- a mapping object that keeps additional
+          index-related parameters - subitem 'indexed_attrs'
+          can be string with comma separated attribute names or
+          a list
 
-          'caller' -- reference to the calling object (usually 
+          'caller' -- reference to the calling object (usually
           a (Z)Catalog instance
         """
         self.id = id
@@ -79,14 +81,16 @@ class UnIndex(SimpleItem):
         self.useOperator = 'or'
 
         # allow index to index multiple attributes
-        try: 
-            self.indexed_attrs = extra.indexed_attrs.split(',')
-            self.indexed_attrs = [ 
-                attr.strip() for attr in  self.indexed_attrs if attr ]
-            if len(self.indexed_attrs) == 0: self.indexed_attrs = [ self.id ]
-        except:
-            self.indexed_attrs = [ self.id ] 
-        
+        try:
+            ia=extra['indexed_attrs']
+            if type(ia) in StringTypes:
+                self.indexed_attrs = ia.split(',')
+            else:
+                self.indexed_attrs = list(ia)
+            self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ] or [self.id]
+       except:
+            self.indexed_attrs = [ self.id ]
+
         self._length = BTrees.Length.Length()
         self.clear()
 
@@ -144,22 +148,22 @@ class UnIndex(SimpleItem):
                 if not indexRow:
                     del self._index[entry]
                     self._length.change(-1)
-                    
+
             except AttributeError:
                 # index row is an int
                 del self._index[entry]
                 self._length.change(-1)
-                
+
             except:
                 LOG.error('%s: unindex_object could not remove '
                           'documentId %s from index %s.  This '
-                          'should not happen.' % (self.__class__.__name__, 
-                           str(documentId), str(self.id)), 
+                          'should not happen.' % (self.__class__.__name__,
+                           str(documentId), str(self.id)),
                            exc_info=sys.exc_info())
         else:
             LOG.error('%s: unindex_object tried to retrieve set %s '
                       'from index %s but couldn\'t.  This '
-                      'should not happen.' % (self.__class__.__name__, 
+                      'should not happen.' % (self.__class__.__name__,
                       repr(entry), str(self.id)))
 
 
@@ -193,10 +197,10 @@ class UnIndex(SimpleItem):
 
         res = 0
         for attr in fields:
-            res += self._index_object(documentId, obj, threshold, attr) 
+            res += self._index_object(documentId, obj, threshold, attr)
 
-        return res > 0 
-        
+        return res > 0
+
 
     def _index_object(self, documentId, obj, threshold=None, attr=''):
         """ index and object 'obj' with integer id 'documentId'"""
@@ -245,7 +249,7 @@ class UnIndex(SimpleItem):
 
     def unindex_object(self, documentId):
         """ Unindex the object with integer id 'documentId' and don't
-        raise an exception if we fail 
+        raise an exception if we fail
         """
         unindexRecord = self._unindex.get(documentId, _marker)
         if unindexRecord is _marker:
@@ -374,7 +378,7 @@ class UnIndex(SimpleItem):
     def getIndexSourceNames(self):
         """ return sequence of indexed attributes """
         try:
-            return self.indexed_attrs 
+            return self.indexed_attrs
         except:
             return [ self.id ]
 
@@ -400,15 +404,15 @@ class UnIndex(SimpleItem):
                 else:
                     l = len(set)
                 rl.append((i, l))
-            return tuple(rl)        
+            return tuple(rl)
 
     def keyForDocument(self, id):
         # This method is superceded by documentToKeyMap
         return self._unindex[id]
-    
+
     def documentToKeyMap(self):
         return self._unindex
-    
+
     def items(self):
         items = []
         for k,v in self._index.items():
