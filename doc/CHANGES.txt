@@ -23,3 +23,8 @@ Zope changes
 
         - Fixed a naming bug in MailHost that caused simple_send to
           fail.
+
+        - Fixed a buglet in the rename form that caused the form to submit
+          to the old manage_renameObject if the user just hit the enter 
+          key in the browser on a single item rename.
+
