@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -148,10 +148,9 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         self.title=title
         if type(data) is not type(''): data=data.read()
         self.munge(data)
-        if REQUEST: return MessageDialog(
-                    title  ='Success!',
-                    message='Your changes have been saved',
-                    action ='manage_main')
+        if REQUEST:
+            message="Content changed."
+            return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
     def manage_upload(self,file='', REQUEST=None):
         """Replace the contents of the document with the text in file."""
