@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -100,6 +100,9 @@ from Traversable import Traversable
 
 class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
+
+    This class provides bits of management framework needed by propertysheets
+    to be used as a view on an object.
     """
 
     def manage_workspace(self, URL1, RESPONSE):
@@ -174,7 +177,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
          ),
         )
 
-    def property_extensible_schema__(self): return self._extensible
+    def property_extensible_schema__(self):
+        """Return a flag indicating whether new properties may be
+        added or removed."""
+        return self._extensible
 
     def __init__(self, id, md=None):
         # Create a new property set, using the given id and namespace
@@ -195,10 +201,11 @@ class PropertySheet(Traversable, Persistent, Implicit):
         return self.v_self()
 
     def valid_property_id(self, id):
-        # Return a true value if the given id is valid to use as 
-        # a property id. Note that this method does not consider 
-        # factors other than the actual value of the id, such as 
-        # whether the given id is already in use.
+        """Is the given id valid to use as a property id
+
+        Note that this method does not consider 
+        factors other than the actual value of the id, such as 
+        whether the given id is already in use."""
         if not id or (id[:1]=='_') or (' ' in id):
             return 0
         return 1
@@ -221,7 +228,6 @@ class PropertySheet(Traversable, Persistent, Implicit):
         """Get the type of property 'id', returning None if no
            such property exists"""
         pself=self.p_self()
-        self=self.v_self()
         for md in pself._properties:
             if md['id']==id:
                 return md.get('type', 'string')
@@ -493,13 +499,13 @@ Globals.default__class_init__(PropertySheet)
 
 
 class Virtual:
+    """A virtual propertysheet stores it's properties in it's instance."""
 
     def __init__(self):
         pass
     
     def v_self(self):
         return self.aq_parent.aq_parent
-
 
 class DefaultProperties(Virtual, PropertySheet, View):
     """The default property set mimics the behavior of old-style Zope
@@ -600,7 +606,6 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     
     id='propertysheets'
 
-
     __ac_permissions__=(
         ('Manage properties', ('manage_addPropertySheet',
                                'addPropertySheet',
@@ -670,10 +675,6 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
             if propset.id != name and  propset.xml_namespace() != name:
                 result.append(propset)
         self.parent.__propsets__=tuple(result)
-
-    # Why?
-    #def __del__(self):
-    #    self.parent=None
         
     def __len__(self):
         return len(self.__propsets__())
@@ -725,6 +726,15 @@ Globals.default__class_init__(DefaultPropertySheets)
 
 
 class FixedSchema(PropertySheet):
+    """A Fixed-schema property sheet has no control over it's schema
+
+    It gets its schema from another proprtysheet but has control over
+    its value storage.
+
+    This mix-in is used for ZClass instance proprtysheets, which store
+    their data in instances, but get their schema from the
+    proprtysheet managed in the ZClass.
+    """
 
     def __init__(self, id, base, md=None):
         FixedSchema.inheritedAttribute('__init__')(self, id, md)
@@ -751,9 +761,12 @@ class FixedSchema(PropertySheet):
 
 
 class vps(Base):
-    # The vps object implements a "computed attribute" - it ensures
-    # that a PropertySheets instance is returned when the propertysheets
-    # attribute of a PropertyManager is accessed.
+    """Virtual Propertysheets
+
+    The vps object implements a "computed attribute" - it ensures
+    that a PropertySheets instance is returned when the propertysheets
+    attribute of a PropertyManager is accessed.
+    """
     def __init__(self, c=PropertySheets):
         self.c=c
         
