@@ -51,6 +51,8 @@ Zope Changes
         signal.
 
       - Write pidfiles out with trailing newlines.
+      
+      - Collector #411: DateTime.rfc822 is not rfc822 compliant 
 
   Zope 2.6.0 beta 1
 
@@ -299,8 +301,8 @@ Zope Changes
         unquoted id
 
       - Collector #61 -- now manage_PasteObjects return a list of dictionaries
-	containing {'id':original_id,'new_id':newly_pasted_obj_id} when called
-	with REQUEST=None
+    containing {'id':original_id,'new_id':newly_pasted_obj_id} when called
+    with REQUEST=None
 
       - Changed FORCE_PRODUCT_LOAD so that if it is set, it determines
         whether products are installed regardless of whether ZEO_CACHE is
@@ -468,10 +470,10 @@ Zope Changes
 
       - New implementation of ZODB object cache.  The new
         implemenation is more likely to keep the size of the object
-	cache close to the target size.  This change means that memory
-	consumption may be reduced.  Some users will need to increase
-	the default cache size, because a too small setting is more
-	likely to hurt performance than it did in the past.
+    cache close to the target size.  This change means that memory
+    consumption may be reduced.  Some users will need to increase
+    the default cache size, because a too small setting is more
+    likely to hurt performance than it did in the past.
 
         Third-party C extensions that use the persistence API must be
         recompiled, and may need to be updated to work correctly with
