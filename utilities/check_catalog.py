@@ -87,8 +87,7 @@
 
 """ script to consistency of a ZCatalog """
 
-__version__='$Revision: 1.1 $'[11:-2]
-
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Zope    
 import os,sys,re,getopt
@@ -123,14 +122,14 @@ def checkCatalog(path,indexes):
     print "\tINFO: Mapping paths: %d entries" % len(l_paths)
 
     if l_data == l_uids:
-        print "\tOK:  self.data==self.uids"
+        print "\tOK:  Mapping data equals Mapping uids"
     else:
-        print "\tERR: self.data!=self.uids"
+        print "\tERR: Mapping data does not equal Mapping uids"
 
     if l_data == l_paths:
-        print "\tOK:  self.data==self.paths"
+        print "\tOK:  Mapping data equals Maaping paths"
     else:
-        print "\tERR: self.data!=self.paths"
+        print "\tERR: Mapping data does not equal Maaping paths"
     
 
     # check BTrees of indexes
@@ -154,8 +153,9 @@ def checkCatalog(path,indexes):
             diff = difference(RIDS, IISet(_cat.data.keys()))
             if len(diff)!=0:
                 print '\tERR: Problem with forward entries' 
+                print '\tERR: too much forward entries:', diff
             else:    
-                print '\tOK:  Forward entries' 
+                print '\tOK:  Forward entries (%d entries)'  % (len(RIDS))
 
 
             # check backward entries
@@ -163,17 +163,17 @@ def checkCatalog(path,indexes):
             diff = difference(RIDS, IISet(_cat.data.keys()))
             if len(diff)!=0:
                 print '\tERR: Problem with backward entries' 
+                print '\tERR: too much backward entries:', diff
             else:
-                print '\tOK:  Backward entries' 
+                print '\tOK:  Backward entries (%d entries)'  % (len(RIDS))
 
         else:
             print "\tWARN: no check implemented yet"
-        
 
 
 
 def usage():
-    print "Usage: %s [--FieldIndex] /path/to/ZCatalog" % \
+    print "Usage: %s [--FieldIndex|KeywordIndex|PathIndex] /path/to/ZCatalog" % \
                 os.path.basename(sys.argv[0])
     print 
     print "This scripts checks the consistency of the internal"
@@ -183,13 +183,16 @@ def usage():
 
 def main():
 
-    opts,args = getopt.getopt(sys.argv[1:],'h',['help','FieldIndex'])
+    opts,args = getopt.getopt(sys.argv[1:],'h',\
+            ['help','FieldIndex','KeywordIndex','PathIndex'])
 
     indexes = []
 
     for o,v in opts:
+
         if o in ['-h','--help']: usage()
-        if o=='--FieldIndex':   indexes.append(o[2:])
+        if o in ['--FieldIndex','--KeywordIndex','PathIndex']: 
+            indexes.append(o[2:])
 
     checkCatalog(args,indexes)
 
