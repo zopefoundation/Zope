@@ -211,6 +211,11 @@ Session related
         The number of minutes to be used as the "data object timeout" of the
         "/temp_folder/session_data" transient object container.
 
+    ZSESSION_OBJECT_LIMIT
+
+        The number of items to use as a "maximum number of subobjects"
+        value of the "/temp_folder" session data transient object container.
+
 Esoteric 
 
     Z_MAX_STACK_SIZE
