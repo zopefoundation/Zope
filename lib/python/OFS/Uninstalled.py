@@ -91,7 +91,7 @@ import Persistence
 broken_klasses={}
 
 class BrokenClass(Acquisition.Explicit, SimpleItem.Item, 
-                  Persistence.Persistent):
+                  Persistence.Overridable):
     _p_changed=0
     meta_type='Broken Because Product is Gone'
     icon='p_/broken'
