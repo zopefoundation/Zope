@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.34 1997/12/31 16:53:41 brian Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: Application.py,v 1.35 1998/01/02 17:39:48 jim Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -25,7 +25,6 @@ from ImageFile import ImageFile
 
 class Application(Folder.Folder):
     title    ='Principia'
-#    id       =title
     __roles__=None
     __defined_roles__=('manage',)
     web__form__method='GET'
@@ -284,6 +283,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.35  1998/01/02 17:39:48  jim
+# Got rid of old commented line.
+#
 # Revision 1.34  1997/12/31 16:53:41  brian
 # Added security info
 #
