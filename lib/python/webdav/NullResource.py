@@ -13,7 +13,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -25,6 +25,7 @@ from Globals import Persistent, DTMLFile
 from WriteLockInterface import WriteLockInterface
 import OFS.SimpleItem
 from zExceptions import Unauthorized
+
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
@@ -63,14 +64,18 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     DELETE=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
 
     def _default_PUT_factory( self, name, typ, body ):
-        #   Return DTMLDoc/Image/File, based on sniffing.
-        from OFS.Image import Image, File
-        from OFS.DTMLDocument import DTMLDocument
-        if typ in ('text/html', 'text/xml', 'text/plain'):
+        # Return DTMLDoc/PageTemplate/Image/File, based on sniffing.
+        if name and name.endswith('.pt'):
+            from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+            ob = ZopePageTemplate(name, body, content_type=typ)
+        elif typ in ('text/html', 'text/xml', 'text/plain'):      
+            from OFS.DTMLDocument import DTMLDocument
             ob = DTMLDocument( '', __name__=name )
         elif typ[:6]=='image/':
+            from OFS.Image import Image
             ob=Image(name, '', body, content_type=typ)
         else:
+            from OFS.Image import File
             ob=File(name, '', body, content_type=typ)
         return ob
 
