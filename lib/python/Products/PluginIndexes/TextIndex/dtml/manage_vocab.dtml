@@ -8,7 +8,7 @@
   <dtml-let lexicon="getLexicon()">
 
     <dtml-try> 
-      <dtml-let x="lexicon().multi_wc"></dtml-let>
+      <dtml-let x="lexicon.multi_wc"></dtml-let>
       Globbing is <em>enabled</em>
       <dtml-except>
       Globbing is <em>disabled</em>
