@@ -73,7 +73,10 @@ def getAccessRule(self, REQUEST=None):
     self = self.this()
     rules = queryBeforeTraverse(self, 'AccessRule')
     if rules:
-        return rules[0][1].name
+        try:
+            return rules[0][1].name
+        except:
+            return 'Invalid BeforeTraverse data: ' + `rules`
     return ''
 
 constructors = (
