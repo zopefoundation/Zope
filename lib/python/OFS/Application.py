@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.156 2001/08/07 18:36:48 evan Exp $'''
-__version__='$Revision: 1.156 $'[11:-2]
+$Id: Application.py,v 1.157 2001/08/09 20:41:00 chrism Exp $'''
+__version__='$Revision: 1.157 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -310,19 +310,18 @@ class Application(Globals.ApplicationDefaultPermissions,
         products=self.Control_Panel.Products
         for product in products.objectValues():
             items=list(product.objectItems())
-            finished=[]
-            idx=0
-            while(idx < len(items)):
-                name, ob = items[idx]
+            finished_dict={}
+            finished = finished_dict.has_key
+            while items:
+                name, ob = items.pop()
                 base=getattr(ob, 'aq_base', ob)
-                if base in finished:
-                    idx=idx+1
+                if finished(id(base)):
                     continue
-                finished.append(base)
+                finished_dict[id(base)] = None
                 try:
                     # Try to re-register ZClasses if they need it.
-                    if hasattr(ob, '_register') and hasattr(ob, '_zclass_'):
-                        class_id=getattr(ob._zclass_, '__module__', None)
+                    if hasattr(base,'_register') and hasattr(base,'_zclass_'):
+                        class_id=getattr(base._zclass_, '__module__', None)
                         if class_id and not reg_has_key(class_id):
                             ob._register()
                             result=1
@@ -331,11 +330,11 @@ class Application(Globals.ApplicationDefaultPermissions,
                                     'Registered ZClass: %s' % ob.id
                                     )
                     # Include subobjects.
-                    if hasattr(ob, 'objectItems'):
+                    if hasattr(base, 'objectItems'):
                         m = list(ob.objectItems())
                         items.extend(m)
                     # Try to find ZClasses-in-ZClasses.
-                    if hasattr(ob, 'propertysheets'):
+                    if hasattr(base, 'propertysheets'):
                         ps = ob.propertysheets
                         if (hasattr(ps, 'methods') and
                             hasattr(ps.methods, 'objectItems')):
@@ -343,8 +342,8 @@ class Application(Globals.ApplicationDefaultPermissions,
                             items.extend(m)
                 except:
                     LOG('Zope', WARNING,
-                        'Broken objects exist in product %s.' % product.id)
-                idx = idx + 1
+                        'Broken objects exist in product %s.' % product.id,
+                        error=sys.exc_info())
 
         return result
 
@@ -353,8 +352,15 @@ class Application(Globals.ApplicationDefaultPermissions,
         """Check the global (zclass) registry for problems, which can
         be caused by things like disk-based products being deleted.
         Return true if a problem is found"""
-        try:    keys=list(self._p_jar.root()['ZGlobals'].keys())
-        except: return 1
+        try:
+            keys=list(self._p_jar.root()['ZGlobals'].keys())
+        except:
+            LOG('Zope', ERROR,
+                'A problem was found when checking the global product '\
+                'registry.  This is probably due to a Product being '\
+                'uninstalled or renamed.  The traceback follows.',
+                error=sys.exc_info())
+            return 1
         return 0
 
 
@@ -461,20 +467,17 @@ def initialize(app):
     bad_things=0
     try:
         if app.checkGlobalRegistry():
+            LOG('Zope', INFO,
+                'Beginning attempt to rebuild the global ZClass registry.')
             app.fixupZClassDependencies(rebuild=1)
             did_fixups=1
             LOG('Zope', INFO,
-                'A broken ZClass dependency was found in the global ' \
-                'class registry. This is probably due to a product ' \
-                'being uninstalled. The registry has successfully ' \
-                'been rebuilt.')
+                'The global ZClass registry has successfully been rebuilt.')
             get_transaction().note('Rebuilt global product registry')
             get_transaction().commit()
     except:
         bad_things=1
-        LOG('Zope', ERROR,
-            'A problem was found in the global product registry but '
-            'the attempt to rebuild the registry failed.',
+        LOG('Zope', ERROR, 'The attempt to rebuild the registry failed.',
             error=sys.exc_info())
         get_transaction().abort()
 
@@ -491,7 +494,10 @@ def initialize(app):
         # product was added or updated and we are not a ZEO client.
         if getattr(Globals, '__disk_product_installed__', 0):
             try:
+                LOG('Zope', INFO, 'New disk product detected, determining '\
+                    'if we need to fix up any ZClasses.')
                 if app.fixupZClassDependencies():
+                    LOG('Zope', INFO, 'Repaired broken ZClass dependencies.')
                     get_transaction().commit()
             except:
                 LOG('Zope', ERROR,
