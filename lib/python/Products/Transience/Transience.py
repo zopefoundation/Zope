@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.28 2002/08/14 22:25:13 mj Exp $
+$Id: Transience.py,v 1.29 2002/10/22 22:18:13 chrism Exp $
 """
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -678,7 +678,7 @@ class TransientObjectContainer(SimpleItem):
         # iterate over the keys in data that have no minimum value and
         # a maximum value of delete_end (note: ordered set)
         # XXX- fixme.  range search doesn't always work (btrees bug)
-        for k in data.keys(None, delete_end):
+        for k in list(data.keys(None, delete_end)):
             if k > delete_end:
                 DEBUG and TLOG(
                     '_housekeep: broken range search (key %s > max %s)'
