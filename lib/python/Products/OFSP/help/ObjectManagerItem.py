@@ -46,6 +46,15 @@ class ObjectManagerItem:
 
         Permission -- 'Allways accessable'
         """
+
+    def manage_workspace(self):
+        """
+
+        This is the web method that is called when a user selects an
+        item in a object manager contents view or in the Zope
+        Management navigation view.
+
+        """
   
     def this(self):
         """
@@ -60,7 +69,7 @@ class ObjectManagerItem:
         you are in a method of a non-item subobject of an item and you
         need to get the item outside of the context of the subobject.
 
-        Permission -- XXX None XXX
+        Permission --
         """
 
     def absolute_url(self, relative=None):
@@ -72,12 +81,41 @@ class ObjectManagerItem:
         virtual hosts are being used, then the path returned is a
         logical, rather than a physical path.
         
-        Permission -- XXX None XXX
+        Permission --Allways available
         """
 
     def getPhysicalRoot(self):
         """
         Returns the top-level Zope Application object.
         
-        Permission -- XXX None XXX
+        Permission --Python only
         """
+
+    def getPhysicalPath(self):
+        """
+        Get the path of an object from the root, ignoring virtual
+        hosts.
+
+        Permission -- Python only
+
+        """
+
+    def unrestrictedTraverse(self, path, default=None):
+        """
+        Return the object obtained by traversing the given path from
+        the object on which the method was called. This method begins
+        with "unrestricted" because (almost) no security checks are
+        performed.
+
+        """
+
+    def restrictedTraverse(self, path, default=None):
+        """
+        Return the object obtained by traversing the given path from
+        the object on which the method was called, performing security 
+        checks along the way.
+
+        """
+
+
+    
