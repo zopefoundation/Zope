@@ -137,7 +137,7 @@ sys.modules['Main']=sys.modules['Zope']
 import ZODB.POSException, ZPublisher, string, ZPublisher, AccessControl.User
 import ExtensionClass
 
-def test(*args, **kw):
+def debug(*args, **kw):
     return apply(ZPublisher.test,('Zope',)+args, kw)
 
 class RequestContainer(ExtensionClass.Base):
@@ -152,7 +152,9 @@ def zpublisher_exception_hook(
     ListType=type([]),
     ):
     try:
-        if type(t) is StringType and lower(t) in ('unauthorized', 'redirect'):
+        if ((type(t) is StringType and
+             lower(t) in ('unauthorized', 'redirect'))
+            or t is SystemExit):
             raise
         if t is ConflictError:
             # now what
