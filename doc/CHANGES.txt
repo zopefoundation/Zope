@@ -38,6 +38,10 @@ Zope Changes
 
       - Locale support in STXNG has been broken (since 2.4.0)
 
+      - Added SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME to the
+        control panel to make it easer to tell what configuration of
+        Zope is running.
+
 
     Bugs fixed
 
