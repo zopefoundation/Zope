@@ -226,7 +226,7 @@ LOG_FILE='Z2.log'
 ##
 
 # Port for HTTP Server. The standard port for HTTP services is 80.
-HTTP_PORT=9673
+HTTP_PORT=8080
 
 # HTTP enivornment settings.
 HTTP_ENV={}
@@ -234,7 +234,7 @@ HTTP_ENV={}
 ## FTP configuration
 
 # Port for the FTP Server. The standard port for FTP services is 21.
-FTP_PORT=9221
+FTP_PORT=8021
 
 ## PCGI configuration
 
@@ -243,7 +243,7 @@ FTP_PORT=9221
 PCGI_FILE='Zope.cgi'
 
 ## Monitor configuration
-MONITOR_PORT=9999
+MONITOR_PORT=8099
 
 # Module to be published, which must be Main or Zope
 MODULE='Zope'
