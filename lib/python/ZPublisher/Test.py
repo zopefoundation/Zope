@@ -78,7 +78,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.14 1998/04/09 15:21:59 jim Exp $
+$Id: Test.py,v 1.15 1998/04/29 19:08:19 jim Exp $
 '''
 #     Copyright 
 #
@@ -132,9 +132,9 @@ $Id: Test.py,v 1.14 1998/04/09 15:21:59 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
-import sys,traceback, profile
+import sys,traceback, profile, os
 repeat_count=100
 
 def main():
@@ -205,6 +205,29 @@ def run(statement, *args):
     else:
 	return prof.print_stats()
 
+
+def publish_module_pm(module_name,
+		      stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+		      environ=os.environ, debug=0):
+
+    from CGIResponse import Response
+    from cgi_module_publisher import ModulePublisher
+
+    after_list=[None]
+    request=None
+    try:
+	response=Response(stdout=stdout, stderr=stderr)
+	publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
+				    environ=environ)
+	response = publisher.response
+	request=publisher.request
+	response = publisher.publish(module_name,after_list,debug=debug)
+	request.other={}
+	response=str(response)
+    finally:
+	try: request.other={}
+	except: pass
+	if after_list[0] is not None: after_list[0]()
 
 def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None):
 
@@ -339,6 +362,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.15  1998/04/29 19:08:19  jim
+# Add support for post-mortem debugging.
+#
 # Revision 1.14  1998/04/09 15:21:59  jim
 # *** empty log message ***
 #
