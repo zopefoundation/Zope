@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -76,34 +76,11 @@ class Document(cDocument, HTML, Explicit,
             if RESPONSE is None: return r
             return decapitate(r, RESPONSE)
 
-	try:
-	    try: r=apply(HTML.__call__, (self, client, REQUEST), kw)
-	    except:
-		if self.id()=='standard_error_message':
-		    raise sys.exc_type, sys.exc_value, sys.exc_traceback
-		error_type=sys.exc_type
-		error_value=sys.exc_value
-		tb=sys.exc_traceback
-                if lower(error_type) in ('redirect',):
-		    raise error_type, error_value, tb
-		if (type(error_value) is type('') and
-		    regex.search('[a-zA-Z]>', error_value) > 0):
-		    error_message=error_value
-		else:
-		    error_message=''
-		error_tb=pretty_tb(error_type, error_value, tb)
-		if client is not None: c=client
-		else: c=self.aq_parent
-		try:
-		    s=getattr(c, 'standard_error_message')
-		    v=HTML.__call__(s, c, REQUEST, error_type=error_type,
-				    error_value=error_value,
-				    error_tb=error_tb, error_traceback=error_tb,
-				    error_message=error_message)
-		except:
-		    v='Sorry, an error occured'
-		raise error_type, v, tb
-	finally: tb=None
+        try: r=apply(HTML.__call__, (self, client, REQUEST), kw)
+        except:
+            if self.id()=='standard_error_message':
+                raise sys.exc_type, sys.exc_value, sys.exc_traceback
+            return self.raise_standardErrorMessage(client, REQUEST)
 		
 	if RESPONSE is None: return r
 	return decapitate(r, RESPONSE)

@@ -16,13 +16,14 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.22 1998/08/03 13:32:39 jim Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: SimpleItem.py,v 1.23 1998/11/23 22:57:05 jim Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
 from CopySupport import CopySource
 from string import join, lower
+from types import InstanceType, StringType
 
 HTML=Globals.HTML
 
@@ -82,26 +83,34 @@ class Item(CopySource, App.Management.Tabs):
     def manage_editedDialog(self, REQUEST, **args):
 	return apply(self._manage_editedDialog,(self, REQUEST), args)
 
-    def raise_standardErrorMessage(self, client=None, REQUEST={},
-				   error_type=None, error_value=None, tb=None,
-				   error_tb=None, error_message=''):
+    def raise_standardErrorMessage(
+        self, client=None, REQUEST={},
+        error_type=None, error_value=None, tb=None,
+        error_tb=None, error_message='',
+        tagSearch=regex.compile('[a-zA-Z]>').search):
 	try:
-	    if not error_type: error_type=sys.exc_type
-	    if not error_value: error_value=sys.exc_value
+	    if error_type  is None: error_type =sys.exc_info()[0]
+	    if error_value is None: error_value=sys.exc_info()[1]
 	    
 	    # allow for a few different traceback options
-	    if tb is None and (error_tb is None):
-		tb=sys.exc_traceback
-	    if type(tb) is not type('') and (error_tb is None):
+	    if tb is None and error_tb is None:
+		tb=sys.exc_info()[2]
+            if type(tb) is not type('') and (error_tb is None):
 		error_tb=pretty_tb(error_type, error_value, tb)
 	    elif type(tb) is type('') and not error_tb:
 		error_tb=tb
 
-	    if lower(error_type) in ('redirect',):
+	    if lower(str(error_type)) in ('redirect',):
 		raise error_type, error_value, tb
-	    if (type(error_value) is type('') and not error_message and
-		regex.search('[a-zA-Z]>', error_value) > 0):
-		error_message=error_value
+
+            if not error_message:
+                if type(error_value) is InstanceType:
+                    s=str(error_value)
+                    if tagSearch(s) >= 0:
+                        error_message=error_value
+                elif (type(error_value) is StringType
+                      and tagSearch(error_value) >= 0):
+                    error_message=error_value
 
 	    if client is None: client=self
 	    if not REQUEST: REQUEST=self.aq_acquire('REQUEST')
@@ -182,6 +191,9 @@ def pretty_tb(t,v,tb):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.23  1998/11/23 22:57:05  jim
+# First crack at updating error handling to work with 1.5
+#
 # Revision 1.22  1998/08/03 13:32:39  jim
 # Made manage a redirect rather than an alias.
 #
