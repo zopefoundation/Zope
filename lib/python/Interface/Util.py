@@ -20,7 +20,7 @@ def _ii(klass, items):
     for b in klass.__bases__: _ii(b, items)
     return items
     
-def implementedBy(object):        
+def objectImplements(object):        
     """Return the interfaces implemented by the object
     """
     r=[]
@@ -43,7 +43,7 @@ def implementedBy(object):
     return r
 
     
-def implementedByInstancesOf(klass):
+def instancesOfObjectImplements(klass):
     """Return the interfaces that instanced implement (by default)
     """
     r=[]

@@ -16,7 +16,7 @@ def verify_class_implementation(iface, klass):
 
     """
 
-    if not iface.implementedByInstancesOf(klass):
+    if not iface.isImplementedByInstancesOf(klass):
         raise DoesNotImplement(iface)
 
     for n, d in iface.namesAndDescriptions():
@@ -29,7 +29,7 @@ def verify_class_implementation(iface, klass):
         elif type(attr) is types.MethodType:
             meth = Method().fromMethod(attr, n)
         else:
-            pass # must be an attribute...
+            break # must be an attribute...
         
         if d.getSignatureInfo() != meth.getSignatureInfo():
                 raise BrokenMethodImplementation(n)

@@ -12,11 +12,11 @@ class C:
 
 IC=Interface.impliedInterface(C)
 
-print "should be 0:", IC.implementedByInstancesOf(C)
+print "should be 0:", IC.isImplementedByInstancesOf(C)
 
 C.__implements__=IC
 
-print "should be 1:", IC.implementedByInstancesOf(C)
+print "should be 1:", IC.isImplementedByInstancesOf(C)
 
 class I1(Interface.Base):
     def ma(self):
@@ -42,25 +42,25 @@ class E(A, B):
 print
 for c in A, B, C, D, E:
     print "%s implements: %s" % (
-        c.__name__, Interface.implementedByInstancesOf(c))
+        c.__name__, Interface.instancesOfObjectImplements(c))
 
 print
 for c in A, B, C, D, E:
     print "an instance of %s implements: %s" % (
         c.__name__,
-        Interface.implementedBy(c()))
+        Interface.objectImplements(c()))
 
 for i in I1, I2, I3, I4, IC:
     print
     for c in A, B, C, D, E:
         print "%s is implemented by instances of %s? %s" % (
                i.__name__, c.__name__,
-               i.implementedByInstancesOf(c))
+               i.isImplementedByInstancesOf(c))
     print
     for c in A, B, C, D, E:
         print "%s is implemented by an instance of %s? %s" % (
                i.__name__, c.__name__,
-               i.implementedBy(c()))
+               i.isImplementedBy(c()))
     
 a=A()
 try:
@@ -151,16 +151,16 @@ class Blah:
 
 blah_instance = Blah()
 
-if AnABCInterface.implementedBy(concrete_instance):
+if AnABCInterface.isImplementedBy(concrete_instance):
     print "%s is an instance that implements %s" % (concrete_instance, AnABCInterface.__name__)
 
-if AnABCInterface.implementedByInstancesOf(AConcreteClass):
+if AnABCInterface.isImplementedByInstancesOf(AConcreteClass):
     print "%s is a class that implements %s" % (AConcreteClass, AnABCInterface.__name__)
 
-if not AnABCInterface.implementedBy(blah_instance):
+if not AnABCInterface.isImplementedBy(blah_instance):
     print "%s is NOT an instance that implements %s" % (blah_instance, AnABCInterface.__name__)
 
-if not AnABCInterface.implementedByInstancesOf(Blah):
+if not AnABCInterface.isImplementedByInstancesOf(Blah):
     print "%s is NOT a class that implements %s" % (Blah, AnABCInterface.__name__)
 
 

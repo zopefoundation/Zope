@@ -23,7 +23,7 @@ class BrokenImplementation(Exception):
         The %(name)s attribute was not provided.
         """ % self.__dict__
 
-class BrokenMethodImplementation(BrokenImplementation):
+class BrokenMethodImplementation(Exception):
     """An method is not completely implemented.
     """
 

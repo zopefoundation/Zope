@@ -63,7 +63,7 @@ class Interface(InterfaceBase):
             if b.extends(other): return 1
         return 0
 
-    def implementedBy(self, object,
+    def isImplementedBy(self, object,
                       tiget=_typeImplements.get):
         """Does the given object implement the interface?
         """
@@ -83,7 +83,7 @@ class Interface(InterfaceBase):
         else:
             return self.__any(implements)
 
-    def implementedByInstancesOf(self, klass,
+    def isImplementedByInstancesOf(self, klass,
                                  tiget=_typeImplements.get):
         """Do instances of the given class implement the interface?
         """
@@ -181,3 +181,80 @@ def assertTypeImplements(type, interfaces):
     """Return the interfaces implemented by objects of the given type
     """
     _typeImplements[type]=interfaces
+
+
+class InterfaceBaseInterface(Base):
+    """
+
+    A base class that defines a common Interface inteface.
+
+    """
+
+    def getName(self):
+        """
+
+        Returns the name of the current interface object.
+
+        """
+
+    def getDoc(self):
+        """
+
+        Returns the documentation for the current interface object.
+
+        """
+
+class InterfaceInterface(InterfaceBaseInterface):
+    """
+
+    Interface objects describe the behavior of an object by containing
+    useful information about the object.  This information includes:
+
+      o Prose documentation about the object.  In Python terms, this
+        is called the "doc string" of the interface.  In this element,
+        you describe how the object works in prose language and any
+        other useful information about the object.
+
+      o Descriptions of attributes.  Attribute descriptions include
+        the name of the attribute and prose documentation describing
+        the attributes usage.
+
+      o Descriptions of methods.  Method descriptions can include:
+
+        o Prose "doc string" documentation about the method and its
+          usage.
+
+        o A description of the methods arguments; how many arguments
+          are expected, optional arguments and their default values,
+          the position or arguments in the signature, whether the
+          method accepts arbitrary arguments and whether the method
+          accepts arbitrary keyword arguments. 
+
+      o Optional tagged data.  Interface objects (and their attributes and
+        methods) can have optional, application specific tagged data
+        associated with them.  Examples uses for this are examples,
+        security assertions, pre/post conditions, and other possible
+        information you may want to associate with an Interface or its
+        attributes.
+
+    Not all of this information is mandatory.  For example, you may
+    only want the methods of your interface to have prose
+    documentation and not describe the arguments of the method in
+    exact detail.  Interface objects are flexible and let you give or
+    take any of these components.
+
+    """
+
+    def getBases(self):
+        """
+
+        Returns a sequence of base interfaces this interface extends.
+
+        """
+
+    def extends(self, other):
+        """
+
+        """
+
+Interface.__implements__ = (InterfaceInterface,)
