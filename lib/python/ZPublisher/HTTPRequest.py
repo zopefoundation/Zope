@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -413,10 +413,11 @@ class HTTPRequest(BaseRequest):
                             seqf=tuple
                             tuple_items[key]=1
                             flags=flags|SEQUENCE
-                        elif type_name == 'method':
+                        elif (type_name == 'method' or type_name == 'action'):
                             if l: meth=key
                             else: meth=item
-                        elif type_name == 'default_method':
+                        elif (type_name == 'default_method' or type_name == \
+                              'default_action'):
                             if not meth:
                                 if l: meth=key
                                 else: meth=item
