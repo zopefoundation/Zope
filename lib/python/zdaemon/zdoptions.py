@@ -201,9 +201,17 @@ class ZDOptions:
 
          # Provide dynamic default method arguments
         if args is None:
-            args = sys.argv[1:]
+            try:
+                args = sys.argv[1:]
+            except AttributeError:
+                args = ()
+
         if progname is None:
-            progname = sys.argv[0]
+            try:
+                progname = sys.argv[0]
+            except AttributeError:
+                progname = 'zope'
+
         if doc is None:
             import __main__
             doc = __main__.__doc__

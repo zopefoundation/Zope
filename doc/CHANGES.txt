@@ -122,6 +122,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Zope can now be embedded in C/C++ without exceptions being raised
+       in zdoptions.
+
      - Collector #1213: Fixed wrong labels of cache parameters 
 
      - Collector #1265: Fixed handling of orphans in ZTUtil.Batch
