@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 
 import sys,os,time,string,Globals
@@ -45,6 +45,11 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     def copyToClipboard(self, REQUEST):
 	return Globals.MessageDialog(title='Not Supported',
 				     message='This item cannot be copied',
+				     action ='./manage_main',)
+
+    def cutToClipboard(self, REQUEST):
+	return Globals.MessageDialog(title='Not Supported',
+				     message='This item cannot be cut',
 				     action ='./manage_main',)
 
     def _init(self):
