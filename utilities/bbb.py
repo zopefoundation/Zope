@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Read and (re-)format BoboPOS 2 database files
 """
 
