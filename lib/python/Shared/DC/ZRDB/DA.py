@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.96 2001/01/12 17:50:32 chrism Exp $'''
-__version__='$Revision: 1.96 $'[11:-2]
+$Id: DA.py,v 1.97 2001/01/24 16:14:54 brian Exp $'''
+__version__='$Revision: 1.97 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -169,7 +169,7 @@ class DA(
         )),
         ('Change Database Methods',
          ('manage_edit','manage_advanced', 'manage_testForm','manage_test',
-          'manage_product_zclass_info', 'PUT', 'manage_FTPput')),
+          'manage_product_zclass_info', 'PUT')),
         ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
         )
    
