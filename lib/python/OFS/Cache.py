@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.2 2000/12/12 21:20:26 shane Exp $"""
+$Id: Cache.py,v 1.3 2000/12/13 16:20:15 shane Exp $"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import time, sys
 from string import join
@@ -218,14 +218,14 @@ class Cacheable:
         self._v_ZCacheable_manager_timestamp = manager_timestamp
         return c
 
-    ZCacheable_isEnabled__roles__ = ()
-    def ZCacheable_isEnabled(self):
+    ZCacheable_isCachingEnabled__roles__ = ()
+    def ZCacheable_isCachingEnabled(self):
         '''
         Returns true only if associated with a cache manager and
         caching of this method is enabled.
         '''
-        return self.ZCacheable_getCache() and self.__enabled
-        
+        return self.__enabled and self.ZCacheable_getCache()
+
     def ZCacheable_isAMethod(self):
         '''
         Returns 1 when this object is a ZClass method.
