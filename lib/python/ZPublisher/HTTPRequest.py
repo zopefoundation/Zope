@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -589,7 +589,7 @@ class HTTPRequest(BaseRequest):
                         form[keys]=values
                     else:
                         #The form has the key
-                        if getattr(values, '__class__',0) is record:
+                        if isinstance(values, record):
                             # if the key is mapped to a record, get the
                             # record
                             r = form[keys]
@@ -606,7 +606,7 @@ class HTTPRequest(BaseRequest):
                             l = form[keys]
                             for x in values:
                                 # for each x in the list
-                                if getattr(x, '__class__',0) is record:
+                                if isinstance(x, record):
                                     # if the x is a record
                                     for k, v in x.__dict__.items():
                                         
@@ -650,8 +650,7 @@ class HTTPRequest(BaseRequest):
                     if form.has_key(k):
                         # If the form has the split key get its value
                         item =form[k]
-                        if (hasattr(item, '__class__') and
-                            item.__class__ is record):
+                        if isinstance(item, record):
                             # if the value is mapped to a record, check if it
                             # has the attribute, if it has it, convert it to
                             # a tuple and set it
@@ -1005,7 +1004,7 @@ def str_field(v):
     if type(v) is ListType:
         return map(str_field,v)
 
-    if hasattr(v,'__class__') and v.__class__ is FieldStorage:
+    if isinstance(v, FieldStorage):
         v=v.value
     elif type(v) is not StringType:
         if hasattr(v,'file') and v.file: v=v.file
