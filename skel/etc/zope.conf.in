@@ -429,19 +429,6 @@ instancehome $INSTANCE
 #    trusted-proxy www.example.com
 #    trusted-proxy 192.168.1.1
 
-# Directive: maximum-security-manager-stack-size
-#
-# Description:
-#     This variable allows you to customize the size of the Zope
-#     SecurityManager stack. You shouldn't change this unless you know what
-#     it means.
-#
-# Default: 100
-#
-# Example:
-#
-#    maximum-security-manager-stack-size 200
-
 # Directive: publisher-profile-file
 #
 # Description:
@@ -450,7 +437,8 @@ instancehome $INSTANCE
 #    the Debug Information - > Profiling tab of Zope's Control_Panel
 #    via the Zope Management Interface.  IMPORTANT: setting this
 #    filename will cause Zope code to be executed much more slowly
-#    than normal.  This should not be enabled in production.  #
+#    than normal.  This should not be enabled in production.
+#
 # Default: unset
 #
 # Example:
