@@ -7,11 +7,11 @@ Building and installing Zope from source
 
 Important notes
 
-   ZOPE 2.5 REQUIRES PYTHON 2.1.X!
+   This version of Zope supports Python 2.2.1 and later versions.
+   Whether it requires this or also runs with Python 2.1.3 and Python
+   2.2 is up for debate at the moment.
 
-   Note: Using Python 2.2 is not recommended and not supported.
-
-   See CHANGES.txt for important notes on Zope 2.5.
+   See CHANGES.txt for important notes on this version of Zope.
 
 
 Quick Start
@@ -19,7 +19,7 @@ Quick Start
   If you are impatient, the following commands should get you up and
   running with Zope 2 using ZServer and ZODB 3 on Unix::
 
-    python w_pcgi.py  # Note, this must be Python 2.1
+    python w_pcgi.py  # Note, this must be Python 2.2.1 or later
     ./start
 
   The first command builds and adjusts Zope.  Take note of the user
@@ -74,21 +74,22 @@ Building Zope
 
   Notes
   
-    * You should be using Python 2.1 to run the build scripts.
+    * You should be using Python 2.2.1 or later to run the build scripts.
 
     * The python you run Zope with *must* have threads compiled in,
-      which is *not* the case for a vanilla build.  When you build the
-      python you'll use, 'configure --with-threads' does the right thing.
-      Warning: Zope will not run with a Python version that uses libpth.
-      You *must* use libpthread.
+      which is the case for a vanilla build.  Warning: Zope will not
+      run with a Python version that uses libpth.  You *must* use
+      libpthread.
 
     * To build python extensions you need to have Python configuration
-      information available. If your Python comes from an RPM you may need
-      the python-devel package installed too. If you built Python from source
-      all the configuration information should already be there.
+      information available. If your Python comes from an RPM you may
+      need the python-devel package installed too. If you built Python
+      from source all the configuration information should already be
+      there.
 
-    * If you just want to use Zope components it's not necessary to build Zope
-      but it's a good idea since it will compile Python C extensions for you.
+    * If you just want to use Zope components it's not necessary to
+      build Zope but it's a good idea since it will compile Python C
+      extensions for you.
 
     * You can use PCGI and an existing web server if you use ZServer.
 
