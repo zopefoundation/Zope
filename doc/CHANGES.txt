@@ -58,7 +58,20 @@ Zope Changes
         - Collector #2290: better handling of subject header in Mailhost.py
 
         - Collector #2291: fixed cookie path in Zope Version Control 
-          
+
+        - Collector #2286: Could not create ZClasses.  coptimizations.c
+          had been corrected erroneously.  Fixed.
+
+        - It was discovered that the implicit names of certain DTMLMethods
+          were ambiguous, making security assertions for them unpredictable.
+          Code was added to detect the condition and correct it in the
+          Zope core.  The affected DTML methods did not pose a security risk.
+          Instead, most were overprotective.
+
+        - "print" with a trailing comma (to avoid a newline) caused
+          spurious errors in Python Scripts.  It turned out the compiler
+          module was in error.  Fixed.
+
 
     Zope 2.4 alpha 1
 
