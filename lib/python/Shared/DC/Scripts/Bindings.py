@@ -320,8 +320,7 @@ class Bindings:
         return caller_namespace
 
     def __call__(self, *args, **kw):
-        '''Calls the script.
-        '''
+        '''Calls the script.'''
         return self._bindAndExec(args, kw, None)
 
     def __render_with_namespace__(self, namespace):
