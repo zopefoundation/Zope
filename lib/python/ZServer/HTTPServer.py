@@ -316,6 +316,7 @@ class zhttp_channel(http_channel):
     "http channel"
 
     closed=0
+    zombie_timeout=100*60 # 100 minutes
     
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
@@ -350,29 +351,11 @@ class zhttp_channel(http_channel):
             self.current_request.channel=None # break circ refs
             self.current_request=None
         while self.producer_fifo:
-            p=self.producer_fifo.pop()
-            p.more()
+            p=self.producer_fifo.first()
+            if p is not None:
+                p.more() # free up resources held by producer
+            self.producer_fifo.pop()
         dispatcher.close(self)
-
-#    def handle_error (self):
-#        (file,fun,line), t, v, tbinfo = compact_traceback()
-#
-#        # sometimes a user repr method will crash.
-#        try:
-#            self_repr = repr (self)
-#        except:
-#            self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
-#
-#        self.log_info (
-#            'uncaptured python exception, closing channel %s (%s:%s %s)' % (
-#                self_repr,
-#                t,
-#                v,
-#                tbinfo
-#                ),
-#            'error'
-#            )
-#        self.handle_close()
 
     def done(self):
         "Called when a publishing request is finished"
