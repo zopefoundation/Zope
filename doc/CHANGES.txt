@@ -72,6 +72,9 @@ Zope Changes
 
     Bugs:
 
+      - Fixed bug #275: setPermissionDefault didn't actually set the
+        right permission -> role mappings.
+
       - Fixed bug reported on maillist during EWOULDBLOCK when using FTP server
         (http:// lists.zope.org/pipermail/zope/2002-March/111521.html).
 
