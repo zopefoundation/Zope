@@ -104,10 +104,10 @@ def main(me):
     import build_extensions
     user=group=''
     import default_content; default_content.main(home, user, group)
-    import zpasswd; zpasswd.write_inituser(home, user, group)
     
     pcgi=os.path.join(home, 'Zope.cgi')
     import make_start; make_start.sh(home, user, group)
+    import zpasswd; zpasswd.write_inituser(home, user, group)
 
     print '-'*78
     print
