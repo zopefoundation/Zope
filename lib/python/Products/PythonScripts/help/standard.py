@@ -53,7 +53,7 @@ def url_quote(s):
 
        "Python 'urllib'
        module":http://www.python.org/doc/current/lib/module-urllib.html
-       'url_quote' function.
+       'quote' function.
 
     """
 
@@ -66,30 +66,33 @@ def url_quote_plus(s):
 
       "Python 'urllib'
       module":http://www.python.org/doc/current/lib/module-urllib.html
-      'url_quote_plus' function.
+      'quote_plus' function.
 
     """
 
 def url_unquote(s):
     """
-    Convert HTML character entities in strings back to their real values.
+    Convert HTML %xx character entities into the characters they
+    represent.  (Undoes the affects of url_quote).
+
+    See Also
+
+       "Python 'urllib'
+       module":http://www.python.org/doc/current/lib/module-urllib.html
+       'unquote' function.
+
+    """
+
+def url_unquote_plus(s):
+    """
+    Like url_unquote but also replace '+' characters with blank spaces.
 
     See Also
 
       "Python 'urllib'
       module":http://www.python.org/doc/current/lib/module-urllib.html
-      'url_unquote' function.
-    """
-      
-def url_unquote(s):
-    """
-    Like url_unquote, but also replace '+' characters with spaces.
+      'unquote_plus' function.
 
-        See Also
-
-      "Python 'urllib'
-      module":http://www.python.org/doc/current/lib/module-urllib.html
-      'url_unquote_plus' function.
     """
 
 def newline_to_br(s):
