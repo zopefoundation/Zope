@@ -18,6 +18,8 @@ The configuration values are represented as a single object with
 attributes for each bit of information.
 """
 
+import sys
+
 _config = None
 
 def getConfiguration():
@@ -60,7 +62,6 @@ def setConfiguration(cfg):
     os.environ["SOFTWARE_HOME"] = cfg.softwarehome
     os.environ["ZOPE_HOME"] = cfg.zopehome
 
-    import sys
     if "Globals" in sys.modules:
         # XXX We *really* want to avoid this if Globals hasn't already
         # been imported, due to circular imports.  ;-(
@@ -85,3 +86,9 @@ class DefaultConfiguration:
         self.dbtab = None
         self.debug_mode = True
         self.enable_product_installation = True
+
+        # restructured text
+        default_enc = sys.getdefaultencoding()
+        self.rest_input_encoding = default_enc
+        self.rest_output_encoding = default_enc
+        self.rest_header_level = 3

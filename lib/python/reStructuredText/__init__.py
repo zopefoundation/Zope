@@ -25,7 +25,7 @@ default_output_encoding = getConfiguration().rest_output_encoding or default_enc
 default_input_encoding = getConfiguration().rest_input_encoding or default_enc
 
 # starting level for <H> elements (default behaviour inside Zope is <H3>)
-default_level = int(os.environ.get('STX_DEFAULT_LEVEL', 3))
+default_level = 3
 initial_header_level = getConfiguration().rest_header_level or default_level
 
 # default language
@@ -42,38 +42,16 @@ class Warnings:
     def write(self, message):
         self.messages.append(message)
 
-def HTML(src,
-         writer='html4css1',
-         report_level=1,
-         stylesheet='default.css',
-         input_encoding=default_input_encoding,
-         output_encoding=default_output_encoding,
-         language_code=default_lang,
-         warnings = None,
-         settings = {}):
-
-    """ render HTML from a reStructuredText string 
-
-        - 'src'  -- string containing a valid reST document
-
-        - 'writer' -- docutils writer 
-
-        - 'report_level' - verbosity of reST parser
-
-        - 'stylesheet' - Stylesheet to be used
-
-        - 'input_encoding' - encoding of the reST input string
-
-        - 'output_encoding' - encoding of the rendered HTML output
-        
-        - 'report_level' - verbosity of reST parser
-
-        - 'language_code' - docutils language
-        
-        - 'warnings' - will be overwritten with a string containing the warnings
-        
-        - 'settings' - dict of settings to pass in to Docutils, with priority
-
+def render(src,
+           writer='html4css1',
+           report_level=1,
+           stylesheet='default.css',
+           input_encoding=default_input_encoding,
+           output_encoding=default_output_encoding,
+           language_code=default_lang,
+           initial_header_level = initial_header_level,
+           settings = {}):
+    """get the rendered parts of the document the and warning object
     """
     # Docutils settings:
     settings = settings.copy()
@@ -94,15 +72,64 @@ def HTML(src,
                           settings_overrides=settings,
                           config_section='zope application')
 
-    output = ('<h%(level)s class="title">%(title)s</h%(level)s>\n%(body)s'
-              % {'level': initial_header_level,
-                 'title': parts['title'],
-                 'body': parts['body']}).encode(output_encoding)
+    return parts, warning_stream
 
-    # what to do with this? (not used in the original code)
+def HTML(src,
+         writer='html4css1',
+         report_level=1,
+         stylesheet='default.css',
+         input_encoding=default_input_encoding,
+         output_encoding=default_output_encoding,
+         language_code=default_lang,
+         initial_header_level = initial_header_level,
+         warnings = None,
+         settings = {}):
+    """ render HTML from a reStructuredText string 
+
+        - 'src'  -- string containing a valid reST document
+
+        - 'writer' -- docutils writer 
+
+        - 'report_level' - verbosity of reST parser
+
+        - 'stylesheet' - Stylesheet to be used
+
+        - 'input_encoding' - encoding of the reST input string
+
+        - 'output_encoding' - encoding of the rendered HTML output
+        
+        - 'report_level' - verbosity of reST parser
+
+        - 'language_code' - docutils language
+        
+        - 'initial_header_level' - level of the first header tag
+        
+        - 'warnings' - will be overwritten with a string containing the warnings
+        
+        - 'settings' - dict of settings to pass in to Docutils, with priority
+
+    """
+    parts, warning_stream = render(src,
+                                   writer = writer,
+                                   report_level = report_level,
+                                   stylesheet = stylesheet,
+                                   input_encoding = input_encoding,
+                                   output_encoding = output_encoding,
+                                   language_code=language_code,
+                                   initial_header_level = initial_header_level,
+                                   settings = settings)
+
+    output = ('<h%(level)s class="title">%(title)s</h%(level)s>\n'
+              '%(docinfo)s%(body)s' % {
+                  'level': initial_header_level,
+                  'title': parts['title'],
+                  'docinfo': parts['docinfo'],
+                  'body': parts['body']
+              }).encode(output_encoding)
+
     warnings = ''.join(warning_stream.messages)
 
     return output
 
 
-__all__ = ("HTML", )
+__all__ = ("HTML", 'render')
