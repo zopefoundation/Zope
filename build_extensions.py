@@ -97,6 +97,7 @@ make('lib','python')
 make('lib','python','DocumentTemplate')
 make('lib','python','ZODB')
 make('lib','python','SearchIndex')
+make('lib','python','Shared','DC','xml','pyexpat')
 
 # Try to link/copy cPickle.so to BoboPOS to out-fox
 # stock Python cPickle.
