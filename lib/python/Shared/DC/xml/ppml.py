@@ -89,6 +89,7 @@
 __version__ = "1.9"                     # Code version
 
 from pickle import *
+from pickle import mloads
 from string import replace
 import struct
 import base64
