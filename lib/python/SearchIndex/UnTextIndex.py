@@ -87,13 +87,14 @@
 
 
 """
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Globals import Persistent
-import BTree, IIBTree, IOBTree
+import BTree, IIBTree, IOBTree, OIBTree
 BTree=BTree.BTree
 IOBTree=IOBTree.BTree
 IIBTree=IIBTree.Bucket
+OIBTree=OIBTree.BTree
 from intSet import intSet
 import operator
 from Splitter import Splitter
@@ -162,7 +163,7 @@ class UnTextIndex(Persistent):
         return r
 
 
-    def index_object(self, i, obj, tupleType=type(()),
+    def index_object(self, i, obj, threshold=None, tupleType=type(()),
                      dictType=type({}), callable=callable):
         
         """ Please document """
@@ -178,7 +179,7 @@ class UnTextIndex(Persistent):
         except:
             return 0
         
-        d = {}
+        d = OIBTree()
         old = d.has_key
         last = None
 
@@ -197,8 +198,12 @@ class UnTextIndex(Persistent):
         get = index.get
 
         unindex[i] = []
-        
+
+        times = 0
         for word,score in d.items():
+            if times > threshold:
+                get_transaction().commit(1)
+                times = 0
             r = get(word)
             if r is not None:
                 r = index[word]
@@ -223,6 +228,7 @@ class UnTextIndex(Persistent):
             else:
                 index[word] = i, score
                 unindex[i].append(word)
+            times = times + 1
 
         unindex[i] = tuple(unindex[i])
         l = len(unindex[i])
@@ -230,7 +236,7 @@ class UnTextIndex(Persistent):
         self._index = index
         self._unindex = unindex
 
-        return l
+        return times
 
 
     def unindex_object(self, i, tt=type(()) ): 
