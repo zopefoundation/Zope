@@ -207,7 +207,7 @@ class FullLogTest(BaseSetupTearDown):
         rec = self._log.next()
         self.failUnless(rec)
         key, rec = rec
-        eq(key, 'o')
+        eq(key, 'x')
         eq(len(rec), 6)
         eq(rec, (oid, vid, nvrevid, '', pickle, prevrevid))
         eq(self._log.next(), None)
@@ -233,13 +233,13 @@ class FullLogTest(BaseSetupTearDown):
         key, rec = rec
         eq(key, 'o')
         eq(len(rec), 6)
-        eq(rec, (oid, zero, zero, lrevid, '', prevrevid))
+        eq(rec, (oid, zero, zero, lrevid, None, prevrevid))
         rec = self._log.next()
         unless(rec)
         key, rec = rec
         eq(key, 'o')
         eq(len(rec), 6)
-        eq(rec, (oid, vid, nvrevid, lrevid, '', prevrevid))
+        eq(rec, (oid, vid, nvrevid, lrevid, None, prevrevid))
         rec = self._log.next()
         unless(rec)
         key, rec = rec

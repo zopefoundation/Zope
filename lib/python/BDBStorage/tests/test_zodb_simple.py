@@ -18,6 +18,9 @@
 
 import time
 import unittest
+# Import this here and now so that import failures properly cause the test
+# suite to ignore these tests.
+import bsddb3
 
 from ZODBTestBase import ZODBTestBase
 from Persistence import PersistentMapping

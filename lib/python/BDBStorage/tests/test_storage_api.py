@@ -15,6 +15,9 @@
 # Unit tests for basic storage functionality
 
 import unittest
+# Import this here and now so that import failures properly cause the test
+# suite to ignore these tests.
+import bsddb3
 
 from ZODB import POSException
 
