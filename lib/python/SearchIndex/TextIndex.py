@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.5 1997/11/03 15:17:12 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: TextIndex.py,v 1.6 1997/11/03 18:59:59 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -318,8 +318,8 @@ class TextIndex(Persistent):
 	    if not key: continue
 	    rr=intSet()
 	    try:
-		for i in query(key,self).keys():
-		    rr.insert(i)
+		for i,score in query(key,self).items():
+		    if score: rr.insert(i)
 	    except KeyError: pass
 	    if r is None: r=rr
 	    else:
@@ -389,7 +389,7 @@ class ResultList:
 	    p=(map(lambda i: (i,0), positions(id,self._words))+
 	       map(lambda i: (i,1), positions(id,x._words)))
 	    p.sort()
-	    d=lp=len(p)
+	    d=lp=9999
 	    li=None
 	    lsrc=None
 	    for i,src in p:
@@ -409,6 +409,7 @@ AndNot    = 'andnot'
 And       = 'and'
 Or        = 'or'
 Near = '...'
+QueryError='TextIndex.QueryError'
 
 def query(s, index, default_operator = Or,
 	  ws = (string.whitespace,)):
@@ -491,13 +492,17 @@ def quotes(s, ws = (string.whitespace,)):
      if (len(splitted) > 1):
          if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
     
-         for i in range(1, len(splitted), 2):
-             # split the quoted region into words
-             splitted[i] = filter(None, split(splitted[i]))
+         for i in range(1,len(splitted),2):
+	     # split the quoted region into words
+	     splitted[i] = filter(None, split(splitted[i]))
 
-             # put the Proxmity operator in between quoted words
-             for j in range(1, len(splitted[i])):
+	     # put the Proxmity operator in between quoted words
+	     for j in range(1, len(splitted[i])):
 		 splitted[i][j : j] = [ Near ]
+
+         for i in range(len(splitted)-1,-1,-2):
+	     # split the non-quoted region into words
+	     splitted[i:i+1] = filter(None, split(splitted[i]))
 
          splitted = filter(None, splitted)
      else:
@@ -506,18 +511,20 @@ def quotes(s, ws = (string.whitespace,)):
 
      return splitted
 
-def get_operands(q, i, index, ListType=type([])):
+def get_operands(q, i, index, ListType=type([]), StringType=type('')):
     '''Evaluate and return the left and right operands for an operator'''
     try:
         left  = q[i - 1]
         right = q[i + 1]
     except IndexError: raise QueryError, "Malformed query"
 
-    if (type(left) is ListType): left = evaluate(left, index)
-    else: left=index[left]
-    
-    if (type(right) is ListType): right = evaluate(right, index)
-    else: right = index[right]
+    t=type(left)
+    if t is ListType: left = evaluate(left, index)
+    elif t is StringType: left=index[left]
+
+    t=type(right)
+    if t is ListType: right = evaluate(right, index)
+    elif t is StringType: right=index[right]
 
     return (left, right)
 
@@ -594,7 +601,7 @@ stop_words=(
     'next', 'nine', 'no', 'nobody', 'none', 'noone', 'nor', 'not',
     'nothing', 'now', 'nowhere', 'of', 'off', 'often', 'on', 'once',
     'one', 'only', 'onto', 'or', 'other', 'others', 'otherwise', 'our',
-    'ours', 'ourselves', 'out', 'over', 'own', 'part', 'per', 'perhaps',
+    'ours', 'ourselves', 'out', 'over', 'own', 'per', 'perhaps',
     'please', 'pre', 'put', 'rather', 're', 'same', 'see', 'seem',
     'seemed', 'seeming', 'seems', 'serious', 'several', 'she', 'should',
     'show', 'side', 'since', 'sincere', 'six', 'sixty', 'so', 'some',
@@ -619,6 +626,9 @@ for word in stop_words: stop_word_dict[word]=None
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.6  1997/11/03 18:59:59  jim
+# Fixed several bugs in handling query parsing and proximity search.
+#
 # Revision 1.5  1997/11/03 15:17:12  jim
 # Updated to use new indexing strategy.  Now, no longer store positions
 # in index, but get them on demand from doc.
