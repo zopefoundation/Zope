@@ -68,6 +68,17 @@ Published objects
   fails, then the object publisher raises a '"Not Found"' exception.  If
   either of the accesses suceeds, then, of course, processing continues.
 
+  During object traversal, the names '.' and '..' have special meaning
+  if the application does not provide meaning for them.  If the name
+  '.' is encountered and the application does not provide a value,
+  then the name is effectively skipped.  For example, the path 'x/./y'
+  is equivalent to 'x/y'. If the name '..' is encountered and the
+  application does not provide a value, then the parent of the object
+  being traversed is used.  For example, 'x/y/../z' is almost
+  equivalent to 'x/z', except that 'y' is considered to be part of the
+  path to 'z'.  If 'y' has a user folder, it will be consulted when
+  validadting access to 'z' before a user folder in 'x' is consulted.
+
   Normally, URL traversal begins with the published module.  If the
   Published module has a global variable named 'bobo_application',
   then traversal begins with this object instead.
@@ -245,6 +256,10 @@ Function, method, and class objects
 
         tuple -- Python tuple of values, even if there is only one.
 
+        method -- Augment PATH_INFO with information from the form field.
+                  (See "Method Arguments" blow.)
+                  
+
     For example, if the name of a field in an input
     form is 'age:int', then the field value will be passed in argument,
     age, and an attempt will be made to convert the argument value to
@@ -252,6 +267,43 @@ Function, method, and class objects
     a file upload field with a name like myfile:string will cause the
     UploadFile to be converted to a string before being passed to the
     object.  
+
+  Method Arguments
+
+    Sometimes, it is desireble to control which method is called based
+    on form data.  For example, one might have a form with a select
+    list and want to choose which method to call depening on the item
+    chosen. Similarly, one might have multiple submit buttons and want
+    to invoke a different method for each button.
+
+    Bobo provides a way to select methods using form variables through
+    use of the "method" argument type.  The method type allows the
+    request 'PATH_INFO' to be augmented using information from a
+    form item name or value.
+
+    If the name of a form field is ':method', then the value of the
+    field is added to 'PATH_INFO'.  For example, if the original
+    'PATH_INFO' is 'foo/bar' and the value of a ':method' field is
+    'x/y', then 'PATH_INFO' is transformed to 'foo/bar/x/y'.  This is
+    useful when presenting a select list.  Method names can be
+    placed in the select option values.
+
+    If the name of a form field ends in ':method' and is longer than 7
+    characters, then the part of the name before ':method' is added to
+    'PATH_INFO'.  For example, if the original 'PATH_INFO' is
+    'foo/bar' and there is a 'x/y:method' field, then 'PATH_INFO' is
+    transformed to 'foo/bar/x/y'.  In this case, the form value is
+    ignored.  This is useful for mapping submit buttons to methods,
+    since submit button values are displayed and should, therefore,
+    not contain method names.
+
+    Only one method field should be provided.  If more than one method
+    field is included in the request, the behavior is undefined.
+
+    The base HREF is set when method fields are provided.  In the
+    above examples, the base HREF is set to '.../foo/bar/x'.  Of
+    course, if, in this example, 'y' was an object with an index_html
+    method, then the base HREF would be reset to '.../foo/bar/x/y'.
 
 Published objects that are not functions, methods, or classes
 
@@ -287,7 +339,7 @@ Base References
    - the text does not define a 'base' tag in the 'head' portion of
      the HTML, and
 
-   - The published had an 'index_html' attribute that was not included
+   - The published object had an 'index_html' attribute that was not included
      in the request URL, 
 
   then a base reference will be inserted that is the URL of the
@@ -373,7 +425,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.86 1998/04/20 21:42:56 jim Exp $"""
+$Id: Publish.py,v 1.87 1998/06/24 16:47:45 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -428,7 +480,7 @@ $Id: Publish.py,v 1.86 1998/04/20 21:42:56 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -469,6 +521,7 @@ except:
 class ModulePublisher:
 
     HTTP_AUTHORIZATION=None
+    _hacked_path=None
     
     def __init__(self,
 		 stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
@@ -526,6 +579,16 @@ class ModulePublisher:
 		    elif type_name == 'tuple':
 			seqf=tuple
 			tuple_items[key]=1
+		    elif type_name == 'method':
+                        if environ.has_key('PATH_INFO'):
+                            path=environ['PATH_INFO']
+                            while path[-1:]=='/': path=path[:-1]
+                        else: path=''
+                        if l: m=key
+                        else: m=item
+                        path="%s/%s" % (path,m)
+                        other['PATH_INFO']=path
+                        self._hacked_path=1
 		    else:
 			item=type_converters[type_name](item)
 		    l=type_search(key)
@@ -702,10 +765,12 @@ class ModulePublisher:
 		    try:
 			subobject=getattr(object,entry_name)
 		    except AttributeError:
-			try:
-			    subobject=object[entry_name]
-			    got=1
+                        got=1
+			try: subobject=object[entry_name]
 			except:
+                            if entry_name=='.': subobject=object
+                            elif entry_name=='..' and parents:
+                                subobject=parents[-1]
 			    self.notFoundError("%s" % (entry_name))
     
 		try:
@@ -732,9 +797,13 @@ class ModulePublisher:
 		    if hasattr(object,method) and entry_name != method:
 			response.setBase(URL)
 			path=[method]
-		    elif (hasattr(object, '__call__') and
-			  hasattr(object.__call__,'__roles__')):
-		        roles=object.__call__.__roles__
+                    else:
+                        if (hasattr(object, '__call__') and
+                            hasattr(object.__call__,'__roles__')):
+                            roles=object.__call__.__roles__
+                        if self._hacked_path:
+                            i=string.rfind(URL,'/')
+                            if i > 0: response.setBase(URL[:i])
     
 	if entry_name != method and method != 'index_html':
 	    self.notFoundError(method)
@@ -1135,19 +1204,23 @@ class Request:
 	else: b=''
 	while b and b[0]=='/': b=b[1:]
 	
-	if have_env('HTTP_HOST'):
-	    server_url="http://%s" % strip(environ['HTTP_HOST'])
-	    if server_url[-1:]=='/': server_url=server_url[:-1]
-	elif have_env('SERVER_URL'):
-	    server_url=strip(environ['SERVER_URL'])
-	    if server_url[-1:]=='/': server_url=server_url[:-1]
-	else:
-	    server_port=environ['SERVER_PORT']
-	    if server_port=='80': server_port=''
-	    server_url=('http://'+
-			strip(environ['SERVER_NAME']) +
-			(server_port and ':'+server_port)
-			)
+
+        if have_env('SERVER_URL'):
+             server_url=strip(environ['SERVER_URL'])
+        else:
+             if have_env('HTTPS') and (
+                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
+                 server_url='https://'
+             else: server_url='http://'
+
+             if have_env('HTTP_HOST'):
+                 server_url=server_url+strip(environ['HTTP_HOST'])
+             else:
+                 server_url=server_url+strip(environ['SERVER_NAME'])
+                 server_port=environ['SERVER_PORT']
+                 if server_port!='80': server_url=server_url+':'+server_port
+
+        if server_url[-1:]=='/': server_url=server_url[:-1]
 			
 	self.base="%s/%s" % (server_url,b)
 	while script[:1]=='/': script=script[1:]
