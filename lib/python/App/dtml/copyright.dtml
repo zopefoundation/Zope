@@ -17,7 +17,7 @@
 
 
 <h3>This software is Copyright &copy;
-<a href="http://www.zope.com/" TARGET="_top">Zope Corporation</a> &tm; and
+<a href="http://www.zope.com/" TARGET="_top">Zope Corporation</a>&trade; and
 Contributors. All rights reserved.</h3>
 
 <p>
@@ -42,15 +42,15 @@ following conditions are met:
    disclaimer in the documentation and/or other materials
    provided with the distribution.
 
-<li> The name Zope Corporation (tm) must not be used to
+<li> The name Zope Corporation must not be used to
    endorse or promote products derived from this software
    without prior written permission from Zope Corporation.
 
 <li> The right to distribute this software or to use it for
    any purpose does not give you the right to use Servicemarks
-   (sm) or Trademarks (tm) of Zope Corporation. Use of them is
-   covered in a separate agreement (see
-   http://www.zope.com/Marks).
+   (sm) or Trademarks (tm) of Zope Corporation. Use of
+   them is covered in a separate agreement (see
+   <a href="http://www.zope.com/Marks">http://www.zope.com/Marks</a>).
 
 <li> If any files are modified, you must cause the modified
    files to carry prominent notices stating that you changed
@@ -60,7 +60,7 @@ following conditions are met:
 <h3>Disclaimer</h3>
 
 <p>
-<bold>
+<strong>
   THIS SOFTWARE IS PROVIDED BY ZOPE CORPORATION ``AS IS''
   AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT
   NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
@@ -75,7 +75,7 @@ following conditions are met:
   OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
-</bold>
+</strong>
 </p>
 
 <p>
@@ -113,14 +113,14 @@ is made available by the Corporation for National Research Initiatives
 (CNRI) at the Internet address
 <a href="ftp://ftp.python.org">ftp://ftp.python.org</a>.</p>
 
-<p>STICHTING MATHEMATISCH CENTRUM AND CNRI DISCLAIM ALL WARRANTIES WITH
+<p><strong>STICHTING MATHEMATISCH CENTRUM AND CNRI DISCLAIM ALL WARRANTIES WITH
 REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF
 MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL STICHTING MATHEMATISCH
 CENTRUM OR CNRI BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL
 DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
 PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.</p>
+PERFORMANCE OF THIS SOFTWARE.</strong></p>
 
 <hr>
 <p>Zope uses the xmlrpclib module:</p>
@@ -141,13 +141,13 @@ AB or the author not be used in advertising or publicity pertaining to
 distribution of the software without specific, written prior
 permission.</p>
 
-<p>SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO
+<p><strong>SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO
 THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
 FITNESS.  IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR
 ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
-OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
+OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</strong></p>
 
 <hr>
 <p>Zope uses the C expat library by James Clark, for parsing XML text.</p>
