@@ -175,6 +175,9 @@ Zope Changes
 
     Features Added
     
+      - Add optional 'relative' argument to getURL the method in CatalogBrains.
+        This allows it to generate site relative URLs like absolute_url can.
+    
       - Browser ids can now be encoded in the URL and Zope can be
         instructed to automatically include the browser id in its
         generated URLs.
