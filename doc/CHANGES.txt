@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1053: parseIndexRequest turned empty sequence of search
+       terms into unrestricted search.
+
      - manage_tabs had a namespace problem with the acquisition of names from
        the manage_options variable resulting to acquire "target" and "action"
        from objects above in the hierachy.

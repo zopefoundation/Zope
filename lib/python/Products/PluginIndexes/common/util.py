@@ -11,7 +11,7 @@
 #
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.10 2002/08/14 22:19:34 mj Exp $'
+__version__ = '$Id: util.py,v 1.11 2003/09/29 12:00:17 andreasjung Exp $'
 
 
 import re
@@ -126,9 +126,6 @@ class parseIndexRequest:
                 field = iid + "_" + op
                 if request.has_key(field):
                     setattr(self, op, request[field])
-
-        if not keys:
-            keys = None
 
         self.keys = keys
 
