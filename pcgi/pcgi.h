@@ -70,6 +70,10 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fcntl.h>
 #endif
 
+#ifdef HAVE_SYSLOG_H
+#include <syslog.h>
+#endif
+
 #define MAXLINEBUFFER   12
 #define PATHSEP_UNIX    '/'
 #define PATHSEP_WIN32   '\\'
@@ -121,7 +125,7 @@ typedef SOCKET                  pcgi_socket;
 #define E_503           "503 Service Unavailable"
 
 #define ERR101_FAILURE_DURING_START "(101) failure during start"
-#define ERR102_FAILURE_DURING_CONNECT "(102) failure during connect"
+#define ERR102_FAILURE_DURING_CONNECT "(102) failure during connect to ZServer"
 #define ERR103_UNABLE_VERIFY_RUNNING "(103) unable to verify if process is running"
 #define ERR104_ENVIRONMENT_SEND "(104) environment send"
 #define ERR105_STDIN_SEND "(105) stdin send"
@@ -162,6 +166,7 @@ typedef struct resource_tag
     char modpath  [MAXSZ]; /* module path */
     char errmsg   [MAXSZ]; /* last error, brief message */
     char errlog   [MAXSZ]; /* fully qualified path to error log file */
+    char explain  [MAXSZ*2]; /* explanation of errors (optionally present) */
     char insertPath  [MAXPATH];  /* insert path by publisher */
     char pythonPath  [MAXPATH];  /* PYTHONPATH, if provided */
     short displayErrors;   /* displayErrors = 0,1 */
@@ -177,6 +182,11 @@ typedef struct resource_tag
     int  conn;
     int  lock;
 } pcgiResource;
+
+#define WHY102_FAILURE_DURING_CONNECT \
+"The PCGI-wrapper program, spawned by Apache to handle the HTTP\n" \
+"request via the standard CGI protocol, is unable to connect to\n" \
+"the ZServer background process via Unix socket %s."
 
 static char errorHtml[]=
 "Status: %s\n"
@@ -200,11 +210,12 @@ static char errorHtml[]=
 "  <P>\n"
 "  The resource you requested is temporarily unavailable - "
 "please try again later.\n"
-"  </TD>\n"
+"  </P></TD>\n"
 "</TR>\n"
 "</TABLE>\n"
-"%s\n"
-"<!--\n%s\n%s\n-->\n"
+"%s</P>\n"
+"<P WIDTH=\"50%%\">%s</P>\n"
+"<!--\n%s\n%s\n\n%s%s\n%s%s\n%s%s\n%s%s\n-->\n"
 "</BODY></HTML>";
 
 /* To ensure backward compatibility with pcgi info files, */

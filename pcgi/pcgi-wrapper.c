@@ -55,7 +55,77 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char spewbuf[1024];    /* yes, it's a global, but only for debugging */
 #endif
 
-static char _id_[]="$Id: pcgi-wrapper.c,v 1.7 2000/01/31 15:29:37 brian Exp $";
+typedef struct {
+	char	*t_name;
+	int	t_val;
+} TRANS;
+
+#ifdef HAVE_SYSLOG_H
+
+static const TRANS facilities[] = {
+    {"auth",	LOG_AUTH},
+#ifdef LOG_AUTHPRIV
+    {"authpriv",LOG_AUTHPRIV},
+#endif
+#ifdef LOG_CRON
+    {"cron", 	LOG_CRON},
+#endif
+#ifdef LOG_DAEMON
+    {"daemon",	LOG_DAEMON},
+#endif
+#ifdef LOG_FTP
+    {"ftp",	LOG_FTP},
+#endif
+#ifdef LOG_KERN
+    {"kern",	LOG_KERN},
+#endif
+#ifdef LOG_LPR
+    {"lpr",	LOG_LPR},
+#endif
+#ifdef LOG_MAIL
+    {"mail",	LOG_MAIL},
+#endif
+#ifdef LOG_NEWS
+    {"news",	LOG_NEWS},
+#endif
+#ifdef LOG_SYSLOG
+    {"syslog",	LOG_SYSLOG},
+#endif
+#ifdef LOG_USER
+    {"user",	LOG_USER},
+#endif
+#ifdef LOG_UUCP
+    {"uucp",	LOG_UUCP},
+#endif
+#ifdef LOG_LOCAL0
+    {"local0",	LOG_LOCAL0},
+#endif
+#ifdef LOG_LOCAL1
+    {"local1",	LOG_LOCAL1},
+#endif
+#ifdef LOG_LOCAL2
+    {"local2",	LOG_LOCAL2},
+#endif
+#ifdef LOG_LOCAL3
+    {"local3",	LOG_LOCAL3},
+#endif
+#ifdef LOG_LOCAL4
+    {"local4",	LOG_LOCAL4},
+#endif
+#ifdef LOG_LOCAL5
+    {"local5",	LOG_LOCAL5},
+#endif
+#ifdef LOG_LOCAL6
+    {"local6",	LOG_LOCAL6},
+#endif
+#ifdef LOG_LOCAL7
+    {"local7",	LOG_LOCAL7},
+#endif
+    {NULL,		-1},
+};
+#endif
+
+static char _id_[]="$Id: pcgi-wrapper.c,v 1.8 2000/06/02 15:54:20 brian Exp $";
 
 /* Globals, OR: "I'll know I'll hate myself in the morning" */
 extern char **environ;
@@ -178,6 +248,15 @@ int main(int argc, char *argv[])
     */
     if ((r->conn = pcgiConnect(r)) < 0)
     {   
+        if (!r->errmsg[0])
+	{
+            strcpy(r->errmsg, ERR102_FAILURE_DURING_CONNECT); 
+            sprintf(r->explain, WHY102_FAILURE_DURING_CONNECT,
+	        r->sockpath); 
+	}
+        onError(E_503, strerror(errno), r);
+
+/*
         if(pcgiVerifyProc(r) < 0)
         {   
             if(pcgiStartProc(r) < 0) 
@@ -199,6 +278,7 @@ int main(int argc, char *argv[])
                 strcpy(r->errmsg, ERR103_UNABLE_VERIFY_RUNNING);
             onError(E_503, "pcgiVerifyProc failed", r);
         }
+*/
     } 
 
     /*
@@ -377,6 +457,48 @@ shutdown(r->conn, 1); /* shutdown the socket so we can receive */
 #endif /* end of main(): PCGI_WRAPPER_MAIN */
 
 /*
+// logMessage: output a message to the PCGI log
+ */
+void logMessage(char *msg, pcgiResource *r, int level)
+{
+    FILE *f;
+    time_t now;
+    char *fname;
+
+    if (r->errlog[0])
+    {   
+#ifdef HAVE_SYSLOG_H
+        if (!strncasecmp(r->errlog, "syslog", 6))
+	{
+	    if ((fname = strchr(r->errlog, ':')))
+	    {
+	        const TRANS *fac;
+
+                fname++;
+                for (fac = facilities; fac->t_name; fac++)
+		{
+		    if (!strcasecmp(fname, fac->t_name))
+                    {
+		        openlog("pcgi-wrapper", LOG_NDELAY|LOG_CONS|LOG_PID, fac->t_val);
+                    }
+		}
+	    }
+            now = time(NULL); 
+            syslog(level, "(%s): %s\n", r->sw_info, msg);
+	    return;
+	}
+#endif
+        if((f=fopen(r->errlog, "ab")) != NULL)
+        {
+            now = time(NULL); 
+            fprintf(f, "%s  pcgi-wrapper(%s): %s\n", 
+                    ctime(&now), r->sw_info, msg);
+            fclose(f);
+        }
+    }
+}
+
+/*
 // onError: fatal pcgi error
  */
 void onError(char *estatus, char *emsg, pcgiResource *r)
@@ -390,7 +512,9 @@ void onError(char *estatus, char *emsg, pcgiResource *r)
 #else
     char *pcgi_version = "";
 #endif
-    char *displayError = "";
+    char displayError[MAXSZ] = "";
+    char explainError[MAXSZ] = "";
+    char msgbuf[MAXSZ];
 
     if (r != NULL)
     {
@@ -406,23 +530,26 @@ void onError(char *estatus, char *emsg, pcgiResource *r)
             WSACleanup();
         }
 #endif
-        if (r->errlog[0])
-        {   
-            if((f=fopen(r->errlog, "ab")) != NULL)
-            {
-                now = time(NULL); 
-                fprintf(f, "%s  pcgi-wrapper: %s  %s\n", 
-                        ctime(&now), emsg, r->errmsg);
-                fclose(f);
-            }
-        }
+        sprintf(msgbuf, "%s  %s\n", emsg, r->errmsg);
+        logMessage(msgbuf, r, LOG_ERR);
 
         if(r->p_env!=NULL)   free(r->p_env);
         if(r->p_input!=NULL) free(r->p_input);
     }
     if (r->displayErrors)
-      displayError = r->errmsg;
-    printf(errorHtml, estatus, displayError, emsg, pcgi_version);
+    {
+      sprintf(displayError, "%s<P WIDTH=\"50%%\">%s</P>\n%s<P WIDTH=\"50%%\">%s</P>\n",
+           "<H2>C-Runtime errno:</H2>\n", emsg,
+           "<H2>PCGI Error:</H2>\n", r->errmsg);
+      sprintf(explainError, "<H2>Explanation:</H2>\n%s", r->explain);
+    }
+    printf(errorHtml, estatus, displayError, explainError, emsg, pcgi_version,
+        "PCGI_INFO_FILE=", r->sw_info,
+        "PCGI_PID_FILE=", r->procpath,
+	"PCGI_SOCKET_FILE=", r->sockpath,
+	"PCGI_PORT=", r->sockport
+    );
+
     fflush(stdout);
     fflush(stderr);
 
@@ -580,7 +707,7 @@ pcgi_socket pcgiConnect(pcgiResource *r)
     if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
         if (!r->errmsg[0])
-            strcpy(r->errmsg, ERR114_UNABLE_TO_OPEN_SOCKET);
+            sprintf(r->errmsg, "%s, path=%s", ERR114_UNABLE_TO_OPEN_SOCKET, s.sun_path);
         return (-1);
     }
     while ((connected < 0) && (attempted <= retry))
@@ -590,7 +717,7 @@ pcgi_socket pcgiConnect(pcgiResource *r)
             if((errno!=ECONNREFUSED) && (errno!=ENOENT))
             {   
                 if (!r->errmsg[0])
-                    strcpy(r->errmsg, ERR115_CONNECTION_REFUSED);
+                    sprintf(r->errmsg, "%s, path=%s", ERR115_CONNECTION_REFUSED, s.sun_path);
                 return(-1);
             }
             sleep(delay);
@@ -599,8 +726,16 @@ pcgi_socket pcgiConnect(pcgiResource *r)
     }
     if (!(connected < 0)) 
     {
+        if (attempted > 0 && attempted <= retry)
+        { /* Got thru to server but took several tries... */
+            char msgbuf[MAXSZ];
+
+            sprintf(msgbuf, "connect to zserver took %d attempts", attempted);
+            logMessage(msgbuf, r, LOG_WARNING);
+        }
+
         if (!r->errmsg[0])
-            sprintf(r->errmsg, "%s, fd=%d", ERR116_UNABLE_TO_CONNECT, fd);
+            sprintf(r->errmsg, "%s, path=%s, fd=%d", ERR116_UNABLE_TO_CONNECT, s.sun_path, fd);
         return (fd);
     }
     return (connected);
