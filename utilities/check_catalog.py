@@ -87,7 +87,7 @@
 
 """ script to consistency of a ZCatalog """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Zope    
 import os,sys,re,getopt
@@ -158,6 +158,23 @@ def checkCatalog(path,indexes):
                 print '\tOK:  Forward entries (%d entries)'  % (len(RIDS))
 
 
+        elif idx.meta_type in ['PathIndex']:
+
+            RIDS = IISet()
+
+            for rids in map(None,idx._index.values()):
+                map(RIDS.insert , rids.values()[0])
+
+            diff = difference(RIDS, IISet(_cat.data.keys()))
+            if len(diff)!=0:
+                print '\tERR: Problem with forward entries' 
+                print '\tERR: too much forward entries:', diff
+            else:    
+                print '\tOK:  Forward entries (%d entries)'  % (len(RIDS))
+            
+
+        if idx.meta_type in ['FieldIndex','KeywordIndex','PathIndex']:
+
             # check backward entries
             RIDS = IISet(idx._unindex.keys())
             diff = difference(RIDS, IISet(_cat.data.keys()))
@@ -167,8 +184,9 @@ def checkCatalog(path,indexes):
             else:
                 print '\tOK:  Backward entries (%d entries)'  % (len(RIDS))
 
-        else:
-            print "\tWARN: no check implemented yet"
+
+
+
 
 
 
@@ -191,7 +209,7 @@ def main():
     for o,v in opts:
 
         if o in ['-h','--help']: usage()
-        if o in ['--FieldIndex','--KeywordIndex','PathIndex']: 
+        if o in ['--FieldIndex','--KeywordIndex','--PathIndex']: 
             indexes.append(o[2:])
 
     checkCatalog(args,indexes)
