@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.3 1999/04/22 22:36:38 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.4 1999/04/29 23:36:09 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -872,9 +872,8 @@ class xmit_channel (asynchat.async_chat):
 	def handle_error (self):
 		# usually this is to catch an unexpected disconnect.
 		self.log ('unexpected disconnect on data xmit channel')
-		self.close()
 		try:
-			self.channel.client_dc = None
+			self.close()
 		except:
 			pass
 
