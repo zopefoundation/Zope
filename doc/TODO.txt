@@ -82,6 +82,29 @@ Server construction errors need to be better
   port cannot be bound, an error is raised.  The error currently doesn't
   include the port number, and should.
 
+I propose that we add two more options to the config file:
+
+  Create import-directory and extensions-directory directives
+
+  These would both be multikeys which specify some number of
+  directories that contained importable zexp files and external
+  methods, respectively.  This would allow us to not require any fixed
+  instance home directory.  Instead, each path required by each
+  subsystem is specifiable by itself in the config file.
+
+  I'm sure that utilizing these options in the config file will break
+  things that rely on having a monolithic INSTANCE_HOME such as
+  products that attempt to do something like "import_dir =
+  os.path.join(INSTANCE_HOME, 'import').
+
+  So I propose that the stock Zope instance home install continue to
+  follow the old pattern (where everything is installed into a single
+  instance home directory), but we provide the advanced config file
+  options for roll-your-own packagers and advanced users.
+
+  I would like to do the same thing for the software home, but I
+  haven't thought much about it yet.
+
 Review the Zope Book 2.6 Edition chapters and come up with revisions
 or at least create a Zope 2.7 Install HowTo
 
@@ -95,10 +118,6 @@ or at least create a Zope 2.7 Install HowTo
 
   At least create a HowTo which summarizes the differences between
   installing 2.6 and installing 2.7.
-
-More storage type examples in zope.conf.in
-
-  Temporary storage, bdbstorage, etc.
 
 ------------------------------
  MAYBE NEVER BUT NICE TO HAVE
@@ -121,29 +140,6 @@ textual representation of the configuration.
   reconstitute the configuration in textual representation
   (to aid GUI builders and to make it possible to have
    a meaningful 'zopectl showconfig' or somesuch).  
-
-RPM install should recompile .pycs
-
-  The RPM spec file (inst/Zope.spec.in) should delete and recompile
-  .pycs/.pyos during an RPM install to make sure tracebacks contain
-  real Zope filenames instead of filenames relative to the build
-  directory.  Alternately the RPM install should not contain .pycs or
-  .pyos.
-
-  XXX Not clear why this is actually needed; importing a module causes
-  the __file__ to be updated with the right filename.  A nice touch,
-  but not required.
-
-  AAA Is this a new Python feature or has it always been this way?
-  Tracebacks used to show the location of the .pyc where it had been
-  compiled, not where it actually lived.
-
-RPM install versioning scheme needs to be documented
-
-  The RPM builder has a versioning scheme via the generated Makefile
-  in order to allow for the install of multiple simultaneous versions
-  of Zope on a single system.  This versioning scheme should be
-  documented.
 
 ----------------------------------
 COMMUNITY CONCERNS (uncategorized)
@@ -195,13 +191,10 @@ Lots of discussion!
    lockfile-name /var/lock/$HOSTNAME-lockfile
 
  - Give installaler an option to put libs in a user-specifiable
-   directory at software installation time.
+   directory at software home installation time.
 
  - Give installer an option to put docs in a user-specifiable directory
    at software home installation time.
-
- - Give installer an option to put instance skeleton files in a
-   user-specifiable directory at software home installation time.
 
  - Make it possible to install Zope-related Python libraries to
    The site-packages of the Python used to invoke setup.py.
@@ -209,16 +202,11 @@ Lots of discussion!
  - Offer to install software home 'bin' scripts into a directory
    separate from the software home 'bin' directory.
 
- - To help binary distribution creators, mkzopeinstance probably needs
-   to make it easier to place instance files in separate directories
-   and needs to generate a zope.conf that reflects
-   logfile/lockfile/pidfile placement options that can be fed on the
-   command line.
-
- - Allow a custom Zope.conf.in to be used by someone invoking
-   mkzopeinstance?
-
  - Allow for the installation of platform-dependent files (basically
    Python extensions) to be installed to a place separate than that of
    platform independent files (as requested by Luca DeVitis).
 
+ - Upon failure of Windows service startup, it's possible for the
+   reason for the failure to not be logged anywhere.  This is because
+   we carefully wait til late in the startup process to write logfiles
+   so UNIX has a chance to setuid.  This is unnecessary for Windows.
