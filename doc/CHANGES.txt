@@ -4,25 +4,28 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+
+  Zope 2.5 Alpha 1
+
     Features Added
 
-     - re-enabled inner links for STXNG documents.
+      - re-enabled inner links for STXNG documents.
 
-     - Zope installations upgraded from pre-2.4 installations
-       did not show the WebDAV LockManager entry in the control panel.
+      - Zope installations upgraded from pre-2.4 installations
+        did not show the WebDAV LockManager entry in the control panel.
 
-     - "requestprofiler.py" script in utilities now does better analysis,
-       including:
+      - "requestprofiler.py" script in utilities now does better analysis,
+        including:
 
-       "active" in detailed output is now slightly more meaningful.
-       It is > 0 only if other requests started after it started
-       but before it finished.  The greater the active count, the
-       more likely it is that something was going on at the time
-       in which the request ran that caused a slowdown.
+        "active" in detailed output is now slightly more meaningful.
+        It is > 0 only if other requests started after it started
+        but before it finished.  The greater the active count, the
+        more likely it is that something was going on at the time
+        in which the request ran that caused a slowdown.
 
-       Multiple files may be analyzed at the same time.
+        Multiple files may be analyzed at the same time.
 
-       Also, script recognizes "U" opcode in big M logs as meaning a restart.
+        Also, script recognizes "U" opcode in big M logs as meaning a restart.
 
       - Added a "preview" field to the edit form for Image
         objects. This provides a preview of the actual image data on 
@@ -182,242 +185,3 @@ Zope Changes
       - Fixed case where DTMLMethod.py complained when it tried to remove
         the accelerated DTML security validation routine after recursive
 	entry.
-
-    Zope 2.4 beta 2
-
-      Bugs fixed
-
-        - Some of the import shenanigans in ZService.py were still 
-          trying to load Python 1.5 versions of support dlls for running 
-          as a service under win32 (meaning you effectively couldn't).
-
-        - Collector #2335: older products like GadflyDA that did not
-          use registerClass() were registered but their visibility
-          flag has not been set to Global.  So these products did not
-          appear in the ZMF.
-
-
-    Zope 2.4 beta 1
-
-      Features Added
-
-        - Added a new lesson to the Zope tutorial which shows how to
-          insert data into a relational database.
-
-        - Made the meta-type in the upper-left corner of ZClass instances'
-          management interface into a link to the ZClass definition.
-
-        - Collector #2316: introduced new environment variable ZSYSLOG_FACILITY
-          to override the default syslog facility 'user'
-
-      Bugs fixed
-
-        - Updated the Zope tutorial a bit. Now it references the Zope
-          Book and the online help's DTML reference. Replaced ZopeTime
-          examples with DateTime in lesson 9.
-
-        - The manage_afterClone hook was called too early for copied objects,
-          before the cloned object was reattached to its context. This 
-          caused problems with CatalogAware objects reindexing themselves 
-          on copy.
-
-        - Fixed a situation that could slow down lazy processing of sorted 
-          search results.
-
-        - Product import ordering has been changed.  Now, the total set of
-          all Products are initialized in ascending alphabetical order by
-          product name, regardless of whether an INSTANCE_HOME exists.
-          If two products with the same name exist in both SOFTWARE_HOME
-          and INSTANCE_HOME, the order in which they appear in
-          Application.Products.__path__ determines whether they
-          are loaded first or second.
-
-        - Collector #2318: html_quote function re-aliased into
-          DT_Util so as not to break existing user code.
-
-        - Corrections to the code that adds interface information to the
-          meta type registry.
-
-        - Collector #2274: fixed typo in Transaction.py. Made Connection.py
-          a bit more noisy in case of failure
-
-        - Collector #2273: fixed bug in STXNG (unable to handle :img: 
-          commands with absolute URLs)
-
-        - Collector #2272: fixed problem in Transaction.py (Objects
-          with id==None could not print themselves)
-
-        - fixed Python module import problems causing XML export/import
-          too be completely broken
-    
-        - Collector #2270: fixed import problem when $INSTANCE_HOME  
-          was set
-
-        - Collector #2269: default script for PythonScript is no longer
-          compiled during installation
-
-        - Updated to zlib 1.1.3.
-
-        - fixed parenthesis handling for TextIndex queries
-
-        - Collector #2283: PersistentMapping class keys() method now returns
-          a *copy* of the cached keys list instead of the cached list of
-          keys itself.  This prevents mutation of the list.
-
-        - DateTime constructor now accepts ISO 8601 compliant dates
-
-        - Collector #2254: added hook for webdav/ftp MKCOL
-
-        - Collector #2247: put values of properties into CDATA section  to 
-          prevent non XML compliant documents to be sent to a webdav client.
-
-        - Collector #2287: fixed missing import of 'render_blocks' in 
-          SendMailTag.py
-
-        - Collector #2289: leading \n\r inside messageText broke
-          mail headers
-
-        - Collector #2290: better handling of subject header in Mailhost.py
-
-        - Collector #2291: fixed cookie path in Zope Version Control 
-
-        - Collector #2286: Could not create ZClasses.  coptimizations.c
-          had been corrected erroneously.  Fixed.
-
-        - It was discovered that the implicit names of certain DTMLMethods
-          were ambiguous, making security assertions for them unpredictable.
-          Code was added to detect the condition and correct it in the
-          Zope core.  The affected DTML methods did not pose a security risk.
-          Instead, most were overprotective.
-
-        - "print" with a trailing comma (to avoid a newline) caused
-          spurious errors in Python Scripts.  It turned out the compiler
-          module was in error.  Fixed.
-
-        - Collector #2306:  Fixed broken glossary of Zope Tutorial
-        
-        - Collector #2305: A comma inside an optional parameter of the
-          parameter string broke the ZScriptHTML_tryParams function of
-          PythonScripts.
-
-        - Restored performance of security checks in DTML and
-          Scripts (Python) by replacing read guards with function calls to
-          guarded_getattr() and guarded_getitem() of ZopeGuards.
-
-        - Restricted the target of PythonScript print statements.
-
-        - Python 2.1 reopened the old "AttributeError: __call__" bug.
-          Checked in a fix that should finally solve it correctly.
-
-    Zope 2.4 alpha 1
-
-      Features Added
-
-        - Zope now requires Python 2.1. See the Zope 2.4 migration 
-          document for details:
-
-          http://www.zope.org/Products/Zope/2.4.0/Zope24MigrationGuide.html
-
-        - The 'Authenticated' role has been added as one of Zope's
-          standard roles.  A user's possession of this role indicates
-          that he or she has been authenticated by the Zope security
-          machinery.  It is an implicit role, and cannot be provided to
-          users within the user management screens or the local roles
-          management screens.  It is provided to all authenticated users.
-          Another way to think of the 'Authenticated' role is that
-          it is possessed by all users *except* the Anonymous User.
-
-        - A module 'requestprofiler.py' is now part of the utilities
-          directory.  When run from the command line, this utility
-          allows you to generate profiling information from Zope's
-          detailed request log (the "-M" log).
-
-        - Restricted code can import AccessControl.getSecurityManager,
-          and use 'validate', 'validateValue', 'checkPermission',
-          'getUser', and 'calledByExecutable'.
-
-        - Zope's WebDAV support now includes exclusive write locking.
-
-        - Data.fs.in index_html now shows zope_quick_start instead
-          of old, inaccurate content.
-
-        - Changed index_html, standard_html_header, standard_html_footer,
-          and standard_error_message in Data.fs.in to use "new" DTML syntax
-          (as opposed to SSI-style syntax).
-
-        - Added check for 'FORCE_PRODUCT_LOAD' environ var to bits which
-          try to detect whether we're a ZEO client or not in order not to
-          skip product-loading tasks.  This has the consequence that a ZEO
-          client with the "ZEO_CLIENT" env var set will cause product
-          loading tasks to occur iff his "FORCE_PRODUCT_LOAD" environment
-          var is set as well.
-
-        - Further optimizations in the lexicon of the Catalog as well
-          as the final merge code integration for Text indexes.  This
-          should reduce the bloat when things are reindexed.  
-
-        - StructuredText: old StructuredText replaces by StructuredTextNG.
-          Added support for locale settings.  Several bugfixes and code
-          cleanup.
-
-        - Image and File objects now support the HTTP Range and If-Range
-          headers, enabeling partial downloads of such objects. This can be
-          used by clients to restart a broken download. Downloads of these
-          objects through FTP can also be restarted.
-
-        - Update of Medusa tree to latest version
-
-        - If an INSTANCE_HOME is defined and has a 'lib/python'
-          subdirectory, it will be added to the front of the Python path.
-
-        - DTML-In and DTML-Tree now have optional "prefix" attributes
-          that can be used to make friendlier tag variable names.
-
-        - Added product reloading capability, formerly provided by
-          the "Refresh" product.  This enables developers to see the
-          effect of changes to their products without restarting Zope.
-
-        - Added new 'sequence' module for underscore namespace to provide
-          extended sorting functionality for sequence (implements
-          ExtendedDTMLSorting proposal)
-
-        - Fixed a long-standing bug in FileStorage that made it so
-          versions were only partially committed.
-
-        - Rewrote the complete indexing infrastructure according
-          to the DropinIndex proposal
-          (see lib/python/Products/PlugginIndexes/README.txt for 
-          detailed informations). 
-
-        - Adopted ZCatalog to new indexing infrastructure. 
-                                  
-        - added text() method to HTTPRequest object to provide a plain 
-          text representation of the request (Collector #2264)
-        
-      Bugs Fixed
-
-        - TextIndexes which called methods expecting an argument failed
-          with a TypeError.  This was fixed by extending an exception
-          handler.
-
-        - A security issue having to do with setting permission mappings
-          on ZClass methods was fixed (this supersedes Hotfix-2001-05-01)
-
-        - Automatic reloading of Help topics while running in debug mode
-          was fixed.
-
-        - Fixed problem adding propertynames with spaces (Collector #2206)
-
-        - Plugged a memory leak in extensions.  There are often circular
-          references in code generated by Python's "exec" statement but
-          with a small change extensions now break those references.
-
-        - Hardened ZMI contents view against subobjects w/ flaky
-          'get_size' (Collector #1900).
-
-        - Fixed OFS.CopySupport's _verifyObjectPaste to utilize the
-          permission stored in the metatype registry, if available
-          (Collector #1975)
-
-        - Fixed a long-standing bug in FileStorage that made it so
-          versions were only partially committed.
