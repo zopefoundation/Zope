@@ -37,5 +37,5 @@ ZCatalog - searchResults: specifying parameters for a search query
           passwd in the 'query' parameter.
 
 
-     'level'  -- only applies to Path Index. Specifies the directory level to 
-     start searching. (optional, default: 0)
+      'level'  -- only applies to Path Index. Specifies the directory level to 
+      start searching. (optional, default: 0)
