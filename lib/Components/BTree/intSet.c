@@ -85,7 +85,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.13 1999/05/01 20:35:22 jeffrey Exp $"
+"\n$Id: intSet.c,v 1.14 1999/05/07 01:42:53 jim Exp $"
 ;
 
 #include <limits.h>
@@ -345,7 +345,7 @@ intSet_set_operation(intSet *self, PyObject *other,
   o=INTSET(other);
 
   PER_USE_OR_RETURN(self, NULL);
-  PER_USE_OR_RETURN(other, NULL);
+  PER_USE_OR_RETURN((intSet*)other, NULL);
 
   od=o->data;
 
@@ -611,7 +611,7 @@ void
 initintSet()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.13 $";
+  char *rev="$Revision: 1.14 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -641,51 +641,3 @@ initintSet()
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module intSet");
 }
-
-/**************************************************************************
-
-  Revision Log:
-
-  $Log: intSet.c,v $
-  Revision 1.13  1999/05/01 20:35:22  jeffrey
-  Removed use of importing malloc
-
-  Revision 1.12  1999/03/10 00:14:35  klm
-  Committing with version 1.0 of the license.
-
-  Revision 1.11  1999/02/08 19:02:34  jim
-  updated copyright
-
-  Revision 1.10  1998/11/23 11:45:40  jim
-  removed license checks
-
-  Revision 1.9  1998/03/24 15:17:34  jim
-  *** empty log message ***
-
-  Revision 1.8  1998/03/24 15:15:33  jim
-  Brought reinit/deactivate machinery up to date.
-
-  Revision 1.7  1998/02/18 22:19:39  jim
-  Fixed C inheritence problem. Waaaaaaa.
-
-  Revision 1.6  1997/12/12 23:48:07  jim
-  Added basicnew support.
-
-  Revision 1.5  1997/11/13 20:47:13  jim
-  Fixed some bad return values.
-
-  Revision 1.4  1997/11/13 20:38:39  jim
-  added dcprotect
-
-  Revision 1.3  1997/10/01 02:45:58  jim
-  Minor reformat.
-
-  Revision 1.2  1997/09/08 18:41:59  jim
-  Added logic to save data in binary form.
-
-  Revision 1.1  1997/08/05 14:55:22  jim
-  *** empty log message ***
-
-
-
-**************************************************************************/
