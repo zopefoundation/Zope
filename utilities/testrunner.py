@@ -311,6 +311,13 @@ def main(args):
         sys.path.insert( 0, sw_home )
         os.environ['SOFTWARE_HOME'] = sw_home
 
+    try:
+        # Try to set up the testing environment (esp. INSTANCE_HOME,
+        # so we use the right custom_zodb.py.)
+        import Testing
+    except ImportError:
+        pass
+
     if test_all:
         testrunner.runAllTests()
     elif pathname:

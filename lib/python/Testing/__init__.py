@@ -13,7 +13,7 @@
 """
 Set up testing environment
 
-$Id: __init__.py,v 1.4 2001/11/28 15:51:17 matt Exp $
+$Id: __init__.py,v 1.5 2002/01/11 17:07:32 shane Exp $
 """
 import os
 
@@ -26,7 +26,8 @@ os.environ['INSTANCE_HOME'] = INSTANCE_HOME = pdir(__file__)
 # Set the SOFTWARE_HOME to the directory containing the Testing package
 os.environ['SOFTWARE_HOME'] = SOFTWARE_HOME = pdir(INSTANCE_HOME)
 
-# Prevent useless initialization by pretending to be a ZEO client
-os.environ['ZEO_CLIENT'] = '1'
+# Note: we don't set os.environ['ZEO_CLIENT'] anymore because we
+# really do need all the products to be initialized.  Some tests
+# use the product registry.
 
 
