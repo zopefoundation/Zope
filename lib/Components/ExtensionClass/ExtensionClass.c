@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.30 1998/11/17 19:48:32 jim Exp $
+  $Id: ExtensionClass.c,v 1.31 1998/11/23 11:47:19 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.30 1998/11/17 19:48:32 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.31 1998/11/23 11:47:19 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -99,7 +99,7 @@ staticforward PyExtensionClass ECType;
     } \
   else UNLESS(self = PyObject_NEW(T, & T ## Type)) return NULL;
 
-#define METH_BY_NAME 2<<16
+#define METH_BY_NAME (2 << 16)
 
 static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__mod__, *py__pow__, *py__divmod__, *py__lshift__, *py__rshift__,
@@ -392,9 +392,10 @@ bindCMethod(CMethod *m, PyObject *inst)
 {
   CMethod *self;
   
-  UNLESS(inst->ob_type==m->type ||
-	 (ExtensionInstance_Check(inst)
-	  && SubclassInstance_Check(inst,m->type))
+  UNLESS(inst->ob_type==m->type
+	 || (ExtensionInstance_Check(inst)
+	     && SubclassInstance_Check(inst,m->type))
+	 || ((m->flags & METH_CLASS_METHOD) && ExtensionClass_Check(inst))
 	 )
     {
       Py_INCREF(m);
@@ -518,15 +519,17 @@ CMethod_call(CMethod *self, PyObject *args, PyObject *kw)
   if ((size=PyTuple_Size(args)) > 0)
     {
       PyObject *first=0;
+
       UNLESS(first=PyTuple_GET_ITEM(args, 0)) return NULL;
-      if (first->ob_type==self->type
-	 ||
-	 (ExtensionInstance_Check(first)
-	  &&
-	  CMethod_issubclass(ExtensionClassOf(first),
-			     AsExtensionClass(self->type))
+      if (
+	  first->ob_type==self->type
+	  ||
+	  (ExtensionInstance_Check(first)
+	   &&
+	   CMethod_issubclass(ExtensionClassOf(first),
+			      AsExtensionClass(self->type))
 	  )
-	 );
+	  )
       {
 	PyObject *rest=0;
 	if (HasMethodHook(first) &&
@@ -1374,34 +1377,13 @@ err:
 }
 
 static PyObject *
-inheritedAttribute(PyObject *self, PyObject *args)
+inheritedAttribute(PyExtensionClass *self, PyObject *args)
 {
-  PyObject *cls, *name;
+  PyObject *name;
 
-  UNLESS(PyArg_ParseTuple(args,"OO",&cls,&name));
-  UNLESS(ExtensionClass_Check(cls))
-    {
-      PyErr_SetString(PyExc_TypeError,
-		      "inheritedAttribute must be called with an extension "
-		      "class first argument");
-      return NULL;
-    }
-  UNLESS(PyString_Check(name))
-    {
-      PyErr_SetString(PyExc_TypeError,
-		      "inheritedAttribute must be called with a "
-		      "string second argument");
-      return NULL;
-    }
+  UNLESS(PyArg_ParseTuple(args,"O!",&PyString_Type, &name)) return NULL;
 
-  UNLESS(name=CCL_getattr(AsExtensionClass(cls),name,1)) return NULL;
-  
-  /* We got something from our class, maybe its an unbound method. */
-  if (UnboundCMethod_Check(name))
-    ASSIGN(name,(PyObject*)bindCMethod((CMethod*)name,self));
-  else if (UnboundPMethod_Check(name))
-    ASSIGN(name,bindPMethod((PMethod*)name,self));
-  return name;
+  return CCL_getattr(AsExtensionClass(self),name,1);
 }
 
 static PyObject *
@@ -1426,7 +1408,7 @@ basicnew(PyExtensionClass *self, PyObject *args)
       PyObject *var_size;
       int size;
       
-      UNLESS(var_size=CCL_getattr(self,py__var_size__, 0)) return NULL;
+      UNLESS(var_size=CCL_getattr(self, py__var_size__, 0)) return NULL;
       UNLESS_ASSIGN(var_size,PyObject_CallObject(var_size,NULL)) return NULL;
       size=PyInt_AsLong(var_size);
       if (PyErr_Occurred()) return NULL;
@@ -1460,10 +1442,11 @@ err:
 }
 
 struct PyMethodDef ECI_methods[] = {
-  {"__reduce__",(PyCFunction)EC_reduce,0,
+  {"__reduce__",(PyCFunction)EC_reduce, METH_VARARGS,
    "__reduce__() -- Reduce an instance into it's class and creation data"
   },
-  {"inheritedAttribute",(PyCFunction)inheritedAttribute,1,
+  {"inheritedAttribute",(PyCFunction)inheritedAttribute,
+   METH_VARARGS | METH_CLASS_METHOD,
    "inheritedAttribute(class,name) -- Get an inherited attribute\n\n"
    "Get an attribute that would be inherited if the given (extension)\n"
    "class did not define it.  This method is used when overriding\n"
@@ -1478,13 +1461,18 @@ struct PyMethodDef ECI_methods[] = {
    "   unbound methods gotten from Python classes cannot be called with \n"
    "   extension class instances.  \n"
   },
+  {"__basicnew__",(PyCFunction)basicnew,
+   METH_VARARGS | METH_CLASS_METHOD,
+   "__basicnew__() -- return a new uninitialized instance"
+  },
   {NULL,		NULL}		/* sentinel */
 };
 
 static PyObject *
 initializeBaseExtensionClass(PyExtensionClass *self)
 {
-  PyMethodChain *chain, top = { ECI_methods, NULL };
+  static PyMethodChain top = { ECI_methods, NULL };
+  PyMethodChain *chain;
   PyObject *dict;
   int abstract;
 
@@ -1505,13 +1493,14 @@ initializeBaseExtensionClass(PyExtensionClass *self)
       Py_DECREF(name);
     }
   else if (0 > PyMapping_SetItemString(dict,"__doc__",Py_None)) goto err;
-
-  top.link=&(self->methods);
   
-  chain=&top;
-  while (chain != NULL)
+  if (&self->methods) chain=&(self->methods);
+  else chain=&top;
+  
+  while (1)
     {
       PyMethodDef *ml = chain->methods;
+
       for (; ml && ml->ml_name != NULL; ml++) 
 	{
 	  if (ml->ml_meth)
@@ -1520,12 +1509,29 @@ initializeBaseExtensionClass(PyExtensionClass *self)
 		{
 		  PyObject *m;
 
-		  UNLESS(m=newCMethod(self, NULL, ml->ml_name, ml->ml_meth,
-				      ml->ml_flags, ml->ml_doc))
-		    return NULL;
-
-		  if (abstract) UNLESS_ASSIGN(m, newPMethod(self, m))
-		    return NULL;
+		  /* Note that we create a circular reference here.
+		     I suppose that this isn't so bad, since this is
+		     probably a static thing anyway. Still, it is a
+		     bit troubling. Oh well.
+		  */
+		  if (ml->ml_flags & METH_CLASS_METHOD)
+		    {
+		      UNLESS(m=newCMethod(
+                         AsExtensionClass(self->ob_type), NULL,
+			 ml->ml_name, ml->ml_meth,
+			 ml->ml_flags, ml->ml_doc))
+			return NULL;
+		    }
+		  else
+		    {
+		      UNLESS(m=newCMethod(self, NULL, ml->ml_name, ml->ml_meth,
+					  ml->ml_flags, ml->ml_doc))
+			return NULL;
+		  
+		      if (abstract)
+			UNLESS_ASSIGN(m, newPMethod(self, m))
+			  return NULL;
+		    }
 
 		  if (PyMapping_SetItemString(dict,ml->ml_name,m) < 0)
 		    return NULL;
@@ -1546,7 +1552,10 @@ initializeBaseExtensionClass(PyExtensionClass *self)
 		PyErr_Clear();
 	    }
 	}
-      chain=chain->link;
+      
+      if (chain == &top) break;
+
+      UNLESS(chain=chain->link) chain=&top;
     }
   return (PyObject*)self;
 
@@ -1706,14 +1715,9 @@ CCL_getattr(PyExtensionClass *self, PyObject *oname, int look_super)
     }
 
   if (PyFunction_Check(r) || NeedsToBeBound(r))
-    {
-      UNLESS_ASSIGN(r,newPMethod(self,r)) return NULL;
-    }
+    ASSIGN(r,newPMethod(self,r));
   else if (PyMethod_Check(r) && ! PyMethod_Self(r))
-    {
-      UNLESS_ASSIGN(r,newPMethod(self, PyMethod_Function(r)))
-	return NULL;
-    }
+    ASSIGN(r,newPMethod(self, PyMethod_Function(r)));
 
   return r;
 }
@@ -1722,15 +1726,6 @@ static PyObject *
 CCL_reduce(PyExtensionClass *self, PyObject *args)
 {
   return PyString_FromString(self->tp_name);
-}
-
-static PyObject *
-obsolete_inheritedAttribute(PyExtensionClass *self, PyObject *name)
-{
-  UNLESS(name) return JimErr_Format(PyExc_TypeError,
-				   "expected one argument, and none given",
-				   NULL);
-  return CCL_getattr(self,name,1);
 }
 
 PyObject *
@@ -1754,13 +1749,7 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 		return PyString_FromString(self->tp_name);
 	      break;
 	    case 'b':
-	      if (strcmp(n,"basicnew__")==0)
-		return newCMethod(self,(PyObject*)self,
-		   "__basicnew__",(PyCFunction)basicnew,0,
-		   "__basicnew__() -- "
-		   "Create a new instance without executing it's constructor"
-                   );
-	      else if (strcmp(n,"bases__")==0)
+	      if (strcmp(n,"bases__")==0)
 		{
 		  if (self->bases)
 		    {
@@ -1788,17 +1777,13 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 	}
     }
 
-  if (strcmp(nm,"inheritedAttribute")==0)
+  if ((r=CCL_getattr(self,name,0)))
     {
-      return newCMethod(self,(PyObject*)self,
-			"inheritedAttribute",
-			(PyCFunction)obsolete_inheritedAttribute,0,
-			"look up an attribute in a class's super classes");
+      if (UnboundCMethod_Check(r) && (AsCMethod(r)->flags & METH_CLASS_METHOD))
+	ASSIGN(r,(PyObject*)bindCMethod((CMethod*)r,OBJECT(self)));
     }
-  
-  if ((r=CCL_getattr(self,name,0))) return r;
-
-  return NULL;
+   
+  return r;
 }
 
 static int
@@ -3297,7 +3282,6 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
 
 struct PyMethodDef ExtensionClass_methods[] = {
   {"__init__",(PyCFunction)subclass__init__,1,""},
-  
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -3389,7 +3373,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.30 $";
+  char *rev="$Revision: 1.31 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;

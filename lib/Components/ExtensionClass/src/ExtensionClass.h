@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.12 1998/11/17 19:53:27 jim Exp $
+  $Id: ExtensionClass.h,v 1.13 1998/11/23 11:47:19 jim Exp $
 
   Extension Class Definitions
 
@@ -390,6 +390,8 @@ static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
   (PyExtensionClassCAPI->issubclass((PyExtensionClass *)((I)->ob_type), \
 				    (PyExtensionClass *)(C))))
 
+/* This let's you define built-in class methods. */
+#define METH_CLASS_METHOD (2 << 17)
 
 /*****************************************************************************
 
