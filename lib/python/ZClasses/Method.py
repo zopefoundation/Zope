@@ -100,6 +100,7 @@ class ZClassMethodsSheet(
     ZClassOwner):
     "Manage instance methods"
     id='contents'
+    icon='p_/Methods_icon'
 
 
     ######################################################################
@@ -112,6 +113,9 @@ class ZClassMethodsSheet(
          'action':'manage_addZClassForm'},
         {'name': App.Factory.Factory.meta_type,
          'action': 'manage_addPrincipiaFactoryForm'
+         },
+        {'name': 'Property Sheet Interface',
+         'action': 'manage_addPropertyInterfaceForm'
          },
         )
     
@@ -134,6 +138,8 @@ class ZClassMethodsSheet(
 
     ######################################################################
 
+    manage_addPropertyInterfaceForm=Globals.HTMLFile('addPropertyInterface',
+                                                     globals())
 
 
     # This is to trigger alternate access management for methods:
