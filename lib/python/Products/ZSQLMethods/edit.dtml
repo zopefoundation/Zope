@@ -34,9 +34,9 @@
                 <!--#var sequence-key--></option>
               <!--#/in-->
             </select></td></tr>
-<tr>	<th align='LEFT'><em>Arguments</em></th>
-	<td align='LEFT'><input name="arguments" size="40"
-             value="<!--#var arguments_src fmt=html-quote-->"></td>
+<tr valign="top"><th align='LEFT'><em>Arguments</em></th>
+	<td align='LEFT'>
+            <textarea name="arguments" cols="40" rows="4">&dtml-arguments_src;</textarea></td>
 		</tr>
 <tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
 	    <textarea name="template:text"
