@@ -1,5 +1,6 @@
 import ExtensionClass
-from string import strip, lower, upper
+import string
+from string import strip, lower, upper, join
 from Acquisition import Implicit
 from Record import Record
 
@@ -91,3 +92,42 @@ class Results:
 	if parent is None: return fields
 	return fields.__of__(parent)
 
+    def asRDB(self): # Waaaaa
+        r=[]
+        append=r.append
+        strings=[]
+        nstrings=[]
+        items=self.__items__
+        indexes=range(len(items))
+        join=string.join
+        for i in indexes:
+            item=items[i]
+            t=lower(item['type'])
+            if t=='s' or t=='t':
+                t=='t'
+                strings.append(i)
+            else: nstrings.append(i)
+            if item.has_key('width'): append('%s%s' % (item['width'], t))
+            else: r.append(t)
+                
+
+        r=[join(self._names, '\t'), join(r,'\t')]
+        append=r.append
+        find=string.find
+        split=string.split
+        row=['']*len(items)
+        tostr=str
+        for d in self._data:
+            for i in strings:
+                v=tostr(d[i])
+                if v:
+                    if find(v,'\\') > 0: v=join(split(v,'\\'),'\\\\')
+                    if find(v,'\t') > 0: v=join(split(v,'\t'),'\\t')
+                    if find(v,'\n') > 0: v=join(split(v,'\n'),'\\n')
+                row[i]=v
+            for i in nstrings:
+                row[i]=tostr(d[i])
+            append(join(row,'\t'))
+        append('')
+                
+        return join(r,'\n')
