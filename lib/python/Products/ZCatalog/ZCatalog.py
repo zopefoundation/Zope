@@ -309,10 +309,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def catalog_object(self, obj, uid):
 	""" wrapper around catalog """
-	print 'about to catalog %s' % uid
 	self.total = self.total + self._catalog.catalogObject(obj, uid)
         if self.total > self.threshold:
-            print 'about to commit'
             get_transaction().commit(1)
             self.total = 0
 
