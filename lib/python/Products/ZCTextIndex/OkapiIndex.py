@@ -60,6 +60,11 @@ class OkapiIndex(Persistent):
         self._lexicon = lexicon
 
         # wid -> {docid -> frequency}; t -> D -> f(D, t)
+        # There are two kinds of OOV words:  wid 0 is explicitly OOV,
+        # and it's possible that the lexicon will return a non-zero wid
+        # for a word *we've* never seen (e.g., lexicons can be shared
+        # across indices, and a query can contain a word some other
+        # index knows about but we don't).
         self._wordinfo = IOBTree()
 
         # docid -> # of words in the doc
@@ -111,8 +116,7 @@ class OkapiIndex(Persistent):
         wids = self._lexicon.termToWordIds(term)
         if not wids:
             return None # All docs match
-        if 0 in wids:
-            wids = filter(None, wids)
+        wids = self._remove_oov_wids(wids)
         return mass_weightedUnion(self._search_wids(wids))
 
     def search_glob(self, pattern):
@@ -121,9 +125,12 @@ class OkapiIndex(Persistent):
 
     def search_phrase(self, phrase):
         wids = self._lexicon.termToWordIds(phrase)
-        if 0 in wids:
+        cleaned_wids = self._remove_oov_wids(wids)
+        if len(wids) != len(cleaned_wids):
+            # At least one wid was OOV:  can't possibly find it.
             return IIBTree()
-        hits = mass_weightedIntersection(self._search_wids(wids))
+        scores = self._search_wids(cleaned_wids)
+        hits = mass_weightedIntersection(scores)
         if not hits:
             return hits
         code = WidCode.encode(wids)
@@ -133,6 +140,9 @@ class OkapiIndex(Persistent):
             if docwords.find(code) >= 0:
                 result[docid] = weight
         return result
+
+    def _remove_oov_wids(self, wids):
+        return filter(self._wordinfo.has_key, wids)
 
     # The workhorse.  Return a list of (IIBucket, weight) pairs, one pair
     # for each wid t in wids.  The IIBucket, times the weight, maps D to
@@ -157,6 +167,7 @@ class OkapiIndex(Persistent):
         L = []
         docid2len = self._doclen
         for t in wids:
+            assert self._wordinfo.has_key(t)  # caller responsible for OOV
             d2f = self._wordinfo[t] # map {docid -> f(docid, t)}
             idf = inverse_doc_frequency(len(d2f), N)  # an unscaled float
             result = IIBucket()
