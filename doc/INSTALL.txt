@@ -28,19 +28,17 @@ Running Zope
 
 Choosing your database
 
-  We currently support two Zope databases, ZODB 2 and ZODB 3.  To use
-  ZODB 3 use ZServer via the z2.py script described below.  To use
-  ZODB 2, use the PCGI publisher (without ZServer).
-
-  (Alternatives for the curious and ZPublisher aware:
+  We currently support two Zope databases, ZODB 2 and ZODB 3. 
+  ZODB 3 is the default database.  To use ZODB 2:
 
     - You can use ZODB 2 with ZServer and the z2.py script
       described below by providing the -2 command-line option to
       z2.py. 
 
-    - You can use ZODB 3 with the PCGI publisher by changing the
-      published module to Zope.
-  )
+    - You can use ZODB 2 with the PCGI publisher by editing Zope.cgi
+      (after running the installer) changing the published module to
+      'Main' and changing 'Zope' to 'Main' in the PCGI_MODULE_PATH
+      setting.
 
 Quick Start
 
@@ -50,8 +48,7 @@ Quick Start
     python wo_pcgi.py  # Note, this must be Python 1.5.2
     python z2.py 
 
-  where you need to supply the IP address of your dns server to the -d
-  option.  If you get errors indicating that addresses are in use,
+  If you get errors indicating that addresses are in use,
   then you will have to supply arguments to z2.py to change the ports
   used for HTTP or FTP. (See the help for the z2.py script by
   running z2.py with the -h option.)
@@ -86,8 +83,8 @@ Building Zope
   help you get started. You must run these scripts from the top-level
   directory.
 
-  If you want to try out Zope in the simplest fashion using a 
-  Python web server or using ZServer, then run the script wo_pcgi::
+  If you want to try out Zope in the simplest fashion using ZServer,
+  then run the script wo_pcgi::
 
     python wo_pcgi.py
 
