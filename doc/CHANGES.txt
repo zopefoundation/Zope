@@ -24,6 +24,20 @@ Zope changes
           way.  It also provides an API for developers to follow when
           experimenting with caching strategies.
 
+        - The ZPublisher 'method' form variable type has been 
+          deprecated in favor of 'action'. The behavior is the 
+          same, only the official (and documented in the Zope
+          book) name has changed. The 'method' name is still 
+          supported for backward compatibility.
+
+        - The 'objectIds' and 'objectValues' methods of ObjectManager
+          derived objects are no longer directly Web-accessible. This 
+          is a topic that has come up over and over on the lists. Some 
+          (xml-rpc, mostly) users may depend on this behavior - applications
+          that need access to this information remotely should be modified 
+          so that a Python Script or DTML Method can explicitly pass 
+          the data. 
+
       Bugs Fixed
 
         - A misspelled function name which prevented the addition of
