@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -176,7 +176,12 @@ class _cache:
            'GMT+1100','GMT+1200','GMT+1300','GMT-0100','GMT-0200',
            'GMT-0300','GMT-0400','GMT-0500','GMT-0600','GMT-0700',
            'GMT-0800','GMT-0900','GMT-1000','GMT-1100','GMT-1200',
-           'GMT+1']
+           'GMT+1',
+           'UT','BST','CDT','MEST','SST','FST','WADT','EADT','NZDT',
+           'WET','WAT','AT','AST','NT','IDLW','CET','MET',
+           'MEWT','SWT','FWT','EET','BT','ZP4','ZP5','ZP6',
+           'WAST','CCT','JST','EAST','GST','NZT','NZST','IDLE']
+
 
     _zmap={'aest':'GMT+1000', 'aedt':'GMT+1100',
            'brazil/acre':'Brazil/Acre',
@@ -233,7 +238,19 @@ class _cache:
            'us/east-indiana':'US/East-Indiana','us/hawaii':'US/Hawaii',
            'us/indiana-starke':'US/Indiana-Starke','us/michigan':'US/Michigan',
            'us/mountain':'US/Mountain','us/pacific':'US/Pacific',
-           'us/samoa':'US/Samoa'}
+           'us/samoa':'US/Samoa',
+
+           'ut':'Universal',      
+           'bst':'GMT+1', 'cdt':'GMT+2', 'mest':'GMT+2', 'sst':'GMT+2',
+           'fst':'GMT+2', 'wadt':'GMT+8', 'eadt':'GMT+11', 'nzdt':'GMT+13',
+           'wet':'GMT', 'wat':'GMT-1', 'at':'GMT-2', 'ast':'GMT-4',
+           'nt':'GMT-11', 'idlw':'GMT-12', 'cet':'GMT+1', 'met':'GMT+1',
+           'mewt':'GMT+1', 'swt':'GMT+1', 'fwt':'GMT+1', 'eet':'GMT+2',
+           'bt':'GMT+3', 'zp4':'GMT+4', 'zp5':'GMT+5', 'zp6':'GMT+6',
+           'wast':'GMT+7', 'cct':'GMT+8', 'jst':'GMT+9', 'east':'GMT+10',
+           'gst':'GMT+10', 'nzt':'GMT+12', 'nzst':'GMT+12', 'idle':'GMT+12'
+           }
+
 
     def __init__(self):
         self._db=DateTimeZone._data
