@@ -10,10 +10,10 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.7 1998/04/15 13:19:02 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Connection.py,v 1.8 1998/04/24 15:04:33 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
-import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
+import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition, sys
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
 from Globals import HTMLFile
@@ -140,6 +140,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.8  1998/04/24 15:04:33  jim
+# *** empty log message ***
+#
 # Revision 1.7  1998/04/15 13:19:02  jim
 # Do better job of raising errors.
 #
