@@ -42,10 +42,14 @@ defaults to test/test1.xml.
 Regression test
 ---------------
 
-There are a number of test cases in the test subdirectory, named
-test/test<number>.xml and test/test<number>.html.  The Python script
-./runtest.py calls driver.main() for each test case, and should print
-"<file> OK" for each testcase.
+There are a number of test files in the test subdirectory, named
+test/input/test<number>.xml and test/input/test<number>.html.  The
+Python script ./runtest.py calls driver.main() for each test file, and
+should print "<file> OK" for each one.
+
+In addition, there are unit test suites in the test subdirectory;
+these can be run with test/run.py.  This should print a number of
+testcase names, ending with a line saying "OK".
 
 What's Here
 -----------
@@ -78,7 +82,10 @@ TO DO
 - Implement on-error.  Assume that the evaluation engine's evaluate()
   functions raise TALESError (defined where???) on all exceptions.
 
-- Bring DummyEngine.py up to specs.
+- Reject input with TAL or METAL statements on tags whose end tag is
+  implied.
+
+- Bring DummyEngine.py up to specs.  (string: instead of str:, etc.)
 
 - Finish implementing insertStructure(): attribute replacement isn't
   implemented yet.
@@ -89,10 +96,6 @@ TO DO
 - HTMLTALParser.py and TALParser.py are silly names.  Should be
   HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,
   without "TAL"?)
-
-- The HTML TAL compiler should preserve more information about the
-  start element, e.g. <img ismap /> should be output like that, not as
-  <img ismap="ismap">.
 
 - Should we preserve case of tags and attribute names in HTML?
 
