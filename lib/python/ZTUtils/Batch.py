@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.7 2002/02/15 16:26:56 evan Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Batch.py,v 1.8 2002/03/15 16:01:52 chrisw Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from ExtensionClass import Base
 
@@ -53,6 +53,8 @@ class Batch(Base):
         argument, is a 1-based index (I know, lame).  "first" is the
         0-based index.  "length" is the actual number of elements in
         the batch.
+
+        "total" is the length of the original, unbatched, sequence
         '''
 
         start = start + 1
@@ -68,6 +70,7 @@ class Batch(Base):
         self.overlap = overlap
         self.first = max(start - 1, 0)
         self.length = self.end - self.first
+        self.total = len(sequence)
         if self.first == 0:
             self.previous = None
         
