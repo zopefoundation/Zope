@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.38 2000/09/01 14:00:41 brian Exp $"
+"$Id: DT_String.py,v 1.39 2000/12/12 21:20:25 shane Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -91,7 +91,7 @@ from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
 from DT_Var import Var, Call, Comment
 from DT_Return import ReturnTag, DTReturn
 
-
+_marker = []  # Create a new marker object.
 
 class String:
     """Document templates defined from strings.
@@ -418,6 +418,14 @@ class String:
         self.globals=vars
         self._vars={}
 
+    ZDocumentTemplate_beforeRender__roles__ = ()
+    def ZDocumentTemplate_beforeRender(self, md, default):
+        return default
+
+    ZDocumentTemplate_afterRender__roles__ = ()
+    def ZDocumentTemplate_afterRender(self, md, result):
+        pass
+
     def __call__(self,client=None,mapping={},**kw):
         '''\
         Generate a document from a document template.
@@ -525,8 +533,14 @@ class String:
             pushed=pushed+1
 
         try:
-            try: return render_blocks(self._v_blocks, md)
-            except DTReturn, v: return v.v
+            value = self.ZDocumentTemplate_beforeRender(md, _marker)
+            if value is _marker:
+                try: result = render_blocks(self._v_blocks, md)
+                except DTReturn, v: result = v.v
+                self.ZDocumentTemplate_afterRender(md, result)
+                return result
+            else:
+                return value
         finally:
             if pushed: md._pop(pushed) # Get rid of circular reference!
             md.level=level # Restore previous level

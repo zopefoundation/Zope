@@ -1,0 +1,84 @@
+Cache Management: Configurable Caching
+
+  Performing some computations in Zope can take a long time or use
+  a lot of resources.  One way to deal with expensive tasks is to
+  cache them.  The first time the computation is requested, the results
+  are stored in a table or *cache*.  Subsequent requests get the results
+  from the cache.  This can result in a dramatic speed increase.
+
+  There are so many possible strategies for caching that no one could
+  possibly come up with them all.  Caches can be
+  stored in memory, on disk, on other computers, or by other means.
+  Caches can be limited in size or unconstrained.  They can be
+  made to work with only specific types of objects.  They can be
+  tuned in different ways.
+
+  So instead of trying to provide for every possible caching strategy,
+  Zope defines an API called *cache management* that lets developers
+  write their own caching strategies, or *cache managers*, and lets
+  site administrators easily connect cacheable objects to those cache
+  managers.
+
+  You can use caching to speed up access to often-requested pages,
+  reduce disk access and network traffic, and deal with heavy loads.
+  All these benefits come with risks of excessive caching, however,
+  so it's important to fine-tune the cache settings.  More on this
+  later.
+  
+How to set up caching
+
+  The first thing you need to do is create a cache manager instance.
+  In the Zope management interface, go to a folder containing objects
+  that would benefit from caching.  From the add list, select a
+  cache manager type such as 'RAM Cache Manager'.  Use an ID that
+  describes the purpose of the cache manager.
+
+  Next, visit one of the objects that you want to cache.  A new tab
+  labeled 'Cache' should be visible.  Select it.  From the drop-down
+  box, select the cache manager you just created and press the
+  'Change' button.
+
+  The object is now ready to be cached.  Visit the 'View' tab.  If
+  the object is a script that takes a long time to render, the first
+  view will still take just as long as before.  But if you're using
+  a RAM cache manager or similar, the second view should be much faster.
+  Press the *reload* button in your browser to try it out.
+
+  You can associate many objects to a cache manager at once using the
+  'Associate' tab of all cache managers.  Visit the cache manager
+  object you created and select the 'Associate' tab.  Press the
+  'Locate' button.  Zope will locate all cacheable objects in the
+  folder.  Select the checkboxes next to the objects you want to
+  cache and press the 'Save changes' button.
+
+Inherent risks
+
+  Cache managers generally don't know the nature of what is being
+  cached, so here are some issues that can surface:
+
+    - Data that is intended for authorized viewers only can
+      be inadvertently cached in public caches.
+
+    - Data is cached for too long a time.
+
+    - If more than one cache is involved, data is purged from one
+      cache but not the other.
+
+    - A method that makes up part of the page sets the caching headers
+      for the entire response, fooling downstream caches into thinking
+      the whole response should be cached.
+
+    - Result data can depend on any number of objects.  Early on it was
+      decided that the standard cache managers will not try to deduce
+      dependencies, but instead rely on the user for configuration of
+      simple dependencies.
+
+  Because of these risks, you should be careful when setting up caching.
+  You'll need to fine-tune the cache settings.  Sometimes you'll find
+  that you can't cache one of your major pages, but that you can cache
+  pieces of it.
+
+  Also remember that caching can actually slow down Zope if it is
+  applied unscrupulously.  You should perform speed tests to verify that
+  caching really does speed up your site.
+

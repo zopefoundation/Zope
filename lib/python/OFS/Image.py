@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.117 $'[11:-2]
+__version__='$Revision: 1.118 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -97,6 +97,7 @@ from cStringIO import StringIO
 from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
+from Cache import Cacheable
 
 
 StringType=type('')
@@ -128,8 +129,8 @@ def manage_addFile(self,id,file='',title='',precondition='', content_type='',
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 
-class File(Persistent,Implicit,PropertyManager,
-           RoleManager,Item_w__name__):
+class File(Persistent, Implicit, PropertyManager,
+           RoleManager, Item_w__name__, Cacheable):
     """A File object is a content object for arbitrary files."""
     
     meta_type='File'
@@ -156,6 +157,7 @@ class File(Persistent,Implicit,PropertyManager,
         )
         + RoleManager.manage_options
         + Item_w__name__.manage_options
+        + Cacheable.manage_options
         )
 
 
@@ -231,6 +233,10 @@ class File(Persistent,Implicit,PropertyManager,
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Content-Length', self.size)
 
+        # Don't cache the data itself, but provide an opportunity
+        # for a cache manager to set response headers.
+        self.ZCacheable_set(None)
+
         data=self.data
         if type(data) is type(''): return data
 
@@ -251,6 +257,7 @@ class File(Persistent,Implicit,PropertyManager,
         if size is None: size=len(data)
         self.size=size
         self.data=data
+        self.ZCacheable_invalidate()
 
     def manage_edit(self, title, content_type, precondition='', REQUEST=None):
         """
@@ -260,6 +267,7 @@ class File(Persistent,Implicit,PropertyManager,
         self.content_type=str(content_type)
         if precondition: self.precondition=str(precondition)
         elif self.precondition: del self.precondition
+        self.ZCacheable_invalidate()
         if REQUEST:
             message="Your changes have been saved"
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
@@ -474,6 +482,7 @@ class Image(File):
         )
         + RoleManager.manage_options
         + Item_w__name__.manage_options
+        + Cacheable.manage_options
         )
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
@@ -551,6 +560,8 @@ class Image(File):
             
         # Now we should have the correct content type, or still None
         if content_type is not None: self.content_type = content_type
+
+        self.ZCacheable_invalidate()
 
 
     def __str__(self):

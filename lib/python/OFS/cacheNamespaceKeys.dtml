@@ -1,0 +1,6 @@
+Names from the DTML namespace to use as cache keys:<br>
+<textarea name="keys:lines" cols="40" rows="5"><dtml-in
+  getCacheNamespaceKeys>&dtml-sequence-item;
+</dtml-in></textarea>
+<br>
+<input type="submit" name="setCacheNamespaceKeys:method" value="Change">

@@ -1,0 +1,65 @@
+<html><head><title>Associate cacheable objects</title></head>
+<body bgcolor="#ffffff">
+<dtml-var manage_tabs>
+<h2>Associate cacheable objects</h2>
+
+<form action="&dtml-URL1;" method="POST">
+
+<dtml-if show_results>
+<dtml-if results>
+<em>Select which objects should be cached using this cache manager.  Only
+those objects for which you have the "Change cache settings" permission
+are shown.</em>
+<table>
+<dtml-in results mapping sort=sortkey>
+<tr><td><input type="checkbox" name="associate_&dtml-path;:int" value="1"
+<dtml-if associated>checked="checked"</dtml-if>>
+<input type="hidden" name="associate_&dtml-path;:int:default" value="0">
+</td>
+<td><dtml-if icon><a href="../&dtml-path;/manage_main"><img src="&dtml-icon;"
+border="0"></a> &nbsp;</dtml-if>
+<a href="../&dtml-path;/manage_main">&dtml-path;</a>
+<dtml-if title>(&dtml-title;)</dtml-if>
+</td></tr>
+</dtml-in>
+</table>
+<input type="submit" name="ZCacheManager_setAssociations:method"
+value="Save changes">
+<dtml-else>
+<em>No objects matched your query.</em>
+</dtml-if>
+
+<hr>
+
+</dtml-if>
+
+<table>
+<tr>
+<td valign="top">
+Locate cacheable objects:
+</td>
+<td valign="top">
+<input type="radio" name="require_assoc:int" value="0" checked="checked"> All
+<input type="radio" name="require_assoc:int" value="1">
+  Associated with this cache manager
+<br>
+<table><tr><td valign="top">
+Meta types:
+</td><td valign="top">
+<select multiple="multiple" name="meta_types:list" size="5">
+<option value="">All</option>
+<dtml-in all_meta_types mapping sort=name>
+<option value="&dtml-name;">&dtml-name;</option>
+</dtml-in>
+</select>
+</td></tr></table>
+<input type="checkbox" name="subfolders:int" value="1" checked="checked">
+<input type="hidden" name="subfolders:int" value="0">
+Search subfolders
+<br>
+<input type="submit" name="ZCacheManager_locate:method" value="Locate">
+</td></tr></table>
+
+</form>
+</body>
+</html>

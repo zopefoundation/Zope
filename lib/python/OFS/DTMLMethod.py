@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -99,18 +99,21 @@ from DateTime.DateTime import DateTime
 from urllib import quote
 import ts_regex, Globals, sys, Acquisition
 from AccessControl import getSecurityManager
+from Cache import Cacheable
 
-
+_marker = []  # Create a new marker object.
 
 class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
                  ElementWithTitle, Item_w__name__,
                  History.Historical,
+                 Cacheable,
                  ):
     """DTML Method objects are DocumentTemplate.HTML objects that act
        as methods of their containers."""
     meta_type='DTML Method'
     _proxy_roles=()
     index_html=None # Prevent accidental acquisition
+    _cache_namespace_keys=()
 
     # Documents masquerade as functions:
     class func_code: pass
@@ -132,8 +135,9 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         +History.Historical.manage_options
         +RoleManager.manage_options
         +Item_w__name__.manage_options
+        +Cacheable.manage_options
         )
-                   
+
     __ac_permissions__=(
     ('View management screens',
      ('document_src', 'PrincipiaSearchSource')),
@@ -142,6 +146,8 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
       'manage_edit', 'manage_upload', 'PUT',
       'manage_historyCopy',
       'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
+      'ZCacheable_configHTML', 'getCacheNamespaceKeys',
+      'setCacheNamespaceKeys',
       )
      ),
     ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
@@ -156,6 +162,13 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
         Response, and key word arguments."""
+
+        if not self._cache_namespace_keys:
+            data = self.ZCacheable_get(default=_marker)
+            if data is not _marker:
+                # Return cached results.
+                return data
+        
         kw['document_id']   =self.getId()
         kw['document_title']=self.title
 
@@ -164,14 +177,19 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         try:
         
             if client is None:
-                # Called as subtemplate, so don't need error propigation!
+                # Called as subtemplate, so don't need error propagation!
                 r=apply(HTML.__call__, (self, client, REQUEST), kw)
-                if RESPONSE is None: return r
-                return decapitate(r, RESPONSE)
+                if RESPONSE is None: result = r
+                else: result = decapitate(r, RESPONSE)
+                if not self._cache_namespace_keys:
+                    self.ZCacheable_set(result)
+                return result
 
             r=apply(HTML.__call__, (self, client, REQUEST), kw)
-            if type(r) is not type(''): return r
-            if RESPONSE is None: return r
+            if type(r) is not type('') or RESPONSE is None:
+                if not self._cache_namespace_keys:
+                    self.ZCacheable_set(r)
+                return r
 
         finally: security.removeContext(self)
 
@@ -182,7 +200,55 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
             else:
                 c, e=guess_content_type(self.getId(), r)
             RESPONSE.setHeader('Content-Type', c)
-        return decapitate(r, RESPONSE)
+        result = decapitate(r, RESPONSE)
+        if not self._cache_namespace_keys:
+            self.ZCacheable_set(result)
+        return result
+
+    def ZDocumentTemplate_beforeRender(self, md, default):
+        # Tries to get a cached value.
+        if self._cache_namespace_keys:
+            # Use the specified keys from the namespace to identify a
+            # cache entry.
+            kw = {}
+            for key in self._cache_namespace_keys:
+                try: val = md[key]
+                except: val = None
+                kw[key] = val
+            return self.ZCacheable_get(keywords=kw, default=default)
+        return default
+
+    def ZDocumentTemplate_afterRender(self, md, result):
+        # Tries to set a cache value.
+        if self._cache_namespace_keys:
+            kw = {}
+            for key in self._cache_namespace_keys:
+                try: val = md[key]
+                except: val = None
+                kw[key] = val
+            self.ZCacheable_set(result, keywords=kw)
+
+    ZCacheable_configHTML = HTMLFile('cacheNamespaceKeys', globals())
+
+    def getCacheNamespaceKeys(self):
+        '''
+        Returns the cacheNamespaceKeys.
+        '''
+        return self._cache_namespace_keys
+        
+    def setCacheNamespaceKeys(self, keys, REQUEST=None):
+        '''
+        Sets the list of names that should be looked up in the
+        namespace to provide a cache key.
+        '''
+        ks = []
+        for key in keys:
+            key = strip(str(key))
+            if key:
+                ks.append(key)
+        self._cache_namespace_keys = tuple(ks)
+        if REQUEST is not None:
+            return self.ZCacheable_manage(self, REQUEST)
 
     def get_size(self):
         return len(self.raw)
@@ -238,6 +304,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         self.title=str(title)
         if type(data) is not type(''): data=data.read()
         self.munge(data)
+        self.ZCacheable_invalidate()
         if REQUEST:
             message="Content changed."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
@@ -247,6 +314,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         self._validateProxy(REQUEST)
         if type(file) is not type(''): file=file.read()
         self.munge(file)
+        self.ZCacheable_invalidate()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -278,6 +346,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         self._validateProxy(REQUEST, roles)
         self._validateProxy(REQUEST)
         self._proxy_roles=tuple(roles)
+        self.ZCacheable_invalidate()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -301,6 +370,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         body=REQUEST.get('BODY', '')
         self._validateProxy(REQUEST)
         self.munge(body)
+        self.ZCacheable_invalidate()
         RESPONSE.setStatus(204)
         return RESPONSE
 

@@ -1,0 +1,11 @@
+Cache manager associations
+ 
+  For background information, see the
+  <a href="Caching.stx">description of cache management</a>.
+
+  The 'Associate' form lets you search for cacheable objects and
+  make or break multiple cache management associations at once.
+  Simply select the search criteria then click the 'Locate'
+  button.  Zope will return a list of cacheable objects with a
+  checkbox for each one.  Select or unselect objects and click the
+  'Save changes' button when you're done.
