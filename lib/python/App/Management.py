@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.33 2000/09/07 19:33:01 brian Exp $"""
+$Id: Management.py,v 1.34 2000/10/09 18:17:35 brian Exp $"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -191,7 +191,7 @@ class Tabs(ExtensionClass.Base):
             script="%s/%s" % (script, quote(p))
             out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
-        return join(out,'&nbsp;/&nbsp;')
+        return join(out, '/')
 
 Globals.default__class_init__(Tabs)
 
