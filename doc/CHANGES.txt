@@ -85,6 +85,11 @@ Zope changes
 
       Bugs Fixed
 
+        - Removed some cruft in OFS/content_types.py (an old data
+          structure was being constructed but was going unused in
+          favor of a newer structure used in conjunction with the
+          mimetypes module).
+
         - (Collector #1650)Where the underlying object does not define
           its own '__cmp__()', comparisons of acquisition-wrapped
           objects fall back to comparing the identities *of the
