@@ -24,6 +24,11 @@ Zope Changes
      - Collector #904: Platform specific signals in zdaemon/Daemon.py
        (fixed by removing the "fossil" module from 2.7 branch and head).
 
+     - Workaround for Collector #1081: The 'title' property for objects
+       derived from OFS.Folder or PropertyManager can now be 
+       removed and replaced with a ustring property. This allows the usage
+       of non-ISO-8859-1 or ASCII charsets
+
      - Collector #951: DateTime(None) is now equal to DateTime()
 
      - Collector #1056: aq_acquire() ignored the default argument
