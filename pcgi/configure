@@ -1262,6 +1262,33 @@ fi
 done
 
 
+echo $ac_n "checking for union semun""... $ac_c" 1>&6
+echo "configure:1267: checking for union semun" >&5
+cat > conftest.$ac_ext <<EOF
+#line 1269 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+int main() {
+union semun semun;
+; return 0; }
+EOF
+if { (eval echo configure:1278: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+  rm -rf conftest*
+  cat >> confdefs.h <<\EOF
+#define HAVE_UNION_SEMUN 1
+EOF
+ echo "$ac_t""yes" 1>&6
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  echo "$ac_t""no" 1>&6
+fi
+rm -f conftest*
+
+
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
