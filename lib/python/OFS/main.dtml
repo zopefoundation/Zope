@@ -91,7 +91,8 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
 <TR>
 <TD VALIGN="MIDDLE">
   <FORM ACTION="<!--#var URL1-->/" METHOD="GET">
-  <SELECT NAME=":method" ONCHANGE="location.href=this.options[this.selectedIndex].value">
+  <SELECT NAME=":method" ONCHANGE="location.href='<!--#var URL1
+  -->/'+this.options[this.selectedIndex].value">
     <OPTION value="manage_workspace" DISABLED>Available Objects
   <!--#in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name-->
     <OPTION value="<!--#var action fmt="url-quote"-->"><!--#var name-->
