@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.144 2000/04/05 00:51:37 tseaver Exp $"""
-__version__='$Revision: 1.144 $'[11:-2]
+$Id: Publish.py,v 1.145 2000/05/09 19:20:28 jim Exp $"""
+__version__='$Revision: 1.145 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -97,6 +97,16 @@ from mapply import mapply
 class Retry(Exception):
     """Raise this to retry a request
     """
+
+    def __init__(self, t=None, v=None, tb=None):
+        self._args=t, v, tb
+
+    def reraise(self):
+        t, v, tb = self._args
+        if t is None: t=Retry
+        if tb is None: raise t, v
+        try: raise t, v, tb
+        finally: tb=None
 
 def call_object(object, args, request):
     result=apply(object,args) # Type s<cr> to step into published object.
