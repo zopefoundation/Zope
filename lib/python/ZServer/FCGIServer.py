@@ -430,6 +430,10 @@ class FCGIChannel(asynchat.async_chat):
         elif rec.recType == FCGI_PARAMS:
             if rec.contentLength == 0:  # end of the stream
                 self.remainingRecs = self.remainingRecs - 1
+                self.content_length=string.atoi(self.env.get(
+                    'CONTENT_LENGTH','0'))
+                if self.content_length==0:
+                    self.remainingRecs = self.remainingRecs - 1
             else:
                 self.env.update(rec.values)
 
@@ -447,6 +451,10 @@ class FCGIChannel(asynchat.async_chat):
                     self.stdin=t
                     self.using_temp_stdin=1
                 self.stdin.write(rec.content)
+                self.content_length = self.content_length - rec.contentLength
+                if self.content_length <= 0:
+                    self.remainingRecs = self.remainingRecs - 1
+ 
 
         # read some filter data
         elif rec.recType == FCGI_DATA:
@@ -457,7 +465,7 @@ class FCGIChannel(asynchat.async_chat):
 
 
         # We've processed the record.  Now what do we do?
-        if self.remainingRecs:
+        if self.remainingRecs > 0:
             # prepare to get the next record
             self.setInitialState()
 
