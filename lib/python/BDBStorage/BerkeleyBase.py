@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.12 $'.split()[-2:][0]
+__version__ = '$Revision: 1.13 $'.split()[-2:][0]
 
 
 
@@ -38,11 +38,21 @@ class BerkeleyBase(BaseStorage):
         name is an arbitrary name for this storage.  It is returned by the
         getName() method.
 
-        Optional env is the database environment name, essentially the name of
-        a directory into which BerkeleyDB will store all its supporting files.
-        If env is a non-empty string, it is passed directly to DbEnv().open(),
-        which in turn is passed to the BerkeleyDB function
+        Optional env, if given, is either a string or a DBEnv object.  If it
+        is a non-empty string, it names the database environment,
+        i.e. essentially the name of a directory into which BerkeleyDB will
+        store all its supporting files.  It is passed directly to
+        DbEnv().open(), which in turn is passed to the BerkeleyDB function
         DBEnv->open() as the db_home parameter.
+
+        Note that if you want to customize the underlying Berkeley DB
+        parameters, this directory can contain a DB_CONFIG file as per the
+        Sleepycat documentation.
+
+        If env is given and it is not a string, it must be an opened DBEnv
+        object as returned by bsddb3.db.DBEnv().  In this case, it is your
+        responsibility to create the object and open it with the proper
+        flags.
 
         Optional prefix is the string to prepend to name when passed to
         DB.open() as the dbname parameter.  IOW, prefix+name is passed to the
@@ -59,19 +69,14 @@ class BerkeleyBase(BaseStorage):
 
         if env == '':
             raise TypeError, 'environment name is empty'
-        elif not isinstance(env, StringType):
-            # We used to test isinstance(env, db.DBEnv) but that isn't a valid
-            # test since db.DBEnv() is a factory function, not a class.
-            # AFAIK, there's no way to pass an existing DBEnv into this
-            # constructor.  Note that the most likely reason for wanting to do
-            # this is to increase the lock size of the environment.  Use a
-            # DB_CONFIG file for that instead (see www.sleepycat.com).
-            raise TypeError, 'env must be a string: %s' % env
+        elif isinstance(env, StringType):
+            self._env = env_from_string(env)
+        else:
+            self._env = env
 
         BaseStorage.__init__(self, name)
 
         # Initialize a few other things
-        self._env = env_from_string(env)
         self._prefix = prefix
         self._commitlog = None
         # Give the subclasses a chance to interpose into the database setup
