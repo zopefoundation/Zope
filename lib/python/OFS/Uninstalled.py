@@ -86,6 +86,7 @@
 Objects for packages that have been uninstalled.
 """
 import string, SimpleItem, Globals, Acquisition
+from Acquisition import Acquired
 import Persistence
 
 broken_klasses={}
@@ -97,6 +98,9 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
     icon='p_/broken'
     product_name='unknown'
     id='broken'
+
+    manage_page_header = Acquired
+    manage_page_footer = Acquired
 
     def __getstate__(self):
         raise SystemError, (
