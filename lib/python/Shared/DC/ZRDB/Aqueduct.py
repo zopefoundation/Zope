@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.5 1997/08/06 18:19:14 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Aqueduct.py,v 1.6 1997/08/15 22:28:18 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Globals import ManageHTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -67,12 +67,14 @@ class BaseQuery:
 	    if v is REQUEST:
 		v=args[a]
 		if v is None:
-		    if return_missing_keys:
-			missing_keys.append(arg)
+		    if hasattr(self,arg): v=getattr(self,arg)
 		    else:
-			raise self.MissingArgumentError, (
-			    '''The required value <em>%s</em> was
-                            ommitted''' % arg)
+			if return_missing_keys:
+			    missing_keys.append(arg)
+			else:
+			    raise self.MissingArgumentError, (
+				'''The required value <em>%s</em> was
+				ommitted''' % arg)
 
 	    if raw:
 		argdata[a]=v
@@ -326,6 +328,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.6  1997/08/15 22:28:18  jim
+# Added machinery to get argument values from instance attributes.
+#
 # Revision 1.5  1997/08/06 18:19:14  jim
 # Renamed description->title and name->id and other changes
 #
