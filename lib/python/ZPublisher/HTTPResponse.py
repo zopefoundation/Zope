@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.80 2004/01/19 19:56:53 Brian Exp $'''
-__version__ = '$Revision: 1.80 $'[11:-2]
+$Id: HTTPResponse.py,v 1.81 2004/04/26 10:12:08 shh Exp $'''
+__version__ = '$Revision: 1.81 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -500,10 +500,10 @@ class HTTPResponse(BaseResponse):
         '''
         name = str(name)
 
-        dict = {'max_age':0, 'expires':'Wed, 31-Dec-97 23:59:59 GMT'}
-        for k, v in kw.items():
-            dict[k] = v
-        apply(HTTPResponse.setCookie, (self, name, 'deleted'), dict)
+        d = kw.copy()
+        d['max_age'] = 0
+        d['expires'] = 'Wed, 31-Dec-97 23:59:59 GMT'
+        apply(HTTPResponse.setCookie, (self, name, 'deleted'), d)
 
     def setCookie(self,name,value,**kw):
         '''\
