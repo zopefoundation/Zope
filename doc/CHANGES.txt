@@ -26,6 +26,8 @@ Zope Changes
 
     Features added
 
+     - Made test.py follow symbolic links on POSIX systems.
+
      - added utilities/reindex_catalog.py to perform ZCatalog maintenance
        operations from the command line (through zopectl)
 

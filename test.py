@@ -471,10 +471,10 @@ def find_tests(rx):
     global finder
     finder = TestFileFinder(pathinit.libdir)
     if test_dir:
-        walkdir = os.path.realpath(os.path.join(pathinit.cwd, test_dir))
+        walkdir = os.path.abspath(os.path.join(pathinit.cwd, test_dir))
     else:
         walkdir = pathinit.libdir
-    os.path.walk(walkdir, finder.visit, rx)
+    walk_with_symlinks(walkdir, finder.visit, rx)
     return finder.files
 
 def package_import(modname):
@@ -608,6 +608,24 @@ def runner(files, test_filter, debug):
         else:
             raise
 
+def walk_with_symlinks(path, visit, arg):
+    """Like os.path.walk, but follows symlinks on POSIX systems.
+
+    This could theoretically result in an infinite loop, if you create symlink
+    cycles in your Zope sandbox, so don't do that.
+    """
+    try:
+        names = os.listdir(path)
+    except os.error:
+        return
+    visit(arg, path, names)
+    exceptions = (os.curdir, os.pardir)
+    for name in names:
+        if name not in exceptions:
+            name = os.path.join(path, name)
+            if os.path.isdir(name):
+                walk_with_symlinks(name, visit, arg)
+
 def remove_stale_bytecode(arg, dirname, names):
     names = map(os.path.normcase, names)
     for name in names:
@@ -628,7 +646,7 @@ def main(module_filter, test_filter, libdir):
     pathinit = PathInit(build, libdir)
 
     if not keepStaleBytecode:
-        os.path.walk(pathinit.home, remove_stale_bytecode, None)
+        walk_with_symlinks(pathinit.home, remove_stale_bytecode, None)
     
     # Load configuration
     if config_file:
