@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.38 1999/11/03 16:22:22 brian Exp $'''
-__version__='$Revision: 1.38 $'[11:-2]
+$Id: Aqueduct.py,v 1.39 2000/03/15 21:13:40 brian Exp $'''
+__version__='$Revision: 1.39 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -102,6 +102,43 @@ from string import strip, replace
 dtml_dir=Globals.package_home(globals())
 
 InvalidParameter='Invalid Parameter'
+
+
+
+class ArgWrapper:
+    """Wrap a dictionary in a way acceptable to validating
+       document templates."""
+
+    __roles__=None
+
+    def __init__(self):
+        self.__data__={}
+        
+    def __setitem__(self, key, value):
+        self.__data__[key]=value
+
+    def __getitem__(self, key, default=strip):
+        result=self.__dict__['__data__'].get(key, default)
+        if result is not strip:
+            return result
+        raise KeyError, key
+    
+    __getattr__=get=__getitem__
+
+    def has_key(self, key):
+        return self.__data__.has_key(key)
+
+    def keys(self):
+        return self.__data__.keys()
+
+    def items(self):
+        return self.__data__.items()
+
+    def values(self):
+        return self.__data__.values()
+
+
+
 
 class BaseQuery(Persistent, SimpleItem.Item,
                 Acquisition.Implicit, RoleManager):
@@ -121,7 +158,7 @@ class BaseQuery(Persistent, SimpleItem.Item,
 
     def _argdata(self, REQUEST):
 
-        r={}
+        r=ArgWrapper()
 
         try: args=self._arg
         except:
