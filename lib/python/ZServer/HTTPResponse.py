@@ -147,15 +147,10 @@ class ZServerHTTPResponse(HTTPResponse):
                 not self._streaming:
             self.setHeader('content-length',len(body))
 
-        # ugh - str(content-length) could be a Python long, which will
-        # produce a trailing 'L' :( This can go away when we move to
-        # Python 2.0...
+        
         content_length= headers.get('content-length', None)
-        if type(content_length) is LongType:
-            str_rep=str(content_length)
-            if str_rep[-1:]=='L':
-                str_rep=str_rep[:-1]
-                self.setHeader('content-length', str_rep)
+        if content_length>0 : 
+            self.setHeader('content-length', content_length)
 
         headersl=[]
         append=headersl.append
