@@ -172,11 +172,12 @@ class ZServerHTTPResponse(HTTPResponse):
         if self._chunking:
             data = '%x\r\n%s\r\n' % (len(data),data)
 
+        l=len(data)
+        
         t=self._tempfile
-        if t is None:
+        if t is None or l<200:
             stdout.write(data)
         else:
-            l=len(data)
             b=self._tempstart
             e=b+l
             self._templock.acquire()

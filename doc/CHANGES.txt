@@ -27,6 +27,8 @@ Zope Changes
         enables retrieval of the document source for dedicated WebDAV 
         clients (see ENVIRONMENT.txt for usage)
 
+      - Collector #272: Optimisations for RESPONSE.write
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff
