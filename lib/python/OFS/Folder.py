@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.14 1997/10/30 19:50:49 jim Exp $"""
+$Id: Folder.py,v 1.15 1997/11/07 16:12:29 jim Exp $"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -17,7 +17,7 @@ import SimpleItem
 class FolderHandler:
     """Folder object handler"""
 
-    meta_types=({'name':'Folder', 'action':'manage_addFolderForm'},)
+    # meta_types=({'name':'Folder', 'action':'manage_addFolderForm'},)
 
     manage_addFolderForm=HTMLFile('OFS/folderAdd')
 
@@ -73,11 +73,10 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 
     _properties=({'id':'title', 'type': 'string'},)
 
-    meta_types=(DocumentHandler.meta_types+
-		ImageHandler.meta_types+
-		FolderHandler.meta_types+
-		UserFolderHandler.meta_types
-	       )
+    meta_types=()
+    dynamic_meta_types=(
+	UserFolderHandler.meta_types_
+	)
 
     manage_options=(
     {'icon':icon, 'label':'Contents',
