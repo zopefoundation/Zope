@@ -770,7 +770,7 @@ try:
         raise
 
     # Check umask sanity.
-    try:
+    if os.name == 'posix':
         # umask is silly, blame POSIX.  We have to set it to get its value.
         current_umask = os.umask(0)
         os.umask(current_umask)
@@ -779,8 +779,6 @@ try:
             zLOG.LOG("z2", zLOG.INFO, 'Your umask of ' + current_umask + \
                      ' may be too permissive; for the security of your ' + \
                      'Zope data, it is recommended you use 077')
-    except:
-        pass
 
 except:
     # Log startup exception and tell zdaemon not to restart us.
