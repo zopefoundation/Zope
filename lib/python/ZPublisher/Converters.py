@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import regex
 from string import atoi, atol, atof, join, split, strip
@@ -164,6 +164,11 @@ def field2tokens(v):
     return split(v)
 
 def field2lines(v):
+    if type(v) in (ListType, TupleType):
+        result=[]
+        for item in v:
+            result.append(str(item))
+        return result
     return split(field2text(v),'\n')
 
 def field2date(v):
