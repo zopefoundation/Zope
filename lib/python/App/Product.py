@@ -268,7 +268,7 @@ class Product(Folder, PermissionManager):
         import tar
         rot=rotor.newrotor(id+' shshsh')
         ar=tar.tgzarchive("%s-%s" % (id, self.version))
-        prefix="lib/python/Products/%s/" % self.id
+        prefix="Products/%s/" % self.id
 
         # __init__.py
         ar.add(prefix+"__init__.py",
