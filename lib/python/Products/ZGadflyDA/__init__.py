@@ -9,8 +9,8 @@
 ############################################################################## 
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.4 1998/12/02 12:11:48 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: __init__.py,v 1.5 1998/12/04 16:21:03 brian Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals, ImageFile, os
 
@@ -72,7 +72,7 @@ __ac_permissions__=(
     )
 
 j=os.path.join
-d=j(j(CUSTOMER_HOME,'var'),'gadfly')
+d=j(j(INSTANCE_HOME,'var'),'gadfly')
 if not os.path.exists(d):
     os.mkdir(d)
     os.mkdir(j(d,'demo'))
