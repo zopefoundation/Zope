@@ -55,7 +55,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char spewbuf[1024];    /* yes, it's a global, but only for debugging */
 #endif
 
-static char _id_[]="$Id: pcgi-wrapper.c,v 1.3 1998/12/03 22:38:19 brian Exp $";
+static char _id_[]="$Id: pcgi-wrapper.c,v 1.4 1998/12/03 22:40:10 brian Exp $";
 
 /* Globals, OR: "I'll know I'll hate myself in the morning" */
 extern char **environ;
@@ -63,7 +63,6 @@ int CloseFileDescriptors = 0;
 
 #if UNIX
 int g_lock = 0;
-union semun sem_idx;
 #endif
 
 #if PCGI_WRAPPER_MAIN
