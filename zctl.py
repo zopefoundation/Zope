@@ -77,7 +77,7 @@ execfile(ZOPE_CONFIG, globals())
 env['INSTANCE_HOME'] = HERE
 env['PYTHONHOME'] = ZOPE_HOME = abspath(ZOPE_HOME)
 for k, v in ZEO.items():
-    env[k] = str(v)
+    env['ZEO_'+k] = str(v)
 
 # Commands
 
@@ -102,7 +102,7 @@ def zctl_start(args):
         clients.append('default')
 
     cmd = '%s "%s/z2.py" %%s' % (PYTHON, ZOPE_HOME)
-    global ZOPE_PORT, ZOPE_LOG, ZOPE_OPTS, ZOPE_ENV, ZEO_ENV
+    global ZOPE_PORT, ZOPE_LOG, ZOPE_OPTS, ZOPE_ENV
     for client in clients:
         args = list(zope_args)
         if client != 'default':
@@ -132,8 +132,8 @@ def zctl_start_zeo(args):
     """Try to start ZEO."""
     for item in ZEO_ENV.items():
         args.append("%s=%s" % item)
-    host = ZEO.get('ZEO_SERVER_NAME', 'localhost')
-    port = ZEO['ZEO_SERVER_PORT']
+    host = ZEO.get('SERVER_NAME', 'localhost')
+    port = ZEO['SERVER_PORT']
     if host == 'localhost' and not _check_for_service(host, port):
         print "Starting ZEO server on", port
         cmd = '%s %s/lib/python/ZEO/start.py -p %s %s &' % (
@@ -185,8 +185,8 @@ def zctl_status(args):
     """Print status."""
     print "NAME\tPORT\tPIDS"
     if ZEO:
-        host = ZEO.get('ZEO_SERVER_NAME', 'localhost')
-        port = ZEO['ZEO_SERVER_PORT']
+        host = ZEO.get('SERVER_NAME', 'localhost')
+        port = ZEO['SERVER_PORT']
         pids = ''
         if _check_for_service(host, port):
             if host == 'localhost':
