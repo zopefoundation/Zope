@@ -373,13 +373,6 @@ setup(
               'Interface.Common', 'Interface.Common.tests'],
     )
 
-# logging
-setup(
-    name='logging',
-    author='Vinay Sajip',
-    packages=['logging'],
-    )
-
 #nt_svcutils
 setup(
     name='nt_svcutils',
