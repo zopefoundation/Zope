@@ -36,7 +36,8 @@ if not os.path.exists(ac_path):
     acfile=open(ac_path, 'w')
     acfile.write('superuser:123\n')
     acfile.close()
-
+    os.system('chmod 744 access')
+    
 print
 print '-'*78
 print 'NOTE: change owndership or permissions on var so that it can be'
