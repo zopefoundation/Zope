@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.35 1997/03/11 20:03:30 jim Exp $
+     $Id: cPickle.c,v 1.36 1997/03/11 22:05:02 chris Exp $
 
      Copyright 
 
@@ -945,10 +945,20 @@ save_tuple(Picklerobject *self, PyObject *args) {
             goto finally;
 
         if (has_key) {
-            static char pop_mark = POP_MARK;
-
-            if ((*self->write_func)(self, &pop_mark, 1) < 0)
-                goto finally;
+            if (self->bin) {
+                static char pop_mark = POP_MARK;
+  
+                if ((*self->write_func)(self, &pop_mark, 1) < 0)
+                    goto finally;
+            }
+            else {
+                static char pop = POP;
+       
+                for (i = 0; i <= len; i++) {
+                    if ((*self->write_func)(self, &pop, 1) < 0)
+                        goto finally;
+                } 
+            }
         
             if (get(self, py_tuple_id) < 0)
                 goto finally;
@@ -962,16 +972,8 @@ save_tuple(Picklerobject *self, PyObject *args) {
         goto finally;
     }
 
-    if (len == 0)
-    {
-        if (put(self, args) < 0)
-            goto finally;
-    }
-    else
-    {
-        if (put2(self, args) < 0)
-            goto finally;
-    }
+    if (put(self, args) < 0)
+        goto finally;
  
     res = 0;
 
@@ -1200,11 +1202,6 @@ save_inst(Picklerobject *self, PyObject *args) {
         goto finally;
     }
 
-    if (put2(self, args) < 0)
-    {
-         goto finally;
-    }
-
     if (getstate_func = PyObject_GetAttr(args, __getstate___str)) {
         UNLESS(state = PyObject_CallObject(getstate_func, empty_tuple))
             goto finally;
@@ -1219,6 +1216,15 @@ save_inst(Picklerobject *self, PyObject *args) {
         }
     }
 
+    if (!PyDict_Check(state)) {
+        if (put2(self, args) < 0)
+            goto finally;
+    }
+    else {
+        if (put(self, args) < 0)
+            goto finally;
+    }
+  
     if (save(self, state, 0) < 0)
         goto finally;
 
@@ -1370,8 +1376,14 @@ save_reduce(Picklerobject *self, PyObject *callable,
 
     if (ob != NULL)
     {
-        if (put(self, ob) < 0)
-            return -1;
+        if (state && !PyDict_Check(state)) {
+            if (put2(self, ob) < 0)
+                return -1;
+        }
+        else {
+            if (put(self, ob) < 0)
+                return -1;
+        }
     }
     
     if (state)
@@ -3821,7 +3833,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.35 $";
+    char *rev="$Revision: 1.36 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3856,6 +3868,11 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.36  1997/03/11 22:05:02  chris
+ write POP rather than POPMARK in non-binary mode
+ use put2() in save_reduce() and save_inst() only if state is not a dictionary
+ removed put2() from save_tuple()
+
  Revision 1.35  1997/03/11 20:03:30  jim
  Added log comment at bottom.
 
