@@ -152,17 +152,12 @@ class StopWordRemover:
     for c in range(255):
         dict[chr(c)] = None
 
-    def process(self, lst):
-        has_key = self.dict.has_key
-        return [w for w in lst if not has_key(w)]
-
-try:
-    from Products.ZCTextIndex import stopper as _stopper
-except ImportError:
-    pass
-else:
-    _stopwords = StopWordRemover.dict
-    def StopWordRemover():
-        swr = _stopper.new()
-        swr.dict.update(_stopwords)
-        return swr
+    try:
+        from Products.ZCTextIndex.stopper import process as _process
+    except ImportError:
+        def process(self, lst):
+            has_key = self.dict.has_key
+            return [w for w in lst if not has_key(w)]
+    else:
+        def process(self, lst):
+            return self._process(self.dict, lst)
