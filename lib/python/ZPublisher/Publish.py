@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.162 2003/03/21 21:20:10 fdrake Exp $"""
-__version__='$Revision: 1.162 $'[11:-2]
+$Id: Publish.py,v 1.163 2003/03/21 22:00:56 fdrake Exp $"""
+__version__='$Revision: 1.163 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -163,7 +163,7 @@ def publish_module(module_name,
             must_die=sys.exc_info()
             request.response.exception(must_die)
         except ImportError, v:
-            if type(v) is type(()) and len(v)==3: must_die=v
+            if isinstance(v, tuple) and len(v)==3: must_die=v
             elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
             else: must_die = SystemExit, v, sys.exc_info()[2]
             request.response.exception(1, v)
@@ -214,9 +214,10 @@ def get_module_info(module_name, modules={},
 
     acquire()
     tb=None
+    g = globals()
     try:
         try:
-            module=__import__(module_name, globals(), globals(), ('__doc__',))
+            module=__import__(module_name, g, g, ('__doc__',))
 
             # Let the app specify a realm
             if hasattr(module,'__bobo_realm__'):
@@ -243,12 +244,8 @@ def get_module_info(module_name, modules={},
                     debug_mode = 1
 
 
-            if hasattr(module,'__bobo_before__'):
-                bobo_before=module.__bobo_before__
-            else: bobo_before=None
-
-            if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
-            else: bobo_after=None
+            bobo_before = getattr(module, "__bobo_before__", None)
+            bobo_after = getattr(module, "__bobo_after__", None)
 
             if hasattr(module,'bobo_application'):
                 object=module.bobo_application
