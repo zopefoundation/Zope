@@ -129,14 +129,11 @@ class CatalogAware:
         """Return a sequence of user names who have the local
             Owner role on an object. The name creator is used
             for this method to conform to Dublin Core."""
-        parent=self.aq_parent
-        roles=parent.aq_acquire('__ac_local_roles__')
-        dict=roles or {} #parent.__ac_local_roles__ or {}
-        items=[]
-        for key, val in dict.items():
-            if 'Owner' in val:
-                items.append(key)
-        return string.join(items, ', ')
+        users=[]
+        for user, roles in self.get_local_roles():
+            if 'Owner' in roles:
+                users.append(user)
+        return string.join(users, ', ')
 
     def onDeleteObject(self):
         """Object delete handler. I think this is obsoleted by
