@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.29 2002/10/22 22:18:13 chrism Exp $
+$Id: Transience.py,v 1.30 2002/10/26 15:42:23 chrism Exp $
 """
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -829,10 +829,46 @@ class TransientObjectContainer(SimpleItem):
         return 1
 
     def values(self):
-        return map(lambda k, self=self: self[k], self.keys())
+        # sloppy and loving it!
+        # we used to use something like:
+        # [ self[x] for x in self.keys() ]
+        # but it was causing KeyErrors in getitem's "v = self._data[b][k]"
+        # due to some synchronization problem that I don't understand.
+        # since this is a utility method, I don't care too much. -cm
+        l = []
+        notfound = []
+        for k, t in self._index.items():
+            bucket = self._data.get(t, notfound)
+            if bucket is notfound:
+                continue
+            value = bucket.get(k, notfound)
+            if value is notfound:
+                continue
+            if hasattr(value, '__of__'):
+                value = value.__of__(self)
+            l.append(value)
+        return l
 
     def items(self):
-        return map(lambda k, self=self: (k, self[k]), self.keys())
+        # sloppy and loving it!
+        # we used to use something like:
+        # [ (x, self[x]) for x in self.keys() ]
+        # but it was causing KeyErrors in getitem's "v = self._data[b][k]"
+        # due to some synchronization problem that I don't understand.
+        # since this is a utility method, I don't care too much. -cm
+        l = []
+        notfound = []
+        for k, t in self._index.items():
+            bucket = self._data.get(t, notfound)
+            if bucket is notfound:
+                continue
+            value = bucket.get(k, notfound)
+            if value is notfound:
+                continue
+            if hasattr(value, '__of__'):
+                value = value.__of__(self)
+            l.append((k, value))
+        return l
 
     def true_items(self):
         l = []
