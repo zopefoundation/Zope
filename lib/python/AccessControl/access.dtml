@@ -1,16 +1,6 @@
 <HTML>
 <HEAD>
 <TITLE>Security</TITLE>
-
-<STYLE type="text/css">
-<!--
-TD {
-  font-size: 10pt;
-  color: black;
-}
--->
-</STYLE>
-
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <!--#if manage_tabs-->
@@ -21,6 +11,15 @@ TD {
 The listing below shows the current security settings for this item. 
 Permissions are rows and roles are columns.  Checkboxes are used to
 indicate where roles are assigned permissions.  
+
+<style type="text/css">
+<!--
+td {
+  font-size: 10pt;
+  color: black;
+}
+-->
+</style>
 
 <!--#with expr="_.namespace(valid_roles=valid_roles())"-->
 <FORM ACTION="manage_changePermissions" METHOD="POST">
