@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -118,9 +118,11 @@ def installHandlers(engine):
 if sys.modules.has_key('Zope'):
     from AccessControl import getSecurityManager
     from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
+    def validate(accessed, container, name, value, dummy):
+        return getSecurityManager().validate(accessed, container, name, value)
     def call_with_ns(f, ns, arg=1):
         td = TemplateDict()
-        td.validate = getSecurityManager().validate
+        td.validate = validate
         td.this = None
         td._push(ns['request'])
         td._push(InstanceDict(ns['here'], td))
