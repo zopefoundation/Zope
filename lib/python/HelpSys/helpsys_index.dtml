@@ -1,0 +1,60 @@
+<html>
+<head>
+<title>
+ZOPE Help
+</title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555">
+
+<h2>ZOPE Help</h2>
+
+<p>
+The ZOPE online help system provides programming documentation 
+as well as links to in-depth product guides, mailing lists and 
+other resources.
+</p>
+
+<h3>General Documentation</h3>
+<p>
+General documentation includes documentation for the use and 
+management of built-in and add-on products, as well as an 
+extensive DTML manual.
+</p>
+<ul>
+<li> <a href="">
+     ZOPE Manager's Guide
+     </a>
+<li> <a href="">
+     DTML manual
+     </a>
+
+</ul>
+
+
+<h3>Programming References</h3>
+<p>
+ZOPE provides an online object reference that documents the 
+services provided by high-level objects such as Documents 
+and Folders. Other references will be added soon.
+</p>
+<ul>
+<li> <a href="<!--#var BASE1-->/HelpSys/ObjectRef/index_html">
+     Object Reference
+     </a>
+
+</ul>
+
+
+<h3>Other Resources</h3>
+<p>
+Online resources include the <a href="http://www.zope.org/">
+ZOPE website</a> and the <a href="mailto:zope@zope.org">
+ZOPE mailing list</a>. You can subscribe to the mailing 
+list by sending an email to <a href="mailto:zope-request@zope.org">
+zope-request@zope.org</a> and including the word &quot;subscribe&quot; 
+in the subject line.
+</p>
+
+
+</body>
+</html>
