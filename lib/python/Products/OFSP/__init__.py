@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''Base Principia
-$Id: __init__.py,v 1.12 1998/03/18 18:25:52 jeffrey Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: __init__.py,v 1.13 1998/05/20 20:56:25 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -72,6 +72,11 @@ __ac_permissions__=(
      ),
     ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
     ('Add User Folders',('manage_addUserFolder',)),
+    ('Change/upload data', ()),
+    ('Change proxy roles', ()),
+    ('Edit session', ()),
+    ('Join/leave session', ()),
+    ('Save/discard session', ()),
     #('Add DraftFolders',
     # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),
     )
@@ -79,6 +84,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.13  1998/05/20 20:56:25  jim
+# Updated permissions.
+#
 # Revision 1.12  1998/03/18 18:25:52  jeffrey
 # Fixed snafulet in the Klasses tuple
 #
