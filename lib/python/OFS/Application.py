@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.135 2000/12/20 15:01:25 mj Exp $'''
-__version__='$Revision: 1.135 $'[11:-2]
+$Id: Application.py,v 1.136 2001/01/18 20:40:45 brian Exp $'''
+__version__='$Revision: 1.136 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -102,7 +102,7 @@ from AccessControl.PermissionRole import PermissionRole
 from App.ProductContext import ProductContext
 from misc_ import Misc_
 import ZDOM
-from zLOG import LOG, ERROR
+from zLOG import LOG, ERROR, WARNING, INFO
 from HelpSys.HelpSys import HelpSys
 
 
@@ -294,6 +294,50 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def getPhysicalRoot(self): return self
 
+    checkGlobalRegistry__roles__=()
+    def checkGlobalRegistry(self, rebuild=1):
+        """Check the global (product) registry for problems, which can
+        be caused by disk-based products being deleted and other things
+        that Zope cannot know about. If rebuild is true, the global
+        registry will be rebuilt automatically if a problem is found.
+
+        The return value will be true if a problem was found (and fixed,
+        if rebuild is true). Returns 0 if no problems found."""
+        jar=self._p_jar
+        zg =jar.root()['ZGlobals']
+
+        result=0
+        try:    keys=list(zg.keys())
+        except: result=1
+
+        if (not rebuild) or (not result):
+            return result
+        
+        # A problem was found, so try to rebuild the registry. Note
+        # that callers should not catch exceptions from this method
+        # to ensure that the transaction gets aborted if the registry
+        # cannot be rebuilt for some reason.
+        LOG('Zope', WARNING, 'Rebuilding global product registry...')
+        import BTree
+        jar.root()['ZGlobals']=BTree.BTree()
+        products=self.Control_Panel.Products
+        for product in products.objectValues():
+            LOG('Zope', INFO, 'Checking product: %s' % product.id)
+            items=list(product.objectItems())
+            finished=[]
+            idx=0
+            while(idx < len(items)):
+                name, ob = items[idx]
+                base=getattr(ob, 'aq_base', ob)
+                if base in finished:
+                    idx=idx+1
+                    continue
+                finished.append(base)
+        LOG('Zope', WARNING, 'Successfully rebuilt global product registry')
+        return 1
+                              
+
+
 class Expired(Globals.Persistent):
     icon='p_/broken'
 
@@ -371,6 +415,22 @@ def initialize(app):
             get_transaction().commit()
 
     install_products(app)
+
+    # Check the global product registry for problems. Note that if the
+    # check finds problems but fails to successfully rebuild the global
+    # registry we abort the transaction so that we don't leave it in an
+    # indeterminate state.
+    try:
+        if app.checkGlobalRegistry():
+            get_transaction().note('Rebuilt global product registry')
+            get_transaction().commit()
+    except:
+         LOG('Zope', ERROR,
+             'A problem was found in the global product registry but ' \
+             'the attempt to rebuild the registry failed.',
+             error=sys.exc_info())
+         get_transaction().abort()
+
 
 def import_products(_st=type('')):
     # Try to import each product, checking for and catching errors.
