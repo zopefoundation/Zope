@@ -9,8 +9,8 @@
 ########################################################################### 
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.1 1998/04/15 15:10:38 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: DABase.py,v 1.2 1998/04/20 18:33:46 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from db import manage_DataSources
 import AqueductDA.Connection, sys
@@ -189,6 +189,9 @@ field_icons={
 ############################################################################## 
 #
 # $Log: DABase.py,v $
+# Revision 1.2  1998/04/20 18:33:46  jim
+# *** empty log message ***
+#
 # Revision 1.1  1998/04/15 15:10:38  jim
 # initial
 #
