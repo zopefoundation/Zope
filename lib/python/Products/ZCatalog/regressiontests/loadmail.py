@@ -2,9 +2,9 @@
 
 Usage:
     cd lib/python
-    python Products/ZCatalog/tests/loadmail.py command args
+    python Products/ZCatalog/regressiontests/loadmail.py command args
 
-where each command has it's own command-line arguments that it expects.
+where each command has its own command-line arguments that it expects.
 
 Note that all of the commands operate on the Zope database,
 typically var/Data.fs.
@@ -27,7 +27,7 @@ where the numbers are:
 
 Commands:
 
-    base mbox max
+    base mbox [max]
 
       Build a base database by:
 
@@ -152,7 +152,7 @@ def loadmessage(dest, message, i, body=None, headers=None):
             try: doc.manage_addProperty(name, v, type)
             except: pass
 
-def loadmail(dest, name, mbox, printstat=0, max=99999999):
+def loadmail(dest, name, mbox, printstat=0, max=-1):
 
     try:
         import Products.BTreeFolder.BTreeFolder
@@ -167,13 +167,16 @@ def loadmail(dest, name, mbox, printstat=0, max=99999999):
     i=0
     message=mb.next()
     while message:
-        if i > max: break
+        if max >= 0 and i > max:
+            break
         if i%100 == 0 and printstat:
-            sys.stdout.write("\t%s\t%s\t\r" % (i, f.tell()))
+            fmt = "\t%s\t%s\t\r"
+            if os.environ.get('TERM') == 'emacs':
+                fmt = "\t%s\t%s\t\n"
+            sys.stdout.write(fmt % (i, f.tell()))
             sys.stdout.flush()
         if i and (i%5000 == 0):
             get_transaction().commit()
-            dest._p_jar._cache.invalidate(None)
             dest._p_jar._cache.minimize()
 
         loadmessage(dest, message, i)
@@ -247,7 +250,10 @@ def base():
     except: pass
     import Zope
     app=Zope.app()
-    max=atoi(sys.argv[3])
+    if len(sys.argv) > 3:
+        max = atoi(sys.argv[3])
+    else:
+        max = -1
     print do(Zope.DB, loadmail, (app, 'mail', sys.argv[2], 1, max))
     Zope.DB.close()
 
