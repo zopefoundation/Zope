@@ -477,6 +477,8 @@ if Zpid and not READ_ONLY:
     
     zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid))
 
+os.chdir(CLIENT_HOME)
+
 try:
     # Import logging support
     import zLOG

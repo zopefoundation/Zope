@@ -88,6 +88,8 @@ Zope Changes
         provide a more intuitive traceback for operating systems with a 
         limited gmtime() implementations
 
+      - Collector #285: Zope changes its working directory
+        to the var directory at startup
 
   Zope 2.5.1 beta 1
     
