@@ -252,7 +252,7 @@ class METALCompiler(DOMVisitor):
         if macroName:
             # Save macro definitions
             if self.macros.has_key(macroName):
-                print "Warning: duplicate macro definition for", macroName
+                raise METALError("duplicate macro definition: %s" % macroName)
             self.pushProgram()
             self.compileElement(node)
             macro = self.popProgram()
@@ -345,15 +345,14 @@ class TALCompiler(METALCompiler):
             m = re.match(
                 r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
-                print "Bad syntax in z:define argument:", `part`
+                raise TALError("invalid z:define syntax: " + `part`)
+            scope, name, expr = m.group(1, 2, 3)
+            scope = scope or "local"
+            cexpr = self.compileExpression(expr)
+            if scope == "local":
+                self.emit("setLocal", name, cexpr)
             else:
-                scope, name, expr = m.group(1, 2, 3)
-                scope = scope or "local"
-                cexpr = self.compileExpression(expr)
-                if scope == "local":
-                    self.emit("setLocal", name, cexpr)
-                else:
-                    self.emit("setGlobal", name, cexpr)
+                self.emit("setGlobal", name, cexpr)
 
     def conditionalElement(self, node):
         condition = node.getAttributeNS(ZOPE_TAL_NS, "condition")
@@ -374,7 +373,7 @@ class TALCompiler(METALCompiler):
         if replace: n = n+1
         if repeat: n = n+1
         if n > 1:
-            print "Please use only one of z:insert, z:replace, z:repeat"
+            raise TALError("can't use z:insert, z:replace, z:repeat together")
         ok = 0
         if insert:
             ok = self.doInsert(node, insert)
@@ -417,8 +416,7 @@ class TALCompiler(METALCompiler):
     def doRepeat(self, node, arg):
         m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
         if not m:
-            print "Bad syntax in z:repeat:", `arg`
-            return 0
+            raise TALError("invalid z:repeat syntax: " + `arg`)
         name, expr = m.group(1, 2)
         cexpr = self.compileExpression(expr)
         self.pushProgram()
