@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.1 1999/04/02 16:47:24 michel Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.2 1999/04/07 20:00:30 michel Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -105,7 +105,8 @@ class MIMETag:
         self.sections = []
 
         for tname, args, section in blocks:
-            args = parse_params(args, type=None, disposition=None, encode=None)
+            args = parse_params(args, type=None, disposition=None,
+                                encode=None, name=None)
 
             has_key=args.has_key
 
@@ -124,13 +125,19 @@ class MIMETag:
             else:
                 encode = 'base64'
 
+            if has_key('name'):
+                name = args['name']
+            else:
+                name = ''
+
             if encode not in \
             ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
              'uue', 'x-uue', '7bit'):
                 raise MIMEError, (
                     'An unsupported encoding was specified in tag')
 
-            self.sections.append((type, disposition, encode, section.blocks))
+            self.sections.append((type, disposition, encode, 
+                                  name,  section.blocks))
 
 
     def render(self, md):
@@ -139,13 +146,20 @@ class MIMETag:
         outer = mw.startmultipartbody('mixed')
         for x in self.sections:
             inner = mw.nextpart()
-            t, d, e, b = x
+            t, d, e, n, b = x
 
             if d:
                 inner.addheader('Content-Disposition', d)
 
             inner.addheader('Content-Transfer-Encoding', e)
-            innerfile = inner.startbody(t)
+            print 'hi'
+            if n:
+                plist = [('name', n)]
+            else:
+                plist = []
+
+            innerfile = inner.startbody(t, plist, 1)
+
             output = StringIO()
             if e == '7bit':
                 innerfile.write(render_blocks(b, md))
