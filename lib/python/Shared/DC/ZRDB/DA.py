@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.109 $'[11:-2]
+__version__='$Revision: 1.110 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -347,7 +347,7 @@ class DA(
         pure_query = query
         # we need to munge the incoming query key in the cache
         # so that the same request to a different db is returned
-        query += '\nDBConnId: %s' % self.connection_hook
+        query = query + ('\nDBConnId: %s' % self.connection_hook, )
         
         # Try to fetch from cache
         if hasattr(self,'_v_cache'): cache=self._v_cache
