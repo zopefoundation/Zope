@@ -51,3 +51,6 @@ Zope changes
           'ProductContext.registerBaseClass' in favor of a new function,
           'ZClasses.createZClassForBase' (because none of the machinery
           needed a ProductContext instance anyway).
+
+        - Undid a bug fix that caused the DateTime unit tests to fail.
+
