@@ -197,6 +197,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', ', '.join(self.__http_methods__))
         RESPONSE.setHeader('Content-Length', 0)
+        RESPONSE.setHeader('DAV', '1,2', 1)
         RESPONSE.setStatus(200)
         return RESPONSE
 
