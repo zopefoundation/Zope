@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -655,7 +655,7 @@ class HTTPRequest(BaseRequest):
         except: rsp.exception(abort=0)
         if object is None:
             req.close()
-            raise rsp.errmsg, sys.exc_value
+            raise rsp.errmsg, sys.exc_info()[1]
 
         # The traversal machinery may return a "default object"
         # like an index_html document. This is not appropriate
