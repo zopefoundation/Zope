@@ -245,7 +245,7 @@ class TransactionsManager:
             else:
                 auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
 
-            T.setUser(auth_user, auth_path)
+            T.setUser(auth_user.getId(), auth_path)
 
 
 zpublisher_transactions_manager = TransactionsManager()
