@@ -94,6 +94,3 @@ TO DO
 
 - In rendered HTML or XML, the TAL attributes should be suppressed.
   (Effectively, when TALInterpreter is invoked with tal=1.)
-
-- Treat <script>...</script> content model correctly (i.e. recognize
-  no other tags, entities etc.).
