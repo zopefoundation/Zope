@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -392,87 +392,87 @@ class HTTPRequest(BaseRequest):
                        if seqf: item=[item]
                        mapping_object[key]=item
            
-        #insert defaults into form dictionary
-        for keys, values in defaults.items():
-            if not form.has_key(keys) and not form == {}:
-                # if the form does not have the key and the
-                # form is not empty, set the default
-                form[keys]=values
-            else:
-               # the form has the key
-               if not form == {}:
-                  if hasattr(values, '__class__') and  values.__class__ is record:
-                     # if the key is mapped to a record, get the
-                     # record
-                     r = form[keys]
-                     for k, v in values.__dict__.items():
-                        # loop through the attributes and values
-                        # in the default dictionary
-                        if not hasattr(r, k):
-                           # if the form dictionary doesn't have
-                           # the attribute, set it to the default
-                           setattr(r,k,v)
-                           form[keys] = r    
+            #insert defaults into form dictionary
+            for keys, values in defaults.items():
+                if not form.has_key(keys) and not form == {}:
+                    # if the form does not have the key and the
+                    # form is not empty, set the default
+                    form[keys]=values
+                else:
+                   # the form has the key
+                   if not form == {}:
+                      if hasattr(values, '__class__') and  values.__class__ is record:
+                         # if the key is mapped to a record, get the
+                         # record
+                         r = form[keys]
+                         for k, v in values.__dict__.items():
+                            # loop through the attributes and values
+                            # in the default dictionary
+                            if not hasattr(r, k):
+                               # if the form dictionary doesn't have
+                               # the attribute, set it to the default
+                               setattr(r,k,v)
+                               form[keys] = r    
+                      else:
+                         # the key is mapped to a list
+                         l = form[keys]
+                         for x in values:
+                            # for each x in the list
+                            if hasattr(x, '__class__') and x.__class__ is record:
+                               # if the x is a record
+                               for k, v in x.__dict__.items():
+                                  # loop through each attribute and value in the
+                                  # record
+                                  for y in l:
+                                     # loop through each record in the form list
+                                     # if it doesn't have the attributes in the
+                                     # default dictionary, set them
+                                     if not hasattr(y, k):
+                                        setattr(y, k, v)
+                            else:
+                               # x is not a record
+                               if not a in l:
+                                  l.append(a)
+                         form[keys] = l       
+                                
+            # Convert to tuples
+            for key in tuple_items.keys():
+               # Split the key and get the attr
+               k=split(key, ".")
+               k,attr=join(k[:-1], "."), k[-1]
+               a = attr
+               # remove any type_names in the attr
+               while not a=='':
+                  a=split(a, ":")
+                  a,new=join(a[:-1], ":"), a[-1]
+               attr = new
+               if form.has_key(k):
+                  # If the form has the split key get its value
+                  item =form[k]
+                  if hasattr(item, '__class__') and item.__class__ is record:
+                     # if the value is mapped to a record, check if it
+                     # has the attribute, if it has it, convert it to
+                     # a tuple and set it
+                     if hasattr(item,attr):
+                        value=tuple(getattr(item,attr))
+                        setattr(item,attr,value)
                   else:
-                     # the key is mapped to a list
-                     l = form[keys]
-                     for x in values:
-                        # for each x in the list
-                        if hasattr(x, '__class__') and x.__class__ is record:
-                           # if the x is a record
-                           for k, v in x.__dict__.items():
-                              # loop through each attribute and value in the
-                              # record
-                              for y in l:
-                                 # loop through each record in the form list
-                                 # if it doesn't have the attributes in the
-                                 # default dictionary, set them
-                                 if not hasattr(y, k):
-                                    setattr(y, k, v)
-                        else:
-                           # x is not a record
-                           if not a in l:
-                              l.append(a)
-                     form[keys] = l       
-                            
-        # Convert to tuples
-        for key in tuple_items.keys():
-           # Split the key and get the attr
-           k=split(key, ".")
-           k,attr=join(k[:-1], "."), k[-1]
-           a = attr
-           # remove any type_names in the attr
-           while not a=='':
-              a=split(a, ":")
-              a,new=join(a[:-1], ":"), a[-1]
-           attr = new
-           if form.has_key(k):
-              # If the form has the split key get its value
-              item =form[k]
-              if hasattr(item, '__class__') and item.__class__ is record:
-                 # if the value is mapped to a record, check if it
-                 # has the attribute, if it has it, convert it to
-                 # a tuple and set it
-                 if hasattr(item,attr):
-                    value=tuple(getattr(item,attr))
-                    setattr(item,attr,value)
-              else:
-                 # It is mapped to a list of  records
-                 for x in item:
-                    # loop through the records
-                    if hasattr(x, attr):
-                       # If the record has the attribute
-                       # convert it to a tuple and set it
-                       value=tuple(getattr(x,attr))
-                       setattr(x,attr,value)          
-           else:
-              # the form does not have the split key 
-              if form.has_key(key):
-                 # if it has the original key, get the item
-                 # convert it to a tuple
-                 item=form[key]  
-                 item=tuple(form[key])
-                 form[key]=item
+                     # It is mapped to a list of  records
+                     for x in item:
+                        # loop through the records
+                        if hasattr(x, attr):
+                           # If the record has the attribute
+                           # convert it to a tuple and set it
+                           value=tuple(getattr(x,attr))
+                           setattr(x,attr,value)          
+               else:
+                  # the form does not have the split key 
+                  if form.has_key(key):
+                     # if it has the original key, get the item
+                     # convert it to a tuple
+                     item=form[key]  
+                     item=tuple(form[key])
+                     form[key]=item
                      
         other=self.other={}
         other.update(form)
