@@ -811,7 +811,7 @@ class DocumentClass:
     def doc_description(
         self, paragraph,
         delim = re.compile(r'\s+--\s+').search,
-        nb=re.compile(r'[^\0- ]').search,
+        nb=re.compile(r'[^\000- ]').search,
         ):
 
         top=paragraph.getColorizableTexts()[0]

@@ -106,17 +106,17 @@ def StructuredText(aStructuredString, level=0):
 
 def html_with_references(text, level=1):
     text = re.sub(
-        r'[\0\n]\.\. \[([0-9_%s-]+)\]' % letters,
+        r'[\000\n]\.\. \[([0-9_%s-]+)\]' % letters,
         r'\n  <a name="\1">[\1]</a>',
         text)
 
     text = re.sub(
-        r'([\x00- ,])\[(?P<ref>[0-9_%s-]+)\]([\x00- ,.:])'   % letters,
+        r'([\000- ,])\[(?P<ref>[0-9_%s-]+)\]([\000- ,.:])'   % letters,
         r'\1<a href="#\2">[\2]</a>\3',
         text)
     
     text = re.sub(
-        r'([\0- ,])\[([^]]+)\.html\]([\0- ,.:])',
+        r'([\000- ,])\[([^]]+)\.html\]([\000- ,.:])',
         r'\1<a href="\2.html">[\2]</a>\3',
         text)
 
