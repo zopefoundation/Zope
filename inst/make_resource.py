@@ -92,10 +92,10 @@ from do import *
 
 def main(cwd=os.getcwd(), name='Zope', user='', group=''):
     python=sys.executable
-    print 'Writing the pcgi resource file (ie cgi script), %s.cgi' % name
+    print 'Writing the pcgi resource file (ie cgi script), %s' % name
     cwd=os.environ.get('ZDIR',cwd)
 
-    open('%s.cgi' % name,'w').write('''#!%(cwd)s/pcgi/pcgi-wrapper
+    open(name,'w').write('''#!%(cwd)s/pcgi/pcgi-wrapper
 PCGI_NAME=Zope
 PCGI_MODULE_PATH=%(cwd)s/lib/python/Zope
 PCGI_PUBLISHER=%(cwd)s/pcgi/pcgi_publisher.py
