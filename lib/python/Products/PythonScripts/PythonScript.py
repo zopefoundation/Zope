@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -311,7 +311,7 @@ class PythonScript(Script, Historical, Cacheable):
         self._v_f = f = l.values()[0]
         return f
 
-    def _makeFunction(self):
+    def _makeFunction(self, dummy=0): # CMFCore.FSPythonScript uses dummy arg.
         self.ZCacheable_invalidate()
         self._compile()
 
