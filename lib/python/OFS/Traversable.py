@@ -84,8 +84,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.3 2000/07/28 15:55:09 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Traversable.py,v 1.4 2000/08/15 17:52:53 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import Acquisition
@@ -100,7 +100,10 @@ class Traversable:
 
     absolute_url__roles__=None # Public
     def absolute_url(self, relative=0):
-        req = self.REQUEST
+        try:
+            req = self.REQUEST
+        except AttributeError:
+            req = {}
         rpp = req.get('VirtualRootPhysicalPath', ('',))
         spp = self.getPhysicalPath()
         i = 0
