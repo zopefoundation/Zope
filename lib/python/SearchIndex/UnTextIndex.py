@@ -92,7 +92,8 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
+
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -226,7 +227,10 @@ class UnTextIndex(Persistent, Implicit):
 
           the next four arguments are default optimizations.
           """
-
+        # Before we do anything, unindex the object we've been handed, as
+        # we can't depend on the user to do the right thing.
+        self.unindex_object(i)
+        
         id = self.id
         try:
             ## sniff the object for our 'id', the 'document source' of 

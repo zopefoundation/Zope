@@ -16,6 +16,10 @@ class UnKeywordIndex(UnIndex):
     def index_object(self, i, obj, threshold=None):
         """ index an object 'obj' with integer id 'i'"""
 
+        # Before we do anything, unindex the object we've been handed, as
+        # we can't depend on the user to do the right thing.
+        self.unindex_object(i)
+
         index = self._index
         unindex = self._unindex
 
@@ -51,8 +55,7 @@ class UnKeywordIndex(UnIndex):
 
         kws = unindex.get(i, None)
         if kws is None:
-            LOG('UnKeywordIndex', ERROR,('unindex_object was called with bad '
-                                         'integer id %s' % str(i)))
+            return None
         for kw in kws:
             set = index.get(kw, None)
             if set is not None:

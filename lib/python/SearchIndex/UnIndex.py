@@ -84,7 +84,9 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.14 $'[11:-2]
+
+__version__='$Revision: 1.15 $'[11:-2]
+
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -157,6 +159,10 @@ class UnIndex(Persistent, Implicit):
     def index_object(self, i, obj, threshold=None):
         """ index and object 'obj' with integer id 'i'"""
 
+        # Before we do anything, unindex the object we've been handed, as
+        # we can't depend on the user to do the right thing.
+        self.unindex_object(i)
+        
         index = self._index
         unindex = self._unindex
 
