@@ -56,19 +56,19 @@
 <dtml-if "_['sequence-index']==a_">
   <td bgcolor="#ffffff" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
-   size="1">&nbsp;<a <dtml-if 
+   size="1" color="#000000">&nbsp;<a <dtml-if 
    action>href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
    ><dtml-if target> target="&dtml-target;"</dtml-if
-   >><font color="#000000"><strong><dtml-var 
-   label></strong></font></a>&nbsp;</font></td>
+   >><span style="color: #000000;"><strong><dtml-var 
+   label></strong></span></a>&nbsp;</font></td>
 <dtml-else>
   <td bgcolor="#efefef" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
-   size="1">&nbsp;<a <dtml-if 
+   size="1" color="#000000">&nbsp;<a <dtml-if 
    action>href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
    ><dtml-if target> target="&dtml-target;"</dtml-if
-   >><font color="#000000"><strong><dtml-var 
-   label></strong></font></a>&nbsp;</font></td>
+   >><span style="color: #000000;"><strong><dtml-var 
+   label></strong></span></a>&nbsp;</font></td>
 </dtml-if>
 </dtml-in>
 </tr>
