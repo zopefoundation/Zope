@@ -328,16 +328,29 @@ class FullLog(CommitLog):
         """Initialize the `full' commit log, usually with a new file."""
         CommitLog.__init__(self, file, dir)
         self.__versions = {}
+        self.__prevrevids = {}
 
     def finish(self):
         CommitLog.finish(self)
         self.__versions.clear()
+        self.__prevrevids.clear()
 
     def get_vid(self, version, missing=None):
         """Given a version string, return the associated vid.
         If not present, return `missing'.
         """
         return self.__versions.get(version, missing)
+
+    def get_prevrevid(self, oid, missing=None):
+        """Given an object id, return the associated prevrevid.
+        If not present, return `missing'.
+
+        This method serves to allow transactionalUndo() to find undone
+        transactions that have been committed to the log, but not to the
+        database (i.e. multiple transactionalUndo()'s during a single
+        transaction).
+        """
+        return self.__prevrevids.get(oid, missing)
 
     # read/write protocol
 
@@ -356,6 +369,13 @@ class FullLog(CommitLog):
         # Write an empty pickle since we're just moving the object and we'll
         # reuse the pickle already in the database.
         self._append('o', (oid, vid, nvrevid, lrevid, '', prevrevid))
+
+    def write_object_undo(self, oid, vid, nvrevid, lrevid, prevrevid):
+        # Identical to write_moved_object() except that we have to keep some
+        # extra info around.  Specifically, it's possible to undo multiple
+        # transactions in the same transaction.
+        self._append('o', (oid, vid, nvrevid, lrevid, '', prevrevid))
+        self.__prevrevids[oid] = prevrevid
 
     def write_new_version(self, version, vid):
         self._append('v', (version, vid))
