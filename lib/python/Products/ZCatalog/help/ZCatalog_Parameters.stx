@@ -41,3 +41,11 @@ ZCatalog - searchResults: specifying parameters for a search query
 
       'level' -- only applies to Path Index. Specifies the directory
       level to start searching. (optional, default: 0)
+
+    
+    Parameters for searchResults():
+
+     'optimize' -- ZCatalog performs a query optimization for queries
+     not passed through the web (either as dictionary or mapping). To
+     disable this optimization set optimize to 0 (optional, default: 1).
+     Optimization is disabled for searches through the web.

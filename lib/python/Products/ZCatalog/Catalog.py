@@ -446,13 +446,30 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 ## on below here...  Most of this stuff came from ZTables with tweaks.
 ## But I worry about :-)
 
-    def _indexedSearch(self, request , sort_index, append, used):
+    def _indexedSearch(self, request , sort_index, append, used, optimize):
         """
         Iterate through the indexes, applying the query to each one.
         """
 
         rs   = None             # resultset
         data = self.data
+
+        # We can optimize queries by only calling index._apply_index()
+        # for indexes involved in a search (means the request object
+        # contains the Id of the corresponding index). But we must
+        # take care of two kind of searches:
+        #
+        # - searches through the web (empty input fields means   
+        #   the index should return *all* records). For such queries
+        #   we disable query optimization.
+        #
+        # - application-related searches (search queries are passed as
+        #   dictionary or mapping). Such queries usually define exactly
+        #   what they are looking for (WYGIWYSF - what you get is what
+        #   you search for).
+
+        if hasattr(request,'environ'):   # we have a request instance
+            optimize = 0
 
         if used is None: used={}
         for i in self.indexes.keys():
@@ -464,9 +481,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
                 # Optimization: we check if there is some work for the index.
                 # 
-                if request.has_key(index.getId()) :
-                    if request[index.getId()] != '':
+
+                if optimize and request.has_key(index.getId()) :
                         r=index._apply_index(request)
+                else:
+                    r=index._apply_index(request)
 
                 if r is not None:
                     r, u = r
@@ -564,7 +583,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     key = (key,id(lm))
                     append((key,lm))
 
-    def searchResults(self, REQUEST=None, used=None, **kw):
+    def searchResults(self, REQUEST=None, used=None, optimize=1, **kw):
         
         # Get search arguments:
         if REQUEST is None and not kw:
@@ -601,7 +620,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Perform searches with indexes and sort_index
         r=[]
         
-        used=self._indexedSearch(kw, sort_index, r.append, used)
+        used=self._indexedSearch(kw, sort_index, r.append, used, optimize)
         if not r:
             return LazyCat(r)
 
