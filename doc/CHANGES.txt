@@ -11,6 +11,14 @@ Zope changes
         - Added a hook that allows user folders to provide a logout
           action.
 
+	- The ZCatalog interface is now cleaned up and matches the new 
+	  interface look and feel better. In addition some logical
+	  reorganization was made to move things onto an Advanced tab.
+
+	- Result sets from the Catalog are now much Lazier, and will
+	  do concatenation with eachother in a lazy fashion.  This was
+	  suggested by Casey Duncan in Collector #1712.
+
       Bugs Fixed
 
         - Added a deprecated alias to UnrestrictedUser, Super, for use
@@ -22,6 +30,26 @@ Zope changes
         - Fixed a NameError in HTTPRequest.
 
         - Made manage_page_style.css correctly available to all.
+
+        - ZCatalog objects now show up in the Add List in the same
+          naming convention that was used for all other Z* objects.
+          This does *not* affect the meta_type that is actually used
+          for the object itself.
+
+        - (Collector #1835, 1820, 1826) Eliminated errors in both
+          Field and Keyword indexes where old keys might show up in
+          'uniqueValuesFor()' because of the way the data structures
+          were kept around.
+
+        - (Collector #1823)Eliminated situation where if the Catalog
+          did not have a metadata record for 'meta_type' the Cataloged
+          Objects view would be incorrect and list everything as a
+          'ZCatalog'. Now it simply lists it as 'Unknown'.
+
+	- (Collector #1844) On the brains returned from ZCatalog
+	  queries, 'getObject()' now tries to resolve URLs as well as
+	  paths.  This should catch more cases.
+
 
     Zope 2.3.0 alpha 2
 
