@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.24 1998/03/06 23:22:36 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.25 1998/03/10 15:04:58 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -156,8 +156,15 @@ expr_globals={
     '__guarded_getslice__': careful_getslice,
     }
 
-def name_param(params,tag='',expr=0, attr='name'):
+def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
     used=params.has_key
+    __traceback_info__=params, tag, expr, attr
+
+    if expr and used('expr') and used('') and not used(params['']):
+	# Fix up something like: <!--#in expr="whatever" mapping-->
+	params[params['']]=default_unnamed
+	del params['']
+	
     if used(''):
 	if used(attr):
 	    raise ParseError, _tm('Two %s values were given', (attr,tag))
@@ -312,6 +319,11 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.25  1998/03/10 15:04:58  jim
+# Added better handling of case like:
+#
+#   <!--#in expr="whatever" mapping-->
+#
 # Revision 1.24  1998/03/06 23:22:36  jim
 # Added "builtin" 'attr' function: attr(inst,name,_vars)
 #
