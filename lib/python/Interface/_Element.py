@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: _Element.py,v 1.4 2003/07/25 13:48:34 anthony Exp $
+$Id: _Element.py,v 1.5 2003/07/30 22:09:23 philikon Exp $
 """
 
 from _object import object
@@ -26,8 +26,6 @@ class Element(object):
     #
     #__implements__ = IElement
 
-    __tagged_values = {}
-
     def __init__(self, __name__=None, __doc__=''):
         """Create an 'attribute' description
         """
@@ -37,6 +35,7 @@ class Element(object):
 
         self.__name__=__name__
         self.__doc__=__doc__
+        self.__tagged_values = {}
 
     def getName(self):
         """ Returns the name of the object. """
