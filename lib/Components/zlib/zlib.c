@@ -665,7 +665,7 @@ PyInit_zlib()
         d = PyModule_GetDict(m);
         ZlibError = Py_BuildValue("s", "zlib.error");
         PyDict_SetItemString(d, "error", ZlibError);
-        PyDict_SetItemString(d, "IDString", "$Id: zlibmodule.c,v 1.2 1997/06/30 17:02:18 jim Exp $");
+        PyDict_SetItemString(d, "IDString", "$Id: zlib.c,v 1.1 1997/07/17 13:34:04 jim Exp $");
 	insint(d, "MAX_WBITS", MAX_WBITS);
 	insint(d, "DEFLATED", DEFLATED);
 	insint(d, "DEF_MEM_LEVEL", DEF_MEM_LEVEL);

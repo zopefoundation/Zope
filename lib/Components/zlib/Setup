@@ -1,4 +1,4 @@
 *shared*
-zlib zlibmodule.c -Izlib -Lzlib -lz
+zlib zlib.c -Izlib -Lzlib -lz
 
 
