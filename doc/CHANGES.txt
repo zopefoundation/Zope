@@ -6,6 +6,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Zope Page Templates set a 'content-type' header even if
+        the result of their execution was not rendered to the browser.
+        We now check to make sure a content-type header is not
+        already set before allowing a page template to set its own.
+
       - The title_or_id attribute of browser id managers and
         session data managers is now accessible publically.
    
