@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.111 2000/09/14 03:06:43 chrism Exp $"""
+$Id: ObjectManager.py,v 1.112 2000/10/10 18:55:33 evan Exp $"""
 
-__version__='$Revision: 1.111 $'[11:-2]
+__version__='$Revision: 1.112 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -493,7 +493,7 @@ class ObjectManager(
         
         if download:
             f=StringIO()
-            if toxml: ob._p_jar.exportXML(ob._p_oid, f)
+            if toxml: XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
             else:     ob._p_jar.exportFile(ob._p_oid, f)
             RESPONSE.setHeader('Content-type','application/data')
             RESPONSE.setHeader('Content-Disposition',
