@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.21 1999/08/02 13:26:52 jim Exp $'''
+$Id: StructuredText.py,v 1.22 1999/08/02 22:01:28 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,13 @@ $Id: StructuredText.py,v 1.21 1999/08/02 13:26:52 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.22  1999/08/02 22:01:28  jim
+# Fixed a bunch of bugs introduced by making ts_regex actually thread
+# safe.
+#
+# Also localized a bunch of regular expressions
+# using "static" variables (aka always default arguments).
+#
 # Revision 1.21  1999/08/02 13:26:52  jim
 # paragraph_divider needs to be a regular (thread-unsafe) regex
 # since it gets passed to ts_regex.split, which is thread-safe
@@ -342,18 +349,16 @@ import ts_regex, regex
 from ts_regex import gsub
 from string import split, join, strip, find
 
-indent_tab  =ts_regex.compile('\(\n\|^\)\( *\)\t')
-indent_space=ts_regex.compile('\n\( *\)')
-paragraph_divider=regex.compile('\(\n *\)+\n')
-
-def untabify(aString):
+def untabify(aString,
+             indent_tab=ts_regex.compile('\(\n\|^\)\( *\)\t').search_group,
+             ):
     '''\
     Convert indentation tabs to spaces.
     '''
     result=''
     rest=aString
     while 1:
-        ts_results = indent_tab.search_group(rest, (1,2))
+        ts_results = indent_tab(rest, (1,2))
         if ts_results:
             start, grps = ts_results
             lnl=len(grps[0])
@@ -393,7 +398,9 @@ def reindent(aString, indent=2, already_untabified=0):
 
     return join(r,'\n')
 
-def indent_level(aString):
+def indent_level(aString,
+                 indent_space=ts_regex.compile('\n\( *\)').search_group,
+                 ):
     '''\
     Find the minimum indentation for a string, not counting blank lines.
     '''
@@ -402,7 +409,7 @@ def indent_level(aString):
     indent=l=len(text)
     while 1:
 
-        ts_results = indent_space.search_group(text, (1,2), start)
+        ts_results = indent_space(text, (1,2), start)
         if ts_results:
             start, grps = ts_results
             i=len(grps[0])
@@ -432,12 +439,6 @@ def structure(list):
         i=i+sublen
     return r
 
-bullet=ts_regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)')
-example=ts_regex.compile('[\0- ]examples?:[\0- ]*$').search
-dl=ts_regex.compile('\([^\n]+\)[ \t]+--[ \t\n]+\([^\0]*\)')
-nl=ts_regex.compile('\n').search
-ol=ts_regex.compile('[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)')
-olp=ts_regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)')
 
 
 optional_trailing_punctuation = '\(,\|\([.:?;]\)\)?'
@@ -454,7 +455,9 @@ class StructuredText:
     output formatting.
     """
 
-    def __init__(self, aStructuredString, level=0):
+    def __init__(self, aStructuredString, level=0,
+                 paragraph_divider=regex.compile('\(\n *\)+\n'),
+                 ):
         '''Convert a structured text string into a structured text object.
 
         Aguments:
@@ -502,12 +505,17 @@ ctag_prefix="\([\0- (]\|^\)"
 ctag_suffix="\([\0- ,.:;!?)]\|$\)"
 ctag_middle="[%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s]"
 ctag_middl2="[%s][%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s][%s]"
-em    =ts_regex.compile(ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix)
-strong=ts_regex.compile(ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix)
-under =ts_regex.compile(ctag_prefix+(ctag_middle % (("_",)*6) )+ctag_suffix)
-code  =ts_regex.compile(ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix)
         
-def ctag(s):
+def ctag(s,
+         em=regex.compile(
+             ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix),
+         strong=regex.compile(
+             ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix),
+         under=regex.compile(
+             ctag_prefix+(ctag_middle % (("_",)*6) )+ctag_suffix),
+         code=regex.compile(
+             ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix),
+         ):
     if s is None: s=''
     s=gsub(strong,'\\1<strong>\\2</strong>\\3',s)
     s=gsub(under, '\\1<u>\\2</u>\\3',s)
@@ -522,9 +530,9 @@ class HTML(StructuredText):
     '''\
 
     def __str__(self,
-                extra_dl=ts_regex.compile("</dl>\n<dl>"),
-                extra_ul=ts_regex.compile("</ul>\n<ul>"),
-                extra_ol=ts_regex.compile("</ol>\n<ol>"),
+                extra_dl=regex.compile("</dl>\n<dl>"),
+                extra_ul=regex.compile("</ul>\n<ul>"),
+                extra_ol=regex.compile("</ol>\n<ol>"),
                 ):
         '''\
         Return an HTML string representation of the structured text data.
@@ -573,27 +581,41 @@ class HTML(StructuredText):
         if not tagged: r=r+'</PRE>\n'
         return r
 
-    def _str(self,structure,level):
+    def _str(self,structure,level,
+             # Static
+             bullet=ts_regex.compile('[ \t\n]*[o*-][ \t\n]+\([^\0]*\)'
+                                     ).match_group,
+             example=ts_regex.compile('[\0- ]examples?:[\0- ]*$'
+                                      ).search,
+             dl=ts_regex.compile('\([^\n]+\)[ \t]+--[ \t\n]+\([^\0]*\)'
+                                 ).match_group,
+             nl=ts_regex.compile('\n').search,
+             ol=ts_regex.compile(
+                 '[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)'
+                 ).match_group,
+             olp=ts_regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)'
+                                  ).match_group,
+             ):
         r=''
         for s in structure:
             # print s[0],'\n', len(s[1]), '\n\n'
             
-            ts_results = bullet.match_group(s[0], (1,))
+            ts_results = bullet(s[0], (1,))
             if ts_results:
                 p = ts_results[1]
                 r=self.ul(r,p,self._str(s[1],level))
             else:
-                ts_results = ol.match_group(s[0], (3,))
+                ts_results = ol(s[0], (3,))
                 if ts_results:
                     p = ts_results[1]
                     r=self.ol(r,p,self._str(s[1],level))
                 else:
-                    ts_results = olp.match_group(s[0], (1,))
+                    ts_results = olp(s[0], (1,))
                     if ts_results:
                         p = ts_results[1]
                         r=self.ol(r,p,self._str(s[1],level))
                     else:
-                        ts_results = dl.match_group(s[0], (1,2))
+                        ts_results = dl(s[0], (1,2))
                         if ts_results:
                             t,d = ts_results[1]
                             r=self.dl(r,t,d,self._str(s[1],level))
@@ -619,10 +641,11 @@ class HTML(StructuredText):
 
 def html_quote(v,
                character_entities=(
-                       (ts_regex.compile('&'), '&amp;'),
-                       (ts_regex.compile("<"), '&lt;' ),
-                       (ts_regex.compile(">"), '&gt;' ),
-                       (ts_regex.compile('"'), '&quot;'))): #"
+                       (regex.compile('&'), '&amp;'),
+                       (regex.compile("<"), '&lt;' ),
+                       (regex.compile(">"), '&gt;' ),
+                       (regex.compile('"'), '&quot;')
+                       )): #"
         text=str(v)
         for re,name in character_entities:
             text=gsub(re,name,text)
