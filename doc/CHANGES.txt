@@ -60,6 +60,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1705: CopySource._postCopy is never called
+
       - Collector #1617: Fixed crash in ZPT code (caused by improper
         checks in cAccessControl)
 

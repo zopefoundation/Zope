@@ -49,11 +49,11 @@ class CopyContainer(ExtensionClass.Base):
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
     def _getOb(self, id, default=_marker):
-        self = aq_base(self)
-        if default is _marker: return getattr(self, id)
-        try: return getattr(self, id)
-        except: return default
-
+        if hasattr(aq_base(self), id):
+            return getattr(self, id)
+        if default is _marker:
+            raise AttributeError, id
+        return default
 
     def manage_CopyContainerFirstItem(self, REQUEST):
         return self._getOb(REQUEST['ids'][0])
@@ -178,6 +178,7 @@ class CopyContainer(ExtensionClass.Base):
                 ob._setId(id)
                 self._setObject(id, ob)
                 ob = self._getOb(id)
+                ob._postCopy(self, op=0)
                 ob.manage_afterClone(ob)
                 ob.wl_clearLocks()
 
@@ -208,12 +209,13 @@ class CopyContainer(ExtensionClass.Base):
                 orig_id=id
                 id=self._get_id(id)
                 result.append({'id':orig_id, 'new_id':id })
-                ob._setId(id)
 
+                ob._setId(id)
                 self._setObject(id, ob, set_owner=0)
+                ob=self._getOb(id)
+                ob._postCopy(self, op=1)
 
                 # try to make ownership implicit if possible
-                ob=self._getOb(id)
                 ob.manage_changeOwnershipType(explicit=0)
 
             if REQUEST is not None:
@@ -264,6 +266,8 @@ class CopyContainer(ExtensionClass.Base):
         # Note - because a rename always keeps the same context, we
         # can just leave the ownership info unchanged.
         self._setObject(new_id, ob, set_owner=0)
+        ob = self._getOb(new_id)
+        ob._postCopy(self, op=1)
 
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, update_menu=1)
@@ -292,7 +296,8 @@ class CopyContainer(ExtensionClass.Base):
         ob=ob._getCopy(self)
         ob._setId(id)
         self._setObject(id, ob)
-        ob=ob.__of__(self)
+        ob=self._getOb(id)
+        ob._postCopy(self, op=0)
         ob.manage_afterClone(ob)
         return ob
 
