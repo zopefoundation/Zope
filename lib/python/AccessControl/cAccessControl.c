@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.22 2003/10/24 01:21:48 chrism Exp $
+  $Id: cAccessControl.c,v 1.23 2003/11/28 16:44:12 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -449,7 +449,7 @@ static PyExtensionClass ZopeSecurityPolicyType = {
 	NULL,					/* tp_next	*/
 #endif
 	METHOD_CHAIN(ZopeSecurityPolicy_methods),/* methods	*/
-	EXTENSIONCLASS_BINDABLE_FLAG,		/* flags	*/
+	(void*)(EXTENSIONCLASS_BINDABLE_FLAG),		/* flags	*/
 };
 
 
@@ -567,11 +567,8 @@ static PyExtensionClass PermissionRoleType = {
 	NULL,					/* tp_next	*/
 #endif
 	METHOD_CHAIN(PermissionRole_methods),	/* methods	*/
-	EXTENSIONCLASS_BINDABLE_FLAG/*|
+	(void*)(EXTENSIONCLASS_BINDABLE_FLAG) /*|
 	EXTENSIONCLASS_INSTDICT_FLAG*/,		/* flags	*/
-	NULL,					/* Class dict	*/
-	NULL,					/* bases	*/
-	NULL,					/* reserved	*/
 };
 
 static char imPermissionRole__doc__[] = "imPermissionRole C implementation";
@@ -632,7 +629,7 @@ static PyExtensionClass imPermissionRoleType = {
 	NULL,					/* tp_next	*/
 #endif
 	METHOD_CHAIN(imPermissionRole_methods), /* methods	*/
-	EXTENSIONCLASS_BINDABLE_FLAG,		/* flags	*/
+	(void*)(EXTENSIONCLASS_BINDABLE_FLAG),		/* flags	*/
 };
 
 
@@ -2073,17 +2070,12 @@ void initcAccessControl(void) {
 
 	if (ZopeSecurityPolicy_setup() < 0) return;
 
-	ZopeSecurityPolicyType.tp_getattro =
-		(getattrofunc) PyExtensionClassCAPI->getattro;
 
-	ExtensionClassGetattro= PyExtensionClassCAPI->getattro;
-
-	imPermissionRoleType.tp_getattro =
-		(getattrofunc) PyExtensionClassCAPI->getattro;
+	ExtensionClassGetattro= Py_FindAttr;
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.22 2003/10/24 01:21:48 chrism Exp $\n");
+		"$Id: cAccessControl.c,v 1.23 2003/11/28 16:44:12 jim Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
