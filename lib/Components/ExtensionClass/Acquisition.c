@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.43 2000/09/29 15:44:53 shane Exp $
+  $Id: Acquisition.c,v 1.44 2000/09/29 17:21:27 tseaver Exp $
 
   If you have questions regarding this software,
   contact:
@@ -605,6 +605,7 @@ Wrapper_setattro(Wrapper *self, PyObject *oname, PyObject *v)
 static int
 Wrapper_compare(Wrapper *self, PyObject *w)
 {
+  PyObject *obj, *wobj;
   PyObject *m;
   int r;
 
@@ -612,8 +613,22 @@ Wrapper_compare(Wrapper *self, PyObject *w)
 
   UNLESS (m=PyObject_GetAttr(OBJECT(self), py__cmp__))
     {
+      /* Unwrap self completely -> obj. */
+      while (self->obj && isWrapper(self->obj))
+        self=WRAPPER(self->obj);
+      obj = self->obj;
+      /* Unwrap w completely -> wobj. */
+      if (isWrapper(w))
+        {
+          while (WRAPPER(w)->obj && isWrapper(WRAPPER(w)->obj))
+            w=WRAPPER(w)->obj;
+          wobj = WRAPPER(w)->obj;
+        }
+      else wobj = w;
+
       PyErr_Clear();
-      return (OBJECT(self) < w) ? -1 : 1;
+      if (obj == wobj) return 0;
+      return (obj < w) ? -1 : 1;
     }
 
   ASSIGN(m, PyObject_CallFunction(m, "O", w));
@@ -1401,7 +1416,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.43 $";
+  char *rev="$Revision: 1.44 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1420,7 +1435,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.43 2000/09/29 15:44:53 shane Exp $\n",
+	   "$Id: Acquisition.c,v 1.44 2000/09/29 17:21:27 tseaver Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

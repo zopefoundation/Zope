@@ -30,3 +30,10 @@ Zope changes
           return the right thing regardless of how the id of the 
           object is stored internally.
 
+      Bugs Fixed
+
+        - (Collector #1650)Where the underlying object does not define
+          its own '__cmp__()', comparisons of acquisition-wrapped
+          objects fall back to comparing the identities *of the
+          wrappers* .  Fixed to unrwap the object (both, if needed)
+          before comparing identities.
