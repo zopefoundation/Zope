@@ -89,7 +89,7 @@ import SessionInterfaces
 from SessionPermissions import *
 from common import DEBUG
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
-    unregisterBeforeTraverse, NameCaller
+    unregisterBeforeTraverse
 import traceback
 
 BID_MGR_NAME = 'browser_id_manager'
@@ -304,9 +304,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             self._hasTraversalHook = 1
             self._requestSessionName = requestSessionName
 
-class SessionDataManagerTraverser(NameCaller):
-    meta_type = "Session ID Insertion Traversal Rule"
-
+class SessionDataManagerTraverser:
     def __init__(self, requestSessionName, sdm):
         self._requestSessionName = requestSessionName
         self._sessionDataManager = sdm
@@ -321,7 +319,7 @@ class SessionDataManagerTraverser(NameCaller):
         except:
             errors = getattr(self,"_v_errors", 0)
             if errors < 4:
-                LOG('Session Tracking', WARNING, 'Session automatic traversal '
+                LOG('Session Tracking', WARNING,'Session automatic traversal '
                     'failed to get session data', error=sys.exc_info())
             if errors == 3:
                 LOG('Session Tracking', WARNING, 'Suppressing further '
@@ -331,4 +329,3 @@ class SessionDataManagerTraverser(NameCaller):
         if self._requestSessionName is not None:
             request.set_lazy(self._requestSessionName, session)
 
-        NameCaller.__call__(self, container, request)
