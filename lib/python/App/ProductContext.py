@@ -85,7 +85,9 @@
 """Objects providing context for product initialization
 """
 from AccessControl.PermissionRole import PermissionRole
-import Globals, os, OFS.ObjectManager
+import Globals, os, OFS.ObjectManager, OFS.misc_, Products
+
+if not hasattr(Products, 'meta_types'): Products.meta_types=()
 
 class ProductContext:
 
@@ -138,13 +140,15 @@ class ProductContext:
 
         """
         app=self.__app
+        pack=self.__pack
         initial=constructors[0]
         tt=type(())
         productObject=self.__prod
+        pid=productObject.id
 
         if icon and instance_class is not None:
-            setattr(instance_class, 'icon', 'Control_Panel/Products/%s/%s' %
-                    (productObject.id, os.path.split(icon)[1]))
+            setattr(instance_class, 'icon', 'misc_/%s/%s' %
+                    (pid, os.path.split(icon)[1]))
 
         OM=OFS.ObjectManager.ObjectManager
 
@@ -182,25 +186,32 @@ class ProductContext:
         if type(initial) is tt: name, initial = initial
         else: name=initial.__name__
 
-        if productObject.__dict__.has_key(name): return
+        if not hasattr(pack, '_m'): pack._m={}
+        m=pack._m
 
-        app._manage_add_product_meta_type(
-            productObject, name, meta_type or instance_class.meta_type
-            )
-        
-        setattr(productObject, name, initial)
-        setattr(productObject, name+'__roles__', pr)
+        Products.meta_types=Products.meta_types+(
+            { 'name': meta_type or instance_class.meta_type,
+              'action': ('manage_addProduct/%s/%s' % (pid, name)),
+              'product': pid                
+              },)
+
+        m[name]=initial
+        m[name+'__roles__']=pr
 
         for method in constructors[1:]:
             if type(method) is tt: name, method = method
             else: name=method.__name__
             if not productObject.__dict__.has_key(name):
-                setattr(productObject, name, method)
-                setattr(productObject, name+'__roles__', pr)
+                m[name]=method
+                m[name+'__roles__']=pr
 
         if icon:
             name=os.path.split(icon)[1]
             icon=Globals.ImageFile(icon, self.__pack.__dict__)
             icon.__roles__=None
-            setattr(productObject, name, icon)
-            
+            if not hasattr(OFS.misc_.misc_, pid):
+                setattr(OFS.misc_.misc_, pid, OFS.misc_.Misc_(pid, {}))
+            getattr(OFS.misc_.misc_, pid)[name]=icon
+
+
+

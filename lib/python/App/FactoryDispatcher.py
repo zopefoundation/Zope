@@ -85,7 +85,7 @@
 
 
 # Implement the manage_addProduct method of object managers
-import Acquisition
+import Acquisition, sys
 from string import rfind
 
 class ProductDispatcher(Acquisition.Implicit):
@@ -128,7 +128,25 @@ class FactoryDispatcher(Acquisition.Implicit):
         d=p.__dict__
         if hasattr(p,name) and d.has_key(name):
             return d[name]
+
+        # Waaa
+        m='Products.%s' % p.id
+        if sys.modules.has_key(m):
+            return sys.modules[m]._m[name]
+    
         raise AttributeError, name
 
     # Provide acquired indicators for critical OM methods:
     _setObject=Acquisition.Acquired
+
+    # Provide a replacement for manage_main that does a redirection:
+    def manage_main(trueself, self, REQUEST, update_menu=0):
+        """IMplement a contents view by redirecting to the true view
+        """
+        d = update_menu and '/manage_main?update_menu=1' or '/manage_main' 
+        REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
+
+
+
+
+

@@ -85,19 +85,18 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.97 1999/03/30 18:09:33 jim Exp $'''
-__version__='$Revision: 1.97 $'[11:-2]
+$Id: Application.py,v 1.98 1999/04/01 16:04:32 jim Exp $'''
+__version__='$Revision: 1.98 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
-import time, traceback, os, string
+import time, traceback, os, string, Products
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
 from HelpSys.HelpSys import HelpSys
 from App.ApplicationManager import ApplicationManager
 from webdav.NullResource import NullResource
-from Globals import Persistent
 from FindSupport import FindSupport
 from urllib import quote
 from cStringIO import StringIO
@@ -268,7 +267,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 
 
 
-class Expired(Persistent):
+class Expired(Globals.Persistent):
     icon='p_/broken'
 
     def __setstate__(self, s={}):
@@ -402,7 +401,7 @@ def install_products(app):
         permission, names = p[:2]
         folder_permissions[permission]=names
 
-    meta_types=list(Folder.dynamic_meta_types)
+    meta_types=[]
 
     product_names=os.listdir(product_dir)
     product_names.sort()
@@ -419,6 +418,11 @@ def install_products(app):
 
         product=__import__("Products.%s" % product_name,
                            global_dict, global_dict, silly)
+        
+        misc_=pgetattr(product, 'misc_', {})
+        if misc_:
+            if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
+            Application.misc_.__dict__[product_name]=misc_
 
         # Set up dynamic project information.
         productObject=App.Product.initializeProduct(
@@ -462,15 +466,11 @@ def install_products(app):
             new_permissions.sort()
             Folder.__dict__['__ac_permissions__']=tuple(
                 list(Folder.__ac_permissions__)+new_permissions)
-        
-        misc_=pgetattr(product, 'misc_', {})
-        if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
-        Application.misc_.__dict__[product_name]=misc_
 
         get_transaction().note('Installed product '+product_name)
         get_transaction().commit()
 
-    Folder.dynamic_meta_types=tuple(meta_types)
+    Products.meta_types=Products.meta_types+tuple(meta_types)
 
     Globals.default__class_init__(Folder)
 
