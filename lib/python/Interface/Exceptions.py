@@ -45,7 +45,7 @@ class BrokenMethodImplementation(Exception):
         self.mess=mess
 
     def __str__(self):
-        return """The implementation of %(method)s violates it's contract
+        return """The implementation of %(method)s violates its contract
         because %(mess)s.
         """ % self.__dict__
 
