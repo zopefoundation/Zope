@@ -11,8 +11,8 @@
 __doc__='''Simple RDB data-file reader
 
 
-$Id: RDB.py,v 1.1 1997/07/25 16:07:19 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: RDB.py,v 1.2 1997/07/28 21:30:13 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -212,7 +212,7 @@ class RDB:
 
     def names(self): return self._names
 
-    def parse(self, line):
+    def parse(self, line, _index=-1):
 	line=line[:-1]
         while line[-1:] in '\r\n': line=line[:-1]
         fields=split(line,'\t')
@@ -281,15 +281,15 @@ class RDB:
 		if index == _index:
 		    self._pos=pos
 		    self._index=_index
-		    self._row=line=self._Record(self.parse(line),
-						self._schema, self._names)
+		    self._row=line=self._Record(
+			self.parse(line,_index), self._schema, self._names)
 		    return line
 
 	else:
 	    file=self._file
 	    file.seek(self._record_positions[index])
-	    return self._Record(self.parse(file.readline()),
-				self._schema, self._names)
+	    return self._Record(
+		self.parse(file.readline(), index), self._schema, self._names)
 
 	raise IndexError, input_index
 	
@@ -317,6 +317,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.2  1997/07/28 21:30:13  jim
+# Fixed bug in handling errors.
+#
 # Revision 1.1  1997/07/25 16:07:19  jim
 # initial
 #
