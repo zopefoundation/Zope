@@ -11,6 +11,8 @@ Zope Changes
         WebDAV. Thanks to John Glavin at South River Technologies for
         help finding the bug.
 
+      - Collector #207: fixed problem with inner links in STXNG
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
