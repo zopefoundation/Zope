@@ -22,13 +22,15 @@ Building Zope
 
   Notes
   
-  * You should be using Python 1.5.1 to run the build scripts.
-  * To build python extensions you need to have Python configuration
-    information available. If your Python comes from an RPM you may need
-    the python-devel RPM installed too. If you built Python from source
-    all the configuration information should already be there.
-  * If you just want to use Zope components it's not necessary to build Zope
-    but it's a good idea since it will compile Python C extensions for you.
+    * You should be using Python 1.5.1 to run the build scripts.
+
+    * To build python extensions you need to have Python configuration
+      information available. If your Python comes from an RPM you may need
+      the python-devel RPM installed too. If you built Python from source
+      all the configuration information should already be there.
+
+    * If you just want to use Zope components it's not necessary to build Zope
+      but it's a good idea since it will compile Python C extensions for you.
 
 
 Setting the Zope "super manager" name and password
@@ -39,17 +41,17 @@ Setting the Zope "super manager" name and password
   and modifying user folders within Zope.
 
   A special "super manager" user name and password are defined outside
-  the application for two reasons:
+  the application for two reasons
  
-    - Some user name and password are needed to enable creation of
-  initial normal managers of your Zope site.
+    * Some user name and password are needed to enable creation of
+      initial normal managers of your Zope site.
 
-    - The "super manager" provides an all-powerful user that can do
-  anything in the application and whose password cannot be changed
-  through the application user interface.
+    * The "super manager" provides an all-powerful user that can do
+      anything in the application and whose password cannot be changed
+      through the application user interface.
 
   This user name and password is defined in the 'access' file located
-  in the Zope directory.  It should be readable only by the user
+  in the Zope directory. It should be readable only by the user
   as which your web server runs.
 
   The super manager username and password should only be used when
@@ -82,36 +84,35 @@ Setting the Zope "super manager" name and password
   system from other domains will fail, even if the correct superuser
   name and password are used.
 
-
 Setting permissions ons on the var directory.
 
-    You need to set permissions on the Zope var directory.
-    Zope needs to read and write data from its var directory. Before
-    running Zope you should ensure that you give adequate permissions
-    to the Zope var directory for the userid Zope will run under.
+  You need to set permissions on the Zope var directory.
+  Zope needs to read and write data from its var directory. Before
+  running Zope you should ensure that you give adequate permissions
+  to the Zope var directory for the userid Zope will run under.
 
-    Depending on how you choose to run Zope you will need to give different
-    permissions to the var directory. For example if you are using
-    ZopeHTTPServer which normally runs as your userid, you need only ensure
-    that your userid has read and write permissions to the var directory.
-    If you use Zope with an existing web server, it will probably run Zope
-    as 'nobody'. In this case 'nobody' needs read and write permissions to
-    the var directory.
+  Depending on how you choose to run Zope you will need to give different
+  permissions to the var directory. For example if you are using
+  ZopeHTTPServer which normally runs as your userid, you need only ensure
+  that your userid has read and write permissions to the var directory.
+  If you use Zope with an existing web server, it will probably run Zope
+  as 'nobody'. In this case 'nobody' needs read and write permissions to
+  the var directory.
 
-    If you change the way you run Zope you may need to modify the permissions
-    of the var directory and the files in it to allow Zope to read and write
-    under its changed userid.
+  If you change the way you run Zope you may need to modify the permissions
+  of the var directory and the files in it to allow Zope to read and write
+  under its changed userid.
 
 
 Using Zope with ZopeHTTPServer
 
   ZopeHTTPServer is a simple web server written in Python and it
   allows you to run Zope without using PCGI and another web server.
-  The build script automatically creates a shell script named serve.sh
+  The build script automatically creates a shell script named 'start'
   which will run the built-in server. To start Zope using ZopeHTTPServer 
   cd to the Zope directory and issue the command::
 
-    serve.sh
+    ./start
 
 
 Starting Zope with an existing web server
@@ -150,4 +151,3 @@ Accessing Zope through the web
     'http://www.zope.org/'
   
   Have fun!
-  
