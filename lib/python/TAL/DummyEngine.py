@@ -144,12 +144,17 @@ class DummyEngine:
         return self.evaluate(expr)
 
     def evaluateText(self, expr):
-        return self.evaluate(expr)
+        text = self.evaluate(expr)
+        if text is not None:
+            text = str(text)
+        return text
 
     def evaluateStructure(self, expr):
+        # XXX Should return None or a DOM tree
         return self.evaluate(expr)
 
     def evaluateSequence(self, expr):
+        # XXX Should return a sequence
         return self.evaluate(expr)
 
     def findMacroDocument(self, macroName):
