@@ -113,6 +113,13 @@ Zope changes
         - Trying to cut or copy with no items selected now returns a 
           nicer error message.
 
+        - A roles keyword argument was added to ZopeSecurityPolicy.validate
+          to enable callers to pass in roles as opposed to allowing the
+          machinery to figure it out for itself.
+
+        - Some product context initialization related to setting roles
+          was updated.
+
     Zope 2.3.0 alpha 1
     
       Features Added
