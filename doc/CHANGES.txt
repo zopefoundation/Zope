@@ -24,7 +24,7 @@ Zope Changes
 
     Features added
 
-     - The obsolete 'SearchIndex' packages has been removed
+     - The obsolete 'SearchIndex' package has been removed
 
      - Traversal now supports a "post traversal hook" that get's run
        after traversal finished and the security context is established.
