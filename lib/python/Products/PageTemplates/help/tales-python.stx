@@ -88,6 +88,9 @@ TALES Python expressions
       'math' -- The standard "Python math
       module":http://www.python.org/doc/current/lib/module-math.html.
 
+      'sequence' -- A module with a powerful sorting function. See XXX
+      for more information.
+
       'Products.PythonScripts.standard' -- Various HTML formatting
       functions available in DTML. See XXX for more information.
 
@@ -118,7 +121,7 @@ TALES Python expressions
         User Name
       </p>
 
-    Basic math (convert image size to mega bytes)::
+    Basic math (convert an image size to megabytes)::
 
       <p tal:content="python:image.getSize() / 1048576.0">
         12.2323
