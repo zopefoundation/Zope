@@ -340,7 +340,7 @@ class BaseReaderWriter(threading.Thread):
                     return
                 except ConflictError:
                     i = i + 1
-                    print "conflict %d" % i
+                    #print "conflict %d" % i
                     if i > 3: raise
         finally:
             self.conn.close()
