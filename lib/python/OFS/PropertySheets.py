@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -125,26 +125,6 @@ class View(App.Management.Tabs):
         return PropertySheet.inheritedAttribute('tabs_path_info')(
             self, script, path)
 
-
-
-psxml='<d:propstat xmlns:n="%s">\n' \
-      '  <d:prop>\n' \
-      '%s\n' \
-      '  </d:prop>\n' \
-      '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
-      '</d:propstat>\n'
-
-
-propstat='<d:propstat xmlns:n="%s">\n' \
-             '  <d:prop>\n' \
-             '%s\n' \
-             '  </d:prop>\n' \
-             '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
-             '</d:propstat>\n',
-
-propdesc='  <d:responsedescription>\n' \
-             '  %s\n' \
-             '  </d:responsedescription>\n'
 
 
 class PropertySheet(Persistent, Implicit):
@@ -279,22 +259,16 @@ class PropertySheet(Persistent, Implicit):
             dict[p['id']]=p
         return dict
 
+    propstat='<d:propstat xmlns:n="%s">\n' \
+             '  <d:prop>\n' \
+             '%s\n' \
+             '  </d:prop>\n' \
+             '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
+             '</d:propstat>\n'
 
-
-
-
-
-##     propstat='<d:propstat xmlns:n="%s">\n' \
-##              '  <d:prop>\n' \
-##              '%s\n' \
-##              '  </d:prop>\n' \
-##              '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
-##              '</d:propstat>\n',
-
-##     propdesc='  <d:responsedescription>\n' \
-##              '  %s\n' \
-##              '  </d:responsedescription>\n'
-    
+    propdesc='  <d:responsedescription>\n' \
+             '  %s\n' \
+             '  </d:responsedescription>\n'
 
     def dav__allprop(self, propstat=propstat, join=string.join):
         # DAV helper method - return one or more propstat elements
@@ -331,7 +305,6 @@ class PropertySheet(Persistent, Implicit):
         result=join(result, '\n')
         return propstat % (self.xml_namespace(), result, '200 OK', '')
 
-
     def dav__propstat(self, name, propstat=propstat, propdesc=propdesc,
                       join=string.join):
         # DAV helper method - return a propstat element indicating
@@ -361,8 +334,8 @@ class PropertySheet(Persistent, Implicit):
             prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
             return propstat % (xml_id, prop, '200 OK', '')
 
-#    del propstat
-#    del propdesc
+    del propstat
+    del propdesc
 
     def olddav__propstat(self, allprop, names, join=string.join):
         # The dav__propstat method returns a chunk of xml containing
@@ -516,7 +489,6 @@ class DAVProperties(Virtual, PropertySheet):
         {'id':'getcontenttype',   'mode':'r'},
         {'id':'getcontentlength', 'mode':'r'},
         {'id':'source',           'mode':'r'},
-        {'id':'supportedlock',    'mode':'r'},
         )
 
     def getProperty(self, id, default=None):
@@ -544,46 +516,44 @@ class DAVProperties(Virtual, PropertySheet):
         return absattr(self.v_self().id)
 
     def dav__resourcetype(self):
-        self=self.v_self()
-        if hasattr(aq_base(self), 'isAnObjectManager') and \
-           self.isAnObjectManager:
-            return '<d:collection/>'
+        vself=self.v_self()
+        if hasattr(aq_base(vself), 'isAnObjectManager') and \
+           vself.isAnObjectManager:
+            return '<n:collection/>'
         return ''
 
     def dav__getlastmodified(self):
-        self=self.v_self()
-        if hasattr(self, '_p_mtime'):
-            return rfc1123_date(self._p_mtime)
+        vself=self.v_self()
+        if hasattr(vself, '_p_mtime'):
+            return rfc1123_date(vself._p_mtime)
         return ''
 
     def dav__getcontenttype(self):
-        self=self.v_self()
-        if hasattr(self, 'content_type'):
-            return self.content_type
+        vself=self.v_self()
+        if hasattr(vself, 'content_type'):
+            return vself.content_type
         return ''
 
     def dav__getcontentlength(self):
-        self=self.v_self()
-        if hasattr(self, 'get_size'):
-            return self.get_size()
+        vself=self.v_self()
+        if hasattr(vself, 'get_size'):
+            return vself.get_size()
         return ''
 
     def dav__source(self):
-        self=self.v_self()
-        if hasattr(self, 'meta_type') and self.meta_type in \
-           ('Document','DTMLDocument','DTMLMethod','ZSQLMethod'):
-            url=self.absolute_url()
-            return '<d:src>%s</d:src>\n' \
-                   '<d:dst>%s/object_src</d:dst>' % (url, url)
+        vself=self.v_self()
+        if hasattr(vself, 'meta_type') and vself.meta_type in \
+           ('Document', 'DTMLDocument', 'DTMLMethod', 'ZSQLMethod'):
+            url=vself.absolute_url()
+            return '\n  <n:src>%s</n:src>\n' \
+                   '  <n:dst>%s/object_src</n:dst>' % (url, url)
         return ''
 
     def dav__supportedlock(self):
-               #'<d:lockscope><d:exclusive/></d:lockscope>\n' \
-               #'<d:locktype><d:write/></d:locktype>\n' \
-        return '<d:supportedlock>\n' \
-               '<d:lockentry>\n' \
-               '</d:lockentry>\n' \
-               '</d:supportedlock>\n'
+        return '\n  <n:lockentry>\n' \
+               '  <d:lockscope><d:exclusive/></d:lockscope>\n' \
+               '  <d:locktype><d:write/></d:locktype>\n' \
+               '  </n:lockentry>\n'
 
     def dav__lockdiscovery(self):
         text=['<d:lockdiscovery>\n']
@@ -611,9 +581,6 @@ class PropertySheets(Implicit):
 
     default=DefaultProperties()
     webdav =DAVProperties()
-
-    def __init__(self, parent=None):
-        pass
 
     def __propsets__(self):
         propsets=self.aq_parent.__propsets__
@@ -665,8 +632,11 @@ class PropertySheets(Implicit):
         for propset in self.aq_parent.__propsets__:
             if propset.id != name and  propset.xml_namespace() != name:
                 result.append(propset)
-        self.aq_parent.__propsets__=tuple(result)
+        self.parent.__propsets__=tuple(result)
 
+    def __del__(self):
+        self.parent=None
+        
     def __len__(self):
         return len(self.__propsets__())
 
@@ -702,9 +672,7 @@ class vps(Base):
         self.c=c
         
     def __of__(self, parent):
-        if hasattr(parent, 'aq_base'):
-            parent=parent.aq_base
-        return self.c(parent)
+        return self.c().__of__(parent)
 
 def absattr(attr):
     if callable(attr):

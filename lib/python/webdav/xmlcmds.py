@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -147,7 +147,6 @@ class PropFind:
             davprops=DAVProps(obj)
             propsets=(davprops,)
             obsheets={'DAV:': davprops}
-
         if self.allprop:
             stats=[]
             for ps in propsets:
@@ -179,23 +178,7 @@ class PropFind:
                     '</d:propstat>\n' % (ns, name, name)
                 result.write(stat)
         else: raise 'Bad Request', 'Invalid request'
-
-        result.write('</d:response>\n')
-
-
-
-        
-##         for ps in obj.propertysheets.values():
-##             if hasattr(aq_base(ps), 'dav__propstat'):
-##                 propstat=ps.dav__propstat(self.allprop, self.propnames)
-##                 if propstat:
-##                     result.write(propstat)
-##                         needstat=0
-##         if needstat: result.write('<d:status>200 OK</d:status>\n')
-##         result.write('</d:response>\n')
-
-
-        
+        result.write('</d:response>\n')        
         if depth in ('1', 'infinity') and iscol:
             for ob in obj.objectValues():
                 dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)
