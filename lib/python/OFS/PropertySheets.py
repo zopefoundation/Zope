@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -814,8 +814,10 @@ def xml_escape(v):
     (e.g. containing accented characters). Also we convert "<" and ">"
     to entities to keep the properties XML compliant. 
     """
-
-    v = str(v).replace('<','&lt;')
-    v = v.replace('>','&gt;')
+    v = str(v)
+    
+    if v.count('<') != v.count('>'): 
+        v = v.replace('<','&lt;')
+        v = v.replace('>','&gt;')
 
     return  unicode(v,"latin-1").encode("utf-8")
