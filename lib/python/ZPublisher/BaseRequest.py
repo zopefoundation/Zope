@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -279,14 +279,19 @@ class BaseRequest:
                 else:
                     try:
                         if baseflag and hasattr(object, 'aq_base'):
-                            subobject=getattr(object.aq_base, entry_name)
-                        else: subobject=getattr(object,entry_name)
+                            if hasattr(object.aq_base, entry_name):
+                                subobject=getattr(object, entry_name)
+                            else: raise AttributeError, entry_name
+                        else: subobject=getattr(object, entry_name)
                     except AttributeError:
                         got=1
                         try: subobject=object[entry_name]
                         except (KeyError, IndexError,
                                 TypeError, AttributeError):
-                            if debug_mode:
+                            if entry_name=='.': subobject=object
+                            elif entry_name=='..' and parents:
+                                subobject=parents[-1]
+                            elif debug_mode:
                                 return response.debugError(
                                     "Cannot locate object at: %s" %URL) 
                             else: return response.notFoundError(URL)
