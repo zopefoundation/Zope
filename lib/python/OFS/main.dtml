@@ -5,10 +5,6 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 <P>
-<!--#if Principia-Session-->
-<EM>You are currently working in session <!--#var Principia-Session--></EM>
-<P>
-<!--#/if Principia-Session-->
 
 <FORM ACTION="." METHOD="POST">
 <!--#if objectItems-->
@@ -20,13 +16,13 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <!--#if icon-->
-  <A HREF="<!--#var sequence-key fmt=url-quote-->/manage_workspace">
+  <A HREF="<!--#var sequence-key url_quote-->/manage_workspace">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
    ALT="[<!--#var meta_type-->]" BORDER="0"></A>
   <!--#/if icon-->
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key fmt=url-quote-->/manage_workspace">
+  <A HREF="<!--#var sequence-key url_quote-->/manage_workspace">
   <!--#var sequence-key--> <!--#if title-->(<!--#var title-->)<!--#/if-->
   </A>
   <!--#if locked_in_session-->
@@ -80,7 +76,7 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
 <TD VALIGN="TOP">
   <FORM ACTION="." METHOD="GET">
   <SELECT NAME=":method">
-  <!--#in all_meta_types mapping-->
+  <!--#in all_meta_types mapping sort=name-->
     <OPTION value="<!--#var action-->"><!--#var name-->
   <!--#/in all_meta_types-->
   </SELECT><BR>
