@@ -85,7 +85,7 @@
 ##############################################################################
 
 import re
-from string import split,join,replace,expandtabs
+from string import split,join,replace,expandtabs,strip
 
 def indention(str):
 
@@ -97,7 +97,7 @@ def indention(str):
    if str == '\n':
       return -1
 
-   str   = expandtabs(str)    # covert tabs into spaces
+   #str   = expandtabs(str)    # covert tabs into spaces
    front = re.compile('( *)')
    m     = front.match(str)
 
@@ -160,11 +160,17 @@ def split_paragraphs(paragraphs):
 
    tmp   = ''
    par   = re.compile('\n[ ]*\n')
+   
+   if type(paragraphs).__name__ == "list":
+      for paragraph in paragraphs:
+         tmp = tmp + expandtabs(paragraph)
 
-   for paragraph in paragraphs:
-      tmp = tmp + paragraph
-
-   paragraphs = par.split(tmp)
+      paragraphs = par.split(tmp)
+   elif type(paragraphs).__name__ == "string":
+      paragraphs = par.split(expandtabs(paragraphs))
+   else:
+      print "paragraphs in unacceptable format, must be string or list"
+      return []
 
    for i in range(len(paragraphs)):
       paragraphs[i] = paragraphs[i] + '\n\n'
@@ -187,14 +193,18 @@ def StructuredText(paragraphs):
    top               = -1    # which header are we under
    numbers           = {0:0} # how many sub-paragraphs already at a level
    struct            = []    # the structure to be returned
-
+   
    paragraphs = split_paragraphs(paragraphs)
+   
+   if not paragraphs:
+      result = ["",[]]
+      return result
 
-   for paragraph in paragraphs :
+   for paragraph in paragraphs:      
       if paragraph == '\n':
          ind.append([-1, paragraph])
       else :
-         ind.append([indention(paragraph), paragraph])
+         ind.append([indention(paragraph), strip(paragraph)+"\n"])
 
    for indent,paragraph in ind :
 
