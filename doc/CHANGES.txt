@@ -105,6 +105,11 @@ Zope changes
         - CatalogPathAware class added.  This will eventually replace
           CatalogAware.
 
+        - The ManagementInterfaceQuickFix project was merged in. The 
+          Zope management interface has been tweaked in various ways 
+          to improve productivity and consistency and is now at least 
+          slightly less ugly :)
+
     Zope 2.3.0 alpha 1
     
       Features Added
