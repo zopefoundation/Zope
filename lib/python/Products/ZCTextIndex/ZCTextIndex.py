@@ -14,6 +14,8 @@
 
 """Plug in text index for ZCatalog with relevance ranking."""
 
+from cgi import escape
+
 import ZODB
 from Persistence import Persistent
 import Acquisition
@@ -71,7 +73,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         lexicon = getattr(caller, lexicon_id, None)
 
         if lexicon is None:
-            raise LookupError, 'Lexicon "%s" not found' % extra.lexicon_id
+            raise LookupError, 'Lexicon "%s" not found' % escape(lexicon_id)
 
         if not ILexicon.isImplementedBy(lexicon):
             raise ValueError, \
