@@ -92,7 +92,7 @@ need the object's ordinary permissions intact so we can manage it.
 import ExtensionClass, Acquisition
 from Permission import pname
 from Owned import UnownableOwner
-from AccessControl.PermissionRole import PermissionRole
+from Globals import InitializeClass
 
 class RoleManager:
     def manage_getPermissionMapping(self):
@@ -119,9 +119,6 @@ class RoleManager:
             a({'permission_name': ac_perms[0], 'class_permission': p})
         return r
     
-    manage_getPermissionMapping__roles__=PermissionRole('Change permissions')
-
-
     def manage_setPermissionMapping(self,
                                     permission_names=[],
                                     class_permissions=[], REQUEST=None):
@@ -151,8 +148,6 @@ class RoleManager:
                 REQUEST, 
                 manage_tabs_message='The permission mapping has been updated')
 
-    manage_setPermissionMapping__roles__=PermissionRole('Change permissions')
-
     def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
         try:
             if hasattr(self, 'aq_self'):
@@ -172,7 +167,6 @@ class RoleManager:
         base=getattr(p, 'aq_base', None)
         return type(base) is PermissionMapper  
               
-                                        
  
 def getPermissionMapping(name, obj, st=type('')):
     obj=getattr(obj, 'aq_base', obj)
@@ -225,3 +219,5 @@ class Rewrapper(ExtensionClass.Base):
             Acquisition.ImplicitAcquisitionWrapper(
                 w, parent))
         return apply(self, args, kw)
+
+InitializeClass(RoleManager)
