@@ -94,6 +94,8 @@ import string, regex, urlparse, urllib, os, sys, time
 import Products
 from Acquisition import Implicit
 from Persistence import Persistent
+from DocumentTemplate.DT_Util import InstanceDict, TemplateDict, cDocument
+from AccessControl.Permission import name_trans
 from Catalog import Catalog, orify
 from SearchIndex import UnIndex, UnTextIndex
 import IOBTree
