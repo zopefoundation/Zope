@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.5 2001/06/29 18:10:18 matt Exp $
+  $Id: cAccessControl.c,v 1.6 2001/06/29 22:18:48 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -72,14 +72,14 @@ typedef struct {
 	PyObject_HEAD
 	PyObject *__name__;
 	PyObject *_p;
-	PyObject *_d;
+	PyObject *__roles__;
 } PermissionRole;
 
 typedef struct {
 	PyObject_HEAD
 	PyObject *_p;
 	PyObject *_pa;
-	PyObject *_d;
+	PyObject *__roles__;
 	PyObject *_v;
 } imPermissionRole;
 
@@ -418,6 +418,7 @@ static void unauthErr(PyObject *name, PyObject *value) {
 		Py_DECREF(_name);
 		_name = PyObject_GetAttrString(value,"id");
 		if (_name == NULL) {
+			PyErr_Clear();
 			_name = PyObject_GetAttrString(value,"__name__");
 		}
 		
@@ -523,6 +524,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		Py_XDECREF(roles);
 		roles = PyObject_GetAttrString(value, "__roles__");
 		if (roles == NULL) {
+			PyErr_Clear();
 			Py_INCREF(_noroles);
 			roles = _noroles;
 		}
@@ -566,6 +568,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 
 		roles = PyObject_GetAttrString(container, "__roles__");
 		if (roles == NULL) {
+			PyErr_Clear();
 			Py_INCREF(_noroles);
 			roles = _noroles;
 		}
@@ -575,6 +578,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 
 			aq = PyObject_GetAttrString(container, "aq_acquire");
 			if (aq == NULL) {
+				PyErr_Clear();
 				Py_DECREF(roles);
 				if (containerbase != accessedbase)  {
 					rval = PyInt_FromLong(0);
@@ -625,6 +629,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 			p = PyObject_GetAttrString(container,
 				"__allow_access_to_unprotected_subobjects__");
 			if (p == NULL) {
+				PyErr_Clear();
 				Py_INCREF(Py_None);
 				p = Py_None;
 			}
@@ -821,6 +826,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	*/
 		proxy_roles = PyObject_GetAttrString(eo, "_proxy_roles");
 		if (proxy_roles == NULL) {
+			PyErr_Clear();
 			Py_INCREF(Py_None);
 			proxy_roles = Py_None;
 		}
@@ -890,6 +896,8 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 			Py_DECREF(allowed);
 		}
 		Py_DECREF(user);
+	} else {
+		PyErr_Clear();
 	}
 
 	/*| # we don't want someone to acquire if they can't get an
@@ -995,7 +1003,7 @@ static PyObject *PermissionRole_getattr(PermissionRole *self, char *name) {
 #define IZZIT(n) if (strcmp(#n, name) == 0) { Py_INCREF(self->n); return self->n; }
 	IZZIT(__name__);
 	IZZIT(_p);
-	IZZIT(_d);
+	IZZIT(__roles__);
 
 	return Py_FindAttrString(OBJECT(self), name);
 }
@@ -1013,7 +1021,7 @@ static int PermissionRole_setattr(PermissionRole *self, char *name,
 
 	IZZITA(__name__);
 	IZZITA(_p);
-	IZZITA(_d);
+	IZZITA(__roles__);
 
 	sname = PyString_FromString(name);
 
@@ -1047,7 +1055,7 @@ static PyObject *PermissionRole_init(PermissionRole *self, PyObject *args) {
 
 	self->_p = permissionName(name);
 
-	self->_d = deflt;
+	self->__roles__ = deflt;
 	Py_INCREF(deflt);
 
 	Py_INCREF(Py_None);
@@ -1092,8 +1100,8 @@ static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args) {
 	/*| r._d = self._d
 	*/
 
-	r->_d = self->_d;
-	Py_INCREF(r->_d);
+	r->__roles__ = self->__roles__;
+	Py_INCREF(r->__roles__);
 
 
 	/*| p = getattr(parent, 'aq_inner', None)
@@ -1112,6 +1120,7 @@ static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args) {
 	} else {
 		result = OBJECT(r);
 		Py_INCREF(r);
+		PyErr_Clear();
 	}
 
 	Py_XDECREF(r);
@@ -1130,7 +1139,7 @@ static void PermissionRole_dealloc(PermissionRole *self) {
 
 	Py_XDECREF(self->_p);
 
-	Py_XDECREF(self->_d);
+	Py_XDECREF(self->__roles__);
 
 	PyMem_DEL(self);  
 }
@@ -1143,7 +1152,7 @@ static PyObject *imPermissionRole_getattr(imPermissionRole *self, char *name) {
 
 	IZZIT(_p);
 	IZZIT(_pa);
-	IZZIT(_d);
+	IZZIT(__roles__);
 	IZZIT(_v);
 
 	return Py_FindAttrString(OBJECT(self), name);
@@ -1160,7 +1169,7 @@ static int imPermissionRole_setattr(imPermissionRole *self, char *name,
 
 	IZZITA(_p);
 	IZZITA(_pa);
-	IZZITA(_d);
+	IZZITA(__roles__);
 	IZZITA(_v);
 
 	sname = PyString_FromString(name);
@@ -1218,83 +1227,27 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 	*/
 
 		roles = PyObject_GetAttr(obj, n);
-		if (roles == NULL) goto err;
+		if (roles != NULL) {
 
-		if (roles == Py_None) {
-			result = Anonymous;
-			Py_INCREF(result);
-			goto err;
-		}
-
-	/*|
-	**|	  t = type(roles)
-	**|  
-	**|	  if t is TupleType:
-	**|          # If we get a tuple, then we don't acquire
-	**|	     if r is None: return roles
-	**|	     return r + list(roles)
-	*/
-		if (PyTuple_Check(roles)) {
-			if (r == Py_None) {
-				result = roles;
-				roles = NULL;	/* avoid incref/decref */
-				goto err;
-			} else {
-				PyObject *list;
-				PyObject *cat;
-
-				list = PySequence_List(roles);
-				cat = PySequence_Concat(r, list);
-
-				Py_DECREF(list);
-				result = cat;
+			if (roles == Py_None) {
+				result = Anonymous;
+				Py_INCREF(result);
 				goto err;
 			}
-		}
-	
-	/*|
-	**|       if t is StringType:
-	**|          # We found roles set to a name.  Start over
-	**|	     # with the new permission name.  If the permission
-	**|	     # name is '', then treat as private!
-	*/
 
-		if (PyString_Check(roles)) {
-
-	/*|
-	**|          if roles:
-	**|             if roles != n:
-	**|                n = roles
-	**|             # If we find a name that is the same as the
-	**|             # current name, we just ignore it.
-	**|             roles = None
-	**|          else:
-	**|             return _what_not_even_god_should_do
-	**|
-	*/
-			if (PyObject_IsTrue(roles)) {
-				if (PyObject_Compare(roles, n))  {
-					Py_DECREF(n);
-					n = roles;
-					Py_INCREF(n);
-				}
-				Py_DECREF(roles);
-				roles = Py_None;
-				Py_INCREF(roles);
-			} else {
-				result = _what_not_even_god_should_do;
-				goto err;
-			}
-		} else {
-
-	/*|       elif roles:
-	**|          if r is None: r = list(roles)
-	**|          else: r = r+list(roles)
-	*/
-			if (PyObject_IsTrue(roles)) {
+		/*|
+		**|	  t = type(roles)
+		**|  
+		**|	  if t is TupleType:
+		**|          # If we get a tuple, then we don't acquire
+		**|	     if r is None: return roles
+		**|	     return r + list(roles)
+		*/
+			if (PyTuple_Check(roles)) {
 				if (r == Py_None) {
-					Py_DECREF(r);
-					r = PySequence_List(roles);
+					result = roles;
+					roles = NULL;	/* avoid inc/decref */
+					goto err;
 				} else {
 					PyObject *list;
 					PyObject *cat;
@@ -1303,8 +1256,66 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 					cat = PySequence_Concat(r, list);
 
 					Py_DECREF(list);
-					Py_DECREF(r);
-					r = cat;
+					result = cat;
+					goto err;
+				}
+			}
+		
+		/*|
+		**|       if t is StringType:
+		**|          # We found roles set to a name.  Start over
+		**|	     # with the new permission name.  If the permission
+		**|	     # name is '', then treat as private!
+		*/
+
+			if (PyString_Check(roles)) {
+
+		/*|
+		**|          if roles:
+		**|             if roles != n:
+		**|                n = roles
+		**|             # If we find a name that is the same as the
+		**|             # current name, we just ignore it.
+		**|             roles = None
+		**|          else:
+		**|             return _what_not_even_god_should_do
+		**|
+		*/
+				if (PyObject_IsTrue(roles)) {
+					if (PyObject_Compare(roles, n))  {
+						Py_DECREF(n);
+						n = roles;
+						Py_INCREF(n);
+					}
+					Py_DECREF(roles);
+					roles = Py_None;
+					Py_INCREF(roles);
+				} else {
+					result = _what_not_even_god_should_do;
+					goto err;
+				}
+			} else {
+
+		/*|       elif roles:
+		**|          if r is None: r = list(roles)
+		**|          else: r = r+list(roles)
+		*/
+				if (PyObject_IsTrue(roles)) {
+					if (r == Py_None) {
+						Py_DECREF(r);
+						r = PySequence_List(roles);
+					} else {
+						PyObject *list;
+						PyObject *cat;
+
+						list = PySequence_List(roles);
+						cat = PySequence_Concat(r,
+							list);
+
+						Py_DECREF(list);
+						Py_DECREF(r);
+						r = cat;
+					}
 				}
 			}
 		}
@@ -1333,7 +1344,7 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 
 	if (r == Py_None) {
 		Py_DECREF(r);
-		r = self->_d;
+		r = self->__roles__;
 		if (r == NULL) goto err;
 	}
 
@@ -1484,8 +1495,8 @@ static void imPermissionRole_dealloc(imPermissionRole *self) {
 	Py_XDECREF(self->_pa);
 	self->_pa = NULL;
 
-	Py_XDECREF(self->_d);
-	self->_d = NULL;
+	Py_XDECREF(self->__roles__);
+	self->__roles__ = NULL;
 
 	Py_XDECREF(self->_v);
 	self->_v = NULL;
@@ -1526,7 +1537,7 @@ static PyObject *rolesForPermissionOn(PyObject *self, PyObject *args) {
 
 	if (deflt == NULL) deflt = defaultPermission;
 
-	im->_d = deflt;
+	im->__roles__ = deflt;
 
 	Py_INCREF(deflt);
 
@@ -1585,7 +1596,7 @@ static PyObject *permissionName(PyObject *name) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.5 $";
+	char *rev = "$Revision: 1.6 $";
 
 	if (!ExtensionClassImported) return;
 
