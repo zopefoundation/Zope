@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, os, time
 
@@ -90,7 +90,9 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
         # Use __getitem__ as opposed to has_key to avoid TTW namespace
         # issues, and to support the most minimal mapping objects
         try:
-            if aq_base(parent[absId]) is aq_base(ob):
+            # We assume that getitem will not acquire which
+            # is the standard behavior for Zope objects
+            if aq_base(ob.aq_parent[absId]) is aq_base(ob):
                 # This object is an item of the aq_parent, its not acquired
                 return 0
         except KeyError:
