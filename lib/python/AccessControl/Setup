@@ -9,3 +9,7 @@
 # install access.dtml
 # install permissionEdit.dtml
 # install roleEdit.dtml
+
+*shared*
+
+cAccessControl cAccessControl.c -I../../Components/ExtensionClass/src
