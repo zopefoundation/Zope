@@ -85,13 +85,12 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay, string
 
 from App.FindHomes import INSTANCE_HOME, SOFTWARE_HOME
-from DateTime import DateTime
 from App.Common import package_home, attrget, Dictionary
 from Persistence import Persistent, PersistentMapping
 from App.special_dtml import HTML, HTMLFile, DTMLFile
