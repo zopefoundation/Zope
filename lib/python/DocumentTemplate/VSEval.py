@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.4 1997/10/29 16:17:27 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.5 1997/10/29 17:00:11 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -55,7 +55,7 @@ __rcs_id__='$Id: VSEval.py,v 1.4 1997/10/29 16:17:27 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from string import join
 import new, sys
@@ -112,7 +112,7 @@ class Eval:
 	# 'manage'. This is a DC specific rule and probably needs to be
 	# made customizable!
 	for name in names:
-	    if name[:1]=='_' or name[:6]=='manage':
+	    if name[:1]=='_' and name != '__env__':
 		raise TypeError, 'illegal name used in expression'
 	
 	
@@ -231,17 +231,17 @@ class Eval:
 	# push name of special environment variable, '_env':
 	if envpos < 0:
 	    envpos=len(names)
-	    names.append('_env')
+	    names.append('__env__')
 	out.append(LOAD_NAME)
 	out.append(envpos%256)
 	out.append(envpos/256)
 	return envpos
 
     def eval(self, mapping):
-	d={'_env': mapping}
+	d={'__env__': mapping}
 	code=self.code
 	for name in self.used:
-	    try: d[name]=mapping.get(name,0)
+	    try: d[name]=mapping.getitem(name,0)
 	    except KeyError: pass
 
 	return eval(code,self.globals,d)
@@ -436,6 +436,9 @@ if __name__=='__main__': globals()[sys.argv[1]]()
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.5  1997/10/29 17:00:11  jim
+# Made namespace, __env__ public.
+#
 # Revision 1.4  1997/10/29 16:17:27  jim
 # Added support for overriding getslice.
 #
