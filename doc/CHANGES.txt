@@ -196,6 +196,8 @@ Zope Changes
 
       Features added
 
+        The let and return tags were added to DTML.
+
       Bugs fixed
 
         Got rid of some DOS line-endings in xmlrpclib.py that caused
