@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.51 1999/03/10 00:15:07 klm Exp $''' 
-__version__='$Revision: 1.51 $'[11:-2]
+'''$Id: DT_Util.py,v 1.52 1999/03/22 17:28:37 jim Exp $''' 
+__version__='$Revision: 1.52 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -241,6 +241,35 @@ def render(self, v, simple={
     return v
 
 d['render']=render
+
+def reorder(self, s, with=None, without=()):
+    if with is None: with=s1
+    d={}
+    tt=type(())
+    for i in s1:
+        if type(i) is tt and len(i)==2: k, v = i
+        else:                           k= v = i
+        d[k]=v
+    r=[]
+    a=r.append
+    h=d.has_key
+
+    for i in without:
+        if type(i) is tt and len(i)==2: k, v = i
+        else:                           k= v = i
+        if h(k): del d[k]
+        
+    for i in with:
+        if type(i) is tt and len(i)==2: k, v = i
+        else:                           k= v = i
+        if h(k):
+            a((k,d[k]))
+            del d[k]
+
+    return r
+
+d['reorder']=reorder
+
 
 expr_globals={
     '__builtins__':{},
