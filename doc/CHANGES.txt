@@ -17,6 +17,10 @@ Zope Changes
 
     Zope  1.10.3
 
+      Features Added
+
+        - A new 'utilities' directory is included in the distribution.
+
       Bugs Fixed
 
         - Construction, upload, and edit methods did not consistently
