@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>Security</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#/if manage_tabs-->
+<P>
+Select one or more roles below, and a type of access that will given 
+to users who have those roles. Select &quot;Special Access...&quot;
+if you would like to define a new type of access.
+
+<FORM ACTION="manage_access" METHOD="POST">
+<TABLE CELLPADDING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Roles</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="roles:list" SIZE="4" MULTIPLE>
+  <!--#in valid_roles-->
+  <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#/in valid_roles-->
+  </SELECT>
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Type of access</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="access">
+  <!--#in access_types-->
+  <OPTION VALUE="<!--#var sequence-var-name-->"><!--#var sequence-var-name-->
+  <!--#/in access_types-->
+  <OPTION VALUE="Special Access...">Special Access...
+  </SELECT>
+  <BR>
+  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>Add User</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<P>
+To add a new user, enter the name, password, confirmation and 
+roles for the new user and click &quot;Add&quot;.
+
+<FORM ACTION="manage_main" METHOD="POST">
+<TABLE>
+<TR>
+  <TD VALIGN="TOP">
+  <STRONG>Name</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="name" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">
+  <STRONG>Password</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="password" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">
+  <STRONG>(Confirm)</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">
+  <STRONG>Roles</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
+  <!--#in valid_roles-->
+  <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#/in valid_roles-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

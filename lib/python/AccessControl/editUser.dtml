@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>Change User</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<FORM ACTION="manage_main" METHOD="POST">
+<TABLE>
+<TR>
+<TD VALIGN="TOP">
+<STRONG>Name</STRONG>
+</TD>
+<TD VALIGN="TOP">
+<!--#var expr="user.name"-->
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">
+<STRONG>Password</STRONG>
+</TD>
+<TD VALIGN="TOP">
+<INPUT TYPE="PASSWORD" NAME="password" VALUE="<!--#var password-->" SIZE="20">
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">
+<STRONG>(Confirm)</STRONG>
+</TD>
+<TD VALIGN="TOP">
+<INPUT TYPE="PASSWORD" NAME="confirm" VALUE="<!--#var password-->" SIZE="20">
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">
+<STRONG>Roles</STRONG>
+</TD>
+<TD VALIGN="TOP">
+<SELECT NAME="roles:list" SIZE="5" MULTIPLE>
+<!--#in valid_roles-->
+<!--#if expr="_vars['sequence-item'] in user.roles"-->
+<OPTION VALUE="<!--#var sequence-item-->" SELECTED><!--#var sequence-item-->
+<!--#else-->
+<OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+<!--#/if-->
+<!--#/in valid_roles-->
+</SELECT>
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--#var expr="user.name"-->">
+<BR>
+<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Change">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,170 @@
+<HTML>
+<HEAD>
+<TITLE>Security</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#/if manage_tabs-->
+<P>
+<!--#if access_info-->
+The listing below shows the current security settings for this item. 
+Each role listed has been given a type of access which represents 
+a specific set of permissions. Click on the name of a role for details 
+on the specific permissions granted to that role.
+<FORM ACTION="manage_access" METHOD="POST">
+<TABLE CELLPADDING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>
+  Role
+  </STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Type of access</STRONG>
+  </TD>
+</TR>
+<!--#in access_info mapping-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="CHECKBOX" NAME="roles:list"
+   VALUE="<!--#var sequence-var-name-->">
+  <A HREF="manage_access?role=<!--#var sequence-var-name fmt=url-quote-->&SUBMIT=List"><!--#var sequence-var-name--></A>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var sequence-var-value-->
+  </TD>
+</TR>
+<!--#/in access_info-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add...">
+  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Remove">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+<P>
+<!--#if access_defaults-->
+Users having roles defined at this level and above that have been 
+given the &quot;Default permission&quot; have the following 
+permissions to this object: <EM>
+<!--#in access_defaults-->
+<!--#var sequence-var-name-->
+<!--#if sequence-end--><!--#else-->, <!--#/if-->
+<!--#/in access_defaults-->
+</EM>
+<!--#/if access_defaults-->
+<!--#/if access_info-->
+
+<!--#else access_info-->
+This object is using default security. Users having roles defined at 
+this level and above that have been given the &quot;Default permission&quot; 
+have access to this object.
+<P>
+To set explicit security on this item, click the &quot;Add...&quot; button.
+<BR>
+<FORM ACTION="manage_access" METHOD="POST">
+<INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add...">
+</FORM>
+<!--#/else access_info-->
+
+<P> 
+<FORM ACTION="manage_access" METHOD="POST">
+<TABLE CELLPADDING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>
+  User defined roles
+  </STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="role" SIZE="16">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add Role">
+  </TD>
+</TR>
+<!--#if userdefined_roles-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="roles:list">
+  <!--#in userdefined_roles-->
+  <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#/in userdefined_roles-->
+  </SELECT>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Delete Role">
+  </TD>
+</TR>
+<!--#/if userdefined_roles-->
+</TABLE>
+</FORM>
+
+<!--#if access_debug-->
+<BR><BR>
+<BR><BR>
+<BR><BR>
+Access Types:
+<TABLE BORDER="0" CELLPADDING="2">
+<!--#in access_types-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var sequence-var-name-->
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var sequence-var-getRoles-->
+  </TD>
+</TR>
+<!--#/in access_types-->
+</TABLE>
+<P>
+Permissions:
+<TABLE BORDER="0" CELLPADDING="2">
+<!--#in access_permissions-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var sequence-var-name-->
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var sequence-var-getRoles-->
+  </TD>
+</TR>
+<!--#/in access_permissions-->
+</TABLE>
+<P>
+Attributes:
+<TABLE BORDER="0" CELLPADDING="2">
+<!--#in access_debug_info mapping-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#if sequence-var-class-->
+  <FONT COLOR="RED">
+  <!--#/if-->
+  <!--#var sequence-var-name-->
+  <!--#if sequence-var-class-->
+  </FONT>
+  <!--#/if-->
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#if sequence-var-class-->
+  <FONT COLOR="RED">
+  <!--#/if-->
+  <!--#var sequence-var-value-->
+  <!--#if sequence-var-class-->
+  </FONT>
+  <!--#/if-->
+  </TD>
+</TR>
+<!--#/in access_debug_info-->
+</TABLE>
+<!--#/if access_debug-->
+</BODY>
+</HTML>
