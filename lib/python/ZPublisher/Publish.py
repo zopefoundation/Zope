@@ -373,7 +373,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.84 1998/04/15 12:01:56 jim Exp $"""
+$Id: Publish.py,v 1.85 1998/04/20 16:24:52 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -428,7 +428,7 @@ $Id: Publish.py,v 1.84 1998/04/15 12:01:56 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -738,7 +738,8 @@ class ModulePublisher:
     
 	if entry_name != method and method != 'index_html':
 	    self.notFoundError(method)
-	
+
+	request.steps=steps
 	parents.reverse()
 
 	# Do authorization checks
@@ -1218,17 +1219,15 @@ class Request:
 
 	if key[:1]=='B' and BASEmatch(key) >= 0 and other.has_key('URL'):
             n=ord(key[4])-ord('0')
-            URL=other['URL']
-            baselen=len(self.base)
-            for i in range(0,n):
-                baselen=find(URL,'/',baselen+1)
-                if baselen < 0:
-                    baselen=len(URL)
-                    break
-            base=URL[:baselen]
-            if base[-1:]=='/': base=base[:-1]
-            other[key]=base
-            return base
+	    if n:
+		v=self.script
+		while v[-1:]=='/': v=v[:-1]
+		v=join([v]+self.steps[:n-1],'/')
+	    else:
+		v=self.base
+		while v[-1:]=='/': v=v[:-1]
+	    other[key]=v
+	    return v
 
 	if default is not field2list: return default
 
