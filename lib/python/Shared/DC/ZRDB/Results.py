@@ -140,8 +140,9 @@ class Results:
             'Result record class'               
 
         r.__record_schema__=schema
-        for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
-            setattr(r,k,getattr(Record,k))
+        for k in Record.__dict__.keys():
+            if k[:2]=='__':
+                setattr(r,k,getattr(Record,k))
 
         # Add SQL Aliases
         d=r.__dict__
