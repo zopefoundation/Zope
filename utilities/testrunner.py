@@ -257,7 +257,7 @@ def main(args):
     mega_suite = 1
     set_python_path = 1
 
-    options, arg=getopt.getopt(args, 'amPhd:f:v:q')
+    options, arg=getopt.getopt(args, 'amPhd:f:v:qM')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
