@@ -12,10 +12,11 @@
 ##############################################################################
 """Python implementations of document template some features
 
-$Id: pDocumentTemplate.py,v 1.39 2002/09/24 22:10:32 jeremy Exp $"""
-__version__='$Revision: 1.39 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.40 2002/09/24 22:11:17 jeremy Exp $"""
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, types
+from types import StringType, UnicodeType, TupleType
 from DocumentTemplate.ustr import ustr
 
 ClassTypes = [types.ClassType]
@@ -38,11 +39,6 @@ def safe_callable(ob):
             return type(ob) in ClassTypes
     else:
         return callable(ob)
-
-StringType=type('')
-UnicodeType=type(u'')
-TupleType=type(())
-
 
 class InstanceDict:
 
