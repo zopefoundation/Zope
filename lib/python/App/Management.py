@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.44 2001/01/15 21:12:41 brian Exp $"""
+$Id: Management.py,v 1.45 2001/01/16 02:55:10 shane Exp $"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -223,7 +223,7 @@ class Navigation(ExtensionClass.Base):
     manage_form_title.__roles__ = None
 
     zope_quick_start=DTMLFile('dtml/zope_quick_start', globals())
-    zope_quick_start__roles__=None
+    zope_quick_start.__roles__=None
 
     manage_copyright=DTMLFile('dtml/copyright', globals())
     manage_copyright.__roles__ = None
