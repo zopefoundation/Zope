@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -106,7 +106,6 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
     __ac_permissions__=(
         ('View',                             ('HEAD',)),
-        ('Add Documents, Images, and Files', ('PUT',)),
         ('Add Folders',                      ('MKCOL',)),
         ('WebDAV Lock items',                ('LOCK',)),
     )
@@ -146,6 +145,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             ob=File(name, '', body, content_type=typ)
         return ob
 
+    PUT__roles__=('Anonymous',)
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource."""
         self.dav__init(REQUEST, RESPONSE)
@@ -174,6 +174,15 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         ob = (factory(name, typ, body) or
               self._default_PUT_factory(name, typ, body)
               )
+        # We call _verifyObjectPaste with verify_src=0, to see if the
+        # user can create this type of object (and we don't need to
+        # check the clipboard.
+        try:
+            parent._verifyObjectPaste(ob.__of__(parent), 0)
+        except 'Unauthorized':
+            raise 'Unauthorized', sys.exc_info()[1]
+        except:
+            raise 'Forbidden', sys.exc_info()[1]
 
         # Delegate actual PUT handling to the new object.
         ob.PUT(REQUEST, RESPONSE)
@@ -278,7 +287,6 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         ('WebDAV Unlock items',              ('UNLOCK',)),
         ('View',                             ('manage_main',
                                               'manage_workspace', 'manage')),
-        ('Add Documents, Images, and Files', ('PUT',)),
         ('Add Folders',                      ('MKCOL',)),
         ('WebDAV Lock items',                ('LOCK',)),
         )
@@ -363,7 +371,7 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             RESPONSE.setStatus(204)
         return RESPONSE
 
-
+    PUT__roles__ = ('Anonymous',)
     def PUT(self, REQUEST, RESPONSE):
         """ Create a new non-collection resource, deleting the LockNull
         object from the container before putting the new object in. """
@@ -408,6 +416,14 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory)
         ob = (factory(name, typ, body) or
               self._default_PUT_factory(name, typ, body))
+
+        # Verify that the user can create this type of object
+        try:
+            parent._verifyObjectPaste(ob.__of__(parent), 0)
+        except 'Unauthorized':
+            raise 'Unauthorized', sys.exc_info()[1]
+        except:
+            raise 'Forbidden', sys.exc_info()[1]
 
         # Put the locks on the new object
         if not WriteLockInterface.isImplementedBy(ob):
