@@ -87,12 +87,10 @@ Dummy TALES engine so that I can test out the TAL implementation.
 """
 
 import re
+import sys
 import string
 
-from TALDefs import NAME_RE, TALError
-
-class TALESError(TALError):
-    pass
+from TALDefs import NAME_RE, TALError, TALESError
 
 class DummyEngine:
 
@@ -125,22 +123,30 @@ class DummyEngine:
         if m:
             type, expr = m.group(1, 2)
         else:
-            type = "var"
+            type = "path"
             expr = expression
-        if type == "str":
+        if type in ("string", "str"):
             return expr
-        if type == "local":
-            return self.locals[string.strip(expr)]
-        if type == "global":
-            return self.globals[string.strip(expr)]
-        if type == "var":
+        if type in ("path", "var", "global", "local"):
             expr = string.strip(expr)
             if self.locals.has_key(expr):
                 return self.locals[expr]
-            else:
+            elif self.globals.has_key(expr):
                 return self.globals[expr]
+            else:
+                raise TALESError("unknown variable: %s", expr)
+        if type == "not":
+            v = self.evaluate(expr)
+            return not v
+        if type == "exists":
+            return self.locals.has_key(expr) or self.globals.has_key(expr)
         if type == "python":
-            return eval(expr, self.globals, self.locals)
+            try:
+                return eval(expr, self.globals, self.locals)
+            except:
+                t, v, tb = info = sys.exc_info()
+                raise TALESError("evaluation error in %s" % `expr`,
+                                 info=sys.exc_info())
         raise TALESError("unrecognized expression: " + `expression`)
 
     def evaluateValue(self, expr):
