@@ -21,6 +21,7 @@ Oh well.
 
 import string
 from pickle import *
+from types import ListType
 
 class xyap:
     start_handlers={}
