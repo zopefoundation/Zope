@@ -115,6 +115,10 @@ Zope Changes
         - The DTML built-in function, getattr, now accepts an additional 
 	  argument providing a default value.	 
 
+        - The tag() method of Image objects now support optional 'scale',
+          'xscale' and 'yscale' arguments that will automatically scale 
+          the output height and width tag attributes.
+
       Features Changed
 
         - ZCatalog uses subtransactions to keep memory consuption low
