@@ -14,7 +14,7 @@
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
-$Id: SortEx.py,v 1.7 2002/10/19 06:46:35 andreasjung Exp $
+$Id: SortEx.py,v 1.8 2003/04/01 10:45:24 yuppie Exp $
 """
 
 from types import TupleType
@@ -181,7 +181,7 @@ def make_sortfunctions(sortfields, _):
         elif sort_order == "desc":
             multiplier = -1
         else:
-            raise SyntaxError, "sort oder must be either ASC or DESC"
+            raise SyntaxError, "sort direction must be either ASC or DESC"
 
         sf_list.append((f[0], func, multiplier))
 
