@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.27 1998/03/13 21:30:23 brian Exp $'''
+$Id: Response.py,v 1.28 1998/03/13 22:13:35 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.27 1998/03/13 21:30:23 brian Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -502,9 +502,9 @@ class Response:
 		elif name=='max_age': cookie = '%s; Max-Age="%s"' % (cookie,v)
 		elif name=='comment': cookie = '%s; Comment="%s"' % (cookie,v)
 		elif name=='secure': cookie = '%s; Secure' % cookie
-		elif name!='value':
-		    raise ValueError, (
-			'Invalid cookie attribute, <em>%s</em>' % name)
+		#elif name!='value':
+		#    raise ValueError, (
+		#	'Invalid cookie attribute, <em>%s</em>' % name)
 	    cookie_list.append(cookie)
 	return cookie_list
 
