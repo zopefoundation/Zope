@@ -4,7 +4,9 @@
 
 import os,sys, unittest
 
-import Zope
+import ZODB, OFS.Application
+from ZODB.DemoStorage import DemoStorage
+from ZODB.DB import DB
 from Products.ZCatalog import ZCatalog,Vocabulary
 from Products.ZCatalog.Catalog import Catalog,CatalogError
 import ExtensionClass
@@ -16,6 +18,27 @@ from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 
 import whrandom,string, unittest
+
+
+def createDatabase():
+    # XXX We have to import and init products in order for PluginIndexes to
+    # be registered.
+    OFS.Application.import_products()
+
+    # Create a DemoStorage and put an Application in it
+    db = DB(DemoStorage())
+    conn = db.open()
+    root = conn.root()
+    app = OFS.Application.Application()
+    root['Application'] = app
+    get_transaction().commit()
+
+    # Init products
+    OFS.Application.initialize(app)
+
+    return app
+
+app = createDatabase()
 
 
 ################################################################################
