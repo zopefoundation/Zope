@@ -88,7 +88,7 @@ Common definitions used by TAL and METAL compilation an transformation.
 
 from types import ListType, TupleType
 
-TAL_VERSION = "1.4"
+TAL_VERSION = "1.3.2"
 
 XML_NS = "http://www.w3.org/XML/1998/namespace" # URI for XML namespace
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
@@ -201,7 +201,7 @@ def getProgramMode(program):
         len(program[1]) == 2):
         opcode, mode = program[1]
         if opcode == "mode":
-            return mode[0]
+            return mode
     return None
 
 def getProgramVersion(program):
@@ -209,7 +209,7 @@ def getProgramVersion(program):
         isinstance(program[0], TupleType) and len(program[0]) == 2):
         opcode, version = program[0]
         if opcode == "version":
-            return version[0]
+            return version
     return None
 
 import cgi

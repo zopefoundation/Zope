@@ -149,7 +149,10 @@ class TALGenerator:
                 else:
                     output.append(("rawtextOffset", (text, len(text))))
             if opcode != None:
-                output.append((opcode, tuple(item[1:])))
+                if len(item) == 2:
+                    output.append((opcode, item[1]))
+                else:
+                    output.append((opcode, tuple(item[1:])))
             rawseen = cursor+1
             collect = []
         return output

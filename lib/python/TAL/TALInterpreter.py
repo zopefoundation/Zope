@@ -253,10 +253,10 @@ class TALInterpreter:
                     if len(s) > 80:
                         s = s[:76] + "...\n"
                     sys.stderr.write(s)
-                    _apply(handlers[opcode], tup + args)
+                    handlers[opcode](self, args)
             else:
                 for (opcode, args) in program:
-                    _apply(handlers[opcode], tup + args)
+                    handlers[opcode](self, args)
         finally:
             self.level = self.level - 1
             del tup
@@ -278,11 +278,11 @@ class TALInterpreter:
         self.position = position
     bytecode_handlers["setPosition"] = do_setPosition
 
-    def do_startEndTag(self, name, attrList):
-        self.do_startTag(name, attrList, self.endsep)
+    def do_startEndTag(self, (name, attrList)):
+        self.do_startTag((name, attrList), self.endsep)
     bytecode_handlers["startEndTag"] = do_startEndTag
 
-    def do_startTag(self, name, attrList, end=">"):
+    def do_startTag(self, (name, attrList), end=">"):
         if not attrList:
             s = "<%s%s" % (name, end)
             self._stream_write(s)
@@ -386,12 +386,6 @@ class TALInterpreter:
                              (i, what, macroName, slots and slots.keys()))
         sys.stderr.write("+--------------------------------------\n")
 
-    def do_endTag(self, name):
-        s = "</%s>" % name
-        self._stream_write(s)
-        self.col = self.col + len(s)
-    bytecode_handlers["endTag"] = do_endTag
-
     def do_beginScope(self, dict):
         if self.tal:
             engine = self.engine
@@ -402,24 +396,24 @@ class TALInterpreter:
         self.scopeLevel = self.scopeLevel + 1
     bytecode_handlers["beginScope"] = do_beginScope
 
-    def do_endScope(self):
+    def do_endScope(self, notused=None):
         self.engine.endScope()
         self.scopeLevel = self.scopeLevel - 1
     bytecode_handlers["endScope"] = do_endScope
 
-    def do_setLocal(self, name, expr):
+    def do_setLocal(self, (name, expr)):
         if self.tal:
             value = self.engine.evaluateValue(expr)
             self.engine.setLocal(name, value)
     bytecode_handlers["setLocal"] = do_setLocal
 
-    def do_setGlobal(self, name, expr):
+    def do_setGlobal(self, (name, expr)):
         if self.tal:
             value = self.engine.evaluateValue(expr)
             self.engine.setGlobal(name, value)
     bytecode_handlers["setGlobal"] = do_setGlobal
 
-    def do_insertText(self, expr, block):
+    def do_insertText(self, (expr, block)):
         if not self.tal:
             self.interpret(block)
             return
@@ -432,7 +426,7 @@ class TALInterpreter:
         self.stream_write(cgi.escape(text))
     bytecode_handlers["insertText"] = do_insertText
 
-    def do_insertStructure(self, expr, repldict, block):
+    def do_insertStructure(self, (expr, repldict, block)):
         if not self.tal:
             self.interpret(block)
             return
@@ -474,7 +468,7 @@ class TALInterpreter:
         program, macros = gen.getCode()
         self.interpret(program)
 
-    def do_loop(self, name, expr, block):
+    def do_loop(self, (name, expr, block)):
         if not self.tal:
             self.interpret(block)
             return
@@ -483,22 +477,22 @@ class TALInterpreter:
             self.interpret(block)
     bytecode_handlers["loop"] = do_loop
 
-    def do_rawtextColumn(self, s, col):
+    def do_rawtextColumn(self, (s, col)):
         self._stream_write(s)
         self.col = col
     bytecode_handlers["rawtextColumn"] = do_rawtextColumn
 
-    def do_rawtextOffset(self, s, offset):
+    def do_rawtextOffset(self, (s, offset)):
         self._stream_write(s)
         self.col = self.col + offset
     bytecode_handlers["rawtextOffset"] = do_rawtextOffset
 
-    def do_condition(self, condition, block):
+    def do_condition(self, (condition, block)):
         if not self.tal or self.engine.evaluateBoolean(condition):
             self.interpret(block)
     bytecode_handlers["condition"] = do_condition
 
-    def do_defineMacro(self, macroName, macro):
+    def do_defineMacro(self, (macroName, macro)):
         if not self.metal:
             self.interpret(macro)
             return
@@ -507,7 +501,7 @@ class TALInterpreter:
         self.popMacro()
     bytecode_handlers["defineMacro"] = do_defineMacro
 
-    def do_useMacro(self, macroName, macroExpr, compiledSlots, block):
+    def do_useMacro(self, (macroName, macroExpr, compiledSlots, block)):
         if not self.metal:
             self.interpret(block)
             return
@@ -528,7 +522,7 @@ class TALInterpreter:
         self.popMacro()
     bytecode_handlers["useMacro"] = do_useMacro
 
-    def do_fillSlot(self, slotName, block):
+    def do_fillSlot(self, (slotName, block)):
         if not self.metal:
             self.interpret(block)
             return
@@ -537,7 +531,7 @@ class TALInterpreter:
         self.popMacro()
     bytecode_handlers["fillSlot"] = do_fillSlot
 
-    def do_defineSlot(self, slotName, block):
+    def do_defineSlot(self, (slotName, block)):
         if not self.metal:
             self.interpret(block)
             return
@@ -553,7 +547,7 @@ class TALInterpreter:
         self.popMacro()
     bytecode_handlers["defineSlot"] = do_defineSlot
 
-    def do_onError(self, block, handler):
+    def do_onError(self, (block, handler)):
         if not self.tal:
             self.interpret(block)
             return
