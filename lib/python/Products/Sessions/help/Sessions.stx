@@ -1,4 +1,4 @@
-Session Tracking
+Session Administration
 
   Overview
 
@@ -25,23 +25,197 @@ Session Tracking
     To facilitate sessions on systems without ZEO, you may wish to create
     a *Temporary Folder* to store your Transient Objects.
 
-  Usage
+    The session data manager will begin automatically adding a SESSION
+    object to the REQUEST in the default configuration. 
 
-    The simplest way to use sessions is to activate the "Automatic Session"
-    feature in the Session Data Manager object.  This will cause a session
-    object to be fetched or created if necessary and stored in the 'REQUEST'
-    object under the name 'SESSION'.
+  Session Data Object Expiration
 
-    This 'SESSION' object behaves as a dictionary, so the following python
-    script would demonstrate incrementing a counter in the session::
+    Session data objects expire after the period between their last
+    access and "now" exceeds the timeout value provided to the
+    transient object container which hold them.  No special action need
+    be taken to expire session data objects.![1]
 
-    	request = context.REQUEST
-	session = request.SESSION
+      ![1] See "Session Data Object Expiration Considerations" in the
+      Concepts and Caveats section below for details on session data
+      expiration.
 
-	counter = session.get('counter',0) + 1
-	session['counter'] = counter
+  Importing And Exporting Session Data Objects
 
-    For more advanced programming details, see the *Session API* documentation.
+    In some circumstances, it is useful to be able to "export" all
+    the session data from a specific transient object container in order
+    to "import" it to another.  This may be necessary when migrating
+    data between containers or when upgrading the session tracking
+    implementation to a more recent version.
+
+    You can export data from a transient object container by visiting
+    its "Advanced" tab, and choosing "Export Session Data".  A file
+    will be written to the hard disk of the Zope server you're
+    talking to in the 'var' directory of the Zope instance named
+    "sessiondata.zexp".
+
+    To import exported session data, choose "Import Session Data"
+    from the Advanced tab of the transient object container you're
+    migrating to.  The "sessiondata.zexp" file containing the
+    exported session data will be read from disk and placed into the
+    transient object container.
+
+    The contents of RAM-based (internal) transient object containers
+    cannot be exported, and you may not import session data into an
+    internal transient object container.
+
+Concepts and Caveats
+
+  Session Id (Non-)Expiration
+
+    Unlike many other sessioning implementations, core session
+    tracking session tokens (ids) do not actually themselves expire.
+    They persist for as long as their conveyance mechanism allows.
+    For example, a session token will last for as long as the session
+    token cookie persists on the client, or for as long as someone
+    uses a bookmarked URL with a session token in it.  The same id
+    will be obtained by a browser id manager on every visit by that
+    client to a site - potentially indefinitely depending on which
+    conveyance mechanisms you use and your configuration for cookie
+    persistence.  It may be useful to think of a Zope browser id as
+    a "browser id" for this reason.
+
+    In lieu of exipry of browser ids, the transient object container
+    which holds session data objects implements a policy for data
+    object expiration.  If asked for a session data object related
+    to a particular browser id which has been expired by a transient
+    object container, a session data manager will a return a new
+    session data object.
+
+  Session Data Object Expiration Considerations
+
+    Because Zope has no scheduling facility, the sessioning
+    machinery depends on the continual exercising of itself to
+    expire session data objects.  If the sessioning machinery is not
+    exercised continually, it's possible that session data
+    objects will stick around longer than the time specified by
+    their transient object container timeout value.  For example:
+
+      - User A exercises application machinery that generates a
+      session data object.  It is inserted into a transient object
+      container which advertises a 20-minute timeout.
+
+      - User A "leaves" the site.
+
+      - 40 minutes go by with no visitors to the site.
+
+      - User B visits 60 minutes after User A first generated his
+      session data object, and exercises app code which hands out
+      session data objects.  *User A's session is expired at this
+      point, 40 minutes "late".*
+
+  Sessioning and Transactions
+
+    The existing transient object container implementations interact
+    with Zope's transaction system.  If a transaction is aborted,
+    the changes made to session data objects during the transaction
+    will be rolled back.
+
+  Acquisition-Wrapped Objects
+
+    The sessioning machinery unwraps acquisition-wrapped objects
+    before storing them during a session_data_object.set or
+    session_data_object.__setitem__ operation.  Practically, this
+    means you can safely pass acquisition-wrapped objects in to the
+    sessioning machinery (for example, a DTML Document obtained via
+    traversal) as values within a session data object.  The stored
+    reference will be to the bare unwrapped object. (new in 0.9)
+
+  Mutable Data Stored Within Session Data Objects
+
+    If you mutate an object stored as a value within a session data
+    object, you'll need to notify the sessioning machinery that the
+    object has changed by calling 'set' or '__setitem__' on the
+    session data object with the new object value.  For example::
+
+       session = self.session_data_manager.getSessionData()
+       foo = {}
+       foo['before'] = 1
+       session.set('foo', foo)
+
+	 # mutate the dictionary
+
+       foo['after'] = 1
+
+	 # performing session.get('foo') 10 minutes from now will likely
+       # return a dict with only 'before' within!
+
+    You'll need to treat mutable objects immutably, instead.  Here's
+    an example that makes the intent of the last example work by
+    doing so::
+
+       session = self.session_data_manager.getSessionData()
+       foo = {}
+       foo['before'] = 1
+       session.set('foo', foo)
+
+	 # mutate the dictionary
+       foo['after'] = 1
+
+	 # tickle the persistence machinery
+	 session.set('foo', foo)
+
+    An easy-to-remember rule for manipulating data objects in
+    session storage: always explicitly place an object back into
+    session storage whenever you change it.  For further reference,
+    see the "Persistent Components" chapter of the Zope Developer's
+    Guide at http://www.zope.org/Documentation/ZDG.
+
+  Session Data Object Keys
+
+    A session data object has essentially the same restrictions as a
+    Python dictionary.  Keys within a session data object must be
+    hashable (strings, tuples, and other immutable basic Python
+    types; or instances which have a __hash__ method).  This is a
+    requirement of all Python objects that are to be used as keys to
+    a dictionary.  For more information, see the associated Python
+    documentation at
+    http://www.python.org/doc/current/ref/types.html (Mappings ->
+    Dictionaries).
+
+  In-Memory Session Data Container RAM Utilization
+
+    Each session data object which is added to an "internal"
+    (RAM-based) transient object container will consume at least 2K of
+    RAM.
+
+  Mounted Database-Based Session Data Container/Internal Session
+  Data Container Caveats
+
+    Persistent objects which have references to other persistent
+    objects in the same database cannot be committed into a mounted
+    database because the ZODB does not currently handle
+    cross-database references.
+
+    "Internal" (RAM-based) transient object containers are currently
+    implemented as objects within (automatically) mounted ZODB
+    databases.  For this reason, they are equivalent in operation to
+    external transient object containers which are placed in a manually
+    mounted database.
+
+    If you use an internal transient object container or an external
+    transient object container that is accessed via a "mounted"
+    database, you cannot store persistent object instances which
+    have already been stored in the "main" database as keys or
+    values in a session data object.  If you try to do so, it is
+    likely that an 'InvalidObjectReference' exception will be raised
+    by the ZODB when the transaction involving the object attempts
+    to commit.  As a result, the transaction will fail and the
+    session data object (and other objects touched in the same
+    transaction) will fail to be committed to storage.
+
+    If your "main" ZODB database is backed by a nonundoing storage,
+    you can avoid this condition by storing session data objects in
+    an external data container instantiated within the "main" ZODB
+    database.  If this is not an option, you should ensure that
+    objects you store as values or keys in a session data object
+    held in a mounted transient object container are instantiated "from
+    scratch" (via their constructors), as opposed to being "pulled
+    out" of the main ZODB.
 
   Networking with ZEO
 
@@ -52,6 +226,62 @@ Session Tracking
     thus any session data stored in a Temporary Folder will not be
     distributed to other ZEO clients.
 
+  Conflict Errors
+
+    This session tracking software stores all session state in
+    Zope's ZODB.  The ZODB uses an optimistic concurrency strategy
+    to maintain transactional integrity for simultaneous writes.
+    This means that if two objects in the ZODB are changed at the
+    same time by two different connections (site visitors) that a
+    "ConflictError" will be raised.  Zope retries requests that
+    raise a ConflictError at most 3 times.  If your site is
+    extremely busy, you may notice ConflictErrors in the Zope debug
+    log (or they may be printed to the console from which you run
+    Zope).  An example of one of these errors is as follows::
+
+     2001-01-16T04:26:58 INFO(0) Z2 CONFLICT Competing writes at, /getData
+     Traceback (innermost last):
+     File /zope/lib/python/ZPublisher/Publish.py, line 175, in publish
+     File /zope/lib/python/Zope/__init__.py, line 235, in commit
+     File /zope/lib/python/ZODB/Transaction.py, line 251, in commit
+     File /zope/lib/python/ZODB/Connection.py, line 268, in commit
+     ConflictError: '\000\000\000\000\000\000\002/'
+
+    Errors like this in your debug log (or console if you've not
+    redirected debug logging to a file) are normal to an extent.  If
+    your site is undergoing heavy load, you can expect to see a
+    ConflictError perhaps every 20 to 30 seconds.  The requests
+    which experience conflict errors will be retried automatically
+    by Zope, and the end user should *never* see one.  Generally,
+    session data objects attempt to provide application-level
+    conflict resolution to reduce the limitations imposed by
+    conflict errors NOTE: to take advantage of this feature, you
+    must be running Zope 2.3.1 or better, and you must be using it
+    with a storage such as FileStorage or SessionStorage which
+    supports application-level conflict resolution.
+
+Zope Versions and Sessioning
+
+    Zope Versions are not particularly useful in combination with
+    sessioning.  Particularly, if you change the properties of a
+    session data manager or browser id manager while working in a
+    Version on a "production" site, it may cause the sessioning
+    machinery to stop working for unversioned visitors to the site
+    due to the "locking" nature of versions.  To work around this
+    problem, do not lock any sessioning-related objects while in a
+    Version.  Alternately, do not use Versions.
+
+Extending The Session Tracking Product
+
+  Implementing Alternate Session Data Managers and Data Containers
+
+    Alternate session data managers and data containers (perhaps
+    using a SQL database as a persistence mechanism) may be
+    implemented if they adhere to the interfaces outlined in the
+    SessioningInterfaces.py documentation which ships with this
+    software.
+
+
   See Also
 
     - "Transient Objects":../../Transience/Help/Transience.stx
@@ -61,5 +291,3 @@ Session Tracking
     - "Session API":SessionInterfaces.py
 
     - "Session API Programming":sessionapi-prog.stx
-
-    - "Session Administration":session-admin.stx
