@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.3 2001/10/22 18:48:17 matt Exp $
+$Id: Transience.py,v 1.4 2001/10/22 20:00:34 matt Exp $
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -229,8 +229,6 @@ class TransientObjectContainer(SimpleItem):
 
         self[key] = item
 
-        self.notifyAdd(item)
-
         return item
         
 
@@ -283,15 +281,27 @@ class TransientObjectContainer(SimpleItem):
         self._delCallback = f
 
     def notifyAdd(self, item):
-        if self._addCallback:
+
+        callback = self._addCallback
+
+        if type(callback) is type(''):
+            callback = self.aq_parent.unrestrictedTraverse(callback)
+
+        if callable(callback):
             try:
-                self._addCallback(item, self)   # Use self as context
+                callback(item, self)            # Use self as context
             except: pass                        # Eat all errors 
 
     def notifyDestruct(self, item):
-        if self._delCallback:
+
+        callback = self._delCallback
+
+        if type(callback) is type(''):
+            callback = self.aq_parent.unrestrictedTraverse(callback)
+
+        if callable(callback):
             try:
-                self._delCallback(item, self)   # Use self as context
+                callback(item, self)            # Use self as context
             except: pass                        # Eat all errors 
 
     # -----------------------------------------------------------------
@@ -423,11 +433,12 @@ class TransientObjectContainer(SimpleItem):
         #        if d != last:
         #            mgr = self.aq_parent.unrestrictedTraverse(d)
         #            last = d
+        #
         #    if callable(f): f(mgr)
 
         for k, v in list(index.items()):
             if v is b:
-                self.notifyDestruct(index[k])
+                self.notifyDestruct(index[k][k])
                 del index[k]
         b.clear()
 
@@ -454,6 +465,7 @@ class TransientObjectContainer(SimpleItem):
         if b is None:
             # this is a new key
             index[k] = current
+            self.notifyAdd(v)
         elif b is not current:
             # this is an old key that isn't in the current bucket.
             del b[k] # delete it from the old bucket
