@@ -71,7 +71,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -271,7 +271,7 @@ class Object:
     password=None
     method=None
     timeout=None
-    special_method='PUT','GET','POST','PUT'
+    special_methods= 'GET','POST','PUT'
 
     def __init__(self, url,
 		 method=None,username=None,password=None,
