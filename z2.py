@@ -576,7 +576,11 @@ try:
         sys.__detailedlog=DL
 
     # Import Zope (or Main)
-    exec "import "+MODULE in {}
+    if MODULE == 'Zope':
+        import Zope
+        Zope.startup()
+    else:
+        exec "import "+MODULE in {}
 
     # Location of the ZServer log file. This file logs all ZServer activity.
     # You may wish to create different logs for different servers. See
