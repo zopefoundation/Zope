@@ -12,6 +12,7 @@
 #
 ##############################################################################
 
+import sys
 from unittest import TestCase, TestSuite, main, makeSuite
 
 from Products.ZCTextIndex.Lexicon import Lexicon
@@ -112,7 +113,24 @@ class Test(TestCase):
         wids = lexicon.sourceToWordIds('cats and dogs')
         wids = lexicon.termToWordIds('hsif')
         self.assertEqual(wids, [2])
-
+        
+    def testSplitterLocaleAwareness(self):
+        from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
+        import locale
+        loc = locale.setlocale(locale.LC_ALL) # get current locale
+         # set German locale
+        if sys.platform != 'win32':
+            locale.setlocale(locale.LC_ALL, 'de_DE.ISO8859-1')
+        else:
+            locale.setlocale(locale.LC_ALL, 'German_Germany.1252')
+        words = ['mülltonne waschbär behörde überflieger']
+        words = Splitter().process(words)
+        self.assertEqual(
+            words, ['mülltonne', 'waschbär', 'behörde', 'überflieger'])
+        words = HTMLWordSplitter().process(words)
+        self.assertEqual(
+            words, ['mülltonne', 'waschbär', 'behörde', 'überflieger'])        
+        locale.setlocale(locale.LC_ALL, loc) # restore saved locale
 
 def test_suite():
     return makeSuite(Test)

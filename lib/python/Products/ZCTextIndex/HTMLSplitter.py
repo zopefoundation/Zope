@@ -21,14 +21,15 @@ class HTMLWordSplitter:
 
     __implements__ = ISplitter
 
-    def process(self, text, wordpat=r"\w+"):
+    def process(self, text, wordpat=r"(?L)\w+"):
         splat = []
         for t in text:
             splat += self._split(t, wordpat)
         return splat
 
     def processGlob(self, text):
-        return self.process(text, r"\w+[\w*?]*") # see Lexicon.globToWordIds()
+        # see Lexicon.globToWordIds()
+        return self.process(text, r"(?L)\w+[\w*?]*")
 
     def _split(self, text, wordpat):
         text = text.lower()
