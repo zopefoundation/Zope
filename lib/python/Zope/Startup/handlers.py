@@ -95,6 +95,10 @@ def large_file_threshold(value):
     import ZServer
     ZServer.LARGE_FILE_THRESHOLD = value
 
+def cgi_maxlen(value):
+    import cgi
+    cgi.maxlen = value
+
 # server handlers
 
 def root_handler(config):

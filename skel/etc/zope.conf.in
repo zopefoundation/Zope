@@ -418,6 +418,19 @@ instancehome $INSTANCE
 #    http-realm Slipknot
 
 
+# Directive: cgi-maxlen
+#
+# Description:
+#     Set this value to limit the amount of form data being processed 
+#     by Zope to prevent DoS attacks.
+#
+# Default: 0 (= no restrictions)
+#
+# Example:
+#
+#    cgi-maxlen 10000
+
+
 # Directive: automatically-quote-dtml-request-data
 #
 # Description:

@@ -522,6 +522,14 @@
     </description>
   </section>
 
+  <key name="cgi-maxlen" default="0" handler="cgi_maxlen" datatype="integer">
+    <description>
+     Set the cgi.maxlen parameter to limit the number of data passwed to
+     cgi.escape(). This is helpful to prevent DoS attacks. Set the parameter
+     to 0 for no restrictions.
+    </description>
+  </key>
+
   <key name="dns-server" datatype=".dns_resolver" attribute="dns_resolver">
     <description>
      Specify the ip address of your DNS server in order to cause resolved

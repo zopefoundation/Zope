@@ -46,6 +46,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1371: added new 'cgi-maxlen' directive to zope.conf 
+        to limit the amount of form data being processed by Zope 
+        to prevent DoS attacks
+
       - Collector #1407: changed WebDAV display name for objects
         to title_or_id() 
 
