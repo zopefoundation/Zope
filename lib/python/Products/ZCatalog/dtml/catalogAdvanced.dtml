@@ -98,7 +98,9 @@
 <dtml-if threshold>
 <tr>
   <td align="left" valign="top">
-    <p class="form-help">The Subtransaction threshold is the number of words the catalog
+    <p class="form-help">The Subtransaction threshold is the number of
+      objects cataloged
+      in the context of a single transaction that the catalog
       will index before it commits a subtransaction.  If this number
       is low, the Catalog will take longer to index but consume less
       memory.  If this number is higher, the Catalog will index

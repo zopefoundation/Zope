@@ -101,6 +101,7 @@ from zLOG import LOG, ERROR
 from Lazy import LazyMap, LazyFilter, LazyCat
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 
+import time
 class KWMultiMapping(MultiMapping):
     def has_key(self, name):
         try:
@@ -347,18 +348,30 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         data = self.data
 
         if self.uids.has_key(uid):
-            i = self.uids[uid]
+            index = self.uids[uid]
         elif data:
-            i = data.keys()[-1] + 1  # find the next available unique id
+            index = data.keys()[-1] + 1  # find the next available unique id
+            self.uids[uid] = index
+            self.paths[index] = uid
         else:
-            i = 0                       
+            index = 0                       
+            self.uids[uid] = index
+            self.paths[index] = uid
 
-        self.uids[uid] = i
-        self.paths[i] = uid
         
         # meta_data is stored as a tuple for efficiency
-        data[i] = self.recordify(object)
-
+        newDataRecord = self.recordify(object)
+        oldDataRecord = data.get(index, None)
+        
+        # Now we need to compare the tuples before we update them!
+        if oldDataRecord is not None:
+            for i in range(len(newDataRecord)):
+                if newDataRecord[i] != oldDataRecord[i]:
+                    data[index] = newDataRecord
+                    break
+        else:
+            data[index] = newDataRecord
+            
         total = 0
         for x in self.indexes.values():
             ## tricky!  indexes need to acquire now, and because they
@@ -366,7 +379,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             ## acquisition doesn't kick in, we must explicitly wrap!
             x = x.__of__(self)
             if hasattr(x, 'index_object'):
-                blah = x.index_object(i, object, threshold)
+                blah = x.index_object(index, object, threshold)
                 total = total + blah
             else:
                 LOG('Catalog', ERROR, ('catalogObject was passed '
@@ -480,11 +493,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         handling intSets and IIBuckets.
         """
 
-##        import pdb
-##        pdb.set_trace()
-
-        ## I use this so much I'm just leaving it commented out -michel
-
         rs=None
         data=self.data
         
@@ -570,8 +578,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                           type(''): Query.String,
                           }, **kw):
 
-
-
         # Get search arguments:
         if REQUEST is None and not kw:
             try: REQUEST=self.REQUEST
@@ -605,7 +611,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Perform searches with indexes and sort_index
         r=[]
         used=self._indexedSearch(kw, sort_index, r.append, used)
-        if not r: return LazyCat(r)
+        if not r:
+            return LazyCat(r)
 
         # Sort/merge sub-results
         if len(r)==1:

@@ -9,48 +9,58 @@
  word(s).
 </p>
 
-  <dtml-in words previous size=20 start=query_start >
-    <div class="list-nav">
-    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
-      [Previous <dtml-var previous-sequence-size> entries]
-    </a>
-    </div>
-  </dtml-in>
-  <dtml-in words next size=20 start=query_start >
-    <div class="list-nav">
-    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
-      [Next <dtml-var next-sequence-size> entries]
-    </a>
-    </div>
-  </dtml-in>
+<dtml-in words previous size=20 start=query_start >
+  <span class="list-nav">
+  <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+    [Previous <dtml-var previous-sequence-size> entries]
+  </a>
+  </span>
+</dtml-in>
+<dtml-in words next size=20 start=query_start >
+  <span class="list-nav">
+  <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+    [Next <dtml-var next-sequence-size> entries]
+  </a>
+  </span>
+</dtml-in>
 
-  <table>
-    <dtml-in words size=20 start=query_start >
-    <tr valign=top>
-      <td valign="top" align="left">
-      <div class="form-text">
-        <dtml-var sequence-item> (<dtml-var sequence-key>)
-      </div>
-      </td> 
-    </tr>
-    </dtml-in>
-  </table>
-
-  <dtml-in words previous size=20 start=query_start >
-    <div class="list-nav">
-    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
-      [Previous <dtml-var previous-sequence-size> entries]
-    </a>
-    </div>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <dtml-in words size=20 start=query_start >
+    <dtml-if name="sequence-start">
+      <tr class="list-header">
+        <td width="80%" align="left" valign="top">
+          <div class="list-item">Word</div></td>
+        <td width="20%" align="left" valign="top">
+          <div class="list-item">Word ID</div></td>
+      </tr>
+    </dtml-if>
+  <dtml-if name="sequence-odd"><tr class="row-normal">
+  <dtml-else><tr class="row-hilite"></dtml-if>
+    <td valign="top" align="left">
+    <div class="form-text">&dtml-sequence-key;</div>
+    </td>
+    <td valign="top" align="left">
+    <div class="form-text">&dtml-sequence-item;</div>
+    </td>
+  </tr>
   </dtml-in>
+</table>
 
-  <dtml-in words next size=20 start=query_start >
-    <div class="list-nav">
-    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
-      [Next <dtml-var next-sequence-size> entries]
-    </a>
-    </div>
-  </dtml-in>
+<dtml-in words previous size=20 start=query_start >
+  <div class="list-nav">
+  <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+    [Previous <dtml-var previous-sequence-size> entries]
+  </a>
+  </div>
+</dtml-in>
+
+<dtml-in words next size=20 start=query_start >
+  <div class="list-nav">
+  <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+    [Next <dtml-var next-sequence-size> entries]
+  </a>
+  </div>
+</dtml-in>
 
 <dtml-else>
 

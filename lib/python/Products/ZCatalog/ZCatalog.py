@@ -318,8 +318,11 @@ class ZCatalog(Folder, Persistent, Implicit):
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
         
-        RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=' +
-                          urllib.quote('Catalog Updated<br>Total time: %s<br>Total CPU time: %s' % (`elapse`, `c_elapse`)))
+        RESPONSE.redirect(URL1 +
+                          '/manage_catalogAdvanced?manage_tabs_message=' +
+                          urllib.quote('Catalog Updated<br>'
+                                       'Total time: %s<br>'
+                                       'Total CPU time: %s' % (`elapse`, `c_elapse`)))
         
 
     def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
@@ -327,7 +330,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog.clear()
 
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Cleared')
+            RESPONSE.redirect(URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Cleared')
 
 
     def manage_catalogFoundItems(self, REQUEST, RESPONSE, URL2, URL1,
