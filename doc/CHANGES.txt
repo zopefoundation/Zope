@@ -71,11 +71,12 @@ Zope Changes
         of changes in the Splitter API
 
       - ZODB conflict errors were logged at a severity that caused
-        them to be logged to the stupid log file "out of the box".
+        tracebacks to be logged to the stupid log file "out of the box".
         Because conflict errors happen under normal operations, and
-        their appearance in the log frequently alarms folks, conflict
-        error logging severity has been changed to BLATHER, which
-        means that conflict errors will only be logged if
+        their appearance in the log frequently alarms folks, typical conflict
+        error logging verbiage has been reduced, and traceback logging
+        has been changed to happen only at BLATHER log level, which
+        means that conflict tracebacks will only be logged if
         STUPID_LOG_SEVERITY is set to -100 or lower.
 
   Zope 2.5 Alpha 2
