@@ -12,6 +12,18 @@ if codedir not in sys.path:
 import unittest
 
 
+# Set skipxml to true if an XML parser could not be found.
+skipxml = 0
+try:
+    import pyexpat
+except ImportError:
+    try:
+        # the C extension in PyXML
+        import xml.parsers.pyexpat
+    except ImportError:
+        skipxml = 1
+
+
 def run_suite(suite, outf=None, errf=None):
     if outf is None:
         outf = sys.stdout
