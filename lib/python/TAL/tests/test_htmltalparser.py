@@ -218,8 +218,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_define_1(self):
         self._run_check("<p tal:define='xyzzy string:spam'></p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs', ({'tal:define': 'xyzzy string:spam'},)),
+            ('beginScope', ({'tal:define': 'xyzzy string:spam'},)),
             ('setLocal', ('xyzzy', '$string:spam$')),
             ('startTag', ('p', [('tal:define', 'xyzzy string:spam', 'tal')])),
             rawtext('</p>'),
@@ -229,8 +228,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_define_2(self):
         self._run_check("<p tal:define='local xyzzy string:spam'></p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs', ({'tal:define': 'local xyzzy string:spam'},)),
+            ('beginScope', ({'tal:define': 'local xyzzy string:spam'},)),
             ('setLocal', ('xyzzy', '$string:spam$')),
             ('startTag', ('p',
              [('tal:define', 'local xyzzy string:spam', 'tal')])),
@@ -241,8 +239,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_define_3(self):
         self._run_check("<p tal:define='global xyzzy string:spam'></p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs', ({'tal:define': 'global xyzzy string:spam'},)),
+            ('beginScope', ({'tal:define': 'global xyzzy string:spam'},)),
             ('setGlobal', ('xyzzy', '$string:spam$')),
             ('startTag', ('p',
              [('tal:define', 'global xyzzy string:spam', 'tal')])),
@@ -253,8 +250,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_define_4(self):
         self._run_check("<p tal:define='x string:spam; y x'></p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs', ({'tal:define': 'x string:spam; y x'},)),
+            ('beginScope', ({'tal:define': 'x string:spam; y x'},)),
             ('setLocal', ('x', '$string:spam$')),
             ('setLocal', ('y', '$x$')),
             ('startTag', ('p', [('tal:define', 'x string:spam; y x', 'tal')])),
@@ -265,8 +261,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_define_5(self):
         self._run_check("<p tal:define='x string:;;;;; y x'></p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs', ({'tal:define': 'x string:;;;;; y x'},)),
+            ('beginScope', ({'tal:define': 'x string:;;;;; y x'},)),
             ('setLocal', ('x', '$string:;;$')),
             ('setLocal', ('y', '$x$')),
             ('startTag', ('p', [('tal:define', 'x string:;;;;; y x', 'tal')])),
@@ -278,8 +273,7 @@ class TALGeneratorTestCases(TestCaseBase):
         self._run_check(
             "<p tal:define='x string:spam; global y x; local z y'></p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs',
+            ('beginScope',
              ({'tal:define': 'x string:spam; global y x; local z y'},)),
             ('setLocal', ('x', '$string:spam$')),
             ('setGlobal', ('y', '$x$')),
@@ -295,8 +289,7 @@ class TALGeneratorTestCases(TestCaseBase):
             "<p><span tal:condition='python:1'><b>foo</b></span></p>", [
             rawtext('<p>'),
             ('setPosition', ((1, 3),)),
-            ('beginScope', ()),
-            ('rawAttrs', ({'tal:condition': 'python:1'},)),
+            ('beginScope', ({'tal:condition': 'python:1'},)),
             ('condition', ('$python:1$',
              [('startTag', ('span', [('tal:condition', 'python:1', 'tal')])),
               rawtext('<b>foo</b></span>')])),
@@ -307,8 +300,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_content_1(self):
         self._run_check("<p tal:content='string:foo'>bar</p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:content': 'string:foo'},)), 
+             ('beginScope', ({'tal:content': 'string:foo'},)), 
              ('startTag', ('p', [('tal:content', 'string:foo', 'tal')])),
              ('insertText', ('$string:foo$', [rawtext('bar')])),
              rawtext('</p>'),
@@ -318,8 +310,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_content_2(self):
         self._run_check("<p tal:content='text string:foo'>bar</p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:content': 'text string:foo'},)),
+             ('beginScope', ({'tal:content': 'text string:foo'},)),
              ('startTag', ('p', [('tal:content', 'text string:foo', 'tal')])),
              ('insertText', ('$string:foo$', [rawtext('bar')])),
              rawtext('</p>'),
@@ -329,8 +320,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_content_3(self):
         self._run_check("<p tal:content='structure string:<br>'>bar</p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:content': 'structure string:<br>'},)),
+             ('beginScope', ({'tal:content': 'structure string:<br>'},)),
              ('startTag', ('p',
               [('tal:content', 'structure string:<br>', 'tal')])),
              ('insertStructure',
@@ -342,8 +332,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_replace_1(self):
         self._run_check("<p tal:replace='string:foo'>bar</p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:replace': 'string:foo'},)),
+             ('beginScope', ({'tal:replace': 'string:foo'},)),
              ('insertText', ('$string:foo$',
               [('startTag', ('p', [('tal:replace', 'string:foo', 'tal')])),
                rawtext('bar</p>')])),
@@ -353,8 +342,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_replace_2(self):
         self._run_check("<p tal:replace='text string:foo'>bar</p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:replace': 'text string:foo'},)),
+             ('beginScope', ({'tal:replace': 'text string:foo'},)),
              ('insertText', ('$string:foo$',
               [('startTag', ('p',
                              [('tal:replace', 'text string:foo', 'tal')])),
@@ -365,8 +353,7 @@ class TALGeneratorTestCases(TestCaseBase):
     def check_replace_3(self):
         self._run_check("<p tal:replace='structure string:<br>'>bar</p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:replace': 'structure string:<br>'},)),
+             ('beginScope', ({'tal:replace': 'structure string:<br>'},)),
              ('insertStructure', ('$string:<br>$', {},
               [('startTag', ('p',
                 [('tal:replace', 'structure string:<br>', 'tal')])),
@@ -378,14 +365,12 @@ class TALGeneratorTestCases(TestCaseBase):
         self._run_check("<p tal:repeat='x python:(1,2,3)'>"
                         "<span tal:replace='x'>dummy</span></p>", [
              ('setPosition', ((1, 0),)),
-             ('beginScope', ()),
-             ('rawAttrs', ({'tal:repeat': 'x python:(1,2,3)'},)),
+             ('beginScope', ({'tal:repeat': 'x python:(1,2,3)'},)),
              ('loop', ('x', '$python:(1,2,3)$',
               [('startTag', ('p',
                              [('tal:repeat', 'x python:(1,2,3)', 'tal')])),
                ('setPosition', ((1, 33),)),
-               ('beginScope', ()),
-               ('rawAttrs', ({'tal:replace': 'x'},)),
+               ('beginScope', ({'tal:replace': 'x'},)),
                ('insertText', ('$x$',
                 [('startTag', ('span', [('tal:replace', 'x', 'tal')])),
                  rawtext('dummy</span>')])),
@@ -399,8 +384,7 @@ class TALGeneratorTestCases(TestCaseBase):
                         "'href string:http://www.zope.org; x string:y'>"
                         "link</a>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs',
+            ('beginScope',
              ({'tal:attributes': 'href string:http://www.zope.org; x string:y',
                'name': 'bar', 'href': 'foo'},)),
             ('startTag', ('a',
@@ -417,8 +401,7 @@ class TALGeneratorTestCases(TestCaseBase):
         self._run_check("<p tal:replace='structure string:<img>' "
                         "tal:attributes='src string:foo.png'>duh</p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs',
+            ('beginScope',
              ({'tal:attributes': 'src string:foo.png',
                'tal:replace': 'structure string:<img>'},)),
             ('insertStructure', ('$string:<img>$',
@@ -434,8 +417,7 @@ class TALGeneratorTestCases(TestCaseBase):
         self._run_check("<p tal:on-error='string:error' "
                         "tal:content='notHere'>okay</p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs',
+            ('beginScope',
              ({'tal:content': 'notHere', 'tal:on-error': 'string:error'},)),
             ('onError',
              ([('startTag', ('p',
@@ -455,8 +437,7 @@ class TALGeneratorTestCases(TestCaseBase):
         self._run_check("<p tal:on-error='string:error' "
                         "tal:replace='notHere'>okay</p>", [
             ('setPosition', ((1, 0),)),
-            ('beginScope', ()),
-            ('rawAttrs',
+            ('beginScope',
              ({'tal:replace': 'notHere', 'tal:on-error': 'string:error'},)),
             ('onError',
              ([('insertText', ('$notHere$',
