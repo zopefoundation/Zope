@@ -24,6 +24,7 @@ def initialize(context):
         permission = 'Add Pluggable Index',
         constructors = (ZCTextIndex.manage_addZCTextIndexForm,
                       ZCTextIndex.manage_addZCTextIndex),
+        icon='www/index.gif',
         visibility=None
     )
 
@@ -32,4 +33,5 @@ def initialize(context):
         permission = 'Add Vocabularies',
         constructors = (ZCTextIndex.manage_addLexiconForm,
                         ZCTextIndex.manage_addLexicon),
+        icon='www/lexicon.gif'
     )
