@@ -192,6 +192,31 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 alpha 3
+
+      Features added
+
+        - XML-RPC support
+
+          All Zope objects are now XML-RPC servers.
+
+        - ZODB 2 (aka BoboPOS) to ZODB 3 FileStorage database conversion
+
+          An option has been added to the bbb.py script in the
+	  utilities directory to convert ZODB 2 database files to ZODB
+	  3 format. The bbb.py script now accepts an '-f' option that
+	  takes an argument specifying an output file name.  For
+	  example, to convert the ZODB 2 data file, Data.bbb, in the
+	  var directory, to ZODB 3 FileStorage format::
+
+            python utilities/bbb.py -f var/Data.fs var/Data.bbb
+
+          Note that version data are not converted.
+
+      Bugs fixed
+
+        - The cache management screens were broken
+
     Zope 2.0 alpha 2
 
       Features added
