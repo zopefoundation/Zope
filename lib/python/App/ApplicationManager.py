@@ -1,5 +1,89 @@
+##############################################################################
+#
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -90,53 +174,53 @@ class ApplicationManager(Folder,CacheManager):
         return 0
 
     def _init(self):
-	pass
+        pass
 
     def manage_app(self, URL2):
-	"""Return to the main management screen"""
-	raise 'Redirect', URL2+'/manage'
+        """Return to the main management screen"""
+        raise 'Redirect', URL2+'/manage'
 
     def parentObject(self):
-	try:    return (self.aq_parent,)
-	except: return ()
+        try:    return (self.aq_parent,)
+        except: return ()
 
     def process_time(self):
         s=int(time.time())-self.process_start   
         d=int(s/86400)
         s=s-(d*86400)
         h=int(s/3600)
-	s=s-(h*3600)
+        s=s-(h*3600)
         m=int(s/60)
-	s=s-(m*60)	
+        s=s-(m*60)      
         d=d and ('%d day%s'  % (d, (d != 1 and 's' or ''))) or ''
-	h=h and ('%d hour%s' % (h, (h != 1 and 's' or ''))) or ''
-	m=m and ('%d min' % m) or ''
-	s='%d sec' % s
-	return '%s %s %s %s' % (d, h, m, s)
+        h=h and ('%d hour%s' % (h, (h != 1 and 's' or ''))) or ''
+        m=m and ('%d min' % m) or ''
+        s='%d sec' % s
+        return '%s %s %s %s' % (d, h, m, s)
 
     def db_name(self): return Globals.Bobobase._jar.db.file_name
 
     def db_size(self):
         s=os.stat(self.db_name())[6]
-	if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
+        if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
 
     def manage_shutdown(self):
         """Shut down the application"""
-	db=Globals.Bobobase._jar.db
-	db.save_index()
-	db.file.close()
-	db=Globals.SessionBase.TDB
-	db.save_index()
-	db.file.close()
-	sys.exit(0)
+        db=Globals.Bobobase._jar.db
+        db.save_index()
+        db.file.close()
+        db=Globals.SessionBase.TDB
+        db.save_index()
+        db.file.close()
+        sys.exit(0)
 
     def manage_pack(self, days=0, REQUEST=None):
-	"""Pack the database"""
-	if self._p_jar.db is not Globals.Bobobase._jar.db:
-	    raise 'Session Error', (
-		'''You may not pack the application database while
-		working in a <em>session</em>''')
+        """Pack the database"""
+        if self._p_jar.db is not Globals.Bobobase._jar.db:
+            raise 'Session Error', (
+                '''You may not pack the application database while
+                working in a <em>session</em>''')
         t=time.time()-days*86400
         if Globals.Bobobase.has_key('_pack_time'):
             since=Globals.Bobobase['_pack_time']
@@ -147,32 +231,32 @@ class ApplicationManager(Folder,CacheManager):
         Globals.Bobobase['_pack_time']=t
         get_transaction().note('')
         get_transaction().commit()
-	Globals.Bobobase._jar.db.pack(t,0)
-	if REQUEST: return self.manage_main(self, REQUEST)
+        Globals.Bobobase._jar.db.pack(t,0)
+        if REQUEST: return self.manage_main(self, REQUEST)
 
     def revert_points(self): return ()
 
     def version_list(self):
-	# Return a list of currently installed products/versions
-	path_join=os.path.join
-	isdir=os.path.isdir
-	exists=os.path.exists
-	strip=string.strip
+        # Return a list of currently installed products/versions
+        path_join=os.path.join
+        isdir=os.path.isdir
+        exists=os.path.exists
+        strip=string.strip
 
-	product_dir=path_join(SOFTWARE_HOME,'Products')
-	product_names=os.listdir(product_dir)
-	product_names.sort()
-	info=[]
-	for product_name in product_names:
-	    package_dir=path_join(product_dir, product_name)
-	    if not isdir(package_dir):
-		continue
-	    version_txt=path_join(package_dir, 'version.txt')
-	    if not exists(version_txt):
-		continue
-	    file=open(version_txt, 'r')
-	    data=file.readline()
-	    file.close()
-	    info.append(strip(data))
-	return info
+        product_dir=path_join(SOFTWARE_HOME,'Products')
+        product_names=os.listdir(product_dir)
+        product_names.sort()
+        info=[]
+        for product_name in product_names:
+            package_dir=path_join(product_dir, product_name)
+            if not isdir(package_dir):
+                continue
+            version_txt=path_join(package_dir, 'version.txt')
+            if not exists(version_txt):
+                continue
+            file=open(version_txt, 'r')
+            data=file.readline()
+            file.close()
+            info.append(strip(data))
+        return info
 

@@ -1,5 +1,89 @@
+##############################################################################
+#
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile
 from marshal import loads, dumps
@@ -62,10 +146,10 @@ class CopyContainer:
         else:
             if REQUEST and REQUEST.has_key('__cp'):
                 cp=REQUEST['__cp']
-	if cp is None:
+        if cp is None:
             raise CopyError, eNoData
         
-	try:    cp=_cb_decode(cp)
+        try:    cp=_cb_decode(cp)
         except: raise CopyError, eInvalid
 
         oblist=[]
@@ -98,15 +182,15 @@ class CopyContainer:
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
-					cb_dataValid=1)
+                                        cb_dataValid=1)
 
-	if op==1:
-	    # Move operation
+        if op==1:
+            # Move operation
             for ob in oblist:
                 id=absattr(ob.id)
                 if not ob.cb_isMoveable():
                     raise CopyError, eNotSupported % id
-	        ob.aq_parent._delObject(id)
+                ob.aq_parent._delObject(id)
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
                 id=_get_id(self, id)
@@ -118,9 +202,9 @@ class CopyContainer:
             if REQUEST is not None:
                 REQUEST['RESPONSE'].setCookie('cp_', 'deleted',
                                     path='%s' % REQUEST['SCRIPT_NAME'],
-				    expires='Wed, 31-Dec-97 23:59:59 GMT')
+                                    expires='Wed, 31-Dec-97 23:59:59 GMT')
                 return self.manage_main(self, REQUEST, update_menu=1,
-					cb_dataValid=0)
+                                        cb_dataValid=0)
         return ''
 
 
@@ -176,14 +260,14 @@ class CopyContainer:
         return ob
 
     def cb_dataValid(self):
-	"Return true if clipboard data seems valid."
-	try:    cp=_cb_decode(self.REQUEST['__cp'])
-	except: return 0
+        "Return true if clipboard data seems valid."
+        try:    cp=_cb_decode(self.REQUEST['__cp'])
+        except: return 0
         return 1
 
     def cb_dataItems(self):
-	"List of objects in the clip board"
-	try:    cp=_cb_decode(self.REQUEST['__cp'])
+        "List of objects in the clip board"
+        try:    cp=_cb_decode(self.REQUEST['__cp'])
         except: return []
         oblist=[]
         m=Moniker.Moniker()
@@ -267,33 +351,33 @@ class CopySource:
         pass
 
     def _getCopy(self, container):
-	# Ask an object for a new copy of itself.
-	f=tempfile.TemporaryFile()
-	self._p_jar.export_file(self,f)
-	f.seek(0)
-	ob=container._p_jar.import_file(f)
-	f.close()
-	return ob
+        # Ask an object for a new copy of itself.
+        f=tempfile.TemporaryFile()
+        self._p_jar.export_file(self,f)
+        f.seek(0)
+        ob=container._p_jar.import_file(f)
+        f.close()
+        return ob
 
     def _postCopy(self, container, op=0):
-	# Called after the copy is finished to accomodate special cases.
+        # Called after the copy is finished to accomodate special cases.
         # The op var is 0 for a copy, 1 for a move.
-	pass
+        pass
     
     def _setId(self, id):
-	# Called to set the new id of a copied object.
-	self.id=id
+        # Called to set the new id of a copied object.
+        self.id=id
 
     def cb_isCopyable(self):
         """Is object copyable? Returns 0 or 1"""
-	if not (hasattr(self, '_canCopy') and self._canCopy(0)):
+        if not (hasattr(self, '_canCopy') and self._canCopy(0)):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
             return 0
         return 1
 
     def cb_isMoveable(self):
-	"""Is object moveable? Returns 0 or 1"""
+        """Is object moveable? Returns 0 or 1"""
         if not (hasattr(self, '_canCopy') and self._canCopy(1)):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
@@ -370,53 +454,24 @@ fMessageDialog=Globals.HTML("""
 
 eNoData=MessageDialog(
         title='No Data',
-	message='No clipboard data found.',
-	action ='manage_main',)
+        message='No clipboard data found.',
+        action ='manage_main',)
 
 eInvalid=MessageDialog(
-	 title='Clipboard Error',
+         title='Clipboard Error',
          message='The data in the clipboard could not be read, possibly due ' \
          'to cookie data being truncated by your web browser. Try copying ' \
          'fewer objects.',
-	 action ='manage_main',)
+         action ='manage_main',)
 
 eNotFound=MessageDialog(
-	  title='Item Not Found',
-	  message='One or more items referred to in the clipboard data was ' \
+          title='Item Not Found',
+          message='One or more items referred to in the clipboard data was ' \
           'not found. The item may have been moved or deleted after you ' \
           'copied it.',
-	  action ='manage_main',)
+          action ='manage_main',)
 
 eNotSupported=fMessageDialog(
-	      title='Not Supported',
-	      message='The item <EM>%s</EM> does not support this operation.',
-	      action ='manage_main',)
-
-
-
-
-############################################################################## 
-#
-# $Log: CopySupport.py,v $
-# Revision 1.23  1998/11/26 21:11:35  amos
-# Added more doc strings and converted some comments to doc strings.
-#
-# Revision 1.22  1998/10/07 15:21:13  jim
-# Rearranged order of operations to make move and copy consistent.
-# In particular, copy or moved object has new ID *before* it gets
-# added to the collection.
-#
-# Revision 1.21  1998/09/21 20:01:50  brian
-# Added support for pasting of "Product" based objects
-#
-# Revision 1.20  1998/08/26 18:33:44  brian
-# Updated permissions in Folder folder for the copy/paste methods and added
-# cvs log to Folder.py
-#
-# Revision 1.19  1998/08/14 20:54:44  brian
-# Readded Find support that got overwritten somehow
-#
-# Revision 1.18  1998/08/14 16:46:35  brian
-# Added multiple copy, paste, rename
-#
-
+              title='Not Supported',
+              message='The item <EM>%s</EM> does not support this operation.',
+              action ='manage_main',)

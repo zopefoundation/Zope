@@ -1,16 +1,90 @@
-/******************************************************************
-     Copyright 
-
-       Copyright 1997 Digital Creations, L.L.C., 910 Princess Anne
-       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved. 
-
- ******************************************************************/
-
-
+/*****************************************************************************
+ 
+  Zope Public License (ZPL) Version 0.9.4
+  ---------------------------------------
+  
+  Copyright (c) Digital Creations.  All rights reserved.
+  
+  Redistribution and use in source and binary forms, with or
+  without modification, are permitted provided that the following
+  conditions are met:
+  
+  1. Redistributions in source code must retain the above
+     copyright notice, this list of conditions, and the following
+     disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above
+     copyright notice, this list of conditions, and the following
+     disclaimer in the documentation and/or other materials
+     provided with the distribution.
+  
+  3. Any use, including use of the Zope software to operate a
+     website, must either comply with the terms described below
+     under "Attribution" or alternatively secure a separate
+     license from Digital Creations.
+  
+  4. All advertising materials, documentation, or technical papers
+     mentioning features derived from or use of this software must
+     display the following acknowledgement:
+  
+       "This product includes software developed by Digital
+       Creations for use in the Z Object Publishing Environment
+       (http://www.zope.org/)."
+  
+  5. Names associated with Zope or Digital Creations must not be
+     used to endorse or promote products derived from this
+     software without prior written permission from Digital
+     Creations.
+  
+  6. Redistributions of any form whatsoever must retain the
+     following acknowledgment:
+  
+       "This product includes software developed by Digital
+       Creations for use in the Z Object Publishing Environment
+       (http://www.zope.org/)."
+  
+  7. Modifications are encouraged but must be packaged separately
+     as patches to official Zope releases.  Distributions that do
+     not clearly separate the patches from the original work must
+     be clearly labeled as unofficial distributions.
+  
+  Disclaimer
+  
+    THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+    ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+    FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+    SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+    THE POSSIBILITY OF SUCH DAMAGE.
+  
+  Attribution
+  
+    Individuals or organizations using this software as a web site
+    must provide attribution by placing the accompanying "button"
+    and a link to the accompanying "credits page" on the website's
+    main entry point.  In cases where this placement of
+    attribution is not feasible, a separate arrangment must be
+    concluded with Digital Creations.  Those using the software
+    for purposes other than web sites must provide a corresponding
+    attribution in locations that include a copyright using a
+    manner best suited to the application environment.
+  
+  This software consists of contributions made by Digital
+  Creations and many individuals on behalf of Digital Creations.
+  Specific attributions are listed in the accompanying credits
+  file.
+  
+ ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.17 1998/05/20 20:11:20 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.18 1998/12/04 20:15:28 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -838,7 +912,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.17 $";
+  char *rev="$Revision: 1.18 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -880,117 +954,6 @@ initcDocumentTemplate()
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
-#include "dcprotect.h"  
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module cDocumentTemplate");
 }
-
-/*****************************************************************************
-Revision Log:
-
-  $Log: cDocumentTemplate.c,v $
-  Revision 1.17  1998/05/20 20:11:20  jim
-  Added check for wrapped objects when performing inst is parent test in
-  validate.
-
-  Revision 1.16  1998/05/20 17:18:34  jim
-  Simplified validate method by getting rid of attempt to acquire roles.
-  Also fixed bug in handling proxy roles.
-
-  Revision 1.15  1998/05/07 22:05:56  jim
-  Added protocol for hasRole to signal that an error should be raised
-  by returning None, rather than 0.
-
-  Revision 1.14  1998/04/14 11:44:05  jim
-  Fixed bug in validate.
-
-  Revision 1.13  1998/04/02 22:35:45  jim
-  Fixed stupid bug that causes validation of non-acquired instance
-  attributes to fail.
-
-  Revision 1.12  1998/04/02 21:17:41  jim
-  Fixed (old) memory leak for DocumentTemplates wo validate.
-
-  Revision 1.11  1998/04/02 17:37:40  jim
-  Major redesign of block rendering. The code inside a block tag is
-  compiled as a template but only the templates blocks are saved, and
-  later rendered directly with render_blocks.
-
-  Added with tag.
-
-  Also, for the HTML syntax, we now allow spaces after # and after end
-  or '/'.  So, the tags::
-
-    <!--#
-      with spam
-      -->
-
-  and::
-
-    <!--#
-      end with
-      -->
-
-  are valid.
-
-  Revision 1.10  1998/03/26 21:55:40  jim
-  Fixed error propigation from aq_acquire in InstanceDict.
-
-  Revision 1.9  1997/12/18 17:48:46  jim
-  added dcprotect
-
-  Revision 1.8  1997/11/19 15:42:47  jim
-  added _ prefix to push and pop methods to make them private
-
-  Revision 1.7  1997/11/07 18:51:47  jim
-  Fixed bug in new call logic.
-
-  Revision 1.6  1997/11/07 17:09:40  jim
-  Changed so exception is raised if a callable object raises an
-  exception when called and the exception type and value are not
-  AttributeError and '__call__'.
-
-  Revision 1.5  1997/10/29 16:58:53  jim
-  Changed name of get to getitem.
-
-  Revision 1.4  1997/10/28 21:57:31  jim
-  Changed to use aq_acquire.
-
-  Revision 1.3  1997/10/28 21:52:58  jim
-  Fixed bug in get.
-  Added latest validation rules.
-
-  Revision 1.2  1997/10/27 17:43:28  jim
-  Added some new experimental validation machinery.
-  This is, still a work in progress.
-
-  Added level attribute used in preventing excessive recursion.
-
-  Added get method.
-
-  Revision 1.1  1997/08/27 18:55:47  jim
-  initial
-
-  Revision 1.4  1997/08/07 12:26:52  jim
-  - InstanceDicts no longer try to evaluate results.  This is defered to
-    the TemplateDict.
-  - Fixed bug in the way TemplateDicts were evaluating
-    document templates.
-  - TemplateDicts now use PyCallable_Check before trying to call
-    returned values.  This should speed common cases.
-
-  Revision 1.3  1997/08/05 21:56:20  jim
-  Changed the way InstanceDicts call template attributes to avoid
-  problem with instance attributes overriding kw arguments.
-
-  Revision 1.2  1997/04/11 19:53:36  jim
-  Forgot NULL return on error in render_blocks.
-
-  Revision 1.1  1997/04/09 22:24:23  jim
-  *** empty log message ***
-
-  $Revision 1.1  1997/02/24 23:25:42  jim
-  $initial
-  $
-
-*****************************************************************************/

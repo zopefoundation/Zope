@@ -1,50 +1,90 @@
-#       Copyright 
+##############################################################################
 #
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.  Copyright in this software is owned by DCLC,
-#       unless otherwise indicated. Permission to use, copy and
-#       distribute this software is hereby granted, provided that the
-#       above copyright notice appear in all copies and that both that
-#       copyright notice and this permission notice appear. Note that
-#       any product, process or technology described in this software
-#       may be the subject of other Intellectual Property rights
-#       reserved by Digital Creations, L.C. and are not licensed
-#       hereunder.
-#
-#
-#       Trademarks 
-#
-#       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-#       All other trademarks are owned by their respective companies. 
-#
-#
-#       No Warranty 
-#
-#       The software is provided "as is" without warranty of any kind,
-#       either express or implied, including, but not limited to, the
-#       implied warranties of merchantability, fitness for a particular
-#       purpose, or non-infringement. This software could include
-#       technical inaccuracies or typographical errors. Changes are
-#       periodically made to the software; these changes will be
-#       incorporated in new editions of the software. DCLC may make
-#       improvements and/or changes in this software at any time
-#       without notice.
-#
-#
-#       Limitation Of Liability 
-#
-#       In no event will DCLC be liable for direct, indirect, special,
-#       incidental, economic, cover, or consequential damages arising
-#       out of the use of or inability to use this software even if
-#       advised of the possibility of such damages. Some states do not
-#       allow the exclusion or limitation of implied warranties or
-#       limitation of liability for incidental or consequential damages,
-#       so the above limitation or exclusion may not apply to you.
-
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -76,14 +116,14 @@ jd1901 =2415385L
 
 class _timezone:
     def __init__(self,data):
-	self.name,self.timect,self.typect, \
+        self.name,self.timect,self.typect, \
         self.ttrans,self.tindex,self.tinfo,self.az=data
 
     def default_index(self):
-	if self.timect == 0: return 0
-	for i in range(self.typect):
-	    if self.tinfo[i][1] == 0: return i
-	return 0
+        if self.timect == 0: return 0
+        for i in range(self.typect):
+            if self.tinfo[i][1] == 0: return i
+        return 0
 
     def index(self,t=None):
         t=t or time()
@@ -104,7 +144,7 @@ class _timezone:
                     if i==0: idx=(ord(self.tindex[0]),ord(self.tindex[1]),
                                   self.default_index())
                     else:    idx=(ord(self.tindex[i]),ord(self.tindex[i+1]),
-			          ord(self.tindex[i-1]))
+                                  ord(self.tindex[i-1]))
                     break
         return idx
 
@@ -141,7 +181,7 @@ class _cache:
            'brazil/denoronha':'Brazil/Denoronha',
            'brazil/east':'Brazil/East','brazil/west':'Brazil/West',
            'canada/atlantic':'Canada/Atlantic',
-	   'canada/central':'Canada/Central',
+           'canada/central':'Canada/Central',
            'canada/eastern':'Canada/Eastern',
            'canada/east-saskatchewan':'Canada/East-Saskatchewan',
            'canada/mountain':'Canada/Mountain',
@@ -156,7 +196,7 @@ class _cache:
            'mountain standard time':'US/Mountain',
            'pacific standard time':'US/Pacific',
            'gb-eire':'GB-Eire','gmt':'GMT',
-	   'gmt+0100':'GMT+1','gmt+0200':'GMT+2','gmt+0300':'GMT+3',
+           'gmt+0100':'GMT+1','gmt+0200':'GMT+2','gmt+0300':'GMT+3',
            'gmt+0400':'GMT+4','gmt+0500':'GMT+5','gmt+0600':'GMT+6',
            'gmt+0700':'GMT+7','gmt+0800':'GMT+8','gmt+0900':'GMT+9',
            'gmt+1000':'GMT+10','gmt+1100':'GMT+11','gmt+1200':'GMT+12',
@@ -166,9 +206,9 @@ class _cache:
            'gmt-0900':'GMT-9','gmt-1000':'GMT-10','gmt-1100':'GMT-11',
            'gmt-1200':'GMT-12','greenwich':'Greenwich','hongkong':'Hongkong',
            'iceland':'Iceland','iran':'Iran','israel':'Israel',
-	   'jamaica':'Jamaica','japan':'Japan',
-	   'mexico/bajanorte':'Mexico/BajaNorte',
-	   'mexico/bajasur':'Mexico/BajaSur','mexico/general':'Mexico/General',
+           'jamaica':'Jamaica','japan':'Japan',
+           'mexico/bajanorte':'Mexico/BajaNorte',
+           'mexico/bajasur':'Mexico/BajaSur','mexico/general':'Mexico/General',
            'mst':'US/Mountain','pst':'US/Pacific','poland':'Poland',
            'singapore':'Singapore','turkey':'Turkey','universal':'Universal',
            'utc':'Universal','uct':'Universal','us/alaska':'US/Alaska',
@@ -177,7 +217,7 @@ class _cache:
            'us/east-indiana':'US/East-Indiana','us/hawaii':'US/Hawaii',
            'us/indiana-starke':'US/Indiana-Starke','us/michigan':'US/Michigan',
            'us/mountain':'US/Mountain','us/pacific':'US/Pacific',
-	   'us/samoa':'US/Samoa'}
+           'us/samoa':'US/Samoa'}
 
     def __init__(self):
         self._db=DateTimeZone._data
@@ -187,8 +227,8 @@ class _cache:
         try:   n=self._zmap[lower(k)]
         except KeyError:
             raise 'DateTimeError','Unrecognized timezone: %s' % k
-	try: return self._d[n]
-	except KeyError:
+        try: return self._d[n]
+        except KeyError:
             z=self._d[n]=_timezone(self._db[n])
             return z
 
@@ -231,7 +271,7 @@ class DateTime:
         numbers of days since January 1, 1901, using the standard int, 
         long, and float functions (Compatibility Note: int, long and
         float return the number of days since 1901 in GMT rather than
-	local machine timezone). DateTime objects also provide access
+        local machine timezone). DateTime objects also provide access
         to their value in a float format usable with the python time
         module, provided that the value of the object falls in the
         range of the epoch-based time module.
@@ -244,17 +284,17 @@ class DateTime:
         """Return a new date-time object
 
         A DateTime object always maintains its value as an absolute 
-	UTC time, and is represented in the context of some timezone
-	based on the arguments used to create the object. A DateTime
-	object's methods return values based on the timezone context.
+        UTC time, and is represented in the context of some timezone
+        based on the arguments used to create the object. A DateTime
+        object's methods return values based on the timezone context.
 
-	Note that in all cases the local machine timezone is used for
-	representation if no timezone is specified.
+        Note that in all cases the local machine timezone is used for
+        representation if no timezone is specified.
 
-	DateTimes may be created with from zero to seven arguments.
+        DateTimes may be created with from zero to seven arguments.
 
 
-	  - If the function is called with no arguments, then the 
+          - If the function is called with no arguments, then the 
             current date/time is returned, represented in the 
             timezone of the local machine.
 
@@ -263,7 +303,7 @@ class DateTime:
             the current time is returned, represented in the specified
             timezone.
 
-	  - If the function is invoked with a single string argument
+          - If the function is invoked with a single string argument
             representing a valid date/time, an object representing
             that date/time will be returned.
 
@@ -311,7 +351,7 @@ class DateTime:
             as it is possible to distinguish the components. If all
             three components are numbers that are less than 13,
             then a a month-day-year ordering is assumed.
-	
+        
             The time component consists of hour, minute, and second
             values separated by colons.  The hour value must be an
             integer between 0 and 23 inclusively. The minute value
@@ -322,7 +362,7 @@ class DateTime:
             followed by am or pm in upper or lower case, in which
             case a 12-hour clock is assumed.
 
-	  - If the DateTime function is invoked with a single
+          - If the DateTime function is invoked with a single
             Numeric argument, the number is assumed to be either
             a floating point value such as that returned by 
             time.time() , or a number of days after January 1, 1901 
@@ -334,16 +374,16 @@ class DateTime:
             after January 1, 1901. Note that the number of days 
             after 1901 need to be expressed from the viewpoint of
             the local machine's timezone. A negative argument will 
-	    yield a date-time value before 1901.
-	
+            yield a date-time value before 1901.
+        
           - If the function is invoked with two numeric arguments,
             then the first is taken to be an integer year and the
             second argument is taken to be an offset in days from
             the beginning of the year, in the context of the local
             machine timezone.
             The date-time value returned is the given offset number of 
-	    days from the beginning of the given year, represented in
-	    the timezone of the local machine. The offset may be positive
+            days from the beginning of the given year, represented in
+            the timezone of the local machine. The offset may be positive
             or negative.
             Two-digit years are assumed to be in the twentieth
             century.
@@ -390,184 +430,184 @@ class DateTime:
         timezones recognized by the DateTime module. Recognition of 
         timezone names is case-insensitive.""" #'
 
-	d=t=s=None
-	ac=len(args)
+        d=t=s=None
+        ac=len(args)
 
-	if ac and args[0]==None: return
-	elif ac==10:
-	    # Internal format called only by DateTime
-	    yr,mo,dy,hr,mn,sc,tz,t,d,s=args
+        if ac and args[0]==None: return
+        elif ac==10:
+            # Internal format called only by DateTime
+            yr,mo,dy,hr,mn,sc,tz,t,d,s=args
 
-	elif not args:
-	    # Current time, exp in local timezone
-	    t,tz=time(),self._localzone
-	    ms=(t-int(t))
-	    yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
-	    s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
-	    d=(self._julianday(yr,mo,dy)-jd1901)+s
+        elif not args:
+            # Current time, exp in local timezone
+            t,tz=time(),self._localzone
+            ms=(t-int(t))
+            yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
+            s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
+            d=(self._julianday(yr,mo,dy)-jd1901)+s
             yr,mo,dy,hr,mn,sc=localtime(t)[:6]
             sc=sc+ms
-	    
-	elif ac==1:
-	    arg=args[0]
-	    if type(arg)==StringType and lower(arg) in self._tzinfo._zidx:
-		# Current time, exp in specified timezone
-	        t,tz=time(),self._tzinfo._zmap[lower(arg)]
-		ms=(t-int(t))
-	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
-	        s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s
-		x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
-		yr,mo,dy=self._calendarday(x+jd1901)
-	        x=(x-int(x))*86400.0
-	        hr=int(x/3600)
-	        x=x-(hr*3600)
-	        mn=int(x/60)
-	        sc=x-(mn*60)
+            
+        elif ac==1:
+            arg=args[0]
+            if type(arg)==StringType and lower(arg) in self._tzinfo._zidx:
+                # Current time, exp in specified timezone
+                t,tz=time(),self._tzinfo._zmap[lower(arg)]
+                ms=(t-int(t))
+                yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
+                s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
+                d=(self._julianday(yr,mo,dy)-jd1901)+s
+                x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
+                yr,mo,dy=self._calendarday(x+jd1901)
+                x=(x-int(x))*86400.0
+                hr=int(x/3600)
+                x=x-(hr*3600)
+                mn=int(x/60)
+                sc=x-(mn*60)
 
-	    elif type(arg)==StringType:
-		# Date/time string
-		yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
-		tz=self._tzinfo._zmap[lower(tz)]
-	        if not self._validDate(yr,mo,dy):
-		    raise self.DateTimeError, 'Invalid date: %s' % arg
-		if not self._validTime(hr,mn,int(sc)):
-		    raise self.DateTimeError, 'Invalid time: %s' % arg
-		s=(hr/24.0+mn/1440.0+sc/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s
-		t=(d*86400.0)-EPOCH+86400.0
+            elif type(arg)==StringType:
+                # Date/time string
+                yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
+                tz=self._tzinfo._zmap[lower(tz)]
+                if not self._validDate(yr,mo,dy):
+                    raise self.DateTimeError, 'Invalid date: %s' % arg
+                if not self._validTime(hr,mn,int(sc)):
+                    raise self.DateTimeError, 'Invalid time: %s' % arg
+                s=(hr/24.0+mn/1440.0+sc/86400.0)
+                d=(self._julianday(yr,mo,dy)-jd1901)+s
+                t=(d*86400.0)-EPOCH+86400.0
                 a=self._tzinfo[tz].info(t)[0]
-		d,t=d-(a/86400.0),t-a
+                d,t=d-(a/86400.0),t-a
 
-	    elif (arg > 0) and (int(arg)/365+1901 > 2030):
-		# Seconds from epoch, gmt
-	        t,tz=arg,self._localzone
-		ms=(t-int(t))
-	        yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
-	        s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s
+            elif (arg > 0) and (int(arg)/365+1901 > 2030):
+                # Seconds from epoch, gmt
+                t,tz=arg,self._localzone
+                ms=(t-int(t))
+                yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
+                s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
+                d=(self._julianday(yr,mo,dy)-jd1901)+s
                 yr,mo,dy,hr,mn,sc=localtime(t)[:6]
                 sc=sc+ms
 
-	    else:
-		# Float days since Jan 1, 1901 machine tz
-	        _j,tz=arg*86400.0,self._localzone
+            else:
+                # Float days since Jan 1, 1901 machine tz
+                _j,tz=arg*86400.0,self._localzone
                 yr,mo,dy=self._calendarday((arg+jd1901))
-	        s=(_j-int(_j))*86400.0
-	        hr=int(s/3600)
-	        s=s-(hr*3600)
-	        mn=int(s/60)
-	        sc=s-(mn*60)
-		if(hr==23 and mn==59 and sc>59.999):
-		    # Fix formatting for positives
-		    hr,mn,sc=0,0,0.0
-	        else:
-		    # Fix formatting for negatives
-		    if hr<0: hr=23+hr
-		    if mn<0: mn=59+mn
-		    if sc<0:
-		        if (sc-int(sc)>=0.999): sc=round(sc)
-		        sc=59+sc
+                s=(_j-int(_j))*86400.0
+                hr=int(s/3600)
+                s=s-(hr*3600)
+                mn=int(s/60)
+                sc=s-(mn*60)
+                if(hr==23 and mn==59 and sc>59.999):
+                    # Fix formatting for positives
+                    hr,mn,sc=0,0,0.0
+                else:
+                    # Fix formatting for negatives
+                    if hr<0: hr=23+hr
+                    if mn<0: mn=59+mn
+                    if sc<0:
+                        if (sc-int(sc)>=0.999): sc=round(sc)
+                        sc=59+sc
                 t=_j-EPOCH
-		a=self._tzinfo[tz].info(t)[0]
-		d,t=arg-(a/86400.0),t-a
-		s=d-int(d)
+                a=self._tzinfo[tz].info(t)[0]
+                d,t=arg-(a/86400.0),t-a
+                s=d-int(d)
 
-	elif ac==2:
-	    if type(args[1])==StringType:
-		# Seconds from epoch (gmt) and timezone
-	        t,tz=args
-		ms=(t-int(t))
-		tz=self._tzinfo._zmap[lower(tz)]
-	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
-	        s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
-	        d=(self._julianday(yr,mo,dy)-jd1901)+s
-		x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
-		yr,mo,dy=self._calendarday(x+jd1901)
-	        x=(x-int(x))*86400.0
-	        hr=int(x/3600)
-	        x=x-(hr*3600)
-	        mn=int(x/60)
-	        sc=x-(mn*60)
-		if(hr==23 and mn==59 and sc>59.999):
-		    # Fix formatting for positives
-		    hr,mn,sc=0,0,0.0
-	        else:
-		    # Fix formatting for negatives
-		    if hr<0: hr=23+hr
-		    if mn<0: mn=59+mn
-		    if sc<0:
-		        if (sc-int(sc)>=0.999): sc=round(sc)
-		        sc=59+sc
-	    else:
-		# Year, julean expressed in local zone
+        elif ac==2:
+            if type(args[1])==StringType:
+                # Seconds from epoch (gmt) and timezone
+                t,tz=args
+                ms=(t-int(t))
+                tz=self._tzinfo._zmap[lower(tz)]
+                yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
+                s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
+                d=(self._julianday(yr,mo,dy)-jd1901)+s
+                x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
+                yr,mo,dy=self._calendarday(x+jd1901)
+                x=(x-int(x))*86400.0
+                hr=int(x/3600)
+                x=x-(hr*3600)
+                mn=int(x/60)
+                sc=x-(mn*60)
+                if(hr==23 and mn==59 and sc>59.999):
+                    # Fix formatting for positives
+                    hr,mn,sc=0,0,0.0
+                else:
+                    # Fix formatting for negatives
+                    if hr<0: hr=23+hr
+                    if mn<0: mn=59+mn
+                    if sc<0:
+                        if (sc-int(sc)>=0.999): sc=round(sc)
+                        sc=59+sc
+            else:
+                # Year, julean expressed in local zone
                 tz=self._localzone
-		yr,jul=args
-		if not yr>100: yr=yr+CENTURY
-	        d=(self._julianday(yr,1,0)-jd1901)+jul
-		yr,mo,dy=self._calendarday(d+jd1901)
-	        x=(d-int(d))*86400.0
-	        hr=int(x/3600)
-	        x=x-(hr*3600)
-	        mn=int(x/60)
-	        sc=x-(mn*60)
-		if(hr==23 and mn==59 and sc>59.999):
-		    # Fix formatting for positives
-		    hr,mn,sc=0,0,0.0
-	        else:
-		    # Fix formatting for negatives
-		    if hr<0: hr=23+hr
-		    if mn<0: mn=59+mn
-		    if sc<0:
-		        if (sc-int(sc)>=0.999): sc=round(sc)
-		        sc=59+sc
-		d=d-(self._tzinfo[tz].info(t)[0]/86400.0)
-		s=d-int(d)
-		t=(d*86400.0)-EPOCH
-	else:
-	    # Explicit format
-	    yr,mo,dy=args[:3]
-	    hr,mn,sc,tz=0,0,0,0
-	    yr=(yr>100) and yr or yr+CENTURY
-	    if not self._validDate(yr,mo,dy):
-		raise self.DateTimeError, 'Invalid date: %s' % args
-	    args=args[3:]
-	    if args:
-		hr,args=args[0],args[1:]
-		if args:
-		    mn,args=args[0],args[1:]
-		    if args:
-			sc,args=args[0],args[1:]
-			if args:
-			    tz,args=args[0],args[1:]
-			    if args:
-				raise self.DateTimeError,'Too many arguments'
-	    if not self._validTime(hr,mn,sc):
-		raise self.DateTimeError, 'Invalid time: %s' % `args`
-	    if not tz: tz=self._localzone
-	    else:      tz=self._tzinfo._zmap[lower(tz)]
-	    leap=yr%4==0 and (yr%100!=0 or yr%400==0)
-	    s=(hr/24.0+mn/1440.0+sc/86400.0)
-	    d=(self._julianday(yr,mo,dy)-jd1901)+s
-	    t=(d*86400.0)-EPOCH+86400.0
-	    a=self._tzinfo[tz].info(t)[0]
-	    d,t=d-(a/86400.0),t-a
+                yr,jul=args
+                if not yr>100: yr=yr+CENTURY
+                d=(self._julianday(yr,1,0)-jd1901)+jul
+                yr,mo,dy=self._calendarday(d+jd1901)
+                x=(d-int(d))*86400.0
+                hr=int(x/3600)
+                x=x-(hr*3600)
+                mn=int(x/60)
+                sc=x-(mn*60)
+                if(hr==23 and mn==59 and sc>59.999):
+                    # Fix formatting for positives
+                    hr,mn,sc=0,0,0.0
+                else:
+                    # Fix formatting for negatives
+                    if hr<0: hr=23+hr
+                    if mn<0: mn=59+mn
+                    if sc<0:
+                        if (sc-int(sc)>=0.999): sc=round(sc)
+                        sc=59+sc
+                d=d-(self._tzinfo[tz].info(t)[0]/86400.0)
+                s=d-int(d)
+                t=(d*86400.0)-EPOCH
+        else:
+            # Explicit format
+            yr,mo,dy=args[:3]
+            hr,mn,sc,tz=0,0,0,0
+            yr=(yr>100) and yr or yr+CENTURY
+            if not self._validDate(yr,mo,dy):
+                raise self.DateTimeError, 'Invalid date: %s' % args
+            args=args[3:]
+            if args:
+                hr,args=args[0],args[1:]
+                if args:
+                    mn,args=args[0],args[1:]
+                    if args:
+                        sc,args=args[0],args[1:]
+                        if args:
+                            tz,args=args[0],args[1:]
+                            if args:
+                                raise self.DateTimeError,'Too many arguments'
+            if not self._validTime(hr,mn,sc):
+                raise self.DateTimeError, 'Invalid time: %s' % `args`
+            if not tz: tz=self._localzone
+            else:      tz=self._tzinfo._zmap[lower(tz)]
+            leap=yr%4==0 and (yr%100!=0 or yr%400==0)
+            s=(hr/24.0+mn/1440.0+sc/86400.0)
+            d=(self._julianday(yr,mo,dy)-jd1901)+s
+            t=(d*86400.0)-EPOCH+86400.0
+            a=self._tzinfo[tz].info(t)[0]
+            d,t=d-(a/86400.0),t-a
 
-	if hr>12:
-	    self._pmhour=hr-12
-	    self._pm='pm'
-	else:
-	    self._pmhour=hr or 12
-	    self._pm= (hr==12) and 'pm' or 'am'
+        if hr>12:
+            self._pmhour=hr-12
+            self._pm='pm'
+        else:
+            self._pmhour=hr or 12
+            self._pm= (hr==12) and 'pm' or 'am'
         self._dayoffset=dx=int((self._julianday(yr,mo,dy)+2L)%7)
-	self._fmon,self._amon,self._pmon= \
-	    self._months[mo],self._months_a[mo],self._months_p[mo]
+        self._fmon,self._amon,self._pmon= \
+            self._months[mo],self._months_a[mo],self._months_p[mo]
         self._fday,self._aday,self._pday= \
-	    self._days[dx],self._days_a[dx],self._days_p[dx]
+            self._days[dx],self._days_a[dx],self._days_p[dx]
         self._nearsec=round(sc)
         self._year,self._month,self._day     =yr,mo,dy
         self._hour,self._minute,self._second =hr,mn,sc
-	self.time,self._d,self._t,self._tz   =s,d,t,tz
+        self.time,self._d,self._t,self._tz   =s,d,t,tz
 
 
     DateTimeError='DateTimeError'
@@ -579,181 +619,181 @@ class DateTime:
     space_chars  =' \t\n'
     delimiters   ='-/.:,'
     _month_len  =((0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
-	          (0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
+                  (0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
     _until_month=((0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334),
-	          (0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335))
+                  (0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335))
     _months     =['','January','February','March','April','May','June','July',
-	             'August', 'September', 'October', 'November', 'December']
+                     'August', 'September', 'October', 'November', 'December']
     _months_a   =['','Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-	             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     _months_p   =['','Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'June',
-	             'July', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
+                     'July', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
     _monthmap   ={'january': 1,   'jan': 1,
-	          'february': 2,  'feb': 2,
-	          'march': 3,     'mar': 3,
-	          'april': 4,     'apr': 4,
-	          'may': 5,
-	          'june': 6,      'jun': 6,
-	          'july': 7,      'jul': 7,
-	          'august': 8,    'aug': 8,
-	          'september': 9, 'sep': 9, 'sept': 9,
-	          'october': 10,  'oct': 10,
-	          'november': 11, 'nov': 11,
-	          'december': 12, 'dec': 12}
+                  'february': 2,  'feb': 2,
+                  'march': 3,     'mar': 3,
+                  'april': 4,     'apr': 4,
+                  'may': 5,
+                  'june': 6,      'jun': 6,
+                  'july': 7,      'jul': 7,
+                  'august': 8,    'aug': 8,
+                  'september': 9, 'sep': 9, 'sept': 9,
+                  'october': 10,  'oct': 10,
+                  'november': 11, 'nov': 11,
+                  'december': 12, 'dec': 12}
     _days       =['Sunday','Monday','Tuesday','Wednesday',
-	          'Thursday','Friday','Saturday']
+                  'Thursday','Friday','Saturday']
     _days_a     =['Sun',  'Mon',  'Tue',  'Wed',  'Thu',  'Fri',  'Sat' ]
     _days_p     =['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.']
     _daymap     ={'sunday': 1,    'sun': 1,
-	          'monday': 2,    'mon': 2,
-	          'tuesday': 3,   'tues': 3,  'tue': 3,
-	          'wednesday': 4, 'wed': 4,
-	          'thursday': 5,  'thurs': 5, 'thur': 5, 'thu': 5,
-	          'friday': 6,    'fri': 6,
-	          'saturday': 7,  'sat': 7}
+                  'monday': 2,    'mon': 2,
+                  'tuesday': 3,   'tues': 3,  'tue': 3,
+                  'wednesday': 4, 'wed': 4,
+                  'thursday': 5,  'thurs': 5, 'thur': 5, 'thu': 5,
+                  'friday': 6,    'fri': 6,
+                  'saturday': 7,  'sat': 7}
     try: _localzone  =_cache._zmap[lower(tzname[0])]
     except: _localzone=''
     _tzinfo     =_cache()
 
     def _parse(self,string):
-	# Parse date-time components from a string
-	month=year=tz=tm=None
-	spaces        =self.space_chars
-	intpat        =self.int_pattern
-	fltpat        =self.flt_pattern
-	wordpat       =self.name_pattern
-	delimiters    =self.delimiters
-	MonthNumbers  =self._monthmap
-	DayOfWeekNames=self._daymap
-	ValidZones    =self._tzinfo._zidx
-	TimeModifiers =['am','pm']
+        # Parse date-time components from a string
+        month=year=tz=tm=None
+        spaces        =self.space_chars
+        intpat        =self.int_pattern
+        fltpat        =self.flt_pattern
+        wordpat       =self.name_pattern
+        delimiters    =self.delimiters
+        MonthNumbers  =self._monthmap
+        DayOfWeekNames=self._daymap
+        ValidZones    =self._tzinfo._zidx
+        TimeModifiers =['am','pm']
 
         # Find timezone first, since it should always be the last
-	# element, and may contain a slash, confusing the parser.
-	sp=split(strip(string))
+        # element, and may contain a slash, confusing the parser.
+        sp=split(strip(string))
         tz=sp[-1]
         if tz and (lower(tz) in ValidZones): string=join(sp[:-1])
-	else: tz=self._localzone
+        else: tz=self._localzone
 
         ints,dels=[],[]
-	i,l=0,len(string)
-	while i < l:
-	    while i < l and string[i] in spaces    : i=i+1
-	    if i < l and string[i] in delimiters:
-		d=string[i]
-		i=i+1
-	    else: d=''
-	    while i < l and string[i] in spaces    : i=i+1
+        i,l=0,len(string)
+        while i < l:
+            while i < l and string[i] in spaces    : i=i+1
+            if i < l and string[i] in delimiters:
+                d=string[i]
+                i=i+1
+            else: d=''
+            while i < l and string[i] in spaces    : i=i+1
 
-	    if fltpat.match(string,i) >= 0:
-		s=fltpat.group(1)
-		i=i+len(s)
-		ints.append(atof(s))
-		continue
+            if fltpat.match(string,i) >= 0:
+                s=fltpat.group(1)
+                i=i+len(s)
+                ints.append(atof(s))
+                continue
 
-	    if intpat.match(string,i) >= 0:
-		s=intpat.group(1)
-		ls=len(s)
-		i=i+ls
-		if (ls==4 and d and d in '+-' and
-		    (len(ints) + (not not month) >= 3)):
-		    tz='%s%s' % (d,s)
-		else:
-		    v=atoi(s)
-		    ints.append(v)
-		continue
+            if intpat.match(string,i) >= 0:
+                s=intpat.group(1)
+                ls=len(s)
+                i=i+ls
+                if (ls==4 and d and d in '+-' and
+                    (len(ints) + (not not month) >= 3)):
+                    tz='%s%s' % (d,s)
+                else:
+                    v=atoi(s)
+                    ints.append(v)
+                continue
 
-	    if wordpat.match(string,i) >= 0:
-		o,s=wordpat.group(1),lower(wordpat.group(1))
-		i=i+len(s)
-		if i < l and string[i]=='.': i=i+1
-		# Check for month name:
-		if MonthNumbers.has_key(s):
-		    v=MonthNumbers[s]
-		    if month is None: month=v
-		    else: raise self.SyntaxError, string
-		    continue
-		# Check for time modifier:
-		if s in TimeModifiers:
-		    if tm is None: tm=s
-		    else: raise self.SyntaxError, string
-		    continue
-		# Check for and skip day of week:
-		if DayOfWeekNames.has_key(s):
-		    continue
-	    raise self.SyntaxError, string
+            if wordpat.match(string,i) >= 0:
+                o,s=wordpat.group(1),lower(wordpat.group(1))
+                i=i+len(s)
+                if i < l and string[i]=='.': i=i+1
+                # Check for month name:
+                if MonthNumbers.has_key(s):
+                    v=MonthNumbers[s]
+                    if month is None: month=v
+                    else: raise self.SyntaxError, string
+                    continue
+                # Check for time modifier:
+                if s in TimeModifiers:
+                    if tm is None: tm=s
+                    else: raise self.SyntaxError, string
+                    continue
+                # Check for and skip day of week:
+                if DayOfWeekNames.has_key(s):
+                    continue
+            raise self.SyntaxError, string
 
-	if ints[-1] > 60 and d not in ['.',':']:
-	    year=ints[-1]
-	    del ints[-1]
-	    if month:
-		day=ints[0]
-		del ints[:1]
-	    else:
-		month=ints[0]
-		day=ints[1]
-		del ints[:2]
-	elif ints[0] > 31:
-	    year=ints[0]
-	    if month:
-		day=ints[1]
-		del ints[:2]
-	    else:
-		month=ints[1]
-		day=ints[2]
-		del ints[:3]
-	elif month and ints[1] > 31:
-	    year=ints[1]
-	    day=ints[0]
-	    del ints[:2]
-	elif not month and ints[2] > 31:
-	    month=ints[0]
-	    day=ints[1]
+        if ints[-1] > 60 and d not in ['.',':']:
+            year=ints[-1]
+            del ints[-1]
+            if month:
+                day=ints[0]
+                del ints[:1]
+            else:
+                month=ints[0]
+                day=ints[1]
+                del ints[:2]
+        elif ints[0] > 31:
+            year=ints[0]
+            if month:
+                day=ints[1]
+                del ints[:2]
+            else:
+                month=ints[1]
+                day=ints[2]
+                del ints[:3]
+        elif month and ints[1] > 31:
+            year=ints[1]
+            day=ints[0]
+            del ints[:2]
+        elif not month and ints[2] > 31:
+            month=ints[0]
+            day=ints[1]
             year=ints[2]
-	    del ints[:3]
-	else:
-	    raise self.SyntaxError, string
+            del ints[:3]
+        else:
+            raise self.SyntaxError, string
 
 
         if not month: raise SyntaxError,string
-	if month > 12:
+        if month > 12:
             # using euro format?
             tmp=month
             month=day
             day=tmp
 
-	if year<100: year=year+CENTURY
-	leap = year%4==0 and (year%100!=0 or year%400==0)
-	if not day or day > self._month_len[leap][month]:
-	    raise self.SyntaxError, string
-	t=0
-	if ints:
-	    i=ints[0]
-	    # Modify hour to reflect am/pm
-	    if tm and (tm=='pm') and i<12:  i=i+12
-	    if tm and (tm=='am') and i==12: i=0
-	    if i > 24: raise self.SyntaxError, string
-	    t=t+i/24.0
-	    del ints[0]
-	    if ints:
-		i=ints[0]
-		if i > 60: raise self.SyntaxError, string
-		t=t+i/1440.0
-		del ints[0]
-		if ints:
-		    i=ints[0]
-		    if i > 60: raise self.SyntaxError, string
-		    t=t+i/86400.0
-		    del ints[0]
-		    if ints: raise self.SyntaxError,string
+        if year<100: year=year+CENTURY
+        leap = year%4==0 and (year%100!=0 or year%400==0)
+        if not day or day > self._month_len[leap][month]:
+            raise self.SyntaxError, string
+        t=0
+        if ints:
+            i=ints[0]
+            # Modify hour to reflect am/pm
+            if tm and (tm=='pm') and i<12:  i=i+12
+            if tm and (tm=='am') and i==12: i=0
+            if i > 24: raise self.SyntaxError, string
+            t=t+i/24.0
+            del ints[0]
+            if ints:
+                i=ints[0]
+                if i > 60: raise self.SyntaxError, string
+                t=t+i/1440.0
+                del ints[0]
+                if ints:
+                    i=ints[0]
+                    if i > 60: raise self.SyntaxError, string
+                    t=t+i/86400.0
+                    del ints[0]
+                    if ints: raise self.SyntaxError,string
 
-	t=t*86400.0
-	hr=int(t/3600)
-	t=t-hr*3600
-	mn=int(t/60)
-	sc=t-mn*60
-	tz=tz or self._localzone
-	return year,month,day,hr,mn,sc,tz
+        t=t*86400.0
+        hr=int(t/3600)
+        t=t-hr*3600
+        mn=int(t/60)
+        sc=t-mn*60
+        tz=tz or self._localzone
+        return year,month,day,hr,mn,sc,tz
 
 
 
@@ -763,92 +803,92 @@ class DateTime:
     def _julianday(self,yr,mo,dy):
         y,m,d=long(yr),long(mo),long(dy)
         if m > 12L:
-	    y=y+m/12L
- 	    m=m%12L
+            y=y+m/12L
+            m=m%12L
         elif m < 1L:
-	    m=-m
-	    y=y-m/12L-1L
-	    m=12L-m%12L
+            m=-m
+            y=y-m/12L-1L
+            m=12L-m%12L
         if y > 0L: yr_correct=0L
-	else:      yr_correct=3L
+        else:      yr_correct=3L
         if m < 3L: y, m=y-1L,m+12L
         if y*10000L+m*100L+d > 15821014L: b=2L-y/100L+y/400L
-	else: b=0L
+        else: b=0L
         return (1461L*y-yr_correct)/4L+306001L*(m+1L)/10000L+d+1720994L+b
 
     def _calendarday(self,j):
-	j=long(j)
-	if(j < 2299160L): b=j+1525L
+        j=long(j)
+        if(j < 2299160L): b=j+1525L
         else:
-	    a=(4L*j-7468861L)/146097L
-	    b=j+1526L+a-a/4L
-	c=(20L*b-2442L)/7305L
-	d=1461L*c/4L
-	e=10000L*(b-d)/306001L
-	dy=int(b-d-306001L*e/10000L)
-	mo=(e < 14L) and int(e-1L) or int(e-13L)
-	yr=(mo > 2) and (c-4716L) or (c-4715L)
-	return int(yr),int(mo),int(dy)
+            a=(4L*j-7468861L)/146097L
+            b=j+1526L+a-a/4L
+        c=(20L*b-2442L)/7305L
+        d=1461L*c/4L
+        e=10000L*(b-d)/306001L
+        dy=int(b-d-306001L*e/10000L)
+        mo=(e < 14L) and int(e-1L) or int(e-13L)
+        yr=(mo > 2) and (c-4716L) or (c-4715L)
+        return int(yr),int(mo),int(dy)
 
     def _validDate(self,y,m,d):
         if m<1 or m>12 or y<0 or d<1 or d>31: return 0
         return d<=self._month_len[(y%4==0 and (y%100!=0 or y%400==0))][m]
 
     def _validTime(self,h,m,s):
-	return h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=59
+        return h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=59
 
 
 
     # Conversion and comparison methods
     def timeTime(self):
-	"""Return the date/time as a floating-point number in UTC,
-	   in the format used by the python time module.
-	   Note that it is possible to create date/time values
-	   with DateTime that have no meaningful value to the
-	   time module, and in such cases a DateTimeError is 
-	   raised. A DateTime object\'s value must generally be
-	   between Jan 1, 1970 (or your local machine epoch) and
-	   Jan 2038 to produce a valid time.time() style value."""
+        """Return the date/time as a floating-point number in UTC,
+           in the format used by the python time module.
+           Note that it is possible to create date/time values
+           with DateTime that have no meaningful value to the
+           time module, and in such cases a DateTimeError is 
+           raised. A DateTime object\'s value must generally be
+           between Jan 1, 1970 (or your local machine epoch) and
+           Jan 2038 to produce a valid time.time() style value."""
         t=self._t
-	if (t>0 and ((t/86400.0) < 24837)): return t
-	raise self.DateTimeError,'No time module compatible time to return'
+        if (t>0 and ((t/86400.0) < 24837)): return t
+        raise self.DateTimeError,'No time module compatible time to return'
 
     def toZone(self, z):
-	"""Return a DateTime with the value as the current
+        """Return a DateTime with the value as the current
            object, represented in the indicated timezone."""
         t,tz=self._t,self._tzinfo._zmap[lower(z)]
-	if (t>0 and ((t/86400.0) < 24837)):
-	    # Try to cheat and use time module for speed...
-	    yr,mo,dy,hr,mn,sc=gmtime(t+self._tzinfo[tz].info(t)[0])[:6]
-	    sc=self._second
-	    return self.__class__(yr,mo,dy,hr,mn,sc,tz,t,self._d,self.time)
+        if (t>0 and ((t/86400.0) < 24837)):
+            # Try to cheat and use time module for speed...
+            yr,mo,dy,hr,mn,sc=gmtime(t+self._tzinfo[tz].info(t)[0])[:6]
+            sc=self._second
+            return self.__class__(yr,mo,dy,hr,mn,sc,tz,t,self._d,self.time)
         d=self._d+(self._tzinfo[tz].info(t)[0]/86400.0)
         yr,mo,dy=self._calendarday((d+jd1901))
-	s=(d-int(d))*86400.0
-	hr=int(s/3600)
-	s=s-(hr*3600)
-	mn=int(s/60)
-	sc=s-(mn*60)
+        s=(d-int(d))*86400.0
+        hr=int(s/3600)
+        s=s-(hr*3600)
+        mn=int(s/60)
+        sc=s-(mn*60)
         if(hr==23 and mn==59 and sc>59.999):
-	    # Fix formatting for positives
-	    hr,mn,sc=0,0,0.0
-	else:
-	    # Fix formatting for negatives
-	    if hr<0: hr=23+hr
-	    if mn<0: mn=59+mn
-	    if sc<0:
-	        if (sc-int(sc)>=0.999):
-		    sc=round(sc)
-		sc=59+sc
+            # Fix formatting for positives
+            hr,mn,sc=0,0,0.0
+        else:
+            # Fix formatting for negatives
+            if hr<0: hr=23+hr
+            if mn<0: mn=59+mn
+            if sc<0:
+                if (sc-int(sc)>=0.999):
+                    sc=round(sc)
+                sc=59+sc
         return self.__class__(yr,mo,dy,hr,mn,sc,tz,t,self._d,self.time)
 
     def isFuture(self):
-	"""Return true if this object represents a date/time
+        """Return true if this object represents a date/time
            later than the time of the call"""
         return (self._t > time())
 
     def isPast(self):
-	"""Return true if this object represents a date/time
+        """Return true if this object represents a date/time
            earlier than the time of the call"""
         return (self._t < time())
 
@@ -898,7 +938,7 @@ class DateTime:
            possible time (in whole seconds) that still falls within
            the current object\'s day, in the object\'s timezone context"""
         return self.__class__(self._year,self._month,self._day,
-			      23,59,59,self._tz)
+                              23,59,59,self._tz)
     def greaterThan(self,t):
         """Compare this DateTime object to another DateTime object
            OR a floating point number such as that which is returned 
@@ -906,7 +946,7 @@ class DateTime:
            represents a date/time greater than the specified DateTime
            or time module style time."""
         try:    return (self._d > t._d)
-	except: return (self._t > t)
+        except: return (self._t > t)
 
     def greaterThanEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -915,7 +955,7 @@ class DateTime:
            represents a date/time greater than or equal to the 
            specified DateTime or time module style time."""
         try:    return (self._d >= t._d)
-	except: return (self._t >= t)
+        except: return (self._t >= t)
 
     def equalTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -924,7 +964,7 @@ class DateTime:
            represents a date/time equal to the specified DateTime
            or time module style time."""
         try:    return (self._d == t._d)
-	except: return (self._t == t)
+        except: return (self._t == t)
 
     def notEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -933,7 +973,7 @@ class DateTime:
            represents a date/time not equal to the specified DateTime
            or time module style time."""
         try:    return (self._d != t._d)
-	except: return (self._t != t)
+        except: return (self._t != t)
 
     def lessThan(self,t):
         """Compare this DateTime object to another DateTime object
@@ -942,7 +982,7 @@ class DateTime:
            represents a date/time less than the specified DateTime
            or time module style time."""
         try:    return (self._d < t._d)
-	except: return (self._t < t)
+        except: return (self._t < t)
 
     def lessThanEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -951,207 +991,207 @@ class DateTime:
            represents a date/time less than or equal to the specified 
            DateTime or time module style time."""
         try:    return (self._d <= t._d)
-	except: return (self._t <= t)
+        except: return (self._t <= t)
 
     def isLeapYear(self):
-	"""Return true if the current year (in the context of the object\'s
+        """Return true if the current year (in the context of the object\'s
            timezone) is a leap year"""
         return self._year%4==0 and (self._year%100!=0 or self._year%400==0)
 
     def dayOfYear(self):
-	"""Return the day of the year, in context of
+        """Return the day of the year, in context of
            the timezone representation of the object"""
-	d=int(self._d+(self._tzinfo[self._tz].info(self._t)[0]/86400.0))
-	return int((d+jd1901)-self._julianday(self._year,1,0))
+        d=int(self._d+(self._tzinfo[self._tz].info(self._t)[0]/86400.0))
+        return int((d+jd1901)-self._julianday(self._year,1,0))
 
 
     # Component access
     def parts(self):
-	"""Return a tuple containing the calendar year, month,
+        """Return a tuple containing the calendar year, month,
            day, hour, minute second and timezone of the object"""
-	return self._year, self._month, self._day, self._hour, \
-	       self._minute, self._second, self._tz
+        return self._year, self._month, self._day, self._hour, \
+               self._minute, self._second, self._tz
 
     def timezone(self):
-	"""Return the timezone in which the object is represented."""
-	return self._tz
+        """Return the timezone in which the object is represented."""
+        return self._tz
 
     def year(self):
-	"""Return the calendar year of the object"""
-	return self._year
+        """Return the calendar year of the object"""
+        return self._year
 
     def month(self):
-	"""Return the month of the object as an integer"""
-	return self._month
+        """Return the month of the object as an integer"""
+        return self._month
 
     def Month(self):
-	"""Return the full month name"""
-	return self._fmon
+        """Return the full month name"""
+        return self._fmon
 
     def aMonth(self):
-	"""Return the abreviated month name."""
-	return self._amon
+        """Return the abreviated month name."""
+        return self._amon
 
     def Mon(self):
-	"""Compatibility: see aMonth"""
-	return self._amon
+        """Compatibility: see aMonth"""
+        return self._amon
 
     def pMonth(self):
-	"""Return the abreviated (with period) month name."""
-	return self._pmon
+        """Return the abreviated (with period) month name."""
+        return self._pmon
 
     def Mon_(self):
-	"""Compatibility: see pMonth"""
-	return self._pmon
+        """Compatibility: see pMonth"""
+        return self._pmon
 
     def day(self):
-	"""Return the integer day"""
-	return self._day
+        """Return the integer day"""
+        return self._day
 
     def Day(self): 
-	"""Return the full name of the day of the week"""
+        """Return the full name of the day of the week"""
         return self._fday
 
     def DayOfWeek(self):
-	"""Compatibility: see Day"""
+        """Compatibility: see Day"""
         return self._fday
 
     def aDay(self):
-	"""Return the abreviated name of the day of the week"""
+        """Return the abreviated name of the day of the week"""
         return self._aday
 
     def pDay(self):
-	"""Return the abreviated (with period) name of the day of the week"""
+        """Return the abreviated (with period) name of the day of the week"""
         return self._pday
 
     def Day_(self):
-	"""Compatibility: see pDay"""
+        """Compatibility: see pDay"""
         return self._pday
 
     def dow(self):
-	"""Return the integer day of the week, where sunday is 0"""
-	return self._dayoffset
+        """Return the integer day of the week, where sunday is 0"""
+        return self._dayoffset
 
     def dow_1(self):
-	"""Return the integer day of the week, where sunday is 1"""
-	return self._dayoffset+1
+        """Return the integer day of the week, where sunday is 1"""
+        return self._dayoffset+1
 
     def h_12(self):
-	"""Return the 12-hour clock representation of the hour"""
-	return self._pmhour
+        """Return the 12-hour clock representation of the hour"""
+        return self._pmhour
 
     def h_24(self):
-	"""Return the 24-hour clock representation of the hour"""
-	return self._hour
+        """Return the 24-hour clock representation of the hour"""
+        return self._hour
 
     def ampm(self):
-	"""Return the appropriate time modifier (am or pm)"""
-	return self._pm
+        """Return the appropriate time modifier (am or pm)"""
+        return self._pm
 
     def hour(self):
-	"""Return the 24-hour clock representation of the hour"""
-	return self._hour
+        """Return the 24-hour clock representation of the hour"""
+        return self._hour
 
     def minute(self):
-	"""Return the minute"""
-	return self._minute
+        """Return the minute"""
+        return self._minute
 
     def second(self):
-	"""Return the second"""
-	return self._second
+        """Return the second"""
+        return self._second
 
 
 
     # General formats from previous DateTime
     def Date(self):
-	"""Return the date string for the object."""
-	return "%s/%2.2d/%2.2d" % (self._year, self._month, self._day)
+        """Return the date string for the object."""
+        return "%s/%2.2d/%2.2d" % (self._year, self._month, self._day)
 
     def Time(self):
-	"""Return the time string for an object to the nearest second."""
-	return '%2.2d:%2.2d:%2.2d' % (self._hour,self._minute,self._nearsec)
+        """Return the time string for an object to the nearest second."""
+        return '%2.2d:%2.2d:%2.2d' % (self._hour,self._minute,self._nearsec)
 
     def TimeMinutes(self): 
-	"""Return the time string for an object not showing seconds."""
-	return '%2.2d:%2.2d' % (self._hour,self._minute)
+        """Return the time string for an object not showing seconds."""
+        return '%2.2d:%2.2d' % (self._hour,self._minute)
 
     def AMPM(self):
-	"""Return the time string for an object to the nearest second."""
+        """Return the time string for an object to the nearest second."""
         return '%2.2d:%2.2d:%2.2d %s' % (
-	        self._pmhour,self._minute,self._nearsec,self._pm)
+                self._pmhour,self._minute,self._nearsec,self._pm)
 
     def AMPMMinutes(self):
-	"""Return the time string for an object not showing seconds."""
+        """Return the time string for an object not showing seconds."""
         return '%2.2d:%2.2d %s' % (self._pmhour,self._minute,self._pm)
 
     def PreciseTime(self):
-	"""Return the time string for the object."""
-	return '%2.2d:%2.2d:%06.3f' % (self._hour,self._minute,self._second)
+        """Return the time string for the object."""
+        return '%2.2d:%2.2d:%06.3f' % (self._hour,self._minute,self._second)
 
     def PreciseAMPM(self):
-	"""Return the time string for the object."""
-	return '%2.2d:%2.2d:%06.3f %s' % (
-	        self._pmhour,self._minute,self._second,self._pm)
+        """Return the time string for the object."""
+        return '%2.2d:%2.2d:%06.3f %s' % (
+                self._pmhour,self._minute,self._second,self._pm)
 
     def yy(self):
-	"""Return calendar year as a 2 digit string"""
+        """Return calendar year as a 2 digit string"""
         return str(self._year)[-2:]
 
     def mm(self):
-	"""Return month as a 2 digit string"""
-	return '%02d' % self._month
+        """Return month as a 2 digit string"""
+        return '%02d' % self._month
 
     def dd(self):
-	"""Return day as a 2 digit string"""
-	return '%02d' % self._day
+        """Return day as a 2 digit string"""
+        return '%02d' % self._day
 
     def rfc822(self):
-	"""Return the date in RFC 822 format"""
-	return '%s, %2.2d %s %d %2.2d:%2.2d:%2.2d %s' % (
-	    self._aday,self._day,self._amon,self._year,
-	    self._hour,self._minute,self._nearsec,self._tz)
+        """Return the date in RFC 822 format"""
+        return '%s, %2.2d %s %d %2.2d:%2.2d:%2.2d %s' % (
+            self._aday,self._day,self._amon,self._year,
+            self._hour,self._minute,self._nearsec,self._tz)
 
 
     # New formats
     def fCommon(self):
-	"""Return a string representing the object\'s value
+        """Return a string representing the object\'s value
            in the format: March 1, 1997 1:45 pm"""
-	return '%s %s, %4.4d %s:%2.2d %s' % (
+        return '%s %s, %4.4d %s:%2.2d %s' % (
                self._fmon,self._day,self._year,self._pmhour,
                self._minute,self._pm)
 
     def fCommonZ(self):
-	"""Return a string representing the object\'s value
+        """Return a string representing the object\'s value
            in the format: March 1, 1997 1:45 pm US/Eastern"""
-	return '%s %s, %4.4d %d:%2.2d %s %s' % (
+        return '%s %s, %4.4d %d:%2.2d %s %s' % (
                self._fmon,self._day,self._year,self._pmhour,
                self._minute,self._pm,self._tz)
 
     def aCommon(self):
-	"""Return a string representing the object\'s value
+        """Return a string representing the object\'s value
            in the format: Mar 1, 1997 1:45 pm"""
-	return '%s %s, %4.4d %s:%2.2d %s' % (
+        return '%s %s, %4.4d %s:%2.2d %s' % (
                self._amon,self._day,self._year,self._pmhour,
                self._minute,self._pm)
 
     def aCommonZ(self):
-	"""Return a string representing the object\'s value
+        """Return a string representing the object\'s value
            in the format: Mar 1, 1997 1:45 pm US/Eastern"""
-	return '%s %s, %4.4d %d:%2.2d %s %s' % (
+        return '%s %s, %4.4d %d:%2.2d %s %s' % (
                self._amon,self._day,self._year,self._pmhour,
                self._minute,self._pm,self._tz)
 
     def pCommon(self):
-	"""Return a string representing the object\'s value
+        """Return a string representing the object\'s value
            in the format: Mar. 1, 1997 1:45 pm"""
-	return '%s %s, %4.4d %s:%2.2d %s' % (
+        return '%s %s, %4.4d %s:%2.2d %s' % (
                self._pmon,self._day,self._year,self._pmhour,
                self._minute,self._pm)
 
     def pCommonZ(self):
-	"""Return a string representing the object\'s value
+        """Return a string representing the object\'s value
            in the format: Mar. 1, 1997 1:45 pm US/Eastern"""
-	return '%s %s, %4.4d %d:%2.2d %s %s' % (
+        return '%s %s, %4.4d %d:%2.2d %s %s' % (
                self._pmon,self._day,self._year,self._pmhour,
                self._minute,self._pm,self._tz)
 
@@ -1166,49 +1206,49 @@ class DateTime:
             self._hour, self._minute, self._second)
 
     def __add__(self,other):
-	"""A DateTime may be added to a number and a number may be 
+        """A DateTime may be added to a number and a number may be 
            added to a DateTime;  two DateTimes cannot be added."""
-	if type(other)==InstanceType:
-	    raise self.DateTimeError,'Cannot add two DateTimes'
-	o=float(other)
+        if type(other)==InstanceType:
+            raise self.DateTimeError,'Cannot add two DateTimes'
+        o=float(other)
         d,t,tz=(self._d+o),(self._t+(o*86400.0)),self._tz
-	x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
+        x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
         yr,mo,dy=self._calendarday((x+jd1901))
-	s=(x-int(x))*86400.0
-	hr=int(s/3600)
-	s=s-(hr*3600)
-	mn=int(s/60)
-	s=s-(mn*60)
+        s=(x-int(x))*86400.0
+        hr=int(s/3600)
+        s=s-(hr*3600)
+        mn=int(s/60)
+        s=s-(mn*60)
         return self.__class__(yr,mo,dy,hr,mn,s,self._tz,t,d,(d-int(d)))
     __radd__=__add__
 
     def __sub__(self,other):
-	"""Either a DateTime or a number may be subtracted from a
+        """Either a DateTime or a number may be subtracted from a
            DateTime, however, a DateTime may not be subtracted from 
-	   a number."""
+           a number."""
         try:    return self._d-other._d
-	except: return self.__add__(-(other))
+        except: return self.__add__(-(other))
 
     def __repr__(self):
         """Convert a DateTime to a string that 
-	   looks like a Python expression."""
-	return '%s(\'%s\')' % (self.__class__.__name__,str(self))
+           looks like a Python expression."""
+        return '%s(\'%s\')' % (self.__class__.__name__,str(self))
 
     def __str__(self):
-	"""Convert a DateTime to a string."""
-	y,m,d   =self._year,self._month,self._day
-	h,mn,s,t=self._hour,self._minute,self._second,self._tz
-	if(h+mn+s):
-	    if (s-int(s))> 0.0001:
-	        return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%g %s' % (
-		        y,m,d,h,mn,s,t)
-	    else:
-	        return '%4.4d/%2.2d/%2.2d  %2.2d:%2.2d:%2.2d %s' % (
-		        y,m,d,h,mn,s,t)
-	else: return '%4.4d/%2.2d/%2.2d' % (y,m,d)
+        """Convert a DateTime to a string."""
+        y,m,d   =self._year,self._month,self._day
+        h,mn,s,t=self._hour,self._minute,self._second,self._tz
+        if(h+mn+s):
+            if (s-int(s))> 0.0001:
+                return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%g %s' % (
+                        y,m,d,h,mn,s,t)
+            else:
+                return '%4.4d/%2.2d/%2.2d  %2.2d:%2.2d:%2.2d %s' % (
+                        y,m,d,h,mn,s,t)
+        else: return '%4.4d/%2.2d/%2.2d' % (y,m,d)
 
     def __cmp__(self,obj):
-	"""Compare a DateTime with another DateTime object, or
+        """Compare a DateTime with another DateTime object, or
            a float such as those returned by time.time().
 
            NOTE: __cmp__ support is provided for backward 
@@ -1217,25 +1257,25 @@ class DateTime:
            You should use the methods lessThan, greaterThan,
            lessThanEqualTo, greaterThanEqualTo, equalTo and
            notEqualTo to avoid potential problems later!!"""
-	try:                   return cmp(self._d,obj._d)
-	except AttributeError: return cmp(self._t,obj)
+        try:                   return cmp(self._d,obj._d)
+        except AttributeError: return cmp(self._t,obj)
 
     def __hash__(self):
-	"""Compute a hash value for a DateTime"""
-	return int(((self._year%100*12+self._month)*31+
-		     self._day+self.time)*100)
+        """Compute a hash value for a DateTime"""
+        return int(((self._year%100*12+self._month)*31+
+                     self._day+self.time)*100)
 
     def __int__(self):
-	"""Convert to an integer number of days since Jan. 1, 1901 (gmt)"""
-	return int(self._d)
+        """Convert to an integer number of days since Jan. 1, 1901 (gmt)"""
+        return int(self._d)
 
     def __long__(self):
-	"""Convert to a long-int number of days since Jan. 1, 1901 (gmt)"""
-	return long(self._d)
+        """Convert to a long-int number of days since Jan. 1, 1901 (gmt)"""
+        return long(self._d)
 
     def __float__(self):
-	"""Convert to floating-point number of days since Jan. 1, 1901 (gmt)"""
-	return float(self._d)
+        """Convert to floating-point number of days since Jan. 1, 1901 (gmt)"""
+        return float(self._d)
 
 
 
@@ -1243,11 +1283,3 @@ class DateTime:
 def Timezones():
     """Return the list of recognized timezone names"""
     return _cache._zlst
-
-
-
-
-
-
-
-

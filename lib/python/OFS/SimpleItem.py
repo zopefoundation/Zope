@@ -1,14 +1,87 @@
-#!/bin/env python
-############################################################################## 
+##############################################################################
 #
-#     Copyright 
-#
-#       Copyright 1997 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved. 
-#
-############################################################################## 
-
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
 '''This module implements a simple item mix-in for objects that have a
 very simple (e.g. one-screen) management interface, like documents,
 Aqueduct database adapters, etc.
@@ -16,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.26 1998/11/30 15:50:25 brian Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: SimpleItem.py,v 1.27 1998/12/04 20:15:30 jim Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -45,12 +118,12 @@ class Item(CopySource, App.Management.Tabs):
     manage_info   =Globals.HTMLFile('App/manage_info')
     manage_options=({'icon':'', 'label':'Manage',
                      'action':'manage_main', 'target':'manage_main',
-	            },
+                    },
                     {'icon':'', 'label':'Access Control',
                      'action':'manage_access', 'target':'manage_main',
                      },
-		    {'icon':'', 'label':'Undo',
-		     'action':'manage_UndoForm','target':'manage_main',
+                    {'icon':'', 'label':'Undo',
+                     'action':'manage_UndoForm','target':'manage_main',
                      },
                     )
 
@@ -129,7 +202,7 @@ class Item(CopySource, App.Management.Tabs):
             except: v='Sorry, an error occured'
             raise error_type, v, tb
         finally:
-	    tb=None
+            tb=None
 
     def uniqueId(self):
         return self._p_oid
@@ -191,90 +264,3 @@ def pretty_tb(t,v,tb):
     tb=format_exception(t,v,tb,200)
     tb=join(tb,'\n')
     return tb
-
-
-############################################################################## 
-#
-# $Log: SimpleItem.py,v $
-# Revision 1.26  1998/11/30 15:50:25  brian
-# *** empty log message ***
-#
-# Revision 1.25  1998/11/30 15:27:13  jeffrey
-# fixed Syntax error in tpValues
-#
-# Revision 1.24  1998/11/26 21:11:35  amos
-# Added more doc strings and converted some comments to doc strings.
-#
-# Revision 1.23  1998/11/23 22:57:05  jim
-# First crack at updating error handling to work with 1.5
-#
-# Revision 1.22  1998/08/03 13:32:39  jim
-# Made manage a redirect rather than an alias.
-#
-# Revision 1.21  1998/05/22 22:31:06  jim
-# Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
-# right into Persistent in Globals.
-#
-# Revision 1.20  1998/05/08 14:58:48  jim
-# Changed permission settings to be in line with new machinery.
-#
-# Revision 1.19  1998/05/01 14:41:59  jeffrey
-# added raise_standardErrorMessage logic
-#
-# Revision 1.18  1998/04/09 17:18:28  jim
-# Added extra logic to verify session locks, which can become
-# stale after a session undo.
-#
-# Revision 1.17  1998/03/18 17:55:36  brian
-# Added uniqueId and aqObjectBind
-#
-# Revision 1.16  1998/03/09 19:58:21  jim
-# changed session marking support
-#
-# Revision 1.15  1998/01/15 15:16:46  brian
-# Fixed Setup, cleaned up SimpleItem
-#
-# Revision 1.14  1998/01/12 21:31:39  jim
-# Made standard defaulr ['Manager', 'Shared'].
-#
-# Revision 1.13  1998/01/12 20:33:49  jim
-# Made shared permission shared.
-#
-# Revision 1.12  1998/01/09 21:35:04  brian
-# Security update
-#
-# Revision 1.11  1998/01/02 17:41:09  jim
-# Factored old Management mix-in into Navigation and Tabs.
-#
-# Revision 1.10  1997/12/19 19:11:17  jim
-# updated icon management strategy
-#
-# Revision 1.9  1997/12/18 16:45:42  jeffrey
-# changeover to new ImageFile and HTMLFile handling
-#
-# Revision 1.8  1997/12/12 21:49:44  brian
-# ui update
-#
-# Revision 1.7  1997/12/05 17:13:52  brian
-# New UI
-#
-# Revision 1.6  1997/11/11 21:25:29  brian
-# Added copy/paste support, restricted unpickling, fixed DraftFolder bug
-#
-# Revision 1.5  1997/11/11 19:26:09  jim
-# Fixed bug in modified_in_session.
-#
-# Revision 1.4  1997/11/10 14:55:14  jim
-# Added two new methods, bobobase_modification_time, and
-# modified_in_session, to support flagging new and session objects.
-#
-# Revision 1.3  1997/11/06 18:41:56  jim
-# Added manage_editedDialog.
-#
-# Revision 1.2  1997/10/30 19:51:09  jim
-# Added methods to support tree browsing.
-#
-# Revision 1.1  1997/09/10 18:42:36  jim
-# Added SimpleItem mix-in and new title/id methods.
-#
-#

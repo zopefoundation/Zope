@@ -1,6 +1,90 @@
+##############################################################################
+#
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -57,7 +141,7 @@ class BasicUser(Implicit):
         passwrd=self._getPassword()
         if domains:
             return (password==passwrd) and domainSpecMatch(domains, request)
-	return password==passwrd
+        return password==passwrd
 
     def _shared_roles(self, parent):
         r=[]
@@ -79,7 +163,7 @@ class BasicUser(Implicit):
             else: return r
 
     def allowed(self,parent,roles=None):
-	usr_roles=self.getRoles()
+        usr_roles=self.getRoles()
         try:
             if roles is None or 'Anonymous' in roles:
                 return 1
@@ -96,11 +180,11 @@ class BasicUser(Implicit):
                 ob=ob.aq_parent
             raise 'spam', `l`
 
-	for role in roles:
-	    if role in usr_roles:
+        for role in roles:
+            if role in usr_roles:
                 if (hasattr(self,'aq_parent') and
                     hasattr(self.aq_parent,'aq_parent')):
-		    if parent is None: return 1
+                    if parent is None: return 1
                     if (not hasattr(parent, 'aq_inContextOf') and
                         hasattr(parent, 'im_self')):
                         # This is a method, grab it's self.
@@ -120,19 +204,19 @@ class BasicUser(Implicit):
             while 'Shared' in roles: roles.remove('Shared')
             return self.allowed(parent,roles)
             
-	return None
+        return None
 
     hasRole=allowed
     domains=[]
     
     def has_role(self, roles):
-	if type(roles)==type('s'):
-	    roles=[roles]
-	user_roles=self.getRoles()
-	for role in roles:
-	    if role in user_roles:
-		return 1
-	return 0
+        if type(roles)==type('s'):
+            roles=[roles]
+        user_roles=self.getRoles()
+        for role in roles:
+            if role in user_roles:
+                return 1
+        return 0
 
     def __len__(self): return 1
     def __str__(self): return self.getUserName()
@@ -145,9 +229,9 @@ class User(BasicUser, Persistent):
     """Standard Principia User object"""
 
     def __init__(self,name,password,roles,domains):
-	self.name   =name
-	self.__     =password
-	self.roles  =roles
+        self.name   =name
+        self.__     =password
+        self.roles  =roles
         self.domains=domains
 
     def getUserName(self):
@@ -267,12 +351,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     _nobody=nobody
             
     def validate(self,request,auth='',roles=None):
-	parent=request['PARENTS'][0]
+        parent=request['PARENTS'][0]
 
-	# If no authorization, only a user with a
+        # If no authorization, only a user with a
         # domain spec and no passwd or nobody can
         # match
-	if not auth:
+        if not auth:
             for ob in self.getUsers():
                 domains=ob.getDomains()
                 if domains:
@@ -286,43 +370,43 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 return ob
             return None
 
-	# Only do basic authentication
-	if lower(auth[:6])!='basic ':
-	    return None
-	name,password=tuple(split(decodestring(split(auth)[-1]), ':'))
+        # Only do basic authentication
+        if lower(auth[:6])!='basic ':
+            return None
+        name,password=tuple(split(decodestring(split(auth)[-1]), ':'))
 
-	# Check for superuser
+        # Check for superuser
         super=self._super
-	if self._isTop() and (name==super.getUserName()) and \
-	super.authenticate(password, request):
-	    return super
+        if self._isTop() and (name==super.getUserName()) and \
+        super.authenticate(password, request):
+            return super
 
-	# Try to get user
+        # Try to get user
         user=self.getUser(name)
         if user is None:
             return None
 
-	# Try to authenticate user
-	if not user.authenticate(password, request):
-	    return None
+        # Try to authenticate user
+        if not user.authenticate(password, request):
+            return None
 
         # We need the user to be able to acquire!
         user=user.__of__(self)
 
-	# Try to authorize user
-	if user.allowed(parent, roles):
-	    return user
-	return None
+        # Try to authorize user
+        if user.allowed(parent, roles):
+            return user
+        return None
 
 
     if _remote_user_mode:
         
-	def validate(self,request,auth='',roles=None):
-	    parent=request['PARENTS'][0]
-	    e=request.environ
-	    if e.has_key('REMOTE_USER'):
+        def validate(self,request,auth='',roles=None):
+            parent=request['PARENTS'][0]
+            e=request.environ
+            if e.has_key('REMOTE_USER'):
                 name=e['REMOTE_USER']
-	    else:
+            else:
                 for ob in self.getUsers():
                     domains=ob.getDomains()
                     if domains:
@@ -336,12 +420,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                     return ob
                 return None
 
-	    # Check for superuser
+            # Check for superuser
             super=self._super
-	    if self._isTop() and (name==super.getUserName()):
-		return super
+            if self._isTop() and (name==super.getUserName()):
+                return super
 
-	    # Try to get user
+            # Try to get user
             user=self.getUser(name)
             if user is None:
                 return None
@@ -349,9 +433,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # We need the user to be able to acquire!
             user=user.__of__(self)
 
-	    # Try to authorize user
-	    if user.allowed(parent, roles):
-		return user
+            # Try to authorize user
+            if user.allowed(parent, roles):
+                return user
             return None
 
 
@@ -379,116 +463,116 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='A username must be specified',
                    action ='manage_main')
-	if not password or not confirm:
+        if not password or not confirm:
             if not domains:
                 return MessageDialog(
                    title  ='Illegal value', 
                    message='Password and confirmation must be specified',
                    action ='manage_main')
-	if self.getUser(name) or (name==self._super.getUserName()):
+        if self.getUser(name) or (name==self._super.getUserName()):
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='A user with the specified name already exists',
                    action ='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
         
-	if not roles: roles=[]
+        if not roles: roles=[]
         if not domains: domains=[]
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='Illegal domain specification',
                    action ='manage_main')
         self._doAddUser(name, password, roles, domains)        
-	if REQUEST: return self._mainUser(self, REQUEST)
+        if REQUEST: return self._mainUser(self, REQUEST)
 
 
     def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
         if not name:
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='A username must be specified',
                    action ='manage_main')
-	if not password or not confirm:
+        if not password or not confirm:
             if not domains:
                 return MessageDialog(
                    title  ='Illegal value', 
                    message='Password and confirmation must be specified',
                    action ='manage_main')
-	if not self.getUser(name):
+        if not self.getUser(name):
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='Unknown user',
                    action ='manage_main')
         if (password or confirm) and (password != confirm):
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
 
-	if not roles: roles=[]
+        if not roles: roles=[]
         if not domains: domains=[]
 
         if domains and not self.domainSpecValidate(domains):
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='Illegal domain specification',
                    action ='manage_main')
         self._doChangeUser(name, password, roles, domains)
-	if REQUEST: return self._mainUser(self, REQUEST)
+        if REQUEST: return self._mainUser(self, REQUEST)
 
     def _delUsers(self,names,REQUEST=None):
-	if not names:
+        if not names:
             return MessageDialog(
-		   title  ='Illegal value', 
+                   title  ='Illegal value', 
                    message='No users specified',
                    action ='manage_main')
         self._doDelUsers(names)
         if REQUEST: return self._mainUser(self, REQUEST)
 
     def manage_users(self,submit=None,REQUEST=None,RESPONSE=None):
-	""" """
-	if submit=='Add...':
-	    return self._add_User(self, REQUEST)
+        """ """
+        if submit=='Add...':
+            return self._add_User(self, REQUEST)
 
-	if submit=='Edit':
-	    try:    user=self.getUser(reqattr(REQUEST, 'name'))
-	    except: return MessageDialog(
-		    title  ='Illegal value',
+        if submit=='Edit':
+            try:    user=self.getUser(reqattr(REQUEST, 'name'))
+            except: return MessageDialog(
+                    title  ='Illegal value',
                     message='The specified user does not exist',
                     action ='manage_main')
-	    return self._editUser(self,REQUEST,user=user,password=user.__)
+            return self._editUser(self,REQUEST,user=user,password=user.__)
 
-	if submit=='Add':
- 	    name    =reqattr(REQUEST, 'name')
- 	    password=reqattr(REQUEST, 'password')
- 	    confirm =reqattr(REQUEST, 'confirm')
- 	    roles   =reqattr(REQUEST, 'roles')
+        if submit=='Add':
+            name    =reqattr(REQUEST, 'name')
+            password=reqattr(REQUEST, 'password')
+            confirm =reqattr(REQUEST, 'confirm')
+            roles   =reqattr(REQUEST, 'roles')
             domains =reqattr(REQUEST, 'domains')
-	    return self._addUser(name,password,confirm,roles,domains,REQUEST)
+            return self._addUser(name,password,confirm,roles,domains,REQUEST)
 
-	if submit=='Change':
- 	    name    =reqattr(REQUEST, 'name')
- 	    password=reqattr(REQUEST, 'password')
- 	    confirm =reqattr(REQUEST, 'confirm')
- 	    roles   =reqattr(REQUEST, 'roles')
+        if submit=='Change':
+            name    =reqattr(REQUEST, 'name')
+            password=reqattr(REQUEST, 'password')
+            confirm =reqattr(REQUEST, 'confirm')
+            roles   =reqattr(REQUEST, 'roles')
             domains =reqattr(REQUEST, 'domains')
- 	    return self._changeUser(name,password,confirm,roles,
+            return self._changeUser(name,password,confirm,roles,
                                     domains,REQUEST)
 
-	if submit=='Delete':
-	    names=reqattr(REQUEST, 'names')
-	    return self._delUsers(names,REQUEST)
+        if submit=='Delete':
+            names=reqattr(REQUEST, 'names')
+            return self._delUsers(names,REQUEST)
 
-	return self._mainUser(self, REQUEST)
+        return self._mainUser(self, REQUEST)
 
     def user_names(self):
         return self.getUserNames()
@@ -501,10 +585,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 'Target already contains a UserFolder.')
 
     def _postCopy(self, container, op=0):
-	container.__allow_groups__=container.acl_users
+        container.__allow_groups__=container.acl_users
 
     def _setId(self, id):
-	if id != self.id:
+        if id != self.id:
             raise Globals.MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a UserFolder',
@@ -532,7 +616,7 @@ class UserFolder(BasicUserFolder):
     icon     ='p_/UserFolder'
 
     def __init__(self):
-	self.data=PersistentMapping()
+        self.data=PersistentMapping()
 
     def getUserNames(self):
         """Return a list of usernames"""
@@ -562,9 +646,9 @@ class UserFolder(BasicUserFolder):
         self.data[name]=User(name,password,roles,domains)
 
     def _doChangeUser(self, name, password, roles, domains):
-	user=self.data[name]
-	user.__=password
-	user.roles=roles
+        user=self.data[name]
+        user.__=password
+        user.roles=roles
         user.domains=domains
 
     def _doDelUsers(self, names):
