@@ -20,6 +20,13 @@ class IStreamIterator(Interface):
         StopIeration if we've reached the end of the bytestream.
         """
 
+    def __len__(self):
+        """
+        Return an integer representing the length of the object
+        in bytes.
+        """
+
+
 class filestream_iterator(file):
     """
     a file subclass which implements an iterator that returns a
@@ -37,5 +44,11 @@ class filestream_iterator(file):
         if not data:
             raise StopIteration
         return data
+
+    def __len__(self):
+        cur_pos = self.tell()
+        self.seek(0, 2)
+        size = self.tell()
+        self.seek(cur_pos, 0)
     
-    
+        return size

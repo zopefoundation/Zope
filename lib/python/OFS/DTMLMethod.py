@@ -32,6 +32,7 @@ from AccessControl.DTML import RestrictedDTML
 from Cache import Cacheable
 from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
+from ZPublisher.Iterators import IStreamIterator
 
 _marker = []  # Create a new marker object.
 
@@ -102,6 +103,19 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if not self._cache_namespace_keys:
             data = self.ZCacheable_get(default=_marker)
             if data is not _marker:
+                if ( IStreamIterator.isImplementedBy(data) and
+                     RESPONSE is not None ):
+                    # This is a stream iterator and we need to set some
+                    # headers now before giving it to medusa
+                    if RESPONSE.headers.get('content-length', None) is None:
+                        RESPONSE.setHeader('content-length', len(data))
+
+                    if ( RESPONSE.headers.get('content-type', None) is None and
+                         RESPONSE.headers.get('Content-type', None) is None ):
+                        ct = ( self.__dict__.get('content_type') or
+                               self.default_content_type )
+                        RESPONSE.setHeader('content-type', ct)
+
                 # Return cached results.
                 return data
 

@@ -51,6 +51,9 @@ Zope Changes
 
     Bugs fixed
 
+      - DTML Methods were not interoperable with the new filestream_iterator
+        and caches based on it (FileCacheManager).
+
       - Collector #1655: fixed severe memory leak in TemporaryStorage
 
       - Collector #1407: fixed XML escaping problem introduced in 2.7.4 b1
