@@ -67,6 +67,8 @@ def main():
         test_largefile()
     if REQUIRE_ZLIB:
         test_zlib()
+    if sys.version < "2.3" and not DISTUTILS_OPTS:
+        DISTUTILS_OPTS = '-q'
     print "  - Zope top-level binary directory will be %s." % PREFIX
     if INSTALL_FLAGS:
         print "  - Distutils install flags will be '%s'" % INSTALL_FLAGS
