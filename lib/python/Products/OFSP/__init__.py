@@ -8,15 +8,15 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.6 1998/01/29 20:21:57 brian Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: __init__.py,v 1.7 1998/01/29 20:52:00 brian Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
+import OFS.Image, OFS.Document
 
-classes=(#'DraftFolder.DraftFolder',
-         'Session.Session', 'OFS.Image.File',
-         'OFS.Image.Image','OFS.Document.Document',)
+classes=('Session.Session', 'OFS.Image.File', 
+	 'OFS.Image.Image', 'OFS.Document.Document')
 
 meta_types=(
 #    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
@@ -59,6 +59,9 @@ misc_={
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.7  1998/01/29 20:52:00  brian
+# Added eval support
+#
 # Revision 1.6  1998/01/29 20:21:57  brian
 # Added eval support
 #
