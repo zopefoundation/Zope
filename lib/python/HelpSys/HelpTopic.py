@@ -227,6 +227,28 @@ class STXTopic(TextTopic):
 <dtml-var standard_html_footer>""")
 
 
+class ReSTTopic(TextTopic):
+    """
+    A reStructuredText [1]_ topic.  Similar to STXTopic, it uses a
+    simle DTML construct to render its contents - this time using the
+    *reStructuredText* language.
+
+    .. [1] reStructuredText
+       (http://docutils.sourceforge.net/rst.html)
+    """
+    index_html = None
+
+    def __call__(self, REQUEST=None):
+        """ Renders the ReST Help Topic """
+        self._check_for_update()
+        return self.htmlfile(self, REQUEST)
+
+    htmlfile = HTML("""\
+<dtml-var standard_html_header>
+<dtml-var obj fmt="restructured-text">
+<dtml-var standard_html_footer>""")
+    
+
 class ImageTopic(HelpTopic):
     """
     A image Help Topic. Holds an ImageFile object.
