@@ -58,8 +58,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.3 1998/04/20 15:16:56 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: DT_InSV.py,v 1.4 1998/05/08 14:54:40 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from string import lower, upper, rfind
 from math import sqrt
@@ -169,7 +169,7 @@ class sequence_variables:
 	l=self.data['sequence-length']=len(self.items)
 	return l
 
-    def query(self, ignored):
+    def query(self, *ignored):
 	if self.start_name_re is None: raise KeyError, 'sequence-query'
         query_string=self.query_string
         while query_string and query_string[:1] in '?&':
@@ -367,6 +367,8 @@ class sequence_variables:
             prefix=prefix[:-4]
             try: return self.value(data[prefix+'-index'],suffix)
             except: pass
+
+        if key=='sequence-query': return self.query()
             
         raise KeyError, key
 
@@ -406,6 +408,9 @@ def opt(start,end,size,orphan,sequence):
 ############################################################################## 
 #
 # $Log: DT_InSV.py,v $
+# Revision 1.4  1998/05/08 14:54:40  jim
+# Fixed bug in handling of sequence-query.
+#
 # Revision 1.3  1998/04/20 15:16:56  jim
 # Fixed bug in backward support for sequence-index-even etc.
 #
