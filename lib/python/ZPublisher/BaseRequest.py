@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -454,7 +454,7 @@ class BaseRequest:
         steps=join(steps[:-i],'/')
         if user is not None:
             # Try to set a watermark on the user object.
-            user.__marker__=_marker
+            user._v__marker__=_marker
             request['AUTHENTICATED_USER']=user
             request['AUTHENTICATION_PATH']=steps
 
