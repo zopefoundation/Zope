@@ -6,7 +6,7 @@ import unittest
 
 
 
-class BaseFramework(unittest.TestCase):
+class MinimalBaseFramework(unittest.TestCase):
     def setUp(self):
         import Minimal
         from ZODB import DB
@@ -14,10 +14,14 @@ class BaseFramework(unittest.TestCase):
         self._dbhome = 'test-db'
         os.mkdir(self._dbhome)
 
-        self._storage = Minimal.Minimal(self._dbhome)
-        self._db = DB(self._storage)
-        self._conn = self._db.open()
-        self._root = self._conn.root()
+        try:
+            self._storage = Minimal.Minimal(self._dbhome)
+            self._db = DB(self._storage)
+            self._conn = self._db.open()
+            self._root = self._conn.root()
+        except:
+            self.tearDown()
+            raise
 
     def tearDown(self):
         for file in os.listdir(self._dbhome):
@@ -26,14 +30,51 @@ class BaseFramework(unittest.TestCase):
 
 
 
-class DBHomeTest(BaseFramework):
+class FullBaseFramework(unittest.TestCase):
+    def setUp(self):
+        import Full
+        from ZODB import DB
+
+        self._dbhome = 'test-db'
+        os.mkdir(self._dbhome)
+
+        try:
+            self._storage = Full.Full(self._dbhome)
+            self._db = DB(self._storage)
+            self._conn = self._db.open()
+            self._root = self._conn.root()
+        except:
+            self.tearDown()
+            raise
+
+    def tearDown(self):
+        for file in os.listdir(self._dbhome):
+            os.unlink(os.path.join(self._dbhome, file))
+        os.removedirs(self._dbhome)
+
+
+
+class MinimalDBHomeTest(MinimalBaseFramework):
     def checkDBHomeExists(self):
-        """Database creation with an explicit db_home create the directory"""
+        """Minimal: Database creation w/ explicit db_home"""
+        assert os.path.isdir(self._dbhome)
+
+
+
+class FullDBHomeTest(FullBaseFramework):
+    def checkDBHomeExists(self):
+        """Full: Database creation w/ explicit db_home"""
         assert os.path.isdir(self._dbhome)
 
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(DBHomeTest('checkDBHomeExists'))
+    suite.addTest(MinimalDBHomeTest('checkDBHomeExists'))
+    suite.addTest(FullDBHomeTest('checkDBHomeExists'))
     return suite
+
+
+
+if __name__ == '__main__':
+    unittest.main(defaultTest='suite')
