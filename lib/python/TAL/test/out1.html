@@ -6,7 +6,7 @@
 
   <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
 
-    <h1 z:condition="python:1" z:insert="str:This
+    <h1 z:condition="python:1" z:content="str:This
 Is
 The
 Replaced
@@ -17,9 +17,9 @@ Title">This</h1>
 
   <!-- examples adapted from TemplateAttributeLanguageSyntax -->
 
-    <span z:insert="str:here/id">here/id</span>
+    <span z:content="str:here/id">here/id</span>
 
-    <p z:define="x str:template/title; global five python:2+3;" z:insert="text var:five">5</p>
+    <p z:define="x str:template/title; global five python:2+3;" z:content="text var:five">5</p>
 
     <p z:repeat="car python:['honda', 'subaru', 'acura']">
       honda
@@ -37,13 +37,13 @@ Title">This</h1>
 
     <ul>
     <span z:repeat="car python:['honda', 'subaru', 'acura']">
-      <li z:insert="var:car">honda</li>
+      <li z:content="var:car">honda</li>
     </span>
     <span z:repeat="car python:['honda', 'subaru', 'acura']">
-      <li z:insert="var:car">subaru</li>
+      <li z:content="var:car">subaru</li>
     </span>
     <span z:repeat="car python:['honda', 'subaru', 'acura']">
-      <li z:insert="var:car">acura</li>
+      <li z:content="var:car">acura</li>
     </span>
     </ul>
 
@@ -53,14 +53,14 @@ Title">This</h1>
     <a z:attributes="href python:'http://python.org' " href="http://python.org">python</a>
 
   <!-- test insert/replace structure -->
-    <span z:insert="structure python:None"></span>
+    <span z:content="structure python:None"></span>
     
 
     <span z:define="global x str:&lt;h3&gt;Header Level 3&lt;/h3&gt;"/>
     <span z:define="global x python:'&amp;' + 'nbsp;;' + x"/>
 
     &nbsp;<h3>Header Level 3</h3>
-    <span z:insert="structure x">&nbsp;<h3>Header Level 3</h3></span>
+    <span z:content="structure x">&nbsp;<h3>Header Level 3</h3></span>
 
   </body>
 
