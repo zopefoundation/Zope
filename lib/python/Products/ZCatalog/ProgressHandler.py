@@ -18,7 +18,10 @@ $Id: ZCatalog.py 25050 2004-05-27 15:06:40Z chrisw $
 import time, sys
 from zLOG import LOG, INFO
 
+from DateTime.DateTime import DateTime
+
 from Interface import Interface
+
 
 class IProgressHandler(Interface):
     """ A handler to log progress informations for long running 
@@ -72,9 +75,13 @@ class StdoutHandler:
                     (time.time() -self._start))
 
     def report(self, current, *args, **kw):
-        if current % self._steps == 0: 
-            self.output('%d/%d (%.2f%%)' % (current, self._max, 
-                                           (100.0 * current / self._max)))
+        if current > 0:
+            seconds_so_far = time.time() - self._start
+            seconds_to_go  = seconds_so_far / current * (self._max - current)
+            if current % self._steps == 0: 
+                self.output('%d/%d (%.2f%%) Estimated termination: %s' % \
+                (current, self._max, (100.0 * current / self._max), 
+                 DateTime(time.time() + seconds_to_go)))
 
     def output(self, text):
         print >>self.fp, '%s: %s' % (self._ident, text)
