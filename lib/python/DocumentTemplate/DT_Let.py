@@ -134,7 +134,7 @@ class Let:
 					raise ParseError, (
 						'<strong>Expression (Python) Syntax error</strong>:'
 						'\n<pre>\n%s\n</pre>\n' % v[0],
-						tag)
+						'let')
 	def render(self, md):
 		d={}; md._push(d)
 		try:
