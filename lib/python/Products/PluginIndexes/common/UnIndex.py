@@ -244,8 +244,11 @@ class UnIndex(SimpleItem):
 
     def numObjects(self):
         """ return number of indexed objects """
-        return len(self)
+        return len(self._unindex)
 
+    def indexSize(self):
+        """ return of distinct values indexed"""
+        return len(self)
 
     def unindex_object(self, documentId):
         """ Unindex the object with integer id 'documentId' and don't
