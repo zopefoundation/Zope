@@ -22,7 +22,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 
 from Products.ZCTextIndex.NBest import NBest
-from Products.ZCTextIndex.OkapiIndex import OkapiIndex as Index
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser
@@ -382,7 +382,7 @@ class TextIndex(Persistent):
 
     def __init__(self):
         self.lexicon = Lexicon(Splitter(), CaseNormalizer(), StopWordRemover())
-        self.index = Index(self.lexicon)
+        self.index = OkapiIndex(self.lexicon)
 
     def index_text(self, docid, text):
         self.index.index_doc(docid, text)

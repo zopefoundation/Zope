@@ -27,7 +27,7 @@ from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
 
-from Products.ZCTextIndex.OkapiIndex import Index
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.Lexicon \
      import Lexicon, Splitter, CaseNormalizer, StopWordRemover
@@ -47,7 +47,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     query_options = ['query']
 
-    def __init__(self, id, extra, caller, index_factory=Index):
+    def __init__(self, id, extra, caller, index_factory=OkapiIndex):
         self.id = id
         self._fieldname = extra.doc_attr
         lexicon = getattr(caller, extra.lexicon_id, None)
