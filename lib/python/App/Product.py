@@ -109,9 +109,10 @@
 import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition, Products
 import re, zlib, Globals, cPickle, marshal, rotor
 import ZClasses, ZClasses.ZClass, AccessControl.Owned
+from urllib import quote
 
 from OFS.Folder import Folder
-from string import rfind, atoi, find, strip, join
+from string import atoi, find, strip, join
 from Factory import Factory
 from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
@@ -158,14 +159,24 @@ class Product(Folder, PermissionManager):
     _isBeingUsedAsAMethod_=1
 
     def new_version(self,
-                    _intending=re.compile(r"[.]?[0-9]+$").search, #TS
+                    _intending=re.compile(r"[0-9]+").search, #TS
                     ):
         # Return a new version number based on the existing version.
         v=str(self.version)
         if not v: return '1.0'
-        if _intending(v) is None: return v
-        l=rfind(v,'.')
-        return v[:l+1]+str(1+atoi(v[l+1:]))            
+        match = _intending(v)
+        if match is None:
+            return v
+        while 1:
+            # Find the last set of digits.
+            m = _intending(v, match.end())
+            if m is None:
+                break
+            else:
+                match = m
+        start = match.start()
+        end = match.end()
+        return v[:start] + str(1 + int(v[start:end])) + v[end:]
                     
     
     meta_types=(
@@ -243,7 +254,8 @@ class Product(Folder, PermissionManager):
         self.version=version=strip(version)
         self.configurable_objects_=configurable_objects
         self.redistributable=redistributable
-        RESPONSE.redirect('Distributions/%s-%s.tar.gz' % (self.id, version))
+        RESPONSE.redirect('Distributions/%s-%s.tar.gz' %
+                          (quote(self.id), quote(version)))
         
     def _distribution(self):
         # Return a distribution
