@@ -10,11 +10,11 @@
 ########################################################################## 
 __doc__='''Aqueduct Search Interface Wizard
 
-$Id: Search.py,v 1.4 1998/01/12 19:20:11 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Search.py,v 1.5 1998/04/15 14:22:28 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Globals import HTMLFile
-from Aqueduct import custom_default_report, nicify
+from Aqueduct import custom_default_report, nicify, Args
 from string import join
 
 addForm=HTMLFile('searchAdd', globals())
@@ -33,11 +33,16 @@ def add(self, report_id, report_title, report_style,
 	'No <em>input id</em> were specified')
 
     qs=map(lambda q, self=self: _getquery(self, q), queries)
+    arguments={}
+    keys=[]
     for q in qs:
 	id=q.id
-	arguments={}
-	for name, arg in q._searchable_arguments().items():
-	    arguments["%s/%s" % (id,name)]=arg
+	if input_id:
+	    for name, arg in q._searchable_arguments().items():
+		if len(qs) > 1: key="%s/%s" % (id,name)
+		else: key=name 
+		arguments[key]=arg
+		keys.append(key)
 	if q._searchable_result_columns() is None:
 	    raise 'Unusable Searchable Error',(
 		"""The input searchable object, <em>%s</em>,
@@ -46,9 +51,10 @@ def add(self, report_id, report_title, report_style,
 		cannot be generated.  Before creating a report
 		from this query, you must try out the query.  To
 		try out the query, <a href="%s">click hear</a>.
-		""" % (q.title_and_id(), q.id))
+		""" % (q.title_and_id(), id))
 
     if input_id:
+	arguments=Args(arguments, keys)
 	self.manage_addDocument(
 	    input_id,input_title,
 	    default_input_form(arguments, report_id))
@@ -115,7 +121,6 @@ def default_input_form(arguments,action='query',
 		       tabs=''):
     if arguments:
 	items=arguments.items()
-	items.sort()
 	return (
 	    "%s\n%s%s" % (
 		'<!--#var standard_html_header-->\n%s\n'
@@ -174,6 +179,10 @@ def default_input_form(arguments,action='query',
 ############################################################################## 
 #
 # $Log: Search.py,v $
+# Revision 1.5  1998/04/15 14:22:28  jim
+# Fixed up input form generation to use input arguments in order.
+# Also excluse decorations when 1 query used.
+#
 # Revision 1.4  1998/01/12 19:20:11  jim
 # *** empty log message ***
 #
