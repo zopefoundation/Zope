@@ -13,6 +13,13 @@ Zope Changes
 
    Bugs fixed
 
+     - backport of TAL fixes from z3
+
+       * i18n and metal interactions
+
+       * fix handling of nested translations with tal:content/replace 
+         and i18n:name
+
      - Collector #1017: reST has been broken
 
      - The container-class keyword to database sections
