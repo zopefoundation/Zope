@@ -82,7 +82,7 @@ class Response:
     def __delattr__(self, name): return delattr(self._real, name)
     
     def setBody(self, body, title='', is_error=0, bogus_str_search=None):
-	if isinstance(body, xmlrpclib.Fault):
+        if isinstance(body, xmlrpclib.Fault):
             # Convert Fault object to XML-RPC response.
             body=xmlrpclib.dumps(body, methodresponse=1)
         else:
