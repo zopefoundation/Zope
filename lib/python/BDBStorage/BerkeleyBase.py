@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.5 $
+# $Revision: 1.6 $
 __version__ = '0.1'
 
 
@@ -147,6 +147,18 @@ class BerkeleyBase(BaseStorage):
         """Return the size of the database."""
         # TBD: this is expensive to calculate and many not be necessary.
         return 0
+
+    # BAW: this overrides BaseStorage.tpc_vote() with exactly the same
+    # implementation.  This is so Zope 2.3.1, which doesn't include the change
+    # to BaseStorage, will work with Berkeley.  Once we can ignore older
+    # versions of ZODB, we can get rid of this.
+    def tpc_vote(self, transaction):
+        self._lock_acquire()
+        try:
+            if transaction is not self._transaction: return
+            self._vote()
+        finally:
+            self._lock_release()
 
     def _vote(self):
         # Make a promise to commit all the registered changes.  Rewind and put
