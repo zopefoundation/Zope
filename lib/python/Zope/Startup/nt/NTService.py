@@ -20,6 +20,7 @@ import win32event
 import win32process
 import pywintypes
 import time
+import os
 
 # the max seconds we're allowed to spend backing off
 BACKOFF_MAX = 300
@@ -72,6 +73,9 @@ class ZopeService(win32serviceutil.ServiceFramework):
             win32process.STARTUPINFO())
 
     def SvcDoRun(self):
+        # indicate to Zope that the process is daemon managed (restartable)
+        os.environ['ZMANAGED'] = '1'
+
         # daemon behavior:  we want to to restart the process if it
         # dies, but if it dies too many times, we need to give up.
 
