@@ -88,8 +88,8 @@ Dummy TALES engine so that I can test out the TAL implementation.
 
 import re
 import string
-from TALVisitor import NAME_RE
-from TALVisitor import macroIndexer
+
+from TALDefs import NAME_RE, macroIndexer
 from TALCompiler import TALCompiler
 
 class DummyEngine:

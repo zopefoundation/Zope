@@ -1,4 +1,3 @@
-#! /usr/bin/env python1.5
 ##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
@@ -84,60 +83,94 @@
 # 
 ##############################################################################
 """
-Helper program to time METAL and TAL transformations and other DOM operations.
+Common definitions used by TAL and METAL compilation an transformation.
 """
 
-import sys
-import time
-import getopt
-from cPickle import dumps, loads
-from cStringIO import StringIO
+import string
+import re
+from xml.dom import Node
 
-from driver import parsefile, copytree, talizetree, printtree, FILE
-from driver import compiletree, interpretit
-from TALDefs import macroIndexer
+ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
+ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
 
-def main():
-    count = 10
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "n:")
-    except getopt.error, msg:
-        print msg
-        sys.exit(2)
-    for o, a in opts:
-        if o == "-n":
-            count = int(a)
-    if args:
-        file = args[0]
-    else:
-        file = FILE
-    dummyfile = StringIO()
-    doc = timefunc(count, parsefile, file)
-    doc = timefunc(count, copytree, doc)
-    doc2 = timefunc(count, talizetree, doc)
-    timefunc(count, printtree, doc, dummyfile)
-    timefunc(count, macroIndexer, doc)
-    it = timefunc(count, compiletree, doc)
-    timefunc(count, interpretit, it, None, dummyfile)
-    s = timefunc(count, pickletree, doc)
-    timefunc(count, unpickletree, s)
+NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
 
-def timefunc(count, func, *args):
-    sys.stderr.write("%-14s: " % func.__name__)
-    sys.stderr.flush()
-    t0 = time.clock()
-    for i in range(count):
-        result = apply(func, args)
-    t1 = time.clock()
-    sys.stderr.write("%6.3f secs for %d calls, i.e. %4.0f msecs per call\n"
-                     % ((t1-t0), count, 1000*(t1-t0)/count))
-    return result
+def parseAttributeReplacements(arg):
+    dict = {}
+    for part in splitParts(arg):
+        m = re.match(r"\s*([^\s]+)\s*(.*)", part)
+        if not m:
+            print "Bad syntax in z:attributes:", `part`
+            continue
+        name, expr = m.group(1, 2)
+        if dict.has_key(name):
+            print "Duplicate attribute name in z:attributes:", `part`
+            continue
+        dict[name] = expr
+    return dict
 
-def pickletree(doc):
-    return dumps(doc)
+def parseSubstitution(arg):
+    m = re.match(r"\s*(?:(text|structure)\s+)?(.*)", arg)
+    if not m:
+        print "Bad syntax in z:insert/replace:", `arg`
+        return None, None
+    key, expr = m.group(1, 2)
+    if not key:
+        key = "text"
+    return key, expr
 
-def unpickletree(s):
-    return loads(s)
+def splitParts(arg):
+    # Break in pieces at undoubled semicolons and
+    # change double semicolons to singles:
+    arg = string.replace(arg, ";;", "\0")
+    parts = string.split(arg, ';')
+    parts = map(lambda s: string.replace(s, "\0", ";;"), parts)
+    return parts
 
-if __name__ == "__main__":
-    main()
+
+def macroIndexer(document):
+    """
+    Return a dictionary containing all define-macro nodes in a document.
+
+    The dictionary will have the form {macroName: node, ...}.
+    """
+    macroIndex = {}
+    _macroVisitor(document.documentElement, macroIndex)
+    return macroIndex
+
+def _macroVisitor(node, macroIndex, __elementNodeType=Node.ELEMENT_NODE):
+    # Internal routine to efficiently recurse down the tree of elements
+    macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
+    if macroName:
+        if macroIndex.has_key(macroName):
+            print ("Duplicate macro definition: %s in <%s>" %
+                   (macroName, node.nodeName))
+        else:
+            macroIndex[macroName] = node
+    for child in node.childNodes:
+        if child.nodeType == __elementNodeType:
+            _macroVisitor(child, macroIndex)
+
+
+def slotIndexer(rootNode):
+    """
+    Return a dictionary containing all fill-slot nodes in a subtree.
+
+    The dictionary will have the form {slotName: node, ...}.
+    """
+    slotIndex = {}
+    _slotVisitor(rootNode, slotIndex)
+    return slotIndex
+
+def _slotVisitor(node, slotIndex, __elementNodeType=Node.ELEMENT_NODE):
+    # Internal routine to efficiently recurse down the tree of elements
+    slotName = node.getAttributeNS(ZOPE_METAL_NS, "fill-slot")
+    if slotName:
+        if slotIndex.has_key(slotName):
+            print ("Duplicate slot definition: %s in <%s>" %
+                   (slotName, node.nodeName))
+        else:
+            slotIndex[slotName] = node
+    for child in node.childNodes:
+        if child.nodeType == __elementNodeType:
+            _slotVisitor(child, slotIndex)

@@ -92,10 +92,10 @@ from xml.dom import Node
 
 from DOMVisitor import DOMVisitor
 
-from TALVisitor import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
-from TALVisitor import macroIndexer, slotIndexer
-from TALVisitor import splitParts, parseAttributeReplacements
-from TALVisitor import parseSubstitution
+from TALDefs import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
+from TALDefs import macroIndexer, slotIndexer
+from TALDefs import splitParts, parseAttributeReplacements
+from TALDefs import parseSubstitution
 
 class TALError(Exception):
     pass

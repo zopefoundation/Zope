@@ -91,10 +91,10 @@ import re
 from xml.dom import Node
 from CopyingDOMVisitor import CopyingDOMVisitor
 
-ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
-ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
-
-NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
+from TALDefs import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
+from TALDefs import macroIndexer, slotIndexer
+from TALDefs import splitParts, parseAttributeReplacements
+from TALDefs import parseSubstitution
 
 class TALVisitor(CopyingDOMVisitor):
 
@@ -285,83 +285,3 @@ class TALVisitor(CopyingDOMVisitor):
                 self.curNode.setAttributeNS(namespaceURI, attrName, attrValue)
             else:
                 self.curNode.setAttribute(attrName, attrValue)
-
-def parseAttributeReplacements(arg):
-    dict = {}
-    for part in splitParts(arg):
-        m = re.match(r"\s*([^\s]+)\s*(.*)", part)
-        if not m:
-            print "Bad syntax in z:attributes:", `part`
-            continue
-        name, expr = m.group(1, 2)
-        if dict.has_key(name):
-            print "Duplicate attribute name in z:attributes:", `part`
-            continue
-        dict[name] = expr
-    return dict
-
-def parseSubstitution(arg):
-    m = re.match(r"\s*(?:(text|structure)\s+)?(.*)", arg)
-    if not m:
-        print "Bad syntax in z:insert/replace:", `arg`
-        return None, None
-    key, expr = m.group(1, 2)
-    if not key:
-        key = "text"
-    return key, expr
-
-def splitParts(arg):
-    # Break in pieces at undoubled semicolons and
-    # change double semicolons to singles:
-    arg = string.replace(arg, ";;", "\0")
-    parts = string.split(arg, ';')
-    parts = map(lambda s: string.replace(s, "\0", ";;"), parts)
-    return parts
-
-
-def macroIndexer(document):
-    """
-    Return a dictionary containing all define-macro nodes in a document.
-
-    The dictionary will have the form {macroName: node, ...}.
-    """
-    macroIndex = {}
-    _macroVisitor(document.documentElement, macroIndex)
-    return macroIndex
-
-def _macroVisitor(node, macroIndex, __elementNodeType=Node.ELEMENT_NODE):
-    # Internal routine to efficiently recurse down the tree of elements
-    macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
-    if macroName:
-        if macroIndex.has_key(macroName):
-            print ("Duplicate macro definition: %s in <%s>" %
-                   (macroName, node.nodeName))
-        else:
-            macroIndex[macroName] = node
-    for child in node.childNodes:
-        if child.nodeType == __elementNodeType:
-            _macroVisitor(child, macroIndex)
-
-
-def slotIndexer(rootNode):
-    """
-    Return a dictionary containing all fill-slot nodes in a subtree.
-
-    The dictionary will have the form {slotName: node, ...}.
-    """
-    slotIndex = {}
-    _slotVisitor(rootNode, slotIndex)
-    return slotIndex
-
-def _slotVisitor(node, slotIndex, __elementNodeType=Node.ELEMENT_NODE):
-    # Internal routine to efficiently recurse down the tree of elements
-    slotName = node.getAttributeNS(ZOPE_METAL_NS, "fill-slot")
-    if slotName:
-        if slotIndex.has_key(slotName):
-            print ("Duplicate slot definition: %s in <%s>" %
-                   (slotName, node.nodeName))
-        else:
-            slotIndex[slotName] = node
-    for child in node.childNodes:
-        if child.nodeType == __elementNodeType:
-            _slotVisitor(child, slotIndex)

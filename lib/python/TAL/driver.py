@@ -84,7 +84,7 @@
 # 
 ##############################################################################
 """
-Driver program to test TALVisitor and its base class CopyingDOMVisitor.
+Driver program to test METAL and TAL implementation.
 """
 
 import sys
