@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -257,7 +257,7 @@ class PropertySheet(Persistent, Implicit):
         # of the WebDAV support machinery. If a property set does
         # not support WebDAV, this method should return an empty
         # string.
-        propstat='<d:propstat xmlns:ps="%s">\n' \
+        propstat='<d:propstat xmlns:n="%s">\n' \
                  '  <d:prop>\n' \
                  '%%s\n' \
                  '  </d:prop>\n' \
@@ -266,13 +266,14 @@ class PropertySheet(Persistent, Implicit):
         errormsg='  <d:responsedescription>%s</d:responsedescription>\n'
         result=[]
         if not allprop and not names:
-            # propname request
+            # return property names only.
             for name in self.propertyIds():
-                result.append('  <ps:%s/>' % name)
+                result.append('  <n:%s/>' % name)
             if not result: return ''
             result=join(result, '\n')
             return propstat % (result, '200 OK', '')
         elif allprop:
+            # return property names and values.
             for item in self.propertyMap():
                 name, type=item['id'], item.get('type','string')
                 meta=item.get('meta', {})
@@ -283,18 +284,19 @@ class PropertySheet(Persistent, Implicit):
                     value=join(value, '\n')
                 if meta.get('dav_xml', 0):
                     prop=value
-                else: prop='  <ps:%s>%s</ps:%s>' % (name, value, name)
+                else: prop='  <n:%s>%s</n:%s>' % (name, value, name)
                 result.append(prop)
             if not result: return ''
             result=join(result, '\n')
             return propstat % (result, '200 OK', '')
         else:
+            # return names and values for named properties.
             propdict=self._propdict()
             xml_id=self.xml_namespace()
             for name, ns in names:
                 if ns==xml_id:
                     if not propdict.has_key(name):
-                        prop='  <ps:%s/>' % name
+                        prop='  <n:%s/>' % name
                         emsg=errormsg % 'Property not found: %s' % name
                         result.append(propstat % (prop, '404 Not Found', emsg))
                     else:
@@ -309,7 +311,7 @@ class PropertySheet(Persistent, Implicit):
                         if meta.get('dav_xml', 0):
                             prop=value
                         else:
-                            prop='  <ps:%s>%s</ps:%s>' % (name, value, name)
+                            prop='  <n:%s>%s</n:%s>' % (name, value, name)
                         result.append(propstat % (prop, '200 OK', ''))
             if not result: return ''
             return join(result, '')
