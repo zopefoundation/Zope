@@ -105,7 +105,7 @@ class File(Persistent, Implicit, PropertyManager,
          ('manage_edit','manage_upload','PUT')),
         ('View',
          ('index_html', 'view_image_or_file', 'get_size',
-          'getContentType', '')),
+          'getContentType', 'PrincipiaSearchSource', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
         ('Delete objects',
@@ -412,6 +412,13 @@ class File(Persistent, Implicit, PropertyManager,
         The default view of the contents of the File or Image.
         """
         raise Redirect, URL1
+
+    def PrincipiaSearchSource(self):
+        """ Allow file objects to be searched.
+        """
+        if self.content_type.startswith('text/'):
+            return str(self.data)
+        return ''
 
     # private
     update_data__roles__=()

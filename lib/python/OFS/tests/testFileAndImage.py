@@ -1,3 +1,7 @@
+import Testing
+import Zope
+Zope.startup()
+
 import os, sys
 import unittest
 import time
@@ -218,6 +222,25 @@ class FileTests(unittest.TestCase):
 
     def testStr(self):
         self.assertEqual(str(self.file), self.data)
+
+    def testFindSupport_not_text(self):
+        self.file.manage_edit('foobar', 'application/octet-stream',
+                              filedata=''.join([chr(x) for x in range(256)]))
+        self.assertEqual(self.file.PrincipiaSearchSource(), '')
+
+    def testFindSupport_text(self):
+        self.file.manage_edit('foobar', 'text/plain',
+                              filedata='Now is the time for all good men to '
+                                       'come to the aid of the Party.')
+        self.failUnless('Party' in self.file.PrincipiaSearchSource())
+
+    def testFindFile(self):
+        self.file.manage_edit('foobar', 'text/plain',
+                              filedata='Now is the time for all good men to '
+                                       'come to the aid of the Party.')
+        results = self.app.ZopeFind(self.app, obj_searchterm='Party')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][1], self.file)
 
 class ImageTests(FileTests):
     data = open(filedata, 'rb').read()
