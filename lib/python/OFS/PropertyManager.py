@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -239,7 +239,6 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         # the value argument indicates the select variable
         # of the property
         
-        id=id.strip()
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
@@ -319,7 +318,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         the given id, type, and value."""
         if type_converters.has_key(type):
             value=type_converters[type](value)
-        self._setProperty(id, value, type)
+        self._setProperty(id.strip(), value, type)
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
