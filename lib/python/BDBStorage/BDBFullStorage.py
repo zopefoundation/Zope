@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.15 $
+# $Revision: 1.16 $
 __version__ = '0.1'
 
 import struct
@@ -647,16 +647,16 @@ class Full(BerkeleyBase):
                         # zombification record
                         if not mrec or mrec[0][:8] <> oid:
                             newrevs.append((oid, vid+nvrevid+DNE+revid))
-                            continue
                         # BAW: If the revid of this object record is the same
                         # as the revid we're being asked to undo, then I think
                         # we have a problem (since the storage invariant is
                         # that it doesn't retain metadata records for multiple
                         # modifications of the object in the same txn).
-                        if mrec[0][8:] == revid:
+                        elif mrec[0][8:] == revid:
                             raise StorageSystemError
                         # All is good, so just restore this metadata record
-                        newrevs.append((oid, mrec[1]))
+                        else:
+                            newrevs.append((oid, mrec[1]))
                     finally:
                         mdc.close()
                 else:
