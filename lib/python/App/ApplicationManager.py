@@ -1,30 +1,56 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
-import sys,os,time,string,Globals
+import sys,os,time,string,Globals, Acquisition
 from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
+from OFS.Folder import Folder
 from CacheManager import CacheManager
 from OFS import SimpleItem
 from App.Dialogs import MessageDialog
+from Product import ProductFolder
 
+class Fake:
+    def locked_in_session(self): return 0
 
-class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
-    """System management"""
-    __roles__=['Manager']
-
-    manage=manage_main=HTMLFile('appMain', globals())
-    manage_undoForm=HTMLFile('undo', globals())
+class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
+    """Database management"""
+    manage=manage_main=HTMLFile('dbMain', globals())
+    id        ='DatabaseManagement'
+    name=title='Database Management'
+    meta_type ='Database Management'
+    icon='p_/DatabaseManagement_icon'
 
     manage_options=(
-    {'icon':'OFS/ControlPanel_icon.gif', 'label':'System',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'App/CacheManager_icon.gif','label':'Cache',
-     'action':'manage_cacheForm','target':'manage_main'},
-    {'icon':'App/undo_icon.gif', 'label':'Undo',
-     'action':'manage_UndoForm',   'target':'manage_main'},
-    )
+        {'label':'Database', 'action':'manage_main'},
+        {'label':'Cache Parameters', 'action':'manage_cacheParameters'},
+        {'label':'Flush Cache', 'action':'manage_cacheGC'},
+        {'label':'Undo', 'action':'manage_UndoForm'},
+        )
+    
+
+class ApplicationManager(Folder,CacheManager):
+    """System management"""
+
+    __roles__=['Manager']
+    isPrincipiaFolderish=1
+    Database=DatabaseManager()
+
+    manage=manage_main=HTMLFile('cpContents', globals())
+    manage_undoForm=HTMLFile('undo', globals())
+
+    _objects=(
+        {'id': 'Database',
+         'meta_type': Database.meta_type},
+        {'id': 'Products',
+         'meta_type': 'Product Management'},
+        )
+
+    manage_options=(
+        {'label':'Contents', 'action':'manage_main'},
+        {'label':'Undo', 'action':'manage_UndoForm'},
+        )
 
     id        ='Control_Panel'
     name=title='Control Panel'
@@ -40,7 +66,14 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     manage_addProperty=None
     manage_editProperties=None
     manage_delProperties=None
-    isPrincipiaFolderish=0
+
+    def __init__(self):
+        self.Products=ProductFolder()
+        
+    def __setstate__(self, v):
+        ApplicationManager.inheritedAttribute('__setstate__')(self, v)
+        if not hasattr(self, 'Products'):
+            self.Products=ProductFolder()
 
     def copyToClipboard(self, REQUEST):
 	return Globals.MessageDialog(title='Not Supported',
