@@ -144,6 +144,8 @@ Zope Changes
 
     Bugs fixed
 
+     - TAL: tal:on-error does not trap ConflictError anymore.
+
      - OFS.CopySupport: Enforced "Delete objects" permission during
        move (CMF Collector #259).
 

@@ -23,6 +23,7 @@ from cgi import escape
 # Do not use cStringIO here!  It's not unicode aware. :(
 from StringIO import StringIO
 from DocumentTemplate.DT_Util import ustr
+from ZODB.POSException import ConflictError
 
 from TALDefs import TAL_VERSION, TALError, METALError, attrEscape
 from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
@@ -710,6 +711,8 @@ class TALInterpreter:
         self._stream_write = stream.write
         try:
             self.interpret(block)
+        except ConflictError:
+            raise
         except:
             exc = sys.exc_info()[1]
             self.restoreState(state)
