@@ -95,8 +95,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.35 1999/02/16 16:10:05 brian Exp $ 
-__version__ = "$Revision: 1.35 $"[11:-2]
+#$Id: MailHost.py,v 1.36 1999/02/16 17:40:26 brian Exp $ 
+__version__ = "$Revision: 1.36 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -308,6 +308,10 @@ class SendMail:
             self._check()
         self.conn.send("data\015\012")
         self._check()
+        replace=string.replace
+        body=replace(body, '\r\n', '\n')
+        body=replace(body, '\r', '\n')
+        body=replace(body, '\n', '\015\012')
         self.conn.send(body)
         self.conn.send("\015\012.\015\012")
         self._check('354')
