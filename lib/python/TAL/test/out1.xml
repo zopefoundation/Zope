@@ -45,8 +45,20 @@
     </span>
     </ul>
 
+  <!-- test attribute expansion -->
+
     <a href="http://python.org" z:attributes="href python:'http://python.org' ">python</a>
     <a z:attributes="href python:'http://python.org' " href="http://python.org">python</a>
+
+  <!-- test insert/replace structure -->
+    <span z:insert="structure python:None"></span>
+    
+
+    <span z:define="global x str:&lt;h3&gt;Header Level 3&lt;/h3&gt;"/>
+    <span z:define="global x python:'&amp;' + 'nbsp;;' + x"/>
+
+    &nbsp;<h3>Header Level 3</h3>
+    <span z:insert="structure x">&nbsp;<h3>Header Level 3</h3></span>
 
   </body>
 

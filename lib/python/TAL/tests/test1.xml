@@ -37,8 +37,20 @@ Title">Title</h1>
     </span>
     </ul>
 
+  <!-- test attribute expansion -->
+
     <a href="foo" z:attributes="href python:'http://python.org' ">python</a>
     <a z:attributes="href python:'http://python.org' ">python</a>
+
+  <!-- test insert/replace structure -->
+    <span z:insert="structure python:None" />
+    <span z:replace="structure python:None" />
+
+    <span z:define="global x str:&lt;h3&gt;Header Level 3&lt;/h3&gt;" />
+    <span z:define="global x python:'&amp;' + 'nbsp;;' + x" />
+
+    <span z:replace="structure x" />
+    <span z:insert="structure x" />
 
   </body>
 
