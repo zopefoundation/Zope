@@ -80,7 +80,7 @@ class ZDaemonTests(unittest.TestCase):
                 args[i] = '"%s"' % args[i]
         return " ".join(args)
 
-    def rundaemon(self, args):
+    def _rundaemon(self, args):
         # Add quotes, in case some pathname contains spaces (e.g. Mac OS X)
         args = self.quoteargs(args)
         cmd = ('PYTHONPATH="%s" "%s" "%s" -d -s "%s" %s' %
@@ -106,7 +106,7 @@ class ZDaemonTests(unittest.TestCase):
         self.expect = "expected\n"
 
     def testSystem(self):
-        self.rundaemon(["echo", "-n"])
+        self._rundaemon(["echo", "-n"])
         self.expect = ""
 
 ##     def testInvoke(self):
@@ -114,7 +114,7 @@ class ZDaemonTests(unittest.TestCase):
 ##         self.expect = ""
 
 ##     def testControl(self):
-##         self.rundaemon(["sleep", "1000"])
+##         self._rundaemon(["sleep", "1000"])
 ##         time.sleep(1)
 ##         self._run("stop")
 ##         time.sleep(1)
@@ -122,7 +122,7 @@ class ZDaemonTests(unittest.TestCase):
 ##         self.expect = "Sent SIGTERM\nExiting now\n"
 
 ##     def testStop(self):
-##         self.rundaemon([self.python, self.nokill])
+##         self._rundaemon([self.python, self.nokill])
 ##         time.sleep(1)
 ##         self._run("stop")
 ##         time.sleep(1)
@@ -252,7 +252,7 @@ class ZDaemonTests(unittest.TestCase):
             touch_cmd = "/bin/touch"
             if not os.path.exists(touch_cmd):
                 touch_cmd = "/usr/bin/touch" # Mac OS X
-            self.rundaemon(["-m", "666", touch_cmd, path])
+            self._rundaemon(["-m", "666", touch_cmd, path])
             for i in range(5):
                 if not os.path.exists(path):
                     time.sleep(0.1)
