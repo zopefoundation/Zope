@@ -18,7 +18,7 @@
 import math
 
 from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IIBTree, IIBucket
+from BTrees.IIBTree import IIBTree, IIBucket, IITreeSet
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
@@ -44,12 +44,9 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
-def unique(l):
-    """Return a list of the unique elements in l."""
-    d = {}
-    for elt in l:
-        d[elt] = 1
-    return d.keys()
+def unique(L):
+    """Return a list of the unique elements in L."""
+    return IITreeSet(L).keys()
 
 class BaseIndex(Persistent):
 
