@@ -27,7 +27,7 @@ except NameError:
         return not not x
 
 try:
-    from bsddb import _db as db
+    from bsddb import db
 except ImportError:
     try:
         from bsddb3 import db
