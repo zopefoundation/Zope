@@ -46,6 +46,7 @@
     </ul>
 
     <a href="http://python.org" z:attributes="href python:'http://python.org' ">python</a>
+    <a z:attributes="href python:'http://python.org' " href="http://python.org">python</a>
 
   </body>
 

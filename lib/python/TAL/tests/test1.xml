@@ -38,6 +38,7 @@ Title">Title</h1>
     </ul>
 
     <a href="foo" z:attributes="href python:'http://python.org' ">python</a>
+    <a z:attributes="href python:'http://python.org' ">python</a>
 
   </body>
 
