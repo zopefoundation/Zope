@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.113 $'[11:-2]
+__version__='$Revision: 1.114 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -166,7 +166,7 @@ class File(Persistent,Implicit,PropertyManager,
          ('manage_edit','manage_upload','PUT')),
         ('View',
          ('index_html', 'view_image_or_file', 'get_size',
-          'getContentType', '')),
+          'getContentType', '__call__', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
         ('Delete objects',
@@ -239,7 +239,13 @@ class File(Persistent,Implicit,PropertyManager,
             data=data.next
 
         return ''
-        
+ 
+    def __call__(self):
+        # allow publisher to call the object directly - this lets File
+        # and Image objects act as the default document if they want.
+        request=self.REQUEST
+        response=request.RESPONSE
+        return self.index_html(request, response)
 
     def view_image_or_file(self, URL1):
         """
@@ -448,7 +454,7 @@ class Image(File):
          ('manage_edit','manage_upload','PUT')),
         ('View',
          ('index_html', 'tag', 'view_image_or_file', 'get_size',
-          'getContentType', '')),
+          'getContentType', '__call__', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
         ('Delete objects',
