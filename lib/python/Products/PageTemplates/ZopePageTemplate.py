@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -355,6 +355,7 @@ d['source.xml'] = d['source.html'] = Src()
 
 # Product registration and Add support
 manage_addPageTemplateForm = PageTemplateFile('www/ptAdd', globals())
+manage_addPageTemplateForm.__name__ = 'manage_addPageTemplateForm'
 
 from urllib import quote
 
