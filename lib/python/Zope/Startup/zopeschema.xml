@@ -198,6 +198,42 @@
 
   <!-- schema begins  -->
 
+  <multisection type="warnfilter" attribute="warnfilters" name="*"
+                dataype="zLOG.warn_filter_handler">
+    <!-- from zLOG -->
+    <description>
+    A multisection which allows a user to set up a Python "warning" filter.
+    The following keys are valid within a warnfilter section:
+
+      action:  one of the following strings:
+
+           "error"   turn matching warnings into exceptions
+           "ignore"  never print matching warnings
+           "always"  always print matching warnings
+           "default" print the first occurrence of matching warnings
+                     for each location where the warning is issued
+           "module"  print the first occurrence of matching warnings
+                     for each module where the warning is issued
+           "once"    print only the first occurrence of matching
+                     warnings, regardless of location
+
+      message:  a string containing a regular expression that the
+                warning message must match (the match is compiled to
+                always be case-insensitive)
+
+      category: a Python dotted-path classname (must be a subclass of
+                Warning) of which the warning category must be a subclass in
+                order to match
+
+      module:   a string containing a regular expression that the
+                module name must match (the match is compiled to be
+                case-sensitive)
+
+      lineno:   an integer that the line number where the warning
+                occurred must match, or 0 to match all line numbers
+    </description>
+  </multisection>
+
   <section type="environment" attribute="environment" name="*">
     <description>
      A section which allows a user to define arbitrary key-value pairs for
