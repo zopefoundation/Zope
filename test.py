@@ -15,13 +15,28 @@
 """
 test.py [-abcdDfgGhLmprtTuv] [modfilter [testfilter]]
 
-Test harness.
+Find and run tests written using the unittest module.
+
+The test runner searches for Python modules that contain test suites.
+It collects those suites, and runs the tests.  There are many options
+for controlling how the tests are run.  There are options for using
+the debugger, reporting code coverage, and checking for refcount problems.
+
+The test runner uses the following rules for finding tests to run.  It
+searches for packages and modules that contain "tests" as a component
+of the name, e.g. "frob.tests.nitz" matches this rule because tests is
+a sub-package of frob.  Within each "tests" package, it looks for
+modules that begin with the name "test."  For each test module, it
+imports the module and calls the test_suite() method, which must
+return a unittest TestSuite object.  (If a package contains a file
+named .testinfo, it will not be searched for tests.  Really.)
 
 -a level
 --all
-    Run the tests at the given level.  Any test at a level at or below this is
-    run, any test at a level above this is not run.  Level 0 runs all tests.
-    The default is to run tests at level 1.  --all is a shortcut for -a 0.
+    Run the tests at the given level.  Any test at a level at or below
+    this is run, any test at a level above this is not run.  Level 0
+    runs all tests.  The default is to run tests at level 1.  --all is
+    a shortcut for -a 0.
 
 -b
     Run "python setup.py build_ext -i" before running tests, where
@@ -53,10 +68,10 @@ Test harness.
     Run functional tests instead of unit tests.
 
 -g threshold
-    Set the garbage collector generation0 threshold.  This can be used to
-    stress memory and gc correctness.  Some crashes are only reproducible when
-    the threshold is set to 1 (agressive garbage collection).  Do "-g 0" to
-    disable garbage collection altogether.
+    Set the garbage collector generation0 threshold.  This can be used
+    to stress memory and gc correctness.  Some crashes are only
+    reproducible when the threshold is set to 1 (agressive garbage
+    collection).  Do "-g 0" to disable garbage collection altogether.
 
 -G gc_option
     Set the garbage collection debugging flags.  The argument must be one
@@ -87,26 +102,26 @@ Test harness.
     This requires that Python was built --with-pydebug.
 
 -T
-    Use the trace module from Python for code coverage.  XXX This only works
-    if trace.py is explicitly added to PYTHONPATH.  The current utility writes
-    coverage files to a directory named `coverage' that is parallel to
-    `build'.  It also prints a summary to stdout.
+    Use the trace module from Python for code coverage.  XXX This only
+    works if trace.py is explicitly added to PYTHONPATH.  The current
+    utility writes coverage files to a directory named `coverage' that
+    is parallel to `build'.  It also prints a summary to stdout.
 
 -v
-    Verbose output.  With one -v, unittest prints a dot (".") for each test
-    run.  With -vv, unittest prints the name of each test (for some definition
-    of "name" ...).  With no -v, unittest is silent until the end of the run,
-    except when errors occur.
+    Verbose output.  With one -v, unittest prints a dot (".") for each
+    test run.  With -vv, unittest prints the name of each test (for
+    some definition of "name" ...).  With no -v, unittest is silent
+    until the end of the run, except when errors occur.
 
 -u
 -m
-    Use the PyUnit GUI instead of output to the command line.  The GUI imports
-    tests on its own, taking care to reload all dependencies on each run.  The
-    debug (-d), verbose (-v), and Loop (-L) options will be ignored.  The
-    testfilter filter is also not applied.
+    Use the PyUnit GUI instead of output to the command line.  The GUI
+    imports tests on its own, taking care to reload all dependencies
+    on each run.  The debug (-d), verbose (-v), and Loop (-L) options
+    will be ignored.  The testfilter filter is also not applied.
 
-    -m starts the gui minimized.  Double-clicking the progress bar will start
-    the import and run all tests.
+    -m starts the gui minimized.  Double-clicking the progress bar
+    will start the import and run all tests.
 
 
 modfilter
@@ -182,7 +197,7 @@ class ImmediateTestResult(unittest._TextTestResult):
         self._debug = debug
         self._progress = progress
         self._progressWithNames = False
-        self._count = count
+        self.count = count
         self._testtimes = {}
         if progress and verbosity == 1:
             self.dots = False
@@ -239,9 +254,9 @@ class ImmediateTestResult(unittest._TextTestResult):
     def startTest(self, test):
         if self._progress:
             self.stream.write("\r%4d" % (self.testsRun + 1))
-            if self._count:
-                self.stream.write("/%d (%5.1f%%)" % (self._count,
-                                  (self.testsRun + 1) * 100.0 / self._count))
+            if self.count:
+                self.stream.write("/%d (%5.1f%%)" % (self.count,
+                                  (self.testsRun + 1) * 100.0 / self.count))
             if self.showAll:
                 self.stream.write(": ")
             elif self._progressWithNames:
@@ -314,14 +329,20 @@ class ImmediateTestRunner(unittest.TextTestRunner):
         self.__super_init(**kwarg)
         self._debug = debug
         self._progress = progress
+        # Create the test result here, so that we can add errors if
+        # the test suite search process has problems.  The count
+        # attribute must be set in run(), because we won't know the
+        # count until all test suites have been found.
+        self.result = ImmediateTestResult(
+            self.stream, self.descriptions, self.verbosity, debug=self._debug,
+            progress=self._progress)
 
     def _makeResult(self):
-        return ImmediateTestResult(self.stream, self.descriptions,
-                                   self.verbosity, debug=self._debug,
-                                   count=self._count, progress=self._progress)
+        # Needed base class run method.
+        return self.result
 
     def run(self, test):
-        self._count = test.countTestCases()
+        self.result.count = test.countTestCases()
         return unittest.TextTestRunner.run(self, test)
 
 # setup list of directories to put on the path
@@ -444,22 +465,40 @@ def package_import(modname):
         mod = getattr(mod, part)
     return mod
 
-def get_suite(file):
+class PseudoTestCase:
+    """Minimal test case objects to create error reports.
+
+    If test.py finds something that looks like it should be a test but
+    can't load it or find its test suite, it will report an error
+    using a PseudoTestCase.
+    """
+
+    def __init__(self, name, descr=None):
+        self.name = name
+        self.descr = descr
+
+    def shortDescription(self):
+        return self.descr
+
+    def __str__(self):
+        return "Invalid Test (%s)" % self.name
+
+def get_suite(file, result):
     modname = finder.module_from_path(file)
     try:
         mod = package_import(modname)
     except ImportError, err:
-        # print traceback
-        print "Error importing %s\n%s" % (modname, err)
-        if debug:
-            raise
+        result.addError(PseudoTestCase(modname), sys.exc_info())
         return None
     try:
         suite_func = mod.test_suite
     except AttributeError:
-        print "No test_suite() in %s" % file
+        result.addError(PseudoTestCase(modname), sys.exc_info())
         return None
-    return suite_func()
+    try:
+        return suite_func()
+    except:
+        result.addError(PseudoTestCase(modname), sys.exc_info())
 
 def filter_testcases(s, rx):
     new = unittest.TestSuite()
@@ -539,7 +578,7 @@ def runner(files, test_filter, debug):
                                  progress=progress)
     suite = unittest.TestSuite()
     for file in files:
-        s = get_suite(file)
+        s = get_suite(file, runner.result)
         # See if the levels match
         dolevel = (level == 0) or level >= getattr(s, "level", 0)
         if s is not None and dolevel:
@@ -573,11 +612,8 @@ def main(module_filter, test_filter, libdir):
     if not keepStaleBytecode:
         os.path.walk(os.curdir, remove_stale_bytecode, None)
 
-    
     global pathinit
-
-
-
+    
     # Get the log.ini file from the current directory instead of possibly
     # buried in the build directory.  XXX This isn't perfect because if
     # log.ini specifies a log file, it'll be relative to the build directory.
@@ -586,7 +622,6 @@ def main(module_filter, test_filter, libdir):
 
     # Initialize the path and cwd
     pathinit = PathInit(build, libdir)
-
 
     # Initialize the logging module.
     import logging.config
