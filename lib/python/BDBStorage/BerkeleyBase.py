@@ -39,14 +39,71 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.17 $'.split()[-2:][0]
+__version__ = '$Revision: 1.18 $'.split()[-2:][0]
+
+# Lock usage is inherently unbounded because there may be an unlimited number
+# of objects actually touched in any single transaction, and worst case could
+# be that each object is on a different page in the database.  Berkeley BTrees
+# implement a lock per leaf page, plus a lock per level.  We try to limit the
+# negative effects of this by writing as much data optimistically as we can.
+# But there's no way to completely avoid this.  So this value is used to size
+# the lock subsystem before the environment is opened.
+DEFAULT_MAX_LOCKS = 20000
+
+
+class BerkeleyConfig:
+    """Bag of bits for describing various underlying configuration options.
+
+    Berkeley databases are wildly configurable, and this class exposes some of
+    that.  Two important configuration options are the size of the lock table
+    and the checkpointing policy.  To customize these options, instantiate one
+    of these classes and set the attributes below to the desired value.  Then
+    pass this instance to the Berkeley storage constructor, using the `config'
+    keyword argument.
+
+    Locks in Berkeley are a limited and static resource; they can only be
+    changed before the environment is opened.  It is possible for Berkeley
+    based storages to exhaust the available locks because worst case is to
+    consume one lock per object being modified, and transactions are unbounded
+    in the number of objects they modify.  See
+
+        http://www.sleepycat.com/docs/ref/lock/max.html
+
+    for a discussion on lock sizing.  These attributes control the lock
+    sizing:
+
+    - numlocks is passed directly to set_lk_max_locks() when the environment
+      is opened.
+
+    You will need to find the right balance between the number of locks
+    allocated and the system resources that consumes.  If the locks are
+    exhausted a TransactionTooLargeError can get raised during commit.
+
+    To improve recovery times in case of failures, you should set up a
+    checkpointing policy when you create the database.  Note that the database
+    is automatically, and forcefully, checkpointed twice when it is closed.
+    But an exception during processing (e.g.
+
+    The following checkpointing attributes are supported:
+
+    - interval indicates the maximum number of calls to tpc_finish() after
+      which a checkpoint is performed.
+
+    - kbytes is passed directly to txn_checkpoint()
+
+    - min is passed directly to txn_checkpoint()
+    """
+    numlocks = DEFAULT_MAX_LOCKS
+    interval = 100
+    kbyte = 0
+    min = 0
 
 
 
 class BerkeleyBase(BaseStorage):
     """Base storage for Minimal and Full Berkeley implementations."""
 
-    def __init__(self, name, env=None, prefix='zodb_'):
+    def __init__(self, name, env=None, prefix='zodb_', config=None):
         """Create a new storage.
 
         name is an arbitrary name for this storage.  It is returned by the
@@ -72,9 +129,17 @@ class BerkeleyBase(BaseStorage):
         DB.open() as the dbname parameter.  IOW, prefix+name is passed to the
         BerkeleyDb function DB->open() as the database parameter.  It defaults
         to "zodb_".
+
+        Optional config must be a BerkeleyConfig instance, or None, which
+        means to use the default configuration options.
         """
 
         # sanity check arguments
+        if config is None:
+            config = BerkeleyConfig()
+        self._config = config
+        self._config._counter = 0
+
         if name == '':
             raise TypeError, 'database name is empty'
 
@@ -84,7 +149,7 @@ class BerkeleyBase(BaseStorage):
         if env == '':
             raise TypeError, 'environment name is empty'
         elif isinstance(env, StringType):
-            self._env = env_from_string(env)
+            self._env = env_from_string(env, self._config)
         else:
             self._env = env
 
@@ -231,9 +296,22 @@ class BerkeleyBase(BaseStorage):
         self._env.close()
         self._closelog()
 
+    # Useful for debugging
+
+    def _lockstats(self):
+        d = self._env.lock_stat()
+        return 'locks = [%(nlocks)d/%(maxnlocks)d]' % d
+
+    def _docheckpoint(self):
+        config = self._config
+        config._counter += 1
+        if config._counter > config.interval:
+            self._env.txn_checkpoint(config.kbyte, config.min)
+            config._counter = 0
+
 
 
-def env_from_string(envname):
+def env_from_string(envname, config):
     # BSDDB requires that the directory already exists.  BAW: do we need to
     # adjust umask to ensure filesystem permissions?
     try:
@@ -242,6 +320,7 @@ def env_from_string(envname):
         if e.errno <> errno.EEXIST: raise
         # already exists
     env = db.DBEnv()
+    env.set_lk_max_locks(config.numlocks)
     env.open(envname,
              db.DB_CREATE       # create underlying files as necessary
              | db.DB_RECOVER    # run normal recovery before opening
