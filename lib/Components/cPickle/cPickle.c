@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.54 1998/05/08 14:41:15 jim Exp $
+     $Id: cPickle.c,v 1.55 1998/05/22 23:25:28 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.54 1998/05/08 14:41:15 jim Exp $\n"
+"$Id: cPickle.c,v 1.55 1998/05/22 23:25:28 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -507,8 +507,10 @@ get(Picklerobject *self, PyObject *id) {
     char s[30];
     int len;
 
-    UNLESS(value = PyDict_GetItem(self->memo, id))
+    UNLESS(value = PyDict_GetItem(self->memo, id)) {
+	PyErr_SetObject(PyExc_KeyError, id);
         return -1;
+      }
 
     UNLESS(value = PyTuple_GetItem(value, 0))
         return -1;
@@ -2851,8 +2853,10 @@ load_get(Unpicklerobject *self) {
     UNLESS(py_str = PyString_FromStringAndSize(s, len - 1))
         goto finally;
   
-    UNLESS(value = PyDict_GetItem(self->memo, py_str))  
+    UNLESS(value = PyDict_GetItem(self->memo, py_str)) {
+	PyErr_SetObject(PyExc_KeyError, py_str);
         goto finally;
+      }
 
     if (PyList_Append(self->stack, value) < 0)
         goto finally;
@@ -2881,8 +2885,10 @@ load_binget(Unpicklerobject *self) {
     UNLESS(py_key = PyInt_FromLong((long)key))
         goto finally;
 
-    UNLESS(value = PyDict_GetItem(self->memo, py_key))  
+    UNLESS(value = PyDict_GetItem(self->memo, py_key)) {
+        PyErr_SetObject(PyExc_KeyError, py_key);
         goto finally;
+    }
 
     if (PyList_Append(self->stack, value) < 0)
         goto finally;
@@ -2918,8 +2924,10 @@ load_long_binget(Unpicklerobject *self) {
     UNLESS(py_key = PyInt_FromLong(key))
         goto finally;
 
-    UNLESS(value = PyDict_GetItem(self->memo, py_key))  
+    UNLESS(value = PyDict_GetItem(self->memo, py_key)) {
+	PyErr_SetObject(PyExc_KeyError, py_key);
         goto finally;
+    }
 
     if (PyList_Append(self->stack, value) < 0)
         goto finally;
@@ -4260,7 +4268,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.54 $";
+    char *rev="$Revision: 1.55 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
