@@ -23,3 +23,8 @@ should contain a reference to this footnote, footnote "[1]".)
   _W protocol implicit_ -- "locallink"::locallink
 
   _W protocol implicit_, alternate -- "locallink", :locallink
+
+  |||| A Simple Two-column Table ||
+  || Column A || Column B ||
+  || Apples   || Oranges  ||
+
