@@ -2,7 +2,7 @@
 Running Zope in Debug Mode
 
   If you wish to run Zope in debug mode, use the -D command line
-  switch.  This will have the following effect::
+  switch.  This will have the following effects::
 
    o On UNIX, Zope will not detach from the controlling terminal.
 
