@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -23,6 +23,7 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import Unauthorized, BadRequest
 from webdav.Lockable import ResourceLockedError
+from cgi import escape
 
 CopyError='Copy Error'
 
@@ -73,7 +74,7 @@ class CopyContainer(ExtensionClass.Base):
                 raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % ob.getId()
 
             if not ob.cb_isMoveable():
-                raise CopyError, eNotSupported % id
+                raise CopyError, eNotSupported % escape(id)
             m=Moniker.Moniker(ob)
             oblist.append(m.dump())
         cp=(1, oblist)
@@ -98,7 +99,7 @@ class CopyContainer(ExtensionClass.Base):
         for id in ids:
             ob=self._getOb(id)
             if not ob.cb_isCopyable():
-                raise CopyError, eNotSupported % id
+                raise CopyError, eNotSupported % escape(id)
             m=Moniker.Moniker(ob)
             oblist.append(m.dump())
         cp=(0, oblist)
@@ -157,7 +158,7 @@ class CopyContainer(ExtensionClass.Base):
             # Copy operation
             for ob in oblist:
                 if not ob.cb_isCopyable():
-                    raise CopyError, eNotSupported % ob.getId()
+                    raise CopyError, eNotSupported % escape(ob.getId())
                 try:    ob._notifyOfCopyTo(self, op=0)
                 except: raise CopyError, MessageDialog(
                     title='Copy Error',
@@ -182,7 +183,7 @@ class CopyContainer(ExtensionClass.Base):
             for ob in oblist:
                 id=ob.getId()
                 if not ob.cb_isMoveable():
-                    raise CopyError, eNotSupported % id
+                    raise CopyError, eNotSupported % escape(id)
                 try:    ob._notifyOfCopyTo(self, op=1)
                 except: raise CopyError, MessageDialog(
                     title='Move Error',
@@ -242,7 +243,7 @@ class CopyContainer(ExtensionClass.Base):
         if ob.wl_isLocked():
             raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % ob.getId()
         if not ob.cb_isMoveable():
-            raise CopyError, eNotSupported % id
+            raise CopyError, eNotSupported % escape(id)
         self._verifyObjectPaste(ob)
         try:    ob._notifyOfCopyTo(self, op=1)
         except: raise CopyError, MessageDialog(
@@ -269,7 +270,7 @@ class CopyContainer(ExtensionClass.Base):
     def manage_clone(self, ob, id, REQUEST=None):
         # Clone an object, creating a new object with the given id.
         if not ob.cb_isCopyable():
-            raise CopyError, eNotSupported % ob.getId()
+            raise CopyError, eNotSupported % escape(ob.getId())
         try: self._checkId(id)
         except: raise CopyError, MessageDialog(
                       title='Invalid Id',
@@ -510,11 +511,11 @@ def cookie_path(request):
 fMessageDialog=Globals.HTML("""
 <HTML>
 <HEAD>
-<TITLE><dtml-var title></TITLE>
+<TITLE>&dtml-title;</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<FORM ACTION="<dtml-var action>" METHOD="GET" <dtml-if
- target>TARGET="<dtml-var target>"</dtml-if>>
+<FORM ACTION="&dtml-action;" METHOD="GET" <dtml-if
+ target>TARGET="&dtml-target;"</dtml-if>>
 <TABLE BORDER="0" WIDTH="100%%" CELLPADDING="10">
 <TR>
   <TD VALIGN="TOP">

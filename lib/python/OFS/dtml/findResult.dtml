@@ -60,13 +60,13 @@ your search terms below.
 <td width="50%">
  <div class="list-item">
  <dtml-in name="results" previous size="batch_size" start="query_start">
- <strong> <a href="&dtml-URL;<dtml-var name="sequence-query">query_start=<dtml-var name="previous-sequence-start-number">">&lt; Previous</a></strong>
+ <strong> <a href="&dtml-URL;&dtml-sequence-query;query_start=&dtml-previous-sequence-start-number;">&lt; Previous</a></strong>
  <dtml-else>&nbsp;</dtml-in></div>
 </td>
 <td align="right" width="50%">
  <div class="list-item">
  <dtml-in name="results" next size=batch_size start=query_start>
- <strong><a href="&dtml-URL;<dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">Next &gt;</a></strong>
+ <strong><a href="&dtml-URL;&dtml-sequence-query;query_start=&dtml-next-sequence-start-number;">Next &gt;</a></strong>
  <dtml-else>&nbsp;</dtml-in></div>
 </td>
 </tr>

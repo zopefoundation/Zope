@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.200 2004/01/11 15:32:44 chrism Exp $'''
-__version__='$Revision: 1.200 $'[11:-2]
+$Id: Application.py,v 1.201 2004/01/15 22:47:23 tseaver Exp $'''
+__version__='$Revision: 1.201 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -22,6 +22,7 @@ from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
 from webdav.NullResource import NullResource
 from FindSupport import FindSupport
+from cgi import escape
 from urllib import quote
 from StringIO import StringIO
 from AccessControl.PermissionRole import PermissionRole
@@ -122,8 +123,8 @@ class Application(Globals.ApplicationDefaultPermissions,
         """Returns an HTML fragment that displays the 'powered by zope'
         button along with a link to the Zope site."""
         return '<a href="http://www.zope.org/Credits" target="_top"><img ' \
-               'src="%s/p_/ZopeButton" width="115" height="50" ' \
-               'border="0" alt="Powered by Zope" /></a>' % self.REQUEST.BASE1
+               'src="%s/p_/ZopeButton" width="115" height="50" border="0" ' \
+               'alt="Powered by Zope" /></a>' % escape(self.REQUEST.BASE1, 1)
 
 
     def DELETE(self, REQUEST, RESPONSE):
