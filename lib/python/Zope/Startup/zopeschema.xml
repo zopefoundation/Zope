@@ -170,7 +170,7 @@
       </description>
     </key>
 
-    <key name="container-class" datatype=".importable_name">
+    <key name="container-class" datatype=".python_dotted_path">
       <description>
        Change the contiainer class a (mounted) database uses on a
        per-database basis to support a different container than a plain

@@ -109,6 +109,13 @@ def importable_name(name):
         raise ValueError, (
             'The object named by "%s" could not be imported' %  name )
 
+# A datatype that ensures that a dotted path name can be resolved but
+# returns the name instead of the object
+
+def python_dotted_path(name):
+    ob = importable_name(name) # will fail in course
+    return name
+
 # Datatype for the root configuration object
 # (adds the softwarehome and zopehome fields; default values for some
 #  computed paths, configures dbtab)
@@ -156,7 +163,9 @@ class ZopeDatabase(ZODBDatabase):
     """ A ZODB database datatype that can handle an extended set of
     attributes for use by DBTab """
 
-    container_class = 'OFS.Folder.Folder'
+    def __init__(self, section):
+        self.container_class = section.container_class or 'OFS.Folder.Folder'
+        ZODBDatabase.__init__(self, section)
 
     def createDB(self):
         return ZODBDatabase.open(self)
@@ -166,7 +175,6 @@ class ZopeDatabase(ZODBDatabase):
         if self.config.connection_class:
             # set the connection class
             DB.klass = self.config.connection_class
-            print DB, DB.klass
         if self.config.class_factory is not None:
             DB.setClassFactory(self.config.class_factory)
         from ZODB.ActivityMonitor import ActivityMonitor
@@ -234,7 +242,7 @@ def getDefaultDatabaseFactories(context):
                               pool_size=7, version_pool_size=3,
                               version_cache_size=100, mount_points=['/'],
                               connection_class=Connection,
-                              class_factory=None))
+                              class_factory=None, container_class=None))
 
     l.append(main)
 
@@ -244,10 +252,11 @@ def getDefaultDatabaseFactories(context):
                                    version_pool_size=3, version_cache_size=100,
                                    mount_points=['/temp_folder'],
                                    connection_class=Connection,
-                                   class_factory=None))
-
-    temporary.container_class = ('Products.TemporaryFolder.TemporaryFolder.'
-                                 'SimpleTemporaryContainer')
+                                   class_factory=None,
+                                   container_class=('Products.TemporaryFolder.'
+                                                    'TemporaryFolder.'
+                                                    'SimpleTemporaryContainer')
+                                   ))
     l.append(temporary)
 
     return l
