@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.34 1999/09/21 23:31:23 jim Exp $
+  $Id: Acquisition.c,v 1.35 1999/11/15 18:08:20 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -199,8 +199,8 @@ newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
     }
 
   Py_INCREF(Wrappertype);
-  Py_INCREF(obj);
-  Py_INCREF(container);
+  Py_XINCREF(obj);
+  Py_XINCREF(container);
   self->obj=obj;
   self->container=container;
   return OBJECT(self);
@@ -210,8 +210,8 @@ newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
 static void
 Wrapper_dealloc(Wrapper *self)     
 {
-  Py_DECREF(self->obj);
-  Py_DECREF(self->container);
+  Py_XDECREF(self->obj);
+  Py_XDECREF(self->container);
   Py_DECREF(self->ob_type);
 
   if (nWrappers < MAX_CACHED_WRAPPERS)
@@ -886,7 +886,7 @@ Wrapper_inContextOf(Wrapper *self, PyObject *args)
   while (1)
     {
       if (c==o) return PyInt_FromLong(1);
-      if (isWrapper(c)) c=WRAPPER(c)->container;
+      if (c && isWrapper(c)) c=WRAPPER(c)->container;
       else return PyInt_FromLong(0);
     }
 }
@@ -1016,7 +1016,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.34 $";
+  char *rev="$Revision: 1.35 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1035,7 +1035,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.34 1999/09/21 23:31:23 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.35 1999/11/15 18:08:20 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
