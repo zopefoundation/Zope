@@ -13,7 +13,7 @@
 ##############################################################################
 """Available ZODB class factories.
 
-$Id: ClassFactories.py,v 1.1 2003/07/20 02:55:58 chrism Exp $"""
+$Id: ClassFactories.py,v 1.2 2004/03/04 22:43:06 jim Exp $"""
 
 import OFS.Uninstalled
 
@@ -78,7 +78,7 @@ def autoClassFactory(jar, module, name):
     root_conn = getattr(jar, '_root_connection', None)
     root_db = getattr(root_conn, '_db', None)
     if root_db is not None:
-        return root_db._classFactory(root_conn, module, name)
+        return root_db.classFactory(root_conn, module, name)
     else:
         return zopeClassFactory(jar, module, name)
 

@@ -76,7 +76,7 @@ def startup():
 
     Globals.opened.append(DB)
     import ClassFactory
-    DB.setClassFactory(ClassFactory.ClassFactory)
+    DB.classFactory = ClassFactory.ClassFactory
 
     # "Log on" as system user
     newSecurityManager(None, AccessControl.User.system)

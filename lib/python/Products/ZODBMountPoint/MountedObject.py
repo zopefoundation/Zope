@@ -13,7 +13,7 @@
 ##############################################################################
 """DBTab mount point (stored in ZODB).
 
-$Id: MountedObject.py,v 1.3 2004/02/25 18:29:58 jeremy Exp $
+$Id: MountedObject.py,v 1.4 2004/03/04 22:43:06 jim Exp $
 """
 
 import os
@@ -98,7 +98,7 @@ class CustomTrailblazer (SimpleTrailblazer):
     def _construct(self, context, id):
         """Creates and returns the named object."""
         jar = self.base._p_jar
-        klass = jar.db()._classFactory(jar, self.module_name, self.class_name)
+        klass = jar.db().classFactory(jar, self.module_name, self.class_name)
         obj = klass(id)
         obj._setId(id)
         context._setObject(id, obj)
