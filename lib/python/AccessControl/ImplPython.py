@@ -17,6 +17,9 @@ import os
 import string
 
 from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import aq_inner
+from Acquisition import aq_acquire
 from ExtensionClass import Base
 from zLOG import LOG, PROBLEM
 
@@ -522,38 +525,57 @@ def guarded_getattr(inst, name, default=_marker):
     Raises Unauthorized if the attribute is found but the user is
     not allowed to access the attribute.
     """
-    if name[:1] != '_':
-        # Try to get the attribute normally so that unusual
-        # exceptions are caught early.
-        try: v = getattr(inst, name)
-        except AttributeError:
-            if default is not _marker:
-                return default
-            raise
+    if name[:1] == '_':
+        raise Unauthorized, name
 
-        assertion = Containers(type(inst))
-        if isinstance(assertion, dict):
-            # We got a table that lets us reason about individual
-            # attrs
-            assertion = assertion.get(name)
-            if assertion:
-                # There's an entry, but it may be a function.
-                if callable(assertion):
-                    return assertion(inst, name)
+    # Try to get the attribute normally so that unusual
+    # exceptions are caught early.
+    try:
+        v = getattr(inst, name)
+    except AttributeError:
+        if default is not _marker:
+            return default
+        raise
 
-                # Nope, it's boolean
-                return v
-            raise Unauthorized, name
+    return _verify_attribute_access(inst, name, v)
 
-        elif assertion:
-            # So the entry in the outer table is not a dict
-            # It's allowed to be a vetoing function:
+def _verify_attribute_access(inst, name, v):
+
+    try:
+        container = v.im_self
+    except AttributeError:
+        container = aq_parent(aq_inner(v)) or inst
+
+    assertion = Containers(type(container))
+
+    if isinstance(assertion, dict):
+        # We got a table that lets us reason about individual
+        # attrs
+        assertion = assertion.get(name)
+        if assertion:
+            # There's an entry, but it may be a function.
             if callable(assertion):
-                assertion(name, v)
-            # No veto, so we can return
-            return v
+                return assertion(inst, name)
 
-        validate = SecurityManagement.getSecurityManager().validate
-        if validate(inst, inst, name, v):
+            # Nope, it's boolean
             return v
-    raise Unauthorized, name
+        raise Unauthorized, name
+
+    if assertion:
+        if callable(assertion):
+            factory = assertion(name, v)
+            if callable(factory):
+                return factory(inst, name)
+            assert factory == 1
+        else:
+            assert assertion == 1
+        return v
+
+
+    # See if we can get the value doing a filtered acquire.
+    # aq_acquire will either return the same value as held by
+    # v or it will return an Unauthorized raised by validate.
+    validate = SecurityManagement.getSecurityManager().validate
+    aq_acquire(inst, name, aq_validate, validate)
+    
+    return v
