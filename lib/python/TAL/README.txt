@@ -86,14 +86,6 @@ TO DO
 - TALInterpreter currently always uses an XML parser to parse inserted
   structure; it should use a parser appropriate to the mode.
 
-- The HTML parser currently returns <img ismap> as if it said <img
-  ismap="ismap">.  This will break with old browsers.  I see two ways
-  to fix this: (1) change the API to return None for the value in this
-  case, and then generate different code; or (2) special-case the
-  generator to recognize that the value is the same as the attribute
-  name for specific attribute names (the list is BOOLEAN_HTML_ATTRS in
-  TALInterpreter).
-
 - HTMLTALParser.py and TALParser.py are silly names.  Should be
   HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,
   without "TAL"?)

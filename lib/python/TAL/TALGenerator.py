@@ -110,6 +110,7 @@ class TALGenerator:
         self.slots = {}
         self.slotStack = []
         self.xml = xml
+        self.emit("version", TAL_VERSION)
 
     def getCode(self):
         return self.optimize(self.program), self.macros

@@ -8,6 +8,7 @@ import utils
 import unittest
 
 from TAL import HTMLTALParser
+from TAL.TALDefs import TAL_VERSION
 
 
 class HTMLTALParserTestCases(unittest.TestCase):
@@ -28,6 +29,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
 
     def check_code_simple_identity(self):
         self._run_check("""<html a='b' b="c" c=d><title>My Title</html>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<html a="b" b="c" c="d">'),
             ('setPosition', (1, 22)),
@@ -36,6 +38,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
 
     def check_code_implied_list_closings(self):
         self._run_check("""<ul><li><p><p><li></ul>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<ul>'),
             ('setPosition', (1, 4)),
@@ -48,6 +51,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
             ('rawtext', '<li></li></ul>'),
             ])
         self._run_check("""<dl><dt><dt><dd><dd><ol><li><li></ol></dl>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<dl>'),
             ('setPosition', (1, 4)),
@@ -69,6 +73,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
     def check_code_implied_table_closings(self):
         self._run_check("""<p>text <table><tr><th>head\t<tr><td>cell\t"""
                         """<table><tr><td>cell \n \t \n<tr>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<p>text</p> '),
             ('setPosition', (1, 8)),
@@ -92,6 +97,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
             ])
         self._run_check("""<table><tr><td>cell """
                         """<table><tr><td>cell </table></table>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<table>'),
             ('setPosition', (1, 7)),
@@ -113,6 +119,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
 
     def check_code_attr_syntax(self):
         output = [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<a b="v" c="v" d="v" e></a>'),
             ]
@@ -123,11 +130,13 @@ class HTMLTALParserTestCases(unittest.TestCase):
 
     def check_code_attr_values(self):
         self._run_check(
-            """<a b='xxx\n\txxx' c="yyy\t\nyyy" d='\txyz\n'>""",
-            [('setPosition', (1, 0)),
-             ('rawtext',
-              '<a b="xxx\n\txxx" c="yyy\t\nyyy" d="\txyz\n"></a>')])
+            """<a b='xxx\n\txxx' c="yyy\t\nyyy" d='\txyz\n'>""", [
+            ('version', TAL_VERSION),
+            ('setPosition', (1, 0)),
+            ('rawtext',
+             '<a b="xxx\n\txxx" c="yyy\t\nyyy" d="\txyz\n"></a>')])
         self._run_check("""<a b='' c="" d=>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<a b="" c="" d=""></a>'),
             ])
@@ -135,35 +144,42 @@ class HTMLTALParserTestCases(unittest.TestCase):
     def check_code_attr_entity_replacement(self):
         # we expect entities *not* to be replaced by HTLMParser!
         self._run_check("""<a b='&amp;&gt;&lt;&quot;&apos;'>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<a b="&amp;&gt;&lt;&quot;\'"></a>'),
             ])
         self._run_check("""<a b='\"'>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', "<a b='\"'></a>"),
             ])
         self._run_check("""<a b='&'>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<a b="&amp;"></a>'),
             ])
         self._run_check("""<a b='<'>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<a b="&lt;"></a>'),
             ])
 
     def check_code_attr_funky_names(self):
         self._run_check("""<a a.b='v' c:d=v e-f=v>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<a a.b="v" c:d="v" e-f="v"></a>'),
             ])
 
     def check_code_pcdata_entityref(self):
         self._run_check("""&nbsp;""", [
+            ('version', TAL_VERSION),
             ('rawtext', '&nbsp;'),
             ])
 
     def check_code_short_endtags(self):
         self._run_check("""<html><img/></html>""", [
+            ('version', TAL_VERSION),
             ('setPosition', (1, 0)),
             ('rawtext', '<html>'),
             ('setPosition', (1, 6)),

@@ -97,7 +97,7 @@ except ImportError:
     from StringIO import StringIO
 
 from XMLParser import XMLParser
-from TALDefs import TALError, TALESError, quote
+from TALDefs import TALError, TALESError, quote, TAL_VERSION
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
@@ -176,6 +176,9 @@ class TALInterpreter:
             method = getattr(self, methodName)
             apply(method, args)
         self.level = self.level - 1
+
+    def do_version(self, version):
+        assert version == TAL_VERSION
 
     def do_setPosition(self, position):
         self.position = position
