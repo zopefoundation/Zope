@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.127 2001/02/28 19:31:56 shane Exp $"""
+$Id: ObjectManager.py,v 1.128 2001/03/01 15:59:59 brian Exp $"""
 
-__version__='$Revision: 1.127 $'[11:-2]
+__version__='$Revision: 1.128 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -384,7 +384,7 @@ class ObjectManager(
 
     def objectMap(self):
         # Return a tuple of mappings containing subobject meta-data
-        return map(lambda dict: dict.copy(), self._objects)
+        return tuple(map(lambda dict: dict.copy(), self._objects))
 
     def objectIds_d(self,t=None):
         if hasattr(self, '_reserved_names'): n=self._reserved_names
