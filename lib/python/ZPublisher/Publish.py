@@ -249,7 +249,7 @@ Function, method, and class objects
     
 	string -- python strings
     
-	Required -- non-blank python strings
+	required -- non-blank python strings
     
 	regex -- Python case-sensitive regular expressions
     
@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.31 1997/01/30 00:50:18 jim Exp $"""
+$Id: Publish.py,v 1.32 1997/02/07 14:41:32 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.31 1997/01/30 00:50:18 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 def main():
@@ -582,7 +582,7 @@ def main():
 
 if __name__ == "__main__": main()
 
-import sys, os, string, types, newcgi, regex
+import sys, os, string, types, newcgi, regex, regsub
 from CGIResponse import Response
 from Realm import Realm, allow_group_composition
 
@@ -1081,9 +1081,10 @@ def field2tokens(v):
     except: v=str(v)
     return string.split(v)
 
-def field2lines(v):
+def field2lines(v, crlf=regex.compile('\r\n\|\n\r')):
     try: v=v.read()
     except: v=str(v)
+    v=regsub.gsub(crlf,'\n',v)
     return string.split(v,'\n')
 
 def field2date(v):
@@ -1405,6 +1406,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.32  1997/02/07 14:41:32  jim
+# Fixed bug in 'lines' conversion and fixed documentation for
+# 'required'.
+#
 # Revision 1.31  1997/01/30 00:50:18  jim
 # Added has_key method to Request
 #
