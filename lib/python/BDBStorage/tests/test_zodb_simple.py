@@ -2,18 +2,16 @@
 # storages, like transaction aborts and commits, changing objects, etc.
 # Doesn't test undo, versions, or packing.
 
-import os
-import errno
 import time
 import unittest
-import test_create
+
+from ZODBTestBase import ZODBTestBase
+from Persistence import PersistentMapping
 
 
 
-class CommitAndRead(test_create.BaseFramework):
+class CommitAndRead:
     def checkCommit(self):
-        from Persistence import PersistentMapping
-
         assert not self._root
         names = self._root['names'] = PersistentMapping()
         names['Warsaw'] = 'Barry'
@@ -52,12 +50,12 @@ class CommitAndRead(test_create.BaseFramework):
 
 
 
-class MinimalCommitAndRead(CommitAndRead):
+class MinimalCommitAndRead(ZODBTestBase, CommitAndRead):
     import Minimal
     ConcreteStorage = Minimal.Minimal
 
 
-class FullCommitAndRead(CommitAndRead):
+class FullCommitAndRead(ZODBTestBase, CommitAndRead):
     import Full
     ConcreteStorage = Full.Full
 
@@ -65,20 +63,8 @@ class FullCommitAndRead(CommitAndRead):
 
 def suite():
     suite = unittest.TestSuite()
-    # On the Minimal storage
-    suite.addTest(MinimalCommitAndRead('checkCommit'))
-    suite.addTest(MinimalCommitAndRead('checkReadAfterCommit'))
-    suite.addTest(MinimalCommitAndRead('checkAbortAfterRead'))
-    suite.addTest(MinimalCommitAndRead('checkReadAfterCommit'))
-    for i in range(5):
-        suite.addTest(MinimalCommitAndRead('checkChangingCommits'))
-    # On the Full storage
-    suite.addTest(FullCommitAndRead('checkCommit'))
-    suite.addTest(FullCommitAndRead('checkReadAfterCommit'))
-    suite.addTest(FullCommitAndRead('checkAbortAfterRead'))
-    suite.addTest(FullCommitAndRead('checkReadAfterCommit'))
-    for i in range(5):
-        suite.addTest(FullCommitAndRead('checkChangingCommits'))
+    suite.addTest(unittest.makeSuite(MinimalCommitAndRead, 'check'))
+    suite.addTest(unittest.makeSuite(FullCommitAndRead, 'check'))
     return suite
 
 

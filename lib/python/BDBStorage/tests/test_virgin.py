@@ -1,17 +1,17 @@
 # Test creation of a brand new database, and insertion of root objects.
 
 import unittest
-import test_create
 
+from ZODBTestBase import ZODBTestBase
+from Persistence import PersistentMapping
+        
 
 
-class BaseInsertMixin:
+class InsertMixin:
     def checkIsEmpty(self):
         assert not self._root.has_key('names')
 
     def checkNewInserts(self):
-        from Persistence import PersistentMapping
-
         self._root['names'] = names = PersistentMapping()
         names['Warsaw'] = 'Barry'
         names['Hylton'] = 'Jeremy'
@@ -19,21 +19,21 @@ class BaseInsertMixin:
 
 
 
-class FullNewInsertsTest(test_create.FullBaseFramework, BaseInsertMixin):
-    pass
+class FullNewInsertsTest(ZODBTestBase, InsertMixin):
+    import Full
+    ConcreteStorage = Full.Full
 
 
-class MinimalNewInsertsTest(test_create.MinimalBaseFramework, BaseInsertMixin):
-    pass
+class MinimalNewInsertsTest(ZODBTestBase, InsertMixin):
+    import Minimal
+    ConcreteStorage = Minimal.Minimal
 
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(MinimalNewInsertsTest('checkIsEmpty'))
-    suite.addTest(MinimalNewInsertsTest('checkNewInserts'))
-    suite.addTest(FullNewInsertsTest('checkIsEmpty'))
-    suite.addTest(FullNewInsertsTest('checkNewInserts'))
+    suite.addTest(unittest.makeSuite(MinimalNewInsertsTest, 'check'))
+    suite.addTest(unittest.makeSuite(FullNewInsertsTest, 'check'))
     return suite
 
 
