@@ -87,7 +87,14 @@
 
 import ZopeHTTPServer, os, sys
 
-args=sys.argv[1:]+[os.path.join(os.getcwd(),'lib','python','Main.py')]
+args=sys.argv[1:]
+m=os.path.join(os.getcwd(),'lib','python','Main.py')
+for i in range(len(args)):
+    if args[i][:1] != '-':
+        args.insert(i,m)
+        m=''
+        break
+if m: args.append(m)
 
 ZopeHTTPServer.main(args)
                     
