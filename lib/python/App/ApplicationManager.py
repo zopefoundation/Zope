@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -358,7 +358,8 @@ class ApplicationManager(Folder,CacheManager):
             s=os.stat(self.db_name())[6]
         else:
             s=self._p_jar.db().getSize()
-            
+            if type(s) is type(''): return s
+
         if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
 
