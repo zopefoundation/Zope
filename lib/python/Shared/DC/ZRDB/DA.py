@@ -24,6 +24,7 @@ from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split, rstrip
 import DocumentTemplate, sqlvar, sqltest, sqlgroup
+from DocumentTemplate.html_quote import html_quote
 from time import time
 from zlib import compress, decompress
 from DateTime.DateTime import DateTime
@@ -331,7 +332,7 @@ class DA(
                 '<dtml-var manage_tabs>\n<hr>\n%s\n\n'
                 '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
                 '</body></html>'
-                % (r,src))
+                % (r,html_quote(src)))
 
             report=apply(report,(self,REQUEST),{self.id:result})
 
