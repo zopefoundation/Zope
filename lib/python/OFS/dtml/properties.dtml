@@ -193,7 +193,7 @@ and value and click the &quot;Add&quot; button.
 </form>
 
 <dtml-if property_extensible_schema__>
-<a name="addpropform">
+
 <form action="<dtml-var URL1>/manage_addProperty" method="post">
 
 <p class="form-help">
