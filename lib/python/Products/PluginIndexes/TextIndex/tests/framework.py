@@ -83,80 +83,36 @@
 # 
 ##############################################################################
 
-import os,sys
-execfile(os.path.join(sys.path[0],'framework.py'))
-
-import unittest,locale
-from Products.PluginIndexes.TextIndex import Splitter
-
-
-class TestCase( unittest.TestCase ):
-    """
-        Test our Splitters
-    """
-
-    def setUp( self ):
-        self.testdata = (
-        ('The quick brown fox jumps over the lazy dog',
-          ['the','quick','brown','fox','jumps','over','the','lazy','dog']),
-        (  'öfters   Österreichische   herüber   Überfall   daß   Ärger   verärgert',
-          ['öfters','österreichische','herüber','überfall','daß','ärger','verärgert'])
-        )
-        
-
-        pass
-
-    def tearDown( self ):
-        """
-        """
-
-           
-    def testAvailableSplitters( self ):
-        "Test available splitters"
-
-        assert len(Splitter.availableSplitters) >0 
-        assert len(Splitter.splitterNames)>0 
-        assert len(Splitter.availableSplitters)==len(Splitter.splitterNames)
-
-
-
-    def _test(self,sp_name,text,splitted):
-    
-        splitter = Splitter.getSplitter(sp_name)
-        result = list(splitter(text))
-
-        assert result==splitted, "%s: %s vs %s" % (sp_name,result,splitted) 
-
-
-#    def testZopeSplitter(self):
-#        """test ZopeSplitter (this test is known to fail because it does not support ISO stuff) """
+######################################################################
+# Set up unit testing framework
 #
-#        for text,splitted in self.testdata:
-#            self._test("ZopeSplitter",text,splitted)
-    
-    def testISOSplitter(self):
-        """test ISOSplitter"""
+# The following code should be at the top of every test module:
+#
+# import os, sys
+# execfile(os.path.join(sys.path[0], 'framework.py'))
+#
+# ...and the following at the bottom:
+#
+# framework()
 
-        for text,splitted in self.testdata:
-            self._test("ISO_8859_1_Splitter",text,splitted)
+
+# Find the Testing package
+if not sys.modules.has_key('Testing'):
+    p0 = sys.path[0]
+    if p0 and __name__ == '__main__':
+        os.chdir(p0)
+        p0 = ''
+    p = d = os.path.abspath(os.curdir)
+    while d:
+        if os.path.isdir(os.path.join(p, 'Testing')):
+            sys.path[:1] = [p0, os.pardir, p]
+            break
+        p, d = os.path.split(p)
+    else:
+        print 'Unable to locate Testing package.'
+        sys.exit(1)
+
+import Testing, unittest
+execfile(os.path.join(os.path.split(Testing.__file__)[0], 'common.py'))
 
 
-
-def test_suite():
-    return unittest.makeSuite( TestCase )
-
-def debug():
-    return test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-def main():
-    unittest.TextTestRunner().run( test_suite() )
-
-if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()

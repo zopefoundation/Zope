@@ -84,21 +84,7 @@
 ##############################################################################
 
 import sys, os
-
-sys.path.insert(0, os.path.join(sys.path[0],'..'))
-sys.path.insert(0, os.getcwd())
-try: import unittest
-except:
-    sys.path[0]=os.path.join(sys.path[0],'..','..', '..')
-    import unittest
-
-print sys.path
-
-class Dummy:
-
-    def __init__(self, **kw):
-        self.__dict__.update(kw)
-
+execfile(os.path.join(sys.path[0],'framework.py'))
 import zLOG
 
 def log_write(subsystem, severity, summary, detail, error):
