@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -177,8 +177,7 @@ class PropertySheet(Persistent, Implicit):
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid property id.'
         self=self.v_self()
-        if meta is None:
-            meta={}
+        if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
         self._properties=self._properties+(prop,)
         setattr(self, id, value)
@@ -235,108 +234,69 @@ class PropertySheet(Persistent, Implicit):
             dict[p['id']]=p
         return dict
 
-    def dav__propstat(self, allprop, vals, join=string.join):
+    def dav__propstat(self, allprop, names, join=string.join):
         # The dav__propstat method returns a chunk of xml containing
         # one or more propstat elements indicating property names,
         # values, errors and status codes. This is called by some
         # of the WebDAV support machinery. If a property set does
-        # not support WebDAV, just override this method to return
-        # an empty string.
-        propstat='<d:propstat%s>\n' \
+        # not support WebDAV, this method should return an empty
+        # string.
+        propstat='<d:propstat xmlns:ps="%s">\n' \
                  '  <d:prop>\n' \
-                 '%s\n' \
+                 '%%s\n' \
                  '  </d:prop>\n' \
-                 '  <d:status>HTTP/1.1 %s</d:status>\n' \
-                 '</d:propstat>\n'
+                 '  <d:status>HTTP/1.1 %%s</d:status>\n%%s' \
+                 '</d:propstat>\n' % self.xml_namespace()
+        errormsg='  <d:responsedescription>%s</d:responsedescription>\n'
         result=[]
-        if not self.propertyMap():
-            return ''
-        if not allprop and not vals:
+        if not allprop and not names:
             # propname request
             for name in self.propertyIds():
-                result.append('  <ns0:%s/>' % name)
+                result.append('  <ps:%s/>' % name)
+            if not result: return ''
             result=join(result, '\n')
-            nsdef=' xmlns:ns0="%s"' % self.xml_namespace()
-            return propstat % (nsdef, result, '200 OK')
+            return propstat % (result, '200 OK', '')
         elif allprop:
-            for name, value in self.propertyItems():
-                prop='  <ns0:%s>%s</ns0:%s>' % (name, value, name)
+            for item in self.propertyMap():
+                name, type=item['id'], item.get('type','string')
+                meta=item.get('meta', {})
+                value=self.getProperty(name)
+                if type=='tokens':
+                    value=join(value, ' ')
+                elif type=='lines':
+                    value=join(value, '\n')
+                if meta.get('dav_xml', 0):
+                    prop=value
+                else: prop='  <ps:%s>%s</ps:%s>' % (name, value, name)
                 result.append(prop)
+            if not result: return ''
             result=join(result, '\n')
-            nsdef=' xmlns:ns0="%s"' % self.xml_namespace()
-            return propstat % (nsdef, result, '200 OK')
+            return propstat % (result, '200 OK', '')
         else:
-            xml_ns=self.xml_namespace()
             propdict=self.propdict()
-            nsdef=' xmlns:ns0="%s"' % self.xml_namespace()
-            for name, ns in vals:
-                if ns==xml_ns:
-                    if propdict.has_key(name):
+            xml_id=self.xml_namespace()
+            for name, ns in names:
+                if ns==xml_id:
+                    if not propdict.has_key(name):
+                        prop='  <ps:%s/>' % name
+                        emsg=errormsg % 'No such property: %s' % name
+                        result.append(propstat % (prop, '404 Not Found', emsg))
+                    else:
+                        item=propdict[name]
+                        name, type=item['id'], item.get('type','string')
+                        meta=item.get('meta', {})
                         value=self.getProperty(name)
-                        prop='  <ns0:%s>%s</ns0:%s>' % (name, value, name)
-                        result.append(propstat % (nsdef, prop, '200 OK'))
-                    else:
-                        prop='  <ns0:%s/>' % name
-                        result.append(propstat % (nsdef, prop,'404 Not Found'))
-            return join(result, '\n')
-
-    def odav__propstat(self, url, allprop, vals, iscol, join=string.join):
-        # The dav__propstat method returns an xml response element 
-        # containing one or more propstats indicating property names, 
-        # values, errors and status codes.
-        result=[]
-        propstat='<d:propstat>\n' \
-                  '<d:prop%s>\n' \
-                  '%s\n' \
-                  '</d:prop>\n' \
-                  '<d:status>HTTP/1.1 %s</d:status>\n' \
-                  '</d:/propstat>'        
-        if not allprop and not vals:
-            if hasattr(aq_base(self), 'propertyMap'):
-                for md in self.propertyMap():
-                    prop='<z:%s/>' % md['id']
-                    result.append(propstat % ('', prop, '200 OK'))
-
-        elif allprop:
-            if hasattr(aq_base(self), 'propertyMap'):
-                for md in self.propertyMap():
-                    name, type=md['id'], md.get('type', 'string')
-                    value=getattr(self, name)
-                    if type=='tokens':
-                        value=join(value, ' ')
-                    elif type=='lines':
-                        value=join(value, '\n')
-                    else: value=str(value)
-                    prop='<z:%s>%s</z:%s>' % (name, value, name)
-                    result.append(propstat % ('', prop, '200 OK'))
-        else:
-            prop_mgr=hasattr(aq_base(self), 'propertyMap')
-            for name, ns in vals:
-                if ns==zpns:
-                    if not prop_mgr or not self.hasProperty(name):
-                        prop='<z:%s/>' % name
-                        result.append(propstat % ('',prop,'404 Not Found'))
-                    else:
-                        value=getattr(self, name)
-                        type=self.getPropertyType(name)
                         if type=='tokens':
                             value=join(value, ' ')
                         elif type=='lines':
                             value=join(value, '\n')
-                        else: value=str(value)
-                        prop='<z:%s>%s</z:%s>' % (name, value, name)
-                        result.append(propstat % ('', prop, '200 OK'))
-
-                else:
-                    prop='<n:%s/>' % name
-                    ns=' xmlns:n="%s"' % ns
-                    result.append(propstat % (ns, prop, '404 Not Found'))
-
-        result='<d:response>\n' \
-                '<d:href>%s</d:href>\n' \
-                '%s\n' \
-                '</d:response>' % (url, join(result, '\n'))
-        return result
+                        if meta.get('dav_xml', 0):
+                            prop=value
+                        else:
+                            prop='  <ps:%s>%s</ps:%s>' % (name, value, name)
+                        result.append(propstat % (prop, '200 OK', ''))
+            if not result: return ''
+            return join(result, '')
 
     # Web interface
     
