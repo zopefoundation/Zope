@@ -1,8 +1,0 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../External-Method.dtml">External Method</a>&gt;Try It</h1>
-<p> This view executes the external method. </p>
-<p> This view executes the external method and returns the results if
-		  any. Only parameters from the web request are passed the the external method.
-		  </p>
-<dtml-var standard_html_footer>
