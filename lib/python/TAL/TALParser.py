@@ -253,10 +253,14 @@ class TALParser(XMLParser):
             key = self.fixname(fullkey)
             if repldict.has_key(key):
                 item = (key, value, "replace", repldict[key])
+                del repldict[key]
             elif fullkey == METAL_DEFINE_MACRO:
                 item = (key, value, "macroHack")
             else:
                 item = (key, value)
+            newlist.append(item)
+        for key, value in repldict.items(): # Add dynamic-only attributes
+            item = (key, "", "replace", value)
             newlist.append(item)
         return newlist
 
