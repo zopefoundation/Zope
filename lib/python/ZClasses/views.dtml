@@ -27,13 +27,11 @@
 	 <td align="left" valign="center">
 	   <select name="helps:list">
 	     <option></option>
-	     <dtml-if "_.getitem('Help')">
-               <dtml-in "Help.helpValues()">
+               <dtml-in "getProductHelp().helpValues()">
 		 <option
 		   <dtml-if "_.has_key('help') and _.getitem('sequence-item').id() == help[1]">SELECTED
 		   </dtml-if>><dtml-var id></option>
 	       </dtml-in>
-             </dtml-if>
 	   </select>
 	 </td>
   </tr>
@@ -62,11 +60,9 @@
   <td align="left" valign="top">
   <select name="help">
   <option></option>
-  <dtml-if "_.getitem('Help')">
-  <dtml-in "Help.helpValues()">
+  <dtml-in "getProductHelp().helpValues()">
   <option><dtml-var id></option>
   </dtml-in>
-  </dtml-if>
   </select>
   </td>
 </tr>
