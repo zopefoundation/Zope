@@ -25,6 +25,7 @@ static PyObject *ErrorObject;
 #define INST      'i'
 #define OBJ       'o'
 #define MARK      '('
+static char MARKv = MARK;
 #define PUT       'p'
 #define BINPUT    'q'
 #define POP       '0'
@@ -650,7 +651,7 @@ save_tuple(Picklerobject *self, PyObject *args)
   long tuple_id, c_value;
   char c_str[30];
 
-  if ((*self->write_func)(self, self->mark, 1) == -1)
+  if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
 
   tuple_id = (long)args;
@@ -754,7 +755,7 @@ save_list(Picklerobject *self, PyObject *args)
   char c_str[30];
   static char append[] = { APPEND };
 
-  if ((*self->write_func)(self, self->mark, 1) == -1)
+  if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
 
   if ((len = PyList_Size(args)) == -1)
@@ -842,7 +843,7 @@ save_dict(Picklerobject *self, PyObject *args)
   char c_str[30];
   static char setitem[] = { SETITEM };
 
-  if ((*self->write_func)(self, self->mark, 1) == -1)
+  if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
 
   UNLESS(items = PyDict_Items(args))  
@@ -963,7 +964,7 @@ save_inst(Picklerobject *self, PyObject *args)
   int len, p;
   static char build[] = { BUILD };
 
-  if ((*self->write_func)(self, self->mark, 1) == -1)
+  if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
 
   UNLESS(class = PyObject_GetAttrString(args, "__class__"))
@@ -1470,14 +1471,6 @@ newPicklerobject(PyObject *file, int bin)
 
   UNLESS(arg = PyTuple_New(1))  goto err;
 
-  UNLESS(mark = (char *)malloc(sizeof(char)))
-  {
-    PyErr_SetString(PyExc_MemoryError, "out of memory");
-    goto err;
-  }
-
-  *mark = MARK;
-
   UNLESS(self = PyObject_NEW(Picklerobject, &Picklertype))  
   {
     free(mark);
@@ -1507,7 +1500,6 @@ newPicklerobject(PyObject *file, int bin)
   self->write = write;
   self->memo  = memo;
   self->arg   = arg;
-  self->mark  = mark;
   self->pers_func = NULL;
 
   return self;
@@ -1539,7 +1531,6 @@ Pickler_dealloc(Picklerobject *self)
   Py_XDECREF(self->arg);
   Py_XDECREF(self->file);
   Py_XDECREF(self->pers_func);
-  free(self->mark);
   PyMem_DEL(self);
 }
 
@@ -2066,17 +2057,12 @@ load_string(Unpicklerobject *self, PyObject *args)
     goto err;
   }
 
-  printf("load_string\n");
-  printf("%d\n", str->ob_refcnt);
-
   free(s);
 
   if (PyList_Append(self->stack, str) == -1)
     goto err;
 
-  printf("%d\n", str->ob_refcnt);
   Py_DECREF(str);
-  printf("%d\n", str->ob_refcnt);
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -2689,13 +2675,8 @@ load_put(Unpicklerobject *self, PyObject *args)
   UNLESS(value = PyList_GetItem(self->stack, len - 1))  
     goto err;
 
-  printf("load_put\n");
-  printf("%d\n", value->ob_refcnt);
-
   if (PyDict_SetItem(self->memo, py_str, value) == -1)  
     goto err;
-
-  printf("%d\n", value->ob_refcnt);
 
   Py_DECREF(py_str);
 
@@ -2940,12 +2921,7 @@ load_stop(Unpicklerobject *self, PyObject *args)
   UNLESS(value = PyList_GetItem(self->stack, len - 1))  
     return NULL;
 
-  printf("load_stop\n");
-  printf("%d\n", value->ob_refcnt);
-
   Py_INCREF(value);
-
-  printf("%d\n", value->ob_refcnt);
 
   if (DEL_LIST_SLICE(self->stack, len - 1, len) == -1)
   {
@@ -2953,12 +2929,8 @@ load_stop(Unpicklerobject *self, PyObject *args)
     return NULL;
   }
 
-  printf("%d\n", value->ob_refcnt);
-
   PyErr_SetObject(StopErr, value);
-  printf("%d\n", value->ob_refcnt);
   Py_DECREF(value);
-  printf("%d\n", value->ob_refcnt);
   return NULL;
 }
 
@@ -2977,19 +2949,17 @@ Unpickler_load(Unpicklerobject *self, PyObject *args)
   PyObject *stack = 0, *key = 0, *junk = 0, *err = 0,
            *exc = 0, *val = 0, *tb = 0, *str = 0,
            *key_repr = 0;
+
+  char c;
+
   char *c_str;
+
+  c_str=&c;
 
   UNLESS(stack = PyList_New(0))
     goto err;
 
   self->stack = stack;
-  Py_INCREF(stack);
-
-  UNLESS(c_str = (char *)malloc(sizeof(char)))
-  {
-    PyErr_SetString(PyExc_MemoryError, "out of memory");
-    goto err;
-  }
 
   while (1)
   {
@@ -3187,10 +3157,6 @@ Unpickler_load(Unpicklerobject *self, PyObject *args)
     break;
   }
 
-  free(c_str);
-
-  Py_DECREF(stack);
-
   err = PyErr_Occurred();
 
   if (err == PyExc_EOFError)
@@ -3202,9 +3168,6 @@ Unpickler_load(Unpicklerobject *self, PyObject *args)
     return NULL;
 
   PyErr_Fetch(&exc, &val, &tb);
-
-  printf("Unpickler_load\n");
-  printf("%d\n", val->ob_refcnt);
 
   Py_XDECREF(exc);
   Py_XDECREF(tb);
@@ -3326,7 +3289,6 @@ Unpickler_dealloc(Unpicklerobject *self)
   Py_XDECREF(self->read);
   Py_XDECREF(self->file);
   Py_XDECREF(self->memo);
-  Py_XDECREF(self->mark);
   Py_XDECREF(self->stack);
   Py_XDECREF(self->pers_func);
   free(self->marks);
@@ -3452,7 +3414,7 @@ dumps(PyObject *self, PyObject *args)
   
 
 static PyObject *
-load(PyObject *self, PyObject *args)
+cpm_load(PyObject *self, PyObject *args)
 {
   Unpicklerobject *unpickler;
   PyObject *load_result;
@@ -3469,15 +3431,8 @@ load(PyObject *self, PyObject *args)
     return NULL;
   }
 
-  printf("load\n");
-  printf("%d\n", load_result->ob_refcnt);
+  Py_DECREF(unpickler);
 
-  Unpickler_dealloc(unpickler);
-
-  printf("%d\n", load_result->ob_refcnt);
-
-  Py_INCREF(load_result);
-  Py_INCREF(load_result);
   return load_result;
 }
 
@@ -3547,7 +3502,7 @@ static struct PyMethodDef cPickle_methods[] =
 {
   {"dump",         (PyCFunction)dump,             1, ""},
   {"dumps",        (PyCFunction)dumps,            1, ""},
-  {"load",         (PyCFunction)load,             0, ""},
+  {"load",         (PyCFunction)cpm_load,         0, ""},
   {"loads",        (PyCFunction)loads,            0, ""},
   {"Pickler",      (PyCFunction)get_Pickler,      1, ""},
   {"Unpickler",    (PyCFunction)get_Unpickler,    0, ""},
