@@ -156,7 +156,7 @@ class ProductContext:
         OM=OFS.ObjectManager.ObjectManager
 
         perms={}
-        for p in OM.__ac_permissions__: perms[p[0]]=None
+        for p in Products.__ac_permissions__: perms[p[0]]=None
 
         if permission is None:
             permission="Add %ss" % (meta_type or instance_class.meta_type)
@@ -178,7 +178,8 @@ class ProductContext:
             
             if not perms.has_key(p):
                 perms[p]=None
-                OM.__ac_permissions__=OM.__ac_permissions__+((p,(),default),)
+                Products.__ac_permissions__=(
+                    Products.__ac_permissions__+((p,(),default),))
                 if not hasattr(Globals.ApplicationDefaultPermissions, pr_._p):
                     setattr(Globals.ApplicationDefaultPermissions,
                             pr_._p, default)

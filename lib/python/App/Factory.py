@@ -84,36 +84,50 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.12 1999/07/13 13:40:40 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Factory.py,v 1.13 1999/07/21 13:15:23 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
-import OFS.SimpleItem, Acquisition, Globals
-import Product
+import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
+import Products, Product
 
-class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
+class Factory(
+    AccessControl.Role.RoleManager,
+    Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item
+    ):
     "Model factory meta-data"
     meta_type='Zope Factory'
     icon='p_/Factory_icon'
 
+    permission='' # Waaaa
+
     _setObject=Acquisition.Acquired
+ 
+    __ac_permissions__=(
+        ('Edit Factories', ('manage_edit','manage_main')),
+        ('Use Factories', ('index_html','')),
+        )
 
     manage_options=(
         {'label':'Edit', 'action':'manage_main'},
         {'label':'Security', 'action':'manage_access'},
     )
     
-    def __init__(self, id, title, object_type, initial, product=None):
+    def __init__(self, id, title, object_type, initial, permission=''):
         self.id=id
         self.title=title
         self.object_type=object_type
         self.initial=initial
+        self.permission=permission
 
-    def manage_edit(self, title, object_type, initial, REQUEST=None):
+    def manage_edit(self, title, object_type, initial, permission='',
+                    REQUEST=None):
         "Modify factory properties."
         self._unregister()
         self.title=title
         self.object_type=object_type
         self.initial=initial
+        self.permission=permission
+        self.manage_setPermissionMapping(('Use Factories',), (permission,))
         self._register()
         if REQUEST is not None: return self.manage_main(self, REQUEST)
 
@@ -141,7 +155,7 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         # Register with the product folder
         product=self.aq_parent
         product.aq_acquire('_manage_add_product_meta_type')(
-            product, self.id, self.object_type)
+            product, self.id, self.object_type, self.permission)
 
     def _unregister(self):
         # Unregister with the product folder
@@ -161,7 +175,5 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
             self.aq_parent.objectIds()
             )
 
-
-
-
-
+class ProductFactory(Factory): pass
+    

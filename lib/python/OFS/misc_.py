@@ -114,6 +114,7 @@ class p_:
     BrokenProduct_icon=ImageFile('App/www/brokenProduct.gif')
     Product_icon=ImageFile('App/www/product.gif')
     Factory_icon=ImageFile('App/www/factory.gif')
+    Permission_icon=ImageFile('App/www/permission.gif')
     ProductFolder_icon=ImageFile('App/www/productFolder.gif')
     PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
 

@@ -3,35 +3,38 @@
 <!--#if manage_tabs-->
 <!--#var manage_tabs-->
 <!--#/if manage_tabs-->
+<p>
+Use this view to select permissions used by this class.
+When setting permissions for individual methods or property sheets, 
+you will be able to select from class permissions and inherited permissions.
 
-<form action=.>
-  <table>
 
-    <tr><td></td><th align=left>Permissions:</th></tr>
-    <!--#in classDefinedPermissions sort-->
-      <tr>
-        <td><input type=checkbox name=selected:list 
-                   value="<!--#var sequence-item-->"></td>
-        <td><!--#var sequence-item--></td>
-      </tr>
-    <!--#/in-->
-    <tr><td></td><td>
-      <input type=submit value=" Delete " name="manage_delete:method">
-    </td></tr>
-  </table>
-</form>
-
-<form action=manage_add>
-  Add a new permission:<br>
-  <input name=newPermission>
-  <input type=submit value=" Add ">
-</form>
-
+<form action="manage_edit">
 <table>
-  <tr><th align=left>Inherited Permissions:</th></tr>
+<tr><th align=left>Class permissions</th>
+    <td align=left>Inherited permissions</th>
+</tr>
+<tr>
+<td>
+<dtml-let selected=classDefinedPermissions>
+  <select name="selected:list" multiple size=9>
+    <dtml-in possible_permissions>
+       <option 
+          <dtml-if "_['sequence-item'] in selected">selected</dtml-if>
+       >&dtml-sequence-item;</option>
+    </dtml-in>
+  </select>
+</dtml-let>
+<br>
+<input type=submit value="   Change   ">
+</td>
+<td valign=top>
   <!--#in classInheritedPermissions sort-->
-    <tr><td><em><!--#var sequence-item--></em></td></tr>
+    <em><!--#var sequence-item--></em><br>
   <!--#/in-->
+</td>
+</tr>
 </table>
+</form>
 
 </body></html>

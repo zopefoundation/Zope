@@ -1,0 +1,29 @@
+<html><head><title>Change a permission</title></head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+<!--#var manage_tabs-->
+
+<form action="manage_edit" method="POST">
+<table cellspacing="2">
+
+  <tr>
+    <th align="LEFT" valign="TOP">Id</th>
+    <td align="LEFT" valign="TOP"><!--#var id--></td>
+    </tr>
+
+  <tr>
+    <th align="LEFT" valign="TOP">Title</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="title"
+     size="40" value="<!--#var title-->"></td>
+    </tr>
+  
+  <tr>
+    <th align="LEFT" valign="TOP">Name</th>
+    <td align="LEFT" valign="TOP"><input type="TEXT" name="name"
+     size="40" value="&dtml-name;"></td>
+    </tr>
+
+  <tr><td></td><td><br><input type="SUBMIT" value="Change"></td></tr>
+
+</table></form>
+
+</body></html>

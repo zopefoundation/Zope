@@ -82,3 +82,4 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+__ac_permissions__=()

@@ -82,112 +82,79 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''short description
+__doc__='''Zope registerable permissions
 
+$Id: Permission.py,v 1.1 1999/07/21 13:15:24 jim Exp $'''
+__version__='$Revision: 1.1 $'[11:-2]
 
-$Id: Permission.py,v 1.6 1999/07/21 13:13:28 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+import OFS.SimpleItem, Acquisition, Globals, ExtensionClass, AccessControl.Role
 
-from Globals import HTMLFile, MessageDialog
-from string import join, strip, split, find
-from Acquisition import Implicit
-import Globals, string
+class Permission(
+    AccessControl.Role.RoleManager,
+    Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item
+    ):
+    "Model Permission meta-data"
+    meta_type='Zope Permission'
+    icon='p_/Permission_icon'
 
-ListType=type([])
-
-
-name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
-                  map(chr,range(256)))
-name_trans=string.maketrans(string.join(name_trans,''), '_'*len(name_trans))
-
-def pname(name, translate=string.translate, name_trans=name_trans):
-    return '_'+translate(name,name_trans)+"_Permission"
-
-_marker=[]
-class Permission:
-    # A Permission maps a named logical permission to a set
-    # of attribute names. Attribute names which appear in a
-    # permission may not appear in any other permission defined
-    # by the object.
-
-    def __init__(self,name,data,obj,default=None):
+    manage_options=(
+        {'label':'Edit', 'action':'manage_main'},
+        {'label':'Security', 'action':'manage_access'},
+    )
+    
+    def __init__(self, id, title, name):
+        self.id=id
+        self.title=title
         self.name=name
-        self._p='_'+string.translate(name,name_trans)+"_Permission"
-        self.data=data
-        if hasattr(obj, 'aq_base'): obj=obj.aq_base
-        self.obj=obj
-        self.default=default
 
-    def getRoles(self, default=_marker):
-        # Return the list of role names which have been given
-        # this permission for the object in question. To do
-        # this, we try to get __roles__ from all of the object
-        # attributes that this permission represents.
-        obj=self.obj
-        name=self._p
-        if hasattr(obj, name): return getattr(obj, name)
-        roles=default
-        for name in self.data:
-            if name:
-                if hasattr(obj, name):
-                    attr=getattr(obj, name)
-                    if hasattr(attr,'im_self'):
-                        attr=attr.im_self
-                        if hasattr(attr, '__dict__'):
-                            attr=attr.__dict__
-                            name=name+'__roles__'
-                            if attr.has_key(name):
-                                roles=attr[name]
-                                break
-            elif hasattr(obj, '__dict__'):
-                attr=obj.__dict__
-                if attr.has_key('__roles__'):
-                    roles=attr['__roles__']
-                    break
+    def manage_edit(self, title, name, REQUEST=None):
+        "Modify Permission properties."
+        if title != self.title: self.title=title
+        if name != self.name:
+            self._unregister()
+            self.name=name
+            self._register()
+        if REQUEST is not None: return self.manage_main(self, REQUEST)
 
-        if roles:
-            try:
-                if 'Shared' not in roles: return tuple(roles)
-                roles=list(roles)
-                roles.remove('Shared')
-                return roles
-            except: return []
+    def manage_afterAdd(self, item, container):
+        self._register()
 
-        if roles is None: return ['Manager','Anonymous']
-        if roles is _marker: return ['Manager']
-                                
-        return roles
+    def manage_beforeDelete(self, item, container):
+        self._unregister()
 
-    def setRoles(self, roles):
-        obj=self.obj
+    def _register(self):
+        # Register with the product folder
+        product=self.aq_parent
+        product.aq_acquire('_manage_add_product_permission')(
+            product, self.name)
 
-        if type(roles) is ListType and not roles:
-            if hasattr(obj, self._p): delattr(obj, self._p)
-        else:
-            setattr(obj, self._p, roles)
-        
-        for name in self.data:
-            if name=='': attr=obj
-            else: attr=getattr(obj, name)
-            try: del attr.__roles__
-            except: pass
-            try: delattr(obj,name+'__roles__')
-            except: pass
+    def _unregister(self):
+        # Unregister with the product folder
+        product=self.aq_parent
+        product.aq_acquire('_manage_remove_product_permission')(
+            product, self.name)
 
-    def setRole(self, role, present):
-        roles=self.getRoles()
-        if role in roles:
-            if present: return
-            if type(roles) is ListType: roles.remove(role)
-            else:
-                roles=list(roles)
-                roles.remove(role)
-                roles=tuple(roles)
-        elif not present: return
-        else:
-            if type(roles) is ListType: roles.append(role)
-            else: roles=roles+(role,)
-        self.setRoles(roles)
-                
-    def __len__(self): return 1
-    def __str__(self): return self.name
+    manage_main=Globals.HTMLFile('editPermission',globals())
+
+    index_html=None
+
+class PermissionManager(ExtensionClass.Base):
+
+    __ac_permissions__=(
+        ('Define permissions',
+         ('manage_addPermissionForm', 'manage_addPermission')),
+        )
+
+    meta_types={
+        'name': Permission.meta_type, 'action': 'manage_addPermissionForm'
+        },
+
+    manage_addPermissionForm=Globals.HTMLFile('addPermission',globals())
+    def manage_addPermission(
+        self, id, title, permission, REQUEST=None):
+        ' '
+        i=Permission(id, title, permission)
+        self._setObject(id,i)
+        if REQUEST is not None:
+            return self.manage_main(self,REQUEST,update_menu=1)
+    

@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.60 1999/07/19 05:58:34 amos Exp $'''
-__version__='$Revision: 1.60 $'[11:-2]
+$Id: SimpleItem.py,v 1.61 1999/07/21 13:17:43 jim Exp $'''
+__version__='$Revision: 1.61 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -317,21 +317,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
 
     def __len__(self):
         return 1
-            
-    def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
-        try:
-            if hasattr(self, 'aq_self'):
-                r=self.aq_acquire('_isBeingUsedAsAMethod_')
-            else:
-                r=self._isBeingUsedAsAMethod_
-        except: r=0
-
-        if REQUEST is not None:
-            if not r != (not wannaBe): REQUEST.response.notFoundError()
-
-        return r
-        
-        
+       
 
 Globals.default__class_init__(Item)
 

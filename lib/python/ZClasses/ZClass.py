@@ -204,7 +204,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     isPrincipiaFolderish=1
  
     __ac_permissions__=(
-	('View',                    ('', '__call__', 'index_html')     ),
+	('Create class instances',
+         ('', '__call__', 'index_html', 'createInObjectManager')),
 	)
 
     def __init__(self, id, title, bases):

@@ -82,112 +82,126 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''short description
+"""Permission Mapping
 
+Sometimes, we need an object's permissions to be remapped to other permissions
+when the object is used in specual ways.  This is rather hard, since we
+need the object's ordinary permissions intact so we can manage it.
+"""
 
-$Id: Permission.py,v 1.6 1999/07/21 13:13:28 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+import ExtensionClass, Acquisition
+from AccessControl.Permission import pname
 
-from Globals import HTMLFile, MessageDialog
-from string import join, strip, split, find
-from Acquisition import Implicit
-import Globals, string
+class RoleManager:
 
-ListType=type([])
-
-
-name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
-                  map(chr,range(256)))
-name_trans=string.maketrans(string.join(name_trans,''), '_'*len(name_trans))
-
-def pname(name, translate=string.translate, name_trans=name_trans):
-    return '_'+translate(name,name_trans)+"_Permission"
-
-_marker=[]
-class Permission:
-    # A Permission maps a named logical permission to a set
-    # of attribute names. Attribute names which appear in a
-    # permission may not appear in any other permission defined
-    # by the object.
-
-    def __init__(self,name,data,obj,default=None):
-        self.name=name
-        self._p='_'+string.translate(name,name_trans)+"_Permission"
-        self.data=data
-        if hasattr(obj, 'aq_base'): obj=obj.aq_base
-        self.obj=obj
-        self.default=default
-
-    def getRoles(self, default=_marker):
-        # Return the list of role names which have been given
-        # this permission for the object in question. To do
-        # this, we try to get __roles__ from all of the object
-        # attributes that this permission represents.
-        obj=self.obj
-        name=self._p
-        if hasattr(obj, name): return getattr(obj, name)
-        roles=default
-        for name in self.data:
-            if name:
-                if hasattr(obj, name):
-                    attr=getattr(obj, name)
-                    if hasattr(attr,'im_self'):
-                        attr=attr.im_self
-                        if hasattr(attr, '__dict__'):
-                            attr=attr.__dict__
-                            name=name+'__roles__'
-                            if attr.has_key(name):
-                                roles=attr[name]
-                                break
-            elif hasattr(obj, '__dict__'):
-                attr=obj.__dict__
-                if attr.has_key('__roles__'):
-                    roles=attr['__roles__']
-                    break
-
-        if roles:
-            try:
-                if 'Shared' not in roles: return tuple(roles)
-                roles=list(roles)
-                roles.remove('Shared')
-                return roles
-            except: return []
-
-        if roles is None: return ['Manager','Anonymous']
-        if roles is _marker: return ['Manager']
-                                
-        return roles
-
-    def setRoles(self, roles):
-        obj=self.obj
-
-        if type(roles) is ListType and not roles:
-            if hasattr(obj, self._p): delattr(obj, self._p)
-        else:
-            setattr(obj, self._p, roles)
         
-        for name in self.data:
-            if name=='': attr=obj
-            else: attr=getattr(obj, name)
-            try: del attr.__roles__
-            except: pass
-            try: delattr(obj,name+'__roles__')
-            except: pass
+    def manage_getPermissionMapping(self):
+        """Return the permission mapping for the object
 
-    def setRole(self, role, present):
-        roles=self.getRoles()
-        if role in roles:
-            if present: return
-            if type(roles) is ListType: roles.remove(role)
+        This is a list of dictionaries with:
+
+          permission_name -- The name of the native object permission
+
+          class_permission -- The class permission the permission is
+             mapped to.
+        """
+        wrapper=getattr(self, '_permissionMapper', None)
+        if wrapper is None: wrapper=PM()
+
+        perms={}
+        for p in self.possible_permissions():
+            perms[pname(p)]=p
+        
+        r=[]
+        a=r.append
+        for ac_perms in self.ac_inherited_permissions(1):
+            p=perms.get(getPermissionMapping(ac_perms[0], wrapper), '')
+            a({'permission_name': ac_perms[0], 'class_permission': p})
+        return r
+
+    def manage_setPermissionMapping(self,
+                                    permission_names=[],
+                                    class_permissions=[], REQUEST=None):
+        """Change the permission mapping
+        """
+        wrapper=getattr(self, '_permissionMapper', None)
+        if wrapper is None: wrapper=PM()
+
+        perms=self.possible_permissions()
+        for i in range(len(permission_names)):
+            name=permission_names[i]
+            p=class_permissions[i]
+            if p and (p not in perms):
+                __traceback_info__=perms, p, i
+                raise 'waaa'
+
+            setPermissionMapping(name, wrapper, p)
+
+        self._permissionMapper=wrapper
+
+        if REQUEST is not None:
+            return self.manage_access(
+                self, REQUEST, 
+                manage_tabs_message='The permission mapping has been updated')
+
+    def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
+        try:
+            if hasattr(self, 'aq_self'):
+                r=self.aq_acquire('_isBeingUsedAsAMethod_')
             else:
-                roles=list(roles)
-                roles.remove(role)
-                roles=tuple(roles)
-        elif not present: return
-        else:
-            if type(roles) is ListType: roles.append(role)
-            else: roles=roles+(role,)
-        self.setRoles(roles)
-                
-    def __len__(self): return 1
-    def __str__(self): return self.name
+                r=self._isBeingUsedAsAMethod_
+        except: r=0
+
+        if REQUEST is not None:
+            if not r != (not wannaBe): REQUEST.response.notFoundError()
+
+        return r
+ 
+def getPermissionMapping(name, obj, st=type('')):
+    obj=getattr(obj, 'aq_base', obj)
+    name=pname(name)
+    r=getattr(obj, name, '')
+    if type(r) is not st: r=''
+    return r
+
+def setPermissionMapping(name, obj, v):
+    name=pname(name)
+    if v: setattr(obj, name, pname(v))
+    elif obj.__dict__.has_key(name): delattr(obj, name)
+
+class PM(ExtensionClass.Base):
+    _View_Permission='_View_Permission'
+        
+    def __getattr__(self, name):
+        # We want to make sure that any non-explicitly set methods are
+        # private!
+        if name[:1]=='_' and name[-11:]=="_Permission": return ''
+        raise AttributeError, name
+        
+PermissionMapper=PM
+
+def aqwrap(object, wrapper, parent):
+    r=Rewrapper()
+    r._ugh=wrapper, object, parent
+    return r
+
+class Rewrapper(ExtensionClass.Base):
+    def __of__(self, parent):
+        w, m, p = self._ugh
+        return m.__of__(
+            Acquisition.ImplicitAcquisitionWrapper(
+                w, parent))
+
+    def __getattr__(self, name):
+        w, m, parent = self._ugh
+        self=m.__of__(
+            Acquisition.ImplicitAcquisitionWrapper(
+                w, parent))
+        return getattr(self, name)
+
+    def __call__(self, *args, **kw):
+        w, m, parent = self._ugh
+        self=m.__of__(
+            Acquisition.ImplicitAcquisitionWrapper(
+                w, parent))
+        return apply(self, args, kw)

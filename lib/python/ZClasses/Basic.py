@@ -87,7 +87,7 @@
 
 import Globals, OFS.PropertySheets, OFS.Image, ExtensionClass
 from string import split, join, strip
-import Acquisition
+import Acquisition, Products
 
 class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
                        OFS.PropertySheets.View):
@@ -98,7 +98,9 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
 
     manage=Globals.HTMLFile('itemProp', globals())
     def manage_edit(self, meta_type='', icon='', file='',
-                    class_id=None, title=None, REQUEST=None):
+                    class_id=None, title=None,
+                    selected=(),
+                    REQUEST=None):
         """Set basic item properties.
         """
         if meta_type: self.setClassAttr('meta_type', meta_type)
@@ -237,53 +239,27 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
         
     manage=Globals.HTMLFile('classPermissions', globals())
 
-    def manage_delete(self, selected=[], REQUEST=None):
+    def possible_permissions(self):
+        r=map(
+            lambda p: p[0],
+            Products.__ac_permissions__+
+            self.aq_acquire('_getProductRegistryData')('ac_permissions')
+            )
+        r.sort()
+        return r
+
+    def manage_edit(self, selected=[], REQUEST=None):
         "Remove some permissions"
-        perms=self.classDefinedPermissions()
-        changed=0
-        message=[]
-        for s in selected:
-            if s in perms:
-                perms.remove(s)
-                changed=1
-            else: message.append('Invalid permission: %s' % s)
-                
-        if changed:
-            self.setClassAttr(
-                '__ac_permissions__',
-                tuple(map(lambda p: (p,()), perms))
-                )
-        else:
-            message.append('Permissions are unchanged.')
+        r=[]
+        for p in (
+            Products.__ac_permissions__+
+            self.aq_acquire('_getProductRegistryData')('ac_permissions')):
+            if p[0] in selected:
+                r.append(p)
+            
+        self.setClassAttr('__ac_permissions__', tuple(r))
 
-        if message: message=join(message, '<br>\n')
+        return self.manage(self, REQUEST,
+                           manage_tabs_message="Permissions updated")
 
-        return self.manage(self, REQUEST, manage_tabs_message=message)
-
-    def manage_add(self, REQUEST, newPermission=''):
-        "Remove some permissions"
-        perms=self.classDefinedPermissions()
-        aperms=perms+self.classInheritedPermissions()
-        changed=0
-        message=[]
-
-        newPermission=strip(newPermission)
-        if newPermission:
-            if newPermission in aperms:
-                message.append('The new permission, %s, is already in use'
-                               % newPermission)
-            else:
-                perms.append(newPermission)
-                changed=1
-                
-        if changed:
-            self.setClassAttr(
-                '__ac_permissions__',
-                tuple(map(lambda p: (p,()), perms))
-                )
-        else:
-            message.append('Permissions are unchanged.')
-        if message: message=join(message, '<br>\n')
-        return self.manage(self, REQUEST, manage_tabs_message=message)
-        
     

@@ -84,19 +84,19 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
 from Acquisition import Implicit
-import Globals, ExtensionClass
+import Globals, ExtensionClass, PermissionMapping, Products
 from Permission import Permission
 from App.Common import aq_base
 
 ListType=type([])
 
-class RoleManager(ExtensionClass.Base):
+class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     """An obect that has configurable permissions"""
 
     __ac_permissions__=(
@@ -132,8 +132,15 @@ class RoleManager(ExtensionClass.Base):
             
         r=gather_permissions(self.__class__, [], d)
         if all:
-            r=list(perms)+r
-            r.sort()
+           if hasattr(self, '_subobject_permissions'):
+               for p in self._subobject_permissions():
+                   pname=p[0]
+                   if not d.has_key(pname):
+                       d[pname]=1
+                       r.append(p)
+            
+           r=list(perms)+r
+           r.sort()
             
         return tuple(r)
 
@@ -493,6 +500,16 @@ class RoleManager(ExtensionClass.Base):
 
     def _setRoles(self,acl_type,acl_roles):
         pass
+
+    def possible_permissions(self):
+        r=map(
+            lambda p: p[0],
+            Products.__ac_permissions__+
+            self.aq_acquire('_getProductRegistryData')('ac_permissions')
+            )
+        r.sort()
+        return r
+
 
 Globals.default__class_init__(RoleManager)
 

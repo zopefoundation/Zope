@@ -106,11 +106,12 @@
 #   on restart if there is still a product directory.
 
 
-import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition
+import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition, Products
 from OFS.Folder import Folder
 import regex, zlib, Globals, cPickle, marshal, rotor
 from string import rfind, atoi, find, strip, join
 from Factory import Factory
+from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
 
 class ProductFolder(Folder):
@@ -145,7 +146,7 @@ class ProductFolder(Folder):
     def _canCopy(self, op=0):
         return 0
 
-class Product(Folder):
+class Product(Folder, PermissionManager):
     """Model a product that can be created through the web.
     """
     meta_type='Product'
@@ -153,6 +154,7 @@ class Product(Folder):
     version=''
     configurable_objects_=()
     import_error_=None
+    _isBeingUsedAsAMethod_=1
 
     def new_version(self,
                     _intending=regex.compile("[.]?[0-9]+$").search, #TS
@@ -166,7 +168,7 @@ class Product(Folder):
                     
     
     meta_types=(
-        ZClasses.meta_types+
+        ZClasses.meta_types+PermissionManager.meta_types+
         (
             {
                 'name': Factory.meta_type,
@@ -197,9 +199,9 @@ class Product(Folder):
 
     manage_addPrincipiaFactoryForm=Globals.HTMLFile('addFactory',globals())
     def manage_addPrincipiaFactory(
-        self, id, title, object_type, initial, REQUEST=None):
+        self, id, title, object_type, initial, permission=None, REQUEST=None):
         ' '
-        i=Factory(id, title, object_type, initial)
+        i=Factory(id, title, object_type, initial, permission)
         self._setObject(id,i)
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
@@ -308,6 +310,9 @@ class Product(Folder):
                 SOFTWARE_HOME, 'Products', self.id,'README.txt'
                 )).read()
         except: return ''
+
+    def permissionMappingPossibleValues(self):
+        return self.possible_permissions()
 
 class CompressedOutputFile:
     def __init__(self, rot):

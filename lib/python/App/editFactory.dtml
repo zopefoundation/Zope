@@ -1,42 +1,56 @@
 <html><head><title>Change a factory</title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
-<!--#var manage_tabs-->
+<dtml-var manage_tabs>
 
 <form action="manage_edit" method="POST">
 <table cellspacing="2">
 
   <tr>
     <th align="LEFT" valign="TOP">Id</th>
-    <td align="LEFT" valign="TOP"><!--#var id--></td>
+    <td align="LEFT" valign="TOP"><dtml-var id></td>
     </tr>
 
   <tr>
     <th align="LEFT" valign="TOP">Title</th>
     <td align="LEFT" valign="TOP"><input type="TEXT" name="title"
-     size="40" value="<!--#var title-->"></td>
+     size="40" value="<dtml-var title>"></td>
     </tr>
   
   <tr>
     <th align="LEFT" valign="TOP">Add list name</th>
     <td align="LEFT" valign="TOP"><input type="TEXT" name="object_type"
-     size="40" value="<!--#var object_type-->"></td>
+     size="40" value="<dtml-var object_type>"></td>
     </tr>
   
-  <tr><th ALIGN="LEFT">Method</th>
+  <tr><th ALIGN="LEFT">Initial method</th>
       <td ALIGN="LEFT">
       <select name="initial">
-	<!--#in objectIds-->
+	<dtml-in objectIds>
 	   <option
-	   <!--#if expr="_.string.strip(_['sequence-item'])==initial"-->SELECTED<!--#/if-->
-           ><!--#var sequence-item--></option>
-	<!--#/in-->
+	   <dtml-if expr="_.string.strip(_['sequence-item'])==initial">
+              SELECTED</dtml-if>
+           ><dtml-var sequence-item></option>
+	</dtml-in>
       </select></td></tr>
+
+  <tr>
+    <th align="LEFT" valign="TOP">Permission</th>
+    <td align="LEFT" valign="TOP">
+      <select name=permission>
+         <dtml-in possible_permissions>
+            <option 
+            <dtml-if "_['sequence-item']==permission">selected</dtml-if>
+            ><dtml-var sequence-item></option>
+         </dtml-in>
+      </select>
+    </td>
+    </tr>
 
   <tr><td></td><td><br><input type="SUBMIT" value="Change"></td></tr>
 
 </table></form>
 
-The <strong>Method</strong> is the method that will be invoked when a
+The <strong>initial method</strong> is the method that will be invoked when a
 user adds a new object.  This must be one of the objects in the
 product, typically a Document.
 

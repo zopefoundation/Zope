@@ -84,11 +84,11 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.78 1999/07/19 05:58:34 amos Exp $"""
+$Id: ObjectManager.py,v 1.79 1999/07/21 13:17:43 jim Exp $"""
 
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
-import App.Management, Acquisition, App.Undo, Globals, CopySupport
+import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
@@ -168,6 +168,12 @@ class ObjectManager(
             try: pmt=self.aq_acquire('_product_meta_types')
             except:  pass
         return self.meta_types+Products.meta_types+pmt
+
+    def _subobject_permissions(self):
+        return (Products.__ac_permissions__+
+                self.aq_acquire('_getProductRegistryData')('ac_permissions')
+                )
+
 
     def filtered_meta_types(self, user):
         "Those meta types for which a user has adequite permissions."

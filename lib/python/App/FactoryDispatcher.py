@@ -87,6 +87,7 @@
 # Implement the manage_addProduct method of object managers
 import Acquisition, sys
 from string import rfind
+from AccessControl.PermissionMapping import aqwrap
 
 class ProductDispatcher(Acquisition.Implicit):
     " "
@@ -129,7 +130,12 @@ class FactoryDispatcher(Acquisition.Implicit):
         p=self.__dict__['_product']
         d=p.__dict__
         if hasattr(p,name) and d.has_key(name):
-            return d[name]
+            m=d[name]
+            w=getattr(m, '_permissionMapper', None)
+            if w is not None:
+                m=ofWrapper(aqwrap(m, getattr(w,'aq_base',w), self))
+    
+            return m
 
         # Waaa
         m='Products.%s' % p.id
@@ -149,6 +155,11 @@ class FactoryDispatcher(Acquisition.Implicit):
         REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
 
 
+import ExtensionClass
+class ofWrapper(ExtensionClass.Base):
+    def __init__(self, o):
+        self._o=o
 
+    def __of__(self, parent): return self.__dict__['_o']
 
 

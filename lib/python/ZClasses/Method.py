@@ -90,6 +90,7 @@ from AccessControl.Permission import pname
 from string import strip
 import App.Dialogs, ZClasses, App.Factory, App.Product, App.ProductRegistry
 from ZClassOwner import ZClassOwner
+from AccessControl.PermissionMapping import aqwrap, PermissionMapper
 
 _marker=[]
 class ZClassMethodsSheet(
@@ -121,9 +122,9 @@ class ZClassMethodsSheet(
         )
     
     def manage_addPrincipiaFactory(
-        self, id, title, object_type, initial, REQUEST=None):
+        self, id, title, object_type, initial, permission=None, REQUEST=None):
         ' '
-        i=App.Factory.Factory(id, title, object_type, initial, self)
+        i=App.Factory.Factory(id, title, object_type, initial, permission)
         self._setObject(id,i)
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
@@ -149,6 +150,8 @@ class ZClassMethodsSheet(
         if REQUEST is not None and wannaBe: REQUEST.response.notFoundError()
         return 0
 
+    def permissionMappingPossibleValues(self):
+        return self.classDefinedAndInheritedPermissions()
 
     def meta_type(self):
         return self.aq_inner.aq_parent.aq_parent.meta_type
@@ -181,7 +184,7 @@ class ZClassMethodsSheet(
         return id+' '
 
     def _setOb(self, id, object):
-        self.setClassAttr(strip(id), PermissionMapper(object))
+        self.setClassAttr(strip(id), MW(object))
 
     def _delOb(self, id):
         self.delClassAttr(strip(id))
@@ -197,18 +200,31 @@ class ZClassMethodsSheet(
         self._delOb(id)
 
     def _getOb(self, id, default=_marker):
-        if default is _marker: r=self.getClassAttr(strip(id))
+        if default is _marker:
+            r=self.getClassAttr(strip(id))
         else:
             try: r=self.getClassAttr(strip(id))
             except: return default
 
         if hasattr(r, methodattr):
-            w=PermissionMapperManager(r)
-            self=w.__of__(self)
-            r=getattr(r, methodattr)
+            m=r.__dict__[methodattr]
+            if r.__class__ is W:
+                # Ugh, we need to convert an old wrapper to a new one
+                wrapper=getattr(m, '_permissionMapper', None)
+                if wrapper is None: wrapper=PermissionMapper()
 
-        if hasattr(r,'aq_base'): r=r.aq_base
-        return r.__of__(self)
+                for k, v in r.__dict__.items():
+                    if k[:1]=='_' and k[-11:]=='_Permission':
+                        setattr(wrapper, k, v)
+
+                m._permissionMapper=wrapper
+
+                mw=MW(m)
+                self.setClassAttr(strip(id), mw)
+
+            r=m
+
+        return getattr(r, 'aq_base', r).__of__(self)
 
     def __bobo_traverse__(self, request, name):
         if hasattr(self, 'aq_base'):
@@ -217,6 +233,9 @@ class ZClassMethodsSheet(
         
         try: return self[name]
         except: return getattr(self, name) 
+
+    def possible_permissions(self):
+        return self.classDefinedAndInheritedPermissions()
 
 default_dm_html='''<html>
 <head><title><!--#var document_title--></title></head>
@@ -231,11 +250,30 @@ the <!--#var title_and_id--> Folder.</P>
 
 methodattr='_ZClassMethodPermissionMapperMethod_'
 
-class W(Globals.Persistent):
-
-    _View_Permission='_View_Permission'
+class MW(ExtensionClass.Base):
 
     def __init__(self, meth): self.__dict__[methodattr]=meth
+            
+    def __of__(self, parent):
+        m=getattr(self, methodattr)
+        m=self.__dict__[methodattr]
+        wrapper=getattr(m, '_permissionMapper', None)
+        if wrapper is None: wrapper=PermissionMapper()
+        if hasattr(m,'__of__'): return aqwrap(m, wrapper, parent)
+        return m
+
+
+def findMethodIds(klass):
+    r=[]
+    for k, v in klass.__dict__.items():
+        if type(v) is W or type(v) is MW: r.append(k)
+
+    return r
+
+# Backward compat. Waaaaa
+class W(Globals.Persistent, MW):
+
+    _View_Permission='_View_Permission'
         
     def __getattr__(self, name):
         # We want to make sure that any non-explicitly set methods are
@@ -251,102 +289,6 @@ class W(Globals.Persistent):
     def __of__(self, parent):
         m=getattr(self, methodattr)
         m=self.__dict__[methodattr]
-        if hasattr(m,'__of__'): 
-            r=Helper()
-            r._ugh=self, m, parent
-            return r
+        if hasattr(m,'__of__'): return aqwrap(m, self, parent)
         return m
-
-PermissionMapper=W
-
-class Helper(ExtensionClass.Base):
-    def __of__(self, parent):
-        w, m, p = self._ugh
-        return m.__of__(
-            Acquisition.ImplicitAcquisitionWrapper(
-                w, parent))
-
-    def __getattr__(self, name):
-        w, m, parent = self._ugh
-        self=m.__of__(
-            Acquisition.ImplicitAcquisitionWrapper(
-                w, parent))
-        return getattr(self, name)
-
-    def __call__(self, *args, **kw):
-        w, m, parent = self._ugh
-        self=m.__of__(
-            Acquisition.ImplicitAcquisitionWrapper(
-                w, parent))
-        return apply(self, args, kw)
-        
-class PermissionMapperManager(Acquisition.Implicit):
-    def __init__(self, wrapper): self._wrapper___=wrapper
-
-    def manage_getPermissionMapping(self):
-        """Return the permission mapping for the object
-
-        This is a list of dictionaries with:
-
-          permission_name -- The name of the native object permission
-
-          class_permission -- The class permission the permission is
-             mapped to.
-        """
-        wrapper=self.__dict__['_wrapper___']
-        method=getattr(wrapper, methodattr)
-        
-        # ugh
-        perms={}
-        for p in self.classDefinedAndInheritedPermissions():
-            perms[pname(p)]=p
-        
-        r=[]
-        a=r.append
-        for ac_perms in method.ac_inherited_permissions(1):
-            p=perms.get(getPermissionMapping(ac_perms[0], wrapper), '')
-            a({'permission_name': ac_perms[0], 'class_permission': p})
-        return r
-
-    def manage_setPermissionMapping(trueself, self,
-                                    permission_names=[],
-                                    class_permissions=[], REQUEST=None):
-        """Change the permission mapping
-        """
-        wrapper=trueself.__dict__['_wrapper___']
-
-        perms=trueself.classDefinedAndInheritedPermissions()
-        for i in range(len(permission_names)):
-            name=permission_names[i]
-            p=class_permissions[i]
-            if p and (p not in perms):
-                __traceback_info__=perms, p, i
-                raise 'waaa'
-
-                p=''
-            setPermissionMapping(name, wrapper, p)
-
-        if REQUEST is not None:
-            return self.manage_access(
-                self, REQUEST, 
-                manage_tabs_message='The permission mapping has been updated')
     
-
-def getPermissionMapping(name, obj, st=type('')):
-    if hasattr(obj, 'aq_base'): obj=obj.aq_base
-    name=pname(name)
-    r=getattr(obj, name)
-    if type(r) is not st: r=''
-    return r
-
-def setPermissionMapping(name, obj, v):
-    name=pname(name)
-    if v: setattr(obj, name, pname(v))
-    elif obj.__dict__.has_key(name): delattr(obj, name)
-
-def findMethodIds(klass):
-    r=[]
-    for k, v in klass.__dict__.items():
-        if type(v) is PermissionMapper: r.append(k)
-
-    return r
