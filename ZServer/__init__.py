@@ -83,7 +83,11 @@
 # 
 ##############################################################################
 
-from medusa import max_sockets
+import sys
+from medusa import max_sockets, asyncore
+
+# We need to make sure *our* asyncore is *the* asyncore
+sys.modules['asyncore']=asyncore
 
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
