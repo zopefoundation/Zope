@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -453,7 +453,7 @@ class PythonScript(Script, Historical, Cacheable):
 
     def params(self): return self._params
     def body(self): return self._body
-    def get_size(self): return len(self._body)
+    def get_size(self): return len(self.read())
     getSize = get_size
 
     def PrincipiaSearchSource(self):

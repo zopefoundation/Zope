@@ -153,6 +153,10 @@ class TestPythonScriptNoAq(unittest.TestCase):
         true = self._newPS(readf('boolean_map'))()
         assert true
 
+    def testGetSize(self):
+        f = self._newPS(readf('complex_print'))
+        self.assertEqual(f.get_size(),len(f.read()))
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestPythonScriptNoAq ) )
