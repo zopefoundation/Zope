@@ -91,7 +91,7 @@ from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
 from zLOG import LOG, WARNING
-import string, os.path
+import string, os.path, re
 import stat
 from DateTime import DateTime
 
@@ -305,7 +305,8 @@ class ProductContext:
         if getattr(h, 'title', None) != title:
             h.title = title
 
-    def registerHelp(self, directory='help', clear=1):
+    def registerHelp(self, directory='help', clear=1,
+            title_re=re.compile(r'<title>(.+?)</title>', re.I)):
         """
         Registers Help Topics for all objects in a directory.
 
@@ -348,10 +349,22 @@ class ProductContext:
             ext=os.path.splitext(file)[1]
             ext=string.lower(ext)
             if ext in ('.dtml',):
+                contents = open(os.path.join(path,file),'rb').read()
+                m = title_re.search(contents)
+                if m:
+                    title = m.group(1)
+                else:
+                    title = ''
                 ht=HelpTopic.DTMLTopic(file, '', os.path.join(path,file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.html', '.htm'):
-                ht=HelpTopic.TextTopic(file, '', os.path.join(path,file))
+                contents = open(os.path.join(path,file),'rb').read()
+                m = title_re.search(contents)
+                if m:
+                    title = m.group(1)
+                else:
+                    title = ''
+                ht=HelpTopic.TextTopic(file, title, os.path.join(path,file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.stx', '.txt'):
                 title=string.split(open(os.path.join(path,file),'rb').readline(), ':')[0]
