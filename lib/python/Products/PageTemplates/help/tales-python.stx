@@ -2,12 +2,73 @@ TALES Python expressions
 
   Syntax
 
-    XXX
+    Python expression syntax::
+
+      XXX
 
   Description
   
-    XXX
+    Python expressions evaluate Python code in a security-restricted
+    environment. Python expressions offer the same facilities as those
+    available in Python-based Scripts and DTML variable expressions.
+
+    Security Restrictions
+
+      XXX
+
+    Built-in Functions
+
+      Python expressions have the same built-ins as Python-based
+      scripts with a few additions.
+
+      These standard Python built-ins are available: 'None', 'abs',
+      'apply', 'callable', 'chr', 'cmp', 'complex', 'delattr',
+      'divmod', 'filter', 'float', 'getattr', 'hash', 'hex', 'int',
+      'isinstance', 'issubclass', 'list', 'len', 'long', 'map', 'max',
+      'min', 'oct', 'ord', 'repr', 'round', 'setattr', 'str', 'tuple'.
+
+      The 'range' and 'pow' functions are available and work the same
+      way they do in standard Python; however, they are limited to
+      keep them from generating very large numbers and sequences. This
+      limitation helps protect against denial of service attacks.
+
+      In addition, these DTML utility functions are available:
+      'DateTime', 'test', 'namespace', 'render'. See XXX for more
+      information on these functions.
+
+      Finally, these functions are available in Python expressions,
+      but not in Python-based scripts:
+
+      'path(string)' -- Evaluate a TALES "path":tales-path.stx
+      expression.
+
+      'string(string)' -- Evaluate a TALES "string":tales-string.stx
+      expression.
+
+      'exists(string)' -- Evaluates a TALES "exists":tales-exists.stx
+      expression.
+
+      'nocall(string)' -- Evaluates a TALES "nocall":tales-nocall.stx
+      expression.
+
+    Python Modules
+
+      string -- XXX
+
+      random -- XXX
+
+      math -- XXX
+
+      Products.PythonScripts.standard -- XXX
+
+      ZPTUtils.* -- XXX
+
+      AccessControl.XXX -- XXX
 
   Examples
+
+    XXX
+
+  See Also
 
     XXX
