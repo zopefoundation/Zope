@@ -14,6 +14,7 @@
 
 $Id$
 """
+
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
 from DateTime import DateTime
@@ -323,10 +324,10 @@ class AppInitializer:
 
     def install_tempfolder_and_sdc(self):
         app = self.getApp()
-        from Products.ZODBMountPoint.MountedObject \
-             import manage_addMounts, MountedObject
-        from Products.ZODBMountPoint.MountedObject \
-             import getConfiguration as getDBTabConfiguration
+        from Products.ZODBMountPoint.MountedObject import manage_addMounts,\
+             MountedObject
+        from Products.ZODBMountPoint.MountedObject import getConfiguration as \
+             getDBTabConfiguration
 
         dbtab_config = getDBTabConfiguration()
 
