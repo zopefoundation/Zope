@@ -12,3 +12,5 @@ from Attr import Attribute
 from Method import Method
 
 from Exceptions import BrokenImplementation
+
+from pprint import interface_as_stx
