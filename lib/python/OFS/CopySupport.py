@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -157,6 +157,20 @@ class CopyContainer(ExtensionClass.Base):
             return self.manage_main(self, REQUEST, cb_dataValid=1)
         return cp
 
+    def _get_id(self, id):
+        # Allow containers to override the generation of
+        # object copy id by attempting to call its _get_id
+        # method, if it exists.
+        n=0
+        if (len(id) > 8) and (id[8:]=='copy_of_'):
+            n=1
+        orig_id=id
+        while 1:
+            if self._getOb(id, None) is None:
+                return id
+            id='copy%s_of_%s' % (n and n+1 or '', orig_id)
+            n=n+1
+
     def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
         """Paste previously copied objects into the current object.
            If calling manage_pasteObjects from python code, pass
@@ -197,7 +211,7 @@ class CopyContainer(ExtensionClass.Base):
                      raise CopyError, eNotSupported % absattr(ob.id)
                 ob=ob._getCopy(self)
                 ob.manage_afterClone(ob)
-                id=_get_id(self, absattr(ob.id))
+                id=self._get_id(absattr(ob.id))
                 ob._setId(id)
                 self._setObject(id, ob)
                 #ob=ob.__of__(self)
@@ -216,7 +230,8 @@ class CopyContainer(ExtensionClass.Base):
                 ob.aq_parent._delObject(id)
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
-                id=_get_id(self, id)
+                id=self._get_id(id)
+                __tracenack_info__=type(ob), ob.__class__
                 ob._setId(id)
                 self._setObject(id, ob)
                 #ob=ob.__of__(self)            
@@ -349,7 +364,6 @@ class CopyContainer(ExtensionClass.Base):
             if hasattr(meth, '__roles__'):
                 roles=meth.__roles__
                 user=REQUEST.get('AUTHENTICATED_USER', None)
-                __traceback_info__=method_name, user
                 if (not hasattr(user, 'hasRole') or
                     not user.hasRole(None, roles)):
                     raise 'Unauthorized', (
@@ -423,23 +437,6 @@ class CopySource:
 def absattr(attr):
     if callable(attr): return attr()
     return attr
-
-def _get_id(ob, id):
-    # Allow containers to override the generation of
-    # object copy id by attempting to call its _get_id
-    # method, if it exists.
-    if hasattr(ob, '_get_id'):
-        return ob._get_id(id)
-    try: ob=ob.aq_base
-    except: pass
-    n=0
-    if (len(id) > 8) and (id[8:]=='copy_of_'):
-        n=1
-    orig_id=id
-    while (hasattr(ob, id)):
-        id='copy%s_of_%s' % (n and n+1 or '', orig_id)
-        n=n+1
-    return id
 
 
 
