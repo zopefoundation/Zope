@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.139 $'[11:-2]
+__version__='$Revision: 1.140 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -674,6 +674,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         a is the object the object was accessed through
         c is the physical container of the object
         """
+        if len(request.steps) == 0: # someone deleted root index_html
+            request.RESPONSE.notFoundError('no default view (root index_html'
+                                           ' was probably deleted)')
         n = request.steps[-1]
         # default to accessed and container as v.aq_parent
         a = c = request['PARENTS'][0]
