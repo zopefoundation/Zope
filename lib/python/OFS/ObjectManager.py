@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.22 1997/12/05 17:13:50 brian Exp $"""
+$Id: ObjectManager.py,v 1.23 1997/12/12 16:14:03 jim Exp $"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -398,7 +398,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 		% (n,t,html_quote(v)))
 
     def _textInput(self,n,t,v):
-        return ('<TEXTAREA NAME="%s" ROWS="10" COLS="40">%s</TEXTAREA>'
+        return ('<TEXTAREA NAME="%s:text" ROWS="10" COLS="40">%s</TEXTAREA>'
 		% (n,html_quote(v)))
 
     _inputMap={
@@ -455,6 +455,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.23  1997/12/12 16:14:03  jim
+# Added :text for text properties.
+#
 # Revision 1.22  1997/12/05 17:13:50  brian
 # New UI
 #
