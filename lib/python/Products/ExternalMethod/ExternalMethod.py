@@ -19,15 +19,49 @@ path_split=os.path.split
 exists=os.path.exists
 
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
-    """Add an external method to a folder"""
+    """Add an external method to a folder
+  
+    Un addition to the standard Principia object-creation arguments,
+    'id' and title, the following arguments are defined:
+
+	function -- The name of the python function. This can be a
+	  an ordinary Python function, or a bound method.
+
+	module -- The name of the file containing the function
+	  definition.
+
+	The module normally resides in the 'Extensions'
+	directory, however, the file name may have a prefix of
+	'product.', indicating that it should be found in a product
+	directory.
+
+	For example, if the module is: 'ACMEWidgets.foo', then an
+	attempt will first be made to use the file
+	'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
+	failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
+	used.
+    """
     i=ExternalMethod(id,title,module,function)
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
 
 class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 		     AccessControl.Role.RoleManager):
-    """An external method is a web-callable function that encapsulates
-    an external function."""
+    """Web-callable functions that encapsulate external python functions.
+
+    The function is defined in an external file.  This file is treated
+    like a module, but is not a module.  It is not imported directly,
+    but is rather read and evaluated.  The file must reside in the
+    'Extensions' subdirectory of the Principia installation, or in an
+    'Extensions' subdirectory of a product directory.
+
+    Due to the way ExternalMethods are loaded, it is not *currently*
+    possible to use Python modules that reside in the 'Extensions'
+    directory.  It is possible to load modules found in the
+    'lib/python' directory of the Principia installation, or in
+    packages that are in the 'lib/python' directory.
+
+    """
 
     meta_type='External Method'
     icon='misc_/ExternalMethod/function_icon'
@@ -54,7 +88,16 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
     manage_main=HTMLFile('methodEdit', globals())
     def manage_edit(self, title, module, function, REQUEST=None):
-	"Change the external method"
+	"""Change the external method
+
+	See the description of manage_addExternalMethod for a
+	descriotion of the arguments 'module' and 'function'.
+
+	Note that calling 'manage_edit' causes the "module" to be
+	effectively reloaded.  This is useful during debugging to see
+	the effects of changes, but can lead to problems of functions
+	rely on shared global data.
+	"""
 	self.title=title
 	if module[-3:]=='.py': module=module[:-3]
 	elif module[-4:]=='.py': module=module[:-4]
@@ -114,6 +157,24 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
     __call____roles__='Manager', 'Shared'
     def __call__(self, *args, **kw):
+	"""Call an ExternalMethod
+
+	Calling an External Method is roughly equivalent to calling
+	the original actual function from Python.  Positional and
+	keyword parameters can be passed as usual.  Note however that
+	unlike the case of a normal Python method, the "self" argument
+	must be passed explicitly.  An exception to this rule is made
+	if:
+
+	- The supplied number of arguments is one less than the
+	  required number of arguments, and
+
+        - The name of the function\'s first argument is 'self'.
+
+	In this case, the URL parent of the object is supplied as the
+	first argument.
+	"""
+	
 	try: f=self._v_f
 	except: f=self.getFunction()
 
@@ -121,13 +182,13 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
 	try: return apply(f,args,kw)
 	except TypeError, v:
-	    if (not args and 
-		self.func_code.co_argcount-len(self.func_defaults or ()) == 1
-		and self.func_code.co_varnames[0]=='self'):
+	    
+	    if (self.func_code.co_argcount-len(self.func_defaults or ()) - 1
+		== len(args)) and self.func_code.co_varnames[0]=='self':
 	
 	        try: parent=self.aq_acquire('REQUEST')['PARENTS'][0]
 		except: parent=self.aq_parent
-		return apply(f,(parent,),kw)
+		return apply(f,(parent,)+args,kw)
 	    raise TypeError, v
 		
 
