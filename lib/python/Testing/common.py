@@ -49,7 +49,7 @@ def catch_log_errors():
 
     def log_write(subsystem, severity, summary, detail, error,
                   PROBLEM=zLOG.PROBLEM):
-        if severity >= PROBLEM:
+        if severity > PROBLEM:
             assert 0, "%s(%s): %s" % (subsystem, severity, summary)
 
     zLOG.old_log_write = zLOG.log_write
