@@ -19,14 +19,12 @@ import sys
 
 class ShutdownProducer:
     "shuts down medusa"
-
     def more(self):
         asyncore.close_all()
 
 
 class LoggingProducer:
     "logs request"
-
     def __init__(self, logger, bytes, method='log'):
         self.logger=logger
         self.bytes=bytes
@@ -40,7 +38,6 @@ class LoggingProducer:
 
 class CallbackProducer:
     "Performs a callback in the channel's thread"
-
     def __init__(self, callback):
         self.callback=callback
 
@@ -52,7 +49,6 @@ class CallbackProducer:
 
 class file_part_producer:
     "producer wrapper for part of a file[-like] objects"
-
     # match http_channel's outgoing buffer size
     out_buffer_size = 1<<16
 
@@ -91,7 +87,6 @@ class file_part_producer:
 
         return data
 
-
 class file_close_producer:
     def __init__(self, file):
         self.file=file
@@ -102,3 +97,13 @@ class file_close_producer:
             file.close()
             self.file=None
         return ''
+
+class iterator_producer:
+    def __init__(self, iterator):
+        self.iterator = iterator
+
+    def more(self):
+        try:
+            return self.iterator.next()
+        except StopIteration:
+            return ''

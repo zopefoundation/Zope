@@ -21,13 +21,14 @@ import time, re,  sys, tempfile
 from cStringIO import StringIO
 import thread
 from ZPublisher.HTTPResponse import HTTPResponse
+from ZPublisher.Iterators import IStreamIterator
 from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
 from medusa.producers import hooked_producer
 from medusa import http_server
 import asyncore
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer, \
-    file_part_producer, file_close_producer
+    file_part_producer, file_close_producer, iterator_producer
 from types import LongType
 import DebugLogger
 
@@ -49,6 +50,7 @@ class ZServerHTTPResponse(HTTPResponse):
     _streaming=0
     # using chunking transfer-encoding
     _chunking=0
+    _bodyproducer = None
 
     def __str__(self,
                 html_search=re.compile('<html>',re.I).search,
@@ -230,6 +232,22 @@ class ZServerHTTPResponse(HTTPResponse):
         self._retried_response = response
         return response
 
+    def outputBody(self):
+        """Output the response body"""
+        self.stdout.write(str(self))
+        if self._bodyproducer:
+            self.stdout.write(self._bodyproducer, 0)
+
+    def setBody(self, body, title='', is_error=0, **kw):
+        """ Accept either a stream iterator or a string as the body """
+        if IStreamIterator.isImplementedBy(body):
+            assert(self.headers.has_key('content-length'))
+            # wrap the iterator up in a producer that medusa can understand
+            self._bodyproducer = iterator_producer(body)
+            HTTPResponse.setBody(self, '', title, is_error, **kw)
+            return self
+        else:
+            HTTPResponse.setBody(self, body, title, is_error, **kw)
 
 class ChannelPipe:
     """Experimental pipe from ZPublisher to a ZServer Channel.

@@ -310,7 +310,19 @@ class zope_ftp_channel(ftp_channel):
         if status==200:
             self.make_xmit_channel()
             if not response._wrote:
-                self.client_dc.push(response.body)
+                # chrism: we explicitly use a large-buffered producer here to
+                # increase speed.  Using "client_dc.push" with the body causes
+                # a simple producer with a buffer size of 512 to be created
+                # to serve the data, and it's very slow
+                # (about 100 times slower than the large-buffered producer)
+                self.client_dc.push_with_producer(
+                    asynchat.simple_producer(response.body, 1<<16))
+                # chrism: if the response has a bodyproducer, it means that
+                # the actual body was likely an empty string.  This happens
+                # typically when someone returns a StreamIterator from
+                # Zope application code.
+                if response._bodyproducer:
+                    self.client_dc.push_with_producer(response._bodyproducer)
             else:
                 for producer in self._response_producers:
                     self.client_dc.push_with_producer(producer)
@@ -647,3 +659,4 @@ class FTPServer(ftp_server):
         # override asyncore limits for nt's listen queue size
         self.accepting = 1
         return self.socket.listen (num)
+

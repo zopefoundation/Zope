@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.150 $'[11:-2]
+__version__='$Revision: 1.151 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -31,6 +31,7 @@ from Cache import Cacheable
 from mimetools import choose_boundary
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+from ZPublisher.Iterators import filestream_iterator
 from zExceptions import Redirect
 from cgi import escape
 
@@ -127,14 +128,9 @@ class File(Persistent, Implicit, PropertyManager,
     def id(self):
         return self.__name__
 
-    def index_html(self, REQUEST, RESPONSE):
-        """
-        The default view of the contents of a File or Image.
-
-        Returns the contents of the file or image.  Also, sets the
-        Content-Type HTTP header to the objects content type.
-        """
-        # HTTP If-Modified-Since header handling.
+    def _if_modified_since_request_handler(self, REQUEST, RESPONSE):
+        # HTTP If-Modified-Since header handling: return True if
+        # we can handle this request by returning a 304 response
         header=REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header=header.split( ';')[0]
@@ -154,27 +150,19 @@ class File(Persistent, Implicit, PropertyManager,
                 else:
                     last_mod = long(0)
                 if last_mod > 0 and last_mod <= mod_since:
-                    # Set header values since apache caching will return Content-Length
-                    # of 0 in response if size is not set here
-                    RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
+                    # Set header values since apache caching will return
+                    # Content-Length of 0 in response if size is not set here
+                    RESPONSE.setHeader('Last-Modified',
+                                       rfc1123_date(self._p_mtime))
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', self.size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setStatus(304)
-                    self.ZCacheable_set(None)
-                    return ''
+                    return True
 
-        if self.precondition and hasattr(self, str(self.precondition)):
-            # Grab whatever precondition was defined and then
-            # execute it.  The precondition will raise an exception
-            # if something violates its terms.
-            c=getattr(self, str(self.precondition))
-            if hasattr(c,'isDocTemp') and c.isDocTemp:
-                c(REQUEST['PARENTS'][1],REQUEST)
-            else:
-                c()
-
-        # HTTP Range header handling
+    def _range_request_handler(self, REQUEST, RESPONSE):
+        # HTTP Range header handling: return True if we've served a range
+        # chunk out of our data.
         range = REQUEST.get_header('Range', None)
         request_range = REQUEST.get_header('Request-Range', None)
         if request_range is not None:
@@ -228,7 +216,7 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setHeader('Content-Type', self.content_type)
                     RESPONSE.setHeader('Content-Length', self.size)
                     RESPONSE.setStatus(416)
-                    return ''
+                    return True
 
                 ranges = HTTPRangeSupport.expandRanges(ranges, self.size)
                                 
@@ -248,7 +236,8 @@ class File(Persistent, Implicit, PropertyManager,
 
                     data = self.data
                     if type(data) is StringType:
-                        return data[start:end]
+                        RESPONSE.write(data[start:end])
+                        return True
 
                     # Linked Pdata objects. Urgh.
                     pos = 0
@@ -274,7 +263,7 @@ class File(Persistent, Implicit, PropertyManager,
 
                         data = data.next
 
-                    return ''
+                    return True
 
                 else:
                     boundary = choose_boundary()
@@ -364,17 +353,50 @@ class File(Persistent, Implicit, PropertyManager,
                     del pdata_map
 
                     RESPONSE.write('\r\n--%s--\r\n' % boundary)
-                    return ''
+                    return True
+
+    def index_html(self, REQUEST, RESPONSE):
+        """
+        The default view of the contents of a File or Image.
+
+        Returns the contents of the file or image.  Also, sets the
+        Content-Type HTTP header to the objects content type.
+        """
+
+        if self._if_modified_since_request_handler(REQUEST, RESPONSE):
+            # we were able to handle this by returning a 304
+            return ''
+
+        if self.precondition and hasattr(self, str(self.precondition)):
+            # Grab whatever precondition was defined and then
+            # execute it.  The precondition will raise an exception
+            # if something violates its terms.
+            c=getattr(self, str(self.precondition))
+            if hasattr(c,'isDocTemp') and c.isDocTemp:
+                c(REQUEST['PARENTS'][1],REQUEST)
+            else:
+                c()
+
+        if self._range_request_handler(REQUEST, RESPONSE):
+            # we served a chunk of content in response to a range request.
+            return ''
 
         RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         RESPONSE.setHeader('Content-Type', self.content_type)
         RESPONSE.setHeader('Content-Length', self.size)
         RESPONSE.setHeader('Accept-Ranges', 'bytes')
 
-        # Don't cache the data itself, but provide an opportunity
-        # for a cache manager to set response headers.
-        self.ZCacheable_set(None)
+        if self.ZCacheable_isCachingEnabled():
+            result = self.ZCacheable_get(default=None)
+            if result is not None:
+                # We will always get None from RAMCacheManager and HTTP
+                # Accelerated Cache Manager but we will get
+                # something implementing the IStreamIterator interface
+                # from a "FileCacheManager"
+                return result
 
+        self.ZCacheable_set(None)
+            
         data=self.data
         if type(data) is type(''):
             RESPONSE.setBase(None) 
@@ -400,6 +422,7 @@ class File(Persistent, Implicit, PropertyManager,
         self.size=size
         self.data=data
         self.ZCacheable_invalidate()
+        self.ZCacheable_set(None)
         self.http__refreshEtag()
 
     def manage_edit(self, title, content_type, precondition='',
@@ -556,6 +579,16 @@ class File(Persistent, Implicit, PropertyManager,
 
     def manage_FTPget(self):
         """Return body for ftp."""
+        if self.ZCacheable_isCachingEnabled():
+            result = self.ZCacheable_get(default=None)
+            if result is not None:
+                # We will always get None from RAMCacheManager but we will get
+                # something implementing the IStreamIterator interface
+                # from FileCacheManager.
+                # the content-length is required here by HTTPResponse, even
+                # though FTP doesn't use it.
+                self.REQUEST.RESPONSE.setHeader('Content-Length', self.size)
+                return result
         return str(self.data)
 
 
@@ -721,7 +754,7 @@ class Image(File):
         if content_type is not None: self.content_type = content_type
 
         self.ZCacheable_invalidate()
-
+        self.ZCacheable_set(None)
 
     def __str__(self):
         return self.tag()

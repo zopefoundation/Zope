@@ -18,8 +18,9 @@ from ZServer.HTTPResponse import ZServerHTTPResponse
 from ZServer.FTPResponse import FTPResponse
 from ZServer.PCGIServer import PCGIResponse
 from ZServer.FCGIServer import FCGIResponse
+from ZPublisher.Iterators import IStreamIterator
 import unittest
-
+from cStringIO import StringIO
 
 class ZServerResponseTestCase(unittest.TestCase):
     """Test ZServer response objects."""
@@ -40,7 +41,56 @@ class ZServerResponseTestCase(unittest.TestCase):
         response = FCGIResponse()
         self.assertRaises(TypeError, response.write, u'bad')
 
+    def test_setBodyIterator(self):
+        channel = DummyChannel()
+        one = ZServerHTTPResponse(stdout=channel)
+        one.setHeader('content-length', 5)
+        one.setBody(test_streamiterator())
+        one.outputBody()
+        all = channel.all()
+        lines = all.split('\r\n')
+        self.assertEqual(lines[-2], '')    # end of headers
+        self.assertEqual(lines[-1], 'hello') # payload
 
+    def test_setBodyIteratorFailsWithoutContentLength(self):
+        one = ZServerHTTPResponse(stdout=DummyChannel())
+        self.assertRaises(AssertionError,
+                          one.setBody, test_streamiterator())
+
+class DummyChannel:
+    def __init__(self):
+        self.out = StringIO()
+
+    def all(self):
+        self.out.seek(0)
+        return self.out.read()
+
+    def read(self):
+        pass
+
+    def write(self, data, len=None):
+        try:
+            if isinstance(data, str):
+                self.out.write(data)
+                return
+        except TypeError:
+            pass
+        while 1:
+            s = data.more()
+            if not s:
+                break
+            self.out.write(s)
+
+class test_streamiterator:
+    __implements__ = IStreamIterator
+    data = "hello"
+    done = 0
+
+    def next(self):
+        if not self.done:
+            self.done = 1
+            return self.data
+        raise StopIteration
 
 def test_suite():
     return unittest.makeSuite(ZServerResponseTestCase)
