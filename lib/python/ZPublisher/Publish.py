@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.146 2000/05/11 18:54:17 jim Exp $"""
-__version__='$Revision: 1.146 $'[11:-2]
+$Id: Publish.py,v 1.147 2000/06/02 20:03:25 jim Exp $"""
+__version__='$Revision: 1.147 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -128,7 +128,7 @@ def publish(request, module_name, after_list, debug=0,
             ):
 
     (bobo_before, bobo_after, object, realm, debug_mode, err_hook,
-     validated_hook, have_transactions)= get_module_info(module_name)
+     validated_hook, transactions_manager)= get_module_info(module_name)
 
     parents=None
 
@@ -149,24 +149,20 @@ def publish(request, module_name, after_list, debug=0,
         if realm and not request.get('REMOTE_USER',None):
             response.realm=realm
     
-        if bobo_before is not None: bobo_before();
+        if bobo_before is not None:
+            bobo_before()
     
         # Get a nice clean path list:
         path=strip(request_get('PATH_INFO'))
     
         request['PARENTS']=parents=[object]
         
-        if have_transactions: get_transaction().begin()
+        if transactions_manager: transactions_manager.begin()
     
         object=request.traverse(path, validated_hook=validated_hook)
     
-        # Record transaction meta-data
-        if have_transactions:
-            get_transaction().note(request_get('PATH_INFO'))
-            auth_user=request_get('AUTHENTICATED_USER',None)
-            if auth_user is not None:
-                get_transaction().setUser(auth_user,
-                                          request_get('AUTHENTICATION_PATH'))
+        if transactions_manager:
+            transactions_manager.recordMetaData(object, request)
     
         result=mapply(object, request.args, request,
                       call_object,1,
@@ -176,10 +172,12 @@ def publish(request, module_name, after_list, debug=0,
     
         if result is not response: response.setBody(result)
     
-        if have_transactions: get_transaction().commit()
+        if transactions_manager: transactions_manager.commit()
 
         return response
     except:
+        if transactions_manager: transactions_manager.abort()
+        
         if err_hook is not None:
             if parents: parents=parents[0]
             try:
@@ -314,12 +312,19 @@ def get_module_info(module_name, modules={},
             error_hook=getattr(module,'zpublisher_exception_hook', None)
             validated_hook=getattr(module,'zpublisher_validated_hook', None)
 
-            try: get_transaction()
-            except: have_transactions=0
-            else: have_transactions=1
+            transactions_manager=getattr(
+                module,'zpublisher_transactions_manager', None)
+            if not transactions_manager:
+                try: get_transaction()
+                except: pass
+                else:
+                    # Create a default transactions manager for use
+                    # by software that uses ZPublisher and ZODB but
+                    # not the rest of Zope.
+                    transactions_manager = DefaultTransactionsManager()
 
             info= (bobo_before, bobo_after, object, realm, debug_mode,
-                   error_hook, validated_hook, have_transactions)
+                   error_hook, validated_hook, transactions_manager)
 
             modules[module_name]=modules[module_name+'.cgi']=info
             
@@ -332,6 +337,20 @@ def get_module_info(module_name, modules={},
         tb=None
         release()
 
+
+class DefaultTransactionsManager:
+    def begin(self): get_transaction().begin()
+    def commit(self): get_transaction().commit()
+    def abort(self): get_transaction().abort()
+    def recordMetaData(self, object, request):
+        # Is this code needed?
+        request_get = request.get
+        T=get_transaction()
+        T.note(request_get('PATH_INFO'))
+        auth_user=request_get('AUTHENTICATED_USER',None)
+        if auth_user is not None:
+            T.setUser(auth_user, request_get('AUTHENTICATION_PATH'))
+        
 
 # ZPublisher profiler support
 # ---------------------------
