@@ -1,10 +1,11 @@
 """Access control package"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
 from Persistence import PersistentMapping
+from OFS.SimpleItem import Item
 from Acquisition import Implicit
 from DocumentTemplate import HTML
 from Globals import MessageDialog
@@ -73,7 +74,7 @@ class SuperUser:
 su=SuperUser()
 
 
-class UserFolder(Implicit, Persistent):
+class UserFolder(Implicit, Persistent, Item):
     """ """
     meta_type='User Folder'
     id       ='acl_users'
@@ -227,6 +228,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.11  1997/09/15 15:00:24  brian
+# Added SimpleItem support
+#
 # Revision 1.10  1997/09/08 23:01:33  brian
 # Style mods
 #
