@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.51 1997/09/09 23:00:55 brian Exp $"""
+$Id: Publish.py,v 1.52 1997/09/11 21:27:45 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.51 1997/09/09 23:00:55 brian Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 
 def main():
@@ -1270,7 +1270,7 @@ class Request:
 		    )
 		)
 	    
-	return "%s\n%s\n%s" % (
+	return "%s\n%s\n" % (
 	    str(self,'other'),str(self,'environ'))
 
     __repr__=__str__
@@ -1461,6 +1461,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.52  1997/09/11 21:27:45  jim
+# *** empty log message ***
+#
 # Revision 1.51  1997/09/09 23:00:55  brian
 # Fixed cookie error: cookies should not be appended to explicit form
 # values (thus possibly changing the expected type and causing havoc).
