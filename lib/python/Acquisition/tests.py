@@ -534,6 +534,33 @@ def test_simple():
 
     """
 
+def test__of__exception():
+    """
+    Wrapper_findattr did't check for an exception in a user defined
+    __of__ method before passing the result to the filter. In this
+    case the 'value' argument of the filter was NULL, which caused
+    a segfault when being accessed.
+
+    >>> class UserError(Exception):
+    ...     pass
+    ...
+    >>> class X(Acquisition.Implicit):
+    ...     def __of__(self, parent):
+    ...         if Acquisition.aq_base(parent) is not parent:
+    ...             raise UserError, 'ack'
+    ...         return X.inheritedAttribute('__of__')(self, parent)
+    ...
+    >>> a = I('a')
+    >>> a.b = I('b')
+    >>> a.b.x = X('x')
+    >>> Acquisition.aq_acquire(a.b, 'x',
+    ...     lambda self, object, name, value, extra: repr(value))
+    Traceback (most recent call last):
+    ...
+    UserError: ack
+
+    """
+
 def test_muliple():
     r"""
     >>> a = I('a')

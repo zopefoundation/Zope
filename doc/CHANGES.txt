@@ -127,6 +127,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1406: fixed segmentation fault by acquisition
+
      - Collector #1392: ExternalMethod ignored management_page_charset
 
      - unrestrictedTraverse() refactored to remove hasattr calls (which mask

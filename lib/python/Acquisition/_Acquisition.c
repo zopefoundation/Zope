@@ -466,7 +466,7 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
 	    ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
 	  else if (has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
 
-	  if (filter)
+	  if (r && filter)
 	    switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
 	      {
 	      case -1: return NULL;
