@@ -183,27 +183,36 @@ class ProductRegistryMixin:
             +((d['name'], d['methods'], d['default']),)
             )
 
+    # HACK - sometimes an unwrapped App object seems to be passed as
+    # self to these methods, which means that they dont have an aq_aquire
+    # method. Until Jim has time to look into this, this aq_maybe method
+    # appears to be an effective work-around...
+    def aq_maybe(self, name):
+        if hasattr(self, name):
+            return getattr(self, name)
+        return self.aq_acquire(name)
+
     def _manage_add_product_data(self, type, product, id, **data):
         values=filter(
             lambda d, product=product, id=id:
             not (d['product']==product and d['id']==id),
-            list(self.aq_acquire('_getProductRegistryData')(type))
+            list(self.aq_maybe('_getProductRegistryData')(type))
             )
 
         data['product']=product
         data['id']=id
         values.append(data)
 
-        self.aq_acquire('_setProductRegistryData')(type, tuple(values))
+        self.aq_maybe('_setProductRegistryData')(type, tuple(values))
 
     def _manage_remove_product_data(self, type, product, id):
         values=filter(
             lambda d, product=product, id=id:
             not (d['product']==product and d['id']==id),
-            self.aq_acquire('_getProductRegistryData')(type)
+            self.aq_maybe('_getProductRegistryData')(type)
             )
 
-        self.aq_acquire('_setProductRegistryData')(type, tuple(values))
+        self.aq_maybe('_setProductRegistryData')(type, tuple(values))
 
 
 
