@@ -11,15 +11,15 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.1 1997/07/25 20:03:22 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Application.py,v 1.2 1997/07/28 21:33:08 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Folder, regex, string
 import Globals
 
 class Application(Folder.Folder):
 
-    name='Webulator'
+    name='Your Place'
     description=''
     web__form__method='GET'
     manage_options=Folder.Folder.manage_options+(
@@ -112,6 +112,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.2  1997/07/28 21:33:08  jim
+# Changed top name.
+#
 # Revision 1.1  1997/07/25 20:03:22  jim
 # initial
 #
