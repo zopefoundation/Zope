@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.30 2002/10/26 15:42:23 chrism Exp $
+$Id: Transience.py,v 1.31 2003/01/09 16:38:03 chrism Exp $
 """
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -513,7 +513,7 @@ class TransientObjectContainer(SimpleItem):
             # these keys, deindexing buckets as necessary when they're older
             # than the timeout.
             # XXX - fixme!  range search doesn't always work (btrees bug)
-            for k in data.keys(deindex_next, pprev):
+            for k in list(data.keys(deindex_next, pprev)):
                 if k < deindex_next:
                     DEBUG and TLOG(
                         'broken range search: key %s < min %s'
@@ -549,19 +549,26 @@ class TransientObjectContainer(SimpleItem):
                 # if the bucket has keys, deindex them and add them to the
                 # notify queue (destruction notification happens during
                 # garbage collection)
-                bucket = data[k]
-                keys = bucket.keys()
+                bucket = data.get(k, _marker)
+                if bucket is _marker:
+                    DEBUG and TLOG(
+                        'data IOBTree lied about keys: %s doesnt exist' % k
+                        )
+                    continue
+                
+                keys = list(bucket.keys())
                 for key in keys:
                     ob = bucket.get(key, _marker)
                     if ob is _marker:
                         DEBUG and TLOG(
-                            'OOBTree lied about %s keys: %s doesnt exist' %
-                            (bucket, key)
+                            'bucket OOBTree lied about keys: %s doesnt exist' %
+                            key
                             )
                         continue
                     self.notify_queue.put((key, ob))
                 DEBUG and TLOG(
-                    '_getCurrentBucket: deindexing keys %s' % list(keys))
+                    '_getCurrentBucket: deindexing keys %s' % keys
+                    )
                 keys and self._deindex(keys)
                 # set the "last deindexed" pointer to k + period
                 deindex_next = k+period
@@ -685,7 +692,12 @@ class TransientObjectContainer(SimpleItem):
                     % (k, delete_end)
                     )
                 continue
-            bucket = data[k]
+            bucket = data.get(k, _marker)
+            if bucket is _marker:
+                DEBUG and TLOG(
+                    'bucket OOBTree lied about keys: %s doesnt exist' % k
+                    )
+                continue
             # delete the bucket from _data
             del data[k]
             DEBUG and TLOG('_housekeep: deleted data[%s]' % k)
