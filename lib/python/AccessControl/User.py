@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.179 $'[11:-2]
+__version__='$Revision: 1.180 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -32,7 +32,6 @@ from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.ZopeSecurityPolicy import _noroles
 
 ListType=type([])
-NotImplemented='NotImplemented'
 
 _marker=[]
 
@@ -61,11 +60,11 @@ class BasicUser(Implicit):
         return 1
 
     def __init__(self,name,password,roles,domains):
-        raise NotImplemented
+        raise NotImplementedError
 
     def getUserName(self):
         """Return the username of a user"""
-        raise NotImplemented
+        raise NotImplementedError
 
     def getId(self):
         """Get the ID of the user. The ID can be used, at least from
@@ -75,11 +74,11 @@ class BasicUser(Implicit):
 
     def _getPassword(self):
         """Return the password of the user."""
-        raise NotImplemented
+        raise NotImplementedError
 
     def getRoles(self):
         """Return the list of roles assigned to a user."""
-        raise NotImplemented
+        raise NotImplementedError
 
     def getRolesInContext(self, object):
         """Return the list of roles assigned to the user,
@@ -112,7 +111,7 @@ class BasicUser(Implicit):
 
     def getDomains(self):
         """Return the list of domain restrictions for a user"""
-        raise NotImplemented
+        raise NotImplementedError
 
     # ------------------------------
     # Internal User object interface
@@ -479,15 +478,15 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def getUserNames(self):
         """Return a list of usernames"""
-        raise NotImplemented
+        raise NotImplementedError
 
     def getUsers(self):
         """Return a list of user objects"""
-        raise NotImplemented
+        raise NotImplementedError
 
     def getUser(self, name):
         """Return the named user object or None"""
-        raise NotImplemented
+        raise NotImplementedError
 
     def getUserById(self, id, default=_marker):
         """Return the user corresponding to the given id.
@@ -505,19 +504,19 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
            do the actual adding of a user. The 'password' will be the
            original input password, unencrypted. The implementation of this
            method is responsible for performing any needed encryption."""
-        raise NotImplemented
+        raise NotImplementedError
 
     def _doChangeUser(self, name, password, roles, domains, **kw):
         """Modify an existing user. This should be implemented by subclasses
            to make the actual changes to a user. The 'password' will be the
            original input password, unencrypted. The implementation of this
            method is responsible for performing any needed encryption."""
-        raise NotImplemented
+        raise NotImplementedError
 
     def _doDelUsers(self, names):
         """Delete one or more users. This should be implemented by subclasses
            to do the actual deleting of users."""
-        raise NotImplemented
+        raise NotImplementedError
 
     # As of Zope 2.5, userFolderAddUser, userFolderEditUser and
     # userFolderDelUsers offer aliases for the the _doAddUser, _doChangeUser
@@ -534,7 +533,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
            objects."""
         if hasattr(self, '_doAddUser'):
             return self._doAddUser(name, password, roles, domains, **kw)
-        raise NotImplemented
+        raise NotImplementedError
 
     def userFolderEditUser(self, name, password, roles, domains, **kw):
         """API method for changing user object attributes. Note that not
@@ -542,14 +541,14 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
            attributes."""
         if hasattr(self, '_doChangeUser'):
             return self._doChangeUser(name, password, roles, domains, **kw)
-        raise NotImplemented
+        raise NotImplementedError
 
     def userFolderDelUsers(self, names):
         """API method for deleting one or more user objects. Note that not
            all user folder implementations support deletion of user objects."""
         if hasattr(self, '_doDelUsers'):
             return self._doDelUsers(names)
-        raise NotImplemented
+        raise NotImplementedError
 
 
     # -----------------------------------

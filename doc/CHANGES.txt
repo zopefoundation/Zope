@@ -33,6 +33,10 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+
+     - AccessControl.User used a misleading string exeception,
+       'NotImplemented', which shadowed the Python builtin.
+
      - Collector #426: Inconsistent, undocumented error() method.
 
      - Collector #799: Eliminate improper uses of SCRIPT_NAME.
