@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -138,7 +138,12 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     ('View management screens',
      ('manage_editForm', 'manage', 'manage_main', 'manage_uploadForm',
       'document_src', 'PrincipiaSearchSource')),
-    ('Change DTML Methods',     ('manage_edit', 'manage_upload', 'PUT')),
+    ('Change DTML Methods',
+     ('manage_edit', 'manage_upload', 'PUT',
+      'manage_historyCopy',
+      'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
+      )
+     ),
     ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
     ('View', ('__call__', 'get_size', '')),
     ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
