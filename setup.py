@@ -394,6 +394,7 @@ setup(
 
     packages=['OFS', 'OFS.tests'],
     data_files=[['OFS', ['OFS/mime.types']],
+                ['OFS/tests', ['OFS/tests/mime.types-?']],
                 ['OFS/dtml', ['OFS/dtml/*']],
                 ['OFS/standard', ['OFS/standard/*']],
                 ['OFS/www', ['OFS/www/*']]],

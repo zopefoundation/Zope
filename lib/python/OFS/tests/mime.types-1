@@ -1,0 +1,5 @@
+# This is a sample mime.types file.
+# It contains a single bogus MIME type and extention for testing
+# purposes.  It is not loaded during normal Zope operation.
+
+text/x-vnd.zope.test-mime-type-1  ztmt-1
