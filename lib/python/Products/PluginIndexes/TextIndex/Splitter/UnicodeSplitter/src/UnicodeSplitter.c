@@ -24,7 +24,7 @@ static PyObject * checkSynword(Splitter *self,PyObject *word)
                 } else res = word;
         } else res = word;
 
-    return res;
+        return res;
 }
 
 static void
@@ -67,15 +67,9 @@ Splitter_item(Splitter *self, int i)
                 return NULL;
         }
 
-        item=PyList_GetItem(self->list , i);
+        item=PyList_GET_ITEM(self->list , i);
         Py_INCREF(item);
 
-
-#ifdef DEBUG
-        printf("\n\tItem %d",i);
-        PyObject_Print(item,stdout,0);
-        fflush(stdout);
-#endif
         return item;
 }
 
@@ -90,10 +84,10 @@ Splitter_indexes(Splitter *self, PyObject *args)
         if (! (r=PyList_New(0))) return NULL;
 
         for (i=0;i<PyList_Size(self->list);i++) {
-                item=PyList_GetItem(self->list,i);
+                item=PyList_GET_ITEM(self->list,i);
 
                 if (PyUnicode_Compare(word,item)==0) {
-                        index=PyInt_FromLong(i); 
+                        index=PyInt_FromLong(i);
                         if(!index) return NULL;
                         Py_INCREF(item);
                         PyList_Append(r,index);
@@ -194,8 +188,6 @@ void splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
                 register Py_UNICODE ch;
 
                 ch = *s;
-                *s = Py_UNICODE_TOLOWER(ch);
-
 #ifdef DEBUG
                 printf("%d %c %d\n",i,ch,ch);
                 fflush(stdout);
@@ -256,6 +248,39 @@ void splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
 
 }
 
+
+static
+void fixlower(PyUnicodeObject *self)
+{
+        int len = self->length;
+        Py_UNICODE *s = self->str;
+
+        while (len-- > 0) {
+                register Py_UNICODE ch;
+
+                ch = Py_UNICODE_TOLOWER(*s);
+                if (ch != *s) *s = ch;
+                s++;
+        }
+}
+
+
+static
+PyUnicodeObject *prepareString(PyUnicodeObject *o)
+
+{
+        PyUnicodeObject *u;
+
+        u = (PyUnicodeObject*) PyUnicode_FromUnicode(NULL, o->length);
+        if (u == NULL) return NULL;
+
+        Py_UNICODE_COPY(u->str, o->str, o->length);
+        fixlower(u);
+
+        return  u;
+}
+
+
 static PyObject *
 get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
 {
@@ -274,7 +299,7 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
         if (PyString_Check(doc)) {
                 // This sux a bit. The default encoding should be ascii or latin1.
                 // But there must be better support to pass an optional encoding parameter
-                
+
                 unicodedoc = PyUnicode_FromEncodedObject(doc,"latin1","strict");
                 if (! unicodedoc) goto err;
 
@@ -291,7 +316,7 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
                 Py_INCREF(synstop);
         } else  self->synstop=NULL;
 
-        splitUnicodeString(self,(PyUnicodeObject *)unicodedoc);
+        splitUnicodeString(self,prepareString((PyUnicodeObject *) unicodedoc));
 
         return (PyObject*)self;
 
@@ -313,7 +338,7 @@ static char Splitter_module_documentation[] =
         "\n"
         "for use in an inverted index\n"
         "\n"
-        "$Id: UnicodeSplitter.c,v 1.1 2001/10/11 18:48:18 andreasjung Exp $\n"
+        "$Id: UnicodeSplitter.c,v 1.2 2001/10/17 14:37:38 andreasjung Exp $\n"
         ;
 
 
@@ -321,7 +346,7 @@ void
 initUnicodeSplitter(void)
 {
         PyObject *m, *d;
-        char *rev="$Revision: 1.1 $";
+        char *rev="$Revision: 1.2 $";
 
         /* Create the module and add the functions */
         m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
