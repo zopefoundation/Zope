@@ -11,13 +11,13 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.16 2003/12/31 21:18:03 poster Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.17 2003/12/31 22:32:21 poster Exp $'
 
 from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
 from zLOG import ERROR, LOG
 from BTrees.OOBTree import OOBTree
-from BTrees.IIBTree import IISet,intersection,union
+from BTrees.IIBTree import IITreeSet,intersection,union
 
 import FilteredSet
 from Products.PluginIndexes import PluggableIndex
@@ -100,9 +100,9 @@ class TopicIndex(Persistent, SimpleItem):
             res = set_func(res,rows)
 
         if res:
-            return res.keys(), (self.id,)
+            return res, (self.id,)
         else:
-            return IISet(), (self.id,)
+            return IITreeSet(), (self.id,)
 
     def uniqueValues(self,name=None, withLength=0):
         """ needed to be consistent with the interface """

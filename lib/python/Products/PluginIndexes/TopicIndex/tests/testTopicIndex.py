@@ -35,7 +35,7 @@ class TestBase(unittest.TestCase):
 
     def _search(self,query,operator,expected):
         res = self.TI._apply_index({'topic':{'query':query,'operator':operator}})
-        rows = list(res[0])
+        rows = list(res[0].keys())
         rows.sort()
         expected.sort()
         self.assertEqual(rows,expected,query)
