@@ -73,6 +73,15 @@ Zope Changes
         
       - New implementation of ZODB object cache.
 
+      - Implementation of RestrictedCreation fishbowl proposal;
+        Product registration can now include a function used to
+        determine whether that product constructor want to allow
+        objects to be created in the specified container object.
+
+      - Collector 196: manage_page_style.css is now cacheable.
+        Added freshness information to ImageFile, to improve
+        cacheability of management interface
+
     Bugs:
     
       - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
