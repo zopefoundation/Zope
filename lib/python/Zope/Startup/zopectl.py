@@ -42,7 +42,7 @@ import Zope.Startup
 
 from zdaemon.zdctl import ZDCmd
 from zdaemon.zdoptions import ZDOptions
-from zLOG.datatypes import FileHandlerFactory
+from ZConfig.components.logger.handlers import FileHandlerFactory
 
 
 def string_list(arg):
