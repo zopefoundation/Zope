@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.80 1999/05/24 21:03:34 jim Exp $"""
+$Id: Folder.py,v 1.81 1999/07/01 14:31:57 brian Exp $"""
 
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import Globals, SimpleItem
 from ObjectManager import ObjectManager
@@ -103,21 +103,40 @@ from Globals import HTMLFile
 
 manage_addFolderForm=HTMLFile('folderAdd', globals())
 
-def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
-                         REQUEST=None):
+def manage_addFolder(self, id, title='',
+                     createPublic=0,
+                     createUserF=0,
+                     REQUEST=None):
     """Add a new Folder object with id *id*.
 
     If the 'createPublic' and 'createUserF' parameters are set to any true
     value, an 'index_html' and a 'UserFolder' objects are created respectively
     in the new folder.
     """
-    i=Folder()
-    i.id=id
-    i.title=title
-    self._setObject(id,i)
-    if createUserF:  i.manage_addUserFolder()
-    if createPublic: i.manage_addDTMLDocument(id='index_html',title='')
-    if REQUEST is not None: return self.manage_main(self,REQUEST,update_menu=1)
+    ob=Folder()
+    ob.id=id
+    ob.title=title
+    self._setObject(id, ob)
+    try: user=REQUEST['AUTHENTICATED_USER']
+    except: user=None
+    if createUserF:
+        if (user is not None) and not (
+            user.has_permission('Add User Folders', self)):
+            raise 'Unauthorized', (
+                  'You are not authorized to add User Folders.'
+                  )
+        ob.manage_addUserFolder()
+    if createPublic:
+        if (user is not None) and not (
+            user.has_permission('Add Documents, Images, and Files', self)):
+            raise 'Unauthorized', (
+                  'You are not authorized to add DTML Documents.'
+                  )
+        ob.manage_addDTMLDocument(id='index_html', title='')
+    if REQUEST is not None:
+        return self.manage_workspace(self, REQUEST, update_menu=1)
+
+
 
 class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
              SimpleItem.Item, FindSupport):
