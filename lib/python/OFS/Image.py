@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.108 $'[11:-2]
+__version__='$Revision: 1.109 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -450,16 +450,19 @@ class Image(File):
                  {'id':'width', 'type':'string'},
                  )
 
-    # Grrrrr, need to replace the view option.
-    manage_options=tuple(map(
-        lambda o:
-        (o['label']=='View'
-         and
-         {'label':'View', 'action':'view_image_or_file',
-          'help':('OFSP','Image_View.stx')}
-         or o)
-        , File.manage_options))
-        
+    manage_options=(
+        (
+        {'label':'Edit', 'action':'manage_main',
+         'help':('OFSP','Image_Edit.stx')},
+        {'label':'Upload', 'action':'manage_uploadForm',
+         'help':('OFSP','File_Upload.stx')},
+        {'label':'View', 'action':'view_image_or_file',
+         'help':('OFSP','Image_View.stx')}
+        )
+        +PropertyManager.manage_options
+        +Item_w__name__.manage_options
+        +RoleManager.manage_options
+        )
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
     view_image_or_file =HTMLFile('imageView',globals())

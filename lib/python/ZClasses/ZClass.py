@@ -602,7 +602,7 @@ class ZObject:
          'action' :'propertysheets/permissions/manage',
          'help':('OFSP','ZClass_Permissions.stx')},     
         {'label': 'Define Permissions', 'action' :'manage_access',  
-         'help':('OFSP','Security-DefinePermissions.stx')},        
+         'help':('OFSP','Security_Define-Permissions.stx')},        
         )
 
     
