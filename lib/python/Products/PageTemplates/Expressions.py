@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -59,7 +59,6 @@ if sys.modules.has_key('Zope'):
     else:
         from ZPythonExpr import PythonExpr, _SecureModuleImporter, \
              call_with_ns
-    SecureModuleImporter = _SecureModuleImporter()
 else:
     from PythonExpr import getSecurityManager, PythonExpr
     try:
@@ -71,7 +70,16 @@ else:
             return f(None, ns)
         else:
             return f(ns)
-    
+
+    class _SecureModuleImporter:
+        """Simple version of the importer for use with trusted code."""
+        __allow_access_to_unprotected_subobjects__ = 1
+        def __getitem__(self, module):
+            __import__(module)
+            return sys.modules[module]
+
+SecureModuleImporter = _SecureModuleImporter()
+
 Undefs = (Undefined, AttributeError, KeyError,
           TypeError, IndexError, Unauthorized)
 
