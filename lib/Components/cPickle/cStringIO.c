@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.13 1997/01/24 19:45:20 chris Exp $
+  $Id: cStringIO.c,v 1.14 1997/01/24 19:56:24 chris Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.14  1997/01/24 19:56:24  chris
+  undid last change
+
   Revision 1.13  1997/01/24 19:45:20  chris
   extra byte in buffer no longer included in buf_size
 
@@ -295,10 +298,10 @@ O_cwrite(PyObject *self, char *c, int  l) {
   if(newl >= ((Oobject*)self)->buf_size)
     {
       ((Oobject*)self)->buf_size*=2;
-      if(((Oobject*)self)->buf_size <= newl) ((Oobject*)self)->buf_size=newl;
+      if(((Oobject*)self)->buf_size <= newl) ((Oobject*)self)->buf_size=newl+1;
       UNLESS(((Oobject*)self)->buf=
 	     (char*)realloc(((Oobject*)self)->buf,
-			    (((Oobject*)self)->buf_size + 1) *sizeof(char)))
+			    (((Oobject*)self)->buf_size) *sizeof(char)))
 	{
 	  PyErr_SetString(PyExc_MemoryError,"out of memory");
 	  ((Oobject*)self)->buf_size=((Oobject*)self)->pos=0;
