@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.58 1998/12/16 14:43:14 jim Exp $'''
-__version__='$Revision: 1.58 $'[11:-2]
+$Id: DA.py,v 1.59 1998/12/16 15:09:35 jim Exp $'''
+__version__='$Revision: 1.59 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -211,27 +211,36 @@ class DA(
 
 	src="Could not render the query template!"
 	result=()
-	try:
-	    src=self(REQUEST, src__=1)
-            if find(src,'\0'): src=join(split(src,'\0'),'\n'+'-'*60+'\n')
-	    result=self(REQUEST)
-            if result._searchable_result_columns():
-                r=custom_default_report(self.id, result)
-            else:
-                r='This was not a query.'
-	except:
-	    r=(
-		'<strong>Error, <em>%s</em>:</strong> %s'
-		% (sys.exc_type, sys.exc_value))
+        t=v=tb=None
+        try:
+            try:
+                src=self(REQUEST, src__=1)
+                if find(src,'\0'): src=join(split(src,'\0'),'\n'+'-'*60+'\n')
+                result=self(REQUEST)
+                if result._searchable_result_columns():
+                    r=custom_default_report(self.id, result)
+                else:
+                    r='This was not a query.'
+            except:
+                t, v, tb = sys.exc_info()
+                r='<strong>Error, <em>%s</em>:</strong> %s' % (t, v)
 
-	report=DocumentTemplate.HTML(
-	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
-	    '<!--#var manage_tabs-->\n<hr>\n%s\n\n'
-	    '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
-	    '</body></html>'
-	    % (r,src))
+            report=DocumentTemplate.HTML(
+                '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
+                '<!--#var manage_tabs-->\n<hr>\n%s\n\n'
+                '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
+                '</body></html>'
+                % (r,src))
 
-	return apply(report,(self,REQUEST),{self.id:result})
+            report=apply(report,(self,REQUEST),{self.id:result})
+
+            if tb is not None:
+                self.raise_standardErrorMessage(
+                    None, REQUEST, t, v, tb, None, report)
+
+            return report
+        
+        finally: tb=None
 
     def index_html(self, PARENT_URL):
 	" "
@@ -319,6 +328,7 @@ class DA(
         if type(result) is type(''):
             f=StringIO()
             f.write(result)
+            f.seek(0)
             result=RDB.File(f,brain,self)
         else:
             result=Results(result, brain, self)
