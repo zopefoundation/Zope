@@ -5,3 +5,5 @@ Xaq Xaq.c
 MethodObject MethodObject.c
 MultiMapping MultiMapping.c
 ThreadLock ThreadLock.c
+
+# install Sync.py
