@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.28 2000/08/31 21:07:17 brian Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: Connection.py,v 1.29 2000/10/06 15:36:19 brian Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -226,7 +226,9 @@ class Connection(
         try: return self._v_database_connection
         except AttributeError:
             s=self.connection_string
-            if s: return self.connect(s)
+            if s:
+                self.connect(s)
+                return self._v_database_connection
             raise 'Database Not Connected',(
                 '''The database connection is not connected''')
 
