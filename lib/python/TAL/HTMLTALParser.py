@@ -138,10 +138,26 @@ TIGHTEN_IMPLICIT_CLOSE_TAGS = (PARA_LEVEL_HTML_TAGS
 class NestingError(HTMLParseError):
     """Exception raised when elements aren't properly nested."""
 
+    def __init__(self, tagstack, endtag, position=(None, None)):
+        self.endtag = endtag
+        if tagstack:
+            if len(tagstack) == 1:
+                msg = ('Open tag <%s> does not match close tag </%s>'
+                       % (tagstack[0], endtag))
+            else:
+                msg = ('Open tags <%s> do not match close tag </%s>'
+                       % (string.join(tagstack, '>, <'), endtag))
+        else:
+            msg = 'No tags are open to match </%s>' % endtag
+        HTMLParseError.__init__(self, msg, position)
+
+class EmptyTagError(NestingError):
+    """Exception raised when empty elements have an end tag."""
+
     def __init__(self, tag, position=(None, None)):
         self.tag = tag
-        HTMLParseError.__init__(self, "unmatched </%s>" % tag, position)
-
+        msg = 'Close tag </%s> should be removed' % tag
+        HTMLParseError.__init__(self, msg, position)
 
 class HTMLTALParser(HTMLParser):
 
@@ -201,7 +217,7 @@ class HTMLTALParser(HTMLParser):
     def handle_endtag(self, tag):
         if tag in EMPTY_HTML_TAGS:
             # </img> etc. in the source is an error
-            raise NestingError(tag, self.getpos())
+            raise EmptyTagError(tag, self.getpos())
         self.close_enclosed_tags(tag)
         self.gen.emitEndElement(tag)
         self.pop_xmlns()
@@ -233,7 +249,7 @@ class HTMLTALParser(HTMLParser):
 
     def close_enclosed_tags(self, tag):
         if tag not in self.tagstack:
-            raise NestingError(tag, self.getpos())
+            raise NestingError(self.tagstack, tag, self.getpos())
         while tag != self.tagstack[-1]:
             self.implied_endtag(self.tagstack[-1], 1)
         assert self.tagstack[-1] == tag
