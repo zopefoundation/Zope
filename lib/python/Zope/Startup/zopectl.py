@@ -254,10 +254,10 @@ class ZopeCmd(ZDCmd):
             args.insert(0, '-v')
 
         args.insert(0, script)
+        args.insert(0, self.options.python)
 
-        cmdline = ' '.join([self.options.python] + args)
-        print 'Running tests via: %s' % cmdline
-        os.system(cmdline)
+        print 'Running tests via: %s' % ' '.join(args)
+        os.execv(self.options.python, args)
 
     def help_test(self):
         print "test [args]+ -- run unit / functional tests."

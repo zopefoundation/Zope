@@ -46,6 +46,10 @@ Zope Changes
 
     Bugs fixed
     
+      - bin/zopectl test now uses os.execv, instead os os.system,
+        so that options with characters that needs shell quoting
+        doesn't break the command.
+      
       - Collector #945:  Allow adding empty PythonScript instances
         programmatically.
 
