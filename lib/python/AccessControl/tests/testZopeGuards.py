@@ -58,7 +58,6 @@ class SecurityManager:
         self.calls.append(('checkPermission', args))
         return not self.reject
 
-
 class GuardTestCase(unittest.TestCase):
 
     def setSecurityManager(self, manager):
@@ -378,7 +377,82 @@ class FuncWrapper:
 # the next one could be called an integration test.  But we're simply
 # trying to run restricted Python with the *intended* implementations of
 # the special wrappers here, so no apologies.
+_ProtectedBase = None
+
 class TestActualPython(GuardTestCase):
+
+    _old_mgr = _old_policy = _marker = []
+
+    def setUp(self):
+        pass
+
+    def tearDown( self ):
+        self._restorePolicyAndManager()
+
+    def _initPolicyAndManager(self, manager=None):
+        from AccessControl.SecurityManagement import get_ident
+        from AccessControl.SecurityManagement import _managers
+        from AccessControl.SecurityManagement import newSecurityManager
+        from AccessControl.SecurityManager import setSecurityPolicy
+        from AccessControl.ZopeSecurityPolicy import ZopeSecurityPolicy
+
+        class UnderprivilegedUser:
+            """ Anonymous USer for unit testing purposes.
+            """
+            def getId(self):
+                return 'Underprivileged User'
+
+            getUserName = getId
+
+            def allowed(self, object, object_roles=None):
+                return 0
+
+            def getRoles(self):
+                return ()
+
+        self._policy = ZopeSecurityPolicy()
+        self._old_policy = setSecurityPolicy(self._policy)
+
+        if manager is None:
+            thread_id = get_ident()
+            self._old_mgr = manager=_managers.get(thread_id, self._marker)
+            newSecurityManager(None, UnderprivilegedUser())
+        else:
+            self._old_mgr = self.setSecurityManager(manager)
+
+    def _restorePolicyAndManager(self):
+        from AccessControl.SecurityManagement import noSecurityManager
+        from AccessControl.SecurityManager import setSecurityPolicy
+
+        if self._old_mgr is not self._marker:
+            self.setSecurityManager(self._old_mgr)
+        else:
+            noSecurityManager()
+
+        if self._old_policy is not self._marker:
+            setSecurityPolicy(self._old_policy)
+
+    def _getProtectedBaseClass(self):
+
+        from AccessControl.SecurityInfo import ClassSecurityInfo
+        from ExtensionClass import Base
+        from Globals import InitializeClass
+
+        global _ProtectedBase
+        if _ProtectedBase is None:
+
+            class ProtectedBase(Base):
+                security = ClassSecurityInfo()
+
+                security.declarePrivate('private_method')
+                def private_method(self):
+                    return 'private_method called'
+
+            InitializeClass(ProtectedBase)
+            _ProtectedBase = ProtectedBase
+
+        return _ProtectedBase
+
     def testPython(self):
         from RestrictedPython.tests import verify
 
@@ -403,6 +477,101 @@ class TestActualPython(GuardTestCase):
         if untouched:
             untouched.sort()
             self.fail("Unexercised wrappers: %r" % untouched)
+
+    def testPythonRealAC(self):
+        code, its_globals = self._compile("actual_python.py")
+        exec code in its_globals
+
+    def test_derived_class_normal(self):
+        from RestrictedPython.tests import verify
+
+        NORMAL_SCRIPT = """
+class Normal(ProtectedBase):
+    pass
+
+normal = Normal()
+print normal.private_method()
+"""
+        code, its_globals = self._compile_str(NORMAL_SCRIPT, 'normal_script')
+        its_globals['ProtectedBase'] = self._getProtectedBaseClass()
+        verify.verify(code)
+
+        self._initPolicyAndManager()
+
+        try:
+            exec code in its_globals
+        except Unauthorized:
+            pass
+        else:
+            self.fail("Didn't raise Unauthorized: \n%s" % 
+                        its_globals['_print']())
+
+    def test_derived_class_sneaky_en_suite(self):
+
+        #  Disallow declaration of security-affecting names in classes
+        #  defined in restricted code (compile-time check).
+        from RestrictedPython.tests import verify
+
+        SNEAKY_SCRIPT = """
+class Sneaky(ProtectedBase):
+    private_method__roles__ = None
+
+
+sneaky = Sneaky()
+print sneaky.private_method()
+"""
+        try:
+            code, its_globals = self._compile_str(SNEAKY_SCRIPT,
+                                                  'sneaky_script')
+        except SyntaxError:
+            pass
+        else:
+            self.fail("Didn't raise SyntaxError!")
+
+    def test_derived_sneaky_post_facto(self):
+
+        #  Assignment to a class outside its suite fails at
+        #  compile time with a SyntaxError.
+        from RestrictedPython.tests import verify
+
+        SNEAKY_SCRIPT = """
+class Sneaky(ProtectedBase):
+    pass
+
+Sneaky.private_method__roles__ = None
+
+sneaky = Sneaky()
+print sneaky.private_method()
+"""
+        try:
+            code, its_globals = self._compile_str(SNEAKY_SCRIPT, 'sneaky_script')
+        except SyntaxError:
+            pass
+        else:
+            self.fail("Didn't raise SyntaxError!")
+
+    def test_derived_sneaky_instance(self):
+
+        #  Assignment of security-sensitive names to an instance
+        #  fails at compile time with a SyntaxError.
+        from RestrictedPython.tests import verify
+
+        SNEAKY_SCRIPT = """
+class Sneaky(ProtectedBase):
+    pass
+
+sneaky = Sneaky()
+sneaky.private_method__roles__ = None
+print sneaky.private_method()
+"""
+        try:
+            code, its_globals = self._compile_str(SNEAKY_SCRIPT,
+                                                  'sneaky_script')
+        except SyntaxError:
+            pass
+        else:
+            self.fail("Didn't raise SyntaxError!")
+
 
     def test_dict_access(self):
         from RestrictedPython.tests import verify

@@ -30,6 +30,9 @@ Zope Changes
     Features added
 
     Bugs fixed
+  
+      - Hotfix_20050405:  classes defined in untrusted code could shadow
+        the roles of methods defined as protected by their bases.
 
       - Collector #1656: Fixed enumeration within untrusted code
         (forward-port from 2.7 branch).

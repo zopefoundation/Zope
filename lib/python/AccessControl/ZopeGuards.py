@@ -367,6 +367,9 @@ safe_builtins['apply'] = builtin_guarded_apply
 # This metaclass supplies the security declarations that allow all
 # attributes of a class and its instances to be read and written.
 def _metaclass(name, bases, dict):
+    for k, v in dict.items():
+        if k.endswith('__roles__') and k[:len('__roles__')] not in dict:
+          raise Unauthorized, "Can't override security: %s" % k
     ob = type(name, bases, dict)
     ob.__allow_access_to_unprotected_subobjects__ = 1
     ob._guarded_writes = 1
