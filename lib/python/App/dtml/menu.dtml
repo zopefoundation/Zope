@@ -71,7 +71,7 @@ td {
 <div align="center">
 <a href="http://www.zope.org/" target="_new"><img src="<dtml-var 
 BASEPATH1>/p_/zopelogo_jpg" height="32" width="90" border="0" 
-alt="" />
+alt="" /></a>
 </div>
 <div class="form-element">
 <form action="<dtml-var BASEPATH1>" method="POST" target="manage_main">
