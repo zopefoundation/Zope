@@ -40,8 +40,6 @@ import ZPublisher
 def startup():
     global app
 
-    Globals.DatabaseVersion='3'
-
     # Import products
     OFS.Application.import_products()
 

@@ -376,11 +376,9 @@ class ApplicationManager(Folder,CacheManager):
         return self._p_jar.db().getName()
 
     def db_size(self):
-        if Globals.DatabaseVersion=='2':
-            s=os.stat(self.db_name())[6]
-        else:
-            s=self._p_jar.db().getSize()
-            if type(s) is type(''): return s
+        s=self._p_jar.db().getSize()
+        if type(s) is type(''):
+            return s
 
         if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)

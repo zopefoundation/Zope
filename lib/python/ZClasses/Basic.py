@@ -64,7 +64,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
 
     def classIcon(self): return self.getClassAttr('icon','')
 
-    def show_class_id(self): return Globals.DatabaseVersion=='3'
+    def show_class_id(self): return True
 
     def class_id(self):
         return (self.getClassAttr('__module__','') or '')[1:]

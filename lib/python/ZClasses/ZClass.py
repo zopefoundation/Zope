@@ -126,12 +126,6 @@ def find_class(ob, name):
             continue
         raise AttributeError, name
 
-def dbVersionEquals(ver):
-    # A helper function to isolate db version checking.
-    return hasattr(Globals, 'DatabaseVersion') and \
-       Globals.DatabaseVersion == ver
-
-
 bad_id=re.compile('[^a-zA-Z0-9_]').search
 
 def manage_addZClass(self, id, title='', baseclasses=[],
@@ -139,6 +133,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
                      zope_object=0):
     """Add a Z Class
     """
+    
     if bad_id(id) is not None:
         raise BadRequest, (
             'The id %s is invalid as a class name.' % id)
@@ -351,8 +346,6 @@ class ZClass( Base
 
     changeClassId__roles__ = ()  # Private
     def changeClassId(self, newid=None):
-        if not dbVersionEquals('3'):
-            return
         if newid is None: newid=self._new_class_id()
         self._unregister()
         if newid:
@@ -427,16 +420,12 @@ class ZClass( Base
         self.propertysheets.methods.manage_afterClone(item)
 
     def manage_afterAdd(self, item, container):
-        if not dbVersionEquals('3'):
-            return
         if not self._zclass_.__module__:
             self.setClassAttr('__module__', self._new_class_id())
         self._register()
         self.propertysheets.methods.manage_afterAdd(item, container)
 
     def manage_beforeDelete(self, item, container):
-        if not dbVersionEquals('3'):
-            return
         self._unregister()
         self.propertysheets.methods.manage_beforeDelete(item, container)
 
