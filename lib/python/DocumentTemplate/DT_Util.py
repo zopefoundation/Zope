@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.86 2002/03/27 10:14:02 htrd Exp $''' 
-__version__='$Revision: 1.86 $'[11:-2]
+'''$Id: DT_Util.py,v 1.87 2002/08/01 16:00:39 mj Exp $''' 
+__version__='$Revision: 1.87 $'[11:-2]
 
 import re, os
 from html_quote import html_quote, ustr # for import by other modules, dont remove!
@@ -66,6 +66,49 @@ if LIMITED_BUILTINS:
             d[name] = NotBindable(f)
         else:
             d[name] = f
+
+try:
+    # Wrap the string module so it can deal with TaintedString strings.
+    from ZPublisher.TaintedString import TaintedString
+    from types import FunctionType, BuiltinFunctionType, StringType
+    import string
+
+    class StringModuleWrapper:
+        def __getattr__(self, key):
+            attr = getattr(string, key)
+            if (isinstance(attr, FunctionType) or
+                isinstance(attr, BuiltinFunctionType)):
+                return StringFunctionWrapper(attr)
+            else:
+                return attr
+
+    class StringFunctionWrapper:
+        def __init__(self, method):
+            self._method = method
+
+        def __call__(self, *args, **kw):
+            tainted = 0
+            args = list(args)
+            for i in range(len(args)):
+                if isinstance(args[i], TaintedString):
+                    tainted = 1
+                    args[i] = str(args[i])
+            for k, v in kw.items():
+                if isinstance(v, TaintedString):
+                    tainted = 1
+                    kw[k] = str(v)
+            args = tuple(args)
+
+            retval = self._method(*args, **kw)
+            if tainted and isinstance(retval, StringType) and '<' in retval:
+                retval = TaintedString(retval)
+            return retval
+
+    d['string'] = StringModuleWrapper()
+
+except ImportError:
+    # Use the string module already defined in RestrictedPython.Utilities
+    pass
 
 # The functions below are meant to bind to the TemplateDict.
 

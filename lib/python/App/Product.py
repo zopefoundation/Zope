@@ -38,6 +38,7 @@ import Globals, OFS.Folder, OFS.SimpleItem, os,  Acquisition, Products
 import re, zlib, Globals, cPickle, marshal, rotor
 import ZClasses, ZClasses.ZClass, AccessControl.Owned
 from urllib import quote
+from cgi import escape
 
 from OFS.Folder import Folder
 from Factory import Factory
@@ -254,14 +255,14 @@ class Product(Folder, PermissionManager):
         "Product Distributions"
 
         def __bobo_traverse__(self, REQUEST, name):
-            if name[-7:] != '.tar.gz': raise 'Invalid Name', name
+            if name[-7:] != '.tar.gz': raise 'Invalid Name', escape(name)
             l=name.find('-')
             id, version = name[:l], name[l+1:-7]
             product=self.aq_parent
             if product.id==id and product.version==version:
                 return Distribution(product)
 
-            raise 'Invalid version or product id', name
+            raise 'Invalid version or product id', escape(name)
 
     Distributions=Distributions()
 

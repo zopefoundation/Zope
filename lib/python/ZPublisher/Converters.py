@@ -10,10 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
+from cgi import escape
 
 def field2string(v):
     if hasattr(v,'read'): return v.read()
@@ -53,7 +54,7 @@ def field2int(v):
         try: return int(v)
         except ValueError:
             raise ValueError, (
-                "An integer was expected in the value '%s'" % v
+                "An integer was expected in the value '%s'" % escape(v)
                 )
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
@@ -65,7 +66,8 @@ def field2float(v):
         try: return float(v)
         except ValueError:
             raise ValueError, (
-                "A floating-point number was expected in the value '%s'" % v
+                "A floating-point number was expected in the value '%s'" % 
+                escape(v)
                 )
     raise ValueError, (
         'Empty entry when <strong>floating-point number</strong> expected')
@@ -81,7 +83,7 @@ def field2long(v):
         try: return long(v)
         except ValueError:
             raise ValueError, (
-                "A long integer was expected in the value '%s'" % v
+                "A long integer was expected in the value '%s'" % escape(v)
                 )
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
@@ -100,7 +102,11 @@ def field2lines(v):
 def field2date(v):
     from DateTime import DateTime
     v = field2string(v)
-    return DateTime(v)
+    try:
+        v = DateTime(v)
+    except DateTime.SyntaxError, e:
+        raise DateTime.SyntaxError, escape(e)
+    return v
 
 def field2boolean(v):
     return not not v

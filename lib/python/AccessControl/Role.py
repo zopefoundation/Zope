@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -20,6 +20,7 @@ from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
 from Permission import Permission
 from App.Common import aq_base
+from cgi import escape
 
 ListType=type([])
 
@@ -171,7 +172,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 return
 
         raise 'Invalid Permission', (
-            "The permission <em>%s</em> is invalid." % permission_to_manage)
+            "The permission <em>%s</em> is invalid." % 
+                escape(permission_to_manage))
         
     _normal_manage_access=DTMLFile('dtml/access', globals())
 
@@ -244,7 +246,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                     valid_roles)
         
         raise 'Invalid Permission', (
-            "The permission <em>%s</em> is invalid." % permission)
+            "The permission <em>%s</em> is invalid." % escape(permission))
 
     def acquiredRolesAreUsedBy(self, permission):
         "used by management screen"
@@ -256,7 +258,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 return type(roles) is ListType and 'CHECKED' or ''
         
         raise 'Invalid Permission', (
-            "The permission <em>%s</em> is invalid." % permission)
+            "The permission <em>%s</em> is invalid." % escape(permission))
 
 
     # Local roles support

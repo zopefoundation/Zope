@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.25 2002/06/21 01:51:43 chrism Exp $
+$Id: Transience.py,v 1.26 2002/08/01 16:00:41 mj Exp $
 """
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -42,6 +42,7 @@ from TransientObject import TransientObject
 import thread
 import ThreadLock
 import Queue
+from cgi import escape
 
 _marker = []
 
@@ -324,14 +325,14 @@ class TransientObjectContainer(SimpleItem):
 
     def _setTimeout(self, timeout_mins):
         if type(timeout_mins) is not type(1):
-            raise TypeError, (timeout_mins, "Must be integer")
+            raise TypeError, (escape(`timeout_mins`), "Must be integer")
         self._timeout_secs = t_secs = timeout_mins * 60
         # timeout_slices == fewest number of timeslices that's >= t_secs
         self._timeout_slices=int(math.ceil(float(t_secs)/self._period))
 
     def _setLimit(self, limit):
         if type(limit) is not type(1):
-            raise TypeError, (limit, "Must be integer")
+            raise TypeError, (escape(`limit`), "Must be integer")
         self._limit = limit
 
     security.declareProtected(MGMT_SCREEN_PERM, 'nudge')

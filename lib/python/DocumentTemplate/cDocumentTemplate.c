@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.46 2002/05/09 13:19:17 htrd Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.47 2002/08/01 16:00:39 mj Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -22,7 +22,7 @@ static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_guarded_getattr;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
-static PyObject *py___class__, *html_quote, *ustr;
+static PyObject *py___class__, *html_quote, *ustr, *untaint_name;
 
 /* ----------------------------------------------------- */
 
@@ -665,6 +665,7 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 {
   PyObject *block, *t, *args;
   int l, i, k=0, append;
+  int skip_html_quote = 0;
 
   if ((l=PyList_Size(blocks)) < 0) return -1;
   for (i=0; i < l; i++)
@@ -689,6 +690,23 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 
               if (t == NULL) return -1;
 
+	      if (! ( PyString_Check(t) || PyUnicode_Check(t) ) )
+	        {
+		  /* This might be a TaintedString object */
+		  PyObject *untaintmethod = NULL;
+
+		  untaintmethod = PyObject_GetAttr(t, untaint_name);
+		  if (untaintmethod) {
+		     /* Quote it */
+		     UNLESS_ASSIGN(t,
+		   	    PyObject_CallObject(untaintmethod, NULL)) return -1;
+		     skip_html_quote = 1;
+
+		  } else PyErr_Clear();
+
+		  Py_XDECREF(untaintmethod);
+	        }
+
               if (! ( PyString_Check(t) || PyUnicode_Check(t) ) )
                 {
                   args = PyTuple_New(1);
@@ -700,9 +718,9 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
                   UNLESS(t) return -1;
                 }
 
-              if (PyTuple_GET_SIZE(block) == 3) /* html_quote */
+              if (skip_html_quote == 0 && PyTuple_GET_SIZE(block) == 3)
+		       /* html_quote */
                 {
-                  int skip_html_quote;
                   if (PyString_Check(t))
                     {
                       if (strchr(PyString_AS_STRING(t), '&') ||
@@ -961,6 +979,7 @@ initcDocumentTemplate(void)
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_renderNS=PyString_FromString("__render_with_namespace__")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
+  UNLESS(untaint_name=PyString_FromString("__untaint__")) return;
   UNLESS(py_acquire=PyString_FromString("aq_acquire")) return;
   UNLESS(py___call__=PyString_FromString("__call__")) return;
   UNLESS(py___roles__=PyString_FromString("__roles__")) return;

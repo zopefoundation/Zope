@@ -18,6 +18,7 @@ from Acquisition import Acquired
 import Persistence
 from thread import allocate_lock
 from zLOG import LOG, WARNING
+from cgi import escape
 
 broken_klasses={}
 broken_klasses_lock = allocate_lock()
@@ -42,7 +43,7 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
     def __getattr__(self, name):
         if name[:3]=='_p_':
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
-        raise AttributeError, name
+        raise AttributeError, escape(name)
 
     manage=manage_main=Globals.DTMLFile('dtml/brokenEdit',globals())
     manage_workspace=manage

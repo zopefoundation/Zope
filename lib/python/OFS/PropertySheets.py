@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -26,6 +26,7 @@ from Globals import Persistent
 from Traversable import Traversable
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
+from cgi import escape
 
 class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
@@ -141,7 +142,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def valid_property_id(self, id):
         if not id or id[:1]=='_' or (id[:3]=='aq_') \
-           or (' ' in id):
+           or (' ' in id) or escape(id) != id:
             return 0
         return 1
 
@@ -180,7 +181,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # systems.
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise 'Bad Request', 'Invalid property id, %s.' % id
+            raise 'Bad Request', 'Invalid property id, %s.' % escape(id)
 
         if not self.property_extensible_schema__():
             raise 'Bad Request', (
@@ -190,7 +191,8 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if hasattr(aq_base(self),id):
             if not (id=='title' and not self.__dict__.has_key(id)):
                 raise 'Bad Request', (
-                    'Invalid property id, <em>%s</em>. It is in use.' % id)
+                    'Invalid property id, <em>%s</em>. It is in use.' % 
+                        escape(id))
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
         pself._properties=pself._properties+(prop,)
@@ -211,10 +213,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # it will used to _replace_ the properties meta data.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise 'Bad Request', 'The property %s does not exist.' % id
+            raise 'Bad Request', 'The property %s does not exist.' % escape(id)
         propinfo=self.propertyInfo(id)
         if not 'w' in propinfo.get('mode', 'wd'):
-            raise 'Bad Request', '%s cannot be changed.' % id
+            raise 'Bad Request', '%s cannot be changed.' % escape(id)
         if type(value)==type(''):
             proptype=propinfo.get('type', 'string')
             if type_converters.has_key(proptype):
@@ -232,13 +234,13 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # Delete the property with the given id. If a property with the
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
-            raise 'Bad Request', 'The property %s does not exist.' % id
+            raise 'Bad Request', 'The property %s does not exist.' % escape(id)
         vself=self.v_self()
         if hasattr(vself, '_reserved_names'):
             nd=vself._reserved_names
         else: nd=()
         if (not 'd' in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
-            raise 'Bad Request', '%s cannot be deleted.' % id
+            raise 'Bad Request', '%s cannot be deleted.' % escape(id)
         delattr(vself, id)
         pself=self.p_self()
         pself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
@@ -262,7 +264,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # Return a mapping containing property meta-data
         for p in self._propertyMap():
             if p['id']==id: return p
-        raise ValueError, 'The property %s does not exist.' % id
+        raise ValueError, 'The property %s does not exist.' % escape(id)
 
     def _propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
@@ -418,7 +420,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         for name, value in props.items():
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
-                    raise 'BadRequest', '%s cannot be changed' % name
+                    raise 'BadRequest', '%s cannot be changed' % escape(name)
                 self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
@@ -487,13 +489,13 @@ class DAVProperties(Virtual, PropertySheet, View):
         return getattr(self, method)()
 
     def _setProperty(self, id, value, type='string', meta=None):
-        raise ValueError, '%s cannot be set.' % id
+        raise ValueError, '%s cannot be set.' % escape(id)
 
     def _updateProperty(self, id, value):
-        raise ValueError, '%s cannot be updated.' % id
+        raise ValueError, '%s cannot be updated.' % escape(id)
 
     def _delProperty(self, id):
-        raise ValueError, '%s cannot be deleted.' % id
+        raise ValueError, '%s cannot be deleted.' % escape(id)
 
     def _propertyMap(self):
         # Only use getlastmodified if returns a value

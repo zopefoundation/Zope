@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.155 2002/07/09 15:14:51 zigg Exp $"""
+$Id: ObjectManager.py,v 1.156 2002/08/01 16:00:39 mj Exp $"""
 
-__version__='$Revision: 1.155 $'[11:-2]
+__version__='$Revision: 1.156 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -34,6 +34,8 @@ import App.Common
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
 import sys,fnmatch,copy
+from cgi import escape
+from types import StringType, UnicodeType
 
 import XMLExportImport
 customImporters={
@@ -51,11 +53,12 @@ def checkValidId(self, id, allow_dup=0):
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
 
-    if not id or (type(id) != type('')):
+    if not id or not isinstance(id, StringType):
+        if isinstance(id, UnicodeType): id = escape(id)
         raise BadRequestException, ('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequestException, (
-            'The id "%s" contains characters illegal in URLs.' % id)
+            'The id "%s" contains characters illegal in URLs.' % escape(id))
     if id[0]=='_': raise BadRequestException, (
         'The id "%s" is invalid - it begins with an underscore.'  % id)
     if id[:3]=='aq_': raise BadRequestException, (
@@ -434,13 +437,13 @@ class ObjectManager(
         for n in ids:
             if n in p:
                 return MessageDialog(title='Not Deletable',
-                       message='<EM>%s</EM> cannot be deleted.' % n,
+                       message='<EM>%s</EM> cannot be deleted.' % escape(n),
                        action ='./manage_main',)
         while ids:
             id=ids[-1]
             v=self._getOb(id, self)
             if v is self:
-                raise 'BadRequest', '%s does not exist' % ids[-1]
+                raise 'BadRequest', '%s does not exist' % escape(ids[-1])
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
@@ -511,7 +514,7 @@ class ObjectManager(
         """Import an object from a file"""
         dirname, file=os.path.split(file)
         if dirname:
-            raise BadRequestException, 'Invalid file name %s' % file
+            raise BadRequestException, 'Invalid file name %s' % escape(file)
 
         instance_home = INSTANCE_HOME
         zope_home = ZOPE_HOME
@@ -521,7 +524,7 @@ class ObjectManager(
             if os.path.exists(filepath):
                 break
         else:
-            raise BadRequestException, 'File does not exist: %s' % file
+            raise BadRequestException, 'File does not exist: %s' % escape(file)
 
         self._importObjectFromFile(filepath, verify=not not REQUEST,
                                    set_owner=set_owner)

@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.49 2001/11/28 15:50:55 matt Exp $"
+"$Id: DT_String.py,v 1.50 2002/08/01 16:00:39 mj Exp $"
 
 import thread,re,exceptions,os
 
@@ -404,6 +404,7 @@ class String:
         # print '============================================================'
 
         if mapping is None: mapping = {}
+        if hasattr(mapping, 'taintWrapper'): mapping = mapping.taintWrapper()
 
         if not hasattr(self,'_v_cooked'):
             try: changed=self.__changed__()

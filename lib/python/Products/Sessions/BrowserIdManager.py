@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -26,12 +26,13 @@ import SessionInterfaces
 from SessionPermissions import *
 from common import DEBUG
 import os, time, random, string, binascii, sys, re
+from cgi import escape
 
 b64_trans = string.maketrans('+/', '-.')
 b64_untrans = string.maketrans('-.', '+/')
 
-badidnamecharsin = re.compile('[\?&;, ]').search
-badcookiecharsin = re.compile('[;, ]').search
+badidnamecharsin = re.compile('[\?&;,<> ]').search
+badcookiecharsin = re.compile('[;,<>& ]').search
 twodotsin = re.compile('(\w*\.){2,}').search
 
 _marker = []
@@ -119,7 +120,8 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
                 # somebody screwed with the REQUEST instance during
                 # this request.
                 raise BrowserIdManagerErr, (
-                    'Ill-formed browserid in REQUEST.browser_id_:  %s' % bid
+                    'Ill-formed browserid in REQUEST.browser_id_:  %s' % 
+                    escape(bid)
                     )
             return bid
         # fall through & ck id namespaces if bid is not in request.
@@ -235,7 +237,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def setBrowserIdName(self, k):
         """ sets browser id name string """
         if not (type(k) is type('') and k and not badidnamecharsin(k)):
-            raise BrowserIdManagerErr, 'Bad id name string %s' % repr(k)
+            raise BrowserIdManagerErr, 'Bad id name string %s' % escape(repr(k))
         self.browserid_name = k
 
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdName')
@@ -309,7 +311,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     def setCookiePath(self, path=''):
         """ sets cookie 'path' element for id cookie """
         if not (type(path) is type('') and not badcookiecharsin(path)):
-            raise BrowserIdManagerErr, 'Bad cookie path %s' % repr(path)
+            raise BrowserIdManagerErr, 'Bad cookie path %s' % escape(repr(path))
         self.cookie_path = path
     
     security.declareProtected(ACCESS_CONTENTS_PERM, 'getCookiePath')
@@ -323,7 +325,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         if type(days) not in (type(1), type(1.0)):
             raise BrowserIdManagerErr,(
                 'Bad cookie lifetime in days %s (requires integer value)'
-                % repr(days)
+                % escape(repr(days))
                 )
         self.cookie_life_days = int(days)
 
@@ -337,7 +339,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         """ sets cookie 'domain' element for id cookie """
         if type(domain) is not type(''):
             raise BrowserIdManagerErr, (
-                'Cookie domain must be string: %s' % repr(domain)
+                'Cookie domain must be string: %s' % escape(repr(domain))
                 )
         if not domain:
             self.cookie_domain = ''
@@ -346,11 +348,11 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             raise BrowserIdManagerErr, (
                 'Cookie domain must contain at least two dots (e.g. '
                 '".zope.org" or "www.zope.org") or it must be left blank. : '
-                '%s' % `domain`
+                '%s' % escape(`domain`)
                 )
         if badcookiecharsin(domain):
             raise BrowserIdManagerErr, (
-                'Bad characters in cookie domain %s' % `domain`
+                'Bad characters in cookie domain %s' % escape(`domain`)
                 )
         self.cookie_domain = domain
 

@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.32 $'[11:-2]
+__version__ = '$Revision: 1.33 $'[11:-2]
 
 
 import  re
@@ -35,6 +35,7 @@ from BTrees.IIBTree import difference, weightedIntersection
 from Lexicon import Lexicon
 
 from types import *
+from cgi import escape
 
 class Op:
     def __init__(self, name):
@@ -482,7 +483,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         query_operator = operator_dict.get(qop)
         if query_operator is None:
             raise exceptions.RuntimeError, ("Invalid operator '%s' "
-                                            "for a TextIndex" % qop)
+                                            "for a TextIndex" % escape(qop))
         r = None
 
         for key in record.keys:

@@ -145,8 +145,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.53 2002/05/21 14:41:41 andreasjung Exp $'
-__version__='$Revision: 1.53 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.54 2002/08/01 16:00:39 mj Exp $'
+__version__='$Revision: 1.54 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -155,6 +155,7 @@ from cgi import escape
 from html_quote import html_quote # for import by other modules, dont remove!
 from types import StringType
 from Acquisition import aq_base
+from ZPublisher.TaintedString import TaintedString
 
 class Var: 
     name='var'
@@ -232,9 +233,19 @@ class Var:
                     if hasattr(val, fmt):
                         val = _get(val, fmt)()
                     elif special_formats.has_key(fmt):
-                        val = special_formats[fmt](val, name, md)
+                        if fmt == 'html-quote' and \
+                           isinstance(val, TaintedString):
+                            # TaintedStrings will be quoted by default, don't
+                            # double quote.
+                            pass
+                        else:
+                            val = special_formats[fmt](val, name, md)
                     elif fmt=='': val=''
-                    else: val = fmt % val
+                    else: 
+                        if isinstance(val, TaintedString):
+                            val = TaintedString(fmt % val)
+                        else:
+                            val = fmt % val
                 except:
                     t, v= sys.exc_type, sys.exc_value
                     if hasattr(sys, 'exc_info'): t, v = sys.exc_info()[:2]
@@ -247,17 +258,40 @@ class Var:
                 if hasattr(val, fmt):
                     val = _get(val, fmt)()
                 elif special_formats.has_key(fmt):
-                    val = special_formats[fmt](val, name, md)
+                    if fmt == 'html-quote' and \
+                        isinstance(val, TaintedString):
+                        # TaintedStrings will be quoted by default, don't
+                        # double quote.
+                        pass
+                    else:
+                        val = special_formats[fmt](val, name, md)
                 elif fmt=='': val=''
-                else: val = fmt % val
+                else:
+                    if isinstance(val, TaintedString):
+                        val = TaintedString(fmt % val)
+                    else:
+                        val = fmt % val
 
         # finally, pump it through the actual string format...
         fmt=self.fmt
-        if fmt=='s': val=ustr(val)
-        else: val = ('%'+self.fmt) % (val,)
+        if fmt=='s':
+            # Keep tainted strings as tainted strings here.
+            if not isinstance(val, TaintedString):
+                val=str(val)
+        else:
+            # Keep tainted strings as tainted strings here.
+            wastainted = 0
+            if isinstance(val, TaintedString): wastainted = 1
+            val = ('%'+self.fmt) % (val,)
+            if wastainted and '<' in val:
+                val = TaintedString(val)
 
         # next, look for upper, lower, etc
-        for f in self.modifiers: val=f(val)
+        for f in self.modifiers:
+            if f.__name__ == 'html_quote' and isinstance(val, TaintedString):
+                # TaintedStrings will be quoted by default, don't double quote.
+                continue
+            val=f(val)
 
         if have_arg('size'):
             size=args['size']
@@ -274,6 +308,9 @@ class Var:
                 else: l='...'
                 val=val+l
 
+        if isinstance(val, TaintedString):
+            val = val.quoted()
+        
         return val
 
     __call__=render
@@ -298,6 +335,9 @@ def url_quote_plus(v, name='(Unknown name)', md={}):
 
 
 def newline_to_br(v, name='(Unknown name)', md={}):
+    # Unsafe data is explicitly quoted here; we don't expect this to be HTML
+    # quoted later on anyway.
+    if isinstance(v, TaintedString): v = v.quoted()
     v=str(v)
     if v.find('\r') >= 0: v=''.join(v.split('\r'))
     if v.find('\n') >= 0: v='<br />\n'.join(v.split('\n'))
@@ -368,7 +408,7 @@ def sql_quote(v, name='(Unknown name)', md={}):
     This is needed to securely insert values into sql
     string literals in templates that generate sql.
     """
-    if v.find("'") >= 0: return "''".join(v.split("'"))
+    if v.find("'") >= 0: return v.replace("'", "''")
     return v
 
 special_formats={
@@ -389,7 +429,7 @@ special_formats={
     }
 
 def spacify(val):
-    if val.find('_') >= 0: val=" ".join(val.split('_'))
+    if val.find('_') >= 0: val=val.replace('_', ' ')
     return val
 
 modifiers=(html_quote, url_quote, url_quote_plus, newline_to_br,

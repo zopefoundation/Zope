@@ -142,6 +142,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             # We're first, so get the REQUEST.
             try:
                 req = self.aq_acquire('REQUEST')
+                if hasattr(req, 'taintWrapper'):
+                    req = req.taintWrapper()
             except: pass
             bound_data['REQUEST'] = req
             ns.this = bound_data['context']

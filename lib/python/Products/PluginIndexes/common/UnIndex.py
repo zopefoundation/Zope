@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -30,6 +30,7 @@ import BTrees.Length
 
 from Products.PluginIndexes.common.util import parseIndexRequest
 import sys
+from cgi import escape
 
 _marker = []
 
@@ -330,7 +331,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         # experimental code for specifing the operator
         operator = record.get('operator',self.useOperator)
         if not operator in self.operators :
-           raise RuntimeError,"operator not valid: %s" % operator
+           raise RuntimeError,"operator not valid: %s" % escape(operator)
 
         # depending on the operator we use intersection or union
         if operator=="or":  set_func = union

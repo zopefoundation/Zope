@@ -77,9 +77,17 @@ Zope Changes
 
       - FileLibrary and GuestBook example applications gave anonymous
         users the Manager proxy role when uploading files - a potential 
-	vulnerability on production servers.
+        vulnerability on production servers.
+
+      - Exceptions that use untrusted information from a REQUEST object in
+        the exception message now html-quote that information.
 
     Features Added
+
+      - <dtml-var name> and &dtml.-name; will now automatically HTML-quote
+        unsafe data taken implictly from the REQUEST object. Data taken
+        explicitly from the REQUEST object is not affected, as well as any
+        other data not originating from REQUEST.
     
       - ZCatalog index management ui is now integrated into ZCatalog rather
         than being a subobject managment screen with different tabs.

@@ -21,6 +21,7 @@ import ExtensionClass, Acquisition
 from Permission import pname
 from Owned import UnownableOwner
 from Globals import InitializeClass
+from cgi import escape
 
 class RoleManager:
     def manage_getPermissionMapping(self):
@@ -64,7 +65,7 @@ class RoleManager:
                 raise 'Permission mapping error', (
                     """Attempted to map a permission to a permission, %s,
                     that is not valid. This should never happen. (Waaa).
-                    """ % p)
+                    """ % escape(p))
             
 
             setPermissionMapping(name, wrapper, p)
@@ -118,7 +119,7 @@ class PM(ExtensionClass.Base):
         # We want to make sure that any non-explicitly set methods are
         # private!
         if name.startswith('_') and name.endswith("_Permission"): return ''
-        raise AttributeError, name
+        raise AttributeError, escape(name)
         
 PermissionMapper=PM
 
