@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.39 2001/06/21 19:08:59 shane Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.40 2001/10/26 16:07:50 matt Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -94,7 +94,7 @@ static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_guarded_getattr;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
-static PyObject *py___class__;
+static PyObject *py___class__, *html_quote;
 
 /* ----------------------------------------------------- */
 
@@ -398,13 +398,29 @@ static PyObject *
 MM_cget(MM *self, PyObject *key, int call)
 {
   long i;
-  PyObject *e, *rr, *tb;
+  PyObject *e, *rr;
 
   UNLESS(-1 != (i=PyList_Size(self->data))) return NULL;
   while (--i >= 0)
     {
-      e=PyList_GetItem(self->data,i);
-      if ((e=PyObject_GetItem(e,key)))
+      e=PyList_GET_ITEM(self->data,i);
+      if (PyDict_Check(e))
+        {
+          e=PyDict_GetItem(e, key);
+          Py_XINCREF(e);
+        }
+      else
+        {
+          UNLESS (e=PyObject_GetItem(e,key)) 
+            {
+              if (PyErr_Occurred() == PyExc_KeyError)
+                PyErr_Clear();
+              else
+                return NULL;
+            }
+        }
+
+      if (e)
 	{
           if (!call) return e;
 
@@ -437,17 +453,8 @@ MM_cget(MM *self, PyObject *key, int call)
             }
 	  return e;
 	}
-      PyErr_Fetch(&e, &rr, &tb);
-      if (e != PyExc_KeyError)
-	{
-	  PyErr_Restore(e,rr,tb);
-	  return NULL;
-	}
-      Py_XDECREF(e);
-      Py_XDECREF(rr);
-      Py_XDECREF(tb);
     }
-  PyErr_SetObject(PyExc_KeyError,key);
+  PyErr_SetObject(PyExc_KeyError, key);
   return NULL;
 }
 
@@ -726,7 +733,7 @@ static int
 render_blocks_(PyObject *blocks, PyObject *rendered,
 	       PyObject *md, PyObject *mda)
 {
-  PyObject *block;
+  PyObject *block, *t;
   int l, i, k=0, append;
 
   if ((l=PyList_Size(blocks)) < 0) return -1;
@@ -735,95 +742,123 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
       block=PyList_GET_ITEM(((PyListObject*)blocks), i);
       append=1;
 
-      if (PyTuple_Check(block))
+      if (PyTuple_Check(block) 
+          && PyTuple_GET_SIZE(block) > 1 
+          && PyTuple_GET_ITEM(block, 0)
+          && PyString_Check(PyTuple_GET_ITEM(block, 0)))
 	{
-	  int bs;
+          switch (PyString_AS_STRING(PyTuple_GET_ITEM(block, 0))[0])
+            {
+            case 'v': /* var  */
+	      t=PyTuple_GET_ITEM(block,1);
 
-	  bs=((PyTupleObject*)block)->ob_size;
-	  
-	  if (bs==1)
-	    {
-	      /* Simple var */
-	      block=PyTuple_GET_ITEM(block,0);
-	      if (PyString_Check(block)) block=PyObject_GetItem(md,block);
-	      else block=PyObject_CallObject(block,mda);
-	      if (block) ASSIGN(block, PyObject_Str(block));
-	      UNLESS(block) return -1;
-	    }
-	  else
-	    {
-	      /* if */
-	      int icond, m;
-	      PyObject *cond, *n, *cache;
+	      if (t == NULL) return -1;
 
-	      UNLESS(cache=PyDict_New()) return -1;
-	      cond=PyObject_GetAttr(md,py__push);
-	      if (cond) ASSIGN(cond, PyObject_CallFunction(cond,"O",cache));
-	      Py_DECREF(cache);
-	      if (cond) Py_DECREF(cond);
-	      else return -1;
+	      if (PyString_Check(t)) t=PyObject_GetItem(md, t);
+	      else t=PyObject_CallObject(t, mda);
+
+              if (t == NULL || (! PyString_Check(t)))
+                {
+                  if (t) ASSIGN(t, PyObject_Str(t));
+                  UNLESS(t) return -1;
+                }
+
+              if (PyString_Check(t) 
+                  && PyTuple_GET_SIZE(block) == 3) /* html_quote */
+                {
+                  if (strchr(PyString_AS_STRING(t), '&')
+                      && strchr(PyString_AS_STRING(t), '<')
+                      && strchr(PyString_AS_STRING(t), '>')
+                      && strchr(PyString_AS_STRING(t), '"')
+                      )
+                    ASSIGN(t, PyObject_CallFunction(html_quote, "O", t));
+		    if (t == NULL) return -1;
+                }
+                  
+              block = t;
+              break;
+            case 'i': /* if */
+              {
+                int icond, m, bs;
+                PyObject *cond, *n, *cache;
+
+                bs = PyTuple_GET_SIZE(block) - 1; /* subtract code */
+
+                UNLESS(cache=PyDict_New()) return -1;
+                cond=PyObject_GetAttr(md,py__push);
+                if (cond) ASSIGN(cond, PyObject_CallFunction(cond,"O",cache));
+                Py_DECREF(cache);
+                if (cond) Py_DECREF(cond);
+                else return -1;
 	      
-	      append=0;
-	      m=bs-1;
-	      for (icond=0; icond < m; icond += 2)
-		{
-		  cond=PyTuple_GET_ITEM(block,icond);
-		  if (PyString_Check(cond))
-		    {
-		      /* We have to be careful to handle key errors here */
-		      n=cond;
-		      if ((cond=PyObject_GetItem(md,cond)))
-			{
-			  if (PyDict_SetItem(cache, n, cond) < 0)
-			    {
-			      Py_DECREF(cond);
-			      return if_finally(md,1);
-			    }
-			}
-		      else
-			{
-			  PyObject *t, *v, *tb;
-
-			  PyErr_Fetch(&t, &v, &tb);
-			  if (t != PyExc_KeyError || PyObject_Compare(v,n))
-			    {
-			      PyErr_Restore(t,v,tb);
-			      return if_finally(md,1);
-			    }
-			  Py_XDECREF(t);
-			  Py_XDECREF(v);
-			  Py_XDECREF(tb);
-			  cond=Py_None;
-			  Py_INCREF(cond);
-			}
-		    }
-		  else
-		    UNLESS(cond=PyObject_CallObject(cond,mda))
-		       return if_finally(md,1);
-
-		  if (PyObject_IsTrue(cond))
-		    {
-		      Py_DECREF(cond);
-		      block=PyTuple_GET_ITEM(block,icond+1);
-		      if (block!=Py_None &&
-			 render_blocks_(block, rendered, md, mda) < 0)
-			return if_finally(md,1);
-		      m=-1;
-		      break;
-		    }
-		  else Py_DECREF(cond);
-		}
+                append=0;
+                m=bs-1;
+                for (icond=0; icond < m; icond += 2)
+                  {
+                    cond=PyTuple_GET_ITEM(block,icond+1);
+                    if (PyString_Check(cond))
+                      {
+                        /* We have to be careful to handle key errors here */
+                        n=cond;
+                        if ((cond=PyObject_GetItem(md,cond)))
+                          {
+                            if (PyDict_SetItem(cache, n, cond) < 0)
+                              {
+                                Py_DECREF(cond);
+                                return if_finally(md,1);
+                              }
+                          }
+                        else
+                          {
+                            PyObject *t, *v, *tb;
+                            
+                            PyErr_Fetch(&t, &v, &tb);
+                            if (t != PyExc_KeyError || PyObject_Compare(v,n))
+                              {
+                                PyErr_Restore(t,v,tb);
+                                return if_finally(md,1);
+                              }
+                            Py_XDECREF(t);
+                            Py_XDECREF(v);
+                            Py_XDECREF(tb);
+                            cond=Py_None;
+                            Py_INCREF(cond);
+                          }
+                      }
+                    else
+                      UNLESS(cond=PyObject_CallObject(cond,mda))
+                        return if_finally(md,1);
+                    
+                    if (PyObject_IsTrue(cond))
+                      {
+                        Py_DECREF(cond);
+                        block=PyTuple_GET_ITEM(block,icond+1+1);
+                        if (block!=Py_None &&
+                            render_blocks_(block, rendered, md, mda) < 0)
+                          return if_finally(md,1);
+                        m=-1;
+                        break;
+                      }
+                    else Py_DECREF(cond);
+                  }
 		if (icond==m)
 		  {
-		    block=PyTuple_GET_ITEM(block,icond);
+		    block=PyTuple_GET_ITEM(block,icond+1);
 		    if (block!=Py_None &&
-		       render_blocks_(block, rendered, md, mda) < 0)
+                        render_blocks_(block, rendered, md, mda) < 0)
 		      return if_finally(md,1);
 		  }
-
+                
 		if (if_finally(md,0) == -2) return -1;
-	    }
-	}
+              }
+              break;
+            default:
+              PyErr_Format(PyExc_ValueError,
+                           "Invalid DTML command code, %s",
+                           PyString_AS_STRING(PyTuple_GET_ITEM(block, 0)));
+              return -1;
+            }
+        }
       else if (PyString_Check(block))
 	{
 	  Py_INCREF(block);
@@ -904,9 +939,13 @@ void
 initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.39 $";
+  char *rev="$Revision: 1.40 $";
 
   DictInstanceType.ob_type=&PyType_Type;
+
+  UNLESS (html_quote = PyImport_ImportModule("html_quote")) return;
+  ASSIGN(html_quote, PyObject_GetAttrString(html_quote, "html_quote"));
+  UNLESS (html_quote) return;
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_renderNS=PyString_FromString("__render_with_namespace__")) return;
@@ -946,6 +985,4 @@ initcDocumentTemplate(void)
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
-  if (PyErr_Occurred())
-    Py_FatalError("can't initialize module cDocumentTemplate");
 }

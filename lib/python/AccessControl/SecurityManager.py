@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.7 2001/10/19 15:12:25 shane Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: SecurityManager.py,v 1.8 2001/10/26 16:07:50 matt Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
 
@@ -95,7 +95,12 @@ _noroles = ZopeSecurityPolicy._noroles
 try: max_stack_size=string.atoi(os.environ.get('Z_MAX_STACK_SIZE','100'))
 except: max_stack_size=100
 
-_defaultPolicy=ZopeSecurityPolicy.ZopeSecurityPolicy()
+if os.environ.has_key("ZSP_OWNEROUS_SKIP"): ownerous=0
+else: ownerous=1
+if os.environ.has_key("ZSP_AUTHENTICATION_SKIP"): authenticated=0
+else: authenticated=1
+_defaultPolicy=ZopeSecurityPolicy.ZopeSecurityPolicy(ownerous=ownerous,
+    authenticated=authenticated)
 def setSecurityPolicy(aSecurityPolicy):
     """Set the system default security policy. 
 
@@ -107,6 +112,7 @@ def setSecurityPolicy(aSecurityPolicy):
     _defaultPolicy=aSecurityPolicy
     return last
 
+
 class SecurityManager:
     """A security manager provides methods for checking access and managing
     executable context and policies
@@ -116,35 +122,34 @@ class SecurityManager:
         'validate': 1, 'validateValue': 1, 'checkPermission': 1,
         'getUser': 1, 'calledByExecutable': 1
         }
-    
+
     def __init__(self, thread_id, context):
         self._thread_id=thread_id
         self._context=context
-        self._policy=None
+        self._policy=_defaultPolicy
 
     def validate(self, accessed=None, container=None, name=None, value=None,
                  roles=_noroles):
         """Validate access.
 
         Arguments:
-        
+
         accessed -- the object that was being accessed
-        
+
         container -- the object the value was found in
-        
+
         name -- The name used to access the value
-        
+
         value -- The value retrieved though the access.
 
         roles -- The roles of the object if already known.
-        
+
         The arguments may be provided as keyword arguments. Some of these
         arguments may be ommitted, however, the policy may reject access
         in some cases when arguments are ommitted.  It is best to provide
         all the values possible.
         """
         policy=self._policy
-        if policy is None: policy=_defaultPolicy
         if roles is _noroles:
             return policy.validate(accessed, container, name, value,
                                    self._context)
@@ -153,19 +158,19 @@ class SecurityManager:
                                    self._context, roles)
 
     def DTMLValidate(self, accessed=None, container=None, name=None,
-                    value=None,md=None):
+                    value=None, md=None):
 
         """Validate access.
         * THIS EXISTS FOR DTML COMPATIBILITY *
 
         Arguments:
-        
+
         accessed -- the object that was being accessed
-        
+
         container -- the object the value was found in
-        
+
         name -- The name used to access the value
-        
+
         value -- The value retrieved though the access.
 
         md -- multidict for DTML (ignored)
@@ -177,7 +182,6 @@ class SecurityManager:
 
         """
         policy=self._policy
-        if policy is None: policy=_defaultPolicy
         return policy.validate(accessed, container, name, value,
                                self._context)
 
@@ -185,7 +189,6 @@ class SecurityManager:
         """Convenience for common case of simple value validation.
         """
         policy=self._policy
-        if policy is None: policy=_defaultPolicy
         if roles is _noroles:
             return policy.validate(None, None, None, value,
                                    self._context)
@@ -198,13 +201,12 @@ class SecurityManager:
         the given object.
 
         Arguments:
-        
+
         permission -- A permission name
-        
+
         object -- The object being accessed according to the permission
         """
         policy=self._policy
-        if policy is None: policy=_defaultPolicy
         return policy.checkPermission(permission, object,
                                       self._context)
 
@@ -218,7 +220,10 @@ class SecurityManager:
             raise SystemError, 'Excessive recursion'
         stack.append(anExecutableObject)
         p=getattr(anExecutableObject, '_customSecurityPolicy', None)
-        if p is not None: p=p()
+        if p is not None:
+            p=p()
+        else:
+            p=_defaultPolicy
         self._policy=p
 
     def removeContext(self, anExecutableObject,
@@ -245,10 +250,13 @@ class SecurityManager:
         if stack:
             top=stack[-1]
             p=getattr(top, '_customSecurityPolicy', None)
-            if p is not None: p=p()
+            if p is not None:
+                p=p()
+            else:
+                p=_defaultPolicy
             self._policy=p
         else:
-            self._policy=None
+            self._policy=_defaultPolicy
 
     def getUser(self):
         """Get the current authenticated user"""
@@ -260,3 +268,17 @@ class SecurityManager:
         return len(self._context.stack)
 
 
+try:
+    #raise ImportError
+    import os
+    if os.environ.get("ZOPE_SECURITY_POLICY", None) == "PYTHON":
+        raise ImportError # :)
+    from cAccessControl import SecurityManager as cSecurityManager
+except ImportError:
+    pass
+else:
+
+    class SecurityManager(cSecurityManager, SecurityManager):
+        """A security manager provides methods for checking access and managing
+        executable context and policies
+        """

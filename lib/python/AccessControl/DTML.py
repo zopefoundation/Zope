@@ -84,25 +84,41 @@
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.7 2001/06/21 17:16:31 shane Exp $''' 
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: DTML.py,v 1.8 2001/10/26 16:07:50 matt Exp $''' 
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DocumentTemplate import DT_Util
 import SecurityManagement, string, math, whrandom, random
 import DocumentTemplate.sequence
 
-from ZopeGuards import guarded_getattr, guarded_getitem, _marker
+from ZopeGuards import guarded_getattr, guarded_getitem
 
 class RestrictedDTML:
     '''
     A mix-in for derivatives of DT_String.String that adds Zope security.
     '''
-    def guarded_getattr(self, ob, name, default=_marker):
-        return guarded_getattr(ob, name, default)
+    def guarded_getattr(self, *args): # ob, name [, default]
+        return guarded_getattr(*args)
 
     def guarded_getitem(self, ob, index):
         return guarded_getitem(ob, index)
 
+
+try:
+    #raise ImportError
+    import os
+    if os.environ.get("ZOPE_SECURITY_POLICY", None) == "PYTHON":
+        raise ImportError # :)
+    from cAccessControl import RestrictedDTMLMixin
+except ImportError:
+    pass
+else:
+
+    class RestrictedDTML(RestrictedDTMLMixin, RestrictedDTML):
+        '''
+        A mix-in for derivatives of DT_String.String that adds Zope security.
+        '''
+    
 
 # Allow access to unprotected attributes
 DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1

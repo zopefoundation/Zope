@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.44 2001/10/02 14:23:32 shane Exp $'
-__version__='$Revision: 1.44 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.45 2001/10/26 16:07:50 matt Exp $'
+__version__='$Revision: 1.45 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
@@ -254,7 +254,11 @@ class Var:
         if len(args)==1 and fmt=='s':
             if expr is None: expr=name
             else: expr=expr.eval
-            self.simple_form=expr,
+            self.simple_form=('v', expr)
+        elif len(args)==2  and fmt=='s' and args.has_key('html_quote'):
+            if expr is None: expr=name
+            else: expr=expr.eval
+            self.simple_form=('v', expr, 'h')
 
     def render(self, md):
         args=self.args
@@ -353,7 +357,7 @@ class Call:
         name, expr = name_param(args,'call',1)
         if expr is None: expr=name
         else: expr=expr.eval
-        self.simple_form=expr,None
+        self.simple_form=('i', expr, None)
 
 
 def url_quote(v, name='(Unknown name)', md={}):

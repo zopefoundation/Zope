@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -98,29 +98,41 @@ _marker = []  # Create a new marker object.
 safe_builtins = safe_builtins.copy()
 safe_builtins.update(utility_builtins)
 
-def aq_validate(inst, obj, name, v, validate):
-    return validate(inst, obj, name, v)
+try:
 
-def guarded_getattr(inst, name, default=_marker):
-    if name[:1] != '_':
-        # Try to get the attribute normally so that unusual
-        # exceptions are caught early.
-        try: v = getattr(inst, name)
-        except AttributeError:
-            if default is not _marker:
-                return default
-            raise
-        if Containers(type(inst)):
-            # Simple type.  Short circuit.
-            return v
-        validate = getSecurityManager().validate
-        # Filter out the objects we can't access.
-        if hasattr(inst, 'aq_acquire'):
-            return inst.aq_acquire(name, aq_validate, validate)
-        # Or just try to get the attribute directly.
-        if validate(inst, inst, name, v):
-            return v
-    raise Unauthorized, name
+    #raise ImportError
+    import os
+    if os.environ.get("ZOPE_SECURITY_POLICY", None) == "PYTHON":
+        raise ImportError # :)
+    from cAccessControl import aq_validate, guarded_getattr
+
+except ImportError:
+
+    def aq_validate(inst, obj, name, v, validate):
+        return validate(inst, obj, name, v)
+
+
+    def guarded_getattr(inst, name, default=_marker):
+        if name[:1] != '_':
+            # Try to get the attribute normally so that unusual
+            # exceptions are caught early.
+            try: v = getattr(inst, name)
+            except AttributeError:
+                if default is not _marker:
+                    return default
+                raise
+            if Containers(type(inst)):
+                # Simple type.  Short circuit.
+                return v
+            validate = getSecurityManager().validate
+            # Filter out the objects we can't access.
+            if hasattr(inst, 'aq_acquire'):
+                return inst.aq_acquire(name, aq_validate, validate)
+            # Or just try to get the attribute directly.
+            if validate(inst, inst, name, v):
+                return v
+        raise Unauthorized, name
+
 safe_builtins['getattr'] = guarded_getattr
 
 def guarded_hasattr(object, name):

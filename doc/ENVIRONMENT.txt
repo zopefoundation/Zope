@@ -148,6 +148,16 @@ Security issues
         2.5+)
 
 
+    ZSP_OWNEROUS_SKIP
+
+        If set, will cause the Zope Security Policy to skip checks relating
+	to ownership, for servers on which ownership is not important.
+
+    ZSP_AUTHENTICATED_SKIP
+
+        If set, will cause the Zope Security Policy to skip checks relating
+	to authentication, for servers which serve only anonymous content.
+
     DISALLOW_LOCAL_PRODUCTS
 
         unknown

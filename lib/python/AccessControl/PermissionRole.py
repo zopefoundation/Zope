@@ -85,8 +85,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.12 2001/10/19 15:12:25 shane Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: PermissionRole.py,v 1.13 2001/10/26 16:07:50 matt Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 _use_python_impl = 0
 import os

@@ -85,8 +85,21 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.4 2001/07/02 16:29:55 evan Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: SecurityManagement.py,v 1.5 2001/10/26 16:07:50 matt Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
+
+def getSecurityManager():
+    """Get a security manager, for the current thread.
+    """
+    thread_id=get_ident()
+    manager=_managers.get(thread_id, None)
+    if manager is None:
+        manager=SecurityManager(
+            thread_id,
+            SecurityContext(SpecialUsers.nobody))
+        _managers[thread_id]=manager
+        
+    return manager
 
 import SpecialUsers
 from SecurityManager import SecurityManager
@@ -109,19 +122,6 @@ def noSecurityManager():
     try: del _managers[get_ident()]
     except: pass
     
-
-def getSecurityManager():
-    """Get a security manager, for the current thread.
-    """
-    thread_id=get_ident()
-    manager=_managers.get(thread_id, None)
-    if manager is None:
-        manager=SecurityManager(
-            thread_id,
-            SecurityContext(SpecialUsers.nobody))
-        _managers[thread_id]=manager
-        
-    return manager
 
 def setSecurityPolicy(aSecurityPolicy):
     """Set the system default security policy. 

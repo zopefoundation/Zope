@@ -147,8 +147,8 @@ __doc__='''Conditional insertion
          variable is not reevaluated.
 
 ''' 
-__rcs_id__='$Id: DT_If.py,v 1.16 1999/03/10 00:15:07 klm Exp $'
-__version__='$Revision: 1.16 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.17 2001/10/26 16:07:50 matt Exp $'
+__version__='$Revision: 1.17 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 
@@ -192,7 +192,7 @@ class If:
 
         if elses is not None: sections.append(elses)
 
-        self.simple_form=tuple(sections)
+        self.simple_form=('i',)+tuple(sections)
 
 class Unless:
     name='unless'
@@ -204,7 +204,7 @@ class Unless:
         name,expr=name_param(args,'unless',1)
         if expr is None: cond=name
         else: cond=expr.eval
-        self.simple_form=(cond,None,section.blocks)
+        self.simple_form=('i',cond,None,section.blocks)
 
 class Else(Unless):
     # The else tag is included for backward compatibility and is deprecated.

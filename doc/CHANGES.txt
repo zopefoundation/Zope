@@ -89,6 +89,11 @@ Zope Changes
 
       - API help topics can now document functions as well as classes.
 
+      - Security accelerations in c
+
+      - Accelerated C Document Template handling; Document Templates
+        can now do additional rendering in C, improving performance.
+
     Bugs fixed
 
       - WebDAV: Zope escaped nested object properties derived from

@@ -85,8 +85,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.14 2001/10/19 15:12:25 shane Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.15 2001/10/26 16:07:50 matt Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -119,8 +119,32 @@ if _use_python_impl:
 
     class ZopeSecurityPolicy:
 
-        def __init__(self, ownerous=1):
+        def __init__(self, ownerous=1, authenticated=1):
+            """Create a Zope security policy.
+
+            Two optional keyword arguments may be provided:
+
+            ownerous -- Untrusted users can create code
+                        (e.g. Python scripts or templates),
+                        so check that code owners can access resources.
+                        The argument must have a truth value.
+                        The default is true.
+
+            authenticated -- Allow access to resources based on the
+                        privaledges of the authenticated user.  
+                        The argument must have a truth value.
+                        The default is true.
+
+                        This (somewhat experimental) option can be set
+                        to false on sites that allow only public
+                        (unauthenticated) access. An anticipated
+                        scenario is a ZEO configuration in which some
+                        clients allow only public access and other
+                        clients allow full management.
+            """
+            
             self._ownerous=ownerous
+            self._authenticated=authenticated
 
         def validate(self, accessed, container, name, value, context,
                      roles=_noroles, None=None, type=type, IntType=type(0),
@@ -239,7 +263,8 @@ if _use_python_impl:
 
 
             try:
-                if context.user.allowed(value, roles): return 1
+                if self._authenticated and context.user.allowed(value, roles):
+                    return 1
             except AttributeError: pass
 
             # We don't want someone to acquire if they can't get an unacquired!
@@ -254,4 +279,3 @@ if _use_python_impl:
             if type(roles) is StringType:
                 roles=[roles]
             return context.user.allowed(object, roles)
-
