@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -107,7 +107,7 @@ from string import strip
 import string, regex, regsub, pdb
 
 
-from Lexicon import Lexicon, query
+from Lexicon import Lexicon, query, stop_word_dict
 from ResultList import ResultList
 
 class UnTextIndex(Persistent):
