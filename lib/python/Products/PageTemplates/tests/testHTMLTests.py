@@ -16,6 +16,7 @@ import os, sys, unittest
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from AccessControl import SecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 
 from Acquisition import Implicit
 class AqPageTemplate(Implicit, PageTemplate):
@@ -54,9 +55,11 @@ class HTMLTests(unittest.TestCase):
       f.t = AqPageTemplate()
       self.policy = UnitTestSecurityPolicy()
       self.oldPolicy = SecurityManager.setSecurityPolicy( self.policy )
+      noSecurityManager()  # Use the new policy.
 
    def tearDown(self):
       SecurityManager.setSecurityPolicy( self.oldPolicy )
+      noSecurityManager()  # Reset to old policy.
 
    def assert_expected(self, t, fname, *args, **kwargs):
       t.write(util.read_input(fname))
