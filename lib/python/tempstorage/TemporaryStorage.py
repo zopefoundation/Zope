@@ -271,7 +271,9 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         while roids:
             roid = roids.pop(0)
             # decrement refcnt:
-            rc=referenceCount_get(roid, 0)
+            # DM 2005-01-07: decrement *before* you make the test!
+            # rc=referenceCount_get(roid, 0)
+            rc=referenceCount_get(roid, 0) - 1
             if rc==0:
                 self._takeOutGarbage(roid)
             elif rc < 0:
@@ -280,7 +282,9 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                     (ReferenceCountError.__doc__,`roid`,rc)
                     )
             else:
-                referenceCount[roid] = rc - 1
+                # DM 2005-01-07: decremented *before* the test! see above
+                #referenceCount[roid] = rc - 1
+                referenceCount[roid] = rc
         try: del self._oreferences[oid]
         except: pass
 
