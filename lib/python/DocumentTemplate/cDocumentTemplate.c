@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.25 1999/06/08 15:39:31 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.26 1999/06/10 20:33:16 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -151,6 +151,7 @@ InstanceDict_dealloc(InstanceDictobject *self)
   Py_XDECREF(self->cache);
   Py_XDECREF(self->namespace);
   Py_XDECREF(self->validate);
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -472,6 +473,7 @@ MM_dealloc(self)
 {
   Py_XDECREF(self->data);
   Py_XDECREF(self->dict);
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -1029,7 +1031,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.25 $";
+  char *rev="$Revision: 1.26 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
