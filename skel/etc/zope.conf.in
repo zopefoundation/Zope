@@ -612,8 +612,6 @@ instancehome $INSTANCE
 #     level INFO, the event log will log to the file
 #     <instancehome>/log/event.log at level INFO, and the trace log
 #     will not be written anywhere.
-#
-# Examples:
 
 <eventlog>
   level all
@@ -643,11 +641,42 @@ instancehome $INSTANCE
 # </logger>
 
 
+# Directive: max-listen-sockets
+#
+# Description:
+#     The maximum number of sockets that ZServer will attempt to open
+#     in order to service incoming connections.
+#
+# Default: 1000
+#
+# Example:
+#
+#    max-listen-sockets 500
+
+
+# Directives: port-base
+#
+# Description:
+#     Offset applied to the port numbers used for ZServer
+#     configurations.  For example, if the http-server port is 8080 and
+#     the port-base is 1000, the HTTP server will listen on port 9080.
+#     This makes it easy to change the complete set of ports used by a
+#     Zope server process
+#
+# Default:
+#
+#     0
+#
+# Example:
+#
+#     port-base 1000
+
+
 # Directives: servers
 #
 # Description:
 #     A set of sections which allow the specification of Zope's various
-#     Zserver servers.  7 different server types may be defined:
+#     ZServer servers.  7 different server types may be defined:
 #     http-server, ftp-server, webdav-source-server, persistent-cgi,
 #     fast-cgi, monitor-server, and icp-server.  If no servers are
 #     defined, the default servers are used.
@@ -703,24 +732,6 @@ instancehome $INSTANCE
 #    # valid key is "address"
 #    address 888
 #  </icp-server>
-
-
-# Directives: port-base
-#
-# Description:
-#     Offset applied to the port numbers used for the server
-#     configurations.  For example, if the HTTP-Server port is 8080 and
-#     the port-base is 1000, the HTTP server will listen on port 9080.
-#     This makes it easy to change the complete set of ports used by a
-#     Zope server process
-#
-# Default:
-#
-#     0
-#
-# Example:
-#
-#     port-base 1000
 
 
 # Database (zodb_db) section
