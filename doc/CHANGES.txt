@@ -107,17 +107,14 @@ Zope Changes
 
            utilities/bbb.py -f var/Data.fs var/Data.bbb
 
+	You can also convert export files from ZODB 2 by inclding the
+        -x option::
+
+           utilities/bbb.py -x -f output.zexp input.bbe
+
       ZODB 3 To-do
 
         There are still a number of things to get working:
-
-        - Zope needs to be updated to be thread-safe.  This is not as
-          hard as it sounds, since persistent objects are always
-          thread-safe. (Well, only one thread accesses any particular
-          copy of a persistent object.)  The biggest issue here is
-          mutable global variables, mutable objects stored in classes, 
-          mutable default Python function arguments, and global
-          variables in extensions.
 
         - Most database adapters are likely to be problematic unless
           the underlying extensions and libraries:
@@ -158,24 +155,22 @@ Zope Changes
 
       In short
  
-        We expect and expect to provide a stable Zope 2.0 release in
+        We expect to provide a stable Zope 2.0 release in
         early August.
 
       Zope 2.0 releases
 
-        We expend to make a number of Zope 2.0 alpha, beta, or
-        candidate releases over the next several weeks.
-
-        Early releases will support both the ZODB 2 (aka BoboPOS) and
-        ZODB 3.  We may even support ZODB 2 in Zope 2.0 betas, but
-        ZODB 2 support will be phased out by the final Zope 2.0
-        release.  Some features (e.g. the new control panel version
-        manager) will require ZODB 3.
+        We expect to make two beta releases in July 1999 followed
+        by a final release in early August.
 
   Releases
 
 
     Zope 2.0 beta 1
+
+      Backward incompatibility
+
+        ZODB 2 is no longer supported or included!
     
       Features added
       
@@ -193,11 +188,62 @@ Zope Changes
 
 	- 'zpasswd.py' added to utilities directory to manage this
           new 'access' file
+
+        - A number of changes have been made to enhance security
+          control in through-the-web-developed products:
+
+          - There are new "Permission" objects that can be added to 
+	    Products.  Permission objects provide a mechanism for
+            defining new permissions. These new permissions show up in
+            folder security screens.
+
+          - Factory objects can have permission settings. This affects
+            whether items show up in add lists and who can use factories.
+
+          - Objects in products now have permission mapping rather
+            than direct permission settings just like ZClass methods.
+
+          - New permissions cannot be defined in ZClasses any longer.
+	    Rather, ZClasses can select from global permissions,
+	    including permissions defined with permission objects.
+
+          Here's a sample scenario:
+
+            1. Add a ZClass, "Container" with the option to create a
+               factory and constructor methods.
+
+            2. Add a permission object with the permission "Manage
+               Containers".
+
+            3. Change the permission of the factory created in step 1
+               to "Manage Containers".
+
+            4. Visit the ZClass created in step 1, view the "Define
+               Permissions" view and map the "Create class instances"
+               permission to "Manage Containers".
+
+            5. Visit the constructor DTML Methods created in step 1,
+               view the "Define Permissions" view and map the "View"
+               permission to "Manage Containers".
+
+          In this scenario, we created a ZClass and made it addable
+          only by users (roles) that have the "Manage Containers" permission.
+
+        - The pyexpat extension module for using James Clark's 
+          expat library for parsing XML is included in the
+          distribution as Shared.DC.pyexpat.
       
       Bugs Fixed
       
         - You can no longer cd to an acquired directory in ZServer FTP.
 
+        - A number of changes were made for thread safety.  This was not as
+          hard as it sounds, since persistent objects are always
+          thread-safe. (Well, only one thread accesses any particular
+          copy of a persistent object.)  The biggest issue here is
+          mutable global variables, mutable objects stored in classes, 
+          mutable default Python function arguments, and global
+          variables in extensions.
 
     Zope 2.0 alpha 4
 
