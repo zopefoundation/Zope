@@ -82,6 +82,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1139: tal:attributes didn't escape double quotes.
+
      - Management interface of TopicIndexes has been completely broken
 
      - Collector #1129: Improper parsing of ISO8601 in DateTime.

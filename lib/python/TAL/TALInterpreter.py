@@ -374,7 +374,7 @@ class TALInterpreter:
             elif evalue is self.Default:
                 value = attrEscape(value)
             else:
-                value = escape(value)
+                value = escape(value, quote=1)
             value = '%s="%s"' % (name, value)
         return ok, name, value
     bytecode_handlers["<attrAction>"] = attrAction
