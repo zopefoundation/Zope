@@ -12,18 +12,21 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.73 2003/03/18 21:39:06 fdrake Exp $'''
-__version__ = '$Revision: 1.73 $'[11:-2]
+$Id: HTTPResponse.py,v 1.74 2003/04/17 17:41:57 fdrake Exp $'''
+__version__ = '$Revision: 1.74 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
 from string import translate, maketrans
-from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
 from zExceptions import Unauthorized
 from zExceptions.ExceptionFormatter import format_exception
 
 nl2sp = maketrans('\n',' ')
+
+BadRequest = 'BadRequest'
+InternalError = 'InternalError'
+NotFound = 'NotFound'
 
 
 # Enable APPEND_TRACEBACKS to make Zope append tracebacks like it used to,
@@ -212,7 +215,7 @@ class HTTPResponse(BaseResponse):
             # It has already been determined.
             return
 
-        if type(status) is types.StringType:
+        if isinstance(status, str):
             status = status.lower()
         if status_codes.has_key(status):
             status = status_codes[status]
@@ -280,16 +283,16 @@ class HTTPResponse(BaseResponse):
         if not body:
             return self
 
-        if type(body) is types.TupleType and len(body) == 2:
+        if isinstance(body, tuple) and len(body) == 2:
             title,body = body
 
-        if type(body) is not types.StringType:
+        if not isinstance(body, str):
             if hasattr(body,'asHTML'):
                 body = body.asHTML()
 
-        if type(body) is UnicodeType:
+        if isinstance(body, unicode):
             body = self._encode_unicode(body)
-        elif type(body) is StringType:
+        elif isinstance(body, str):
             pass
         else:
             try:
@@ -432,7 +435,7 @@ class HTTPResponse(BaseResponse):
         If base is None, or the document already has a base, do nothing."""
         if base is None:
             base = ''
-        elif not base.endswith('/'):          
+        elif not base.endswith('/'):
             base = base+'/'
         self.base = str(base)
 
@@ -622,7 +625,7 @@ class HTTPResponse(BaseResponse):
 
     def notFoundError(self,entry='Unknown'):
         self.setStatus(404)
-        raise 'NotFound',self._error_html(
+        raise NotFound, self._error_html(
             "Resource not found",
             "Sorry, the requested resource does not exist." +
             "<p>Check the URL and try again.</p>" +
@@ -632,7 +635,7 @@ class HTTPResponse(BaseResponse):
                                     # why reveal that it exists?
 
     def debugError(self,entry):
-        raise 'NotFound',self._error_html(
+        raise NotFound, self._error_html(
             "Debugging Notice",
             "Zope has encountered a problem publishing your object.<p>"
             "\n%s" % entry)
@@ -640,11 +643,11 @@ class HTTPResponse(BaseResponse):
     def badRequestError(self,name):
         self.setStatus(400)
         if re.match('^[A-Z_0-9]+$',name):
-            raise 'InternalError', self._error_html(
+            raise InternalError, self._error_html(
                 "Internal Error",
                 "Sorry, an internal error occurred in this resource.")
 
-        raise 'BadRequest',self._error_html(
+        raise BadRequest, self._error_html(
             "Invalid request",
             "The parameter, <em>%s</em>, " % name +
             "was omitted from the request.<p>" +
@@ -708,7 +711,7 @@ class HTTPResponse(BaseResponse):
         del stb
         self.setStatus(t)
         if self.status >= 300 and self.status < 400:
-            if type(v) == types.StringType and absuri_match(v) is not None:
+            if isinstance(v, str) and absuri_match(v) is not None:
                 if self.status == 300:
                     self.setStatus(302)
                 self.setHeader('location', v)
@@ -717,7 +720,7 @@ class HTTPResponse(BaseResponse):
             else:
                 try:
                     l, b = v
-                    if (type(l) == types.StringType
+                    if (isinstance(l, str)
                         and absuri_match(l) is not None):
                         if self.status == 300:
                             self.setStatus(302)
