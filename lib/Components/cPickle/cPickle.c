@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.26 1997/02/28 23:07:51 chris Exp $
+     $Id: cPickle.c,v 1.27 1997/02/28 23:09:47 chris Exp $
 
      Copyright 
 
@@ -3705,7 +3705,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.26 $";
+    char *rev="$Revision: 1.27 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3724,16 +3724,15 @@ initcPickle() {
 			 PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
 #ifdef FORMAT_1_3
-    format_version = PyString_FromString("1.2");
-    compatible_formats = Py_BuildValue("[ss]", "1.0", "1.1");
-#else
     format_version = PyString_FromString("1.3");
     compatible_formats = Py_BuildValue("[sss]", "1.0", "1.1", "1.2");
+#else
+    format_version = PyString_FromString("1.2");
+    compatible_formats = Py_BuildValue("[ss]", "1.0", "1.1");
 #endif
 
     PyDict_SetItemString(d, "format_version", format_version);
     PyDict_SetItemString(d, "compatible_formats", compatible_formats);
-
 
     init_stuff(m, d);
     CHECK_FOR_ERRORS("can't initialize module cPickle");
