@@ -8,10 +8,11 @@
 
 <dtml-in data mapping>
   <tr>
-     <td><input type=checkbox name="selected:list"
-                value="<dtml-var label html_quote>"></td>
-     <th align=left valign=top><dtml-var label html_quote></th>
-     <td align=left valign=top>
+     <td valign=center>
+       <input type=checkbox name="selected:list"
+              value="<dtml-var label html_quote>"></td>
+     <th align=left valign=center><dtml-var label html_quote></th>
+     <td align=left valign=center>
        <select name="actions:list">
          <dtml-in zclass_candidate_view_actions>
            <option
