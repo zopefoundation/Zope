@@ -48,7 +48,7 @@ reldir=`dirname $0`
 # output.  For more information on EVENT_LOG_FILE, see doc/ENVIRONMENT.txt.
 ZLOGFILE=$EVENT_LOG_FILE
 if [ -z "$ZLOGFILE" ]; then
-ZLOGFILE=$STUPID_LOG_FILE
+        ZLOGFILE=$STUPID_LOG_FILE
 fi
 if [ -z "$ZLOGFILE" ]; then
         EVENT_LOG_FILE=""
@@ -56,6 +56,7 @@ if [ -z "$ZLOGFILE" ]; then
 fi
 %s=`cd $reldir; pwd`
 export %s
-exec %s $%s/z2.py -D "$@" """
+exec %s $%s/z2.py -D "$@"
+"""
 
-STOP_SCRIPT="#! /bin/sh\nkill `cat %s`" 
+STOP_SCRIPT="#! /bin/sh\nkill `cat %s`\n"
