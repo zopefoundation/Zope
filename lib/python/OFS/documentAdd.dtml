@@ -13,23 +13,23 @@
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Id</STRONG></TD>
   <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Title</STRONG></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="title" SIZE="50">
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Roles of authorized users</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><STRONG>Roles of authorized users</STRONG></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="roles" SIZE="50">
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>File</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><STRONG>File</STRONG></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file:string" SIZE="30" VALUE="">
   </TD>
