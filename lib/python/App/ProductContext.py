@@ -137,6 +137,7 @@ class ProductContext:
                   for backward compatibility
 
         """
+        app=self.__app
         initial=constructors[0]
         tt=type(())
         productObject=self.__prod
@@ -183,7 +184,7 @@ class ProductContext:
 
         if productObject.__dict__.has_key(name): return
 
-        self.__app._manage_add_product_meta_type(
+        app._manage_add_product_meta_type(
             productObject, name, meta_type or instance_class.meta_type
             )
         
