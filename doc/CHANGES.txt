@@ -81,29 +81,32 @@ Zope Changes
       Bugs fixed
 
         - Database packing failed in certain cases where the data set
-	  contained many version commits.
+          contained many version commits.
 
-	- Database packing generated spurious error logs indicating
-	  that there were bad references for objects created in
-	  ncommitted versions.
+        - Database packing generated spurious error logs indicating
+          that there were bad references for objects created in
+          ncommitted versions.
 
         - A memory leak due to errors in managing request data.
 
         - Zope sites became unresponsive (a.k.a. "Hung") due to an
-	  error in managing ZODB 3 database connections.
+          error in managing ZODB 3 database connections.
 
         - Only the top-level folder's standard_error_message was used.
 
         - There were thread-safety and resouce consumption problems
           in the implementation of thread-safe regex objects.
          
-	- Fixed bug where ZCatalog's not in the root folder did not
-	  recognize the proper URL of objects using the 'Find'
-	  machinery.  This caused all the objects to mysteriously
-	  disapear when you updated the catalog (because their paths
-	  were wrong).  The Catalog now works correctly anywhere in
-	  the object hierarchy.
+        - Fixed bug where ZCatalog's not in the root folder did not
+          recognize the proper URL of objects using the 'Find'
+          machinery.  This caused all the objects to mysteriously
+          disapear when you updated the catalog (because their paths
+          were wrong).  The Catalog now works correctly anywhere in
+          the object hierarchy.
 
+        - Fixed a bug that caused error messages to be formatted
+          incorrectly if the standard_html_header did not begin
+          with an HTML tag.
 
     Zope 2.0 beta 4
     
@@ -144,32 +147,32 @@ Zope Changes
  
         - Disk full errors could leave the object system
           in an inconsistent state.  The handling of this error 
-	  was made more robust.  Also, when serious errors like this
-	  occur late in the transaction commit process, the
+          was made more robust.  Also, when serious errors like this
+          occur late in the transaction commit process, the
           transaction system switches to read-only mode.
 
           The File-storage recovery process needs to change to make
-	  disk full errors detectable earlier in the two-phase commit
-	  process so that the system can recover without switching to
-	  read-only mode.  This change, which is expected in 2.1 will
-	  also provide better write performance.
+          disk full errors detectable earlier in the two-phase commit
+          process so that the system can recover without switching to
+          read-only mode.  This change, which is expected in 2.1 will
+          also provide better write performance.
 
-	- Errors during commit of sub-transactions were not handled
-	  correctly, leading to inconsistent object data.
+        - Errors during commit of sub-transactions were not handled
+          correctly, leading to inconsistent object data.
 
         - Packing not not mark all transactions performed before the
           pack time as "packed". Undoing these transactions lead to a
           broken database.
 
         - On win9x systems, random data seems to be added to the end
-	  of the file on system crashes, causing apparent file
-	  corruption.  Code has been added to check for this case and
-	  recover by truncating the file with a log message.
+          of the file on system crashes, causing apparent file
+          corruption.  Code has been added to check for this case and
+          recover by truncating the file with a log message.
 
         - The Zope version was not shown in the control panel.
 
         - The binary release had the PCGI wrapper program in the wrong
-	  directory so PCGI installations were not successful.
+          directory so PCGI installations were not successful.
 
     Zope 2.0 beta 3
     
