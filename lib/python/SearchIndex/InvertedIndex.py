@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.29 1997/04/08 00:14:22 jim Exp $'''
+$Id: InvertedIndex.py,v 1.30 1997/04/14 12:03:17 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.29 1997/04/08 00:14:22 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.30  1997/04/14 12:03:17  jim
+# Fixed bug in proximity searches.
+#
 # Revision 1.29  1997/04/08 00:14:22  jim
 # Chris' changes, I think....
 #
@@ -184,7 +187,7 @@ $Id: InvertedIndex.py,v 1.29 1997/04/08 00:14:22 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -289,7 +292,7 @@ class ResultList:
         return result
   
     def and_not(self, x):
-        '''Return items in the reciever that are not in the argument'''
+        '''Return items in the receiver that are not in the argument'''
     
         result = self.__class__()
     
@@ -373,6 +376,8 @@ class ResultList:
     
     	    if value is None:
     		continue
+
+	    score=pow(v[0]*value[0],0.5)
     
     	    positions = v[1] + value[1]
     	    positions.sort()
@@ -392,7 +397,7 @@ class ResultList:
     		pl = p
     	    
     	    if (len(positionsr)):
-    		result[key] = positionsr
+    		result[key] = score,positionsr
     
     	return result
   
