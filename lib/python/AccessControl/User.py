@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.104 $'[11:-2]
+__version__='$Revision: 1.105 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -655,6 +655,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         if item is self:
             if hasattr(self, 'aq_base'): self=self.aq_base
             container.__allow_groups__=self
+
+    def __creatable_by_super__(self): return 1
 
     def _setId(self, id):
         if id != self.id:
