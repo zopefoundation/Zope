@@ -1,7 +1,7 @@
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.tests \
      import testIndex, testQueryEngine, testQueryParser
-from Products.ZCTextIndex.Index import scaled_int, SCALE_FACTOR
+from Products.ZCTextIndex.Index import scaled_int, SCALE_FACTOR, Index
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 
@@ -35,7 +35,7 @@ class IndexTests(testIndex.IndexTest):
         extra.lexicon_id = 'lexicon'
         caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
                                StopWordRemover()))
-        self.zc_index = ZCTextIndex('name', extra, caller)
+        self.zc_index = ZCTextIndex('name', extra, caller, Index)
         self.index = self.zc_index.index
         self.lexicon = self.zc_index.lexicon
 
