@@ -6,6 +6,8 @@ cDocumentTemplate ./cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install DT_HTML.py
 # install DT_If.py
 # install DT_In.py
+# install DT_With.py
+# install DT_InSV.py
 # install DT_Comment.py
 # install DT_Raise.py
 # install DT_String.py
