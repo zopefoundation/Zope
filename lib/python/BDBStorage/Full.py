@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.25 $'[-2:][0]
+__version__ = '$Revision: 1.26 $'[-2:][0]
 
 import struct
 import time
@@ -845,49 +845,49 @@ class Full(BerkeleyBase):
     def history(self, oid, version=None, size=1, filter=None):
         self._lock_acquire()
         try:
-            # Find the vid for the version
-            if version is None:
-                tvid = None
-                version = ''
-            elif version == '':
-                tvid = 0
-            else:
-                # BAW: for now, let KeyErrors percolate up
-                tvid = self._vids[version]
-            # Start with the most recent revision of the object, then search
-            # the transaction records backwards finding revisions in the
-            # selected version.
+            # Jim says:
+            #
+            #     This documentation is wrong. I think that the version should
+            #     be ignored.  It really shouldn't be in the signature. Zope
+            #     never passes the version argument.
+            #
+            # so we ignore `version', which makes our lives a bit easier.  We
+            # start with the most recent revision of the object, then search
+            # the transaction records backwards until we find enough records.
             history = []
             revid = self._serials[oid]
             # BAW: Again, let KeyErrors percolate up
             while len(history) < size:
+                # Some information comes out of the revision metadata...
                 vid, nvrevid, lrevid, previd = struct.unpack(
                     '>8s8s8s8s', self._metadata[oid+revid])
-                if tvid is None or vid == ZERO or tvid == vid:
-                    # Get transaction metadata, which we need to fill in the
-                    # appropriate HistoryEntry slots.
-                    txnmeta = self._txnMetadata[revid]
-                    userlen, desclen = struct.unpack('>II', txnmeta[1:9])
-                    user = txnmeta[9:9+userlen]
-                    desc = txnmeta[9+userlen:9+userlen+desclen]
-                    # Now get the pickle size
-                    data = self._pickles[oid+lrevid]
-                    # Create a HistoryEntry structure, which turns out to be a
-                    # dictionary with some specifically named entries (BAW:
-                    # although this poorly documented).
-                    if vid == ZERO:
-                        retvers = ''
-                    else:
-                        retvers = version
-                    d = {'time'       : TimeStamp(revid).timeTime(),
-                         'user_name'  : user,
-                         'description': desc,
-                         'serial'     : revid,
-                         'version'    : retvers,
-                         'size'       : len(data),
-                         }
-                    if filter is None or filter(d):
-                        history.append(d)
+                # ...while other information comes out of the transaction
+                # metadata.
+                txnmeta = self._txnMetadata[revid]
+                userlen, desclen = struct.unpack('>II', txnmeta[1:9])
+                user = txnmeta[9:9+userlen]
+                desc = txnmeta[9+userlen:9+userlen+desclen]
+                # Now get the pickle size
+                data = self._pickles[oid+lrevid]
+                # Create a HistoryEntry structure, which turns out to be a
+                # dictionary with some specifically named entries (BAW:
+                # although this poorly documented).
+                if vid == ZERO:
+                    retvers = ''
+                else:
+                    retvers = self._versions[vid]
+                # The HistoryEntry object
+                d = {'time'       : TimeStamp(revid).timeTime(),
+                     'user_name'  : user,
+                     'description': desc,
+                     'serial'     : revid,
+                     'version'    : retvers,
+                     'size'       : len(data),
+                     }
+                if filter is None or filter(d):
+                    history.append(d)
+                # Chase the link backwards to the next most historical
+                # revision, stopping when we've reached the end.
                 if previd == ZERO:
                     break
                 revid = previd
