@@ -22,7 +22,7 @@ on the Zope website at
 </p>
 <p>The <a href="http://www.zope.org/Documentation/Guides" target="_top">Zope Guides</a> are a great place to start learning Zope.
 <ul>
-<li><a href="http://www.zope.org/Documentation/Guides/ZMG">Zope Manager's Guide</a></li>
+<li><a href="http://www.zope.org/Documentation/Guides/ZCMG">Zope Content Manager's Guide</a></li>
 <li><a href="http://www.zope.org/Documentation/Guides/DTML">Z Document Template User's Guide</a></li>
 <li><a href="http://www.zope.org/Documentation/Guides/ZSQL">Z SQL Methods User's Guide</a></li>
 </ul>
