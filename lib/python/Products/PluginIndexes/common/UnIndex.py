@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys
 from cgi import escape
@@ -39,7 +39,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
     """UnIndex object interface"""
 
 
-    def __init__(self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):
+    def __init__(
+        self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):
         """Create an unindex
 
         UnIndexes are indexes that contain two index components, the
@@ -88,7 +89,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         # allow index to index multiple attributes
         try: 
             self.indexed_attrs = extra.indexed_attrs.split(',')
-            self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ]
+            self.indexed_attrs = [ 
+                attr.strip() for attr in  self.indexed_attrs if attr ]
             if len(self.indexed_attrs) == 0: self.indexed_attrs = [ self.id ]
         except:
             self.indexed_attrs = [ self.id ] 
