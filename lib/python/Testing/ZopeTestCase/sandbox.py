@@ -19,7 +19,7 @@ class Sandboxed:
 
     def _app(self):
         '''Returns the app object for a test.'''
-        app = Zope2.app(Zope.sandbox().open())
+        app = Zope2.app(Zope2.sandbox().open())
         AppZapper().set(app)
         return utils.makerequest(app)
 

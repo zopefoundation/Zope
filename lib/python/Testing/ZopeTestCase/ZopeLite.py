@@ -20,7 +20,7 @@ import os, sys, time
 sys.setcheckinterval(2500)
 
 # Shut up if we are not in control of the import process
-_quiet = sys.modules.has_key('Zope')
+_quiet = sys.modules.has_key('Zope2')
 
 def _print(msg):
     '''Writes 'msg' to stderr and flushes the stream.'''

@@ -53,7 +53,7 @@ class Functional(sandbox.Sandboxed):
         outstream = StringIO()
         response = Response(stdout=outstream, stderr=sys.stderr) 
 
-        publish_module('Zope', response=response, environ=env, extra=extra)
+        publish_module('Zope2', response=response, environ=env, extra=extra)
 
         return ResponseWrapper(response, outstream, path)
 
