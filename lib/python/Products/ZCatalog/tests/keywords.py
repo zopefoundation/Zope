@@ -6,7 +6,6 @@ class Keywords:
     purposes only
     """
 
-
     def __init__(self):
         self.kw = []
         
@@ -16,7 +15,8 @@ class Keywords:
         msg = mb.next()
         
         while msg and len(self.kw) < limit:
-            sub = string.split( msg.dict.get("subject") , ' ')
+
+            sub =  msg.dict.get("subject","").split(' ')
             for f in sub:
                 ok = 1
                 for c in f: 
@@ -38,4 +38,11 @@ class Keywords:
         return self.kw
         
         
+
+
+if __name__=="__main__":
+
+    k = Keywords()
+    k.build("/home/andreas/zope.mbox",1000)
+
         

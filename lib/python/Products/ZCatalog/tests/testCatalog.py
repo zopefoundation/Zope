@@ -2,11 +2,14 @@
 
 """
     Testsuite for testing Catalogs
-    $Id: testCatalog.py,v 1.5 2001/04/17 17:08:13 chrism Exp $
+    $Id: testCatalog.py,v 1.6 2001/06/15 14:09:57 andreas Exp $
     
     Andreas Jung, andreas@digicool.com
     
     $Log: testCatalog.py,v $
+    Revision 1.6  2001/06/15 14:09:57  andreas
+    some tweaks for Python 2.1, new ZCatalog/PluginIndexes infrastructure
+
     Revision 1.5  2001/04/17 17:08:13  chrism
     Merging into trunk.
 
@@ -102,7 +105,7 @@ here = os.getcwd()
 
 import Zope
 import ZODB, ZODB.FileStorage
-from Products.ZCatalog import Catalog,ZCatalog,Vocabulary
+from Products.ZCatalog import ZCatalog,Vocabulary
 from Products.ZCatalog.Catalog import CatalogError
 import Persistence
 import ExtensionClass
@@ -110,10 +113,6 @@ from Testing import dispatcher
 import keywords
 from zLOG import LOG
 
-from SearchIndex.UnIndex import UnIndex
-from SearchIndex.UnTextIndex import UnTextIndex
-from SearchIndex.UnKeywordIndex import UnKeywordIndex
-from SearchIndex.Lexicon import Lexicon
 
 import getopt,whrandom,time,string,mailbox,rfc822
 from Testing import unittest
@@ -181,7 +180,7 @@ class testCatalog(Persistence.Persistent,unittest.TestCase):
         
         self._vocabulary = Vocabulary.Vocabulary('Vocabulary',
                             'Vocabulary', globbing=1)
-        self._catalog    = Catalog.Catalog()
+        self._catalog    = ZCatalog.ZCatalog("zcatalog")
         self._catalog.addIndex('to',      'TextIndex')
         self._catalog.addIndex('sender',  'TextIndex')
         self._catalog.addIndex('subject', 'TextIndex')
@@ -502,7 +501,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         for i in range(len(self.keywords)):
             m = whrandom.randint(0,10000) 
             n = m + 200
-            rg.append(m,n)
+            rg.append( (m,n) )
 
         env = self.th_setup()
 
@@ -532,6 +531,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         uncat_conflicts = cat_conflicts = 0
         cat,msg_ids = self.get_catalog()
 
+
         msgs = self.setupUpdatesMethod(kw["numUpdates"])
         keys = msgs.keys()
 
@@ -548,7 +548,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
             obj = msgs[mid]
 
             try:
-                cat.uncatalogObject(mid)
+                cat.uncatalog_object(mid)
 
                 if kw.get("commit",1)==1:
                     get_transaction().commit()            
@@ -557,7 +557,7 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
                 uncat_conflicts = uncat_conflicts + 1
 
             try:
-                cat.catalogObject(obj,mid)
+                cat.catalog_object(obj,mid)
 
                 if kw.get("commit",1)==1:
                     get_transaction().commit()            
@@ -589,12 +589,13 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         while msg and i<numUpdates:
 
             obj = testMessage(msg)
-            mid = msg.dict["message-id"]
-
-            dict[mid] = obj 
+   
+            mid = msg.dict.get("message-id",None)
+            if mid:
+                dict[mid] = obj 
+                i = i+1
 
             msg = mb.next()
-            i = i+1
        
         return dict 
     
@@ -627,10 +628,15 @@ class testSearches(dispatcher.Dispatcher,unittest.TestCase):
         i = 0
 
         msg = mb.next()
+
         while msg and i<numfiles:
 
             obj = testMessage(msg,modify_doc)
-            mid = msg.dict["message-id"]
+            if msg.dict.has_key("message-id"):
+                mid = msg.dict["message-id"]
+            else:
+                msg = mb.next()
+                continue
 
             try:
                 cat.catalogObject(obj,mid)
@@ -1055,10 +1061,10 @@ def get_tests(what):
     )
 
     bench2_tests = (
-        testSearches("testReindexing",numThreads=1),
-        testSearches("testIncrementalIndexing",numThreads=1),
+#       testSearches("testReindexing",numThreads=1),
+#        testSearches("testIncrementalIndexing",numThreads=1),
         testSearches("testUpdates",numThreads=2,numUpdates=200),
-        testSearches("testUpdates",numThreads=4,numUpdates=200)
+#        testSearches("testUpdates",numThreads=4,numUpdates=200)
     )
 
     exp_tests = (
