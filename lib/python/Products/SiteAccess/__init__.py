@@ -8,10 +8,10 @@ def initialize(context):
     constructors=SiteRoot.constructors, legacy=SiteRoot.constructors,
     icon='www/SiteRoot.gif')
   context.registerClass(instance_class=AccessRule.AccessRule,
-    permission='Set Access Rule', constructors=AccessRule.constructors,
+    permission='Manage Access Rules', constructors=AccessRule.constructors,
     icon='www/AccessRule.gif')
   context.registerClass(instance_class=VirtualHostMonster.VirtualHostMonster,
-    permission='Create Virtual Host Monster',
+    permission='Add Virtual Host Monsters',
     constructors=VirtualHostMonster.constructors,
     icon='www/VirtualHostMonster.gif')
   context.registerHelp()
