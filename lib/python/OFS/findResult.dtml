@@ -7,7 +7,7 @@
 function new_wnd()
 {  wnd=window.open("<dtml-var URL>?<dtml-var QUERY_STRING>","find_result");
 }
-//>
+//-->
 </SCRIPT>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">

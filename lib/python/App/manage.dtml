@@ -7,7 +7,7 @@
 function update_menu()
 {   window.manage_menu.location.href=window.manage_menu.location.href;
 }
-//>
+//-->
 </SCRIPT>
 </HEAD>
 <FRAMESET COLS="175,*">

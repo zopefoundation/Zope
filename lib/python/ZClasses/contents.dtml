@@ -95,7 +95,7 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
 <SCRIPT LANGUAGE="javascript">
 <!--
 window.parent.update_menu();
-//>
+//-->
 </SCRIPT>
 </dtml-if>
 
