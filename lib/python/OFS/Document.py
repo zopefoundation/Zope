@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Globals import HTML
 from Globals import HTMLFile
@@ -78,6 +78,29 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 	self._setRoles(acl_type,acl_roles)
 	REQUEST['CANCEL_ACTION']="%s/manage_main" % REQUEST['URL2']
 	return HTML.manage_edit(self,data,REQUEST)
+
+    def validate(self, inst, parent, name, value, md):
+
+	if name[:1]=='_': return 0
+	if hasattr(value, '__roles__'):
+	    roles=value.__roles__
+	elif inst is parent:
+	    return 1
+	else:
+	    if name[:6]=='manage': return 0
+	    if hasattr(parent,'__roles__'): roles=parent.__roles__
+	    elif hasattr(parent, 'aq_acquire'):
+		try: roles=parent.aq_acquire('__roles__')
+		except AttributeError: return 0
+	    else: return 0
+
+	if roles is None: return 1
+
+	try: return md.AUTHENTICATED_USER.hasRole(roles)
+	except AttributeError: return 0
+
+
+
 
 
 default_html="""<!--#var standard_html_header-->
