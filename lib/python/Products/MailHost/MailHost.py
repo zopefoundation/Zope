@@ -4,8 +4,8 @@ from AccessControl.Role import RoleManager
 import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
 
-#$Id: MailHost.py,v 1.10 1997/09/16 15:51:46 jeffrey Exp $ 
-__version__ = "$Revision: 1.10 $"[11:-2]
+#$Id: MailHost.py,v 1.11 1997/09/16 16:59:01 jeffrey Exp $ 
+__version__ = "$Revision: 1.11 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -118,9 +118,15 @@ class SendMail:
 	return line
 
     def _check(self, lev='250'):
-        data = self.getLine()
-        if data[:3] != lev:
-            raise smtpError, "Expected %s, got %s from SMTP"%(lev, data[:3])
+	line = self.getLine()
+	try:
+	    code=string.atoi(line[:3])
+	except:
+	    raise smtpError, "Cannot convert line from SMTP: %s" % line
+
+	if code > 500:
+            #raise smtpError, "Expected %s, got %s from SMTP" % (lev, data[:3])
+	    raise smtpError "Recieved error code %s from SMTP: %s" % (code, line)
 
     def send(self, mfrom, mto, subj, body):
         self.conn.send("mail from:<%s>\n"%mfrom)
@@ -170,53 +176,15 @@ def newDecapitate(message):
     body=string.join(maxwell[linecount:],'\n')
     return headerDict, body
 
-def decapitate(message,
-               header_re=regex.compile(
-                    '\(\('
-                      '[^\0- <>:]+:[^\n]*\n'
-                    '\|'
-                      '[ \t]+[^\0- ][^\n]*\n'
-                    '\)+\)[ \t]*\n\([\0-\377]+\)'
-                   ),
-                  #r'(([^\0- <>:]+:[^\n]*\n|[ \t]+[^\0- ][^\n]*\n)+)[ \t]*\n([\0-\377]+)'
-               space_re=regex.compile('\([ \t]+\)'),
-               name_re=regex.compile('\([^\0- <>:]+\):\([^\n]*\)'),
-               ):
-    if header_re.match(message) < 0: return message
+def decapitate(message, **kw):
+    #left behind for bw-compatibility
+    return newDecapitate(message)
 
-    headers, body = header_re.group(1,3)
-
-    headers=string.split(headers,'\n')
-    headerDict={}
-
-    i=1
-    while i < len(headers):
-        if not headers[i]:
-            del headers[i]
-        elif space_re.match(headers[i]) >= 0:
-            headers[i-1]="%s %s" % (headers[i-1],
-                                    headers[i][len(space_re.group(1)):])
-            del headers[i]
-        else:
-            i=i+1
-
-    for i in range(len(headers)):
-        if name_re.match(headers[i]) >= 0:
-            k, v = name_re.group(1,2)
-            k=string.lower(k); v=string.strip(v)
-            headerDict[k]=v
-        else:
-            raise ValueError, 'Invalid Header (%d): %s ' % (i,headers[i])
-
-    if headerDict.has_key('to'):
-        headerDict['to']=map(
-            lambda x: string.strip(x),
-            string.split(headerDict['to'], ',')
-            )
-
-    return (headerDict, body)
 
 #$Log: MailHost.py,v $
+#Revision 1.11  1997/09/16 16:59:01  jeffrey
+#New SMTP checking..?
+#
 #Revision 1.10  1997/09/16 15:51:46  jeffrey
 #(Hopefully) fixed some socket problems
 #
