@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.2 1999/03/01 18:31:22 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: HTTPResponse.py,v 1.3 1999/03/01 18:33:13 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -458,8 +458,7 @@ class HTTPResponse(BaseResponse):
         raise 'BadRequest',self._html(
             "Invalid request",
             "The parameter, <em>%s</em>, was omitted from the request."
-            "<!--%s-->"
-            % (name,self.request))
+            % name)
 
     def _unauthorized(self):
         realm=self.realm
