@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.48 1997/05/08 19:12:13 jim Exp $'''
+$Id: InvertedIndex.py,v 1.49 1997/06/16 13:37:53 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -81,170 +81,8 @@ $Id: InvertedIndex.py,v 1.48 1997/05/08 19:12:13 jim Exp $'''
 #
 #   (540) 371-6909
 #
-# $Log: InvertedIndex.py,v $
-# Revision 1.48  1997/05/08 19:12:13  jim
-# Changed some string literals for emacs hilit.
-#
-# Revision 1.47  1997/05/08 19:10:43  jim
-# Changed some string literals for emacs hilit.
-# Added minimal index variety.
-#
-# Revision 1.46  1997/04/30 21:56:12  jim
-# Fixed highlighting for searches where a word occurs more than once in
-# the search.
-#
-# Revision 1.45  1997/04/25 17:50:26  chris
-# Fixed problem with tuple positions in ResultList.near()
-#
-# Revision 1.44  1997/04/25 16:14:52  chris
-# changed Index.highlight() to make sure positions are a list
-#
-# Revision 1.43  1997/04/25 15:42:07  chris
-# fixed bug in Index.__getitem__() which caused a TypeError
-# when searching for a stopword
-#
-# Revision 1.42  1997/04/24 14:20:32  chris
-# Fixed small bug in Index.__init__()
-#
-# Revision 1.41  1997/04/24 14:19:16  chris
-# got rid of copy() in __init__()
-#
-# Revision 1.40  1997/04/24 14:18:07  chris
-# *** empty log message ***
-#
-# Revision 1.39  1997/04/23 20:56:38  chris
-# added support for multi-word synonyms
-#
-# Revision 1.38  1997/04/23 18:13:50  jim
-# Began allowing multi-word synonyms.
-#
-# Revision 1.37  1997/04/23 17:17:34  chris
-# added a setitem on the _index_object in Index.addentry
-# to be sure changes are registered when not saving persistent
-# objects.
-#
-# Revision 1.36  1997/04/23 17:11:36  chris
-# remove_document() now uses a WordSequence.
-#
-# Revision 1.35  1997/04/23 16:56:31  chris
-# fixed bug in Index __getitem__() that caused it not to return
-# ResultLists
-#
-# Revision 1.34  1997/04/23 16:53:27  chris
-# *** empty log message ***
-#
-# Revision 1.32  1997/04/22 15:18:01  jim
-# Cris' changes.
-#
-# Revision 1.31  1997/04/18 18:32:46  chris
-# *** empty log message ***
-#
-# Revision 1.30  1997/04/14 12:03:17  jim
-# Fixed bug in proximity searches.
-#
-# Revision 1.29  1997/04/08 00:14:22  jim
-# Chris' changes, I think....
-#
-# Revision 1.28  1997/03/31 23:17:53  jim
-# I put back the list_class hook.
-#
-# Revision 1.27  1997/03/28 17:11:38  chris
-# *** empty log message ***
-#
-# Revision 1.26  1997/03/28 16:54:57  chris
-# *** empty log message ***
-#
-# Revision 1.25  1997/03/28 16:53:50  chris
-# indexed data now stored as dictionaries rather than ResultLists.
-# indexing documents with few than two keywords fails silently rather
-# than raising an exception.
-#
-# Revision 1.24  1997/03/24 20:22:27  chris
-# *** empty log message ***
-#
-# Revision 1.23  1997/03/22 13:32:23  jim
-# Rearranged index method to update result lists in a separate
-# overridable method.  This is needed to implement a clear method
-# in a subclass that allows an inverted index to be "cleared" without
-# actually updating data records.
-#
-# Made some slight optimizations.
-#
-# Revision 1.22  1997/03/22 13:02:17  jim
-# Finish fixing bug in __or__ that Chris has started to fix.
-#
-# Revision 1.21  1997/03/20 21:51:01  jim
-# Rearranged and, or, and near.
-# Got rid of get/setstate.
-# Made result-list-specific methods use mapping prootcol to make it
-# easier to mix with other mapping types.
-#
-# Revision 1.20  1997/03/05 19:28:18  chris
-# fixed typo
-#
-# Revision 1.19  1997/03/05 19:25:52  chris
-# removed references to SingleThreadedTransaction
-#
-# Revision 1.18  1997/03/05 19:21:36  chris
-# removed PersistentResultList, placing it in its own module
-#
-# Revision 1.17  1997/02/24 16:29:01  chris
-# *** empty log message ***
-#
-# Revision 1.16  1997/02/21 19:37:01  cici
-# *** empty log message ***
-#
-# Revision 1.15  1997/02/19 17:05:09  chris
-# *** empty log message ***
-#
-# Revision 1.14  1997/02/19 16:37:39  chris
-# Removed Transactional and Persistent classes
-#
-# Revision 1.13  1997/02/13 17:28:32  chris
-# *** empty log message ***
-#
-# Revision 1.12  1997/02/12 18:35:21  cici
-# added apply() to Transactional and Persistent addentry() methods.
-#
-# Revision 1.11  1997/02/12 18:11:54  cici
-# *** empty log message ***
-#
-# Revision 1.10  1997/01/29 16:48:40  chris
-# added list_class argument to Index __init__
-#
-# Revision 1.9  1996/12/23 21:54:10  chris
-# Checked out by Chris for testing/editing.
-#
-# Revision 1.8  1996/12/13 13:53:11  jim
-# Checked in so I could edit.
-#
-# Revision 1.7  1996/12/10 21:17:57  chris
-# Experimenting....
-#
-# Revision 1.6  1996/12/09 15:50:15  jim
-# Checked in so jim can hack.
-#
-# Revision 1.5  1996/12/03 18:15:07  chris
-# Updated doc strings
-#
-# Revision 1.4  1996/12/03 18:11:57  chris
-# Went back to returning empty ResultLists for failed searches.
-#
-# Revision 1.3  1996/12/03 17:44:21  chris
-# Added pack() methods to Persistent and Transactional.
-# Disabled autosave on Persistent.
-# Failed searches now raise a KeyError rather than returning an
-# empty ResultList.
-#
-# Revision 1.2  1996/11/18 18:50:16  chris
-# Added doc strings
-#
-# Revision 1.1  1996/11/15 17:41:37  chris
-# Initial version
-#
-#
 # 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 import regex, string, copy
@@ -500,6 +338,8 @@ for w in _default_stop_words:
 for w in string.letters: 
     default_stop_words[w] = None
 
+
+UnindexData=-1,()
 
 class Index:
     '''\
@@ -786,6 +626,66 @@ class Index:
 	        else:
                     self.rmdoc(doc_key, key)
 
+
+    def mergeMap(self,index_map):
+	my_map=self._index_object
+	tt=type(())
+
+	for key in index_map.keys():
+
+	    v=index_map[key]
+	    if v is None: continue
+	    index_map[key]=None
+
+	    try: o=my_map[key]
+	    except: o=None
+
+	    if o is None:
+		my_map[key]=v
+		continue
+
+	    if type(v) is tt: v = { v[0] : v[1:] }
+	    if type(o) is tt: o = { o[0] : o[1:] }
+
+	    for id in v.keys():
+		d=v[id]
+		if d==UnindexData:
+		    # Remove this doc
+		    try: del o[id]
+		    except: pass
+		else:
+		    o[id]=v[id]
+
+	    my_map[key]=o
+
+    def removeMap(self,index_map):
+	my_map=self._index_object
+	tt=type(())
+
+	for key in index_map.keys():
+	    v=index_map[key]
+	    if v is None: continue
+	    index_map[key]=None
+
+	    try: o=my_map[key]
+	    except: o=None
+	    if o is None: continue
+
+	    if type(v) is tt: v = { v[0] : v[1:] }
+	    if type(o) is tt: o = { o[0] : o[1:] }
+	    if len(o) < len(v):
+		x=o
+		o=v
+		v=x
+
+	    for id in v.keys():
+		try: del o[id]
+		except: pass
+
+	    if o:
+		my_map[key]=o
+	    else:
+		del my_map[key]
   
     def get_stopwords(self):
         synstop = self.synstop
@@ -840,3 +740,168 @@ class Index:
     
 	return text
 
+############################################################################
+# $Log: InvertedIndex.py,v $
+# Revision 1.49  1997/06/16 13:37:53  jim
+# Added logic to work with IntermediateIndex.
+#
+# Revision 1.48  1997/05/08 19:12:13  jim
+# Changed some string literals for emacs hilit.
+#
+# Revision 1.47  1997/05/08 19:10:43  jim
+# Changed some string literals for emacs hilit.
+# Added minimal index variety.
+#
+# Revision 1.46  1997/04/30 21:56:12  jim
+# Fixed highlighting for searches where a word occurs more than once in
+# the search.
+#
+# Revision 1.45  1997/04/25 17:50:26  chris
+# Fixed problem with tuple positions in ResultList.near()
+#
+# Revision 1.44  1997/04/25 16:14:52  chris
+# changed Index.highlight() to make sure positions are a list
+#
+# Revision 1.43  1997/04/25 15:42:07  chris
+# fixed bug in Index.__getitem__() which caused a TypeError
+# when searching for a stopword
+#
+# Revision 1.42  1997/04/24 14:20:32  chris
+# Fixed small bug in Index.__init__()
+#
+# Revision 1.41  1997/04/24 14:19:16  chris
+# got rid of copy() in __init__()
+#
+# Revision 1.40  1997/04/24 14:18:07  chris
+# *** empty log message ***
+#
+# Revision 1.39  1997/04/23 20:56:38  chris
+# added support for multi-word synonyms
+#
+# Revision 1.38  1997/04/23 18:13:50  jim
+# Began allowing multi-word synonyms.
+#
+# Revision 1.37  1997/04/23 17:17:34  chris
+# added a setitem on the _index_object in Index.addentry
+# to be sure changes are registered when not saving persistent
+# objects.
+#
+# Revision 1.36  1997/04/23 17:11:36  chris
+# remove_document() now uses a WordSequence.
+#
+# Revision 1.35  1997/04/23 16:56:31  chris
+# fixed bug in Index __getitem__() that caused it not to return
+# ResultLists
+#
+# Revision 1.34  1997/04/23 16:53:27  chris
+# *** empty log message ***
+#
+# Revision 1.32  1997/04/22 15:18:01  jim
+# Cris' changes.
+#
+# Revision 1.31  1997/04/18 18:32:46  chris
+# *** empty log message ***
+#
+# Revision 1.30  1997/04/14 12:03:17  jim
+# Fixed bug in proximity searches.
+#
+# Revision 1.29  1997/04/08 00:14:22  jim
+# Chris' changes, I think....
+#
+# Revision 1.28  1997/03/31 23:17:53  jim
+# I put back the list_class hook.
+#
+# Revision 1.27  1997/03/28 17:11:38  chris
+# *** empty log message ***
+#
+# Revision 1.26  1997/03/28 16:54:57  chris
+# *** empty log message ***
+#
+# Revision 1.25  1997/03/28 16:53:50  chris
+# indexed data now stored as dictionaries rather than ResultLists.
+# indexing documents with few than two keywords fails silently rather
+# than raising an exception.
+#
+# Revision 1.24  1997/03/24 20:22:27  chris
+# *** empty log message ***
+#
+# Revision 1.23  1997/03/22 13:32:23  jim
+# Rearranged index method to update result lists in a separate
+# overridable method.  This is needed to implement a clear method
+# in a subclass that allows an inverted index to be "cleared" without
+# actually updating data records.
+#
+# Made some slight optimizations.
+#
+# Revision 1.22  1997/03/22 13:02:17  jim
+# Finish fixing bug in __or__ that Chris has started to fix.
+#
+# Revision 1.21  1997/03/20 21:51:01  jim
+# Rearranged and, or, and near.
+# Got rid of get/setstate.
+# Made result-list-specific methods use mapping prootcol to make it
+# easier to mix with other mapping types.
+#
+# Revision 1.20  1997/03/05 19:28:18  chris
+# fixed typo
+#
+# Revision 1.19  1997/03/05 19:25:52  chris
+# removed references to SingleThreadedTransaction
+#
+# Revision 1.18  1997/03/05 19:21:36  chris
+# removed PersistentResultList, placing it in its own module
+#
+# Revision 1.17  1997/02/24 16:29:01  chris
+# *** empty log message ***
+#
+# Revision 1.16  1997/02/21 19:37:01  cici
+# *** empty log message ***
+#
+# Revision 1.15  1997/02/19 17:05:09  chris
+# *** empty log message ***
+#
+# Revision 1.14  1997/02/19 16:37:39  chris
+# Removed Transactional and Persistent classes
+#
+# Revision 1.13  1997/02/13 17:28:32  chris
+# *** empty log message ***
+#
+# Revision 1.12  1997/02/12 18:35:21  cici
+# added apply() to Transactional and Persistent addentry() methods.
+#
+# Revision 1.11  1997/02/12 18:11:54  cici
+# *** empty log message ***
+#
+# Revision 1.10  1997/01/29 16:48:40  chris
+# added list_class argument to Index __init__
+#
+# Revision 1.9  1996/12/23 21:54:10  chris
+# Checked out by Chris for testing/editing.
+#
+# Revision 1.8  1996/12/13 13:53:11  jim
+# Checked in so I could edit.
+#
+# Revision 1.7  1996/12/10 21:17:57  chris
+# Experimenting....
+#
+# Revision 1.6  1996/12/09 15:50:15  jim
+# Checked in so jim can hack.
+#
+# Revision 1.5  1996/12/03 18:15:07  chris
+# Updated doc strings
+#
+# Revision 1.4  1996/12/03 18:11:57  chris
+# Went back to returning empty ResultLists for failed searches.
+#
+# Revision 1.3  1996/12/03 17:44:21  chris
+# Added pack() methods to Persistent and Transactional.
+# Disabled autosave on Persistent.
+# Failed searches now raise a KeyError rather than returning an
+# empty ResultList.
+#
+# Revision 1.2  1996/11/18 18:50:16  chris
+# Added doc strings
+#
+# Revision 1.1  1996/11/15 17:41:37  chris
+# Initial version
+#
