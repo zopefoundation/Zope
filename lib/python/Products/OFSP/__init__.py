@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''Base Principia
-$Id: __init__.py,v 1.11 1998/03/09 19:52:23 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: __init__.py,v 1.12 1998/03/18 18:25:52 jeffrey Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -19,7 +19,7 @@ product_name='Base Principia'
 
 classes=('Session.Session', 'OFS.Image.File', 
 	 'OFS.Image.Image', 'OFS.Document.Document')
-klasses=('OFS.Image.Folder', 'AccessControl.User.UserFolder')
+klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 
 meta_types=(
 #    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
@@ -79,6 +79,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.12  1998/03/18 18:25:52  jeffrey
+# Fixed snafulet in the Klasses tuple
+#
 # Revision 1.11  1998/03/09 19:52:23  jim
 # Moved more meta-data here.
 #
