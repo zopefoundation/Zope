@@ -213,7 +213,10 @@ def loadinc(name, mb, f, printstat=0, max=99999999, wait=1):
         app=jar.root()['Application']
         mdest=getattr(app, name)
         if i%100 == 0 and printstat:
-            sys.stdout.write("\t%s\t%s\t\r" % (i, f.tell()))
+            fmt = "\t%s\t%s\t\r"
+            if os.environ.get('TERM') in ('dumb', 'emacs'):
+                fmt = "\t%s\t%s\t\n"
+            sys.stdout.write(fmt % (i, f.tell()))
             sys.stdout.flush()
 
         did=str(i)
