@@ -12,12 +12,13 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.7 1997/12/18 13:36:57 jim Exp $'''
+$Id: Session.py,v 1.8 1997/12/18 16:42:02 jeffrey Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
+from ImageFile import ImageFile
 
-_addForm=Globals.HTMLFile('OFS/sessionAdd')
+_addForm=Globals.HTMLFile('sessionAdd', globals())
 def addForm(realself, self, REQUEST, **ignored):
     return _addForm(self, REQUEST,
 		    selectedRoles=map(
@@ -46,7 +47,8 @@ class Session(Persistence.Persistent,
     '''
 
     meta_type='Session'
-    icon='OFS/session.gif'
+    icon='SessionIcon'
+    SessionIcon=ImageFile('www/session.gif', globals())
 
     manage_options=({'icon':'', 'label':'Join/Leave',
 		     'action':'manage_main', 'target':'manage_main',
@@ -70,8 +72,8 @@ class Session(Persistence.Persistent,
 	if l >= 0: cookie=cookie[:l]
 	self.cookie="%s/%s" % (cookie, id)
 
-    manage_propertiesForm=Globals.HTMLFile('OFS/sessionEdit')
-    index_html=manage=manage_main=Globals.HTMLFile('OFS/session')
+    manage=manage_main=Globals.HTMLFile('sessionEdit', globals())
+    index_html=Globals.HTMLFile('session', globals())
 
     def title_and_id(self):
 	r=Session.inheritedAttribute('title_and_id')(self)
@@ -123,7 +125,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 
@@ -131,6 +133,9 @@ __version__='$Revision: 1.7 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.8  1997/12/18 16:42:02  jeffrey
+# *** empty log message ***
+#
 # Revision 1.7  1997/12/18 13:36:57  jim
 # Rearranged management options to make the join/leave screen the
 # default.
