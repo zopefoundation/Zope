@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.59 1999/01/29 15:41:39 brian Exp $"""
+$Id: Folder.py,v 1.60 1999/02/10 17:21:22 amos Exp $"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -118,7 +118,7 @@ from CopySupport import CopyContainer
 from FindSupport import FindSupport
 from Image import Image, File
 from string import rfind, lower
-
+import marshal
 
 manage_addFolderForm=HTMLFile('folderAdd', globals())
 
@@ -194,6 +194,8 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
         ('Manage properties',
          ('manage_addProperty', 'manage_editProperties',
           'manage_delProperties', 'manage_changeProperties',)),
+        ('FTP access',         ('manage_FTPstat','manage_FTPlist')),
+
     )
 
     manage_addObject__roles__=None
@@ -255,6 +257,42 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
         self._setObject(id,o)
         return 'OK, I imported %s' % id
 
+    # FTP support methods
+    
+    def manage_FTPlist(self,REQUEST):
+        "Directory listing for FTP"
+        out=()
+        # check to see if we are acquiring our objectValues or not
+        if len(REQUEST.PARENTS) > 1 and \
+                self.objectValues()==REQUEST.PARENTS[1].objectValues():
+                raise ValueError, 'FTP List not supported on acquired objects'
+                # XXX what type of error to raise?  
+        files=self.objectItems()
+        if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
+                self.isTopLevelPrincipiaApplicationObject):
+            files.insert(0,('..',self.aq_parent))
+        for k,v in files:
+            stat=marshal.loads(v.manage_FTPstat(REQUEST))
+            out=out+((k,stat),)
+        return marshal.dumps(out)   
+
+    def manage_FTPstat(self,REQUEST):
+        "Psuedo stat used for FTP listings"
+        mode=0040000
+        from AccessControl.User import nobody
+        # check to see if we are acquiring our objectValues or not
+        if not (len(REQUEST.PARENTS) > 1 and
+                self.objectValues() == REQUEST.PARENTS[1].objectValues()):
+            if REQUEST['AUTHENTICATED_USER'].allowed(
+                        self.manage_FTPlist,
+                        self.manage_FTPlist.__roles__):
+                mode=mode | 0770
+            if nobody.allowed(
+                        self.manage_FTPlist,
+                        self.manage_FTPlist.__roles__):
+                mode=mode | 0007
+        mtime=self.bobobase_modification_time().timeTime()
+        return marshal.dumps((mode,0,0,1,0,0,0,mtime,mtime,mtime))
 
 
 class PUTer(Acquisition.Explicit):
