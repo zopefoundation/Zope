@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -128,6 +128,9 @@ class BaseRequest:
         else:
             for k, v in kw.items(): other[k]=v
         self.other=other
+
+    def close(self):
+        del self.other
 
     def processInputs(self):
         """Do any input processing that could raise errors
