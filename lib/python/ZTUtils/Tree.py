@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.10 2002/10/04 16:50:58 mj Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Tree.py,v 1.11 2002/10/04 20:06:52 mj Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -82,6 +82,43 @@ class TreeMaker:
                 self._values_filter = filter
         else:
             self._values_function = function
+
+    def setIdAttr(self, id):
+        """Set the attribute or method name called to get a unique Id.
+
+        The id attribute or method is used to get a unique id for every node in
+        the tree, so that the state of the tree can be encoded as a string using
+        Tree.encodeExpansion(). The returned id should be unique and stable
+        across Zope requests.
+
+        If the attribute or method isn't found on an object, either the objects
+        persistence Id or the result of id() on the object is used instead.
+
+        """
+        self._id = id
+
+    def setExpandRoot(self, expand):
+        """Set wether or not to expand the root node by default.
+        
+        When no expanded flag or mapping is passed to .tree(), assume the root
+        node is expanded, and leave all subnodes closed.
+
+        The default is to expand the root node.
+        
+        """
+        self._expand_root = expand and True or False
+
+    def setAssumeChildren(self, assume):
+        """Set wether or not to assume nodes have children.
+        
+        When a node is not expanded, when assume children is set, don't
+        determine if it is a leaf node, but assume it can be opened. Use this
+        when determining the children for a node is expensive.
+        
+        The default is to not assume there are children.
+        
+        """
+        self._assume_children = assume and True or False
 
     def tree(self, root, expanded=None, subtree=0):
         '''Create a tree from root, with specified nodes expanded.
