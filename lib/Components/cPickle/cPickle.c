@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.28 1997/03/04 18:31:16 chris Exp $
+     $Id: cPickle.c,v 1.29 1997/03/04 19:41:57 jim Exp $
 
      Copyright 
 
@@ -3091,6 +3091,8 @@ Unpickler_load(Unpicklerobject *self, PyObject *args) {
     int len;
     char *s;
 
+    UNLESS(PyArg_ParseTuple(args,"")) return NULL;
+
     UNLESS(stack = PyList_New(0))
         goto err;
 
@@ -3690,7 +3692,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.28 $";
+    char *rev="$Revision: 1.29 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
