@@ -10,5 +10,9 @@ Page Template changes
 
         - Adopted Zope-style CHANGES.txt and HISTORY.txt
         - Improved execution performance
+        - nocall: paths are back in.
 
       Bugs Fixed
+
+        - TALES expressions let any string exception through, not just
+          Redirect and Unauthorized.
