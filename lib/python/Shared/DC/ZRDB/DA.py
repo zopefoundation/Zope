@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.71 1999/08/30 17:43:29 jim Exp $'''
-__version__='$Revision: 1.71 $'[11:-2]
+$Id: DA.py,v 1.72 1999/08/30 18:01:09 jim Exp $'''
+__version__='$Revision: 1.72 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -144,9 +144,11 @@ class DA(
  
     # Specify how individual operations add up to "permissions":
     __ac_permissions__=(
-        ('View management screens', ('manage_main', 'index_html',
-                                     'manage_advancedForm',
-                                     )),
+        ('View management screens',
+         (
+        'manage_main', 'index_html',
+        'manage_advancedForm', 'PrincipiaSearchSource'
+        )),
         ('Change Database Methods',
          ('manage_edit','manage_advanced', 'manage_testForm','manage_test')),
         ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
@@ -270,6 +272,10 @@ class DA(
     #def getFindContent(self):
     #    """Return content for use by the Find machinery."""
     #    return '%s\n%s' % (self.arguments_src, self.src)
+
+    def PrincipiaSearchSource(self):
+        """Return content for use by the Find machinery."""
+        return '%s\n%s' % (self.arguments_src, self.src)
     
     def manage_testForm(self, REQUEST):
         " "
