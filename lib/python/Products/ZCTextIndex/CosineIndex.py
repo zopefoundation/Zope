@@ -21,7 +21,7 @@ from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
-from Products.ZCTextIndex.BaseIndex import BaseIndex
+from Products.ZCTextIndex.BaseIndex import BaseIndex, inverse_doc_frequency
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
@@ -77,7 +77,7 @@ class CosineIndex(BaseIndex):
     #        self._wordinfo[t] is a map from d to w(d, t).
     #
     #    w(q, t) = log(1 + N/f(t))
-    #        computed by query_term_weight()
+    #        computed by inverse_doc_frequency()
     #
     #    W(d) = sqrt(sum(for t in d: w(d, t) ** 2))
     #        computed by _get_frequencies(), and remembered in
@@ -110,7 +110,7 @@ class CosineIndex(BaseIndex):
         for wid in wids:
             assert self._wordinfo.has_key(wid)  # caller responsible for OOV
             d2w = self._wordinfo[wid] # maps docid to w(docid, wid)
-            idf = query_term_weight(len(d2w), N)  # this is an unscaled float
+            idf = inverse_doc_frequency(len(d2w), N)  # this is an unscaled float
             #print "idf = %.3f" % idf
             if isinstance(d2w, DictType):
                 d2w = IIBucket(d2w)
@@ -237,12 +237,3 @@ def doc_term_weight(count):
     """Return the doc-term weight for a term that appears count times."""
     # implements w(d, t) = 1 + log f(d, t)
     return 1.0 + math.log(count)
-
-def query_term_weight(term_count, num_items):
-    """Return the query-term weight for a term,
-
-    that appears in term_count items in a collection with num_items
-    total items.
-    """
-    # implements w(q, t) = log(1 + N/f(t))
-    return math.log(1.0 + float(num_items) / term_count)

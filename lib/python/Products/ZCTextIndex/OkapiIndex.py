@@ -24,7 +24,7 @@ from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
-from Products.ZCTextIndex.BaseIndex import BaseIndex
+from Products.ZCTextIndex.BaseIndex import BaseIndex, inverse_doc_frequency
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
@@ -211,15 +211,6 @@ class OkapiIndex(BaseIndex):
                 new[k] = v
             map = new
         self._wordinfo[wid] = map # Not redundant, because of Persistency!
-
-def inverse_doc_frequency(term_count, num_items):
-    """Return the inverse doc frequency for a term,
-
-    that appears in term_count items in a collection with num_items
-    total items.
-    """
-    # implements IDF(q, t) = log(1 + N/f(t))
-    return math.log(1.0 + float(num_items) / term_count)
 
 """
 "Okapi" (much like "cosine rule" also) is a large family of scoring gimmicks.
