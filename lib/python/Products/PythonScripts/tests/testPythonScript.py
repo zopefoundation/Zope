@@ -239,6 +239,8 @@ class TestPythonScriptGlobals(PythonScriptTestBase):
         self.assertEqual(f(), ('?.foo', "'string'"))
 
     def test_filepath(self):
+        # This test is meant to raise a deprecation warning.
+        # It used to fail mysteriously instead.
         f = self._filePS('filepath')
         self.assertEqual(f(), [0])
 
