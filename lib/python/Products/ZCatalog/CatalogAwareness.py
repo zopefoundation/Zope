@@ -179,10 +179,6 @@ class CatalogAware:
         if hasattr(self, self.default_catalog):
             getattr(self, self.default_catalog).uncatalog_object(self.url())
 
-    def aq_base(ob):
-        if hasattr(ob,  'aq_base'):
-            return ob.aq_base
-        return ob
 
     def reindex_all(self, obj=None):
         """ """
@@ -194,6 +190,9 @@ class CatalogAware:
             for item in obj.objectValues():
                 reindex_all(self, item)
         return 'done!'
+
+
+
 
 
 
