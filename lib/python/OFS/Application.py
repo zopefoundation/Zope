@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.70 1998/08/17 19:13:03 brian Exp $'''
-__version__='$Revision: 1.70 $'[11:-2]
+$Id: Application.py,v 1.71 1998/08/24 20:30:48 jim Exp $'''
+__version__='$Revision: 1.71 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -184,9 +184,9 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 		    "Sorry, the requested document does not exist.<p>"
 		    "\n<!--\n%s\n%s\n-->" % (name,REQUEST['REQUEST_METHOD']))
 
-    def PrincipiaTime(self):
+    def PrincipiaTime(self, *args):
 	"""Utility function to return current date/time"""
-	return DateTime()
+	return apply(DateTime, args)
 
 
 class Expired(Persistent):
@@ -432,6 +432,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.71  1998/08/24 20:30:48  jim
+# Made PrincipiaTime accept arguments.
+#
 # Revision 1.70  1998/08/17 19:13:03  brian
 # Added fix for ProductFolder with old bobobases.
 #
