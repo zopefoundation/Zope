@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 from urllib import quote
 import xmlrpc
@@ -344,6 +344,17 @@ class BaseRequest:
                         "published." % URL
                         )
 
+                # Hack for security: in Python 2.2.2, most built-in types
+                # gained docstrings that they didn't have before. That caused
+                # certain mutable types (dicts, lists) to become publishable
+                # when they shouldn't be. The following check makes sure that
+                # the right thing happens in both 2.2.2+ and earlier versions.
+                
+                if not typeCheck(subobject):
+                    return response.debugError(
+                        "The object at %s is not publishable." % URL
+                        )
+
                 r = getattr(subobject, '__roles__', UNSPECIFIED_ROLES)
                 if r is not UNSPECIFIED_ROLES:
                     roles = r
@@ -490,3 +501,27 @@ def old_validation(groups, request, auth,
             """<strong>You are not authorized to access this resource""")
 
     return None
+
+
+
+# This mapping contains the built-in types that gained docstrings
+# between Python 2.1 and 2.2.2. By specifically checking for these
+# types during publishing, we ensure the same publishing rules in
+# both versions. The downside is that this needs to be extended as
+# new built-in types are added and future Python versions are
+# supported. That happens rarely enough that hopefully we'll be on
+# Zope 3 by then :)
+
+import types
+
+itypes = {}
+for name in ('NoneType', 'IntType', 'LongType', 'FloatType', 'StringType',
+             'BufferType', 'TupleType', 'ListType', 'DictType', 'XRangeType',
+             'SliceType', 'EllipsisType', 'UnicodeType', 'CodeType',
+             'TracebackType', 'FrameType', 'DictProxyType'):
+    if hasattr(types, name):
+        itypes[getattr(types, name)] = 0
+
+def typeCheck(obj, deny=itypes):
+    # Return true if its ok to publish the type, false otherwise.
+    return deny.get(type(obj), 1)
