@@ -15,41 +15,32 @@ import os,sys,re
 
 from App.config import getConfiguration
 
-v=sys.version_info
-
 _version_string = None
 _zope_version = None
 
 
 def intval(dict, key):
-    v = dict.get(key, None)
-    if v is None:
-        return 0
-    else:
-        return int(v)
+    return int(dict.get(key, 0))
 
 def strval(dict, key):
-    v = dict.get(key, None)
-    if v is None:
-        return ''
-    else:
-        return str(v)
+    return str(dict.get(key, ''))
 
 
 def _prep_version_data():
     global _version_string, _zope_version
     if _version_string is None:
+        v = sys.version_info
+        pyver = "python %d.%d.%d, %s" % (v[0], v[1], v[2], sys.platform)
+        cfg = getConfiguration()
+        fn = os.path.join(cfg.softwarehome, 'version.txt')
+        expr = re.compile(
+            r'(?P<product>[A-Za-z0-9]+) +(?P<major>[0-9]+)'
+            '\.(?P<minor>[0-9]+)\.(?P<micro>[0-9]+)'
+            '(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
         try:
-            cfg = getConfiguration()
-            s = open(os.path.join(cfg.softwarehome,'version.txt')).read()
+            s = open(fn).read()
             ss = re.sub("\(.*?\)\?","",s)
-            ss = '%s, python %d.%d.%d, %s' % (ss,v[0],v[1],v[2],sys.platform)
-            _version_string = ss
 
-            expr = re.compile(
-                r'(?P<product>[A-Za-z0-9]+) +(?P<major>[0-9]+)'
-                '\.(?P<minor>[0-9]+)\.(?P<micro>[0-9]+)'
-                '(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
             dict = expr.match(s).groupdict()
             _zope_version = (
                 intval(dict, 'major'),
@@ -58,10 +49,9 @@ def _prep_version_data():
                 strval(dict, 'status'),
                 intval(dict, 'release'))
         except:
-            ss = 'unreleased version, python %d.%d.%d, %s' % (
-                v[0],v[1],v[2],sys.platform)
-            _version_string = ss
+            ss = 'unreleased version'
             _zope_version = (-1, -1, -1, '', -1)
+        _version_string = "%s, %s" % (ss, pyver)
 
 
 def version_txt():
