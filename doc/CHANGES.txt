@@ -4,7 +4,7 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-    Zope 2.4 alpha 2
+    Zope 2.4 beta 1
 
       Features Added
 
@@ -15,6 +15,14 @@ Zope Changes
           to override the default syslog facility 'user'
 
       Bugs fixed
+
+        - The manage_afterClone hook was called too early for copied objects,
+          before the cloned object was reattached to its context. This 
+          caused problems with CatalogAware objects reindexing themselves 
+          on copy.
+
+        - Fixed a situation that could slow down lazy processing of sorted 
+          search results.
 
         - Product import ordering has been changed.  Now, the total set of
           all Products are initialized in ascending alphabetical order by
