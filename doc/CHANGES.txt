@@ -1,6 +1,6 @@
 Zope Changes
 
-  This file contains change information for the current Zope release. 
+  This file contains change information for the current Zope release.
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
@@ -9,14 +9,14 @@ Zope Changes
       - New "Transience" (session data storage) implementation.
         More reliable under high load.
 
-      - Collector #402: PythonScript recompile utility should only be 
+      - Collector #402: PythonScript recompile utility should only be
         usable by Manager to prevent abuse.
 
       - Collector #433: Fixed broken Splitter backwards compatiblity
         issue caused by code cleanup.
 
       - Collector #151: The Python 2.1 / 2.2 fcntl compatibility hacks
-        were bypassed when using medusa directly without importing 
+        were bypassed when using medusa directly without importing
         ZServer first (as when using monitor_client.py).
 
       - Collector #72: Start on Windows 95 machines with no network
@@ -28,21 +28,45 @@ Zope Changes
         instead of returning X, contradicting the docs and common
         sense.  difference(None, X) continues to return None.
 
+    Features Added
+
+      - The IOBTree module also supports multiunion() now.
+
+      - BTrees and TreeSets are complex objects, with parent->child
+        pointers, sibling pointers, and multi-level parent->descendant
+        pointers.  About half the pointers are formally redundant, but
+        speed operations.  BTrees and TreeSets now support a ._check()
+        method, which does a thorough job of examining all these
+        pointers for consistency.  It raises AssertionError if it finds
+        any problems, else returns None.  In Zope 2.5, in rare cases a
+        key deletion could leave these internal pointers in an
+        inconsistent state (what was supposed to be redundant
+        information became conflicting information).  The most likely
+        symptom was that tree.keys() would yield an object that
+        disgreed with the tree about how many keys there are.
+        tree._check() can be used if you suspect such a problem (and if
+        you find one, rebuilding the tree is the best solution for now).
+
   Zope 2.6.0 alpha 1
 
     Features Added
 
-      - Set the default sys checkinterval to a higher value (500) to 
-        take better advantage of faster processors. Since there is no 
-        way to scientifically determine a number that works best for 
-        everyone, this at least should err on the side of better 
+      - The IIBTree module has a new multiunion function.  It accepts
+        a sequence of sets, treesets, etc, and returns the union of
+        the keys of these objects, as an IISet.  It's designed
+        for peak speed when the input sequence contains many objects.
+
+      - Set the default sys checkinterval to a higher value (500) to
+        take better advantage of faster processors. Since there is no
+        way to scientifically determine a number that works best for
+        everyone, this at least should err on the side of better
         performance "out of the box" for higher-end production
         systems.
 
         Note that you can always use the -i argument to z2 to change
         the check interval.
 
-      - Added support for gzip content compression for clients that 
+      - Added support for gzip content compression for clients that
         support it. See lib/python/ZPublisher/HTTPResponse.py for more
         details.
 
@@ -73,19 +97,19 @@ Zope Changes
          kill -HUP `cat /path/to/var/z2.pid`
 
         When a process is interrupted via ctrl-C or via a TERM signal
-        (INT, TERM), all open database connections and sockets will be closed 
+        (INT, TERM), all open database connections and sockets will be closed
         before the process dies.  This will speed up restart time for sites
-        that use a FileStorage as its index will be written to the filesystem 
+        that use a FileStorage as its index will be written to the filesystem
         before shutdown.
 
         Unspecified signals kill the process without doing cleanup.
-    
+
       - ZCatalog no longer has a hand in managing text index vocabularies.
         The cruft associated with this functionality has been exorcised.
         No default indexes or metadata elements are defined for you when
         you create a new ZCatalog. Since we now have many new kinds of
         plug-in indexes it no longer made sense to do this
-        anymore.        
+        anymore.
 
       - A new permission "Copy or Move" was added.  This permission
         may be used respective to an object to prevent objects
@@ -100,7 +124,7 @@ Zope Changes
         is granted to Manager and Anonymous by default, and must be
         revoked on an object-by-object basis if site managers intend
         to provide management screen access to folders which contain
-        sensitive subobjects.  This patch came as a result of 
+        sensitive subobjects.  This patch came as a result of
         Collector #376 (thanks to Chris Deckard).
 
       - Structured Text's "DocumentWithImages" class did not recognize
@@ -109,15 +133,15 @@ Zope Changes
       - The getElementsByTagName method of STDOM (used by Structured Text)
         would croak on most documents, especially those containing
         unwrapped text nodes.  Fixed.
-    
+
       - FileUpload objects now evaluate false when the have an empty file
         name. Making it easier to check for omitted file upload form fields.
-    
+
       - ZClasses now use a python script as their constructor method
-        instead of a DTML method. Also, ZClasses inherit from 
+        instead of a DTML method. Also, ZClasses inherit from
         CatalogPathAwareness now instead of CatalogAwareness.
-    
-      - added browser_default hook to ZPublisher. This allows objects to 
+
+      - added browser_default hook to ZPublisher. This allows objects to
         specify the path to the default method that the publisher calls
         when the object is published. The default for objects not defining
         browser_default is still 'index_html' for bw compatibility.
@@ -141,7 +165,7 @@ Zope Changes
         Julian calendar.
 
       - WebDAV: the new environment variable WEBDAV_SOURCE_PORT_CLIENTS
-        enables retrieval of the document source for dedicated WebDAV 
+        enables retrieval of the document source for dedicated WebDAV
         clients (see ENVIRONMENT.txt for usage)
 
       - Collector #272: Optimizations for RESPONSE.write
@@ -160,8 +184,8 @@ Zope Changes
         table.
 
       - TextIndex: Enhanced splitter functionality now allows the
-        TextIndex to index numbers, single characters. It is also 
-        possible to enable case-sensitive indexing. The new 
+        TextIndex to index numbers, single characters. It is also
+        possible to enable case-sensitive indexing. The new
         configuration options are available through the addForm
         of the Vocabulary object.
 
@@ -172,7 +196,7 @@ Zope Changes
         the default level for <Hx> elements (see doc/ENVIRONMENT.txt)
 
       - Collector #304: several catalog optimisations
-        
+
       - New implementation of ZODB object cache.  The new
         implemenation is more likely to keep the size of the object
 	cache close to the target size.  This change means that memory
@@ -201,7 +225,7 @@ Zope Changes
         onto the namespace stack.
 
       - STXNG: Structured Text now supports images by default
-        by using the HTMLWithImages class (has been disabled prior 
+        by using the HTMLWithImages class (has been disabled prior
         to Zope 2.6)
 
       - new option --force-http-connection-close for z2.py to prevent
@@ -216,11 +240,11 @@ Zope Changes
         making it easier to tune the ZODB cache size.
 
     Bugs Fixed
-    
+
       - External methods didn't properly setup func_defaults and func_code
         when they were first loaded. This meant mapply couldn't properly map
         arguments on the first try.
-        
+
       - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
         compliant browsers. This allows better control for browsers that have a
         hard time knowing what 100% means.
@@ -234,7 +258,7 @@ Zope Changes
       - Fixed bug #144: Upload button on dtml, py scripts, images, files and
         pts now raises an error if the file is not specified rather than
         clearing the source.
-        
+
       - Fixed bug #275: setPermissionDefault didn't actually set the
         right permission -> role mappings.
 
@@ -269,13 +293,13 @@ Zope Changes
       - Collector #207: fixed problem with inner links in STXNG
 
       - Collector #210: HTML() function of StructuredText produced wrong
-        <h0> tags. 
+        <h0> tags.
 
       - Collector #166: ObjectManger.all_meta_types() implemented only
         an incomplete filter based on interfaces.
 
       - FTP: Downloading files through FTP has been broken since 2.4.0
-        because the downloaded file has been stored with a HTTP 
+        because the downloaded file has been stored with a HTTP
         header at the beginning of the file. Fixed!
 
       - FTP: Spaces in usernames inside a FTP file listing are now
@@ -284,7 +308,7 @@ Zope Changes
       - Collector #227: improved handling of unicode string in TextIndex.py
         with unmodified default encoding in site.py.
 
-      - Collector #227: z2.py, TextIndex/dtml/manage_vocab.dtml modified 
+      - Collector #227: z2.py, TextIndex/dtml/manage_vocab.dtml modified
         to display unicode strings in the vocabulary properly (now using
         UTF-8 encoding for display purposes)
 
@@ -303,7 +327,7 @@ Zope Changes
         underscores
 
       - Collector #279: changed exception handling for safegmtime() to
-        provide a more intuitive traceback for operating systems with a 
+        provide a more intuitive traceback for operating systems with a
         limited gmtime() implementations
 
       - Collector #285: Zope changes its working directory
@@ -325,7 +349,7 @@ Zope Changes
       - Collector #1: UNIX security fixes: make starting Zope as 'root'
         secure, stop using 'nobody', warn of insecure umasks
 
-      - Collector #303: Properties of type 'long' got truncated 
+      - Collector #303: Properties of type 'long' got truncated
 
       - Collector #325: adding a new TextIndex to an existing Catalog
         cleared the standard Vocabulary.
@@ -333,13 +357,13 @@ Zope Changes
       - Collector #373: content_type property for Image objects
         are no longer deletable to prevent malfunction.
 
-      - Collector #343: The ZCatalogs 'Indexes' view showed the 
+      - Collector #343: The ZCatalogs 'Indexes' view showed the
         wrong number of indexed objects for FieldIndexes.
 
-      - FTP server: replaced 'System_Process' by 'Sysproc' to 
+      - FTP server: replaced 'System_Process' by 'Sysproc' to
         avoid breaking some FTP clients and the output format
         with overlong usernames.
-      
+
       - Fixed a potential bug with cAccessControl's permission
         role deallocator which would try to decref things which
         may not have been set, due to a change in the initializer
@@ -349,7 +373,7 @@ Zope Changes
       - Collector #185, 341: PCGIServer and FCGIServer logs corrected
         and now output extended information like HTTPServer does.
 
-      - Propertysheets: Ids like 'values' and 'items' are 
+      - Propertysheets: Ids like 'values' and 'items' are
         now forbidden as they break WebDAV functionality. Existing
         Propertysheets are not affected
 
