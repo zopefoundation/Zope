@@ -143,29 +143,13 @@ class TALParser(XMLParser):
         for key, value in attrlist:
             item = self.fixname(key), value
             if key[:nmetal] == metalprefix:
-                if key[nmetal:] not in KNOWN_METAL_ATTRIBUTES:
-                    self.attrerror(key, "METAL")
                 metaldict[key[nmetal:]] = value
                 if key[nmetal:] == "define-macro":
                     item = item + ("macroHack",)
             elif key[:ntal] == talprefix:
-                if key[ntal:] not in KNOWN_TAL_ATTRIBUTES:
-                    self.attrerror(key, "TAL")
                 taldict[key[ntal:]] = value
             fixedattrlist.append(item)
         return fixedattrlist, taldict, metaldict
-
-    def attrerror(self, key, mode):
-        if mode == "METAL":
-            raise METALError(
-                        "bad METAL attribute: %s;\nallowed are: %s" %
-                        (repr(key[len(ZOPE_METAL_NS)+1:]),
-                         string.join(KNOWN_METAL_ATTRIBUTES)))
-        if mode == "TAL":
-            raise TALError(
-                        "bad TAL attribute: %s;\nallowed are: %s" %
-                        (repr(key[len(ZOPE_TAL_NS)+1:]),
-                         string.join(KNOWN_TAL_ATTRIBUTES)))
 
     def xmlnsattrs(self):
         newlist = []
