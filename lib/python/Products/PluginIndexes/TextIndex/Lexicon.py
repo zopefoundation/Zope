@@ -98,6 +98,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IISet, IITreeSet
 
 from randid import randid
+from types import StringType
 
 class Lexicon(Persistent, Implicit):
     """Maps words to word ids and then some
@@ -198,7 +199,11 @@ class Lexicon(Persistent, Implicit):
         while not inverse.insert(wid, word):
             wid=randid()
 
-        self._lexicon[intern(word)] = wid
+        if isinstance(word,StringType):        
+            self._lexicon[intern(word)] = wid
+        else:
+            self._lexicon[word] = wid
+            
 
         return wid
 
