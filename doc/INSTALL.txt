@@ -126,7 +126,7 @@ Accessing Zope through the web
   you should be able to start using Zope through the web. Point your browser
   to either:
   
-    'http://localhost:8080/manage'
+    'http://localhost:9673/manage'
   
   if you are using ZopeHTTPServer or whatever the relevant URL is, if
   you are using PCGI. If you're using PCGI make sure to tack '/manage'
