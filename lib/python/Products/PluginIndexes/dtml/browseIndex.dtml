@@ -2,9 +2,26 @@
 <dtml-var manage_tabs>
 <dtml-call "REQUEST.RESPONSE.setHeader('Content-Type', 'text/html; charset=UTF-8')" >
 
+<p class="form-text">
+The index "&dtml-getId;" contains <dtml-var items fmt=collection-length thousands_commas> distinct values
+</p>
+
+<div class="form-text">
+  <dtml-in items previous size=20 start=query_start >
+      <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;">
+      [Previous <dtml-var previous-sequence-size> entries]
+    </a>
+  </dtml-in>
+  <dtml-in items next size=20 start=query_start >
+    <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;">
+      [Next <dtml-var next-sequence-size> entries]
+    </a>
+  </dtml-in>
+</div>
+
 
 <table border="1" align="center" width="100%" class="form-help">
-  <dtml-in items>
+  <dtml-in items start=query_start>
     <tr>
       <td>
         <dtml-if "meta_type in ('DateIndex',)">
