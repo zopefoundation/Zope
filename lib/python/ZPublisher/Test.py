@@ -162,9 +162,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.32 1999/08/04 12:01:20 jim Exp $
+$Id: Test.py,v 1.33 1999/08/04 18:05:29 jim Exp $
 '''
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -256,8 +256,6 @@ def publish_module(module_name,
                 stdout=response.stdout
             if request is None:
                 request=Request(stdin, environ, response)
-            request.processInputs()
-            response=request.response # could have changed!
             for k, v in extra.items(): request[k]=v
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:

@@ -82,9 +82,9 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
-from Publish import publish_module
+from Publish import publish_module, Retry
 
 def test(*args, **kw):
     global test

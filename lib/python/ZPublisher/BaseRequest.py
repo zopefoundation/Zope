@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -246,136 +246,135 @@ class BaseRequest:
     
         parents=request['PARENTS']
         object=parents[-1]
-        del parents[-1]
-    
-        if hasattr(object,'__roles__'): roles=object.__roles__
-        else:                           roles=UNSPECIFIED_ROLES
-    
-        # if the top object has a __bobo_traverse__ method, then use it
-        # to possibly traverse to an alternate top-level object.
-        if hasattr(object,'__bobo_traverse__'):
-            try: object=object.__bobo_traverse__(request)
-            except: pass            
-    
-        # Get default object if no path was specified:
-        if not path:
-            if not method: return response.forbiddenError(entry_name)
-            entry_name=method
-            try:
-                if hasattr(object,entry_name):
-                    response.setBase(URL)
-                    path=[entry_name]
-                else:
-                    try:
-                        if object.has_key(entry_name):
-                            path=[entry_name]
-                    except: pass
-            except: pass
-    
-        # Traverse the URL to find the object:
-    
-        if hasattr(object, '__of__'): 
-            # Try to bind the top-level object to the request
-            object=object.__of__(RequestContainer(REQUEST=request))
-    
-        steps=[]
-        path.reverse()
-        while path:
-            entry_name=path[-1]
-            del path[-1]
-            URL="%s/%s" % (URL,quote(entry_name))
-            got=0
-            if entry_name:
-                if entry_name[:1]=='_':
-                    if debug_mode:
-                        return response.debugError(
-                            "Object name begins with an underscore at: %s"
-                            % URL)
-                    else: return response.forbiddenError(entry_name)
-    
-                if hasattr(object,'__bobo_traverse__'):
-                    request['URL']=URL
-                    subobject=object.__bobo_traverse__(request,entry_name)
-                    if type(subobject) is type(()) and len(subobject) > 1:
-                        while len(subobject) > 2:
-                            parents.append(subobject[0])
-                            subobject=subobject[1:]
-                        object, subobject = subobject
-                else:
-                    try:
-                        # Note - this is necessary to support things like DAV.
-                        # We have to make sure that the target object is not
-                        # acquired if the request_method is other than GET or
-                        # POST. Otherwise, you could never use PUT to add a new
-                        # object named 'test' if an object 'test' existed above
-                        # it in the heirarchy -- you'd always get the existing
-                        # object :(
-                        if baseflag and hasattr(object, 'aq_base'):
-                            if hasattr(object.aq_base, entry_name):
-                                subobject=getattr(object, entry_name)
-                            else: raise AttributeError, entry_name
-                        else: subobject=getattr(object, entry_name)
-                    except AttributeError:
-                        got=1
-                        try: subobject=object[entry_name]
-                        except (KeyError, IndexError,
-                                TypeError, AttributeError):
-                            if debug_mode:
-                                return response.debugError(
-                                    "Cannot locate object at: %s" %URL) 
-                            else: return response.notFoundError(URL)
-    
+        del parents[:]
+        try:
+            # We build parents in the wrong order, so we
+            # need to make sure we reverse it when we're doe.
+            if hasattr(object,'__roles__'): roles=object.__roles__
+            else:                           roles=UNSPECIFIED_ROLES
+        
+            # if the top object has a __bobo_traverse__ method, then use it
+            # to possibly traverse to an alternate top-level object.
+            if hasattr(object,'__bobo_traverse__'):
+                try: object=object.__bobo_traverse__(request)
+                except: pass            
+        
+            # Get default object if no path was specified:
+            if not path:
+                if not method: return response.forbiddenError(entry_name)
+                entry_name=method
                 try:
-                    try: doc=subobject.__doc__
-                    except: doc=getattr(object, entry_name+'__doc__')
-                    if not doc: raise AttributeError, entry_name
-                except:
-                    if debug_mode:
-                        return response.debugError("Missing doc string at: %s"
-                                                   % URL)
-                    else: return response.notFoundError("%s" % (URL))
-
-                if hasattr(subobject,'__roles__'):
-                    roles=subobject.__roles__
-                else:
-                    if not got:
-                        roleshack=entry_name+'__roles__'
-                        if hasattr(object, roleshack):
-                            roles=getattr(object, roleshack)
-
-                # Promote subobject to object
-            
-                parents.append(object)
-                object=subobject
-
-                steps.append(entry_name)
-    
-                # Check for method:
-                if not path:
-                    if (method and hasattr(object,method)
-                        and entry_name != method
-                        and getattr(object, method) is not None
-                        ):
-                        request._hacked_path=1
-                        path=[method]
+                    if hasattr(object,entry_name):
+                        response.setBase(URL)
+                        path=[entry_name]
                     else:
-                        if (hasattr(object, '__call__') and
-                            hasattr(object.__call__,'__roles__')):
-                            roles=object.__call__.__roles__
-                        if request._hacked_path:
-                            i=rfind(URL,'/')
-                            if i > 0: response.setBase(URL[:i])
+                        try:
+                            if object.has_key(entry_name):
+                                path=[entry_name]
+                        except: pass
+                except: pass
+        
+            # Traverse the URL to find the object:
+        
+            if hasattr(object, '__of__'): 
+                # Try to bind the top-level object to the request
+                object=object.__of__(RequestContainer(REQUEST=request))
+        
+            steps=self.steps
+            path.reverse()
+            while path:
+                entry_name=path[-1]
+                del path[-1]
+                URL="%s/%s" % (URL,quote(entry_name))
+                got=0
+                if entry_name:
+                    if entry_name[:1]=='_':
+                        if debug_mode:
+                            return response.debugError(
+                                "Object name begins with an underscore at: %s"
+                                % URL)
+                        else: return response.forbiddenError(entry_name)
+        
+                    if hasattr(object,'__bobo_traverse__'):
+                        request['URL']=URL
+                        subobject=object.__bobo_traverse__(request,entry_name)
+                        if type(subobject) is type(()) and len(subobject) > 1:
+                            while len(subobject) > 2:
+                                parents.append(subobject[0])
+                                subobject=subobject[1:]
+                            object, subobject = subobject
+                    else:
+                        try:
+                            
+                            # Note - this is necessary to support
+                            # things like DAV.  We have to make sure
+                            # that the target object is not acquired
+                            # if the request_method is other than GET
+                            # or POST. Otherwise, you could never use
+                            # PUT to add a new object named 'test' if
+                            # an object 'test' existed above it in the
+                            # heirarchy -- you'd always get the
+                            # existing object :(
+                            
+                            if baseflag and hasattr(object, 'aq_base'):
+                                if hasattr(object.aq_base, entry_name):
+                                    subobject=getattr(object, entry_name)
+                                else: raise AttributeError, entry_name
+                            else: subobject=getattr(object, entry_name)
+                        except AttributeError:
+                            got=1
+                            try: subobject=object[entry_name]
+                            except (KeyError, IndexError,
+                                    TypeError, AttributeError):
+                                if debug_mode:
+                                    return response.debugError(
+                                        "Cannot locate object at: %s" %URL) 
+                                else: return response.notFoundError(URL)
+        
+                    try:
+                        try: doc=subobject.__doc__
+                        except: doc=getattr(object, entry_name+'__doc__')
+                        if not doc: raise AttributeError, entry_name
+                    except:
+                        if debug_mode:
+                            return response.debugError(
+                                "Missing doc string at: %s" % URL)
+                        else: return response.notFoundError("%s" % (URL))
     
+                    if hasattr(subobject,'__roles__'):
+                        roles=subobject.__roles__
+                    else:
+                        if not got:
+                            roleshack=entry_name+'__roles__'
+                            if hasattr(object, roleshack):
+                                roles=getattr(object, roleshack)
     
-        # THIS LOOKS WRONG!
-#        if entry_name != method and method != 'index_html':
-#            if debug_mode:
-#                response.debugError("Method %s not found at: %s"
-#                                    % (method,URL))
-#            else: response.notFoundError(method)
+                    # Promote subobject to object
+                
+                    parents.append(object)
+                    object=subobject
     
-        request.steps=steps
-        parents.reverse()
+                    steps.append(entry_name)
+        
+                    # Check for method:
+                    if not path:
+                        if (method and hasattr(object,method)
+                            and entry_name != method
+                            and getattr(object, method) is not None
+                            ):
+                            request._hacked_path=1
+                            path=[method]
+                        else:
+                            if (hasattr(object, '__call__') and
+                                hasattr(object.__call__,'__roles__')):
+                                roles=object.__call__.__roles__
+                            if request._hacked_path:
+                                i=rfind(URL,'/')
+                                if i > 0: response.setBase(URL[:i])
+        
+        finally:
+            # We need to MAKE SURE this happens due to new error handling
+            parents.reverse()
     
         # Do authorization checks
         user=groups=None
@@ -448,6 +447,16 @@ class BaseRequest:
     
         return object
 
+    retry_count=0
+    def supports_retry(self): return 0
+
+    _held=()
+    def _hold(self, object):
+        """Hold a reference to an object to delay it's destruction until mine
+        """
+        self._held=self._held+(object,)
+
+    
 def old_validation(groups, request, auth,
                    roles=UNSPECIFIED_ROLES):
 

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.134 1999/08/04 12:01:20 jim Exp $"""
-__version__='$Revision: 1.134 $'[11:-2]
+$Id: Publish.py,v 1.135 1999/08/04 18:05:28 jim Exp $"""
+__version__='$Revision: 1.135 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -93,6 +93,10 @@ from Response import Response
 from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
+
+class Retry(Exception):
+    """Raise this to retry a request
+    """
 
 def call_object(object, args, request):
     result=apply(object,args) # Type s<cr> to step into published object.
@@ -113,56 +117,125 @@ def publish(request, module_name, after_list, debug=0,
             mapply=mapply,
             ):
 
-    request_get=request.get
-    response=request.response
+    (bobo_before, bobo_after, object, realm, debug_mode, err_hook,
+     have_transactions)= get_module_info(module_name)
 
-    # First check for "cancel" redirect:
-    cancel=''
-    if lower(strip(request_get('SUBMIT','')))=='cancel':
-        cancel=request_get('CANCEL_ACTION','')
-        if cancel: raise 'Redirect', cancel
+    parents=None
 
-    bobo_before, bobo_after, object, realm, debug_mode = get_module_info(
-        module_name)
+    try:
+        request.processInputs()
 
-    after_list[0]=bobo_after
-    if debug_mode: response.debug_mode=debug_mode
-    if realm and not request.get('REMOTE_USER',None):
-        response.realm=realm
+        request_get=request.get
+        response=request.response
+    
+        # First check for "cancel" redirect:
+        cancel=''
+        if lower(strip(request_get('SUBMIT','')))=='cancel':
+            cancel=request_get('CANCEL_ACTION','')
+            if cancel: raise 'Redirect', cancel
+    
+        after_list[0]=bobo_after
+        if debug_mode: response.debug_mode=debug_mode
+        if realm and not request.get('REMOTE_USER',None):
+            response.realm=realm
+    
+        if bobo_before is not None: bobo_before();
+    
+        # Get a nice clean path list:
+        path=strip(request_get('PATH_INFO'))
+    
+        request['PARENTS']=parents=[object]
+        
+        if have_transactions: get_transaction().begin()
+    
+        object=request.traverse(path)
+    
+        # Record transaction meta-data
+        if have_transactions:
+            get_transaction().note(request_get('PATH_INFO'))
+            auth_user=request_get('AUTHENTICATED_USER',None)
+            if auth_user is not None:
+                get_transaction().setUser(auth_user,
+                                          request_get('AUTHENTICATION_PATH'))
+    
+        result=mapply(object, request.args, request,
+                      call_object,1,
+                      missing_name, 
+                      dont_publish_class,
+                      request)
+    
+        if result is not response: response.setBody(result)
+    
+        if have_transactions: get_transaction().commit()
 
-    if bobo_before is not None: bobo_before();
+        return response
 
-    # Get a nice clean path list:
-    path=strip(request_get('PATH_INFO'))
+    except:
+        if err_hook is not None:
+            if parents: parents=parents[-1]
+            try:
+                return err_hook(parents, request,
+                                sys.exc_info()[0],
+                                sys.exc_info()[1],
+                                sys.exc_info()[2],
+                                )
+            except Retry:
+                # We need to try again....
+                if not request.supports_retry():
+                    return err_hook(parents, request,
+                                    sys.exc_info()[0],
+                                    sys.exc_info()[1],
+                                    sys.exc_info()[2],
+                                    )
+                return publish(request.retry(), module_name, after_list, debug)
+        else: raise
+            
 
-    request['PARENTS']=parents=[object]
+def publish_module(module_name,
+                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+                   environ=os.environ, debug=0, request=None, response=None):
+    must_die=0
+    status=200
+    after_list=[None]
+    try:
+        try:
+            if response is None:
+                response=Response(stdout=stdout, stderr=stderr)
+            else:
+                stdout=response.stdout
 
-    # Attempt to start a transaction:
-    try: transaction=get_transaction()
-    except: transaction=None
-    if transaction is not None: transaction.begin()
+            if request is None:
+                request=Request(stdin, environ, response)
 
-    object=request.traverse(path)
+            response = publish(request, module_name, after_list, debug=debug)
+        except SystemExit, v:
+            if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_traceback
+            response.exception(must_die)
+        except ImportError, v:
+            if type(v) is type(()) and len(v)==3: must_die=v
+            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_traceback
+            response.exception(1, v)
+        except:
+            response.exception()
+            status=response.getStatus()
 
-    # Record transaction meta-data
-    if transaction is not None:
-        get_transaction().note(request_get('PATH_INFO'))
-        auth_user=request_get('AUTHENTICATED_USER',None)
-        if auth_user is not None:
-            get_transaction().setUser(auth_user,
-                                      request_get('AUTHENTICATION_PATH'))
+        if response:
+            response=str(response)
+            if response:
+                stdout.write(response)
 
-    result=mapply(object, request.args, request,
-                  call_object,1,
-                  missing_name, 
-                  dont_publish_class,
-                  request)
+        # The module defined a post-access function, call it
+        if after_list[0] is not None: after_list[0]()
 
-    if result is not response: response.setBody(result)
+    finally:
+        if request is not None: request.other={}
 
-    if transaction: get_transaction().commit()
+    if must_die: raise must_die[0], must_die[1], must_die[2]
+    sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
+    return status
 
-    return response
 
 _l=allocate_lock()
 def get_module_info(module_name, modules={},
@@ -219,8 +292,15 @@ def get_module_info(module_name, modules={},
         elif hasattr(module,'web_objects'):
             object=module.web_objects
         else: object=module
+
+        error_hook=getattr(module,'zpublisher_exception_hook', None)
+
+        try: get_transaction()
+        except: have_transactions=0
+        else: have_transactions=1
     
-        info= (bobo_before, bobo_after, object, realm, debug_mode)
+        info= (bobo_before, bobo_after, object, realm, debug_mode,
+               error_hook, have_transactions)
     
         modules[module_name]=modules[module_name+'.cgi']=info
 
@@ -232,47 +312,3 @@ def get_module_info(module_name, modules={},
     finally:
         tb=None
         release()
-
-def publish_module(module_name,
-                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-                   environ=os.environ, debug=0, request=None, response=None):
-    must_die=0
-    status=200
-    after_list=[None]
-    try:
-        try:
-            if response is None:
-                response=Response(stdout=stdout, stderr=stderr)
-            else:
-                stdout=response.stdout
-            if request is None:
-                request=Request(stdin, environ, response)
-            request.processInputs()
-            response=request.response # could have changed!
-            response = publish(request, module_name, after_list, debug=debug)
-        except SystemExit, v:
-            if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_traceback
-            response.exception(must_die)
-        except ImportError, v:
-            if type(v) is type(()) and len(v)==3: must_die=v
-            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_traceback
-            response.exception(1, v)
-        except:
-            response.exception()
-            status=response.getStatus()
-        if response:
-            response=str(response)
-        if response: stdout.write(response)
-
-        # The module defined a post-access function, call it
-        if after_list[0] is not None: after_list[0]()
-
-    finally:
-        if request is not None: request.other={}
-
-    if must_die: raise must_die[0], must_die[1], must_die[2]
-    sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
-    return status
-

@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.16 1999/06/30 14:02:15 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: HTTPResponse.py,v 1.17 1999/08/04 18:05:27 jim Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -186,6 +186,7 @@ class HTTPResponse(BaseResponse):
     accumulated_headers=''
     body=''
     realm='Zope'
+    _error_format='text/html'
 
     def __init__(self,body='',status=200,headers=None,
                  stdout=sys.stdout, stderr=sys.stderr,):
@@ -207,6 +208,16 @@ class HTTPResponse(BaseResponse):
         self.cookies={}
         self.stdout=stdout
         self.stderr=stderr
+
+    def retry(self):
+        """Return a response object to be used in a retry attempt
+        """
+        
+        # This implementation is a bit lame, because it assumes that
+        # only stdout stderr were passed to the constructor. OTOH, I
+        # think that that's all that is ever passed.
+        
+        return self.__class__(stdout=self.stdout, stderr=self.stderr)
     
     def setStatus(self, status, reason=None):
         '''\

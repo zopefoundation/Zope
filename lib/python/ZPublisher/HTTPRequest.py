@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -170,8 +170,19 @@ class HTTPRequest(BaseRequest):
     _hacked_path=None
     args=()
 
+    retry_max_count=3
+    def supports_retry(self): return self.retry_count < self.retry_max_coun
+
+    def retry(self):
+        r=self.__class__(stdin=self.stdin,
+                         environ=self._orig_env,
+                         response=self.response.retry()
+                         )
+        r._held=self._held
+        return r
+
     def __init__(self, stdin, environ, response, clean=0):
-        
+        self._orig_env=environ
         # Avoid the overhead of scrubbing the environment in the
         # case of request cloning for traversal purposes. If the
         # clean flag is set, we know we can use the passed in
@@ -180,8 +191,64 @@ class HTTPRequest(BaseRequest):
         
         self.stdin=stdin
         self.environ=environ
+        have_env=environ.has_key
+        get_env=environ.get
         self.response=response
-        other=self.other={}
+        other=self.other={'RESPONSE': response}
+        self.form={}
+        self.steps=[]
+
+        ################################################################
+        # Get base info first. This isn't likely to cause
+        # errors and might be useful to error handlers.
+        b=script=strip(get_env('SCRIPT_NAME',''))
+        while b and b[-1]=='/': b=b[:-1]
+        p = rfind(b,'/')
+        if p >= 0: b=b[:p+1]
+        else: b=''
+        while b and b[0]=='/': b=b[1:]
+
+        server_url=get_env('SERVER_URL',None)
+        if server_url is not None:
+             server_url=strip(server_url)
+        else:
+             if have_env('HTTPS') and (
+                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
+                 server_url='https://'
+             elif (have_env('SERVER_PORT_SECURE') and 
+                   environ['SERVER_PORT_SECURE'] == "1"):
+                 server_url='https://'
+             else: server_url='http://'
+
+             if have_env('HTTP_HOST'):
+                 server_url=server_url+strip(environ['HTTP_HOST'])
+             else:
+                 server_url=server_url+strip(environ['SERVER_NAME'])
+                 server_port=environ['SERVER_PORT']
+                 if server_port!='80': server_url=server_url+':'+server_port
+             other['SERVER_URL']=server_url
+             
+        if server_url[-1:]=='/': server_url=server_url[:-1]
+                        
+        if b: self.base="%s/%s" % (server_url,b)
+        else: self.base=server_url
+        while script[:1]=='/': script=script[1:]
+        if script: script="%s/%s" % (server_url,script)
+        else:      script=server_url
+        other['URL']=self.script=script
+
+        ################################################################
+        # Cookie values should *not* be appended to existing form
+        # vars with the same name - they are more like default values
+        # for names not otherwise specified in the form.
+        cookies={}
+        k=get_env('HTTP_COOKIE','')
+        if k:
+            parse_cookie(k, cookies)
+            for k,item in cookies.items():
+                if not other.has_key(k):
+                    other[k]=item
+        self.cookies=cookies
     
     def processInputs(
         self,
@@ -201,8 +268,8 @@ class HTTPRequest(BaseRequest):
         ):
         """Process request inputs
 
-        We need to delay input parsing so that it is done under publisher control for
-        error handling prposes.
+        We need to delay input parsing so that it is done under
+        publisher control for error handling purposes.
         """
         response=self.response
         environ=self.environ
@@ -216,8 +283,9 @@ class HTTPRequest(BaseRequest):
             response._auth=1
             del environ['HTTP_AUTHORIZATION']
 
-        form={}
+        form=self.form
         other=self.other
+
         meth=None
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
@@ -229,7 +297,8 @@ class HTTPRequest(BaseRequest):
                 global xmlrpc
                 if xmlrpc is None: import xmlrpc
                 meth, self.args = xmlrpc.parse_input(fs.value)
-                response=self.response=xmlrpc.response(response)
+                response=xmlrpc.response(response)
+                other['RESPONSE']=self.response=response
                 other['REQUEST_METHOD']='' # We don't want index_html!
             else:
                 self._file=fs.file
@@ -461,23 +530,31 @@ class HTTPRequest(BaseRequest):
                                    if getattr(x, '__class__',0) is record:
                                        # if the x is a record
                                        for k, v in x.__dict__.items():
-                                           # loop through each attribute and value in
+                                           
+                                           # loop through each
+                                           # attribute and value in
                                            # the record
+                                           
                                            for y in l:
-                                               # loop through each record in the form
-                                               # list if it doesn't have the attributes
-                                               # in the default dictionary, set them
+                                               
+                                               # loop through each
+                                               # record in the form
+                                               # list if it doesn't
+                                               # have the attributes
+                                               # in the default
+                                               # dictionary, set them
+                                               
                                                if not hasattr(y, k):
                                                    setattr(y, k, v)
                                    else:
-                                   # x is not a record
+                                       # x is not a record
                                        if not a in l:
                                            l.append(a)
                                form[keys] = l
                         else:
                             # The form has the key, the key is not mapped
                             # to a record or sequence so do nothing
-                            pass 
+                            pass
                                 
             # Convert to tuples
             if tuple_items:
@@ -528,57 +605,6 @@ class HTTPRequest(BaseRequest):
             else: path=''
             other['PATH_INFO']=path="%s/%s" % (path,meth)
             self._hacked_path=1
-
-        # Cookie values should *not* be appended to existing form
-        # vars with the same name - they are more like default values
-        # for names not otherwise specified in the form.
-        cookies={}
-        if environ.has_key('HTTP_COOKIE'):
-            parse_cookie(environ['HTTP_COOKIE'],cookies)
-            for k,item in cookies.items():
-                if not other.has_key(k):
-                    other[k]=item
-
-        self.form=form
-        self.cookies=cookies
-        other['RESPONSE']=response
-
-        have_env=environ.has_key
-
-        b=script=strip(environ['SCRIPT_NAME'])
-        while b and b[-1]=='/': b=b[:-1]
-        p = rfind(b,'/')
-        if p >= 0: b=b[:p+1]
-        else: b=''
-        while b and b[0]=='/': b=b[1:]
-        
-        if have_env('SERVER_URL'):
-             server_url=strip(environ['SERVER_URL'])
-        else:
-             if have_env('HTTPS') and (
-                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
-                 server_url='https://'
-             elif (have_env('SERVER_PORT_SECURE') and 
-                   environ['SERVER_PORT_SECURE'] == "1"):
-                 server_url='https://'
-             else: server_url='http://'
-
-             if have_env('HTTP_HOST'):
-                 server_url=server_url+strip(environ['HTTP_HOST'])
-             else:
-                 server_url=server_url+strip(environ['SERVER_NAME'])
-                 server_port=environ['SERVER_PORT']
-                 if server_port!='80': server_url=server_url+':'+server_port
-             other['SERVER_URL']=server_url
-             
-        if server_url[-1:]=='/': server_url=server_url[:-1]
-                        
-        if b: self.base="%s/%s" % (server_url,b)
-        else: self.base=server_url
-        while script[:1]=='/': script=script[1:]
-        if script: script="%s/%s" % (server_url,script)
-        else:      script=server_url
-        other['URL']=self.script=script
 
     def resolve_url(self, url):
         # Attempt to resolve a url into an object in the Zope

@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.3 1999/03/18 22:34:53 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: BaseResponse.py,v 1.4 1999/08/04 18:05:26 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -98,6 +98,7 @@ class BaseResponse:
     """
     debug_mode=None
     _auth=None
+    _error_format='text/plain'
 
     def __init__(self, stdout, stderr,
                  body='', headers=None, status=None, cookies=None):
