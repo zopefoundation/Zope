@@ -377,7 +377,7 @@ def server_info(old, v, offset=0):
         
     try: 
         v=string.atoi(v)
-        if v < 1: raise 'Invalid port', v
+        if v < 0: raise 'Invalid port', v
         v=v+offset
     except: raise 'Invalid port', v
 
@@ -436,7 +436,7 @@ try:
         elif o=='-S': sys.ZMANAGED=1
         elif o=='-X':
             MONITOR_PORT=HTTP_PORT=FTP_PORT=FCGI_PORT=0
-            PCFI_FILE=''
+            PCGI_FILE=''
         elif o=='-m':
             MONITOR_PORT=server_info(MONITOR_PORT, v)
         elif o=='-w':
