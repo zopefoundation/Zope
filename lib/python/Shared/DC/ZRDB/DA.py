@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.35 1998/02/20 22:25:35 jim Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: DA.py,v 1.36 1998/02/23 14:41:26 jim Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -109,6 +109,7 @@ class DA(
 	self.max_cache_, self.cache_time_ = max_cache, cache_time
 	self._v_cache={}, IOBTree.Bucket()
 	self.class_name_, self.class_file_ = class_name, class_file
+	if modules.has_key(class_file): del modules[class_file]
 	getBrain(self)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
     
@@ -304,8 +305,9 @@ class Traverse(ExtensionClass.Base):
 
 braindir=SOFTWARE_HOME+'/Extensions'    
 
+modules={}
+
 def getBrain(self,
-	     modules={},
 	     ):
     'Check/load a class'
     
@@ -341,6 +343,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.36  1998/02/23 14:41:26  jim
+# Added code to remove module from cache on reload.
+#
 # Revision 1.35  1998/02/20 22:25:35  jim
 # Fixed up traversal machinery to work correctly with acquisition,
 # especially method acquisition.
