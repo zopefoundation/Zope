@@ -14,7 +14,7 @@ Testrunner will look for and execute test suites that follow some simple
 conventions. Test modules should have a name prefixed with 'test', such as
 'testMyModule.py', and test modules are expected to define a module function
 named 'test_suite' that returns a PyUnit TestSuite object. By convention,
-we put test suites in 'test' subdirectories of the packages they test.
+we put test suites in 'tests' subdirectories of the packages they test.
 
 Testrunner is used to run all checked in test suites before releases are
 made, and can be used to quickly run a particular suite or all suites in
