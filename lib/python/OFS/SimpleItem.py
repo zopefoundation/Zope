@@ -89,18 +89,19 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.27 1998/12/04 20:15:30 jim Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: SimpleItem.py,v 1.28 1999/01/18 15:30:01 brian Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
 from CopySupport import CopySource
 from string import join, lower
 from types import InstanceType, StringType
+from webdav.resource import Resource
 
 HTML=Globals.HTML
 
-class Item(CopySource, App.Management.Tabs):
+class Item(CopySource, App.Management.Tabs, Resource):
     """A simple Principia object. Not Folderish."""
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
@@ -213,6 +214,12 @@ class Item(CopySource, App.Management.Tabs):
     def manage(self, URL1):
         " "
         raise 'Redirect', "%s/manage_main" % URL1 
+
+    # This keeps simple items from acquiring their parents
+    # objectValues, etc., when used in simple tree tags.
+    def objectValues(self, spec=None):
+        return ()
+    objectIds=objectItems=objectValues
 
 class Item_w__name__(Item):
     """Mixin class to support common name/id functions"""
