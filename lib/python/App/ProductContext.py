@@ -166,8 +166,10 @@ class ProductContext:
 
             fd = pack.__FactoryDispatcher__ = __FactoryDispatcher__
 
-        if not hasattr(pack, '_m'): pack._m=fd.__dict__
-        m=pack._m
+        if not hasattr(pack, '_m'):
+            pack._m = AttrDict(fd)
+
+        m = pack._m
 
         if interfaces is _marker:
             if instance_class is None:
@@ -341,3 +343,11 @@ class ProductContext:
                     continue
                 ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
+
+class AttrDict:
+
+    def __init__(self, ob):
+        self.ob = ob
+
+    def __setitem__(self, name, v):
+        setattr(self.ob, name, v)

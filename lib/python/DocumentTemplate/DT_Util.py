@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.89 2003/02/27 17:31:27 fdrake Exp $'''
-__version__='$Revision: 1.89 $'[11:-2]
+'''$Id: DT_Util.py,v 1.90 2003/11/28 16:45:22 jim Exp $'''
+__version__='$Revision: 1.90 $'[11:-2]
 
 import re, os
 from html_quote import html_quote, ustr # for import by other modules, dont remove!
@@ -42,8 +42,9 @@ try:
     import ExtensionClass
     from cDocumentTemplate import InstanceDict, TemplateDict, \
          render_blocks, safe_callable, join_unicode
-except: from pDocumentTemplate import InstanceDict, TemplateDict, \
-        render_blocks, safe_callable, join_unicode
+except:
+    from pDocumentTemplate import InstanceDict, TemplateDict, \
+         render_blocks, safe_callable, join_unicode
 
 functype = type(int_param)
 class NotBindable:
@@ -51,21 +52,18 @@ class NotBindable:
     def __init__(self, f):
         self.__call__ = f
 
-d = TemplateDict.__dict__
 for name, f in safe_builtins.items() + utility_builtins.items():
     if type(f) is functype:
-        d[name] = NotBindable(f)
-    else:
-        d[name] = f
+        f = NotBindable(f)
+    setattr(TemplateDict, name, f)
 
 if LIMITED_BUILTINS:
     # Replace certain builtins with limited versions.
     from RestrictedPython.Limits import limited_builtins
     for name, f in limited_builtins.items():
         if type(f) is functype:
-            d[name] = NotBindable(f)
-        else:
-            d[name] = f
+            f = NotBindable(f)
+        setattr(TemplateDict, name, f)
 
 try:
     # Wrap the string module so it can deal with TaintedString strings.
@@ -104,7 +102,7 @@ try:
                 retval = TaintedString(retval)
             return retval
 
-    d['string'] = StringModuleWrapper()
+    TemplateDict.string = StringModuleWrapper()
 
 except ImportError:
     # Use the string module already defined in RestrictedPython.Utilities
@@ -138,8 +136,8 @@ def careful_hasattr(md, inst, name):
     else:
         return 1
 
-d['getattr']=careful_getattr
-d['hasattr']=careful_hasattr
+TemplateDict.getattr = careful_getattr
+TemplateDict.hasattr = careful_hasattr
 
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whose attributes are
@@ -152,7 +150,7 @@ def namespace(self, **kw):
         information may contain more details.)'''
     return self(**kw)
 
-d['namespace']=namespace
+TemplateDict.namespace = namespace
 
 def render(self, v):
     "Render an object in the way done by the 'name' attribute"
@@ -167,7 +165,7 @@ def render(self, v):
                 v = v()
     return v
 
-d['render']=render
+TemplateDict.render = render
 
 
 class Eval(RestrictionCapableEval):

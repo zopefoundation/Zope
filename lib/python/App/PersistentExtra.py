@@ -16,7 +16,7 @@ from Persistence import Persistent
 import Globals
 from DateTime import DateTime
 
-Persistent.__dict__['__class_init__']=default__class_init__
+Persistent.__class_init__ = default__class_init__
 
 class PersistentUtil:
 
@@ -69,4 +69,7 @@ class PersistentUtil:
         except: return 0
         return 1
 
-for k, v in PersistentUtil.__dict__.items(): Persistent.__dict__[k]=v
+for k, v in PersistentUtil.__dict__.items():
+    if k[0] != '_':
+        setattr(Persistent, k, v)
+

@@ -46,11 +46,13 @@ def default__class_init__(self):
                 d['__name__']=name
             if name=='manage' or name[:7]=='manage_':
                 name=name+'__roles__'
-                if not have(name): dict[name]=('Manager',)
+                if not have(name):
+                    setattr(self, name, ('Manager',))
         elif name=='manage' or name[:7]=='manage_' and type(v) is ft:
             name=name+'__roles__'
-            if not have(name): dict[name]='Manager',
-
+            if not have(name):
+                setattr(self, name, ('Manager',))
+                
     # Look for a SecurityInfo object on the class. If found, call its
     # apply() method to generate __ac_permissions__ for the class. We
     # delete the SecurityInfo from the class dict after it has been
@@ -59,7 +61,7 @@ def default__class_init__(self):
         if hasattr(value, '__security_info__'):
             security_info=value
             security_info.apply(self)
-            del dict[key]
+            delattr(self, key)
             break
 
     if self.__dict__.has_key('__ac_permissions__'):
@@ -72,4 +74,4 @@ def default__class_init__(self):
             else:
                 pr=PermissionRole(pname)
             for mname in mnames:
-                dict[mname+'__roles__']=pr
+                setattr(self, mname+'__roles__', pr)
