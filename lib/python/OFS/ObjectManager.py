@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.12 1997/09/25 15:43:35 brian Exp $"""
+$Id: ObjectManager.py,v 1.13 1997/09/25 15:44:18 brian Exp $"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -296,9 +296,8 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def manage_addProperty(self,id,value,type,REQUEST):
 	"""Add a new property (www)"""
-#	try:    value=type_converters[type](value)
-#	except: pass
-        value=type_converters[type](value)
+	try:    value=type_converters[type](value)
+	except: pass
 	self._setProperty(id,value,type)
 	return self.manage_propertiesForm(self,REQUEST)
 
@@ -395,6 +394,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.13  1997/09/25 15:44:18  brian
+# *** empty log message ***
+#
 # Revision 1.12  1997/09/25 15:43:35  brian
 # Added document_id, document_title
 #
