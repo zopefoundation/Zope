@@ -102,6 +102,9 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+
+     - Collector #1260: Testing/__init__.py no longer changes the
+       INSTANCE_HOME.
     
      - App.config.setConfiguration() did not update the legacy source
        for debug_mode, Globals.DevelopmentMode.

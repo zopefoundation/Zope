@@ -47,7 +47,10 @@ def startup():
     # Open the database
     try:
         # Try to use custom storage
-        m=imp.find_module('custom_zodb',[getConfiguration().instancehome])
+        try:
+            m=imp.find_module('custom_zodb',[getConfiguration().testinghome])
+        except:
+            m=imp.find_module('custom_zodb',[getConfiguration().instancehome])
     except:
         # if there is no custom_zodb, use the config file specified databases
         configuration = getConfiguration()

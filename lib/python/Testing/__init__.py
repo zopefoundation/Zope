@@ -13,7 +13,7 @@
 """
 Set up testing environment
 
-$Id: __init__.py,v 1.8 2003/02/11 17:17:08 fdrake Exp $
+$Id: __init__.py,v 1.9 2004/03/22 16:25:02 shh Exp $
 """
 import os
 
@@ -21,8 +21,8 @@ import App.config
 
 cfg = App.config.getConfiguration()
 
-# Set the INSTANCE_HOME to the Testing package directory
-cfg.instancehome = os.path.dirname(__file__)
+# Set testinghome to the Testing package directory
+cfg.testinghome = os.path.dirname(__file__)
 
 # Make sure this change is propogated to all the legacy locations for
 # this information.
