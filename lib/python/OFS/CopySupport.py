@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -391,12 +391,34 @@ class CopyContainer(ExtensionClass.Base):
                   action='manage_main')
 
         method_name=None
+        mt_permission=None
         meta_types=absattr(self.all_meta_types)
         for d in meta_types:
             if d['name']==mt:
                 method_name=d['action']
+                mt_permission=d.get( 'permission', None )
                 break
 
+        if mt_permission is not None:
+            try:    parent=object.aq_inner.aq_parent
+            except: parent=None
+            if getSecurityManager().checkPermission( mt_permission, parent ):
+                if not validate_src:
+                    return
+                # Ensure the user is allowed to access the object on the
+                # clipboard.
+                try:    parent=object.aq_inner.aq_parent
+                except: parent=None
+                if getSecurityManager().validate(None, parent, None, object):
+                    return
+                raise 'Unauthorized', absattr(object.id)
+            else:
+                raise 'Unauthorized', mt_permission
+        #
+        #   XXX:    Ancient cruft, left here in true co-dependent fashion
+        #           to keep from breaking old products which don't put
+        #           permissions on their metadata registry entries.
+        #
         if method_name is not None:
             meth=self.unrestrictedTraverse(method_name)
             try:    parent=object.aq_inner.aq_parent
