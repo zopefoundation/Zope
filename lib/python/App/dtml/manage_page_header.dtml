@@ -6,7 +6,7 @@
 </dtml-unless>
 <meta http-equiv="content-type" content="text/html;charset=&dtml-management_page_charset;" />
 <dtml-call "RESPONSE.setHeader('content-type','text/html;charset='+management_page_charset)">
-<title><dtml-if title>&dtml-title;</dtml-if></title>
+<title><dtml-if title_or_id><dtml-var title_or_id><dtml-else>Zope</dtml-if></title>
 <dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
      is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
      use_css="REQUEST.get('zmi_use_css', '1')"
