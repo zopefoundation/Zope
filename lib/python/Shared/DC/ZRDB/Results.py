@@ -1,10 +1,14 @@
-
+import ExtensionClass
 from string import strip, lower, upper
 from Acquisition import Implicit
 from Record import Record
 
 record_classes={}
 
+class SQLAlias(ExtensionClass.Base):
+    def __init__(self, name): self._n=name
+    def __of__(self, parent): return getattr(parent, self._n)
+ 
 class NoBrains: pass
 
 class Results:
@@ -20,6 +24,7 @@ class Results:
         self._names=names=[]
 	self._schema=schema={}
         self._data_dictionary=dd={}
+        aliases=[]
         i=0
         for item in items:
             name=item['name']
@@ -29,8 +34,10 @@ class Results:
 	    if schema.has_key(name):
 		raise ValueError, 'Duplicate column name, %s' % name
 	    schema[name]=i
-	    schema[lower(name)]=i
-	    schema[upper(name)]=i
+            n=lower(name)
+            if n != name: aliases.append((n, SQLAlias(name)))
+            n=upper(name)
+            if n != name: aliases.append((n, SQLAlias(name)))
             dd[name]=item
             names.append(name)
 	    i=i+1
@@ -49,6 +56,11 @@ class Results:
 	    for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
 		setattr(r,k,getattr(Record,k))
 		record_classes[names,brains]=r
+
+            # Add SQL Aliases
+            d=r.__dict__
+            for k, v in aliases:
+                if not hasattr(r,k): d[k]=v
 
 	    if hasattr(brains, '__init__'):
 		binit=brains.__init__

@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.17 1998/07/12 15:58:57 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: RDB.py,v 1.18 1998/07/12 16:46:40 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -41,6 +41,10 @@ Parsers={'n': atof,
 
 record_classes={}
 
+class SQLAlias(ExtensionClass.Base):
+    def __init__(self, name): self._n=name
+    def __of__(self, parent): return getattr(parent, self._n)
+ 
 class NoBrains: pass
 
 class DatabaseResults:
@@ -63,6 +67,7 @@ class DatabaseResults:
 	self._names=names=split(line,'\t')
 	if not names: raise ValueError, 'No column names'
 
+        aliases=[]
 	self._schema=schema={}
 	i=0
 	for name in names:
@@ -72,8 +77,10 @@ class DatabaseResults:
 	    if schema.has_key(name):
 		raise ValueError, 'Duplicate column name, %s' % name
 	    schema[name]=i
-	    schema[lower(name)]=i
-	    schema[upper(name)]=i
+            n=lower(name)
+            if n != name: aliases.append((n, SQLAlias(name)))
+            n=upper(name)
+            if n != name: aliases.append((n, SQLAlias(name)))
 	    i=i+1
 
 	self._nv=nv=len(names)
@@ -129,6 +136,11 @@ class DatabaseResults:
 	    for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
 		setattr(r,k,getattr(Record,k))
 		record_classes[names,brains]=r
+
+            # Add SQL Aliases
+            d=r.__dict__
+            for k, v in aliases:
+                if not hasattr(r,k): d[k]=v
 
 	    if hasattr(brains, '__init__'):
 		binit=brains.__init__
@@ -200,6 +212,9 @@ File=DatabaseResults
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.18  1998/07/12 16:46:40  jim
+# Redid way SQL aliases are handled.
+#
 # Revision 1.17  1998/07/12 15:58:57  jim
 # Made row data attributes case-insensitive.
 #
