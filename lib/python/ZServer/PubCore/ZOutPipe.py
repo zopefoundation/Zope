@@ -58,3 +58,18 @@ class OutputPipe:
             else:                    self._buf=[]
             return join(b,'')
         finally: self._r()
+        
+    def ready(self):
+        """Pipe status, medusa producer style.
+        
+        Return 1 if the pipe is open and has data.
+        Return None if the pipe is open but has no data.
+        Return 1 if the pipe is closed.
+        """
+        self._a()
+        try:
+            b=self._buf
+            if b is None: return 1
+            if not b: return None
+            return 1
+        finally: self._r()
