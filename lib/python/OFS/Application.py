@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.47 1998/02/10 18:25:42 jim Exp $'''
-__version__='$Revision: 1.47 $'[11:-2]
+$Id: Application.py,v 1.48 1998/02/12 16:24:52 brian Exp $'''
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -346,6 +346,7 @@ def lic_check(product_name):
 		    __import__(m)
 		setattr(sys.modules[m], c, Expired)
 	    return 0
+	return 1
 
 
 
@@ -375,6 +376,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.48  1998/02/12 16:24:52  brian
+# Fixed eval mode bug ;(
+#
 # Revision 1.47  1998/02/10 18:25:42  jim
 # Re-did the way permissions are handled in install_products, once
 # again.
