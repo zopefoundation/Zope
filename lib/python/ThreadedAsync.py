@@ -84,7 +84,7 @@
 ##############################################################################
 """Utility module to help manage the asyncore mainloop in a multi-threaded app
 """
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import thread
 import asyncore
@@ -96,7 +96,7 @@ _loop_callbacks=[]
 def register_loop_callback(callback, args=(), kw=None):
     _loop_lock.acquire()
     try:
-        if _looping: apply(cb, (map,)+args, kw or {})
+        if _looping: apply(callback, (map,)+args, kw or {})
         else: _loop_callbacks.append((callback, args, kw))
     finally: _loop_lock.release()
 
