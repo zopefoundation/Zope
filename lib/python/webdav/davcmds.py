@@ -85,9 +85,9 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
-import sys, os, string
+import sys, os, string, regex
 from common import absattr, aq_base, urlfix
 from OFS.PropertySheets import DAVProperties
 from xmltools import XmlParser
@@ -103,6 +103,7 @@ class DAVProps(DAVProperties):
         self.__obj__=obj
     def v_self(self):
         return self.__obj__
+
 
 
 
@@ -149,6 +150,7 @@ class PropFind:
             result=StringIO()
             depth=self.depth
             url=urlfix(self.request['URL'], 'PROPFIND')
+            url=rel_url(url)
             result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
                          '<d:multistatus xmlns:d="DAV:">\n')
         iscol=hasattr(obj, '__dav_collection__')
@@ -339,3 +341,12 @@ class Lock:
         self.type=lt.elements()[0].name()
         lo=info.elements('owner', ns=dav)
         if lo: self.owner=lo[0].toxml()
+
+
+
+def rel_url(url, r=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)?',
+                                 regex.casefold)):
+    if r.match(url) >= 0:
+        host,port,uri=r.group(1,2,3)
+        return uri or '/'
+    else: raise ValueError, url
