@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -266,7 +266,7 @@ class CopyContainer(ExtensionClass.Base):
                 ob.manage_changeOwnershipType(explicit=0)
 
             if REQUEST is not None:
-                REQUEST['RESPONSE'].setCookie('cp_', 'deleted',
+                REQUEST['RESPONSE'].setCookie('__cp', 'deleted',
                                     path='%s' % REQUEST['SCRIPT_NAME'],
                                     expires='Wed, 31-Dec-97 23:59:59 GMT')
                 return self.manage_main(self, REQUEST, update_menu=1,
