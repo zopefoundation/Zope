@@ -68,7 +68,7 @@ modified objects that were modified by a selected transaction.
 </dtml-if>
     <td width="16" align="left" valign="top">
     <input type="checkbox" name="transaction_info:list" 
-     value="<dtml-var id html_quote>" />
+     value="&dtml-id;" />
     </td>
     <td align="left" valign="top">
     <div class="list-item">
