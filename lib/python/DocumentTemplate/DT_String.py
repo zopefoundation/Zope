@@ -25,13 +25,15 @@ class String:
     def tagre(self):
 	return regex.symcomp(
 	    '%('                                     # beginning
-	    '\(<name>[a-z]+\)'                       # tag name
-	    '[\0- ]*'                                # space after tag name
+	    '\(<name>[a-zA-Z0-9_/.-]+\)'                       # tag name
+	    '\('
+	    '[\0- ]+'                                # space after tag name
 	    '\(<args>\([^)"]+\("[^"]*"\)?\)*\)'      # arguments
+	    '\)?'
 	    ')\(<fmt>[0-9]*[.]?[0-9]*[a-z]\|[]![]\)' # end
 	    , regex.casefold) 
 
-    def parseTag(self, tagre, command=None):
+    def parseTag(self, tagre, command=None, sargs=''):
 	"""Parse a tag using an already matched re
 
 	Return: tag, args, command, coname
@@ -44,13 +46,23 @@ class String:
 	         or None otherwise
 	"""
 	tag, name, args, fmt =tagre.group(0, 'name', 'args', 'fmt')
+	args=args and strip(args) or ''
 
 	if fmt==']':
 	    if not command or name != command.name:
-		raise ParseError, 'unexpected end tag'
+		raise ParseError, ('unexpected end tag', tag)
 	    return tag, args, None, None
 	elif fmt=='[' or fmt=='!':
 	    if command and name in command.blockContinuations:
+
+		if name=='else' and args:
+		    # Waaaaaah! Have to special case else because of
+		    # old else start tag usage. Waaaaaaah!
+		    l=len(args)
+		    if not (args==sargs or
+			    args==sargs[:l] and sargs[l:l+1] in ' \t\n'):
+			return tag, args, self.commands[name], None
+
 		return tag, args, None, name
 
 	    try: return tag, args, self.commands[name], None
@@ -58,7 +70,7 @@ class String:
 		raise ParseError, ('Unexpected tag', tag)
         else:
 	    # Var command
-	    args="%s %s" % (name, args)
+	    args=args and ("%s %s" % (name, args)) or name
 	    return tag, args, Var, None
 
     def varExtra(self,tagre): return tagre.group('fmt')
@@ -80,10 +92,12 @@ class String:
 		start=self.parse_block(text, start, result, tagre,
 				       tag, l, args, command)
 	    else:
-		if command is Var:
-		    result.append(command(args, self.varExtra(tagre)))
-		else:
-		    result.append(command(args))
+		try:
+		    if command is Var:
+			result.append(command(args, self.varExtra(tagre)))
+		    else:
+			result.append(command(args))
+		except ParseError, m: self.parse_error(m,tag,text,l)
 
 	    l=tagre.search(text,start)
 
@@ -106,19 +120,21 @@ class String:
         tname=scommand.name
 	sname=stag
 	sstart=start
+	sa=sargs
         while 1:
 
 	    l=tagre.search(text,start)
 	    if l < 0: self.parse_error('No closing tag', stag, text, sloc)
 
-	    try: tag, args, command, coname= self.parseTag(tagre,scommand)
+	    try: tag, args, command, coname= self.parseTag(tagre,scommand,sa)
 	    except ParseError, m: self.parse_error(m[0],m[1], text, l)
 	    
 	    if command:
 		start=l+len(tag)
 		if hasattr(command, 'blockContinuations'):
 		    # New open tag.  Need to find closing tag.
-		    start=self.parse_close(text, start, tagre, tag, l, command)
+		    start=self.parse_close(text, start, tagre, tag, l,
+					   command, args)
 	    else:
 		# Either a continuation tag or an end tag
 		section=self.SubTemplate(sname)
@@ -134,22 +150,25 @@ class String:
 		    sargs=args
 		    sstart=start
 		else:
-		    result.append(scommand(blocks))
+		    try: result.append(scommand(blocks))
+		    except ParseError, m: self.parse_error(m,stag,text,l)
+
 		    return start
     
-    def parse_close(self, text, start, tagre, stag, sloc, scommand):
+    def parse_close(self, text, start, tagre, stag, sloc, scommand, sa):
         while 1:
 	    l=tagre.search(text,start)
 	    if l < 0: self.parse_error('No closing tag', stag, text, sloc)
 
-	    try: tag, args, command, coname= self.parseTag(tagre,scommand)
+	    try: tag, args, command, coname= self.parseTag(tagre,scommand,sa)
 	    except ParseError, m: self.parse_error(m[0],m[1], text, l)
 
 	    start=l+len(tag)
 	    if command:
 		if hasattr(command, 'blockContinuations'):
 		    # New open tag.  Need to find closing tag.
-		    start=self.parse_close(text, start, tagre, tag, l, command)
+		    start=self.parse_close(text, start, tagre, tag, l,
+					   command,args)
 	    elif not coname: return start
 
     shared_globals={}

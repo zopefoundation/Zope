@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.1 1997/08/27 18:55:43 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.2 1997/09/02 20:35:09 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -133,7 +133,9 @@ def parse_params(text,
 	l=len(unparmre.group(1))
 	if result.has_key(''):
 	    if parms.has_key(name): result[name]=parms[name]
-	    else: raise InvalidParameter, name
+	    else: raise ParseError, (
+		'Invalid parameter name, %s <!--%s--> <!--u-->'
+		% (name, text))
 	else:
 	    result['']=name
 	return apply(parse_params,(text[l:],result),parms)
@@ -141,7 +143,8 @@ def parse_params(text,
 	if not text or not strip(text): return result
 	raise InvalidParameter, text
     
-    if not parms.has_key(name): raise ParseError, name
+    if not parms.has_key(name):
+	raise ParseError, 'Invalid parameter name, %s <!--%s-->' % (name, text)
 
     result[name]=value
 
@@ -154,6 +157,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.2  1997/09/02 20:35:09  jim
+# Various fixes to parsing code.
+#
 # Revision 1.1  1997/08/27 18:55:43  jim
 # initial
 #
