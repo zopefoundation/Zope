@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.12 1997/07/18 14:43:24 jim Exp $"
+"\n$Id: Trie.c,v 1.13 1997/09/10 17:27:14 jim Exp $"
 ;
 
 
@@ -395,7 +395,7 @@ static struct PyMethodDef Trie_methods[] = {
    "__setstate__(v) -- Set the persistent state of the trie"},
 #ifdef PERSISTENT
   {"_p___reinit__",	(PyCFunction)Trie__p___reinit__,	METH_VARARGS,
-   "_p___reinit__(oid,jar,copy) -- Reinitialize from a newly created copy"},
+   "_p___reinit__() -- Reinitialize from a newly created copy"},
 #endif
   {"keys", 		(PyCFunction)Trie_keys,		METH_VARARGS,
    "keys() -- Get the keys of the trie"},
@@ -747,7 +747,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.12 $";
+  char *rev="$Revision: 1.13 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -787,6 +787,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.13  1997/09/10 17:27:14  jim
+  Fixed doc string.
+
   Revision 1.12  1997/07/18 14:43:24  jim
   Added cPersistent, PER_DEL invocation to destructor.
   Fixed memory leaks in cset.
