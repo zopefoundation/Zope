@@ -169,14 +169,13 @@ class ZopeDistribution(distutils.core.Distribution):
 BASE_DIR=os.path.dirname(os.path.abspath(sys.argv[0]))
 
 AUTHOR = 'Zope Corporation and Contributors'
-EXTENSIONCLASS_ROOT = os.path.join(BASE_DIR, 'lib', 'Components',
-                                   'ExtensionClass')
-EXTENSIONCLASS_SRCDIR = os.path.join(EXTENSIONCLASS_ROOT, 'src')
-EXTENSIONCLASS_INCLUDEDIRS = [EXTENSIONCLASS_SRCDIR]
 
 # Most modules are in lib/python in the source distribution
 PACKAGES_ROOT = os.path.join(BASE_DIR, 'lib', 'python')
 os.chdir(PACKAGES_ROOT)
+
+EXTENSIONCLASS_INCLUDEDIRS = ['ExtensionClass']
+
 
 # AccessControl
 setup(
@@ -198,8 +197,12 @@ setup(
                 ['AccessControl/www', ['AccessControl/www/*']]],
     ext_modules=[
         Extension(name='AccessControl.cAccessControl',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['AccessControl/cAccessControl.c'])]
+                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS+['Acquisition'],
+                  sources=['AccessControl/cAccessControl.c'],
+                  depends=['ExtensionClass/ExtensionClass.h',
+                           'ExtensionClass/pickle/pickle.c',
+                           'Acquisition/Acquisition.h'],
+                  )]
     )
 
 # App
@@ -232,49 +235,26 @@ setup(
     packages=['BTrees', 'BTrees.tests'],
     ext_modules=[
         Extension(name='BTrees._OOBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
+                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['persistent'],
                   sources=['BTrees/_OOBTree.c']),
         Extension(name='BTrees._OIBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
+                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['persistent'],
                   sources=['BTrees/_OIBTree.c']),
         Extension(name='BTrees._IIBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
+                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['persistent'],
                   define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
                   sources=['BTrees/_IIBTree.c']),
         Extension(name='BTrees._IOBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
+                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['persistent'],
                   define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
                   sources=['BTrees/_IOBTree.c']),
         Extension(name='BTrees._fsBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
+                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['persistent'],
                   define_macros=[('EXCLUDE_INTSET_SUPPORT', None)],
                   sources=['BTrees/_fsBTree.c'])],
     data_files=[['BTrees', ['BTrees/Maintainer.txt']]],
     )
 
-# BTrees compatibility package
-setup(
-    name='BTree',
-    author=AUTHOR,
-
-    #headers=['../Components/BTree/intSet.h'],
-    ext_modules=[
-        Extension(name='BTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
-                  sources=['../Components/BTree/BTree.c']),
-        Extension(name='IIBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
-                  sources=['../Components/BTree/IIBTree.c']),
-        Extension(name='IOBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
-                  sources=['../Components/BTree/IOBTree.c']),
-        Extension(name='OIBTree',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
-                  sources=['../Components/BTree/OIBTree.c']),
-        Extension(name='intSet',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS + ['ZODB'],
-                  sources=['../Components/BTree/intSet.c'])]
-    )
 
 # DateTime
 setup(
@@ -326,31 +306,51 @@ setup(
     name='ExtensionClass',
     author=AUTHOR,
 
+    packages=['ExtensionClass', 'Acquisition', 'MethodObject', 'MultiMapping',
+              'ThreadLock', 'Missing', 'Record', 'ComputedAttribute'],
+
     ext_modules=[
-        Extension(name='ExtensionClass',
+        Extension(name='ExtensionClass._ExtensionClass',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/ExtensionClass.c"]),
-        Extension(name='Acquisition',
+                  sources=["ExtensionClass/_ExtensionClass.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
+        Extension(name='Acquisition._Acquisition',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/Acquisition.c"]),
-        Extension(name='MethodObject',
+                  sources=["Acquisition/_Acquisition.c"],
+                  depends=["ExtensionClass/ExtensionClass.h",
+                           "Acquisition/Acquisition.h"],
+                  ),
+        Extension(name='MethodObject._MethodObject',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/MethodObject.c"]),
-        Extension(name='MultiMapping',
+                  sources=["MethodObject/_MethodObject.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
+        Extension(name='MultiMapping._MultiMapping',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/MultiMapping.c"]),
-        Extension(name='ThreadLock',
+                  sources=["MultiMapping/_MultiMapping.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
+        Extension(name='ThreadLock._ThreadLock',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/ThreadLock.c"]),
-        Extension(name='Missing',
+                  sources=["ThreadLock/_ThreadLock.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
+        Extension(name='Missing._Missing',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/Missing.c"]),
-        Extension(name='Record',
+                  sources=["Missing/_Missing.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
+        Extension(name='Record._Record',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/Record.c"]),
-        Extension(name='ComputedAttribute',
+                  sources=["Record/_Record.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
+        Extension(name='ComputedAttribute._ComputedAttribute',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=[EXTENSIONCLASS_SRCDIR + "/ComputedAttribute.c"]),
+                  sources=["ComputedAttribute/_ComputedAttribute.c"],
+                  depends=["ExtensionClass/ExtensionClass.h"],
+                  ),
         ]
     )
 
@@ -560,29 +560,47 @@ setup(
                 ['ZClasses/dtml', ['ZClasses/dtml/*']]],
     )
 
+
 # ZODB
 setup(
     name='ZODB',
     author=AUTHOR,
 
-    packages=['Persistence', 'ZODB', 'ZODB.tests'],
+    packages=['Persistence', 'persistent', 'ZODB', 'ZODB.tests'],
     data_files=[['ZODB', ['ZODB/component.xml']]],
     ext_modules=[
-        Extension(name='ZODB.cPersistence',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['ZODB/cPersistence.c']),
-        Extension(name='ZODB.cPickleCache',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['ZODB/cPickleCache.c']),
-        Extension(name='ZODB.TimeStamp',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  define_macros=[('USE_EXTENSION_CLASS', 1)],
-                  sources=['ZODB/TimeStamp.c']),
+        Extension(name='persistent.cPersistence',
+                  include_dirs=['persistent'],
+                  sources=['persistent/cPersistence.c',
+                           'persistent/ring.c'],
+                  depends=['persistent/cPersistence.h',
+                           'persistent/ring.h',
+                           'persistent/ring.c'],
+                  ),
+        Extension(name='Persistence._Persistence',
+                  include_dirs=['persistent', 'ExtensionClass'],
+                  sources=['Persistence/_Persistence.c',
+                           ],
+                  depends=['persistent/cPersistence.h',
+                           'ExtensionClass/ExtensionClass.h',
+                           ],
+                  ),
+        Extension(name='persistent.cPickleCache',
+                  include_dirs=['persistent'],
+                  sources=['persistent/cPickleCache.c',
+                           'persistent/ring.c'],
+                  depends = ['persistent/cPersistence.h',
+                             'persistent/ring.h',
+                             'persistent/ring.c']
+                  ),
+        Extension(name='persistent.TimeStamp',
+                  include_dirs=['persistent'],
+                  sources=['persistent/TimeStamp.c']),
         Extension(name='ZODB.coptimizations',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
+                  include_dirs=['persistent'],
                   sources=['ZODB/coptimizations.c']),
         Extension(name='ZODB.winlock',
-                  include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
+                  include_dirs=['persistent'],
                   sources=['ZODB/winlock.c'])],
     )
 
