@@ -11,9 +11,9 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
-from string import capitalize, split, join, strip
+
 import time, Interface, re
 
 class EtagBaseInterface(Interface.Base):
@@ -85,12 +85,12 @@ class EtagSupport:
         matchlist = REQUEST.get_header(header)
         if matchlist is None:
             # capitalize the words of the header, splitting on '-'
-            tmp = map(capitalize, split(header, '-'))
-            tmp = join(tmp,'-')
+            tmp = [x.capitalize() for x in  header.split('-')]
+            tmp = '-'.join(tmp)
             matchlist = REQUEST.get_header(tmp)
             if matchlist is None:
                 return None
-        matchlist = map(strip, split(matchlist, ','))
+        matchlist = [ x.strip() for x in matchlist.split(',')]
 
         r = []
         for match in matchlist:
