@@ -118,7 +118,8 @@ def startup():
 
 def validated_hook(request, user):
     newSecurityManager(request, user)
-    if request.get(Globals.VersionNameName, ''):
+    version = request.get(Globals.VersionNameName, '')
+    if version:
         object = user.aq_parent
         if not getSecurityManager().checkPermission(
             'Join/leave Versions', object):
@@ -127,6 +128,7 @@ def validated_hook(request, user):
                 expires="Mon, 25-Jan-1999 23:59:59 GMT",
                 path=(request['BASEPATH1'] or '/'),
                 )
+            Zope.DB.removeVersionPool(version)
             raise Unauthorized, "You don't have permission to enter versions."
     
 
