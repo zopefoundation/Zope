@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.37 1997/03/26 19:05:56 jim Exp $"""
+$Id: Publish.py,v 1.38 1997/03/26 22:11:52 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.37 1997/03/26 19:05:56 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 def main():
@@ -1198,7 +1198,10 @@ class Request:
 	else: b=''
 	while b and b[0]=='/': b=b[1:]
 	try:
-	    server_url=string.strip(environ['SERVER_URL'])
+	    try:
+		server_url="http://%s" % string.strip(environ['HTTP_HOST'])
+	    except:
+		server_url=string.strip(environ['SERVER_URL'])
 	    if server_url[-1:]=='/': server_url=server_url[:-1]
 	except:
 	    server_port=env('SERVER_PORT')
@@ -1432,6 +1435,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.38  1997/03/26 22:11:52  jim
+# Added support for OM's HTTP_HOST variable to get base ref.  This seems
+# to make authentication slightly less annoying.
+#
 # Revision 1.37  1997/03/26 19:05:56  jim
 # Added fix to avoid circular references through parents with
 # acquisition.
