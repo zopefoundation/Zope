@@ -154,13 +154,15 @@ def spacestrip(txt):
 
     We need this to workaround a nasty bug in STXNG. 
     STXNG creates empty <pre>..</pre> when then text start
-    if a level > 1
+    if a level > 1. This fix is lame. The problem should be fixed
+    inside STXNG
     """
     
     l = []
     for x in string.split(txt,"\n"):
         if len(x)>2 and x[:2]=='  ':
             l.append(x[2:])
+        else: l.append(x)
 
     return string.join(l,'\n')
 
