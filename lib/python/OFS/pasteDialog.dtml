@@ -6,16 +6,12 @@
 <!--#if moniker-->
 <!--#in moniker-->
 <H2>Paste <!--#var sequence-var-mtype--></H2>
-<!--#/in moniker-->
-<!--#else moniker-->
-<H2>Paste Item</H2>
-<!--#/if moniker-->
 
 <!--#if bad-->
 <EM>An item with the specified id exists</EM>. 
 Please specify another id.
 <!--#else bad-->
-Please specify the id to use for this item.
+Please specify the id to use for this <!--#var sequence-var-mtype-->.
 <!--#/if bad-->
 
 <FORM ACTION="pasteFromClipboard" METHOD="POST">
@@ -26,11 +22,7 @@ Please specify the id to use for this item.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="clip_id" SIZE="40"
-   <!--#if moniker-->
-   <!--#in moniker-->
-   VALUE="<!--#var sequence-var-id-->"
-   <!--#/in moniker-->
-   <!--#/if moniker-->>
+   VALUE="<!--#var sequence-var-id-->">
   </TD>
 </TR>
 <TR>
@@ -41,6 +33,8 @@ Please specify the id to use for this item.
 </TR>
 </TABLE>
 </FORM>
+<!--#/in moniker-->
+<!--#/if moniker-->
 </BODY>
 </HTML>
 

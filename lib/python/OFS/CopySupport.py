@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals, Moniker, rPickle
 from cPickle import loads, dumps
@@ -45,6 +45,7 @@ class CopyContainer:
 	obj=obj._getCopy(self)
         obj._setId(clip_id)
 	self._setObject(clip_id, obj)
+	obj._postCopy(self)
 	return self.manage_main(self, REQUEST)
 
 
@@ -61,6 +62,10 @@ class CopySource:
     def _getCopy(self, container):
 	# Ask an object for a new copy of itself.
 	return loads(dumps(self))
+
+    def _postCopy(self, container):
+	# Called after the copy is finished to accomodate special cases
+	pass
 
     def _setId(self, id):
 	# Called to set the new id of a copied object.
