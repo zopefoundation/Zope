@@ -53,7 +53,7 @@
 
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.1 1997/04/11 21:44:58 jim Exp $"
+"\n$Id: ThreadLock.c,v 1.2 1997/07/02 20:21:02 jim Exp $"
 ;
 
 #include "Python.h"
@@ -63,10 +63,7 @@ static PyObject *ErrorObject;
 
 /* ----------------------------------------------------- */
 
-static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
-#define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
-#define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 
 /* Declarations for objects of type ThreadLock */
 
@@ -189,7 +186,7 @@ ThreadLock_getattr(ThreadLockObject *self, PyObject *name)
 {
   char *cname;
 
-  if(cname=PyString_AsString(name))
+  if((cname=PyString_AsString(name)))
     {
       if(*cname=='c' && strcmp(cname,"count")==0)
 	return PyInt_FromLong(self->count);
@@ -275,7 +272,7 @@ void
 initThreadLock()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
 
   /* Create the module and add the functions */
   m = Py_InitModule4("ThreadLock", Module_methods,
@@ -304,6 +301,10 @@ initThreadLock()
 Revision Log:
 
   $Log: ThreadLock.c,v $
+  Revision 1.2  1997/07/02 20:21:02  jim
+  Added stupid parens and other changes to make 'gcc -Wall -pedantic'
+  happy.  Got rid of unused macros.
+
   Revision 1.1  1997/04/11 21:44:58  jim
   *** empty log message ***
 
