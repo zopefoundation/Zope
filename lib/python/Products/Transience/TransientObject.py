@@ -250,6 +250,8 @@ class TransientObject(Persistent, Implicit):
             states.sort(lastaccessed_sort)
             DEBUG and TLOG('TO _p_rc: returning last_accessed state')
             return states[0]
+        except ConflictError:
+            raise
         except:
             LOG.info('Conflict resolution error in TransientObject',
                       exc_info=sys.exc_info())
