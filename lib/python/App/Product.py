@@ -143,7 +143,10 @@ class ProductFolder(Folder):
             return self.manage_main(self,REQUEST,update_menu=1)
 
     def _delObject(self,id):
-        for factory in getattr(self, id)._factories(): factory._unregister()
+        try:
+            for factory in getattr(self, id)._factories():
+                factory._unregister()
+        except: pass
         ProductFolder.inheritedAttribute('_delObject')(self, id)
 
     def _canCopy(self, op=0):

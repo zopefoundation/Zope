@@ -111,14 +111,25 @@ class ProductRegistry:
                                         mt['name']!=nmt,
                                         self._product_meta_types)
         
-    def _manage_add_product_meta_type(self, product, id, meta_type):
-        if filter(lambda mt, nmt=meta_type:
-                  mt['name']==nmt,
-                  self.all_meta_types()):
-            raise 'Type Exists', (
-                'The type <em>%s</em> is already defined.')
-        
-        self._product_meta_types=self._product_meta_types+({
+    def _manage_add_product_meta_type(self, product, id, meta_type,
+                                      permission=''):
+        pid=product.id
+
+        for mt in self._product_meta_types:
+            if mt['name']==meta_type:
+                if not mt.has_key('product'): mt['product']=pid
+                if mt['product'] != pid:
+                    raise 'Type Exists', (
+                        'The type <em>%s</em> is already defined.' % meta_type)
+                mt['action']='manage_addProduct/%s/%s' % (pid, id)
+                if permission: mt['permission']=permission
+                return
+
+        mt={
             'name': meta_type,
-            'action': ('manage_addProduct/%s/%s' % (product.id, id)),
-            },)
+            'action': ('manage_addProduct/%s/%s' % (pid, id)),
+            'product': pid
+            }
+        if permission: mt['permission']=permission
+        
+        self._product_meta_types=self._product_meta_types+(mt,)

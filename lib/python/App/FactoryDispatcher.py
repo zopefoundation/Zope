@@ -124,5 +124,5 @@ class FactoryDispatcher(Acquisition.Implicit):
             return d[name]
         raise AttributeError, name
 
-
-
+    # Provide acquired indicators for critical OM methods:
+    _setObject=Acquisition.Acquired
