@@ -233,9 +233,18 @@ class ProductContext:
         if meta_type is None:
             if hasattr(base_class, 'meta_type'): meta_type=base_class.meta_type
             else:                                meta_type=base_class.__name__
+
+        module=base_class.__module__
+        name=base_class.__name__
             
-        key="%s/%s" % (base_class.__module__, base_class.__name__)
-        Products.meta_class_info[key]=meta_type
+        key="%s/%s" % (module, name)
+
+        if module[:9]=='Products.': module=string.split(module,'.')[1]
+        else: module=string.split(module,'.')[0]
+            
+        info="%s: %s" % (module, name)
+
+        Products.meta_class_info[key]=info # meta_type
         Products.meta_classes[key]=Z
         
 
