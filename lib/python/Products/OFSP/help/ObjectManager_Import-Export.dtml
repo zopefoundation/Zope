@@ -10,8 +10,54 @@
 		  var directory of the server on which Zope is running. If
 		  you choose <tt>XML format</tt>, the export file will be encoding as
 		  XML, otherwise it will be encoded as a binary file. </p>
-<p> To import an object into to Zope, specify the name of the import
-		  file in the <tt>Import file name</tt> field and click the
-		  <tt>Import</tt> button. The import file should be located in the Zope
-		  import directory of the server on which Zope is running.
-		  </p><dtml-var standard_html_footer>
+
+
+
+<p> 
+To import an object into to Zope, specify the name of the import 
+file in the <tt>Import file name</tt> field. The import file should 
+be located in the Zope import directory of the Zope installation. 
+Click the <tt>Import</tt> button to import the objects in the import 
+file.
+</p>
+
+<p>
+By default, you will become the owner of the objects you import. In 
+some cases you may want to preserve the ownership information in the 
+imported objects. To preserve the existing ownership information in 
+the imported objects, select the <tt>retain existing ownership information</tt>
+ option before clicking the <tt>Import</tt> button.
+</p>
+
+<p>
+Note that when you elect to retain existing ownership information, the 
+ownership information will be used exactly as it appears in the imported 
+objects. For instance, if the object you are importing was acquiring its 
+ownership information in the place where you exported it, it will 
+continue to acquire its ownership information when you import it (though 
+the actual ownership information may now be different in the context into 
+which it is imported). 
+</p>
+
+<p>
+Likewise, if the ownership of an object was explicit 
+(not acquired) when it was exported, then it will be explicit after it is 
+imported. The important thing to note in this case is that if you export an 
+object from another Zope site, the user who owned that object in the other 
+site may not exist in the site you are importing the object into. Zope does 
+not check to make sure the owner exists if you import an object that was 
+explicitly owned. 
+</p>
+
+<p>
+If the explicitly named owner does not exist in the site 
+that you are importing into, imported objects that depended on their 
+owner having a higher level of privilege than the special <tt>nobody</tt> 
+user may not work correctly until their ownership has been reassigned to 
+another user with sufficient privileges. See the online help for <a 
+href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Ownership.dtml">
+ownership</a> for more details.
+
+</p>
+
+<dtml-var standard_html_footer>

@@ -2,6 +2,8 @@
 
 <h1>Ownership</h1>
 
+<h2>Overview</h2>
+
 <p> 
 This view allows you to manage the ownership of a Zope object.
 </p>
@@ -10,7 +12,8 @@ This view allows you to manage the ownership of a Zope object.
 All Zope objects except objects within the Control Panel support 
 ownership. When an object is created, copied or imported in Zope, 
 the logged-in user performing the operation becomes the owner of 
-the resulting object(s).
+the resulting object(s). Note that simply moving or renaming an 
+object does not change its ownership.
 </p>
 
 <p>
@@ -39,7 +42,11 @@ If an object is owned directly, the ownership information is
 stored in the object itself. If an object is owned implicitly, 
 it acquires its ownership information from its container (which 
 may in turn acquire its ownership information from <em>its</em> 
-container, and so on). When Zope automatically assigns ownership 
+container, and so on). 
+</p>
+
+<p>
+When Zope automatically assigns ownership 
 to newly created or copied objects, it tries to use implict 
 ownership if possible. This makes it easier to change the 
 ownership of many objects at one time without having to visit 
@@ -113,6 +120,35 @@ affect the ownership information of the current object.
 If you have the <em>Take ownership</em> permission for the object, 
 you will also see a button labeled <tt>Take ownership</tt>. Click 
 the button to take ownership of the object.
+</p>
+
+<h2>Notes on Ownership</h2>
+
+<p>
+It is possible to remove a user in your Zope installation while 
+objects that were owned by that user remain (for instance, 
+someone in your organization moves on, so you remove his account 
+on your Zope server). When you remove a Zope user, objects that 
+were owned by that user still have ownership information that 
+refers to that user. This will not cause an error, but it is 
+important to understand what happens to Zope objects whose owners 
+no longer exist.
+</p>
+
+<p>
+This is most important for "executable" objects. Usually, the 
+abilities of executable objects are constrained by the abilities 
+of the object's owner as well as the user causing the object to 
+execute. If Zope cannot find the user that the executable's ownership 
+information refers to when it tries to execute the object, it will 
+use the special <tt>nobody</tt> or anonymous user instead. The 
+<tt>nobody</tt> user has very minimal priveleges, so you should take 
+this into account when deciding what to do about a user's owned 
+objects when you delete the user. If the user had DTML documents or 
+other executable objects that depended upon their owner to have a 
+higher level of privilege than the <tt>nobody</tt> user, they will 
+not work correctly until their ownership has been reassigned to 
+another user with sufficient privileges.
 </p>
 
 <dtml-var standard_html_footer>
