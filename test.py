@@ -391,6 +391,12 @@ class TestFileFinder:
 
     def visit(self, rx, dir, files):
         if os.path.split(dir)[1] != self.dirname:
+            # Allow tests module rather than package.
+            if "tests.py" in files:
+                path = os.path.join(dir, "tests.py")
+                if match(rx, path):
+                    self.files.append(path)
+                    return 
             return
         if not self.is_package(dir):
             return
