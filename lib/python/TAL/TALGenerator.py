@@ -360,7 +360,7 @@ class TALGenerator:
             if isend:
                 self.emitEndElement(name, isend)
             return
-            
+
         for key in taldict.keys():
             if key not in KNOWN_TAL_ATTRIBUTES:
                 raise TALError("bad TAL attribute: " + `key`, position)
@@ -408,8 +408,10 @@ class TALGenerator:
         if fillSlot:
             self.pushProgram()
             todo["fillSlot"] = fillSlot
-        if define:
+        if taldict:
             self.emit("beginScope")
+            self.emit("tagDict", self.makeAttrDict(attrlist))
+            todo["scope"] = 1
         if onError:
             self.pushProgram() # handler
             self.emitStartTag(name, attrlist)
@@ -423,7 +425,6 @@ class TALGenerator:
             todo["condition"] = condition
         if repeat:
             todo["repeat"] = repeat
-            self.emit("beginScope")
             self.pushProgram()
             if repeatWhitespace:
                 self.emitText(repeatWhitespace)
@@ -435,7 +436,7 @@ class TALGenerator:
         if attrsubst:
             repldict = parseAttributeReplacements(attrsubst)
             for key, value in repldict.items():
-                repldict[key] = self.expressionCompiler.compile(value)
+                repldict[key] = self.compileExpression(value)
         else:
             repldict = {}
         if replace:
@@ -449,6 +450,13 @@ class TALGenerator:
         self.todoPush(todo)
         if isend:
             self.emitEndElement(name, isend)
+
+    def makeAttrDict(self, attrlist):
+        dict = {}
+        for item in attrlist:
+            key, value = item[:2]
+            dict[key] = value
+        return dict
 
     def emitEndElement(self, name, isend=0, implied=0):
         todo = self.todoPop()
@@ -470,6 +478,7 @@ class TALGenerator:
         onError = todo.get("onError")
         define = todo.get("define")
         repldict = todo.get("repldict", {})
+        scope = todo.get("scope")
 
         if implied > 0:
             if defineMacro or useMacro or defineSlot or fillSlot:
@@ -489,12 +498,11 @@ class TALGenerator:
             self.emitSubstitution(replace, repldict, position)
         if repeat:
             self.emitRepeat(repeat, position)
-            self.emit("endScope")
         if condition:
             self.emitCondition(condition)
         if onError:
             self.emitOnError(name, onError, position)
-        if define:
+        if scope:
             self.emit("endScope")
         if defineMacro:
             self.emitDefineMacro(defineMacro, position)
