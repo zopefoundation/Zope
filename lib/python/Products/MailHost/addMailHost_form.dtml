@@ -22,7 +22,7 @@
 <TR VALIGN="TOP">
   <TD ALIGN="LEFT"><STRONG>Local Host</STRONG></TD>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localhost" SIZE="50" VALUE="localhost">
+    <INPUT TYPE="TEXT" NAME="localhost" SIZE="50" VALUE="<!--#var localhost-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
