@@ -53,7 +53,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.6 1997/09/23 16:06:03 jim Exp $"
+"\n$Id: Missing.c,v 1.7 1997/10/03 14:43:27 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -120,8 +120,7 @@ static int
 Missing_coerce(PyObject **pv, PyObject **pw)
 {
   Py_INCREF(*pv);
-  Py_INCREF(*pv);
-  *pw=*pv;
+  Py_INCREF(*pw);
   return 0;
 }
 
@@ -246,7 +245,7 @@ Missing_call(PyObject *self, PyObject *args, PyObject *kw)
 static int
 Missing_cmp(Missing *m1, Missing *m2)
 {
-  return 0;
+  return m1->ob_type != m2->ob_type ;
 }
 
 static PyExtensionClass MissingType = {
@@ -295,7 +294,7 @@ void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
+  char *rev="$Revision: 1.7 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -331,6 +330,9 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.7  1997/10/03 14:43:27  jim
+  Fixed comparison bug, again :-(
+
   Revision 1.6  1997/09/23 16:06:03  jim
   Added MV member.
 
