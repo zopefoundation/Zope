@@ -38,14 +38,14 @@ class Dummy:
 class DI_Tests(unittest.TestCase):
     def setUp(self):
         self._values = (
-            (0, Dummy('a', None)),
-            (1, Dummy('b', DateTime(0))),
-            (2, Dummy('c', DateTime('2002-05-08 15:16:17'))),
-            (3, Dummy('d', DateTime('2032-05-08 15:16:17'))),
-            (4, Dummy('e', DateTime('2062-05-08 15:16:17'))),
-            (5, Dummy('e', DateTime('2062-05-08 15:16:17'))),
-            (6, Dummy('f', 1072742620.0)),
-            (7, Dummy('f', 1072742900)),
+            (0, Dummy('a', None)),                            # None
+            (1, Dummy('b', DateTime(0))),                     # 1055335680
+            (2, Dummy('c', DateTime('2002-05-08 15:16:17'))), # 1072667236
+            (3, Dummy('d', DateTime('2032-05-08 15:16:17'))), # 1088737636
+            (4, Dummy('e', DateTime('2062-05-08 15:16:17'))), # 1018883325
+            (5, Dummy('e', DateTime('2062-05-08 15:16:17'))), # 1018883325
+            (6, Dummy('f', 1072742620.0)),                    # 1073545923
+            (7, Dummy('f', 1072742900)),                      # 1073545928
         )
         self._index = DateIndex('date')
         self._noop_req  = {'bar': 123}

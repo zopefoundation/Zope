@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.12 2003/06/17 19:01:06 sidnei Exp $
+"""$Id: DateIndex.py,v 1.13 2003/11/04 22:09:03 chrism Exp $
 """
 
 from types import StringType, FloatType, IntType
@@ -190,13 +190,13 @@ class DateIndex(UnIndex):
 
         t_val = ( ( ( ( yr * 12 + mo ) * 31 + dy ) * 24 + hr ) * 60 + mn )
 
-        try:
+        if isinstance(t_val, long):
             # t_val must be IntType, not LongType
-            return int(t_val)
-        except OverflowError:
             raise OverflowError, (
                 "%s is not within the range of indexable dates (index: %s)"
                 % (value, self.id))
+
+        return t_val
 
 
 manage_addDateIndexForm = DTMLFile( 'dtml/addDateIndex', globals() )
