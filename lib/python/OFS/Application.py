@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.131 2000/08/02 17:31:54 brian Exp $'''
-__version__='$Revision: 1.131 $'[11:-2]
+$Id: Application.py,v 1.132 2000/08/10 14:22:48 brian Exp $'''
+__version__='$Revision: 1.132 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -485,49 +485,52 @@ def install_products(app):
                 initmethod=pgetattr(product, 'initialize', None)
                 if initmethod is not None:
                     initmethod(context)                    
-                else:
-                    permissions={}
-                    new_permissions={}
-                    for p in pgetattr(product, '__ac_permissions__', ()):
-                        permission, names, default = (
-                            tuple(p)+('Manager',))[:3]
-                        if names:
-                            for name in names:
-                                permissions[name]=permission
-                        elif not folder_permissions.has_key(permission):
-                            new_permissions[permission]=()
 
-                    for meta_type in pgetattr(product, 'meta_types', ()):
-                        # Modern product initialization via a ProductContext
-                        # adds 'product' and 'permission' keys to the meta_type
-                        # mapping. We have to add these here for old products.
-                        pname=permissions.get(meta_type['action'], None)
-                        if pname is not None:
-                            meta_type['permission']=pname
-                        meta_type['product']=productObject.id
-                        meta_types.append(meta_type)
+                # Support old-style product metadata. Older products may
+                # define attributes to name their permissions, meta_types,
+                # constructors, etc.
+                permissions={}
+                new_permissions={}
+                for p in pgetattr(product, '__ac_permissions__', ()):
+                    permission, names, default = (
+                        tuple(p)+('Manager',))[:3]
+                    if names:
+                        for name in names:
+                            permissions[name]=permission
+                    elif not folder_permissions.has_key(permission):
+                        new_permissions[permission]=()
 
-                    for name,method in pgetattr(
-                        product, 'methods', {}).items():
-                        if not hasattr(Folder, name):
-                            setattr(Folder, name, method)
-                            if name[-9:]!='__roles__': # not Just setting roles
-                                if (permissions.has_key(name) and
-                                    not folder_permissions.has_key(
-                                        permissions[name])):
-                                    permission=permissions[name]
-                                    if new_permissions.has_key(permission):
-                                        new_permissions[permission].append(name)
-                                    else:
-                                        new_permissions[permission]=[name]
+                for meta_type in pgetattr(product, 'meta_types', ()):
+                    # Modern product initialization via a ProductContext
+                    # adds 'product' and 'permission' keys to the meta_type
+                    # mapping. We have to add these here for old products.
+                    pname=permissions.get(meta_type['action'], None)
+                    if pname is not None:
+                        meta_type['permission']=pname
+                    meta_type['product']=productObject.id
+                    meta_types.append(meta_type)
 
-                    if new_permissions:
-                        new_permissions=new_permissions.items()
-                        for permission, names in new_permissions:
-                            folder_permissions[permission]=names
-                        new_permissions.sort()
-                        Folder.__dict__['__ac_permissions__']=tuple(
-                            list(Folder.__ac_permissions__)+new_permissions)
+                for name,method in pgetattr(
+                    product, 'methods', {}).items():
+                    if not hasattr(Folder, name):
+                        setattr(Folder, name, method)
+                        if name[-9:]!='__roles__': # not Just setting roles
+                            if (permissions.has_key(name) and
+                                not folder_permissions.has_key(
+                                    permissions[name])):
+                                permission=permissions[name]
+                                if new_permissions.has_key(permission):
+                                    new_permissions[permission].append(name)
+                                else:
+                                    new_permissions[permission]=[name]
+
+                if new_permissions:
+                    new_permissions=new_permissions.items()
+                    for permission, names in new_permissions:
+                        folder_permissions[permission]=names
+                    new_permissions.sort()
+                    Folder.__dict__['__ac_permissions__']=tuple(
+                        list(Folder.__ac_permissions__)+new_permissions)
 
                 if os.environ.get('ZEO_CLIENT',''):
                     # we don't want to install products from clients!
