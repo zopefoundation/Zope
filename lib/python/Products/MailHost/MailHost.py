@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.82 2003/12/18 21:42:06 regebro Exp $"""
-__version__ = "$Revision: 1.82 $"[11:-2]
+$Id: MailHost.py,v 1.83 2003/12/20 10:37:23 regebro Exp $"""
+__version__ = "$Revision: 1.83 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -83,7 +83,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
 
     security.declareProtected( 'Change configuration', 'manage_makeChanges' )
-    def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid,smtp_pwd, REQUEST=None):
+    def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid='',smtp_pwd='', REQUEST=None):
         'make the changes'
 
         title=str(title)
