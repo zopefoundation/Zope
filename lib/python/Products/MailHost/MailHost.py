@@ -6,8 +6,8 @@ import OFS.SimpleItem
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 
-#$Id: MailHost.py,v 1.15 1997/09/17 21:08:15 jeffrey Exp $ 
-__version__ = "$Revision: 1.15 $"[11:-2]
+#$Id: MailHost.py,v 1.16 1997/09/18 20:08:51 brian Exp $ 
+__version__ = "$Revision: 1.16 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -28,6 +28,7 @@ def add(self, id='aMailHost', title='Some mail thing', smtp_host=None,
 class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
                RoleManager):
     'a mailhost...?'
+    meta_type='Mail Host'
     manage=HTMLFile('MailHost/manageMailHost')
     index_html=HTMLFile('MailHost/mailHost')
     icon="MailHost/MailHost_icon.gif"
@@ -212,6 +213,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.16  1997/09/18 20:08:51  brian
+#Added meta_type for auto-detection
+#
 #Revision 1.15  1997/09/17 21:08:15  jeffrey
 #threadsafe calls to Scheduler, added .scheduledSend method which is
 #the same interface as send, but uses the schedular to send message
