@@ -1,10 +1,10 @@
 """Document object"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import HTMLFile
-from string import join, split, strip
+from string import join, split, strip, rfind
 import AccessControl.ACL
 import regex
 
@@ -26,11 +26,18 @@ class Document(HTML, AccessControl.ACL.RoleManager):
                    <input type=text name=roles SIZE="50" value="%s"></td></tr>
                    </table>""" % (self.title, roles))
 
-    def index_html(self, REQUEST, PARENTS, RESPONSE):
-	"""Run the document as a web object with possible HTTP headers"""
-	return decapitate(self(PARENTS[1],REQUEST), RESPONSE)
-	
-	
+
+    def initvars(self, mapping, vars):
+	"""Hook to override signature so we can detect whether we are
+	running from the web"""
+	HTML.initvars(self, mapping, vars)
+	self.func_code.__init__(('self','REQUEST','RESPONSE'))
+	self.func_defaults=(None,)
+
+    def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+	r=apply(HTML.__call__, (self, client, REQUEST), kw)
+	if RESPONSE is None: return r
+	return decapitate(r, RESPONSE)
 
     def manage_edit(self,data,title,roles,REQUEST=None):
 	"""Edit method"""
@@ -41,15 +48,9 @@ class Document(HTML, AccessControl.ACL.RoleManager):
 
 
 
-default_html="""
-<HTML>
-<HEAD>
-<TITLE>New Document</TITLE>
-</HEAD>
-<BODY>
+default_html="""<!--#var standard_html_header-->
 New Document
-</BODY>
-</HTML>"""
+<!--#var standard_html_footer-->"""
 
 
 class DocumentHandler:
@@ -65,7 +66,7 @@ class DocumentHandler:
 	i.title=title
 	i.parse_roles_string(roles)
 	self._setObject(id,i)
-	return self.manage_main(self,REQUEST)
+	if REQUEST: return self.manage_main(self,REQUEST)
 
     def documentIds(self):
 	t=[]
