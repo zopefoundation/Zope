@@ -239,6 +239,35 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 				manage_tabs_message=message)
 
 
+    def manage_catalogFoundItems(self, REQUEST, obj_metatypes=None,
+                                 obj_ids=None, obj_searchterm=None,
+                                 obj_expr=None, obj_mtime=None,
+                                 obj_mspec=None, obj_roles=None,
+                                 obj_permission=None):
+    
+        """ Find object according to search criteria and Catalog them
+        """
+
+        results = self.ZopeFind(REQUEST.PARENTS[-1],
+                                obj_metatypes=obj_metatypes,
+                                obj_ids=obj_ids,
+                                obj_searchterm=obj_searchterm,
+                                obj_expr=obj_expr,
+                                obj_mtime=obj_mtime,
+                                obj_mspec=obj_mspec,
+                                obj_permission=obj_permission,
+                                obj_roles=obj_roles,
+                                search_sub=1,
+                                REQUEST=REQUEST)
+
+        for n in results:
+            self.catalog_object(n[1], n[0])
+
+        message = "Objects Cataloged"
+	return self.manage_main(self, REQUEST,
+				manage_tabs_message=message)
+
+
     def manage_addColumn(self, name, REQUEST):
 	""" add a column """
 	self._catalog.addColumn(name)
