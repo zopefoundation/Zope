@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -227,10 +227,11 @@ class CopyContainer(ExtensionClass.Base):
                     message=sys.exc_info()[1],
                     action ='manage_main')
                 ob=ob._getCopy(self)
-                ob.manage_afterClone(ob)
                 id=self._get_id(ob.getId())
                 ob._setId(id)
                 self._setObject(id, ob)
+                ob = self._getOb(id)
+                ob.manage_afterClone(ob)
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
