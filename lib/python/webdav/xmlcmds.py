@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -173,7 +173,7 @@ class PropFind:
                     '  <d:status>HTTP/1.1 404 Not Found</d:status>\n' \
                     '  <d:responsedescription>\n' \
                     '  The property %s does not exist.\n' \
-                    '  </d:responsedescription>\n' \  
+                    '  </d:responsedescription>\n' \
                     '</d:propstat>\n' % (ns, name, name)
                 result.write(stat)
         result.write('</d:response>\n')
