@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.106 $'[11:-2]
+__version__='$Revision: 1.107 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -145,11 +145,11 @@ class File(Persistent,Implicit,PropertyManager,
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
-         'help':('OFSP','File_Edit.dtml')},
+         'help':('OFSP','File_Edit.stx')},
         {'label':'Upload', 'action':'manage_uploadForm',
-         'help':('OFSP','File_Upload.dtml')},
+         'help':('OFSP','File_Upload.stx')},
         {'label':'View', 'action':'',
-         'help':('OFSP','File_View.dtml')},
+         'help':('OFSP','File_View.stx')},
         )
         +PropertyManager.manage_options
         +Item_w__name__.manage_options
@@ -456,7 +456,7 @@ class Image(File):
         (o['label']=='View'
          and
          {'label':'View', 'action':'view_image_or_file',
-          'help':('OFSP','Image_View.dtml')}
+          'help':('OFSP','Image_View.stx')}
          or o)
         , File.manage_options))
         

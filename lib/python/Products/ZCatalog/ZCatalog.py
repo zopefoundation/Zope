@@ -147,20 +147,25 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_options=Folder.manage_options + (  
         {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
          'target': 'manage_main',
-         'help':('ZCatalog','ZCatalog_Cataloged-Objects.dtml')},
+         'help':('ZCatalog','ZCatalog_Cataloged-Objects.stx')},
         {'label': 'Find Items to ZCatalog', 'action': 'manage_catalogFind', 
          'target':'manage_main',
-         'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.dtml')},
+         'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.stx')},
         {'label': 'MetaData Table', 'action': 'manage_catalogSchema', 
          'target':'manage_main',
-         'help':('ZCatalog','ZCatalog_MetaData-Table.dtml')},
+         'help':('ZCatalog','ZCatalog_MetaData-Table.stx')},
         {'label': 'Indexes', 'action': 'manage_catalogIndexes', 
          'target':'manage_main',
-         'help':('ZCatalog','ZCatalog_Indexes.dtml')},
+         'help':('ZCatalog','ZCatalog_Indexes.stx')},
         {'label': 'Status', 'action': 'manage_catalogStatus', 
          'target':'manage_main',
+<<<<<<< ZCatalog.py
+         'help':('ZCatalog','ZCatalog_Status.stx')},
+        )+Folder.manage_options
+=======
          'help':('ZCatalog','ZCatalog_Status.dtml')},
         )
+>>>>>>> 1.60
 
     __ac_permissions__=(
 

@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.3 2000/05/15 16:44:00 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Owned.py,v 1.4 2000/06/16 19:42:04 srichter Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -111,7 +111,7 @@ class Owned(ExtensionClass.Base):
     
     manage_options=({'label':  'Ownership',
                      'action': 'manage_owner',
-                     'help':   ('OFSP','Ownership.dtml'),
+                     'help':   ('OFSP','Ownership.stx'),
                      'filter': ownableFilter
                      },
                    )

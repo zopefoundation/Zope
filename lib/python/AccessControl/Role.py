@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -123,11 +123,11 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
     manage_options=(
         {'label':'Security', 'action':'manage_access',
-         'help':('OFSP','Security.dtml'),
+         'help':('OFSP','Security.stx'),
          'filter': _isNotBeingUsedAsAMethod,
          },
         {'label':'Define Permissions', 'action':'manage_access',
-         'help':('OFSP','Security-DefinePermissions.dtml'),
+         'help':('OFSP','Security-DefinePermissions.stx'),
          'filter': _isBeingUsedAsAMethod,
          },
         )

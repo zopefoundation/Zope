@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -111,7 +111,7 @@ class FindSupport(ExtensionClass.Base):
     
     manage_options=(
         {'label':'Find', 'action':'manage_findFrame', 'target':'manage_main',
-         'help':('OFSP','Find.dtml')},         
+         'help':('OFSP','Find.stx')},         
         )
 
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,

@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.87 2000/06/16 19:31:38 shane Exp $'''
-__version__='$Revision: 1.87 $'[11:-2]
+$Id: DA.py,v 1.88 2000/06/16 19:50:30 srichter Exp $'''
+__version__='$Revision: 1.88 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -149,11 +149,11 @@ class DA(
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
-         'help':('ZSQLMethods','Z-SQL-Method_Edit.dtml')},
+         'help':('ZSQLMethods','Z-SQL-Method_Edit.stx')},
         {'label':'Test', 'action':'manage_testForm',
-         'help':('ZSQLMethods','Z-SQL-Method_Test.dtml')},
+         'help':('ZSQLMethods','Z-SQL-Method_Test.stx')},
         {'label':'Advanced', 'action':'manage_advancedForm',
-         'help':('ZSQLMethods','Z-SQL-Method_Advanced.dtml')},
+         'help':('ZSQLMethods','Z-SQL-Method_Advanced.stx')},
         )
         +OFS.SimpleItem.Item.manage_options
         +AccessControl.Role.RoleManager.manage_options

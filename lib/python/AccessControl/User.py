@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.110 $'[11:-2]
+__version__='$Revision: 1.111 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -348,7 +348,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     manage_options=(
         (
         {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','User-Folder_Contents.dtml')},
+         'help':('OFSP','User-Folder_Contents.stx')},
         )
         +Item.manage_options
         +RoleManager.manage_options

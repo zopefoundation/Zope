@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -121,13 +121,13 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     manage_options=(
         (
             {'label':'Edit', 'action':'manage_main',
-             'help':('OFSP','DTML-DocumentOrMethod_Edit.dtml')},
+             'help':('OFSP','DTML-DocumentOrMethod_Edit.stx')},
             {'label':'Upload', 'action':'manage_uploadForm',
-             'help':('OFSP','DTML-DocumentOrMethod_Upload.dtml')},
+             'help':('OFSP','DTML-DocumentOrMethod_Upload.stx')},
             {'label':'View', 'action':'',
-             'help':('OFSP','DTML-DocumentOrMethod_View.dtml')},
+             'help':('OFSP','DTML-DocumentOrMethod_View.stx')},
             {'label':'Proxy', 'action':'manage_proxyForm',
-             'help':('OFSP','DTML-DocumentOrMethod_Proxy.dtml')},
+             'help':('OFSP','DTML-DocumentOrMethod_Proxy.stx')},
             )
         +History.Historical.manage_options
         +RoleManager.manage_options

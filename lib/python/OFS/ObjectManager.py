@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.98 2000/06/01 19:58:05 brian Exp $"""
+$Id: ObjectManager.py,v 1.99 2000/06/16 19:40:14 srichter Exp $"""
 
-__version__='$Revision: 1.98 $'[11:-2]
+__version__='$Revision: 1.99 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -145,9 +145,9 @@ class ObjectManager(
 
     manage_options=(
         {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','ObjectManager_Contents.dtml')},
+         'help':('OFSP','ObjectManager_Contents.stx')},
         {'label':'Import/Export', 'action':'manage_importExportForm',
-         'help':('OFSP','ObjectManager_Import-Export.dtml')},         
+         'help':('OFSP','ObjectManager_Import-Export.stx')},         
         )
 
     isAnObjectManager=1

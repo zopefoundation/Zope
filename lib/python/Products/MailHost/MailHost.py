@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.51 2000/06/05 15:32:01 brian Exp $"""
-__version__ = "$Revision: 1.51 $"[11:-2]
+$Id: MailHost.py,v 1.52 2000/06/16 19:46:32 srichter Exp $"""
+__version__ = "$Revision: 1.52 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -133,7 +133,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         (
         {'icon':'', 'label':'Edit',
          'action':'manage_main', 'target':'manage_main',
-         'help':('MailHost','Mail-Host_Edit.dtml')},
+         'help':('MailHost','Mail-Host_Edit.stx')},
         )
         +OFS.SimpleItem.Item.manage_options
         +RoleManager.manage_options
