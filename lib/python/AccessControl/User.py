@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -144,6 +144,7 @@ class BasicUser(Implicit):
                 continue
             if hasattr(object, 'im_self'):
                 object=object.im_self
+                object=getattr(object, 'aq_inner', object)
                 continue
             break
         roles=list(roles) + local.keys()
