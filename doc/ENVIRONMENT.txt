@@ -252,6 +252,17 @@ Structured Text
        Set this variable to change the default level for <Hx> elements.
        The default level is 3.  
 
+DTML
+
+    ZOPE_DTML_REQUEST_AUTOQUOTE
+
+        Set this variable to one of 'no', '0' or 'disabled' to disable
+        autoquoting of implicitly retrieved REQUEST data that contain a '<'
+        when used in a dtml-var construction. When *not* set to one of these
+        values, all data implicitly taken from the REQUEST (as oposed to
+        addressing REQUEST.varname directly), that contain a '<', will be
+        HTML quoted when interpolated with a <dtml-var> or &dtml-;
+        construct.
 
 Esoteric 
 
