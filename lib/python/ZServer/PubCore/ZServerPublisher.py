@@ -95,3 +95,4 @@ class ZServerPublisher:
                    response=response)
            finally:
                response._finish()
+               request=response=None
