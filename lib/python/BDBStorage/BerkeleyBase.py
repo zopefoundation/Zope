@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.23 $'.split()[-2:][0]
+__version__ = '$Revision: 1.24 $'.split()[-2:][0]
 
 import os
 import time
@@ -437,7 +437,7 @@ class _WorkThread(threading.Thread):
 
     def stop(self):
         self._stop = True
-        
+
     def _dowork(self):
         pass
 
