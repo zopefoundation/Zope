@@ -12,10 +12,11 @@
 ##############################################################################
 """Python implementations of document template some features
 
-$Id: pDocumentTemplate.py,v 1.38 2002/09/24 22:09:47 jeremy Exp $"""
-__version__='$Revision: 1.38 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.39 2002/09/24 22:10:32 jeremy Exp $"""
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, types
+from DocumentTemplate.ustr import ustr
 
 ClassTypes = [types.ClassType]
 
