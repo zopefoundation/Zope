@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -398,6 +398,8 @@ class CopyContainer(ExtensionClass.Base):
                 except: parent=None
                 if getSecurityManager().validate(None, parent, None, object):
                     return
+                raise 'Unauthorized', absattr(object.id)
+            else:
                 raise 'Unauthorized', method_name
 
         raise CopyError, MessageDialog(
