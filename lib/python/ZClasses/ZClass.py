@@ -462,7 +462,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             except: durl=REQUEST['URL3']
             RESPONSE.redirect(durl+'/manage_workspace')
         else:
-            return getattr(folder, id)
+            return folder._getOb(id)
         
     index_html=createInObjectManager
 
