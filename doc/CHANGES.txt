@@ -6,24 +6,10 @@ Zope Changes
 
   Releases
 
-    Future Zope  x.x.x
-
-      Features Added
-
-        - Added automatic height/width detection for JPEG images.
-
-        - Added new product registration interface.
-
-        - Added Z Classes.
-
-      Bugs Fixed
-
-        - Added small fixes to ZopeHTTPServer in anticipation of DAV.
-
-
-
-    Zope  1.10.3
-
+    Zope 1.11.0 pr1
+      
+      Lots has changed in this release. The major news is ZClasses and WebDAV.
+      
       TO DO !!!!!!
 
         - Fix binary distributions so they aren't so darn big:
@@ -38,7 +24,31 @@ Zope Changes
 
       Features Added
 
-        - A new DTML try tag added based on work by Jordan B. Baker.
+        - Added WebDAV support. See http://webdav.zope.org/ for details.
+
+        - Added Z Classes. Documentation is forthcoming.
+
+        - Added Property Sheets. Documentation is forthcoming.
+        
+        - ZServer now included in distribution.
+        
+        - Added new product registration interface. Documentation is
+          forthcoming.
+
+        - Added local roles which allow for permission settings for
+          users on individual objects. This allows for 'ownership' of Zope
+          objects. Added 'Owner' role to default roles, and automatic
+          setting of the 'Owner' role on a created object to the user who
+          created it.
+        
+        - Added hooks for XML-RPC support to ZPublisher. See the source
+          for details. XML-RPC support is not yet finished.
+        
+        - Added automatic height/width detection for JPEG images.
+
+        - Revised Zope error messages.
+
+        - A new DTML try 'tag' added based on work by Jordan B. Baker.
 
         - A new 'range' function added the the '_' DTML variable. 
 
@@ -46,12 +56,58 @@ Zope Changes
 
         - A new flag attribute, 'only', of the DTML 'with' tag
           prunes the DTML namespace to only the namespace created
-	  with the with tag.
+          with the with tag.
 
         - Added contributed support for encoding options in the SendMail
           tag and MailHost send method.
+          
+        - Mangement tabs are now prettier and allow status messages with
+          the manage_tabs_message variable.
+          
+        - Added a method of notifying users of changes without using a
+          MessageDialog. This makes editing DTML Documents and Methods
+          easier.
+          
+        - Added more documentation to Product add screens.
+
+        - New icons for many Zope objects.
+
+        - Sessions are now known as Versions.
+
+        - Changed from using 'manage_main' as default management method to use
+          'manage_workspace' which is a reserved method that dispatches to the
+          default management interface which is the first interface defined
+          in manage_options
+
+        - Permission settings are now inherited by Products from their base
+          classes. This means when you build a Product you only need to specify
+          its particular permission settings.
+
+        - Changed ZPublisher.publish_module's interface so that instead of
+          providing a stdin, stdout, and stderr, you can provide a Request and
+          a Response object. ZServer makes extensive use of this feature.
+
+        - Added methods to HTTPRequest to allow access to ZPublishers object
+          traversal. HTTPRequest.clone and HTTPRequest.resolve_url. See the
+          source for more details.
+          
+        - Added a new "builtin" function reorder to DTML.
+        
+          reorder(s, [with, without]])
+ 
+          Reorder the items in s according to the order given in with
+          and with items mentioned in without removed.  Items from s
+          not mentioned in with are removed.
+
+          s, with, and without are all either sequences if strings
+          or sequences of key-value tuples, with ordering done on the
+          keys.
+
+          This function is useful for constructing ordered select lists.
 
       Bugs Fixed
+
+        - Added small fixes to ZopeHTTPServer in anticipation of DAV.
 
         - Construction, upload, and edit methods did not consistently
           support either string or file data.  This caused really weird
@@ -74,6 +130,29 @@ Zope Changes
         - Fixed registration of MailHost settings and incorrect default
           quoted-printable encoding of message bodies.
 
+        - Added contributed patch that fixes bug in copied-object id
+          generation.
+
+        - DTML Documents and Methods now attempt to determine their
+          content-type rather than assuming they are text/html.
+
+        - Fixed PUT bug in determining content-type of binary files.
+
+        - Added changes that allow the top level userfolder to be replaced by a
+          UserDB or other userfolder-like object.
+
+        - Fixed an FTP support bug that sometimes kept simple items from
+          producting FTP listings.
+
+        - Added URL1 instead of "." as the form target for the workspace forms --
+          using "." causes NS servers to intercept the request and report an
+          error, making Zope effectively unusable.
+
+        - Added ZPL 1.0 and credits to copyright link in management screen.
+          
+        - Fixed a bug that prevented validate() from working if the top-level
+          object were accessed and no default object (index_html) existed.
+
     Zope  1.10.2
 
       Bugs Fixed
@@ -82,7 +161,7 @@ Zope Changes
           errors when attempting to commit permission changes.
 
         - Factories could not determine the available methods
-	  when they were being edited, making them uneditable.
+          when they were being edited, making them uneditable.
 
     Zope  1.10.1
 
