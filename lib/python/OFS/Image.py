@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.137 $'[11:-2]
+__version__='$Revision: 1.138 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -31,6 +31,7 @@ from Cache import Cacheable
 from mimetools import choose_boundary
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+from cgi import escape
 
 StringType=type('')
 manage_addFileForm=DTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
@@ -740,7 +741,7 @@ class Image(File):
 
         if alt is None:
             alt=getattr(self, 'title', '')
-        result = '%s alt="%s"' % (result, alt)
+        result = '%s alt="%s"' % (result, escape(alt, 1))
 
         if height:
             result = '%s height="%s"' % (result, height)
