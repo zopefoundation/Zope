@@ -17,6 +17,8 @@ def _setenv(name, value):
 
 def debug_mode(value):
     value and _setenv('Z_DEBUG_MODE', '1')
+    import Globals
+    Globals.DevelopmentMode = not not value
     return value
 
 def enable_product_installation(value):

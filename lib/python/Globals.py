@@ -13,7 +13,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -44,17 +44,10 @@ data_dir = _cfg.clienthome
 INSTANCE_HOME = _cfg.instancehome
 SOFTWARE_HOME = _cfg.softwarehome
 ZOPE_HOME = _cfg.zopehome
-del _cfg, _getConfiguration
 
 opened=[]
 
-# Check,if DEBUG variables are set
-DevelopmentMode=None
+DevelopmentMode=_cfg.debug_mode
 
-z1 = os.environ.get('Z_DEBUG_MODE','')
-z2 = os.environ.get('BOBO_DEBUG_MODE','')
+del _cfg, _getConfiguration
 
-if z1.lower() in ('yes','y') or z1.isdigit():
-    DevelopmentMode=1
-elif z2.lower() in ('yes','y') or z2.isdigit():
-    DevelopmentMode=1
