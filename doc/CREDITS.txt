@@ -9,22 +9,38 @@ Credits
     o Sam Rushing worked with us at Digital Creations to make Medusa
     the publishing platform for ZServer and the concurrency of Zope2.
 
+    o Martijn Pieters and Brian Hooper contributed the #in reverse
+    attribute
+
+    o Phillip J. Eby conributed the 'let' tag, a serious contribution
+    to the clarity of DTML
+
     o The DateTime module was based on work from Ted Horst.
 
-    o Jordan Baker contributed the 'try' tag, something I've wanted
+    o Jordan Baker contributed the 'try' tag, something we've wanted
     for a long, long time.
 
     o Martijn Pieters chipped in with a safe range function.
 
     o Michael Hauser came up with the name "Zope".
 
+    o Eric Kidd from Userland contributed to ZPublisher's support for
+    XML-RPC.
+
+    o Andrew M. Kuchling wrote the initial version of mod_pcgi, making 
+    him extremely cool in our book.
+
     o All the other Zopistas far and wide that stuck with us during
     the Bobo/Principia days and politely push us to make the best damn
     app server on this or any other planet.
 
-  Of course the list of credits would be quite incomplete without
-  mentioning Guido van Rossum, benevolent dictator of Python and
-  long-time friend of Digital Creations.  Zope Power is Python Power.
+    o Jephte CLAIN made some patches to European TimeZope 
 
-  Paul Everitt, paul@digicool.com.
+    o Of course the list of credits would be quite incomplete without
+    mentioning Guido van Rossum, benevolent dictator of Python and
+    long-time friend of Digital Creations.  Zope Power is Python
+    Power.
+
+
+
 
