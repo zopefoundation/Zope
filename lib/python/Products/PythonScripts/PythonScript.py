@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -129,8 +129,9 @@ def manage_addPythonScript(self, id, REQUEST=None, submit=None):
     if REQUEST is not None:
         file = REQUEST.form.get('file', '')
         if type(file) is not type(''): file = file.read()
-        if file:
-            self._getOb(id).write(file)
+        if not file:
+            file = open(_default_file).read()
+        self._getOb(id).write(file)
         try: u = self.DestinationURL()
         except: u = REQUEST['URL1']
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
@@ -170,7 +171,7 @@ class PythonScript(Script, Historical, Cacheable):
     def __init__(self, id):
         self.id = id
         self.ZBindings_edit(defaultBindings)
-        self._body = open(_default_file).read()
+        self._makeFunction()
 
     security = AccessControl.ClassSecurityInfo()
 
@@ -468,8 +469,7 @@ class PythonScript(Script, Historical, Cacheable):
             if bup:
                 self._setupBindings(bindmap)
 
-            if self._p_changed:
-                self._makeFunction()
+            self._makeFunction()
         except:
             LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
             raise
