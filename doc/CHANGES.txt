@@ -38,6 +38,17 @@ Zope Changes
       - Added a new script "utitilies/check_catalog.py" to perform
         some consistency checks on a ZCatalog instance
 
+      - Added the following new products related to sessioning:
+        
+	- browser id manager
+
+	- session data manager
+
+	- transient object container
+
+	- temporary folder
+
+      - Zope will create default sessioning objects on startup
   
     Bugs Fixed
     
