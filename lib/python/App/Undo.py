@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.23 2001/01/08 22:46:56 brian Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: Undo.py,v 1.24 2001/01/11 22:42:42 chrism Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -107,7 +107,7 @@ class UndoSupport(ExtensionClass.Base):
          'help':('OFSP','Undo.stx')},
         )
 
-    manage_UndoForm=Globals.HTMLFile(
+    manage_UndoForm=Globals.DTMLFile(
         'dtml/undo',
         globals(),
         PrincipiaUndoBatchSize=20,
@@ -176,7 +176,7 @@ class UndoSupport(ExtensionClass.Base):
             
             
         if REQUEST is None: return
-        REQUEST['RESPONSE'].redirect("%s/manage_main" % REQUEST['URL1'])
+        REQUEST['RESPONSE'].redirect("%s/manage_UndoForm" % REQUEST['URL1'])
         return ''
                  
 Globals.default__class_init__(UndoSupport)
