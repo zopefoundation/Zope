@@ -114,12 +114,15 @@ class HelpSystem(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
     def __init__(self, id):
         self.id=id
-    
+
     def helpValues(self, spec=None):
-        "ProductHelp objects of all Products"
+        "ProductHelp objects of all Products that have help"
         hv=[]
         for product in self.Control_Panel.Products.objectValues():
-            hv.append(product.getProductHelp())
+            productHelp=product.getProductHelp()
+            # only list products that actually have help
+            if productHelp.helpValues():
+                hv.append(productHelp)
         return hv
 
     # Seaching does an aggregated search of all ProductHelp
@@ -156,9 +159,9 @@ class HelpSystem(Acquisition.Implicit, ObjectManager, Item, Persistent):
         return self.button(self, self.REQUEST, product=product, topic=topic)
 
     helpURL=HTMLFile('helpURL',globals())
-    
 
-        
+
+
 class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
     Manages a collection of Help Topics for a given Product.
@@ -168,6 +171,8 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
     meta_type='Product Help'
     icon='p_/ProductHelp_icon'
+
+    lastRegistered=None
     
     meta_types=({'name':'Help Topic',
                  'action':'addTopicForm',
@@ -214,7 +219,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         if REQUEST is not None:
             return self.manage_main(self, REQUEST,
                                     manage_tabs_message='Help Topic added.')
-        
+
     def helpValues(self, REQUEST=None):
         """
         Lists contained Help Topics.
@@ -236,6 +241,6 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         Searchable interface
         """
         return apply(self.catalog.__call__, args, kw)
-    
+
     standard_html_header=HTMLFile('topic_header', globals())
     standard_html_footer=HTMLFile('topic_footer', globals())
