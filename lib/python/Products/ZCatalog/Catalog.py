@@ -385,24 +385,28 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         Note, the uid must be the same as when the object was
         catalogued, otherwise it will not get removed from the catalog
 
-        """
-        try:
-            rid = self.uids[uid]
+        This method should not raise an exception if the uid cannot
+        be found in the catalog.
 
-            for x in self.indexes.values():
+        """
+        data = self.data
+        uids = self.uids
+        paths = self.paths
+        indexes = self.indexes
+        rid = uids.get(uid, None)
+
+        if rid is not None:
+            for x in indexes.values():
                 x = x.__of__(self)
                 if hasattr(x, 'unindex_object'):
-                    try:
-                        x.unindex_object(rid)
-                    except KeyError:
-                        pass  #fugedaboudit
-
-            del self.data[rid]
-            del self.uids[uid]
-            del self.paths[rid]
-
-        except:
-            pass
+                    x.unindex_object(rid)
+                    # this should never raise an exception
+            for btree in (data, paths):
+                try:
+                    del btree[rid]
+                except KeyError:
+                    pass
+            del uids[uid]
 
     def clear(self):
         """ clear catalog """

@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -316,18 +316,23 @@ class UnTextIndex(Persistent, Implicit):
 
 
     def unindex_object(self, i, tt=type(()) ): 
-        """ unindex object 'obj' with iteger id 'i' from the text index """
+        """ carefully unindex document with integer id 'i' from the text
+        index and do not fail if it does not exist """
         index = self._index
-        for n in self._unindex[i]:
-            v = index[n]
-            if type(v) is tt:
-                del index[n]
-            else:
-                del index[n][i]
-
-        del self._unindex[i]
-        
-        self._index = index
+        unindex = self._unindex
+        val = unindex.get(i, None)
+        if val is not None:
+            for n in val:
+                v = index.get(n, None)
+                if type(v) is tt:
+                    del index[n]
+                elif v is not None:
+                    try:
+                        del index[n][i]
+                    except (KeyError, IndexError, TypeError):
+                        pass
+            del unindex[i]
+            self._index = index
 
 
 

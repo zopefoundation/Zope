@@ -43,16 +43,17 @@ class UnKeywordIndex(UnIndex):
     
 
     def unindex_object(self, i):
-        """ Unindex the object with integer id 'i' """
+        """ carefully unindex the object with integer id 'i' and do not
+        fail if it does not exist """
         index = self._index
         unindex = self._unindex
 
-        kws = unindex[i]
+        kws = unindex.get(i, None)
         if kws is None:
             return None
         
         for kw in kws:
-            set = index.get(kw)
+            set = index.get(kw, None)
             if set is not None: set.remove(i)
         
         del unindex[i]
