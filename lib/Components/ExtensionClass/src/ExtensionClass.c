@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
+  Copyright (c) 1996-2000, Digital Creations, Fredericksburg, VA, USA.  
   All rights reserved.
   
   Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.40 2000/11/04 16:18:56 jim Exp $
+  $Id: ExtensionClass.c,v 1.41 2000/12/26 15:20:23 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.40 2000/11/04 16:18:56 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.41 2000/12/26 15:20:23 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -704,6 +704,7 @@ bindPMethod(PMethod *m, PyObject *inst)
 
   Py_INCREF(inst);
   Py_INCREF(m->type);
+  Py_INCREF(m->meth);
   self->type=m->type;
   self->self=inst;
   self->meth=m->meth;
@@ -733,6 +734,7 @@ PMethod_dealloc(PMethod *self)
 #endif
   Py_XDECREF(self->type);
   Py_XDECREF(self->self);
+  Py_XDECREF(self->meth);
   self->self=(PyObject*)freePMethod;
   freePMethod=self;
 #ifdef TRACE_DEALLOC
@@ -3521,7 +3523,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.40 $";
+  char *rev="$Revision: 1.41 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
