@@ -2,7 +2,7 @@
 <dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
 <dtml-var manage_tabs>
 
-<dtml-tree>
+<dtml-tree sort=id>
 <dtml-if "meta_type =='Help Topic'">
   <a href="<dtml-var absolute_url>" target="help_main"><dtml-var title_or_id></a>
 <dtml-else>
