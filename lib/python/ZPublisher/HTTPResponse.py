@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.31 2000/06/28 14:11:02 brian Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+$Id: HTTPResponse.py,v 1.32 2000/08/07 17:15:25 brian Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -328,8 +328,9 @@ class HTTPResponse(BaseResponse):
                    base_re_search=regex.compile('\(<base[\0- ]+[^>]+>\)',
                                                 regex.casefold).search
                    ):
-        if (self.headers.has_key('content-type') and
-            self.headers['content-type'] != 'text/html'): return
+        # Only insert a base tag if content appears to be html.
+        if self.headers.get('content-type', '')[:9] != 'text/html':
+            return
 
         if self.base:
             body=self.body
@@ -688,7 +689,8 @@ class HTTPResponse(BaseResponse):
                     c='text/plain'
                 self.setHeader('content-type',c)
             else:
-                isHTML = headers['content-type']=='text/html'
+                isHTML = headers['content-type'][:9] == 'text/html'
+
             if isHTML and end_of_header_search(self.body) < 0:
                 lhtml=html_search(body)
                 if lhtml >= 0:
