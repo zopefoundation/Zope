@@ -186,6 +186,7 @@ class PM(ExtensionClass.Base):
     _owner=UnownableOwner
 
     _View_Permission='_View_Permission'
+    _is_wrapperish = 1
         
     def __getattr__(self, name):
         # We want to make sure that any non-explicitly set methods are
