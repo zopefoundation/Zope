@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.3 2001/05/31 12:22:52 andreas Exp $'
+__version__ = '$Id: PathIndex.py,v 1.4 2001/06/01 18:53:39 andreas Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -119,12 +119,15 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
 
     meta_type="PathIndex"
-
+    
     manage_options= (
         {'label': 'Settings',     
          'action': 'manage_main',
          'help': ('PathIndex','PathIndex_Settings.stx')},
     )
+
+    query_options = ["query","level"]
+
 
     def __init__(self,id,caller=None):
         self.id = id
@@ -329,7 +332,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         cid      ???
         """
 
-        record = parseIndexRequest(request,self.id)
+        record = parseIndexRequest(request,self.id,self.query_options)
         if record.keys==None: return None
 
         # get the level parameter 

@@ -96,6 +96,8 @@ import KeywordIndex.KeywordIndex
 
 _indexes =  ['TextIndex','KeywordIndex','FieldIndex','PathIndex']
 
+from TextIndex.Splitter import ZopeSplitter as ZS
+
 def initialize(context):
 
     for idx in _indexes:
@@ -114,9 +116,13 @@ def initialize(context):
     context.registerHelp()
     context.registerHelpTitle('Indexes (Pluggable)')
 
+    context.registerClass(ZS.ZopeSplitter,permission="Splitter",constructors=(ZS.ZopeSplitter.a,ZS.ZopeSplitter.b))
+
 
 for idx in _indexes:
 
     exec("manage_add%sForm = %s.%s.manage_add%sForm" % (idx,idx,idx,idx))
     exec("manage_add%s     = %s.%s.manage_add%s" % (idx,idx,idx,idx))
+
+
 

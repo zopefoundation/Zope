@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.4 $'[11:-2]
+__version__ = '$Revision: 1.5 $'[11:-2]
 
 
 import string, re
@@ -149,6 +149,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
          'action': 'manage_main',
          'help': ('TextIndex','TextIndex_Settings.stx')},
     )
+
+    query_options = ["query","operator"]
  
     def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,extra=None):
         """Create an index
@@ -501,7 +503,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         all data fields used.  
         """
 
-        record = parseIndexRequest(request,self.id)
+        record = parseIndexRequest(request,self.id,self.query_options)
         if record.keys==None: return None
 
         # Changed for 2.4

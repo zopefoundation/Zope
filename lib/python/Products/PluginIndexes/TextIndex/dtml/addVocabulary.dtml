@@ -67,4 +67,7 @@
 </table>
 </form>
 
+<dtml-var "objectItems("splitter")>
+<dtml-var "objectItems()">
+
 <dtml-var manage_page_footer>

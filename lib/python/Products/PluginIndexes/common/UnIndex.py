@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -108,7 +108,6 @@ _marker = []
 class UnIndex(Persistent, Implicit):
     """UnIndex object interface"""
 
-    meta_type = 'Field Index'
 
     def __init__(self, id, ignore_ex=None, call_methods=None):
         """Create an unindex
@@ -378,7 +377,8 @@ class UnIndex(Persistent, Implicit):
 
         """
 
-        record = parseIndexRequest(request,self.id)
+
+        record = parseIndexRequest(request, self.id, self.query_options)
         if record.keys==None: return None
 
         index = self._index

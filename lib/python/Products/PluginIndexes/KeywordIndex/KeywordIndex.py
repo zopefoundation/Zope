@@ -111,6 +111,8 @@ class KeywordIndex(UnIndex,PluggableIndex.PluggableIndex,Persistent,
          'help': ('KeywordIndex','KeywordIndex_Settings.stx')},
     )
 
+    query_options = ["query","operator"]
+
     
     """Like an UnIndex only it indexes sequences of items
     

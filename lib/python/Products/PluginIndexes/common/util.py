@@ -83,7 +83,7 @@
 # 
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.3 2001/06/01 16:50:06 shane Exp $'
+__version__ = '$Id: util.py,v 1.4 2001/06/01 18:53:40 andreas Exp $'
 
 
 import re
@@ -124,12 +124,13 @@ class parseIndexRequest:
 
     ParserException = 'IndexRequestParseError'
 
-    def __init__(self,request,iid): 
+    def __init__(self,request,iid,options=[]): 
         """ parse a request  from the ZPublisher and return a uniform
         datastructure back to the _apply_index() method of the index
 
           request -- the request dictionary send from the ZPublisher
           iid     -- Id of index
+          options -- a list of options the index is interested in 
         """
 
         self.id         = iid
@@ -137,17 +138,11 @@ class parseIndexRequest:
 
         if not request.has_key(iid): return
 
+        # We keep this for backward compatility
         if request.has_key(iid+'_usage'):
             self.usage = request[iid+'_usage']
 
-        if request.has_key(iid+'_operator'):
-            self.operator = request[iid+'_operator']
-
         keys = request[iid]
-
-
-        # This check checks if the object is an instance of
-        # Record - This check is lame and should be fixed !
 
         if type(keys) == InstanceType:
             """ query is of type record """
@@ -164,22 +159,27 @@ class parseIndexRequest:
             elif type(keys) == ListType:
                 self.keys = keys
 
-            for k in dir(record):
-                if not k in ['query','operator']: 
+            for op in options:
+                if op in ["query"]: continue 
+
+                if hasattr(record,op):
                     setattr(self,k,getattr(record,k))
+
 
         elif type(keys)==DictType:
             """ query is a dictionary containing all parameters """
-
+    
             query = keys.get("query",[])
             if type(query) in [TupleType,ListType]:
                 self.keys = query
             else:
                 self.keys = [ query ]
 
-            for k,v in keys.items():
-                if k in ["query"]: continue
-                setattr(self,k,v)
+            for op in  options:         
+                if op in ["query"]: continue
+
+                if keys.has_key(op):
+                    setattr(self,op,keys[op])
  
 
         else:
@@ -190,16 +190,10 @@ class parseIndexRequest:
             else:
                 self.keys = [keys]
 
-            if hasattr(request, 'keys'):
-                # Look through the entire request for extra parameters.
-                # This is expensive!
-                params = filter(lambda x,id=self.id: x.startswith(id+'_'),
-                                request.keys())
+            for op in options:
+                if request.has_key(iid+"_"+op):
+                    setattr(self,op,request[iid+"_"+op])
 
-                params = map(lambda x,id=self.id: x[len(id)+1:],params)
-
-                for p in params: 
-                    setattr(self,p,request[self.id+'_'+p])
 
         if self.keys != None:
             self.keys = filter(lambda x: len(str(x))>0 , self.keys)
@@ -219,7 +213,7 @@ class parseIndexRequest:
 
 def test():
 
-    r  = parseIndexRequest({'path':{'query':"xxxx","level":2,"operator":'and'}},'path')
+    r  = parseIndexRequest({'path':{'query':"xxxx","level":2,"operator":'and'}},'path',['query',"level","operator"])
     for k in dir(r):
         print k,getattr(r,k)
 

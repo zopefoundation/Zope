@@ -93,7 +93,7 @@ except ImportError:
 
 import ZODB
 import unittest
-from Products.PluginIndexes.common.UnIndex import UnIndex
+from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 
 class Dummy:
 
@@ -116,7 +116,7 @@ class TestCase( unittest.TestCase ):
     def setUp( self ):
         """
         """
-        self._index = UnIndex( 'foo' )
+        self._index = FieldIndex( 'foo' )
         self._marker = []
         self._values = [ ( 0, Dummy( 'a' ) )
                        , ( 1, Dummy( 'ab' ) )
@@ -229,7 +229,7 @@ class TestCase( unittest.TestCase ):
 
     def testRange(self):
         """Test a range search"""
-        index = UnIndex( 'foo' )
+        index = FieldIndex( 'foo' )
         for i in range(100):
             index.index_object(i, Dummy(i%10))
 

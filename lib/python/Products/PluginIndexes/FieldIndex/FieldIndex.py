@@ -1,4 +1,4 @@
-##############################################################################
+#############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
 # -------------------------------------
@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -109,8 +109,6 @@ from OFS.History import Historical
 from OFS.SimpleItem import SimpleItem
 
 
-import sys
-
 _marker = []
 
 class FieldIndex(UnIndex,PluggableIndex.PluggableIndex, Persistent,
@@ -127,6 +125,7 @@ class FieldIndex(UnIndex,PluggableIndex.PluggableIndex, Persistent,
          'help': ('FieldIndex','FieldIndex_Settings.stx')},
     )
 
+    query_options = ["query","range"]
 
     index_html = DTMLFile('dtml/index', globals())
 
