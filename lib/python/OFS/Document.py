@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -48,6 +48,7 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 		  ('View Access', ['View',]),
 		 )
 
+    __call____roles__='Manager', 'Shared'
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
 	""" """
 	kw['document_id']   =self.id
@@ -114,6 +115,7 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 		    message='Your changes have been saved',
 		    action ='manage_main')
 
+    PUT__roles__='Manager',
     def PUT(self, BODY, REQUEST):
 	""" """
 	self.munge(BODY)
