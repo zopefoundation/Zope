@@ -136,6 +136,7 @@ sys.modules['Main']=sys.modules['Zope']
 
 import ZODB.POSException, ZPublisher, string, ZPublisher, AccessControl.User
 import ExtensionClass
+from zLOG import LOG, INFO
 
 def debug(*args, **kw):
     return apply(ZPublisher.test,('Zope',)+args, kw)
@@ -162,7 +163,8 @@ def zpublisher_exception_hook(
             # do this by releasing the hold on it. There should be
             # some sane protocol for this, but for now we'll use
             # brute force:
-            REQUEST._held=()
+            LOG('Z2 CONFLICT', INFO,
+                'Conflict Error, %s' % REQUEST.get('PATH_INFO', ''))
             raise ZPublisher.Retry
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
