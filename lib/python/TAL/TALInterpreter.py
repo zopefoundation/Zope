@@ -88,8 +88,8 @@ Interpreter for a pre-compiled TAL program.
 
 import sys
 import getopt
-import cgi
 
+from cgi import escape
 from string import join, lower, rfind
 try:
     from strop import lower, rfind
@@ -199,7 +199,8 @@ class TALInterpreter:
         self._stream_write = self.stream.write
         assert self.level == level
         while self.scopeLevel > scopeLevel:
-            self.do_endScope()
+            self.engine.endScope()
+            self.scopeLevel = self.scopeLevel - 1
 
     def restoreOutputState(self, state):
         (dummy, self.col, self.stream, scopeLevel, level) = state
@@ -246,12 +247,10 @@ class TALInterpreter:
 
     bytecode_handlers = {}
 
-    def interpret(self, program):
-        self.level = self.level + 1
+    def interpret(self, program, None=None):
+        oldlevel = self.level
+        self.level = oldlevel + 1
         handlers = self.dispatch
-        _apply = apply
-        _tuple = tuple
-        tup = (self,)
         try:
             if self.debug:
                 for (opcode, args) in program:
@@ -265,8 +264,7 @@ class TALInterpreter:
                 for (opcode, args) in program:
                     handlers[opcode](self, args)
         finally:
-            self.level = self.level - 1
-            del tup
+            self.level = oldlevel
 
     def do_version(self, version):
         assert version == TAL_VERSION
@@ -291,7 +289,7 @@ class TALInterpreter:
     bytecode_handlers["startEndTag"] = do_startEndTag
 
     def do_startTag(self, (name, attrList),
-                    end=">", endlen=1, _len=len, _quote=quote):
+                    end=">", endlen=1, _len=len):
         # The bytecode generator does not cause calls to this method
         # for start tags with no attributes; those are optimized down
         # to rawtext events.  Hence, there is no special "fast path"
@@ -304,18 +302,15 @@ class TALInterpreter:
         align = col + 1 + namelen
         if align >= wrap/2:
             align = 4  # Avoid a narrow column far to the right
+        attrAction = self.dispatch["<attrAction>"]
         try:
             for item in attrList:
                 if _len(item) == 2:
                     name, s = item
                 else:
-                    ok, name, value = self.attrAction(item)
+                    ok, name, s = attrAction(self, item)
                     if not ok:
                         continue
-                    if value is None:
-                        s = name
-                    else:
-                        s = "%s=%s" % (name, _quote(value))
                 slen = _len(s)
                 if (wrap and
                     col >= align and
@@ -334,10 +329,44 @@ class TALInterpreter:
 
     def attrAction(self, item):
         name, value, action = item[:3]
-        if not self.showtal and action > 1:
+        if action > 1 and not self.showtal:
             return 0, name, value
         ok = 1
-        if action <= 1 and self.tal:
+        if action == 2 and self.metal:
+            i = rfind(name, ":") + 1
+            prefix, suffix = name[:i], name[i:]
+            ##self.dumpMacroStack(prefix, suffix, value)
+            what, macroName, slots = self.macroStack[-1]
+            if suffix == "define-macro":
+                if what == "use-macro":
+                    name = prefix + "use-macro"
+                    value = macroName
+                else:
+                    assert what == "define-macro"
+                    i = self.macroContext("use-macro")
+                    if i >= 0:
+                        j = self.macroContext("define-slot")
+                        if j > i:
+                            name = prefix + "use-macro"
+                        else:
+                            return 0, name, value
+            elif suffix == "define-slot":
+                assert what == "define-slot"
+                if self.macroContext("use-macro") >= 0:
+                    name = prefix + "fill-slot"
+
+        if value is None:
+            value = name
+        else:
+            value = "%s=%s" % (name, quote(value))
+        return ok, name, value
+
+    def attrAction_tal(self, item):
+        name, value, action = item[:3]
+        if action > 1 and not self.showtal:
+            return 0, name, value
+        ok = 1
+        if action <= 1:
             if self.html and lower(name) in BOOLEAN_HTML_ATTRS:
                 evalue = self.engine.evaluateBoolean(item[3])
                 if evalue is self.Default:
@@ -379,9 +408,13 @@ class TALInterpreter:
                 if self.macroContext("use-macro") >= 0:
                     name = prefix + "fill-slot"
 
-        elif action == 1: # Unexecuted insert
-            ok = 0
+        if ok:
+            if value is None:
+                value = name
+            else:
+                value = "%s=%s" % (name, quote(value))
         return ok, name, value
+    bytecode_handlers["<attrAction>"] = attrAction
 
     def dumpMacroStack(self, prefix, suffix, value):
         sys.stderr.write("+---- %s%s = %s\n" % (prefix, suffix, value))
@@ -407,36 +440,40 @@ class TALInterpreter:
         self.scopeLevel = self.scopeLevel - 1
     bytecode_handlers["endScope"] = do_endScope
 
-    def do_setLocal(self, junk):
+    def do_setLocal(self, notused):
         pass
 
     def do_setLocal_tal(self, (name, expr)):
-        value = self.engine.evaluateValue(expr)
-        self.engine.setLocal(name, value)
+        self.engine.setLocal(name, self.engine.evaluateValue(expr))
     bytecode_handlers["setLocal"] = do_setLocal
 
     def do_setGlobal_tal(self, (name, expr)):
-        value = self.engine.evaluateValue(expr)
-        self.engine.setGlobal(name, value)
+        self.engine.setGlobal(name, self.engine.evaluateValue(expr))
     bytecode_handlers["setGlobal"] = do_setLocal
 
-    def do_insertText(self, (expr, block)):
-        self.interpret(block)
+    def do_insertText(self, stuff):
+        self.interpret(stuff[1])
 
-    def do_insertText_tal(self, (expr, block)):
-        text = self.engine.evaluateText(expr)
+    def do_insertText_tal(self, stuff):
+        text = self.engine.evaluateText(stuff[0])
         if text is None:
             return
         if text is self.Default:
-            self.interpret(block)
+            self.interpret(stuff[1])
             return
-        self.stream_write(cgi.escape(text))
+        s = escape(text)
+        self._stream_write(s)
+        i = rfind(s, '\n')
+        if i < 0:
+            self.col = self.col + len(s)
+        else:
+            self.col = len(s) - (i + 1)
     bytecode_handlers["insertText"] = do_insertText
 
-    def do_insertStructure(self, (expr, repldict, block)):
-        if not self.tal:
-            self.interpret(block)
-            return
+    def do_insertStructure(self, stuff):
+        self.interpret(stuff[2])
+
+    def do_insertStructure_tal(self, (expr, repldict, block)):
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
             return
@@ -580,9 +617,11 @@ class TALInterpreter:
     bytecode_handlers_tal["beginScope"] = do_beginScope_tal
     bytecode_handlers_tal["setLocal"] = do_setLocal_tal
     bytecode_handlers_tal["setGlobal"] = do_setGlobal_tal
+    bytecode_handlers_tal["insertStructure"] = do_insertStructure_tal
     bytecode_handlers_tal["insertText"] = do_insertText_tal
     bytecode_handlers_tal["loop"] = do_loop_tal
     bytecode_handlers_tal["onError"] = do_onError_tal
+    bytecode_handlers_tal["<attrAction>"] = attrAction_tal
 
 
 def test():
