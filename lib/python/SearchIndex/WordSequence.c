@@ -150,98 +150,114 @@ check_synstop(WordSequence *self, PyObject *word)
 
     return value;		/* Which must be None! */
 }
-    
+ 
+#define MAX_WORD 256
+   
 static PyObject *
 next_word(WordSequence *self)
 {
-    char wbuf[256];
-    char *tmp_ptr;
-    int size = PyString_Size(self->wordletters), i = 0;
-    PyObject *pyword, *res;
+  char wbuf[MAX_WORD];
+  char *p, *end, *here, *b;
+  int size = PyString_Size(self->wordletters), i = 0;
+  PyObject *pyword, *res;
 
-    while (self->here < self->end)
+  here=self->here;
+  end=self->end;
+  b=wbuf;
+  while (here < end)
     {
-        /* skip hyphens */ 
-        if ((i > 0) && (*self->here == '-'))
+      /* skip hyphens */ 
+      if ((i > 0) && (*here == '-'))
         {
-            tmp_ptr = self->here;
-            while ((*(++tmp_ptr) <= ' ') && (tmp_ptr < self->end));
-
-            if ((tmp_ptr < self->end) && (tmp_ptr - self->here) > 1)
-            {
-                self->here = tmp_ptr;
-	    }
+	  while ((*++here <= ' ') && (here < end));
+	  continue;
 	}
-               
-        /* Check to see if this character is part of a word */
-        if (memchr(self->cwordletters, *self->here, size))
+      
+      /* Check to see if this character is part of a word */
+      if (memchr(self->cwordletters, *here, size))
         {
-            wbuf[i++] = *self->here;
+	  if(i++ < MAX_WORD) *b++ = *here;
         }
-        else if (i != 0)
+      else if (i != 0)
         {
-
-	    /* We've found the end of a word */
-
-	    /* Check for a phone number (I know it's lame :) */
-	    if(wbuf[0] >= '0' && wbuf[0] <= '9' && 
-	       wbuf[1] >= '0' && wbuf[1] <= '9' && 
-	       wbuf[2] >= '0' && wbuf[2] <= '9' &&
-	       wbuf[3] == '-' &&
-	       wbuf[4] >= '0' && wbuf[4] <= '9' && 
-	       wbuf[5] >= '0' && wbuf[5] <= '9' && 
-	       wbuf[6] >= '0' && wbuf[6] <= '9' && 
-	       wbuf[7] >= '0' && wbuf[7] <= '9')
-	      {
-		i=0;
-		self->here++;
-		continue;
-	      }
-	    
-            UNLESS(pyword = PyString_FromStringAndSize(wbuf, i))
-            {
-                return NULL;
+	  if(i >= MAX_WORD)
+	    {
+	      /* Ridiculously long word! */
+	      i=0;
+	      b=wbuf;
+	      here++;
+	      continue;
+	    }
+	  
+	  /* Check for and skip a phone number (I know it's lame :) */
+	  if(i == 8 &&
+	     wbuf[0] >= '0' && wbuf[0] <= '9' && 
+	     wbuf[1] >= '0' && wbuf[1] <= '9' && 
+	     wbuf[2] >= '0' && wbuf[2] <= '9' &&
+	     wbuf[3] == '-' &&
+	     wbuf[4] >= '0' && wbuf[4] <= '9' && 
+	     wbuf[5] >= '0' && wbuf[5] <= '9' && 
+	     wbuf[6] >= '0' && wbuf[6] <= '9' && 
+	     wbuf[7] >= '0' && wbuf[7] <= '9')
+	    {
+	      i=0;
+	      b=wbuf;
+	      here++;
+	      continue;
 	    }
 
-            UNLESS(res = check_synstop(self, pyword))
+	  UNLESS(pyword = PyString_FromStringAndSize(wbuf, i))
             {
-                Py_DECREF(pyword);
-                return NULL;
+	      self->here=here;
+	      return NULL;
+	    }
+	  
+	  /* We've found the end of a word */
+	  
+	  UNLESS(res = check_synstop(self, pyword))
+            {
+	      self->here=here;
+	      Py_DECREF(pyword);
+	      return NULL;
+	    }
+	  
+	  if (res != Py_None)
+            {
+	      self->here=here;
+	      Py_DECREF(pyword);
+	      return res;
 	    }
 
-            if (res != Py_None)
-            {
-                Py_DECREF(pyword);
-                return res;
-	    }
+	  /* The word is a stopword, so ignore it */ 
 
-	    /* The word is a stopword, so ignore it */ 
-
-            Py_DECREF(res);          
-            Py_DECREF(pyword);
-            i = 0;
+	  Py_DECREF(res);          
+	  Py_DECREF(pyword);
+	  i = 0;
+	  b=wbuf;
         }            
-
-        self->here++;
+      
+      here++;
     }
 
-    /* We've reached the end of the string */
+  self->here=here;
 
-    if (i == 0)
+  /* We've reached the end of the string */
+
+  if (i == 0)
     { 
-        /* No words */
-        Py_INCREF(Py_None);
-        return Py_None;
+      /* No words */
+      Py_INCREF(Py_None);
+      return Py_None;
     }
-
-    UNLESS(pyword = PyString_FromStringAndSize(wbuf, i))
+  
+  UNLESS(pyword = PyString_FromStringAndSize(wbuf, i))
     {
-        return NULL;
+      return NULL;
     }
-
-    res = check_synstop(self, pyword);
-    Py_DECREF(pyword);
-    return res;
+  
+  res = check_synstop(self, pyword);
+  Py_DECREF(pyword);
+  return res;
 }
  
 static void
@@ -538,7 +554,7 @@ static char WordSequence_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: WordSequence.c,v 1.8 1997/07/17 14:44:45 jim Exp $\n"
+"$Id: WordSequence.c,v 1.9 1997/07/31 22:31:58 jim Exp $\n"
 ;
 
 void
