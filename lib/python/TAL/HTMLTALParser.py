@@ -191,14 +191,15 @@ class HTMLTALParser(HTMLParser):
     # Overriding HTMLParser methods
 
     def handle_starttag(self, tag, attrs):
+        if tag in EMPTY_HTML_TAGS:
+            return self.handle_startendtag(tag, attrs)
+        
         self.close_para_tags(tag)
         self.tagstack.append(tag)
         self.scan_xmlns(attrs)
         attrlist, taldict, metaldict = self.extract_attrs(attrs)
         self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
                                   self.getpos())
-        if tag in EMPTY_HTML_TAGS:
-            self.implied_endtag(tag, -1)
 
     def handle_startendtag(self, tag, attrs):
         self.close_para_tags(tag)
