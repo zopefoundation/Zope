@@ -218,7 +218,7 @@ class zhttp_handler:
         env['SERVER_PROTOCOL']=request.version
         if self.uri_base=='/':
             env['SCRIPT_NAME']=''
-            env['PATH_INFO']=path
+            env['PATH_INFO']='/' + path
         else:
             env['SCRIPT_NAME'] = self.uri_base
             try:
