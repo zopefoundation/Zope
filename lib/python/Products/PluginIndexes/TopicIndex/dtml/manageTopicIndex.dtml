@@ -121,7 +121,7 @@
     </div>
     </td>
     <td align="left" valign="top">
-    <textarea type="text" name="expr" cols="60" rows="5" />
+    <textarea type="text" name="expr" cols="60" rows="5"></textarea>
     </td>
   </tr>
   <tr>
