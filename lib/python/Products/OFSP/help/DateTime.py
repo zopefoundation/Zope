@@ -87,22 +87,21 @@
 class DateTime:
 
     """
-
     The DateTime object provides an interface for working with dates
     and times in various formats.  DateTime also provides methods for
     calendar operations, date and time arithmetic and formatting.
 
-   DateTime objects represent instants in time and provide
-   interfaces for controlling its representation without
-   affecting the absolute value of the object. 
+    DateTime objects represent instants in time and provide
+    interfaces for controlling its representation without
+    affecting the absolute value of the object. 
 
-   DateTime objects may be created from a wide variety of string 
-   or numeric data, or may be computed from other DateTime objects.
-   DateTimes support the ability to convert their representations
-   to many major timezones, as well as the ability to create a
-   DateTime object in the context of a given timezone.
+    DateTime objects may be created from a wide variety of string 
+    or numeric data, or may be computed from other DateTime objects.
+    DateTimes support the ability to convert their representations
+    to many major timezones, as well as the ability to create a
+    DateTime object in the context of a given timezone.
 
-   DateTime objects provide partial numerical behavior:
+    DateTime objects provide partial numerical behavior:
 
       - Two date-time objects can be subtracted to obtain a time,
         in days between the two.
@@ -282,104 +281,103 @@ class DateTime:
 
     def timeTime():
         """
-
         Return the date/time as a floating-point number in UTC, in the
         format used by the python time module.  Note that it is
         possible to create date/time values with DateTime that have no
         meaningful value to the time module.
 
+        Permission -- Always available
         """
 
     def toZone(z):
         """
-
         Return a DateTime with the value as the current object,
         represented in the indicated timezone.
 
+        Permission -- Always available
         """
 
     def isFuture():
         """
-
         Return true if this object represents a date/time later than
         the time of the call
 
+        Permission -- Always available
         """
 
     def isPast():
         """
-
         Return true if this object represents a date/time earlier than
         the time of the call
 
+        Permission -- Always available
         """
 
     def isCurrentYear():
         """
-
         Return true if this object represents a date/time that falls
         within the current year, in the context of this object\'s
         timezone representation
 
+        Permission -- Always available
         """
 
     def isCurrentMonth():
         """
-
         Return true if this object represents a date/time that falls
         within the current month, in the context of this object\'s
         timezone representation
 
+        Permission -- Always available
         """
 
     def isCurrentDay():
         """
-
         Return true if this object represents a date/time that falls
         within the current day, in the context of this object\'s
         timezone representation
 
+        Permission -- Always available
         """
 
     def isCurrentHour():
         """
-
         Return true if this object represents a date/time that falls
         within the current hour, in the context of this object\'s
         timezone representation
 
+        Permission -- Always available
         """
 
     def isCurrentMinute():
         """
-
         Return true if this object represents a date/time that falls
         within the current minute, in the context of this object\'s
         timezone representation
 
+        Permission -- Always available
         """
 
     def earliestTime():
         """
-
         Return a new DateTime object that represents the earliest
         possible time (in whole seconds) that still falls within the
-        current object\'s day, in the object\'s timezone context
+        current object's day, in the object's timezone context
 
+        Permission -- Always available
         """
 
     def latestTime():
         """
-
         Return a new DateTime object that represents the latest
         possible time (in whole seconds) that still falls within the
-        current object\'s day, in the object\'s timezone context
+        current object's day, in the object's timezone context
 
+        Permission -- Always available
         """
 
     def greaterThan(self,t):
         """
-
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
         python time module. Returns true if the object represents a
@@ -387,11 +385,11 @@ class DateTime:
         style time.  Revised to give more correct results through
         comparison of long integer milliseconds.
 
+        Permission -- Always available
         """
 
     def greaterThanEqualTo(self,t):
         """
-
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
         python time module. Returns true if the object represents a
@@ -399,11 +397,11 @@ class DateTime:
         time module style time.  Revised to give more correct results
         through comparison of long integer milliseconds.
 
+        Permission -- Always available
         """
 
     def equalTo(self,t):
         """
-
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
         python time module. Returns true if the object represents a
@@ -411,11 +409,11 @@ class DateTime:
         time.  Revised to give more correct results through comparison
         of long integer milliseconds.
 
+        Permission -- Always available
         """
 
     def notEqualTo(self,t):
         """
-
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
         python time module. Returns true if the object represents a
@@ -423,11 +421,11 @@ class DateTime:
         style time.  Revised to give more correct results through
         comparison of long integer milliseconds.
 
+        Permission -- Always available
         """
 
     def lessThan(self,t):
         """
-
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
         python time module. Returns true if the object represents a
@@ -435,11 +433,11 @@ class DateTime:
         style time.  Revised to give more correct results through
         comparison of long integer milliseconds.
 
+        Permission -- Always available
         """
 
     def lessThanEqualTo(self,t):
         """
-
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
         python time module. Returns true if the object represents a
@@ -447,215 +445,210 @@ class DateTime:
         module style time.  Revised to give more correct results
         through comparison of long integer milliseconds.
 
+        Permission -- Always available
         """
 
     def isLeapYear():
         """
-
         Return true if the current year (in the context of the
-        object\'s timezone) is a leap year
+        object's timezone) is a leap year
 
+        Permission -- Always available
         """
 
     def dayOfYear():
         """
-
         Return the day of the year, in context of the timezone
         representation of the object
 
+        Permission -- Always available
         """
 
     # Component access
     def parts():
         """
-
         Return a tuple containing the calendar year, month, day, hour,
         minute second and timezone of the object
 
+        Permission -- Always available
         """
 
     def timezone():
         """
-
         Return the timezone in which the object is represented.
 
+        Permission -- Always available
         """
 
     def year():
         """
-
         Return the calendar year of the object
 
+        Permission -- Always available
         """
-
 
     def month():
         """
-
         Return the month of the object as an integer
 
+        Permission -- Always available
         """
 
 
     def Month():
         """
-
         Return the full month name
 
+        Permission -- Always available
         """
 
 
     def aMonth():
         """
-
         Return the abbreviated month name.
 
+        Permission -- Always available
         """
 
 
     def Mon():
         """
-
         Compatibility: see aMonth
 
+        Permission -- Always available
         """
 
 
     def pMonth():
         """
-
         Return the abbreviated (with period) month name.
 
+        Permission -- Always available
         """
 
 
     def Mon_():
         """
-
         Compatibility: see pMonth
 
+        Permission -- Always available
         """
 
 
     def day():
         """
-
         Return the integer day
 
+        Permission -- Always available
         """
 
 
     def Day(): 
         """
-
         Return the full name of the day of the week
 
+        Permission -- Always available
         """
 
 
     def DayOfWeek():
         """
-
         Compatibility: see Day
 
+        Permission -- Always available
         """
 
 
     def aDay():
         """
-
         Return the abbreviated name of the day of the week
 
+        Permission -- Always available
         """
-
 
     def pDay():
         """
-
         Return the abbreviated (with period) name of the day of the
         week
 
-
+        Permission -- Always available
         """
-
 
     def Day_():
         """
-
         Compatibility: see pDay
 
+        Permission -- Always available
         """
-
 
     def dow():
         """
-
         Return the integer day of the week, where Sunday is 0
 
+        Permission -- Always available
         """
-
 
     def dow_1():
         """
-
         Return the integer day of the week, where Sunday is 1
 
+        Permission -- Always available
         """
 
 
     def h_12():
         """
-
         Return the 12-hour clock representation of the hour
 
+        Permission -- Always available
         """
 
 
     def h_24():
         """
-
         Return the 24-hour clock representation of the hour
 
+        Permission -- Always available
         """
 
 
     def ampm():
         """
-
         Return the appropriate time modifier (am or pm)
 
+        Permission -- Always available
         """
 
 
     def hour():
         """
-
         Return the 24-hour clock representation of the hour
 
+        Permission -- Always available
         """
 
 
     def minute():
         """
-
         Return the minute
 
+        Permission -- Always available
         """
 
 
     def second():
         """
-
         Return the second
 
+        Permission -- Always available
         """
 
 
     def millis():
         """
-
         Return the millisecond since the epoch in GMT.
 
+        Permission -- Always available
         """
 
     def strftime(format):
@@ -663,107 +656,161 @@ class DateTime:
 
         Return date time string formatted according to 'format'
 
+        See Python's
+        "time.strftime":http://www.python.org/doc/current/lib/module-time.html
+        function.
         """
 
     # General formats from previous DateTime
     def Date():
         """
-
         Return the date string for the object.
 
+        Permission -- Always available
         """
 
     def Time():
         """
-
         Return the time string for an object to the nearest second.
 
+        Permission -- Always available
         """
 
     def TimeMinutes(): 
         """
-
         Return the time string for an object not showing seconds.
 
+        Permission -- Always available
         """
 
     def AMPM():
         """
-
         Return the time string for an object to the nearest second.
 
+        Permission -- Always available
         """
 
 
     def AMPMMinutes():
         """
-
         Return the time string for an object not showing seconds.
 
+        Permission -- Always available
         """
 
     def PreciseTime():
         """
-
         Return the time string for the object.
 
+        Permission -- Always available
         """
 
     def PreciseAMPM():
-        """Return the time string for the object."""
+        """
+        Return the time string for the object.
+
+        Permission -- Always available
+        """
 
     def yy():
-        """Return calendar year as a 2 digit string"""
+        """
+        Return calendar year as a 2 digit string
+
+        Permission -- Always available
+        """
 
     def mm():
-        """Return month as a 2 digit string"""
+        """
+        Return month as a 2 digit string
+
+        Permission -- Always available
+        """
 
     def dd():
-        """Return day as a 2 digit string"""
+        """
+        Return day as a 2 digit string
+
+        Permission -- Always available
+        """
 
     def rfc822():
-        """Return the date in RFC 822 format"""
+        """
+        Return the date in RFC 822 format
+
+        Permission -- Always available
+        """
 
     # New formats
     def fCommon():
-        """Return a string representing the object\'s value
-           in the format: March 1, 1997 1:45 pm"""
+        """
+        Return a string representing the object's value
+        in the format: March 1, 1997 1:45 pm
+
+        Permission -- Always available
+        """
 
     def fCommonZ():
-        """Return a string representing the object\'s value
-           in the format: March 1, 1997 1:45 pm US/Eastern"""
+        """
+        Return a string representing the object's value
+        in the format: March 1, 1997 1:45 pm US/Eastern
+
+        Permission -- Always available
+        """
 
     def aCommon():
-        """Return a string representing the object\'s value
-           in the format: Mar 1, 1997 1:45 pm"""
+        """
+        Return a string representing the object's value
+        in the format: Mar 1, 1997 1:45 pm
+
+        Permission -- Always available
+        """
 
     def aCommonZ():
-        """Return a string representing the object\'s value
-           in the format: Mar 1, 1997 1:45 pm US/Eastern"""
+        """
+        Return a string representing the object's value
+        in the format: Mar 1, 1997 1:45 pm US/Eastern
+
+        Permission -- Always available
+        """
 
     def pCommon():
-        """Return a string representing the object\'s value
-           in the format: Mar. 1, 1997 1:45 pm"""
+        """
+        Return a string representing the object's value
+        in the format: Mar. 1, 1997 1:45 pm
+
+        Permission -- Always available
+        """
 
     def pCommonZ():
-        """Return a string representing the object\'s value
-           in the format: Mar. 1, 1997 1:45 pm US/Eastern"""
+        """
+        Return a string representing the object's value
+        in the format: Mar. 1, 1997 1:45 pm US/Eastern
+
+        Permission -- Always available
+        """
 
 
     def ISO():
-        """Return the object in ISO standard format
+        """
+        Return the object in ISO standard format
 
         Dates are output as: YYYY-MM-DD HH:MM:SS
+
+        Permission -- Always available
         """
 
     def HTML4():
-        """Return the object in the format used in the HTML4.0 specification,
-        one of the standard forms in ISO8601.  See
-               http://www.w3.org/TR/NOTE-datetime
+        """
+        Return the object in the format used in the HTML4.0 specification,
+        one of the standard forms in ISO8601.
+
+        See "HTML 4.0 Specification":http://www.w3.org/TR/NOTE-datetime
 
         Dates are output as: YYYY-MM-DDTHH:MM:SSZ
-           T, Z are literal characters.
-           The time is in UTC.
+        T, Z are literal characters.
+        The time is in UTC.
+
+        Permission -- Always available
         """
 
 
