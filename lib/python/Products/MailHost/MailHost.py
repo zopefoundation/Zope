@@ -1,26 +1,30 @@
-from Globals import Persistent, HTMLFile, HTML
+from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from socket import *
+from AccessControl.Role import RoleManager
 import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
 
-#$Id: MailHost.py,v 1.8 1997/09/11 21:32:54 jeffrey Exp $ 
-__version__ = "$Revision: 1.8 $"[11:-2]
+#$Id: MailHost.py,v 1.9 1997/09/12 15:00:00 jeffrey Exp $ 
+__version__ = "$Revision: 1.9 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
 addForm=HTMLFile('MailHost/addMailHost_form',localhost=gethostname())
 def add(self, id='aMailHost', title='Some mail thing', smtp_host=None, 
-        localhost='localhost', smtp_port=25, REQUEST):
+        localhost='localhost', smtp_port=25, acl_type='A',acl_roles=[], 
+        REQUEST=None):
     ' add a MailHost into the system '
     i=MailHost()            #create new mail host
     i.id=id                 #give it id
     i.title=title           #title
     i._init(localHost=localhost, smtpHost=smtp_host, smtpPort=smtp_port)
+    i._setRoles(acl_type, acl_roles)
     self._setObject(id,i)   #register it
     return self.manage_main(self,REQUEST)   #and whatever this does.. :)
 
 
-class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
+class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
+               RoleManager):
     'a mailhost...?'
     manage=HTMLFile('MailHost/manageMailHost')
     index_html=HTMLFile('MailHost/mailHost')
@@ -36,13 +40,19 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         self.smtpPort=smtpPort
         self.sentMessages=0
 
-    def manage_makeChanges(self, title, localHost, smtpHost, smtpPort):
+    def manage_makeChanges(self, title, localHost, smtpHost, smtpPort,
+                          acl_type='A',acl_roles=[], REQUEST=None):
         'make the changes'
         self.title=title
         self.localHost=localHost
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
-        return self.manage_main(self,self.REQUEST)
+        self._setRoles(acl_type, acl_roles)
+        return MessageDialog(
+            title  ='Changed %s' % self.__name__,
+            message='%s has been updated' % self.id,
+            action =REQUEST['URL2']+'/manage_main',
+            target ='manage_main')
     
     def sendTemplate(trueself, self, messageTemplate, 
                      statusTemplate=None, mto=None, mfrom=None, REQUEST):
@@ -198,6 +208,10 @@ def decapitate(message,
     return (headerDict, body)
 
 #$Log: MailHost.py,v $
+#Revision 1.9  1997/09/12 15:00:00  jeffrey
+#Finally added full support for RoleManager, also use of MessageDialog
+#in the management process.
+#
 #Revision 1.8  1997/09/11 21:32:54  jeffrey
 #sniffs out the 'local host' (web server host name thingy computer)
 #
