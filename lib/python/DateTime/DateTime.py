@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1153,28 +1153,35 @@ class DateTime:
            that falls within the current month, in the context
            of this object\'s timezone representation"""
         t=time()
-        return safegmtime(t+_tzoffset(self._tz, t))[1]==self._month
+        gmt=safegmtime(t+_tzoffset(self._tz, t))
+        return gmt[0]==self._year and gmt[1]==self._month
 
     def isCurrentDay(self):
         """Return true if this object represents a date/time
            that falls within the current day, in the context
            of this object\'s timezone representation"""
         t=time()
-        return safegmtime(t+_tzoffset(self._tz, t))[2]==self._day
+        gmt=safegmtime(t+_tzoffset(self._tz, t))
+        return gmt[0]==self._year and gmt[1]==self._month and gmt[2]==self._day
 
     def isCurrentHour(self):
         """Return true if this object represents a date/time
            that falls within the current hour, in the context
            of this object\'s timezone representation"""
         t=time()
-        return safegmtime(t+_tzoffset(self._tz, t))[3]==self._hour
+        gmt=safegmtime(t+_tzoffset(self._tz, t))
+        return (gmt[0]==self._year and gmt[1]==self._month and
+                gmt[2]==self._day and gmt[3]==self._hour)
 
     def isCurrentMinute(self):
         """Return true if this object represents a date/time
            that falls within the current minute, in the context
            of this object\'s timezone representation"""
         t=time()
-        return safegmtime(t+_tzoffset(self._tz, t))[4]==self._minute
+        gmt=safegmtime(t+_tzoffset(self._tz, t))
+        return (gmt[0]==self._year and gmt[1]==self._month and
+                gmt[2]==self._day and gmt[3]==self._hour and
+                gmt[4]==self._minute)
 
     def earliestTime(self):
         """Return a new DateTime object that represents the earliest
