@@ -28,8 +28,6 @@ tree: Inserts a tree widget
     branches_expr=string -- Finds tree branches by evaluating the
     expression.
 
-    expand -- XXX deprecated? XXX
-
     id=string -- The name of a method or id to determine tree
     state. It defaults to 'tpId' which most Zope objects support. This
     attribute is for advanced usage only.
