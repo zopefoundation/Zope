@@ -1,15 +1,16 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
+import sys, os
+from string import atof, rfind
 
 try:
     home=CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL
     CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL=home
 except:
     # Debugger support
-    import sys, os
     try: home=os.environ['SOFTWARE_HOME']
     except:
 	home=os.getcwd()
@@ -21,7 +22,6 @@ except:
 
 
 from SingleThreadedTransaction import PickleDictionary, Persistent
-from SingleThreadedTransaction import PersistentMapping
 import DocumentTemplate
 
 class HTML(DocumentTemplate.HTML,Persistent,):
@@ -33,8 +33,11 @@ class HTMLDefault(DocumentTemplate.HTMLDefault,Persistent,):
 class HTMLFile(DocumentTemplate.HTMLFile,Persistent,):
     "Persistent HTML Document Templates read from files"
 
-    def __init__(self,name='',*args,**kw):
-	args=(self, '%s/lib/python/%s.dtml' % (SOFTWARE_HOME,name),) + args
+    def __init__(self,name,_prefix=None, **kw):
+	if _prefix is None: _prefix=SOFTWARE_HOME+'/lib/python'
+	elif type(_prefix) is not type(''): _prefix=package_home(_prefix)
+
+	args=(self, '%s/%s.dtml' % (_prefix,name))
 	apply(HTMLFile.inheritedAttribute('__init__'),args,kw)
 
 data_dir     = CUSTOMER_HOME+'/var'
@@ -46,12 +49,24 @@ from App.Dialogs import MessageDialog
 
 SessionNameName='Principia-Session'
 
+if atof(sys.version[:3]) >= 1.5:
+    def package_home(globals_dict):
+	__name__=globals_dict['__name__']
+	return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+else:
+    # ni
+    def package_home(globals_dict):
+	return globals_dict['__'].__path__[0]
+    
 
 ##########################################################################
 #
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.10  1997/12/17 16:36:50  jim
+# Changed HTML file to support passing in globals()
+#
 # Revision 1.9  1997/11/21 19:33:45  brian
 # Fixed out-of-date debugger support to add correct SH, CH, SU
 #
