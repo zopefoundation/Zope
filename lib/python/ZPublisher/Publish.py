@@ -353,6 +353,10 @@ Function, method, and class objects
     Only one method field should be provided.  If more than one method
     field is included in the request, the behavior is undefined.
 
+    If the name of a form field is ':default_method', then the value
+    of the field is added to 'PATH_INFO' *if and only if* there are no
+    form fields with names ending in ':method'.
+
     The base HREF is set when method fields are provided.  In the
     above examples, the base HREF is set to '.../foo/bar/x'.  Of
     course, if, in this example, 'y' was an object with an index_html
@@ -478,11 +482,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.102 1998/09/25 15:14:49 jim Exp $"""
+$Id: Publish.py,v 1.103 1998/10/02 19:42:10 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.102 $'[11:-2]
+__version__='$Revision: 1.103 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -556,6 +560,7 @@ class ModulePublisher:
             type_search=type_re.search
             lt=type([])
             CGI_name=isCGI_NAME
+            meth=None
             for item in fslist:
                 key=unquote(item.name)
 
@@ -581,15 +586,12 @@ class ModulePublisher:
                         seqf=tuple
                         tuple_items[key]=1
                     elif type_name == 'method':
-                        if environ.has_key('PATH_INFO'):
-                            path=environ['PATH_INFO']
-                            while path[-1:]=='/': path=path[:-1]
-                        else: path=''
-                        if l: m=key
-                        else: m=item
-                        path="%s/%s" % (path,m)
-                        other['PATH_INFO']=path
-                        self._hacked_path=1
+                        if l: meth=key
+                        else: meth=item
+                    elif type_name == 'default_method':
+                        if not meth:
+                            if l: meth=key
+                            else: meth=item
                     else:
                         item=type_converters[type_name](item)
                     l=type_search(key)
@@ -614,10 +616,17 @@ class ModulePublisher:
                 form[key]=item
                 other[key]=item
 
+        if meth:
+            if environ.has_key('PATH_INFO'):
+                path=environ['PATH_INFO']
+                while path[-1:]=='/': path=path[:-1]
+            else: path=''
+            other['PATH_INFO']=path="%s/%s" % (path,meth)
+            self._hacked_path=1
+
         # Cookie values should *not* be appended to existing form
         # vars with the same name - they are more like default values
         # for names not otherwise specified in the form.
-
         cookies={}
         if environ.has_key('HTTP_COOKIE'):
             parse_cookie(self.environ['HTTP_COOKIE'],cookies)
