@@ -88,6 +88,7 @@ Code generator for TALInterpreter intermediate code.
 
 import re
 import cgi
+import string
 
 from TALDefs import *
 
@@ -150,6 +151,7 @@ class TALGenerator:
             m = re.match(
                 r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
+                if not string.strip(part): break # extra space after semi
                 raise TALError("invalid z:define syntax: " + `part`)
             scope, name, expr = m.group(1, 2, 3)
             scope = scope or "local"
