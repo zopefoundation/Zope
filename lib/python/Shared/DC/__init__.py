@@ -82,6 +82,5 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''$Id: __init__.py,v 1.5 1999/03/06 23:08:03 klm Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
-
+__doc__='''$Id: __init__.py,v 1.6 1999/03/06 23:10:22 klm Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
