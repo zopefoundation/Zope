@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.148 2001/02/23 20:40:45 shane Exp $"""
-__version__='$Revision: 1.148 $'[11:-2]
+$Id: Publish.py,v 1.149 2001/04/01 17:47:04 jim Exp $"""
+__version__='$Revision: 1.149 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -377,6 +377,7 @@ if os.environ.get('PROFILE_PUBLISHER', None):
     def publish_module(module_name, stdin=sys.stdin, stdout=sys.stdout, 
                        stderr=sys.stderr, environ=os.environ, debug=0, 
                        request=None, response=None):
+        global _pstat
         _plock.acquire()
         try:
             if request is not None:
@@ -392,7 +393,6 @@ if os.environ.get('PROFILE_PUBLISHER', None):
             result=sys._pr_
             pobj.create_stats()
             if _pstat is None:
-                global _pstat
                 _pstat=sys._ps_=pstats.Stats(pobj)
             else: _pstat.add(pobj)
         finally:
