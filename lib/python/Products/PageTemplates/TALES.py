@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -262,11 +262,14 @@ class Context:
     evaluateValue = evaluate
 
     def evaluateBoolean(self, expr):
-        return not not self.evaluate(expr)
+        bool = self.evaluate(expr)
+        if bool is Undefined:
+            return bool
+        return not not bool
 
     def evaluateText(self, expr):
         text = self.evaluate(expr)
-        if text is not None:
+        if text not in (None, Undefined):
             text = str(text)
         return text
 
