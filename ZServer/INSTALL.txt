@@ -111,6 +111,16 @@ Using ZServer
   to a directory where you have permissions before you can do
   anything. See above for more information about logging into FTP.
 
+Advanced Usage: zinit.py
+
+  One problem you may notice with ZServer is that once the server is
+  shutdown, either through the web management interface, or by some
+  other means, it will not automatically be restarted. If you are used
+  to PCGI's process activation, this may seem annoying to you. One
+  solution to the problem of keeping ZServer running is zinit.py This
+  script allows for automatic restarting of ZServer under Unix. See
+  the source for more details.
+
 Where to go from here
 
   Check out the README.txt file. It contains information on what
