@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.93 $'[11:-2]
+__version__='$Revision: 1.94 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -479,6 +479,12 @@ class DateTime:
     __roles__=None
     __allow_access_to_unprotected_subobjects__=1
 
+    # Make class-specific exceptions available as attributes.
+    DateError = DateError
+    TimeError = TimeError
+    DateTimeError = DateTimeError
+    SyntaxError = SyntaxError
+
     def __init__(self,*args, **kw):
         """Return a new date-time object
 
@@ -496,12 +502,6 @@ class DateTime:
           - If the function is called with no arguments or with None, 
             then the current date/time is returned, represented in the
             timezone of the local machine. 
-
-    # Make class-specific exceptions available as attributes.
-    DateError = DateError
-    TimeError = TimeError
-    DateTimeError = DateTimeError
-    SyntaxError = SyntaxError
 
           - If the function is invoked with a single string argument
             which is a recognized timezone name, an object representing
