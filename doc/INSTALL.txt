@@ -41,7 +41,10 @@ Building Zope
     following sequence of commands within a Zope source directory:
 
       ./configure
-      make instance
+      make instance MKZ_FLAGS="--user admin:adminpw"
+
+    This command also creates an administrative user with the
+    specified username and password.
 
     WARNING: "make instance" doesn't work on FreeBSD 5.0 and
     presumably other platforms. You should either use GNU make
