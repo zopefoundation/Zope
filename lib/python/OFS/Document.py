@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -47,7 +47,7 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
     ('View management screens',
      ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
-    ('Change/upload data', ['manage_edit','manage_upload','PUT']),
+    ('Change Documents', ['manage_edit','manage_upload','PUT']),
     ('Change proxy roles', ['manage_proxyForm','manage_proxy']),
     ('View', ['__call__', '']),
     )

@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.45 1998/05/11 17:16:14 jim Exp $"""
+$Id: Folder.py,v 1.46 1998/05/20 21:31:34 jim Exp $"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -71,19 +71,20 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	('View management screens',
 	 ('manage','manage_menu','manage_main','manage_copyright',
 	 'manage_tabs','manage_propertiesForm','manage_UndoForm',)),
-	('Access Contents Information',
+	('Access contents information',
 	 ('objectIds', 'objectValues', 'objectItems','hasProperty',
 	  'propertyIds', 'propertyValues','propertyItems',''),
 	 ('Anonymous', 'Manager'),
 	 ),
 	('Undo changes',       ('manage_undo_transactions',)),
 	('Change permissions', ('manage_access',)),
-	('Add objects', ('manage_addObject',)),
 	('Delete objects',     ('manage_delObjects',)),
 	('Manage properties',
-	('manage_addProperty', 'manage_editProperties',
-	 'manage_delProperties', 'manage_changeProperties',)),
+         ('manage_addProperty', 'manage_editProperties',
+          'manage_delProperties', 'manage_changeProperties',)),
     )
+
+    manage_addObject__roles__=None
 
     def tpValues(self):
 	r=[]
