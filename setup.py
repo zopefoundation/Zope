@@ -1130,7 +1130,7 @@ distutils.core.setup(
     scripts=["utilities/mkzeoinstance.py", "utilities/mkzopeinstance.py",
              "utilities/check_catalog.py", "utilities/load_site.py",
              "utilities/requestprofiler.py", "utilities/zpasswd.py",
-             "utilities/testrunner.py", "utilities/copyzopeskel.py",
+             "utilities/copyzopeskel.py",
              "utilities/compilezpy.py", "utilities/decompilezpy.py"],
     distclass=ZopeDistribution,
     )
