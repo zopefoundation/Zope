@@ -296,9 +296,9 @@ class ChannelPipe:
         Wakeup()
         
     def close(self):
-        if not self._channel.closed:
-            DebugLogger.log('A', id(self._request), 
+        DebugLogger.log('A', id(self._request), 
                 '%s %s' % (self._request.reply_code, self._bytes))
+        if not self._channel.closed:
             self._channel.push(LoggingProducer(self._request, self._bytes), 0)
             self._channel.push(CallbackProducer(self._channel.done), 0)
             self._channel.push(CallbackProducer(
@@ -308,10 +308,19 @@ class ChannelPipe:
                 except: r=0
                 sys.ZServerExitCode=r
                 self._channel.push(ShutdownProducer(), 0)
-                Wakeup(lambda: asyncore.close_all())
+                Wakeup()
             else:
                 if self._close: self._channel.push(None, 0)
             Wakeup()
+        else:
+            # channel closed too soon
+            if self._shutdown:
+                try: r=self._shutdown[0]
+                except: r=0
+                sys.ZServerExitCode=r
+                Wakeup(lambda: asyncore.close_all())
+            else:
+                Wakeup()
 
         self._channel=None #need to break cycles?
         self._request=None
