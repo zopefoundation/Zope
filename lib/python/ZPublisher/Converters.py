@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
@@ -18,13 +18,12 @@ from types import ListType, TupleType, UnicodeType
 def field2string(v):
     if hasattr(v,'read'): return v.read()
     elif isinstance(v,UnicodeType) :
-        return v
+        return v.encode('latin1')
     else:  
         return str(v)
 
 def field2text(v, nl=re.compile('\r\n|\n\r').search):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
+    v = field2string(v)
     mo = nl(v)
     if mo is None: return v
     l = mo.start(0)
@@ -42,16 +41,14 @@ def field2text(v, nl=re.compile('\r\n|\n\r').search):
     return '\n'.join(r)
 
 def field2required(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
+    v = field2string(v)
     if v.strip(): return v
     raise ValueError, 'No input for required field<p>'
 
 def field2int(v):
     if type(v) in (ListType, TupleType):
         return map(field2int, v)
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
+    v = field2string(v)
     if v:
         try: return int(v)
         except ValueError:
@@ -63,8 +60,7 @@ def field2int(v):
 def field2float(v):
     if type(v) in (ListType, TupleType):
         return map(field2float, v)
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
+    v = field2string(v)
     if v:
         try: return float(v)
         except ValueError:
@@ -77,9 +73,7 @@ def field2float(v):
 def field2long(v):
     if type(v) in (ListType, TupleType):
         return map(field2long, v)
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-
+    v = field2string(v)
     # handle trailing 'L' if present.
     if v[-1:] in ('L', 'l'):
         v = v[:-1]
@@ -92,8 +86,7 @@ def field2long(v):
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2tokens(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
+    v = field2string(v)
     return v.split()
 
 def field2lines(v):
@@ -106,12 +99,11 @@ def field2lines(v):
 
 def field2date(v):
     from DateTime import DateTime
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
+    v = field2string(v)
     return DateTime(v)
 
 def field2boolean(v):
-    return v
+    return not not v
 
 class _unicode_converter:
     def __call__(self,v):
