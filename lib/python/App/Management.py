@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.42 2001/01/13 15:01:55 shane Exp $"""
+$Id: Management.py,v 1.43 2001/01/15 16:16:57 shane Exp $"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -237,6 +237,9 @@ class Navigation(ExtensionClass.Base):
 Sorry, this is not yet implemented.
 </body>
 </html>"""
+
+    manage_zmi_prefs=HTMLFile('dtml/manage_zmi_prefs', globals())
+    manage_zmi_prefs.__roles__ = None
 
 file = DTMLFile('dtml/manage_page_style.css', globals())
 setattr(Navigation, 'manage_page_style.css', file)
