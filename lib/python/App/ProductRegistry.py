@@ -183,6 +183,30 @@ class ProductRegistryMixin:
             +((d['name'], d['methods'], d['default']),)
             )
 
+    def _manage_add_product_data(self, type, product, id, **data):
+        values=filter(
+            lambda d, product=product, id=id:
+            not (d['product']==product and d['id']==id),
+            list(self._getProductRegistryData(type))
+            )
+
+        data['product']=product
+        data['id']=id
+        values.append(data)
+
+        self._setProductRegistryData(type, tuple(values))
+
+    def _manage_remove_product_data(self, type, product, id):
+        values=filter(
+            lambda d, product=product, id=id:
+            not (d['product']==product and d['id']==id),
+            self._getProductRegistryData(type)
+            )
+
+        self._setProductRegistryData(type, tuple(values))
+
+
+
 class ProductRegistry(ProductRegistryMixin):
     # This class implements a protocol for registering products that
     # are defined through the web.  It also provides methods for
@@ -195,6 +219,9 @@ class ProductRegistry(ProductRegistryMixin):
     _product_meta_types=()
     _product_permissions=()
     _product_ac_permissions=()
+
+    _product_zclasses=() # product, id, meta_type, class
+
 
     def _getProductRegistryMetaTypes(self): return self._product_meta_types
     def _setProductRegistryMetaTypes(self, v): self._product_meta_types=v
