@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.167 2001/11/20 20:38:55 chrism Exp $'''
-__version__='$Revision: 1.167 $'[11:-2]
+$Id: Application.py,v 1.168 2001/11/20 21:58:07 chrism Exp $'''
+__version__='$Revision: 1.168 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -174,7 +174,10 @@ class Application(Globals.ApplicationDefaultPermissions,
     _reserved_names=('standard_html_header',
                      'standard_html_footer',
                      'standard_error_message',
-                     'Control_Panel')
+                     'Control_Panel',
+                     'browser_id_manager',
+                     'session_data_manager',
+                     'temp_folder')
 
     # This class-default __allow_groups__ ensures that the
     # emergency user can still access the system if the top-level
@@ -421,7 +424,8 @@ def initialize(app):
 
     # b/c: Ensure that a temp folder exists
     if not hasattr(app, 'temp_folder'):
-        from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
+        from Products.TemporaryFolder.TemporaryFolder import \
+             MountedTemporaryFolder
         tf = MountedTemporaryFolder('temp_folder','Temporary Folder')
         app._setObject('temp_folder', tf)
         get_transaction().note('Added temp_folder')
@@ -471,6 +475,9 @@ def initialize(app):
                       'Session Data Container', timeout_mins = timeout_spec,
                       addNotification=addnotify, delNotification = delnotify)
         tf._setObject('session_data', toc)
+        tf_reserved = getattr(tf, '_reserved_names', ())
+        if 'session_data' not in tf_reserved:
+            tf._reserved_names = tf_reserved + ('session_data',)
         get_transaction().note('Added session_data to temp_folder')
         get_transaction().commit()
         del toc
