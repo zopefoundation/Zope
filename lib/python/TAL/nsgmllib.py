@@ -37,6 +37,21 @@ attrfind = re.compile(
     r'\s*([a-zA-Z_][-.:a-zA-Z_0-9]*)(\s*=\s*'
     r'(\'[^\']*\'|"[^"]*"|[-a-zA-Z0-9./:;+*%?!&$\(\)_#=~]*))?')
 
+declname = re.compile(r'[a-zA-Z][-_.a-zA-Z0-9]*\s*')
+declstringlit = re.compile(r'(\'[^\']*\'|"[^"]*")\s*')
+
+
+class SGMLParseError(Exception):
+    """Exception raised for all parse errors."""
+    def __init__(self, msg, pos=(None, None)):
+        self.msg = msg
+        self.lineno = pos[0]
+        self.offset = pos[1]
+
+    def __str__(self):
+        return ("%s (line %s, offset %s)"
+                % (self.msg, self.lineno, self.offset))
+
 
 # SGML parser base class -- find tags and call handler functions.
 # Usage: p = SGMLParser(); p.feed(data); ...; p.close().
@@ -165,7 +180,11 @@ class SGMLParser:
                         self.handle_data(rawdata[i])
                         i = self.updatepos(i, i+1)
                         continue
-                    k = match.end(0)
+                    # This is some sort of declaration; in "HTML as
+                    # deployed," this should only be the document type
+                    # declaration ("<!DOCTYPE html...>").
+                    k = self.parse_declaration(i)
+                    if k < 0: break
                     i = self.updatepos(i, k)
                     continue
             elif rawdata[i] == '&':
@@ -188,7 +207,7 @@ class SGMLParser:
                     i = self.updatepos(i, k)
                     continue
             else:
-                raise RuntimeError, 'neither < nor & ??'
+                raise SGMLParserError('neither < nor & ??', self.getpos())
             # We get here only if incomplete matches but
             # nothing else
             match = incomplete.match(rawdata, i)
@@ -212,7 +231,8 @@ class SGMLParser:
     def parse_comment(self, i):
         rawdata = self.rawdata
         if rawdata[i:i+4] != '<!--':
-            raise RuntimeError, 'unexpected call to handle_comment'
+            raise SGMLParseError('unexpected call to parse_comment()',
+                                 self.getpos())
         match = commentclose.search(rawdata, i+4)
         if not match:
             return -1
@@ -221,11 +241,44 @@ class SGMLParser:
         j = match.end(0)
         return j-i
 
+    # Internal -- parse declaration.
+    def parse_declaration(self, i):
+        rawdata = self.rawdata
+        j = i + 2
+        # in practice, this should look like: ((name|stringlit) S*)+ '>'
+        while 1:
+            c = rawdata[j:j+1]
+            if c == ">":
+                # end of declaration syntax
+                self.handle_decl(rawdata[i+2:j])
+                return j + 1
+            if c in "\"'":
+                m = declstringlit.match(rawdata, j)
+                if not m:
+                    # incomplete or an error?
+                    return -1
+                j = m.end()
+            elif c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+                m = declname.match(rawdata, j)
+                if not m:
+                    # incomplete or an error?
+                    return -1
+                j = m.end()
+            elif i == len(rawdata):
+                # end of buffer between tokens
+                return -1
+            else:
+                raise SGMLParseError(
+                    "unexpected char in declaration: %s" % `rawdata[i]`,
+                    self.getpos())
+        assert 0, "can't get here!"
+
     # Internal -- parse processing instr, return length or -1 if not terminated
     def parse_pi(self, i):
         rawdata = self.rawdata
         if rawdata[i:i+2] != '<?':
-            raise RuntimeError, 'unexpected call to handle_pi'
+            raise SGMLParseError('unexpected call to parse_pi()',
+                                 self.getpos())
         match = piclose.search(rawdata, i+2)
         if not match:
             return -1
@@ -253,7 +306,8 @@ class SGMLParser:
         attrs = []
         match = tagfind.match(rawdata, i+1)
         if not match:
-            raise RuntimeError, 'unexpected call to parse_starttag'
+            raise SGMLParseError('unexpected call to parse_starttag()',
+                                 self.getpos())
         k = match.end(0)
         tag = string.lower(rawdata[i+1:k])
         self.lasttag = tag
@@ -389,6 +443,10 @@ class SGMLParser:
 
     # Example -- handle comment, could be overridden
     def handle_comment(self, data):
+        pass
+
+    # Example -- handle declaration, could be overridden
+    def handle_decl(self, decl):
         pass
 
     # Example -- handle processing instruction, could be overridden
