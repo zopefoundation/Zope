@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -179,13 +179,13 @@ class File(Persistent,Implicit,PropertyManager,
         Returns the contents of the file or image.  Also, sets the
         Content-Type HTTP header to the objects content type.
         """
-
-        # Attempt to handle If-Modified-Since headers.
-        ms=REQUEST.get_header('If-Modified-Since', None)
-        if ms is not None:
-            ms=string.split(ms, ';')[0]
-            ms=DateTime(ms).timeTime()
-            if self._p_mtime > ms:
+        # HTTP If-Modified-Since header handling.
+        header=REQUEST.get_header('If-Modified-Since', None)
+        if header is not None:
+            header=string.split(header, ';')[0]
+            mod_since=DateTime(header).timeTime()
+            last_mod =self._p_mtime
+            if last_mod > 0 and last_mod <= mod_since:
                 RESPONSE.setStatus(304)
                 return RESPONSE
         
