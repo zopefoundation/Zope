@@ -13,13 +13,13 @@
 
 """ZCatalog product"""
 
-import ZCatalog, Catalog, CatalogAwareness,  ZClasses
+import ZCatalog, Catalog, CatalogPathAwareness,  ZClasses
 from Products.PluginIndexes.TextIndex import Vocabulary
 from ZClasses import createZClassForBase
 
 createZClassForBase( ZCatalog.ZCatalog , globals()
                    , 'ZCatalogBase', 'ZCatalog' )
-createZClassForBase( CatalogAwareness.CatalogAware, globals()
+createZClassForBase( CatalogPathAwareness.CatalogAware, globals()
                    , 'CatalogAwareBase', 'CatalogAware' )
 
 def initialize(context):

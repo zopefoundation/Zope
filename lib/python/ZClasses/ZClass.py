@@ -19,6 +19,7 @@ from ZPublisher.mapply import mapply
 from ExtensionClass import Base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
+from Products.PythonScripts.PythonScript import PythonScript
 import webdav.Collection
 
 import marshal
@@ -153,11 +154,9 @@ def manage_addZClass(self, id, title='', baseclasses=[],
             id+' constructor input form', 
             addFormDefault % {'id': id, 'meta_type': meta_type},
             )
-        self.manage_addDTMLMethod(
-            id+'_add',
-            id+' constructor',
-            addDefault % {'id': id},
-            )
+        constScript = PythonScript(id+'_add')
+        constScript.write(addDefault % {'id': id, 'title':id+' constructor'})
+        self._setObject(constScript.getId(), constScript)
         self.manage_addPermission(
             id+'_add_permission',
             id+' constructor permission',
@@ -705,51 +704,31 @@ addFormDefault="""<HTML>
 </body></html> 
 """
 
-addDefault="""<HTML>
-<HEAD><TITLE>Add %(id)s</TITLE></HEAD>
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+addDefault="""## Script (Python) "%(id)s_add"
+##bind container=container
+##bind context=context
+##bind namespace=
+##bind script=script
+##bind subpath=traverse_subpath
+##parameters=redirect=1
+##title=%(title)s
+##
+# Add a new instance of the ZClass
+request = context.REQUEST
+instance = container.%(id)s.createInObjectManager(request['id'], request)
 
-<dtml-comment> We add the new object by calling the class in
-                a with tag.  Not only does this get the thing
-                added, it adds the new thing's attributes to
-                the DTML name space, so we can call methods
-                to initialize the object.
-</dtml-comment>
+# *****************************************************************
+# Perform any initialization of the new instance here.
+# For example, to update a property sheet named "Basic" from the
+# form values, uncomment the following line of code:
+# instance.propertysheets.Basic.manage_editProperties(request)
+# *****************************************************************
 
-<dtml-with "%(id)s.createInObjectManager(REQUEST['id'], REQUEST)">
-
-  <dtml-comment>
-
-     You can add code that modifies the new instance here.
-
-     For example, if you have a property sheet that you want to update
-     from form values, you can call it here:
-
-       <dtml-call "propertysheets.Basic.manage_editProperties(
-                  REQUEST)">
-
-  </dtml-comment>
-
-</dtml-with>
-
-<dtml-comment> Now we need to return something.  We do this via
-                a redirect so that the URL is correct.
-
-                Unfortunately, the way we do this depends on
-                whether we live in a product or in a class.
-                If we live in a product, we need to use DestinationURL
-                to decide where to go. If we live in a class,
-                DestinationURL won't be available, so we use URL2.
-</dtml-comment>
-<dtml-if DestinationURL>
-
- <dtml-call "RESPONSE.redirect(
-       DestinationURL+'/manage_workspace')">
-
-<dtml-else>
-
-    <dtml-call "RESPONSE.redirect(
-           URL2+'/manage_workspace')">
-</dtml-if>
-</body></html>
+if redirect:
+    # redirect to the management view of the instance's container
+    request.RESPONSE.redirect(instance.aq_parent.absolute_url() + '/manage_main')
+else:
+    # If we aren't supposed to redirect (ie, we are called from a script)
+    # then just return the ZClass instance to the caller
+    return instance
 """

@@ -8,6 +8,10 @@ Zope Changes
 
     new Features:
     
+      - ZClasses now use a python script as their constructor method
+        instead of a DTML method. Also, ZClasses inherit from 
+        CatalogPathAwareness now instead of CatalogAwareness.
+    
       - added browser_default hook to ZPublisher. This allows objects to 
         specify the path to the default method that the publisher calls
         when the object is published. The default for objects not defining
