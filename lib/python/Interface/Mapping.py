@@ -16,7 +16,7 @@ class QueryMapping(Mapping):
         """Check whether the object has an item with the given key"""
 
 
-    def get(key, default):
+    def get(key, default=None):
         """Get the value for the given key
 
         Return the default if the key is not in the  collection.
