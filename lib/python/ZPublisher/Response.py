@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.9 1996/08/30 23:28:29 jfulton Exp $'''
+$Id: Response.py,v 1.10 1996/09/13 22:52:10 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.9 1996/08/30 23:28:29 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.10  1996/09/13 22:52:10  jim
+# *** empty log message ***
+#
 # Revision 1.9  1996/08/30 23:28:29  jfulton
 # Added code to map 300 redirects to 302.
 #
@@ -100,7 +103,7 @@ $Id: Response.py,v 1.9 1996/08/30 23:28:29 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -544,8 +547,6 @@ class Response:
 	if not headers.has_key('content-type') and self.status == 200:
 	    self.setStatus('nocontent')
 
-	def upcase(s): return string.upper(s[:1])+s[1:]
-
 	headersl=map(
 	    lambda k,d=headers, upcase=upcase:
 	    "%s: %s" % (upcase(k),d[k]),
@@ -589,6 +590,17 @@ class Response:
 	    self._wrote=1
 	    write('\n\n')
 	    write(body)
+
+
+def upcase(s):
+    s=string.upper(s[:1])+s[1:]
+    l=string.find(s,'-')
+    if l > 0:
+	l=l+1
+	return s[:l]+upcase(s[l:])
+    else:
+	return s
+
 
 def main():
     print Response('hello world')

@@ -517,7 +517,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.18 1996/08/30 23:40:40 jfulton Exp $"""
+$Id: Publish.py,v 1.19 1996/09/13 22:51:35 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -570,6 +570,9 @@ $Id: Publish.py,v 1.18 1996/08/30 23:40:40 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.19  1996/09/13 22:51:35  jim
+# *** empty log message ***
+#
 # Revision 1.18  1996/08/30 23:40:40  jfulton
 # Fixed bug in argument marshalling!!!
 #
@@ -650,7 +653,7 @@ $Id: Publish.py,v 1.18 1996/08/30 23:40:40 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 def main():
@@ -737,7 +740,7 @@ class ModulePublisher:
 	self.forbiddenError()
 
     def publish(self, module_name, published='web_objects',
-		imported_modules={}, module_dicts={}):
+		imported_modules={}, module_dicts={},debug=0):
 
         # First check for "cancel" redirect:
 	cancel=''
@@ -815,14 +818,26 @@ class ModulePublisher:
 
 	URL=self.script
 	parents=[]
+
+	# sad_pathetic_persistence_hack:
+	try: setstate=object.__dict__['_p_setstate']
+	except: setstate=None
+	if setstate: setstate(object)
+
 	while path:
-	    sad_pathetic_persistence_hack(object)
+	    # sad_pathetic_persistence_hack(object)
 	    entry_name,path=path[0], path[1:]
 	    URL="%s/%s" % (URL,entry_name)
 	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
 	    if entry_name:
 		try:
 		    subobject=getattr(object,entry_name)
+
+		    # sad_pathetic_persistence_hack:
+		    try: setstate=subobject.__dict__['_p_setstate']
+		    except: setstate=None
+		    if setstate: setstate(subobject)
+
 		    try:
 			groups=subobject.__allow_groups__
 			inherited_groups=allow_group_composition(
@@ -857,6 +872,12 @@ class ModulePublisher:
 		except AttributeError:
 		    try:
 			subobject=object[entry_name]
+
+			# sad_pathetic_persistence_hack:
+			try: setstate=subobject.__dict__['_p_setstate']
+			except: setstate=None
+			if setstate: setstate(subobject)
+
 			try:
 			    request_params=getattr(subobject,'__request_data__')
 			    try: request_params=request_params()
@@ -888,7 +909,7 @@ class ModulePublisher:
 				realm=object[entry_name+'__realm__']
 				realm_name=default_realm_name
 			    except: pass
-		    except (TypeError,AttributeError,KeyError):
+		    except (TypeError,AttributeError,KeyError), mess:
 			if not path and entry_name=='help' and doc:
 			    object=doc
 			    entry_name, subobject = (
@@ -899,7 +920,7 @@ class ModulePublisher:
 				 '<pre>\n%s\n</pre>' % doc)
 				)
 			else:
-			    self.notFoundError(entry_name)
+			    self.notFoundError("%s: %s" % (entry_name,mess))
 		if published:
 		    # Bypass simple checks the first time
 		    published=None
@@ -993,15 +1014,18 @@ class ModulePublisher:
 		raise 'BadRequest', ('<strong>Invalid entry for %s </strong>'
 				     % argument_name)
 
-
-	if args: result=apply(object,tuple(args))
-	else:    result=object()
+	if debug: result=self.call_object(object,tuple(args))
+	else:     result=apply(object,tuple(args))
 
 	if result and result is not response: response.setBody(result)
 
 	if transaction: transaction.commit()
 
 	return response
+
+    def call_object(self,object,args):
+	result=apply(object,args)
+	return result
 
 def sad_pathetic_persistence_hack(object):
     try: setstate=object.__dict__['_p_setstate']
@@ -1352,7 +1376,7 @@ class CGIModulePublisher(ModulePublisher):
 
 def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-		   environ=os.environ):
+		   environ=os.environ, debug=0):
     must_die=0
     try:
 	response=Response(stdout=stdout, stderr=stderr)
@@ -1360,7 +1384,7 @@ def publish_module(module_name,
 				       stderr=stderr,
 				       environ=environ)
 	response = publisher.response
-	response = publisher.publish(module_name)
+	response = publisher.publish(module_name,debug=debug)
     except ImportError, v:
 	sys.exc_type, sys.exc_value, sys.exc_traceback = v
 	must_die=1
