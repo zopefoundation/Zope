@@ -111,7 +111,8 @@ class FTPResponse(ZServerHTTPResponse):
         self.cookies[name]=self.cookies[name] + value
 
     def expireCookie(self, name, **kw):
-        del self.cookies[name]
+        if self.cookies.has_key(name):            
+            del self.cookies[name]
 
     def _cookie_list(self):
         return []
