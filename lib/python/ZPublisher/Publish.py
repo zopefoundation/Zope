@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.44 1997/06/13 16:02:10 jim Exp $"""
+$Id: Publish.py,v 1.45 1997/07/28 21:46:17 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.44 1997/06/13 16:02:10 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 
 def main():
@@ -587,13 +587,17 @@ from CGIResponse import Response
 from Realm import Realm, allow_group_composition
 from urllib import quote
 from cgi import FieldStorage, MiniFieldStorage
-from string import lower, strip
+from string import upper, lower, strip
 
 try:
     from ExtensionClass import Base
     class RequestContainer(Base):
 	def __init__(self,**kw):
 	    for k,v in kw.items(): self.__dict__[k]=v
+
+	def manage_property_types(self):
+	    return type_converters.keys()
+	    
 except:
     class RequestContainer:
 	def __init__(self,**kw):
@@ -744,7 +748,6 @@ class ModulePublisher:
 	if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 	self.module_name=module_name
 	response=self.response
-	response.setBase(self.base,'')
 	server_name=self.request.SERVER_NAME
 
 	try:
@@ -766,6 +769,9 @@ class ModulePublisher:
 	    except: raise ImportError, (
 		sys.exc_type, sys.exc_value, sys.exc_traceback)
 	    
+
+	if find_object is old_find_object: response.setBase(self.base,'')
+
 	after_list[0]=bobo_after
 
 	if bobo_before is not None: bobo_before();
@@ -779,9 +785,12 @@ class ModulePublisher:
 	path=string.splitfields(path,'/')
 	while path and not path[0]: path = path[1:]
 
+	method=upper(self.request['REQUEST_METHOD'])
+	if method=='GET' or method=='POST': method='index_html'
+
     	# Get default object if no path was specified:
     	if not path:
-    	    entry_name='index_html'
+    	    entry_name=method
     	    try:
     		if hasattr(object,entry_name):
     		    path=[entry_name]
@@ -795,7 +804,7 @@ class ModulePublisher:
 
 	# Traverse the URL to find the object:
 	(object, parents, URL, groups, realm, inherited_groups,
-	 realm_name) = find_object(self, info, path)
+	 realm_name,roles) = find_object(self, info, path, method)
 	
 	# Do authorization checks
 	if groups is not None:
@@ -803,26 +812,37 @@ class ModulePublisher:
 	    # Do composition, if we've got a named group:
 	    try: 
 		try: groups.keys  # See if we've got a mapping
-		except: groups().keys
+		except:
+		    groups=groups()
+		    groups.keys
 		g={None:None}
 		for i in inherited_groups[:-1]:
 		    g=allow_group_composition(g,i)
-		groups=allow_group_composition(groups,g)
+		if roles:
+		    groups=allow_group_composition(g,inherited_groups[-1])
+		    if type(roles) is type(''): 
+			groups=(g[roles],)
+		    else:
+			groups=map(lambda role: g[role], roles)
+		else:
+		    groups=allow_group_composition(groups,g)
 	    except:
 		# groups was not a mapping (or a function returning a
 		# mapping), so no point in composing.
 		pass 
 
-	    if not groups: self.forbiddenError()
-	    try:
-		if realm.name is None:
-		    realm.name=realm_name
-	    except:
+	    if groups is not None:
+
+		if not groups: self.forbiddenError()
 		try:
-		    len(realm)
-		    realm=Realm(realm_name,realm)
-		except: pass
-	    self.validate(groups,realm)
+		    if realm.name is None:
+			realm.name=realm_name
+		except:
+		    try:
+			len(realm)
+			realm=Realm(realm_name,realm)
+		    except: pass
+		self.validate(groups,realm)
    
 	# Attempt to start a transaction:
 	try: transaction=get_transaction()
@@ -927,7 +947,7 @@ def str_field(v):
 
 def attr_meta_data(object, subobject, entry_name, 
 		   inherited_groups, groups,
-		   realm, realm_name, default_realm_name):
+		   realm, realm_name, default_realm_name, roles):
     try:
         groups=subobject.__allow_groups__
         inherited_groups.append(groups)
@@ -936,10 +956,17 @@ def attr_meta_data(object, subobject, entry_name,
             groups=getattr(object, entry_name+'__allow_groups__')
             inherited_groups.append(groups)
         except: pass
+
+    try: roles=subobject.__roles__
+    except:
+        try: roles=getattr(object,entry_name+'__roles__')
+        except: pass
+
     try: doc=subobject.__doc__
     except:
         try: doc=getattr(object,entry_name+'__doc__')
         except: doc=None
+
     try:
         realm=subobject.__realm__
         realm_name=default_realm_name
@@ -949,26 +976,31 @@ def attr_meta_data(object, subobject, entry_name,
             realm_name=default_realm_name
         except: pass
 
-    return inherited_groups, groups, realm, realm_name, doc
+    return inherited_groups, groups, realm, realm_name, doc, roles
 
 def item_meta_data(subobject,
 		   inherited_groups, groups,
-		   realm, realm_name, default_realm_name):
+		   realm, realm_name, default_realm_name, roles):
     try:
         groups=subobject.__allow_groups__
         inherited_groups.append(groups)
     except: pass
+
     try: doc=subobject.__doc__
     except: doc=None
+
+    try: roles=subobject.__roles__
+    except: roles=None
+
     try:
         realm=subobject.__realm__
         realm_name=default_realm_name
     except: pass
 
-    return inherited_groups, groups, realm, realm_name, doc
+    return inherited_groups, groups, realm, realm_name, doc, roles
     
 
-def new_find_object(self, info, path): 
+def new_find_object(self, info, path, method): 
     (bobo_before, bobo_after, realm, realm_name, request_params,
      inherited_groups, groups,
      object, doc, published, ignore) = info
@@ -986,6 +1018,8 @@ def new_find_object(self, info, path):
 	    REQUEST=self.request, RESPONSE=self.response))
     except: pass
 
+    roles=()
+
     while path:
         entry_name,path=path[0], path[1:]
         URL="%s/%s" % (URL,quote(entry_name))
@@ -997,26 +1031,26 @@ def new_find_object(self, info, path):
 		request['URL']=URL
                 subobject=traverse(request,entry_name)
 		(inherited_groups, groups,
-		 realm, realm_name, doc) = attr_meta_data(
+		 realm, realm_name, doc, roles) = attr_meta_data(
 		     object, subobject, entry_name,
 		     inherited_groups, groups,
-		     realm, realm_name, default_realm_name)
+		     realm, realm_name, default_realm_name, roles)
 	    else:
             	try:
             	    subobject=getattr(object,entry_name)
 		    (inherited_groups, groups,
-		     realm, realm_name, doc) = attr_meta_data(
+		     realm, realm_name, doc, roles) = attr_meta_data(
 			object, subobject, entry_name,
 			inherited_groups, groups,
-			realm, realm_name, default_realm_name)
+			realm, realm_name, default_realm_name, roles)
             	except AttributeError:
             	    try:
             		subobject=object[entry_name]
 			(inherited_groups, groups,
-			 realm, realm_name, doc) = item_meta_data(
+			 realm, realm_name, doc, roles) = item_meta_data(
 			     subobject,
 			     inherited_groups, groups,
-			     realm, realm_name, default_realm_name)
+			     realm, realm_name, default_realm_name, roles)
             	    except (TypeError,AttributeError,KeyError), mess:
             		if not path and entry_name=='help' and doc:
             		    object=doc
@@ -1041,15 +1075,18 @@ def new_find_object(self, info, path):
             parents.append(object)
             object=subobject
 
-            # Check for index_html:
-            if (not path and hasattr(object,'index_html') and
-                entry_name != 'index_html'):
-                path=['index_html']
+            # Check for method:
+            if (not path and hasattr(object,method) and
+                entry_name != method):
+                path=[method]
+
+    if entry_name != method and method != 'index_html':
+	self.notFoundError(method)
 
     return (object, parents, URL, groups, realm, inherited_groups,
-            realm_name)
+            realm_name, roles)
 
-def old_find_object(self, info, path):
+def old_find_object(self, info, path, method):
     (bobo_before, bobo_after, realm, realm_name, request_params,
      inherited_groups, groups,
      object, doc, published, ignore) = info
@@ -1147,13 +1184,16 @@ def old_find_object(self, info, path):
             parents.append(object)
             object=subobject
 
-            # Check for index_html:
-            if (not path and hasattr(object,'index_html') and
-                entry_name != 'index_html'):
-                path=['index_html']
+            # Check for method:
+            if (not path and hasattr(object,method) and
+                entry_name != method):
+                path=[method]
+
+    if entry_name != method and method != 'index_html':
+	self.notFoundError(method)
 
     return (object, parents, URL, groups, realm, inherited_groups,
-            realm_name)
+            realm_name, None)
 
 class FileUpload:
     '''\
@@ -1203,6 +1243,12 @@ def flatten_field(v,converter=None):
 def field2string(v):
     try: v=v.read()
     except: v=str(v)
+    return v
+
+def field2text(v, nl=regex.compile('\r\n\|\n\r'), sub=regsub.gsub):
+    try: v=v.read()
+    except: v=str(v)
+    v=sub(nl,'\n',v)
     return v
 
 def field2required(v):
@@ -1278,6 +1324,26 @@ def field2list(v):
 def field2tuple(v):
     if type(v) is not types.ListType: v=(v,)
     return tuple(v)
+
+
+type_converters = {
+    'float':	field2float,
+    'int': 	field2int,
+    'long':	field2long,
+    'string':	field2string,
+    'date':	field2date,
+    'list':	field2list,
+    'tuple':	field2tuple,
+    'regex':	field2regex,
+    'Regex':	field2Regex,
+    'regexs':	field2regexs,
+    'Regexs':	field2Regexs,
+    'required':	field2required,
+    'tokens':	field2tokens,
+    'lines':	field2lines,
+    'text':     field2text,
+    }
+
 
 class Request:
     """\
@@ -1374,24 +1440,6 @@ class Request:
 	
 	self.other[key]=value
 
-
-    __type_converters = {
-	'float':	field2float,
-	'int': 		field2int,
-	'long':		field2long,
-	'string':	field2string,
-	'date':		field2date,
-	'list':		field2list,
-	'tuple':	field2tuple,
-	'regex':	field2regex,
-	'Regex':	field2Regex,
-	'regexs':	field2regexs,
-	'Regexs':	field2Regexs,
-	'required':	field2required,
-	'tokens':	field2tokens,
-	'lines':	field2lines,
-	}
-
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
 
 
@@ -1459,7 +1507,7 @@ class Request:
 				tf[k[:l]]=form[k],k[l+len(group(1)):]
 
 		    v,t=tf[key]
-		    try: converter=self.__type_converters[t]
+		    try: converter=type_converters[t]
 		    except: pass
 		v=flatten_field(v,converter)
 		other[key]=v
@@ -1576,7 +1624,24 @@ class CGIModulePublisher(ModulePublisher):
 	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
 	except: pass
 	
-	form=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+	try: list=fs.list
+	except: list=None
+	if list is None: form={'BODY':fs}
+	else:
+	    form={}
+	    lt=type([])
+	    for item in list:
+		key=item.name
+		try:
+		    found=form[key]
+		    if type(found) is lt: found.append(item)
+		    else:
+			found=[found,item]
+			form[key]=found
+		except:
+		    form[key]=item
+
         request=self.request=Request(environ,form,stdin)
 	self.response=Response(stdout=stdout, stderr=stderr)
 	self.stdin=stdin
@@ -1623,6 +1688,11 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.45  1997/07/28 21:46:17  jim
+# Added roles.
+# Tries to get rid of base ref.
+# Added check for groups function that doesn't return dict.
+#
 # Revision 1.44  1997/06/13 16:02:10  jim
 # Fixed bug in computation of transaction info that made user
 # authentication required.
