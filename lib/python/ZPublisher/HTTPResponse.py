@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.21 1999/09/23 22:01:50 jim Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: HTTPResponse.py,v 1.22 1999/11/03 16:48:39 brian Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -505,6 +505,7 @@ class HTTPResponse(BaseResponse):
 </HTML>""")
 
     def notFoundError(self,entry='who knows!'):
+        self.setStatus(404)
         raise 'NotFound',self._error_html(
             "Resource not found",
             "Sorry, the requested Zope resource does not exist.<p>" +
@@ -521,6 +522,7 @@ class HTTPResponse(BaseResponse):
             "\n%s" % entry)
 
     def badRequestError(self,name):
+        self.setStatus(400)
         if regex.match('^[A-Z_0-9]+$',name) >= 0:
             raise 'InternalError', self._error_html(
                 "Internal Error",
