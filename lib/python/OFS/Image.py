@@ -113,6 +113,7 @@ class File(Persistent, Implicit, PropertyManager,
 
 
     _properties=({'id':'title', 'type': 'string'},
+                 {'id':'alt', 'type':'string'},
                  {'id':'content_type', 'type':'string'},
                  )
 
@@ -788,7 +789,7 @@ class Image(File):
         result='<img src="%s"' % (self.absolute_url())
 
         if alt is None:
-            alt=getattr(self, 'title', '')
+            alt=getattr(self, 'alt', '')
         result = '%s alt="%s"' % (result, escape(alt, 1))
 
         if title is None:
@@ -801,8 +802,9 @@ class Image(File):
         if width:
             result = '%s width="%s"' % (result, width)
 
-        if not 'border' in [ x.lower() for x in  args.keys()]:
-            result = '%s border="0"' % result
+        # Omitting 'border' attribute (Collector #1557)
+#        if not 'border' in [ x.lower() for x in  args.keys()]:
+#            result = '%s border="0"' % result
 
         if css_class is not None:
             result = '%s class="%s"' % (result, css_class)

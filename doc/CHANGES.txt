@@ -33,6 +33,12 @@ Zope Changes
 
       - docutils: moved from lib/python/docutils to lib/python/third_party/docutils 
 
+      - Collector #1557/OFS.Image: Introducing new 'alt' property. The 'alt' attribute
+        is no longer taken from the 'title' property but from the new 'alt' property. 
+        The border="0" attribute is no longer part of the HTML output except specified
+        otherwise.
+           
+
   Zope 2.8a1
 
 
