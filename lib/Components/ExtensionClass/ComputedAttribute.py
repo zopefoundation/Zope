@@ -1,4 +1,3 @@
-#!/bin/env python
 ############################################################################## 
 #
 #     Copyright 
@@ -77,8 +76,8 @@ called automatically, if it has one.
 This module provides a simple computed attribute implementation and
 an example of its usage.
 
-$Id: ComputedAttribute.py,v 1.1 1998/04/07 16:43:21 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: ComputedAttribute.py,v 1.2 1998/12/04 20:57:46 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import ExtensionClass
 
@@ -98,18 +97,9 @@ if __name__ == "__main__":
 
     class point(ExtensionClass.Base):
 
-	def __init__(self, x, y): self.x, self.y = x, y
+        def __init__(self, x, y): self.x, self.y = x, y
 
-	radius=ComputedAttribute(lambda self: sqrt(self.x**2+self.y**2))
+        radius=ComputedAttribute(lambda self: sqrt(self.x**2+self.y**2))
 
     p=point(2,2)
     print p.radius
-
-
-############################################################################## 
-#
-# $Log: ComputedAttribute.py,v $
-# Revision 1.1  1998/04/07 16:43:21  jim
-# *** empty log message ***
-#
-#
