@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.20 $
+# $Revision: 1.21 $
 __version__ = '0.1'
 
 import struct
@@ -891,6 +891,7 @@ class Full(BerkeleyBase):
         # decref any pickles it points to.  For everything else, we'll do it
         # in the most efficient manner possible.
         tids = []
+        vids = []
         for oid in collectables:
             self._serials.delete(oid)
             self._refcounts.delete(oid)
@@ -902,29 +903,44 @@ class Full(BerkeleyBase):
             try:
                 rec = c.set(oid)
                 while rec and rec[0][:8] == oid:
-                    # Remember the transaction ids so we can clean up the
-                    # txnoids table below.  Note that we don't record the vids
-                    # because now that we don't have destructive undo,
-                    # _zaprevisions() can only be called during a pack() and
-                    # it is impossible to pack current records (and hence
-                    # currentVersions).
-                    tids.append(rec[0][8:])       # second 1/2 of the key
+                    # Remember the transaction and version ids so we can clean
+                    # up the txnoids table and the currentVersions table below.
+                    vids.append(rec[1][:8])       # the 1st 8-bytes of value
+                    tids.append(rec[0][8:])       # second half of the key
                     self._zaprevision(rec[0], referencesf)
                     rec = c.next()
             finally:
                 c.close()
             # Delete all the txnoids entries that referenced this oid
-            for tid in tids:
-                c = self._txnoids.cursor()
-                try:
+            c = self._txnoids.cursor()
+            try:
+                for tid in tids:
                     rec = c.set_both(tid, oid)
                     while rec:
                         # Although unlikely, it is possible that an object got
                         # modified more than once in a transaction.
                         c.delete()
                         rec = c.next_dup()
-                finally:
-                    c.close()
+            finally:
+                c.close()
+            # And delete all version entries w/ records containing oid
+            c = self._currentVersions.cursor()
+            try:
+                for vid in vids:
+                    rec = c.set_both(vid, oid)
+                    while rec:
+                        c.delete()
+                        rec = c.next_dup()
+            finally:
+                c.close()
+            # Now, for each vid, delete the versions->vid and vid->versions
+            # mapping if we've deleted all references to this vid
+            for vid in vids:
+                if self._currentVersions.get(vid):
+                    continue
+                version = self._versions[vid]
+                self._versions.delete(vid)
+                self._vids.delete(version)
 
     def pack(self, t, referencesf):
         # BAW: This doesn't play nicely if you enable the `debugging revids'
@@ -978,6 +994,19 @@ class Full(BerkeleyBase):
                     if key[8:] == current:
                         continue
                     self._zaprevision(key, referencesf)
+                # Now look and see if the object has a reference count of
+                # zero, and if so garbage collect it.
+                refcounts = self._refcounts.get(oid)
+                if not refcounts:
+                    # The current revision should be the only revision of this
+                    # object that exists, otherwise it's refcounts shouldn't
+                    # be zero.
+                    self._zaprevision(oid+current, referencesf)
+                    # And delete a few other records that _zaprevisions()
+                    # doesn't clean up
+                    self._serials.delete(oid)
+                    if refcounts <> None:
+                        self._refcounts.delete(oid)
         finally:
             if c:
                 c.close()
@@ -990,6 +1019,7 @@ class Full(BerkeleyBase):
         This means they can be garbage collected, with all necessary cascading
         reference counting performed
         """
+        # BAW: this is broken -- make it look like the end of pack()
         self._lock_acquire()
         c = None
         try:
