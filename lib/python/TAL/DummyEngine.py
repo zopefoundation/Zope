@@ -151,3 +151,18 @@ class DummyEngine:
 
     def evaluateSequence(self, expr):
         return self.evaluate(expr)
+
+    def findMacroDocument(self, macroName):
+        if not macroName:
+            print "Empty macro name:", macroName
+            return None, None
+        i = string.rfind(macroName, '/')
+        if i < 0:
+            # No slash -- must be a locally defined macro
+            return None, macroName
+        else:
+            # Up to last slash is the filename
+            fileName = macroName[:i]
+            from Products.ParsedXML.DOM import ExpatBuilder
+            doc = ExpatBuilder.parse(fileName, 1)
+            return doc, macroName[i+1:]
