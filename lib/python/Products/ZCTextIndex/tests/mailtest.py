@@ -46,6 +46,7 @@ from Products.ZCTextIndex.Lexicon import \
      Lexicon, CaseNormalizer, Splitter, StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from BTrees.IOBTree import IOBTree
+from Products.ZCTextIndex.QueryParser import QueryParser
 
 import sys
 import mailbox
@@ -161,7 +162,10 @@ def query(rt, query_str):
     print "query:", query_str
     print "# results:", len(results), "of", num_results, \
           "in %.2f ms" % (elapsed * 1000)
-    qw = idx.index.query_weight([query_str])
+
+    tree = QueryParser(idx.lexicon).parseQuery(query_str)
+    qw = idx.index.query_weight(tree.terms())
+
     for docid, score in results:
         scaled = 100.0 * score / qw
         print "docid %7d score %6d scaled %5.2f%%" % (docid, score, scaled)
