@@ -13,8 +13,8 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.6 2003/06/10 15:39:04 shane Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.7 2003/10/24 01:21:49 chrism Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os, sys, unittest
 
@@ -207,6 +207,14 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         c.attr = PublicMethod()
         self.assertPolicyAllows(c, 'attr')
 
+    def testUnicodeAttributeLookups(self):
+        item = self.item
+        r_item = self.a.r_item
+        self.assertPolicyAllows(item, u'public_prop')
+        self.assertPolicyDenies(r_item, u'private_prop')
+        self.assertPolicyAllows(item, u'public_m')
+        self.assertPolicyDenies(item, u'dangerous_m')
+
     def testRolesForPermission(self):
         # Test of policy.checkPermission().
         r_item = self.a.r_item
@@ -215,6 +223,15 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         self.assert_(not v, '_View_Permission should deny access to user')
         o_context = SecurityContext(self.uf.getUserById('theowner'))
         v = self.policy.checkPermission('View', r_item, o_context)
+        self.assert_(v, '_View_Permission should grant access to theowner')
+
+    def testUnicodeRolesForPermission(self):
+        r_item = self.a.r_item
+        context = self.context
+        v = self.policy.checkPermission(u'View', r_item, context)
+        self.assert_(not v, '_View_Permission should deny access to user')
+        o_context = SecurityContext(self.uf.getUserById('theowner'))
+        v = self.policy.checkPermission(u'View', r_item, o_context)
         self.assert_(v, '_View_Permission should grant access to theowner')
 
     def testAqNames(self):
@@ -252,7 +269,7 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ZopeSecurityPolicyTests))
+    suite.addTest(unittest.makeSuite(ZopeSecurityPolicyTests, 'test'))
     return suite
 
 def main():

@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.23 2003/06/10 15:39:04 shane Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.24 2003/10/24 01:21:48 chrism Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -33,7 +33,7 @@ else:
 
 if _use_python_impl:
 
-    from types import StringType
+    from types import StringType, UnicodeType
 
     import SimpleObjectPolicies
     from AccessControl import Unauthorized
@@ -193,6 +193,6 @@ if _use_python_impl:
         def checkPermission(self, permission, object, context):
             # XXX proxy roles and executable owner are not checked
             roles=rolesForPermissionOn(permission, object)
-            if type(roles) is StringType:
+            if type(roles) in (StringType, UnicodeType):
                 roles=[roles]
             return context.user.allowed(object, roles)

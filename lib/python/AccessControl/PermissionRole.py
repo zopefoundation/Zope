@@ -13,8 +13,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.18 2003/06/10 15:39:04 shane Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: PermissionRole.py,v 1.19 2003/10/24 01:21:48 chrism Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 _use_python_impl = 0
 import os
@@ -85,7 +85,8 @@ if _use_python_impl:
         """Implement permission-based roles
         """
 
-        def __of__(self, parent,tt=type(()),st=type(''),getattr=getattr):
+        def __of__(self, parent,tt=type(()),st=type(''),ut=type(u''),
+                   getattr=getattr):
             obj=parent
             n=self._p
             r=None
@@ -102,7 +103,7 @@ if _use_python_impl:
                         if r is None: return roles
                         return r+list(roles)
 
-                    if t is st:
+                    if t in (st, ut):
                         # We found roles set to a name.  Start over
                         # with the new permission name.  If the permission
                         # name is '', then treat as private!

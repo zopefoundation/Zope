@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.21 2003/09/11 16:00:42 jeremy Exp $
+  $Id: cAccessControl.c,v 1.22 2003/10/24 01:21:48 chrism Exp $
 
   If you have questions regarding this software,
   contact:
@@ -758,13 +758,14 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           return NULL;
 
 	/*| # Provide special rules for acquisition attributes
-	**| if type(name) is StringType:
+	**| if type(name) in (StringType, UnicodeType):
 	**|     if name[:3] == 'aq_' and name not in valid_aq_:
 	**|	   raise Unauthorized(name, value)
 	*/ 
 
-	if (PyString_Check(name)) {		/* XXX what about unicode? */
-		sname = PyString_AS_STRING(name);
+	if ( PyString_Check(name) || PyUnicode_Check(name) ) {
+	    sname = PyString_AsString(name); 
+	    if (sname != NULL) {
 		if (*sname == 'a' && sname[1]=='q' && sname[2]=='_') {
 			if (strcmp(sname,"aq_parent")   != 0 &&
                             strcmp(sname,"aq_inner") != 0 &&
@@ -772,8 +773,9 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 				/* Access control violation */
 				unauthErr(name, value);
 				return NULL;  /* roles is not owned yet */
-			}
-		}
+		            }
+	        }
+	    }
 	}
 
 	Py_XINCREF(roles);	/* Convert the borrowed ref to a real one */
@@ -1145,11 +1147,11 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
 	if (roles == NULL)
           return NULL;
 
-	/*| if type(roles) is StringType:
+	/*| if type(roles) in (StringType, UnicodeType):
 	**|	roles = [roles]
 	*/
 
-	if (PyString_Check(roles)) {
+	if ( PyString_Check(roles) || PyUnicode_Check(roles) ) {
           PyObject *r;
 
           r = PyList_New(1);
@@ -1294,21 +1296,22 @@ SecurityManager_dealloc(SecurityManager *self)
 static PyObject *
 SecurityManager_getattro(SecurityManager *self, PyObject *name)
 {
-  if (PyString_Check(name) && PyString_AS_STRING(name)[0]=='_')
+  if ( (PyString_Check(name) || PyUnicode_Check(name) ) && 
+       PyString_AsString(name)[0]=='_' )
     {
-      if (strcmp(PyString_AS_STRING(name), "_thread_id")==0 
+      if (strcmp(PyString_AsString(name), "_thread_id")==0 
           && self->thread_id)
         {
           Py_INCREF(self->thread_id);
           return self->thread_id;
         }
-      else if (strcmp(PyString_AS_STRING(name), "_context")==0 
+      else if (strcmp(PyString_AsString(name), "_context")==0 
                && self->context)
         {
           Py_INCREF(self->context);
           return self->context;
         }
-      else if (strcmp(PyString_AS_STRING(name), "_policy")==0 
+      else if (strcmp(PyString_AsString(name), "_policy")==0 
                && self->policy)
         {
           Py_INCREF(self->policy);
@@ -1322,21 +1325,22 @@ SecurityManager_getattro(SecurityManager *self, PyObject *name)
 static int 
 SecurityManager_setattro(SecurityManager *self, PyObject *name, PyObject *v)
 {
-  if (v && PyString_Check(name) && PyString_AS_STRING(name)[0]=='_')
+  if ( (PyString_Check(name) || PyUnicode_Check(name) ) && 
+       PyString_AsString(name)[0]=='_' )
     {
-      if (strcmp(PyString_AS_STRING(name), "_thread_id")==0)
+      if (strcmp(PyString_AsString(name), "_thread_id")==0)
         {
           Py_INCREF(v);
           ASSIGN(self->thread_id, v);
           return 0;
         }
-      else if (strcmp(PyString_AS_STRING(name), "_context")==0)
+      else if (strcmp(PyString_AsString(name), "_context")==0)
         {
           Py_INCREF(v);
           ASSIGN(self->context, v);
           return 0;
         }
-      else if (strcmp(PyString_AS_STRING(name), "_policy")==0)
+      else if (strcmp(PyString_AsString(name), "_policy")==0)
         {
           Py_INCREF(v);
           ASSIGN(self->policy, v);
@@ -1485,7 +1489,7 @@ static void PermissionRole_dealloc(PermissionRole *self) {
 
 static PyObject *PermissionRole_getattro(PermissionRole *self, PyObject *name) {
   	PyObject  *result= NULL;
-  	char      *name_s= PyString_AsString(name);
+        char      *name_s = PyString_AsString(name);
 
 	/* see whether we know the attribute */
 	/* we support both the old "_d" (from the Python implementation)
@@ -1595,13 +1599,13 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 			}
 		
 		/*|
-		**|       if t is StringType:
+		**|       if t in (StringType, UnicodeType):
 		**|          # We found roles set to a name.  Start over
 		**|	     # with the new permission name.  If the permission
 		**|	     # name is '', then treat as private!
 		*/
 
-			if (PyString_Check(roles)) {
+			if (PyString_Check(roles) || PyUnicode_Check(roles)) {
 
 		/*|
 		**|          if roles:
@@ -1911,7 +1915,8 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
   int i;
 
   /* if name[:1] != '_': */
-  if (PyString_Check(name) && PyString_AS_STRING(name)[0] != '_')
+  if ( (PyString_Check(name) || PyUnicode_Check(name)) && 
+       PyString_AsString(name)[0] != '_')
     {
 
       /*
@@ -2078,7 +2083,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.21 2003/09/11 16:00:42 jeremy Exp $\n");
+		"$Id: cAccessControl.c,v 1.22 2003/10/24 01:21:48 chrism Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
