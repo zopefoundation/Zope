@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.109 2000/09/05 20:52:47 brian Exp $"""
+$Id: ObjectManager.py,v 1.110 2000/09/11 17:55:16 evan Exp $"""
 
-__version__='$Revision: 1.109 $'[11:-2]
+__version__='$Revision: 1.110 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -610,7 +610,7 @@ class ObjectManager(
         if hasattr(self, 'REQUEST'):
             request=self.REQUEST
             method=request.get('REQUEST_METHOD', 'GET')
-            if not method in ('GET', 'POST'):
+            if request.maybe_webdav_client and not method in ('GET', 'POST'):
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
