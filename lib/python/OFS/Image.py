@@ -84,11 +84,11 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.123 $'[11:-2]
+__version__='$Revision: 1.124 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
@@ -102,7 +102,7 @@ from Cache import Cacheable
 
 StringType=type('')
 
-manage_addFileForm=HTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
+manage_addFileForm=DTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file='',title='',precondition='', content_type='',
                    REQUEST=None):
     """Add a new File object.
@@ -141,7 +141,7 @@ class File(Persistent, Implicit, PropertyManager,
     precondition=''
     size=None
 
-    manage_editForm  =HTMLFile('dtml/fileEdit',globals(),
+    manage_editForm  =DTMLFile('dtml/fileEdit',globals(),
                                Kind='File',kind='file')
 
     manage=manage_main=manage_editForm
@@ -151,12 +151,10 @@ class File(Persistent, Implicit, PropertyManager,
         (
         {'label':'Edit', 'action':'manage_main',
          'help':('OFSP','File_Edit.stx')},
-        ) 
-        + PropertyManager.manage_options +
-        (
         {'label':'View', 'action':'',
          'help':('OFSP','File_View.stx')},
         )
+        + PropertyManager.manage_options
         + RoleManager.manage_options
         + Item_w__name__.manage_options
         + Cacheable.manage_options
@@ -409,7 +407,7 @@ class File(Persistent, Implicit, PropertyManager,
     manage_FTPget=index_html
 
 
-manage_addImageForm=HTMLFile('dtml/imageAdd',globals(),
+manage_addImageForm=DTMLFile('dtml/imageAdd',globals(),
                              Kind='Image',kind='image')
 def manage_addImage(self, id, file, title='', precondition='', content_type='',
                     REQUEST=None):
@@ -533,23 +531,19 @@ class Image(File):
                  )
 
     manage_options=(
-        (
-        {'label':'Edit', 'action':'manage_main',
+        ({'label':'Edit', 'action':'manage_main',
          'help':('OFSP','Image_Edit.stx')},
-        ) 
-        + PropertyManager.manage_options +
-        (
-        {'label':'View', 'action':'view_image_or_file',
-         'help':('OFSP','Image_View.stx')},
-        )
+         {'label':'View', 'action':'view_image_or_file',
+         'help':('OFSP','Image_View.stx')},)
+        + PropertyManager.manage_options
         + RoleManager.manage_options
         + Item_w__name__.manage_options
         + Cacheable.manage_options
         )
 
-    manage_editForm  =HTMLFile('dtml/imageEdit',globals(),
+    manage_editForm  =DTMLFile('dtml/imageEdit',globals(),
                                Kind='Image',kind='image')
-    view_image_or_file =HTMLFile('dtml/imageView',globals())
+    view_image_or_file =DTMLFile('dtml/imageView',globals())
 
     manage=manage_main=manage_editForm
     manage_uploadForm=manage_editForm
