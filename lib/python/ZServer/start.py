@@ -17,6 +17,10 @@ import os
 ###
 
 # This should point to your Zope directory
+SOFTWARE_HOME='d:\\program files\\1.10.2'
+
+# This should point at the directory where your var directory is located
+# Most of the time this is the same as SOFTWARE_HOME
 INSTANCE_HOME='d:\\program files\\1.10.2'
 
 ### ZServer configuration 
@@ -60,15 +64,28 @@ FTP_PORT=8021
 
 # You can configure the PCGI server manually, or have it read its
 # configuration information from a PCGI info file.
-PCGI_FILE=os.path.join(INSTANCE_HOME,'Zope.cgi')
+PCGI_FILE=os.path.join(SOFTWARE_HOME,'Zope.cgi')
 
-# Add Zope to the Python path first.
-# If you are using a binary release of Zope, you may need
-# to add additional paths here.
+# Add Zope to the Python path first. If you are using a binary release
+# of Zope, you may need to add additional paths here. Or else set the
+# PYTHONHOME environment variable in a shell script or batch file and
+# use that script to start this script.
 #
 import sys
-sys.path.insert(0,os.path.join(INSTANCE_HOME,'lib','python'))
+sys.path.insert(0,os.path.join(SOFTWARE_HOME,'lib','python'))
 
+# Try to become nobody. This will only work if this script is run by root.
+try:
+    import pwd
+    try:
+        nobody = pwd.getpwnam('nobody')[2]
+    except pwd.error:
+        nobody = 1 + max(map(lambda x: x[2], pwd.getpwall()))
+    os.setuid(nobody)
+except:
+    pass
+
+# import ZServer stuff
 from medusa import resolver,logger,http_server,asyncore
 from HTTPServer import zhttp_server, zhttp_handler
 from PCGIServer import PCGIServer
@@ -85,42 +102,29 @@ lg = logger.file_logger(LOG_FILE)
 
 # HTTP Server
 hs = zhttp_server(
-	ip=IP_ADDRESS,
-	port=HTTP_PORT,
-	resolver=rs,
-	logger_object=lg)
+    ip=IP_ADDRESS,
+    port=HTTP_PORT,
+    resolver=rs,
+    logger_object=lg)
 
 zh = zhttp_handler(MODULE,'')
 hs.install_handler(zh)
 
-# PCGI Server
-zpcgi = PCGIServer(
-	ip=IP_ADDRESS,
-	pcgi_file=PCGI_FILE,
-	resolver=rs,
-	logger_object=lg)
-
-# FTP Server	
+# FTP Server    
 zftp = FTPServer(
-	module=MODULE,
-	hostname=HOSTNAME,
-	port=FTP_PORT,
-	resolver=rs,
-	logger_object=lg)
+    module=MODULE,
+    hostname=HOSTNAME,
+    port=FTP_PORT,
+    resolver=rs,
+    logger_object=lg)
 
-
-# Try to become nobody. This will only work if this script is run by root.
-try:
-	import pwd
-	try:
-		nobody = pwd.getpwnam('nobody')[2]
-	except pwd.error:
-		nobody = 1 + max(map(lambda x: x[2], pwd.getpwall()))
-	os.setuid(nobody)
-except:
-	pass
+# PCGI Server (uncomment to turn it on)
+#zpcgi = PCGIServer(
+#    ip=IP_ADDRESS,
+#    pcgi_file=PCGI_FILE,
+#    resolver=rs,
+#    logger_object=lg)
 
 # Start Medusa
 asyncore.loop()
-
 
