@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.1 1999/01/09 03:17:32 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.2 1999/01/13 03:00:27 amos Exp $'
 
 # python modules
 import os
@@ -106,7 +106,7 @@ class http_request:
 
 	def found_terminator (self):
 		if self.collector:
-			self.collector.collect_incoming_data (data)
+			self.collector.found_terminator()
 		else:
 			sys.stderr.write (
 				'warning: unexpected end-of-record for incoming request\n'
@@ -420,10 +420,6 @@ class http_channel (asynchat.async_chat):
 			# no handlers, so complain
 			r.error (404)
 
-	def writable (self):
-		# this is just the normal async_chat 'writable', here for comparison
-		return self.ac_out_buffer or len(self.producer_fifo)
-
 	def writable_for_proxy (self):
 		# this version of writable supports the idea of a 'stalled' producer
 		# [i.e., it's not ready to produce any output yet] This is needed by
@@ -598,32 +594,12 @@ def crack_request (r):
 			version = None
 		return string.lower (REQUEST.group (1)), REQUEST.group(2), version
 
-class fifo:
-	def __init__ (self, list=None):
-		if not list:
-			self.list = []
-		else:
-			self.list = list
-		
-	def __len__ (self):
-		return len(self.list)
 
-	def first (self):
-		return self.list[0]
+class fifo(asynchat.fifo):
 
 	def push_front (self, object):
 		self.list.insert (0, object)
 
-	def push (self, data):
-		self.list.append (data)
-
-	def pop (self):
-		if self.list:
-			result = self.list[0]
-			del self.list[0]
-			return (1, result)
-		else:
-			return (0, None)
 
 def compute_timezone_for_log ():
 	if time.daylight:

@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-RCS_ID = '$Id: producers.py,v 1.1 1999/01/09 03:17:32 amos Exp $'
+RCS_ID = '$Id: producers.py,v 1.2 1999/01/13 03:00:27 amos Exp $'
 
 import string
 
@@ -11,6 +11,14 @@ in various ways to get interesting and useful behaviors.
 
 For example, you can feed dynamically-produced output into the compressing
 producer, then wrap this with the 'chunked' transfer-encoding producer.
+
+Added 'ready' method to all producers. This allows future producers which
+may not be ready until after they are created. Returning false means that
+a call to 'more' will not give you useful information, right now, but will
+later. A producer which is not ready is saying that it will be ready sometime
+in the future. When a producer is exhausted, it should return true for ready.
+
+When 'more' returns '', the producer is done.
 """
 
 class simple_producer:
@@ -28,6 +36,9 @@ class simple_producer:
 			result = self.data
 			self.data = ''
 			return result
+
+	def ready(self):
+		return 1
 
 class scanning_producer:
 	"like simple_producer, but more efficient for large strings"
@@ -49,6 +60,9 @@ class scanning_producer:
 		else:
 			return ''
 
+	def ready(self):
+		return 1
+
 class lines_producer:
 	"producer for a list of lines"
 
@@ -56,7 +70,7 @@ class lines_producer:
 		self.lines = lines
 
 	def ready (self):
-		return len(self.lines)
+		return 1
 
 	def more (self):
 		if self.lines:
@@ -89,6 +103,9 @@ class file_producer:
 			else:
 				return data
 
+	def ready(self):
+		return 1
+
 # A simple output producer.  This one does not [yet] have
 # the safety feature builtin to the monitor channel:  runaway
 # output will not be caught.
@@ -98,6 +115,8 @@ class file_producer:
 
 class output_producer:
 	"Acts like an output file; suitable for capturing sys.stdout"
+	# XXX this should be updated for new ready semantics
+	#     including fixing ready, more and adding a close method
 	def __init__ (self):
 		self.data = ''
 			
@@ -134,11 +153,18 @@ class output_producer:
 
 class composite_producer:
 	"combine a fifo of producers into one"
+	# I had to add a buffer to this producer to ensure
+	# that it really was ready when it said it was ready
 	def __init__ (self, producers):
 		self.producers = producers
-
+		self.buffer = ''
+		
 	def more (self):
-		while len(self.producers):
+		if self.buffer:
+			b=self.buffer
+			self.buffer=''
+			return b
+		while self.producers.ready():
 			p = self.producers.first()
 			d = p.more()
 			if d:
@@ -147,6 +173,15 @@ class composite_producer:
 				self.producers.pop()
 		else:
 			return ''
+
+	def ready(self):
+		if self.buffer or len(self.producers)==0:
+			return 1
+		if not self.producers.ready():
+			return None
+		self.buffer=self.more()
+		if self.buffer or len(self.producers)==0:
+			return 1
 
 
 class globbing_producer:
@@ -162,7 +197,7 @@ class globbing_producer:
 		self.buffer_size = buffer_size
 
 	def more (self):
-		while len(self.buffer) < self.buffer_size:
+		while len(self.buffer) < self.buffer_size and self.producer.ready():
 			data = self.producer.more()
 			if data:
 				self.buffer = self.buffer + data
@@ -171,6 +206,9 @@ class globbing_producer:
 		r = self.buffer
 		self.buffer = ''
 		return r
+
+	def ready(self):
+		return self.producer is None or self.producer.ready()
 
 
 class hooked_producer:
@@ -196,6 +234,9 @@ class hooked_producer:
 			return result
 		else:
 			return ''
+
+	def ready(self):
+		return self.producer is None or self.producer.ready()
 
 # HTTP 1.1 emphasizes that an advertised Content-Length header MUST be
 # correct.  In the face of Strange Files, it is conceivable that
@@ -235,6 +276,9 @@ class chunked_producer:
 					return '0\r\n\r\n'
 		else:
 			return ''
+
+	def ready(self):
+		return self.producer is None or self.producer.ready()
 
 # Unfortunately this isn't very useful right now (Aug 97), because
 # apparently the browsers don't do on-the-fly decompression.  Which
@@ -279,6 +323,9 @@ class compressed_producer:
 		else:
 			return ''
 
+	def ready(self):
+		return self.producer is None or self.producer.ready()
+
 class escaping_producer:
 
 	"A producer that escapes a sequence of characters"
@@ -311,3 +358,7 @@ class escaping_producer:
 				return buffer
 		else:
 			return buffer
+
+	def ready(self):
+		return self.producer is None or self.producer.ready()
+
