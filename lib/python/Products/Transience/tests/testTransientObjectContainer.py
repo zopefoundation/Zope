@@ -82,17 +82,21 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-import sys, os, time, whrandom
-sys.path.insert(0, '../../..')
-os.chdir('../../..')
+import sys, os, time, whrandom, unittest
+
+if __name__ == "__main__":
+    sys.path.insert(0, '../../..')
+    #os.chdir('../../..')
+
 import ZODB
 from Products.Transience.Transience import \
-     TransientObjectContainer
+     TransientObjectContainer, TransientObject
 import Products.Transience.Transience
 from ExtensionClass import Base
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 
 epoch = time.time()
+stash = {}
 
 class TestTransientObjectContainer(TestCase):
     def setUp(self):
@@ -455,6 +459,26 @@ class TestTransientObjectContainer(TestCase):
         self.t._setTimeout(10)
         assert self.t.getTimeoutMinutes() == 10
 
+    def test_new(self):
+        t = self.t.new('foobieblech')
+        assert issubclass(t.__class__, TransientObject)
+
+    def _dupNewItem(self):
+        t = self.t.new('foobieblech')
+
+    def test_newDupFails(self):
+        t = self.t.new('foobieblech')
+        self.assertRaises(KeyError, self._dupNewItem)
+
+    def test_new_or_existing(self):
+        t = self.t.new('foobieblech')
+        t['hello'] = "Here I am!"
+        t2 = self.t.new_or_existing('foobieblech')
+        assert t2['hello'] == "Here I am!"
+
+    def test_getId(self):
+        assert self.t.getId() == 'sdc'
+
 
 def lsubtract(l1, l2):
    l1=list(l1)
@@ -464,7 +488,7 @@ def lsubtract(l1, l2):
    return l
 
 def test_suite():
-    print "TransientObjectContainer tests take just about forever (10+ mins)"
+    #print "TransientObjectContainer tests take just about forever (10+ mins)"
     testsuite = makeSuite(TestTransientObjectContainer, 'test')
     alltests = TestSuite((testsuite,))
     return alltests
