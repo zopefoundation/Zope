@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -143,7 +143,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             type, enc=mimetypes.guess_type(name)
         if type is None:
             if OFS.content_types.find_binary(body) >= 0:
-                content_type='application/octet-stream'
+                type='application/octet-stream'
             else: type=OFS.content_types.text_type(body)
         type=string.lower(type)
         from OFS.Image import Image, File
