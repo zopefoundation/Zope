@@ -107,6 +107,9 @@ Options:
     process id in. The path may be relative, in which case it will be
     relative to the Zope location.
 
+    To prevent use of a separate management process, provide an
+    empty string: -Z ''
+
   -t n
 
     The number of threads to use, if ZODB3 is used. The default is
@@ -119,15 +122,16 @@ Options:
 
   -a ipaddress
 
-    The IP address to listen on.  If this is an empty string, then all
-    addresses on the machine are used. The default is %(IP_ADDRESS)s.
+    The IP address to listen on.  If this is an empty string
+    (e.g. -a ''), then all addresses on the machine are used. The
+    default is %(IP_ADDRESS)s.
 
   -d ipaddress
 
-    IP address of your DNS server. If this is an empty string, then
-    IP addresses will not be logged. If you have DNS service on your
-    local machine then you can set this to 127.0.0.1.
-    The default is: %(DNS_IP)s.
+    IP address of your DNS server. If this is an empty string
+    (e.g. -d ''), then IP addresses will not be logged. If you have
+    DNS service on your local machine then you can set this to
+    127.0.0.1.  The default is: %(DNS_IP)s.
     
   -u username or uid number
   
@@ -145,28 +149,30 @@ Options:
   -w port
   
     The Web server (HTTP) port.  This defaults to %(HTTP_PORT)s. The
-    standard port for HTTP services is 80.  If this is an empty
-    string, then HTTP is disabled.
+    standard port for HTTP services is 80.  If this is an empty string
+    (e.g. -w ''), then HTTP is disabled.
 
   -f port
   
-    The FTP port.  If this is an empty string, then FTP is disabled.
-    The standard port for FTP services is 21.  The default is %(FTP_PORT)s.
+    The FTP port.  If this is an empty string (e.g. -f ''), then FTP
+    is disabled.  The standard port for FTP services is 21.  The
+    default is %(FTP_PORT)s.
 
   -p path
 
     Path to the PCGI resource file.  The default value is
     %(PCGI_FILE)s, relative to the Zope location.  If this is an empty
-    string or the file does not exist, then PCGI is disabled.
+    string (-p '') or the file does not exist, then PCGI is disabled.
 
   -m port
   
-    The secure monitor server port. If this is an empty string, then the
-    monitor server is disabled. The monitor server allows interactive
-    Python style access to a running ZServer. To access the server see
-    medusa/monitor_client.py or medusa/monitor_client_win32.py. The monitor
-    server password is the same as the Zope super manager password set in
-    the 'access' file. The default is %(MONITOR_PORT)s.
+    The secure monitor server port. If this is an empty string
+    (-m ''), then the monitor server is disabled. The monitor server
+    allows interactive Python style access to a running ZServer. To
+    access the server see medusa/monitor_client.py or
+    medusa/monitor_client_win32.py. The monitor server password is the
+    same as the Zope super manager password set in the 'access'
+    file. The default is %(MONITOR_PORT)s.
 
   -2
 
