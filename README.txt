@@ -1,4 +1,4 @@
-Welcome to Zope beta 2 source release
+Welcome to Zope source release
 -------------------------------------
 
   This document provides some general information about the Zope
@@ -43,7 +43,7 @@ Using Zope Components Separately
 
     * ZPublisher - A packagized version of the Bobo ORB you know and
       love. It's been updated with new thinks like support for
-      __bobo_debug_mode__ More info to come soon.
+      __bobo_debug_mode__
 
     * DocumentTemplate - This package includes cDocumentTemplate which
       speeds things up considerably.
@@ -54,7 +54,7 @@ Using Zope Components Separately
   You can find most of these packages in the lib/python directory. If
   you poke around, you might find other goodies too, like StructuredText.
 
-  We plan on making separate releases of these packages soon.
+  ZPublisher and DocumentTemplate are also available separately.
 
 Notes
 
