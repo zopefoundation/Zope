@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -164,22 +164,32 @@ class PropPatch:
         e=root.elements('propertyupdate', ns=dav)[0]
         for ob in e.elements():
             if ob.name()=='set' and ob.namespace()==dav:
-                prop=ob.elements('prop', ns=dav)[0]
-                for val in prop.elements():
+                proptag=ob.elements('prop', ns=dav)[0]
+                for prop in proptag.elements():
                     # We have to ensure that all tag attrs (including
                     # an xmlns attr for all xml namespaces used by the
                     # element and its children) are saved, per rfc2518.
-                    attrs={}
-                    val.remap({})
-                    for attr in val.attrs():
-                        attrs[attr.name()]=attr.value()
-                    md={'attrs':attrs, 'nsid': val.__nskey__}
-                    item=(val.name(), val.namespace(), val.strval(), md)
-                    vals.append(item)
+                    name, ns=prop.name(), prop.namespace()
+                    e, attrs=prop.elements(), prop.attrs()
+                    if (not e) and (not attrs):
+                        # simple property
+                        item=(name, ns, prop.strval(), {})
+                        vals.append(item)
+                    else:
+                        # xml property
+                        attrs={}
+                        prop.remap({ns:'n'})
+                        prop.del_attr('xmlns:n')
+                        for attr in prop.attrs():
+                            attrs[attr.qname()]=attr.value()
+                        md={'__xml_attrs__':attrs}
+                        item=(name, ns, prop.strval(), md)
+                        vals.append(item)
+
             if ob.name()=='remove' and ob.namespace()==dav:
-                prop=ob.elements('prop', ns=dav)[0]
-                for val in prop.elements():
-                    item=(val.name(), val.namespace())
+                proptag=ob.elements('prop', ns=dav)[0]
+                for prop in proptag.elements():
+                    item=(prop.name(), prop.namespace())
                     vals.append(item)
 
     def apply(self, obj):
@@ -202,6 +212,7 @@ class PropPatch:
                     obj.propertysheets.manage_addPropertySheet('', ns)
                     propsets=obj.propertysheets.values()
                     propset=propsets.get(ns)
+                propdict=propset._propdict()
                 if propset.hasProperty(name):
                     try: propset._updateProperty(name, val, meta=md)
                     except:
@@ -238,6 +249,8 @@ class PropPatch:
                      '</d:multistatus>' % errmsg)
         result=result.getvalue()
         if not errors: return result
+        # This is lame, but I cant find a way to keep ZPublisher
+        # from sticking a traceback into my xml response :(
         get_transaction().abort()
         result=string.replace(result, '200 OK', '424 Failed Dependency')
         return result

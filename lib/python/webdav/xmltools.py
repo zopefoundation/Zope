@@ -85,7 +85,7 @@
 
 """WebDAV XML parsing tools."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os, string, xmllib
 from Acquisition import Implicit
@@ -210,6 +210,13 @@ class Element(Node):
             if attr.name()==name and (ns is None) or (ns==attr.namespace()):
                 return attr
         return default
+
+    def del_attr(self, name):
+        attrs=[]
+        for attr in self.__attrs__:
+            if attr.name() != name:
+                attrs.append(attr)
+        self.__attrs__=attrs
 
     def remap(self, dict, n=0, top=1):
         # The remap method effectively rewrites an element and all of its
