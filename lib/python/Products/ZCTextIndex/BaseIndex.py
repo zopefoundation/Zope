@@ -130,12 +130,11 @@ class BaseIndex(Persistent):
     def _search_wids(self, wids):
         raise NotImplementedError
 
+    # Subclass must override.
+    # It's not clear what it should do; so far, it only makes real sense
+    # for the cosine indexer.
     def query_weight(self, terms):
-        # This method was inherited from the cosine measure, and doesn't
-        # make sense for Okapi measures in the way the cosine measure uses
-        # it.  See the long comment at the end of the file for how full
-        # Okapi BM25 deals with weighting query terms.
-        return 10   # arbitrary
+        raise NotImplementedError
 
     DICT_CUTOFF = 10
 
