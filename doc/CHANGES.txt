@@ -6,7 +6,55 @@ Zope Changes
 
   HEAD only
 
+    To-do
+
+     - Renable C permission roles by implementing recent Python
+       changes in C, brining the Python and C implementations back in
+       sync.  See lib/python/AccessControl/PermissionRole.py.
+
+     - Renable C Zope security policy by implementing recent Python
+       changes in C, brining the Python and C implementations back in
+       sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
+
+     - Add cyclic-garbage collection support to C extension classes,
+       especially to acquisition wrappers. 
+
+     - Change acquisition wrappers to implement the descr get slot
+       directly, this speeding the use of the slot.
+
     Features added
+
+     - Extension Classes, a key Zope foundation, have been totally
+       rewritten based on Python new-style classes.  
+
+       This change provides a number of advantages:
+
+       o Use of new-style class features (e.g. slots, descriptors,
+         etc.) in Zope objects. Support for object protocols (special
+         __ methods) added since Python 1.4.
+
+       o Support for cyclic garbage collection.
+
+       o Ability to use new-style classes as base classes of Zope objects.
+
+       o Pave the way for sharing code between Zope 2 and Zope 3.
+
+       Note -- Extension classes with __of__ methods are made into
+         Python read descriptors.  
+
+         If an extension classes is used to implement a descriptor,
+         indirectly by implementing __of__ or directly by implementing
+         __get__, the behavior of the descriptor will differ from
+         ordinary descriptors in an important way. The descriptors
+         __get__ method will be called *even if* the descriptor is
+         stored on an instance of an extension class.  Normally
+         descritor __get__ methods are called only of the descriptor
+         is stored in a class.
+
+     - ZODB 3.3
+
+       This is the first version of ZODB that does not require
+       ExtensionClass.
 
      - Add 'parity' method to ZTUtils Iterators.
 
