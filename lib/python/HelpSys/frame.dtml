@@ -7,7 +7,7 @@
 MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
 <FRAME
 <dtml-if "_.has_key('help_url')">
-SRC="<dtml-var SCRIPT_NAME><dtml-var help_url>"
+SRC="<dtml-var help_url>"
 <dtml-else>
 SRC="main"
 </dtml-if>

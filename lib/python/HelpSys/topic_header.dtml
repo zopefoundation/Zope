@@ -3,11 +3,6 @@
 <title><dtml-var title></title>
 
 <style type="text/css">
-<!--
-
-h1, h2, h3, h4, h5, h6{
-font-family: Verdana, Arial, Helvetica, san-serif;
-}
 
 .instructions{
 background: #FFFFAA;
@@ -21,7 +16,27 @@ border-width: thin;
 border-style: solid;
 padding: 10pt;
 }
--->
+
+.api{
+font-size: 16pt;
+font-family : "Courier New", Courier, monospace;
+}
+
+.attribute, .method{
+font-size: 14pt;
+font-family : "Courier New", Courier, monospace;
+}
+
+.method_doc{
+background: #FFFFDD;
+padding: 12pt;
+}
+
+.api_doc{
+background: #FFFFDD;
+padding: 12pt;
+}
+
 </style>
 
 </head>
