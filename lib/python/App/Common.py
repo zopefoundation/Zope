@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, os, time
 
@@ -123,11 +123,10 @@ def package_home(globals_dict):
         r=sys.modules[__name__[:__name__.rfind('.')]].__path__[0]
     else:
         r=__name__
-    return os.path.join(os.getcwd(), r)
+    return os.path.abspath(r)
 
 
-def attrget(o,name,default):
-    if hasattr(o,name): return getattr(o,name)
-    return default
+# We really only want the 3-argument version of getattr:
+attrget = getattr
 
 def Dictionary(**kw): return kw # Sorry Guido
