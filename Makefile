@@ -1,6 +1,6 @@
-PYTHON=python
+PYTHON=python2.2
 WHOA_PIGGY=wo_pcgi.py
-TESTOPTS=-a
+TESTOPTS=-a -v1
 
 all:
 	$(PYTHON) $(WHOA_PIGGY)
