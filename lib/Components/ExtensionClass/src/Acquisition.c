@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.45 2000/10/05 23:25:01 shane Exp $
+  $Id: Acquisition.c,v 1.46 2001/01/16 15:39:41 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -409,6 +409,12 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
 	else return r;
       }
     else PyErr_Clear();
+  else if (*name=='_' && name[1]=='_' && strcmp(name+2,"reduce__")==0)
+    {
+      PyErr_SetString(PyExc_TypeError, 
+                      "Can't pickle objects in acquisition wrappers.");
+      return NULL;
+    }
 
   /* If we are doing a containment search, then replace self with aq_inner */
   if (containment)
@@ -1419,7 +1425,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.45 $";
+  char *rev="$Revision: 1.46 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1438,7 +1444,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.45 2000/10/05 23:25:01 shane Exp $\n",
+	   "$Id: Acquisition.c,v 1.46 2001/01/16 15:39:41 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
