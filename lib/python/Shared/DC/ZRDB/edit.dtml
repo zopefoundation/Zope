@@ -3,6 +3,14 @@
 <!--#var manage_tabs-->
 <H2>Edit <!--#var title_or_id--></H2>
 
+<!--#if whine-->
+<em><strong>Warning:</strong>
+There is no <!--#var database_type--> database connection.  You need
+to add an Aqueduct <!--#var database_type--> database connection
+before you can use an Aqueduct <!--#var database_type--> database adapter.
+</em>
+<!--#/if-->
+
 <form action="manage_edit" method="POST">
 
 <table>

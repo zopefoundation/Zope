@@ -3,6 +3,14 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>New <!--#var database_type--> Database Adapter</H2>
 
+<!--#if whine-->
+<em><strong>Warning:</strong>
+There is no <!--#var database_type--> database connection.  You need
+to add an Aqueduct <!--#var database_type--> database connection
+before you can use an Aqueduct <!--#var database_type--> database adapter.
+</em>
+<!--#/if-->
+
 <form action="manage_addAqueduct<!--#var database_type-->DA" method="post">
 
 <table>     
