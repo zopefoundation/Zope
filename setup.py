@@ -697,8 +697,11 @@ setup(
     author=AUTHOR,
 
     packages=['ZConfig', 'ZConfig.tests',
+              'ZConfig.tests.library', 'ZConfig.tests.library.widget',
+              'ZConfig.tests.library.thing',
               'ZConfig.components',
-              'ZConfig.components.basic', 'ZConfig.components.basic.tests'],
+              'ZConfig.components.basic', 'ZConfig.components.basic.tests',
+              ],
     data_files=[
         ['../../doc/zconfig',
          ['ZConfig/doc/zconfig.pdf', 'ZConfig/doc/schema.dtd']],
