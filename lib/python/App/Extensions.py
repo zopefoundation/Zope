@@ -86,8 +86,8 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.14 2000/07/05 21:22:00 brian Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Extensions.py,v 1.15 2001/04/03 14:42:30 brian Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 from string import find, split
 import os, zlib, rotor, imp
@@ -156,7 +156,7 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
            p = name[:l]
            n = name[l + 1:]
            for product_dir in Products.__path__:
-               r = _getPath(product_dir, '%s/%s/' % (p, prefix), n, suffixes)
+               r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
                if r is not None: return r
 
     sw=path_split(path_split(SOFTWARE_HOME)[0])[0]
