@@ -2,13 +2,37 @@
 # $What$
 
 __doc__="""\
-Publish python objects on web servers using CGI
+Python Object Publisher -- Publish Python objects on web servers
 
 Introduction
 
-  The python object publisher provides a simple mechanism for publishing a
-  collection of python objects as World-Wide-Web (Web) resources without any
+  The Python object publisher provides a simple mechanism for publishing a
+  collection of Python objects as World-Wide-Web (Web) resources without any
   plumbing (e.g. CGI) specific code.
+
+Benefits
+
+  - Applications do not have to include code for interfacing with the
+    web server.
+
+  - Applications can be moved from one publishing mechanism, such as
+    CGI, to another mechanism, such as Fast CGI or ILU Requestor, with
+    no change.
+
+  - Python objects are published as Python objects.  The web server
+    "calls" the objects in much the same way that other Python objects
+    would.
+
+  - Automatic conversion of URL to object/sub-object traversal.
+
+  - Automatic marshaling of form data, cookie data, and request
+    meta-data to Python function arguments.
+
+  - Automated exception handling.
+
+  - Automatic generation of CGI headers.
+
+  - Automated authentication and authorization.
 
 Published objects
 
@@ -17,16 +41,21 @@ Published objects
 
     - can be found in the module's global name space,
 
-    - That do not have names starting with an underscore, 
+    - that do not have names starting with an underscore, 
 
-    - that have non-empty doc strings, and 
+    - that have non-empty documentation strings, and 
 
     - that are not modules
 
-  are published  Alternatively, a module variable, named
-  'web_objects' can be defined.  If this variable is defined, it should
-  be bound to a mapping object that maps published names to published
-  objects.
+  are published.
+
+  Alternatively, a module variable, named 'web_objects' can be
+  defined.  If this variable is defined, it should be bound to a
+  mapping object that maps published names to published objects.
+  Objects that are published through a module's 'web_objects' are not
+  subject to the restrictions listed above. For example, modules or
+  objects without documentation strings may be published by including
+  them in a module's 'web_objects' attribute.
 
   Sub-objects (or sub-sub objects, ...) of published objects are
   also published, as long as the sub-objects:
@@ -37,7 +66,41 @@ Published objects
 
     - are not modules.
 
+  A sub-object that cannot have a doc strings may be published by
+  including a special attribute in the containing object named:
+  subobject_name__doc__.  For example, if foo.bar.spam doesn't have a
+  doc string, but foo.bar has a non-empty attribute
+  foo.bar.spam__doc__, then foo.bar.spam can be published.
+
   Note that object methods are considered to be subobjects.
+
+  Object-to-subobject traversal is done by converting steps in the URI
+  path to get attribute or get item calls.  For example, in traversing
+  from 'http://some.host/some_module/object' to
+  'http://some.host/some_module/object/subobject', the module
+  publisher will try to get 'some_module.object.subobject'.  If the
+  access fails with other than an attribute error, then the object
+  publisher raises a "NotFound" exception.  If the access fails with
+  an attribute error, then the object publisher will try to obtain the
+  subobject with: 'some_module.object["subobject"]'.  If this access
+  fails, then the object publisher raises a '"Not Found"' exception.  If
+  either of the accesses suceeds, then, of course, processing continues.
+
+  In some cases, a parent object may hold special attributed for a
+  subobject.  This may be the case either when a sub-object cannot have
+  the special attribute or when it is convenience for the parent
+  object to manage attribute data (e.g. to share attribute data among
+  multiple children).  When the object publisher looks for a special
+  attribute, it first trys to get the attribute from the published
+  object.  If it fails to get the special attribute, it uses the same
+  access mechanism used to extract the subobject from the parent
+  object to get an attribute (or item) using a name obtained by
+  concatinating the sub-object name with the special attribute
+  name. For example, let 'foo.bar' be a dictionary, and foo.bar.spam
+  an item in the dictionary.  When attempting to obtain the special
+  attribute '__realm__', the object publisher will first try to
+  evaluate 'foo.bar.spam.__realm__', and then try to evaluate:
+  'foo.bar["spam"+"__realm__"]'. 
 
 Access Control
 
@@ -53,9 +116,17 @@ Access Control
   will be used and the object publisher will attempt to
   authenticate the access to the object using one of the supplied
   name and password pairs.  The basic authentication realm name
-  used is "module_name.server_name", where "module_name" is the
+  used is 'module_name.server_name', where 'module_name' is the
   name of the module containing the published objects, and
   server_name is the name of the web server.      
+
+  The module used to publish an object may contain it's own
+  '__allow_groups__' attribute, thereby limiting access to all of the
+  objects in a module.
+
+  If multiple objects in the URI path have '__allow_groups__'
+  attributes, then the effect will be that of intersecting all of the
+  groups.
 
   Realms
 
@@ -124,11 +195,19 @@ Function, method, and class objects
   Argument Types and File upload
 
     Normally, string arguments are passed to called objects. The
-    called function must be prepared to convert string arguments to
+    called object must be prepared to convert string arguments to
     other data types, such as numbers.
     
     If file upload is used, however, then file objects will be
     passed instead.
+
+    If field names in form data are of the form: name:type, then an
+    attempt will be to convert data from from strings to the indicated
+    type.  The data types currently supported are: float, int, and
+    long.  For example, if the name of a field in an input form is
+    age:int, then the field value will be passed in argument, age, and
+    an attempt will be made to convert the argument value to an
+    integer. 
 
 Published objects that are not functions, methods, or classes
 
@@ -138,25 +217,76 @@ Published objects that are not functions, methods, or classes
 Return types
 
   A published object, or the returned value of a called published
-  object can be of any python type.  The returned value will be
+  object can be of any Python type.  The returned value will be
   converted to a string and examined to see if it appears to be an
   HTML document.  If it appears to be an HTML document, then the
-  response content-type will be set to text/html.  Otherwise the
-  content-type will be set to text/plain.
+  response content-type will be set to 'text/html'.  Otherwise the
+  content-type will be set to 'text/plain'.
 
   A special case is when the returned object is a two-element tuple.
-  If the return value is a two-element tuple, then the first element
+  If the return object is a two-element tuple, then the first element
   will be converted to a string and treated as an HTML title, and
   the second element will be converted to a string and treated as
   the contents of an HTML body. An HTML document is created and
   returned (with type text/html) by adding necessary html, head,
   title, and body tags.
+
+  If the returned object is None or the string representation of the
+  returned object is an empty string, then HTTP the return status will
+  be set "No Content", and no body will be returned.  On some
+  browsers, this will cause the displayed document to be unchanged.
+
+Providing On-Line help
+
+  On-line help is provided for published objects, both explicitly and
+  implicitly.  To provide on-line help for an object, simply provide a
+  'help' attribute for the object.  If a 'help' attribute is not
+  provided, then the object's documentation string is used. When a URI
+  like: 'http:/some.server/cgi-bin/some_module/foo/bar/help' is
+  presented to the publisher, it will try to access the 'help'
+  attribute of 'some_module.foo.bar'.  If the object does not have a
+  'help' attribute, then the object's documentation string will be
+  returned.
       
 Exception handling
 
   Unhandled exceptions are caught by the object publisher
   and are translated automatically to nicely formatted HTTP output.
-  Traceback information will be included in a comment in the output.
+
+  When an exception is raised, the exception type is mapped to an HTTP
+  code by matching the value of the exception type with a list of
+  standard HTTP status names.  Any exception types that do not match
+  standard HTTP status names are mapped to "Internal Error" (500).
+  The standard HTTP status names are: '"OK"', '"Created"',
+  '"Accepted"', '"No Content"', '"Multiple Choices"', '"Redirect"',
+  '"Moved Permanently"', '"Moved Temporarily"', '"Not Modified"',
+  '"Bad Request"', '"Unauthorized"', '"Forbidden"', '"Not Found"',
+  '"Internal Error"', '"Not Implemented"', '"Bad Gateway"', and
+  '"Service Unavailable"', Variations on these names with different
+  cases and without spaces are also valid.
+
+  An attempt is made to use the exception value as the body of the
+  returned response.  The object publisher will examine the exception
+  value.  If the value is a string that contains some white space,
+  then it will be used as the body of the return error message.  It it
+  appears to be HTML, the the error content type will be set to
+  'text/html', otherwise, it will be set to 'text/plain'.  If the
+  exception value is not a string containing white space, then the
+  object publisher will generate it's own error message.
+
+  There are two exceptions to the above rule:
+
+    1. If the exception type is: '"Redirect"', '"Multiple Choices"'
+       '"Moved Permanently"', '"Moved Temporarily"', or
+       '"Not Modified"', and the exception value is an absolute URI,
+       then no body will be provided and a 'Location' header will be
+       included in the output with the given URI.
+
+    2. If the exception type is '"No Content"', then no body will be
+       returned.
+
+  When a body is returned, traceback information will be included in a
+  comment in the output. 
 
 Redirection
 
@@ -166,8 +296,11 @@ Redirection
 
 Examples
 
-  Consider the following examples:
+  Consider the following example:
   
+        "sample.py -- sample published module"
+
+	# URI: http://some.host/cgi-bin/sample/called
 	_called=0
 	def called():
 	    "Report how many times I've been called"
@@ -175,10 +308,12 @@ Examples
 	    _called=_called+1
 	    return _called
 	
+	# URI: http://some.host/cgi-bin/sample/hi
 	def hi():
 	    "say hello"
-	    return '<html><head><base href=spam></head>hi'
+	    return "<html><head><base href=spam></head>hi"
 	
+	# URI: http://some.host/cgi-bin/sample/add?x=1&y=2
 	def add(x,y):
 	    "add two numbers"
 	    from string import atof
@@ -187,46 +322,53 @@ Examples
 	# Note that doc is not published
 	def doc(m):
 	  d={}
-	  exec 'import ' + m in d
+	  exec "import " + m in d
 	  return d[m].__doc__
 	
+	# URI: http://some.host/cgi-bin/sample/spam
 	class spam:
 	    "spam is good"
 	
-	    __allow_groups__=[{'jim':1, 'super':1}]
+	    __allow_groups__=[{"jim":1, "super":1}]
 	
+	    # URI: http://some.host/cgi-bin/sample/aSpam/hi
 	    def hi(self):
 	      return self.__doc__
 	
-	    __super_group=[{'super':1}]
+	    __super_group=[{"super":1}]
 
+	    # URI: http://some.host/cgi-bin/sample/aSpam/eat?module_name=foo
 	    # Note that eat requires "super" access.
 	    eat__allow_groups__=__super_group
 	    def eat(self,module_name):
 		"document a module"
 		if not module_name:
-		    raise 'BadRequest', 'The module name is blank'
+		    raise "BadRequest", "The module name is blank"
 		return doc(module_name)
 
+	    # URI: http://some.host/cgi-bin/sample/aSpam/list
 	    # Here we have a stream output example.
 	    # Note that only jim and super can use this.
     	    def list(self, RESPONSE):
 		"list some elements"
-		RESPONSE.setCookie('spam','eggs',path='/')
-		RESPONSE.write('<html><head><title>A list</title></head>')
-		RESPONSE.write('list: \\n')
-		for i in range(10): RESPONSE.write('\\telement %d' % i)
-		RESPONSE.write('\\n')
+		RESPONSE.setCookie("spam","eggs",path="/")
+		RESPONSE.write("<html><head><title>A list</title></head>")
+		RESPONSE.write("list: \\n")
+		for i in range(10): RESPONSE.write("\\telement %d" % i)
+		RESPONSE.write("\\n")
 	
 	
+	# URI: http://some.host/cgi-bin/sample/aSpam
 	aSpam=spam()
 	
 	# We create another spam that paul can use,
 	# but he still can't eat.
+	# URI: http://some.host/cgi-bin/sample/moreSpam
 	moreSpam=spam()
 	moreSpam.__dict__['__allow_groups__']=[{'paul':1}]
 	
 	
+	# URI: http://some.host/cgi-bin/sample/taste
 	def taste(spam):
 	    "a favorable reviewer"
 	    return spam,'yum yum, I like ' + spam
@@ -249,7 +391,7 @@ Publishing a module using CGI
     o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
       Realm.pyc, and newcgi.pyc, to the directory containing the
       module to be published, or to a directory in the standard
-      (compiled in) python search path.
+      (compiled in) Python search path.
 
     o Copy the file cgi-module-publisher to the directory containing the
       module to be published.
@@ -263,7 +405,7 @@ Publishing a module using Fast CGI
     o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
       Realm.pyc, and newcgi.pyc, to the directory containing the
       module to be published, or to a directory in the standard
-      (compiled in) python search path.
+      (compiled in) Python search path.
 
     o Copy the file fcgi-module-publisher to the directory containing the
       module to be published.
@@ -280,7 +422,7 @@ Publishing a module using the ILU Requestor (future)
     o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
       Realm.pyc, and newcgi.pyc, to the directory containing the
       module to be published, or to a directory in the standard
-      (compiled in) python search path.
+      (compiled in) Python search path.
 
     o Copy the file ilu-module-publisher to the directory containing the
       module to be published.
@@ -292,10 +434,10 @@ Publishing a module using the ILU Requestor (future)
     o Start the module server process by running the symbolically
       linked file, giving the server name as an argument.
 
-    o Configure the web server to call module_name@server with
+    o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.4 1996/07/04 22:57:20 jfulton Exp $"""
+$Id: Publish.py,v 1.5 1996/07/08 20:34:11 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -348,6 +490,14 @@ $Id: Publish.py,v 1.4 1996/07/04 22:57:20 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.5  1996/07/08 20:34:11  jfulton
+# Many changes, including:
+#
+#   - Butter realm management
+#   - Automatic type conversion
+#   - Improved documentation
+#   - ...
+#
 # Revision 1.4  1996/07/04 22:57:20  jfulton
 # Added lots of documentation.  A few documented features have yet to be
 # implemented.  The module needs to be retested after adding some new
@@ -355,7 +505,7 @@ $Id: Publish.py,v 1.4 1996/07/04 22:57:20 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 def main():
@@ -368,6 +518,9 @@ if __name__ == "__main__": main()
 import sys, os, string, types, newcgi, regex
 from CGIResponse import Response
 from Realm import Realm
+
+from newcgi import FieldStorage
+
 
 class ModulePublisher:
 
@@ -404,55 +557,27 @@ class ModulePublisher:
 	try: return self.environ[key]
 	except: return ''
 
-    
-    def document(self,o,response):
-	if type(o) is not types.StringType: o=o.__doc__
-	response.setBody(
-	    self.html('Documentation for' +
-		      ((self.env('PATH_INFO') or
-			('/'+self.module_name))[1:]),
-		      '<pre>\n%s\n</pre>' % o)
-	    )
-	return response
 
-    def validate(self,object,parent=None,object_name='_'):
-	if type(object) is types.ModuleType: self.forbiddenError()
-	if (hasattr(object,'__allow_groups__') or
-	    parent and hasattr(parent,object_name+'__allow_groups__')
-	    ):
-  	    if hasattr(object,'__allow_groups__'):
-		groups=object.__allow_groups__
-	    else:
-		groups=getattr(parent,object_name+'__allow_groups__')
+    def validate(self,groups,realm=None):
+	if not realm:
 	    try: realm=self.realm
 	    except:
-		try:
-		    realm=self.module.__realm__
-		    if not hasattr(realm,'validate'):
-			# Hm.  The realm must really be just a mapping
-			# object, so we will convert it to a proper
-			# realm using basic authentication
-			import Realm
-			realm=Realm("%s.%s" %
-				    (self.module_name,self.request.SERVER_NAME),
-				    realm)
-			self.module.__realm__=realm
-		except:
-		    import Realm
-		    realm=Realm("%s.%s" %
+		import Realm
+		realm=Realm("%s.%s" %
 				(self.module_name,self.request.SERVER_NAME))
 		self.realm=realm
+	    
+	try:
+	    return realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
+	except:
 	    try:
-		return realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
-	    except:
-		try:
-		    t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
-		    auth,v=v
-		except: pass
-		if t == 'Unauthorized':
-		    self.response['WWW-authenticate']=auth
-		    raise 'Unauthorized', v
-	    self.forbiddenError()
+		t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
+		auth,v=v
+	    except: pass
+	    if t == 'Unauthorized':
+		self.response['WWW-authenticate']=auth
+		raise 'Unauthorized', v
+	self.forbiddenError()
 
     def publish(self, module_name, published='web_objects',
 		imported_modules={}, module_dicts={}):
@@ -464,17 +589,28 @@ class ModulePublisher:
 
 	dict=imported_modules
 	try:
-	    theModule, dict, published = module_dicts[module_name]
+	    theModule, object, published = module_dicts[module_name]
 	except:
 	    exec 'import %s' % module_name in dict
-	    theModule=dict=dict[module_name]
-	    if hasattr(dict,published):
-		dict=getattr(dict,published)
+	    theModule=object=dict[module_name]
+	    if hasattr(theModule,published):
+		object=getattr(dict,published)
 	    else:
-		dict=dict.__dict__
+		object=theModule
 		published=None
-	    module_dicts[module_name] = theModule, dict, published
+	    module_dicts[module_name] = theModule, object, published
+
 	self.module=theModule
+
+	# Try to get realm from module
+	try: realm=theModule.__realm__
+	except: realm=None
+
+	# Do authorization check, if need be:
+	try:
+	    groups=theModule.__allow_groups__
+	    if groups: self.validate(groups,realm)	
+	except: groups=None
 
 	# Get a nice clean path list:
 	path=(string.strip(self.env('PATH_INFO')) or '/')[1:]
@@ -483,73 +619,140 @@ class ModulePublisher:
     
 	# Make help the default, if nothing is specified:
 	if not path: path = ['help']
-
-	# Try to look up the first one:
-	try: function, p, path = dict[path[0]], path[0], path[1:]
-	except KeyError: self.notFoundError()
-
-	# Do top-level object first-step authentication
-	if not (published or function.__doc__): self.forbiddenError()
-	self.validate(function)
     
-	p=''
 	while path:
-	    p,path=path[0], path[1:]
-	    if p:
-		try: f=getattr(function,p)
+	    entry_name,path,groups=path[0], path[1:], None
+	    if entry_name:
+		try:
+		    subobject=getattr(object,entry_name)
+		    try: groups=subobject.__allow_groups__
+		    except:
+			try: groups=getattr(object,
+					    entry_name+'__allow_groups__')
+			except: pass
+		    try: doc=subobject.__doc__
+		    except:
+			try: doc=getattr(object,entry_name+'__doc__')
+			except: doc=None
+		    try: realm=subobject.__realm__
+		    except:
+			try: realm=getattr(object,entry_name+'__realm__')
+			except: pass
 		except AttributeError:
-		    try: f=function[p]
+		    try:
+			subobject=object[entry_name]
+			try: groups=subobject.__allow_groups__
+			except:
+			    try: groups=object[entry_name+'__allow_groups__']
+			    except: pass
+			try: doc=subobject.__doc__
+			except:
+			    try: doc=object[entry_name+'__doc__']
+			    except: doc=None
+			try: realm=subobject.__realm__
+			except:
+			    try: realm=object[entry_name+'__realm__']
+			    except: pass
 		    except TypeError:
-			if not path and p=='help':
-			    p, f = '__doc__', self.document(function,response)
+			if not path and entry_name=='help' and doc:
+			    object=doc
+			    entry_name, subobject = (
+				'__doc__', self.html
+				('Documentation for' +
+				 ((self.env('PATH_INFO') or
+				   ('/'+self.module_name))[1:]),
+				 '<pre>\n%s\n</pre>' % doc)
+				)
 			else:
 			    self.notFoundError()
-		if not (p=='__doc__' or f.__doc__) or p[0]=='_':
-		    raise 'Forbidden',function
-		self.validate(f,function,p)
-		function=f
-    
-	if type(f) is types.ClassType:
-	    if hasattr(f,'__init__'):
-		f=f.__init__
+		if published:
+		    # Bypass simple checks the first time
+		    published=None
+		else:
+		    # Perform simple checks
+		    if (type(subobject)==types.ModuleType or
+			entry_name != '__doc__' and
+			(not doc or entry_name[0]=='_')
+			):
+			raise 'Forbidden',object
+
+		# Do authorization checks
+		if groups: self.validate(groups, realm)
+
+		# Promote subobject to object
+		object=subobject
+
+	object_as_function=object	
+	if type(object_as_function) is types.ClassType:
+	    if hasattr(object_as_function,'__init__'):
+		object_as_function=object_as_function.__init__
 	    else:
-		def ff(): pass
-		f=ff
-	if type(f) is types.MethodType:
-	    defaults=f.im_func.func_defaults
-	    names=(f.im_func.
-		   func_code.co_varnames[1:f.im_func.func_code.co_argcount])
-	elif type(f) is types.FunctionType:
-	    defaults=f.func_defaults
-	    names=f.func_code.co_varnames[:f.func_code.co_argcount]
+		def function_with_empty_signature(): pass
+		object_as_function=function_with_empty_signature
+		
+	if type(object_as_function) is types.MethodType:
+	    defaults=object_as_function.im_func.func_defaults
+	    argument_names=(
+		object_as_function.im_func.
+		func_code.co_varnames[
+		    1:object_as_function.im_func.func_code.co_argcount])
+	elif type(object_as_function) is types.FunctionType:
+	    defaults=object_as_function.func_defaults
+	    argument_names=object_as_function.func_code.co_varnames[
+		:object_as_function.func_code.co_argcount]
 	else:
-	    return response.setBody(function)
+	    return response.setBody(object)
     
 	query=self.request
 	query['RESPONSE']=response
 
 	args=[]
-	nrequired=len(names) - (len(defaults or []))
-	for name_index in range(len(names)):
-	    name=names[name_index]
+	nrequired=len(argument_names) - (len(defaults or []))
+	for name_index in range(len(argument_names)):
+	    argument_name=argument_names[name_index]
 	    try:
-		v=query[name]
+		v=query[argument_name]
 		args.append(v)
 	    except:
 		if name_index < nrequired:
-		    self.badRequestError(name)
+		    self.badRequestError(argument_name)
 
     
-	if args: result=apply(function,tuple(args))
-	else:    result=function()
+	if args: result=apply(object,tuple(args))
+	else:    result=object()
 
 	if result and result is not response: response.setBody(result)
 
 	return response
 
 def str_field(v):
+    if type(v) is types.ListType:
+	return map(str_field,v)
+
     if type(v) is types.InstanceType and v.__class__ is newcgi.MiniFieldStorage:
         v=v.value
+    elif type(v) is not types.StringType:
+	try:
+	    if v.file:
+		v=v.file
+	    else:
+		v=v.value
+	except: pass
+    return v
+
+def flatten_field(v,converter):
+    if type(v) is types.ListType:
+	if len(v) > 1: return map(flatten_field,v)
+	v=v[0]
+
+    try:
+	if v.file:
+	    v=v.file
+	else:
+	    v=v.value
+    except: pass
+    
+    if converter: v=converter(v)
     return v
 
 class Request:
@@ -570,12 +773,13 @@ class Request:
         These variables include input headers, server data, and other
         request-related data.  The variable names are as 
         <a href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
-        the <a href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI specification</a>
+        in the
+	<a href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI specification</a>
 
       - Form data
 
-        These are data extracted either a URL-encoded query string or
-        body, if present.
+        These are data extracted from either a URL-encoded query
+        string or body, if present.
 
       - Cookies
 
@@ -588,6 +792,12 @@ class Request:
     The request object has three attributes: "environ", "form",
     "cookies", and "other" that are dictionaries containing this data.
 
+    The form attribute of a request is actually a Field Storage
+    object.  When file uploads are used, this provides a richer and
+    more complex interface than is provided by accessing form data as
+    items of the request.  See the FieldStorage class documentation
+    for more details.
+
     The request object may be used as a mapping object, in which case
     values will be looked up in the order: environment variables,
     other variables, form data, and then cookies.  Dot notation may be
@@ -595,9 +805,10 @@ class Request:
     other than "environ", "form", "cookies", and "other".
     """
 
-    def __init__(self,environ,form):
+    def __init__(self,environ,form,stdin):
 	self.environ=environ
 	self.form=form
+	self.stdin=stdin
 	self.other={}
 
     def __setitem__(self,key,value):
@@ -608,6 +819,11 @@ class Request:
 	"""
 	
 	self.other[key]=value
+
+
+    __type_converters = {'float':string.atof, 'int': string.atoi, 'long':string.atol}
+
+    __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
 
     def __getitem__(self,key):
 	"""Get a variable value
@@ -631,11 +847,28 @@ class Request:
 
 	if key!='cookies':
 	    try:
-		v=self.form[key]
-		if type(v) is types.ListType:
-		    v=map(str_field, v)
-		    if len(v) == 1: v=v[0]
-		else: v=str_field(v)
+		converter=None
+		try:
+		    v=self.form[key]
+		except:
+		    # Hm, maybe someone used a form with a name like: name:type
+		    try: tf=self.__dict__['___typed_form']
+		    except:
+			tf=self.__dict__['___typed_form']={}
+			form=self.form
+			colon=self.__http_colon
+			search=colon.search
+			group=colon.group
+			for k in form.keys():
+			    l = search(k)
+			    if l > 0: 
+				tf[k[:l]]=form[k],k[l+len(group(1)):]
+
+		    v,t=tf[key]
+		    try:
+			converter=self.__type_converters[t]
+		    except: pass
+		v=flatten_field(v,converter)
 		return v
 	    except: pass
 
@@ -686,8 +919,9 @@ class CGIModulePublisher(ModulePublisher):
 	try:
 	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
 	except: pass
+	
 	form=newcgi.FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
-        self.request=Request(environ,form)
+        self.request=Request(environ,form,stdin)
 	self.response=Response(stdout=stdout, stderr=stderr)
 	self.stdin=stdin
 	self.stdout=stdout
@@ -702,8 +936,10 @@ def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
 		   environ=os.environ):
     try:
-	publisher=CGIModulePublisher(stdin=stdout, stdin=stdout, stderr=stderr,
-				     environ=environ)
+	publisher = CGIModulePublisher(stdin=stdin, stdout=stdout,
+				       stderr=stderr,
+				       environ=environ)
+	response = publisher.response
 	response = publisher.publish(module_name)
     except:
 	response.exception()

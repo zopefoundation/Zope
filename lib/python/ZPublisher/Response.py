@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.3 1996/07/03 18:25:50 jfulton Exp $'''
+$Id: Response.py,v 1.4 1996/07/08 20:34:09 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,14 @@ $Id: Response.py,v 1.3 1996/07/03 18:25:50 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.4  1996/07/08 20:34:09  jfulton
+# Many changes, including:
+#
+#   - Butter realm management
+#   - Automatic type conversion
+#   - Improved documentation
+#   - ...
+#
 # Revision 1.3  1996/07/03 18:25:50  jfulton
 # Added support for file upload via newcgi module.
 #
@@ -72,7 +80,7 @@ $Id: Response.py,v 1.3 1996/07/03 18:25:50 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import string, types, sys, regex
 
@@ -81,6 +89,7 @@ status_reasons={
     201: 'Created',
     202: 'Accepted',
     204: 'No Content',
+    300: 'Multiple Choices',
     301: 'Moved Permanently',
     302: 'Moved Temporarily',
     304: 'Not Modified',
@@ -99,6 +108,8 @@ status_codes={
     'created':201,
     'accepted':202,
     'nocontent':204,
+    'multiplechoices':300,
+    'redirect':300,
     'movedpermanently':301,
     'movedtemporarily':302,
     'notmodified':304,
@@ -110,6 +121,17 @@ status_codes={
     'notimplemented':501,
     'badgateway':502,
     'serviceunavailable':503,
+    'no content':204,
+    'multiple choices':300,
+    'moved permanently':301,
+    'moved temporarily':302,
+    'not modified':304,
+    'bad request':400,
+    'not found':404,
+    'internal error':500,
+    'not implemented':501,
+    'bad gateway':502,
+    'service unavailable':503,
     200: 200,
     201: 201,
     202: 202,
@@ -127,8 +149,8 @@ status_codes={
     503: 503,
 
     # Map standard python exceptions to status codes:
-    'accesserror':403,
-    'attributeerror':501,
+    'accesserror':500,
+    'attributeerror':500,
     'conflicterror':500,
     'eoferror':500,
     'ioerror':500,
@@ -149,7 +171,29 @@ status_codes={
 end_of_header_re=regex.compile('</head>',regex.casefold)
 base_re=regex.compile('<base',regex.casefold)
 
+absuri_re=regex.compile("[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?")
+
 class Response:
+    """\
+    An object representation of an HTTP response.
+    
+    The Response type encapsulates all possible responses to HTTP
+    requests.  Responses are normally created by the object publisher.
+    A published object may recieve the response abject as an argument
+    named 'RESPONSE'.  A published object may also create it's own
+    response object.  Normally, published objects use response objects
+    to:
+
+    - Provide specific control over output headers,
+
+    - Set cookies, or
+
+    - Provide stream-oriented output.
+
+    If stream oriented output is used, then the response object
+    passed into the object must be used.
+    """
+    
 
     def __init__(self,body='',status=200,headers=None,
 		 stdout=sys.stdout, stderr=sys.stderr,):
@@ -192,16 +236,21 @@ class Response:
 	the previous value set for the header, if one exists. '''
 	self.headers[string.lower(name)]=value
 
-    def __getitem__(self, name):
-	'Get the value of an output header'
-	return self.headers[name]
-
     __setitem__=setHeader
 
     def setBody(self, body, title=''):
 	'''\
+	Set the body of the response
+	
 	Sets the return body equal to the (string) argument "body". Also
-	updates the "content-length" return header. '''
+	updates the "content-length" return header.
+
+	You can also specify a title, in which case the title and body
+	will be wrapped up in html, head, title, and body tags.
+
+	If the body is a 2-element tuple, then it will be treated
+	as (title,body)
+	'''
 	if type(body)==types.TupleType:
 	    title,body=body
 	if(title):
@@ -244,7 +293,9 @@ class Response:
 
     def expireCookie(self, name):
 	'''\
-	Returns an HTTP header that will remove the cookie
+	Cause an HTTP cookie to be removed from the browser
+	
+	The response will include an HTTP header that will remove the cookie
 	corresponding to "name" on the client, if one exists. This is
 	accomplished by sending a new cookie with an expiration date
 	that has already passed. '''
@@ -253,7 +304,9 @@ class Response:
     def setCookie(self,name, value=None,
 		  expires=None, domain=None, path=None, secure=None):
 	'''\
-	Returns an HTTP header that sets a cookie on cookie-enabled
+	Set an HTTP cookie on the browser
+
+	The response will include an HTTP header that sets a cookie on cookie-enabled
 	browsers with a key "name" and value "value". This overwrites
 	any previously set value for the cookie in the Response object. '''
 	try: cookie=self.cookies[name]
@@ -270,14 +323,21 @@ class Response:
 
 
     def appendBody(self, body):
-	''
 	self.setBody(self.getBody() + body)
 
     def getHeader(self, name):
 	 '''\
+	 Get a header value
+	 
 	 Returns the value associated with a HTTP return header, or
-	 "None" if no such header has been set in the response yet. '''
-	 return self.headers[name]
+	 "None" if no such header has been set in the response
+	 yet. '''
+	 try: return self.headers[name]
+	 except: return None
+
+    def __getitem__(self, name):
+	'Get the value of an output header'
+	return self.headers[name]
 
     def getBody(self):
 	'Returns a string representing the currently set body. '
@@ -285,6 +345,8 @@ class Response:
 
     def appendHeader(self, name, value, delimiter=","):
 	'''\
+	Append a value to a cookie
+	
 	Sets an HTTP return header "name" with value "value",
 	appending it following a comma if there was a previous value
 	set for the header. '''
@@ -295,7 +357,8 @@ class Response:
 	self.setHeader(name,h)
 
     def isHTML(self,str):
-	return string.lower(string.strip(str)[:6]) == '<html>'
+	return (string.lower(string.strip(str)[:6]) == '<html>' or
+		string.find(str,'</') > 0)
 
     def _traceback(self,t,v,tb):
 	import traceback
@@ -307,8 +370,21 @@ class Response:
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
 
 	self.setStatus(t)
+	if self.status >= 300 and self.status < 400:
+	    if type(v) == types.StringType and absuri_re.match(v) >= 0:
+		self.setHeader('location', v)
+		return self
+	    else:
+		try:
+		    l,b=v
+		    if type(l) == types.StringType and absuri_re.match(l) >= 0:
+			self.setHeader('location', l)
+			self.setBody(b)
+			return self
+		except: pass
+
 	b=v
-	if type(b) is not type(''):
+	if type(b) is not types.StringType:
 	    return self.setBody(
 		(str(t),
 		 'Sorry, an error occurred.<p>'
@@ -357,7 +433,23 @@ class Response:
 
 	return string.joinfields(headersl,'\n')
 
+    def flush(self): pass
+
     def write(self,data):
+	"""\
+	Return data as a stream
+
+	HTML data may be returned using a stream-oriented interface.
+	This allows the browser to display partial results while
+	computation of a response to proceed.
+
+	The published object should first set any output headers or
+	cookies on the response object.
+
+	Note that published objects must not generate any errors
+	after beginning stream-oriented output.	
+
+	"""
 	self.body=self.body+data
 	if end_of_header_re.search(self.body) >= 0:
 	    try: del self.headers['content-length']
@@ -368,13 +460,12 @@ class Response:
 	    body=self.body
 	    self.body=''
 	    self.write=write=self.stdout.write
+	    try: self.flush=self.stdout.flush
+	    except: pass
 	    write(str(self))
 	    self._wrote=1
 	    write('\n\n')
 	    write(body)
-
-def ExceptionResponse():
-    return Response().exception()
 
 def main():
     print Response('hello world')
