@@ -678,6 +678,8 @@ if MONITOR_PORT:
 try:
     import pwd
     try:
+        try:    UID = string.atoi(UID)
+        except: pass
         gid = None
         if type(UID) == type(""):
             uid = pwd.getpwnam(UID)[2]
