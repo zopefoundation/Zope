@@ -22,7 +22,16 @@ class BaseFramework(unittest.TestCase):
             self.tearDown()
             raise
 
+    def _close(self):
+        self._db.close()
+
     def tearDown(self):
+        # If the tests exited with any uncommitted objects, they'll blow up
+        # subsequent tests because the next transaction commit will try to
+        # commit those object.  But they're tied to closed databases, so
+        # that's broken.  Aborting the transaction now saves us the headache.
+        get_transaction().abort()
+        self._close()
         for file in os.listdir(self._dbhome):
             os.unlink(os.path.join(self._dbhome, file))
         os.removedirs(self._dbhome)
