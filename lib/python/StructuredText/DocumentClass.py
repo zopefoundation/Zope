@@ -922,7 +922,7 @@ class DocumentClass:
            return None
 
     ## Some constants to make the doc_href() regex easier to read.
-    _DQUOTEDTEXT = r'("[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/]+")' ## double quoted text
+    _DQUOTEDTEXT = r'("[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/\*\']+")' ## double quoted text
     _URL_AND_PUNC = r'([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)'
     _SPACES = r'(\s*)'
     
