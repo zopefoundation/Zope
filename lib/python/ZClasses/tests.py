@@ -44,7 +44,6 @@ def test_suite():
     return unittest.TestSuite((
 
         # To do:
-        # - Beef up basic test
         # - Test working with old pickles
         # - Test proper handling of __of__
         # - Test export/import

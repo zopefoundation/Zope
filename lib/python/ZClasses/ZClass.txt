@@ -83,9 +83,17 @@ We can access the class in another connection:
     ...     app.c2.x = '*'
     ...     print app.c2.x, app.c2.y, app.c2.eek(), '!'
     ...     print app.c.x, app.c.y, app.c.eek(), '!'
+    ...     transaction.commit()
     ...     connection.close()
 
 
-    ... run(read_class)
-    hee 42 ****************************************** !
+    >>> run(read_class)
+    * 42 ****************************************** !
     hi  3 hi hi hi  !
+
+Of course, we should be able to see the new object created in the
+other connection:
+
+    >>> conn.sync()
+    >>> app.c2.eek()
+    '******************************************'
