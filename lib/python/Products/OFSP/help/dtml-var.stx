@@ -85,11 +85,11 @@ var: Inserts a variable
     url_quote_plus -- URL quotes character, like 'url_quote' but also
     converts spaces to plus signs.
 
-    url_unquote -- convert HTML character entities in strings back to
-    their real values.
+    url_unquote -- Converts HTML '%xx' escapes into their single
+    character values (ie: undoes the effects of url_quote).
 
-    url_unquote_plus -- like url_unquote, but also replace "+"
-    characters with spaces.
+    url_unquote_plus -- Like url_unquote, but also replaces '+'
+    characters with spaces (ie: undoes the effects of url_quote_plus).
 
     sql_quote -- Converts single quotes to pairs of single
     quotes. This is needed to safely include values in SQL strings.
