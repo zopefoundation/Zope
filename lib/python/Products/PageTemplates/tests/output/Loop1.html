@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>Loop doc</title>
+</head>
+<body>
+<p>Choose your type:</p>
+<ul>
+  <li tal:repeat="type python:'digital', 'analog', 'organic'">
+  <a href="/mach/digital"
+     tal:attributes="href string:/mach/$type"
+     tal:content="type">digital</a>
+  </li>
+  <li tal:repeat="type python:'digital', 'analog', 'organic'">
+  <a href="/mach/analog"
+     tal:attributes="href string:/mach/$type"
+     tal:content="type">analog</a>
+  </li>
+  <li tal:repeat="type python:'digital', 'analog', 'organic'">
+  <a href="/mach/organic"
+     tal:attributes="href string:/mach/$type"
+     tal:content="type">organic</a>
+  </li>
+</ul>
+</body>
+</html>
