@@ -12,24 +12,19 @@
 #
 ##############################################################################
 """
-A logging module which handles ZServer access log messages.
-
-This depends on Vinay Sajip's PEP 282 logging module.
+An abstract logger meant to provide features to the access logger,
+the event logger, and the debug logger.
 """
 
-from ZServer.BaseLogger import BaseLogger
+import logging
 
 
-class AccessLogger(BaseLogger):
+class BaseLogger:
+    def __init__(self, name):
+        self.logger = logging.getLogger(name)
+        self.logger.propagate = False
 
-    def __init__(self):
-        BaseLogger.__init__(self, 'access')
-
-    def log(self, message):
-        if not self.logger.handlers: # don't log if we have no handlers
-            return
-        if message.endswith('\n'):
-            message = message[:-1]
-        self.logger.warn(message)
-
-access_logger = AccessLogger()
+    def reopen(self):
+        for handler in self.logger.handlers:
+            if hasattr(handler, 'reopen') and callable(handler.reopen):
+                handler.reopen()

@@ -36,12 +36,13 @@ where:
 import time
 import logging
 
-from zLOG.BaseLogger import BaseLogger
+from ZServer.BaseLogger import BaseLogger
 
 
 class DebugLogger(BaseLogger):
 
-    logger = logging.getLogger('trace')
+    def __init__(self):
+        BaseLogger.__init__(self, 'trace')
 
     def log(self, code, request_id, data=''):
         if not self.logger.handlers:
