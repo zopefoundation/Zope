@@ -18,7 +18,12 @@ module level to add functionality to the test environment.
 $Id: utils.py,v 1.21 2005/02/11 09:00:21 shh42 Exp $
 """
 
+import os
+import sys
+import time
+import random
 import transaction
+
 
 def setupCoreSessions(app=None):
     '''Sets up the session_data_manager e.a.'''
@@ -30,7 +35,7 @@ def setupCoreSessions(app=None):
 
     if not hasattr(app, 'temp_folder'):
         from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
-        tf = MountedTemporaryFolder('temp_folder','Temporary Folder')
+        tf = MountedTemporaryFolder('temp_folder', 'Temporary Folder')
         app._setObject('temp_folder', tf)
         commit = 1
 
@@ -90,8 +95,6 @@ def setupSiteErrorLog(app=None):
             transaction.commit()
 
 
-import os, time
-
 def importObjectFromFile(container, filename, quiet=0):
     '''Imports an object from a (.zexp) file into the given container.'''
     from ZopeLite import _print
@@ -109,7 +112,6 @@ def startZServer(number_of_threads=1, log=None):
     '''Starts an HTTP ZServer thread.'''
     global _Z2HOST, _Z2PORT
     if _Z2HOST is None:
-        import random
         _Z2HOST = '127.0.0.1'
         _Z2PORT = random.choice(range(55000, 55500))
         from ZServer import setNumberOfThreads
@@ -121,8 +123,6 @@ def startZServer(number_of_threads=1, log=None):
         time.sleep(0.1) # Sandor Palfy
     return _Z2HOST, _Z2PORT
 
-
-import sys
 
 def makerequest(app, stdout=sys.stdout):
     '''Wraps the app into a fresh REQUEST.'''
