@@ -260,7 +260,7 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:l:2DP:')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:')
 
     # Get environment variables
     for a in args:
@@ -285,6 +285,7 @@ try:
         elif o=='-d': DNS_IP=v
         elif o=='-u': UID=v
         elif o=='-D': os.environ['Z_DEBUG_MODE']='1'
+        elif o=='-S': sys.ZMANAGED=1
         elif o=='-m':
             if v:
                 try: 

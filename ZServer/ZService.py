@@ -288,6 +288,6 @@ if __name__=='__main__':
         if win32serviceutil.GetServiceCustomOption(ZServerService,'start') is None:
             import string, os.path
             home=string.split(sys.argv[0],'ZServer')[0]
-            command='"%s" "%s"' % (sys.executable, os.path.join(home,'z2.py'))
+            command='"%s" "%s" -S' % (sys.executable, os.path.join(home,'z2.py'))
             set_start_command(command)
             print "Setting ZServer start command to:", command
