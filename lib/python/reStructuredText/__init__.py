@@ -71,6 +71,8 @@ def render(src,
     settings['input_encoding'] = input_encoding
     settings['output_encoding'] = output_encoding
     settings['stylesheet'] = stylesheet
+    if language_code:
+        settings['language_code'] = language_code
     settings['language_code'] = language_code
     # starting level for <H> elements:
     settings['initial_header_level'] = initial_header_level + 1
