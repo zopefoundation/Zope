@@ -84,10 +84,10 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.29 2000/06/02 20:07:05 jim Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: HTTPResponse.py,v 1.30 2000/06/19 21:54:52 brian Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
-import string, types, sys, regex
+import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
 from types import StringType, InstanceType
 from BaseResponse import BaseResponse
@@ -158,6 +158,8 @@ status_codes['nameerror']=503
 status_codes['keyerror']=503
 status_codes['redirect']=300
 
+
+start_of_header_search=re.compile('(<head[^>]*>)', re.IGNORECASE).search
 
 end_of_header_search=regex.compile('</head>',regex.casefold).search
 
@@ -332,14 +334,15 @@ class HTTPResponse(BaseResponse):
         if self.base:
             body=self.body
             if body:
-                e=end_of_header_search(body)
-                if e >= 0:
-                    b=base_re_search(body) 
-                    if b < 0:
-                        self.body=('%s\t<base href="%s">\n%s' %
-                                   (body[:e],self.base,body[e:]))
+                match=start_of_header_search(body)
+                if match is not None:
+                    index=match.start(0) + len(match.group(0))
+                    ibase=base_re_search(body)
+                    if ibase < 0:
+                        self.body=('%s\n<base href="%s">\n%s' %
+                                   (body[:index], self.base, body[index:]))
                         self.setHeader('content-length', len(self.body))
-                        
+
     def appendCookie(self, name, value):
         '''\
         Returns an HTTP header that sets a cookie on cookie-enabled
