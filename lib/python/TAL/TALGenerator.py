@@ -297,6 +297,12 @@ class TALGenerator:
         return newlist
 
     def emitStartElement(self, name, attrlist, taldict, metaldict):
+        for key in taldict.keys():
+            if key not in KNOWN_TAL_ATTRIBUTES:
+                raise TALError("bad TAL attribute: " + `key`)
+        for key in metaldict.keys():
+            if key not in KNOWN_METAL_ATTRIBUTES:
+                raise TALError("bad METAL attribute: " + `key`)
         todo = {}
         defineMacro = metaldict.get("define-macro")
         useMacro = metaldict.get("use-macro")
