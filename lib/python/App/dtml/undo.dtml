@@ -8,7 +8,7 @@
 <p class="form-help">
 This application's transactional feature allows you to easily undo changes 
 made to the application's settings or data. You can revert the application 
-to a &quot;snapshot&quot; of it's state at a previous point in time.
+to a &quot;snapshot&quot; of its state at a previous point in time.
 </p>
 
 <p class="form-help">
