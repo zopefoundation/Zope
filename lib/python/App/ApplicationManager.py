@@ -1,23 +1,28 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 import sys,os,time,Globals
 from Acquisition import Acquirer
 from Management import Management
 from Globals import HTMLFile
+from CacheManager import CacheManager
 
-class ApplicationManager(Acquirer,Management):
-    """ """
+class ApplicationManager(Acquirer,Management,CacheManager):
+    """Application management component."""
 
     manage_main    =HTMLFile('App/appMain')
     manage_packForm=HTMLFile('App/pack')
     manage_undoForm=HTMLFile('App/undo')
 
     manage_options=(
-    {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
+    {'icon':'App/arrow.jpg', 'label':'Application',
+     'action':'manage_app',   'target':'_top'},
+    {'icon':'App/arrow.jpg', 'label':'Application Manager',
      'action':'manage_main',   'target':'manage_main'},
+    {'icon':'App/arrow.jpg', 'label':'Cache Manager',
+     'action':'manage_cacheForm',   'target':'manage_main'},
     )
     name=title   ='Control Panel'
     process_id   =os.getpid()

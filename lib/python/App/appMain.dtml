@@ -2,8 +2,8 @@
 <HEAD>
 <TITLE><!--#var title--></TITLE>
 </HEAD> 
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2><!--#var title--></H2>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<h2><!--#var title--></h2>
 <P>
 <!--#if parentObject-->
   <!--#in parentObject-->
