@@ -278,6 +278,18 @@ instancehome $INSTANCE
 #    lock-filename /home/chrism/projects/sessions/var/Z2.lock
 
 
+# Directive: mime-types
+#
+# Description:
+#     Tells Zope about additional mime.types files that should be
+#     loaded.  The files have the same format as the mime.types file
+#     distributed with Apache.  The "mime-types" setting may be given
+#     more than once in the configuration file.
+#
+# Example:
+#
+#     mime-types  $INSTANCE/etc/mime.types
+
 
 # Directive: structured-text-header-level
 #
