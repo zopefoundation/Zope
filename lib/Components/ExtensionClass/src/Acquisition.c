@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.51 2001/03/28 14:06:50 jeremy Exp $
+  $Id: Acquisition.c,v 1.52 2001/07/03 19:38:20 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -45,6 +45,11 @@
 
 */
 #include "ExtensionClass.h"
+
+#define _IN_ACQUISITION_C
+#include "Acquisition.h"
+
+static ACQUISITIONCAPI AcquisitionCAPI;
 
 static void
 PyVar_Assign(PyObject **v,  PyObject *e)
@@ -1210,21 +1215,12 @@ static struct PyMethodDef Xaq_methods[] = {
 };
 
 static PyObject *
-module_aq_acquire(PyObject *ignored, PyObject *args, PyObject *kw)
+capi_aq_acquire(PyObject *self, PyObject *name, PyObject *filter,
+	PyObject *extra, int explicit, PyObject *defalt, int containment)
 {
-  PyObject *self;
-  PyObject *name, *filter=0, *extra=Py_None;
-  PyObject *expl=0, *defalt=0;
-  int explicit=1, containment=0;
-
-  UNLESS (PyArg_ParseTupleAndKeywords(
-	     args, kw, "OO|OOOOi", acquire_args,
-	     &self, &name, &filter, &extra, &explicit, &defalt, &containment
-	     ))
-    return NULL;
-
-  if (expl) explicit=PyObject_IsTrue(expl);
   
+  PyObject *result;
+
   if (filter==Py_None) filter=0;
 
   /* We got a wrapped object, so business as usual */
@@ -1242,14 +1238,56 @@ module_aq_acquire(PyObject *ignored, PyObject *args, PyObject *kw)
   UNLESS (self=newWrapper(self, NULL, (PyTypeObject*)&Wrappertype)) 
     return NULL;
   
-  ignored=Wrapper_findattr(WRAPPER(self), name, filter, extra, OBJECT(self),
+  result=Wrapper_findattr(WRAPPER(self), name, filter, extra, OBJECT(self),
 			   1, 1, explicit, containment);
 
   /* get rid of temp wrapper */
   Py_DECREF(self);
 
-  return ignored;
+  return result;
 }
+
+static PyObject *
+module_aq_acquire(PyObject *ignored, PyObject *args, PyObject *kw)
+{
+  PyObject *self;
+  PyObject *name, *filter=0, *extra=Py_None;
+  PyObject *expl=0, *defalt=0;
+  int explicit=1, containment=0;
+
+  UNLESS (PyArg_ParseTupleAndKeywords(
+	     args, kw, "OO|OOOOi", acquire_args,
+	     &self, &name, &filter, &extra, &expl, &defalt, &containment
+	     ))
+    return NULL;
+
+  if (expl) explicit=PyObject_IsTrue(expl);
+
+  return capi_aq_acquire(self, name, filter, extra, explicit, defalt,
+  	containment);
+}
+
+static PyObject *
+capi_aq_get(PyObject *self, PyObject *name, PyObject *defalt, int containment)
+{
+  PyObject *result = NULL;
+  /* We got a wrapped object, so business as usual */
+  if (isWrapper(self)) 
+    result=Wrapper_findattr(WRAPPER(self), name, 0, 0, OBJECT(self), 1, 1, 1, 
+		       containment);
+  else
+    result=PyObject_GetAttr(self, name);
+
+  if (! result && defalt)
+    {
+      PyErr_Clear();
+      result=defalt;
+      Py_INCREF(result);
+    }
+  
+  return result;
+}
+
 
 static PyObject *
 module_aq_get(PyObject *r, PyObject *args)
@@ -1260,81 +1298,95 @@ module_aq_get(PyObject *r, PyObject *args)
   UNLESS (PyArg_ParseTuple(args, "OO|Oi", 
 			   &self, &name, &defalt, &containment
 			   )) return NULL;
+  return capi_aq_get(self, name, defalt, containment);
+}
 
-  /* We got a wrapped object, so business as usual */
-  if (isWrapper(self)) 
-    r=Wrapper_findattr(WRAPPER(self), name, 0, 0, OBJECT(self), 1, 1, 1, 
-		       containment);
-  else
-    r=PyObject_GetAttr(self, name);
+static int 
+capi_aq_iswrapper(PyObject *self) {
+	return isWrapper(self);
+}
 
-  if (! r && defalt)
+static PyObject *
+capi_aq_base(PyObject *self)
+{
+  PyObject *result;
+  if (! isWrapper(self)) 
     {
-      PyErr_Clear();
-      r=defalt;
-      Py_INCREF(r);
+      Py_INCREF(self);
+      return self;
     }
   
-  return r;
+  if (WRAPPER(self)->obj)
+    {
+      result=WRAPPER(self)->obj;
+      while (isWrapper(result) && WRAPPER(result)->obj)
+      	result=WRAPPER(result)->obj;
+    }
+  else result=Py_None;
+  Py_INCREF(result);
+  return result;
 }
 
 static PyObject *
 module_aq_base(PyObject *ignored, PyObject *args)
 {
-  PyObject *self, *r;
+  PyObject *self;
   UNLESS (PyArg_ParseTuple(args, "O", &self)) return NULL;
-  if (! isWrapper(self)) 
-    {
-      Py_INCREF(self);
-      return self;
-    }
-  
-  if (WRAPPER(self)->obj)
-    {
-      r=WRAPPER(self)->obj;
-      while (isWrapper(r) && WRAPPER(r)->obj) r=WRAPPER(r)->obj;
-    }
-  else r=Py_None;
-  Py_INCREF(r);
-  return r;
+
+  return capi_aq_base(self);
+}
+
+static PyObject *
+capi_aq_parent(PyObject *self)
+{
+  PyObject *result=Py_None;
+
+  if (isWrapper(self) && WRAPPER(self)->container)
+  	result=WRAPPER(self)->container;
+
+  Py_INCREF(result);
+  return result;
 }
 
 static PyObject *
 module_aq_parent(PyObject *ignored, PyObject *args)
 {
-  PyObject *self, *r=Py_None;
+  PyObject *self;
 
   UNLESS (PyArg_ParseTuple(args, "O", &self)) return NULL;
 
-  if (isWrapper(self) && WRAPPER(self)->container) r=WRAPPER(self)->container;
-
-  Py_INCREF(r);
-  return r;
+  return capi_aq_parent(self);
 }
 
 static PyObject *
-module_aq_self(PyObject *ignored, PyObject *args)
+capi_aq_self(PyObject *self)
 {
-  PyObject *self, *r;
-  UNLESS (PyArg_ParseTuple(args, "O", &self)) return NULL;
+  PyObject *result;
   if (! isWrapper(self)) 
     {
       Py_INCREF(self);
       return self;
     }
   
-  if (WRAPPER(self)->obj) r=WRAPPER(self)->obj;
-  else r=Py_None;
+  if (WRAPPER(self)->obj) result=WRAPPER(self)->obj;
+  else result=Py_None;
 
-  Py_INCREF(r);
-  return r;
+  Py_INCREF(result);
+  return result;
 }
 
 static PyObject *
-module_aq_inner(PyObject *ignored, PyObject *args)
+module_aq_self(PyObject *ignored, PyObject *args)
 {
-  PyObject *self, *r;
+  PyObject *self;
   UNLESS (PyArg_ParseTuple(args, "O", &self)) return NULL;
+  return capi_aq_self(self);
+}
+
+static PyObject *
+capi_aq_inner(PyObject *self)
+{
+  PyObject *result;
   if (! isWrapper(self)) 
     {
       Py_INCREF(self);
@@ -1343,30 +1395,35 @@ module_aq_inner(PyObject *ignored, PyObject *args)
 
   if (WRAPPER(self)->obj)
     {
-      r=WRAPPER(self)->obj;
-      while (isWrapper(r) && WRAPPER(r)->obj) 
+      result=WRAPPER(self)->obj;
+      while (isWrapper(result) && WRAPPER(result)->obj) 
 	{
-	  self=r;
-	  r=WRAPPER(r)->obj;
+	  self=result;
+	  result=WRAPPER(result)->obj;
 	}
-      r=self;
+      result=self;
     }
-  else r=Py_None;
+  else result=Py_None;
 
-  Py_INCREF(r);
-  return r;
+  Py_INCREF(result);
+  return result;
 }
 
 static PyObject *
-module_aq_chain(PyObject *ignored, PyObject *args)
+module_aq_inner(PyObject *ignored, PyObject *args)
 {
-  PyObject *self, *r;
-  int containment=0;
+  PyObject *self;
 
-  UNLESS (PyArg_ParseTuple(args, "O|i", &self, &containment))
-    return NULL;
+  UNLESS (PyArg_ParseTuple(args, "O", &self)) return NULL;
+  return capi_aq_inner(self);
+}
 
-  UNLESS (r=PyList_New(0)) return NULL;
+static PyObject *
+capi_aq_chain(PyObject *self, int containment)
+{
+  PyObject *result;
+
+  UNLESS (result=PyList_New(0)) return NULL;
 
   while (1)
     {
@@ -1377,7 +1434,7 @@ module_aq_chain(PyObject *ignored, PyObject *args)
 	      if (containment)
 		while (WRAPPER(self)->obj && isWrapper(WRAPPER(self)->obj))
 		  self=WRAPPER(self)->obj;
-	      if (PyList_Append(r,OBJECT(self)) < 0)
+	      if (PyList_Append(result,OBJECT(self)) < 0)
 		goto err;
 	    }
 	  if (WRAPPER(self)->container) 
@@ -1387,16 +1444,28 @@ module_aq_chain(PyObject *ignored, PyObject *args)
 	    }
 	}
       else
-	if (PyList_Append(r, self) < 0)
+	if (PyList_Append(result, self) < 0)
 	  goto err;
 
       break;
     }
   
-  return r;
+  return result;
 err:
-  Py_DECREF(r);
-  return r;
+  Py_DECREF(result);
+  return result;
+}
+
+static PyObject *
+module_aq_chain(PyObject *ignored, PyObject *args)
+{
+  PyObject *self;
+  int containment=0;
+
+  UNLESS (PyArg_ParseTuple(args, "O|i", &self, &containment))
+    return NULL;
+
+  return capi_aq_chain(self, containment);
 }
 
 static struct PyMethodDef methods[] = {
@@ -1427,7 +1496,8 @@ void
 initAcquisition(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.51 $";
+  PyObject *api;
+  char *rev="$Revision: 1.52 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1446,7 +1516,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.51 2001/03/28 14:06:50 jeremy Exp $\n",
+	   "$Id: Acquisition.c,v 1.52 2001/07/03 19:38:20 matt Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -1463,6 +1533,19 @@ initAcquisition(void)
   PyDict_SetItemString(d,"__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
   PyDict_SetItemString(d,"Acquired",Acquired);
+
+  AcquisitionCAPI.AQ_Acquire = capi_aq_acquire;
+  AcquisitionCAPI.AQ_Get = capi_aq_get;
+  AcquisitionCAPI.AQ_IsWrapper = capi_aq_iswrapper;
+  AcquisitionCAPI.AQ_Base = capi_aq_base;
+  AcquisitionCAPI.AQ_Parent = capi_aq_parent;
+  AcquisitionCAPI.AQ_Self = capi_aq_self;
+  AcquisitionCAPI.AQ_Inner = capi_aq_inner;
+  AcquisitionCAPI.AQ_Chain = capi_aq_chain;
+
+  api = PyCObject_FromVoidPtr(&AcquisitionCAPI, NULL);
+  PyDict_SetItemString(d, "AcquisitionCAPI", api);
+  Py_DECREF(api);
 
   CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }
