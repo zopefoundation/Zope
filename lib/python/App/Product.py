@@ -470,8 +470,12 @@ def initializeProduct(productp, name, home, app):
             {'label':'README', 'action':'manage_readme'},
             )
 
-    if os.environ.get('ZEO_CLIENT',''): get_transaction().abort()
+    if os.environ.get('ZEO_CLIENT',''):
+        get_transaction().abort()
+        return product
 
+    # Give the ZClass fixup code in Application
+    Globals.__disk_product_installed__=1
     return product
 
 def ihasattr(o, name):
