@@ -73,6 +73,17 @@ Zope Changes
         - The process id displayed in the control panel now inclused
           the thread id, in parentheses.
 
+        - Upload of image or file data *always* used
+          sub-transactions. Unfortunately, database adapters don't
+          support subtransactions.  Images and files now use
+          subtransactions only of the image or file is greater than
+          128K bytes in size.  Also, subtransactions are not used if
+          data are uploaded as atring by using the ':string'
+          ZPublisher type in the upload form.
+
+	  More advanced DA's could, and probably should support
+	  sub-transactions.
+
       Bugs Fixed
 
         - Database connections were leaked when database conflict
