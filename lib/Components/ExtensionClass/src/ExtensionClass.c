@@ -21,7 +21,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.61 2003/09/15 16:29:20 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.62 2003/10/02 18:17:27 jeremy Exp $\n"
 ;
 
 #include "ExtensionClass.h"

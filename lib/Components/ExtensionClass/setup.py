@@ -85,7 +85,7 @@ setup(name = "ExtensionClass",
       url = "http://www.zope.com",
 
       ext_modules = [ExtensionClass, Acquisition, ComputedAttribute,
-                     MethodObject, Missing, MultiMapping, 
+                     MethodObject, Missing, MultiMapping,
                      ThreadLock, Record],
       headers = ["src/ExtensionClass.h"],
 

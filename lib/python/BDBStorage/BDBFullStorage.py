@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.73 $
+$Revision: 1.74 $
 """
 
 import time

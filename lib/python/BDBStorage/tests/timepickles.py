@@ -4,14 +4,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Time transaction commits and normalize vs. pickle size and #objects.
@@ -206,7 +206,7 @@ def doit(srcdb, dstdb, options):
 
     from bsddb3 import db
     env = db.DBEnv()
-    env.open('BDB', 
+    env.open('BDB',
         db.DB_CREATE       # create underlying files as necessary
         | db.DB_RECOVER    # run normal recovery before opening
         | db.DB_INIT_MPOOL # initialize shared memory buffer pool
@@ -252,34 +252,34 @@ def doit(srcdb, dstdb, options):
 
         t1 = time.time()
         try:
-	    dbtxn = env.txn_begin()
+            dbtxn = env.txn_begin()
             for r in txn:
                 oid = r.oid
                 objects += 1
-		thissize = len(r.data)
+                thissize = len(r.data)
                 size += thissize
-		if thissize > largest_pickle:
-		    largest_pickle = thissize
+                if thissize > largest_pickle:
+                    largest_pickle = thissize
                 if verbose:
                     if not r.version:
                         vstr = 'norev'
                     else:
                         vstr = r.version
                     print utils.U64(oid), vstr, len(r.data)
-		key = oid + tid
-		d.put(key, r.data, txn=dbtxn)
+                key = oid + tid
+                d.put(key, r.data, txn=dbtxn)
             t2 = time.time()
             t3 = time.time()
-	    dbtxn.commit()
+            dbtxn.commit()
             t4 = time.time()
         except KeyError, e:
             traceback.print_exc(file=logfp)
 
         # record the results
-	if objects > largest_txn_in_objects:
-	    largest_txn_in_objects = objects
-	if size > largest_txn_in_size:
-	    largest_txn_in_size = size
+        if objects > largest_txn_in_objects:
+            largest_txn_in_objects = objects
+        if size > largest_txn_in_size:
+            largest_txn_in_size = size
         print >> outfp, utils.U64(tid), objects, size, t4-t0, \
               t1-t0, t2-t1, t3-t2, t4-t3
 

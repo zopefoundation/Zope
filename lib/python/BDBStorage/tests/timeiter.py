@@ -4,14 +4,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Time transaction commits and normalize vs. pickle size and #objects.
@@ -240,10 +240,10 @@ def doit(srcdb, dstdb, options):
             for r in txn:
                 oid = r.oid
                 objects += 1
-		thissize = len(r.data)
+                thissize = len(r.data)
                 size += thissize
-		if thissize > largest_pickle:
-		    largest_pickle = thissize
+                if thissize > largest_pickle:
+                    largest_pickle = thissize
                 if verbose:
                     if not r.version:
                         vstr = 'norev'
@@ -266,10 +266,10 @@ def doit(srcdb, dstdb, options):
             traceback.print_exc(file=logfp)
 
         # record the results
-	if objects > largest_txn_in_objects:
-	    largest_txn_in_objects = objects
-	if size > largest_txn_in_size:
-	    largest_txn_in_size = size
+        if objects > largest_txn_in_objects:
+            largest_txn_in_objects = objects
+        if size > largest_txn_in_size:
+            largest_txn_in_size = size
         print >> outfp, utils.U64(tid), objects, size, t4-t0, \
               t1-t0, t2-t1, t3-t2, t4-t3
 

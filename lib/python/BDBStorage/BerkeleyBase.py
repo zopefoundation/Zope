@@ -16,6 +16,7 @@
 """
 
 import os
+import sys
 import time
 import errno
 import shutil
@@ -448,7 +449,9 @@ class BerkeleyBase(BaseStorage):
             # i.e. abort the transaction -- but swallow the exception.
             txn.abort()
         except:
-            #import traceback ; traceback.print_exc()
+##            import traceback ; traceback.print_exc()
+            zLOG.LOG(self.__class__.__name__, zLOG.DEBUG,
+                     "unexpected error in _withtxn", error=sys.exc_info())
             txn.abort()
             raise
         else:

@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.31 $'[-2:][0]
+__version__ = '$Revision: 1.32 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -125,7 +125,8 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         if version is None:
             self._info.put('version', BDBMINIMAL_SCHEMA_VERSION, txn=txn)
         elif version <> BDBMINIMAL_SCHEMA_VERSION:
-            raise POSException.StorageSystemError, 'incompatible storage version'
+            raise POSException.StorageSystemError(
+                'incompatible storage version')
 
     def _make_autopacker(self, event):
         return _Autopack(self, event, self._config.frequency)
