@@ -88,9 +88,10 @@ counting garbage-collection strategy which necessitates packing only when
 the stored data has cyclically-referenced garbage.
 """
 
-__version__ ='$Revision: 1.3 $'[11:-2]
+__version__ ='$Revision: 1.4 $'[11:-2]
 
 from base import Base
+from base import BerkeleyDBError
 from bsddb3 import db
 from struct import pack, unpack
 from ZODB.referencesf import referencesf
@@ -108,6 +109,7 @@ class TemporaryLogCorruptedError(POSException.POSError):
 class OutOfTempSpaceError(POSException.POSError):
     """ An out-of-disk-space error occured when writing a temporary log
     file. """
+
 
 class Packless(Base):
 
@@ -130,9 +132,14 @@ class Packless(Base):
     def load(self, oid, version):
         self._lock_acquire()
         try:
-            s=self._index[oid]
-            p=self._opickle[oid]
-            return p, s # pickle, serial
+            try:
+                s=self._index[oid]
+                p=self._opickle[oid]
+                return p, s # pickle, serial
+            except db.error, msg:
+                raise BerkeleyDBError, (
+                    "%s (%s)" % (BerkeleyDBError.__doc__, msg)
+                    )
         finally: self._lock_release()
 
     def store(self, oid, serial, data, version, transaction):
@@ -154,7 +161,9 @@ class Packless(Base):
                 # write the pickle to the temp log
                 self._tmp.write(data)
             except IOError:
-                raise OutOfTempSpaceError, self._tempdir
+                raise OutOfTempSpaceError, (
+                    "%s (%s)" % (OutOfTempSpaceError.__doc__, self._tempdir)
+                    )
         finally: self._lock_release()
 
         return serial
@@ -223,8 +232,10 @@ class Packless(Base):
                                 rc=rc-1
                                 if rc < 0:
                                     # This should never happen
-                                     raise ReferenceCountError, (
-                                        "Oid %s had refcount %s" % (`roid`,rc)
+                                    rce = ReferenceCountError
+                                    raise rce, (
+                                        "%s (Oid %s had refcount %s)" %
+                                        (rce.__doc__,`roid`,rc)
                                         )
                                 referenceCount_put(roid, pack(">i", rc), txn)
                                 if rc==0: zeros[roid]=1
@@ -250,7 +261,9 @@ class Packless(Base):
                 l=l+ldata+oidlen+intlen
                 if ldata > fsize:
                     # this should never happen.
-                    raise TemporaryLogCorruptedError
+                    raise TemporaryLogCorruptedError, (
+                        TemporaryLogCorruptedError.__doc__
+                        )
                 serial_put(oid, serial, txn)
                 opickle_put(oid, data, txn)
 
@@ -262,6 +275,14 @@ class Packless(Base):
             tmp.seek(0)
             if fsize > MAXTEMPFSIZE: tmp.truncate()
 
+        except db.error, msg:
+            try:
+                txn.abort()
+            except db.error, msg:
+                raise BerkeleyDBError, "%s (%s)" % (BerkeleyDBError.__doc__,
+                                                    msg)
+            raise BerkeleyDBError, "%s (%s)" % (BerkeleyDBError.__doc__,
+                                                msg)
         except:
             txn.abort()
             raise
@@ -293,8 +314,10 @@ class Packless(Base):
                     if rc:
                         rc=unpack(">i", rc)[0]-1
                         if rc < 0:
-                            raise ReferenceCountError, (
-                                "Oid %s had refcount %s" % (`roid`,rc)
+                            rce = ReferenceCountError
+                            raise rce, (
+                                "%s (Oid %s had refcount %s)" %
+                                (rce.__doc__,`roid`,rc)
                                 )
                         if rc==0: self._takeOutGarbage(roid, txn)
                         else: referenceCount_put(roid, pack(">i", rc), txn)
