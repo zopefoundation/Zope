@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.74 1999/11/03 16:22:22 brian Exp $'''
-__version__='$Revision: 1.74 $'[11:-2]
+$Id: DA.py,v 1.75 1999/11/16 20:19:52 jeffrey Exp $'''
+__version__='$Revision: 1.75 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -224,7 +224,8 @@ class DA(
         if REQUEST:
             if SUBMIT=='Change and Test':
                 return self.manage_testForm(REQUEST)
-            return self.manage_editedDialog(REQUEST)
+            message='ZSQL Method content changed'
+            return self.manage_main(self, REQUEST, manage_tabs_message=message)
         return ''
 
 
@@ -267,7 +268,9 @@ class DA(
         self._v_brain=getBrain(self.class_file_, self.class_name_, 1)
         self.allow_simple_one_argument_traversal=direct
         if REQUEST is not None:
-            return self.manage_editedDialog(REQUEST)
+            m="ZSQL Method advanced settings have been set"
+            return self.manage_advancedForm(self,REQUEST,manage_tabs_message=m)
+##            return self.manage_editedDialog(REQUEST)
 
     #def getFindContent(self):
     #    """Return content for use by the Find machinery."""

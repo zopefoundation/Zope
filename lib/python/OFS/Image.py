@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -232,10 +232,9 @@ class File(Persistent,Implicit,PropertyManager,
         self.content_type=content_type
         if precondition: self.precondition=precondition
         elif self.precondition: del self.precondition
-        if REQUEST: return MessageDialog(
-                    title  ='Success!',
-                    message='Your changes have been saved',
-                    action ='manage_main')
+        if REQUEST:
+            message="Your changes have been saved"
+            return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
     def manage_upload(self,file='',REQUEST=None):
         """
