@@ -112,7 +112,8 @@ class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
                 manage_tabs_message='Changes were applied'
                 )
 
-    def isFolderish(self): return self.getClassAttr('isPrincipiaFolderish', 0)
+    def isFolderish(self):
+        return self.getClassAttr('isPrincipiaFolderish', 0, 1)
 
 class ZObjectManagerPropertySheets(OFS.PropertySheets.PropertySheets):
 
