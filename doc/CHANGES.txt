@@ -122,6 +122,9 @@ Zope Changes
 
       Bugs Fixed
 
+        - A bug in the DTML tree tag that prevented expand_all from
+          working correctly has been fixed.
+
         - ZCatalog now actually saves memory when using
           subtransactions.  Plugged a couple memory leaks doing this.
 
