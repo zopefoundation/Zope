@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.22 2002/04/25 12:44:02 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.23 2002/05/21 17:14:34 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -99,7 +99,6 @@ class PathIndex(Persistent, Implicit, SimpleItem):
     def index_object(self, documentId, obj ,threshold=100):
         """ hook for (Z)Catalog """
 
-
         # first we check if the object provide an attribute or
         # method to be used as hook for the PathIndex
 
@@ -112,9 +111,9 @@ class PathIndex(Persistent, Implicit, SimpleItem):
             except:
                 return 0
 
-
-            if not isinstance(path,StringType):
-                raise TypeError, "attribute/method must be string"
+            if not (isinstance(path,StringType) or 
+                    isinstance(path,TupleType)):
+                raise TypeError, "attribute/method must be/return string or tuple"
 
         else:             
 
