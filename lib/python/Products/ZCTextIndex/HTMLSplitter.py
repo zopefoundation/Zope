@@ -27,7 +27,7 @@ class HTMLWordSplitter:
         for pat in remove:
             text = re.sub(pat, " ", text)
         rx = re.compile("[A-Za-z]")
-        return [word for word in text._split()
+        return [word for word in text.split()
                 if len(word) > 1 and rx.search(word)]
 
 if __name__ == "__main__":
