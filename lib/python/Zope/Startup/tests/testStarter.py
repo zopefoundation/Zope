@@ -15,15 +15,16 @@
 
 import os
 import cStringIO
+import logging
 import tempfile
 import unittest
 
 import ZConfig
 import Zope.Startup
-from Zope.Startup import ZopeStarter
 
 from App.config import getConfiguration
-import logging
+from Zope.Startup import ZopeStarter
+
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
@@ -39,15 +40,18 @@ def getSchema():
 logger_states = {}
 for name in ('event', 'trace', 'access'):
     logger = logging.getLogger(name)
-    logger_states[name] = {'level':logger.level,
-                           'propagate':logger.propagate,
-                           'handlers':logger.handlers,
-                           'filters':logger.filters}
+    logger_states[name] = {'level': logger.level,
+                           'propagate': logger.propagate,
+                           'handlers': logger.handlers,
+                           'filters': logger.filters}
 
 class ZopeStarterTestCase(unittest.TestCase):
 
+    schema = None
+
     def setUp(self):
-        self.schema = getSchema()
+        if self.schema is None:
+            ZopeStarterTestCase.schema = getSchema()
         self.original_event_logger = logging.getLogger
 
     def tearDown(self):
