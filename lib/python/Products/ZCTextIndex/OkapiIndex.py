@@ -177,8 +177,8 @@ class Index:
             merge.add((x, weight), len(x))
         while len(merge) > 1:
             # Merge the two smallest so far, and add back to the queue.
-            x, wx = merge.pop_smallest()
-            y, wy = merge.pop_smallest()
+            (x, wx), dummy = merge.pop_smallest()
+            (y, wy), dummy = merge.pop_smallest()
             dummy, z = weightedUnion(x, y, wx, wy)
             merge.add((z, 1), len(z))
         (result, weight), score = merge.pop_smallest()
