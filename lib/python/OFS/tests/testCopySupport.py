@@ -94,11 +94,13 @@ class TestCopySupport( unittest.TestCase ):
         self.folder2 = getattr( self.app, 'folder2' )
 
         self.policy = UnitTestSecurityPolicy()
-        SecurityManager.setSecurityPolicy(self.policy)
+        self.oldPolicy = SecurityManager.setSecurityPolicy( self.policy )
         newSecurityManager( None, UnitTestUser().__of__( self.root ) )
 
     def tearDown( self ):
         noSecurityManager()
+        SecurityManager.setSecurityPolicy( self.oldPolicy )
+        del self.oldPolicy
         del self.policy
         del self.folder2
         del self.folder1
