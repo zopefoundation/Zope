@@ -1,7 +1,7 @@
 
 from Sync import Synchronized
 import thread
-from rand import rand
+from random import random
 from time import sleep
 
 
@@ -12,7 +12,7 @@ class P(Synchronized):
 
     def inc(self):
             c=self.count
-            sleep(rand()/327680.0)
+            sleep(random())
             self.count=self.count+1
             return c,self.count
 
