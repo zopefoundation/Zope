@@ -271,7 +271,7 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
                 trailer='\n', limit=100))
         except:
             _stupid_dest.write("%s: %s\n" % error[:2])
-            
+    _stupid_dest.flush()
 
 
 log_write=stupid_log_write
