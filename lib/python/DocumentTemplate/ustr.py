@@ -50,10 +50,13 @@ def ustr(v):
         return str(v)
 
 
-def _exception_str(self):
-    if not self.args:
-        return ''
-    elif len(self.args) == 1:
-        return ustr(self.args[0])
-    else:
-        return str(self.args)
+def _exception_str(exc):
+    if hasattr(exc, 'args'):
+        if not exc.args:
+            return ''
+        elif len(exc.args) == 1:
+            return ustr(exc.args[0])
+        else:
+            return str(exc.args)
+    return str(exc)
+
