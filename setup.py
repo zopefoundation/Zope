@@ -390,7 +390,7 @@ setup(
     name='reStructuredText',
     author='Andreas Jung',
 
-    packages=['reStructuredText'],
+    packages=['reStructuredText', 'reStructuredText.tests'],
     data_files=[['reStructuredText', ['reStructuredText/*.txt']],
                ],
     )
