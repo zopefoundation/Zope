@@ -21,3 +21,4 @@ Zope changes
 
         - Removed old validation code in cDocumentTemplate.
 
+	- Minor bug in ZCatalog which prevented deletion of indexes fixed.
