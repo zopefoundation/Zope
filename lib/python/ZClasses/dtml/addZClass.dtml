@@ -127,7 +127,7 @@
     <td align="left" valign="top" colspan="3">
     <div class="form-label">
     <INPUT TYPE="CHECKBOX" NAME="zope_object:int" VALUE="1"<dtml-if 
-     zope_object--> CHECKED</dtml-if>>
+     zope_object> CHECKED</dtml-if>>
     Include standard Zope persistent object base classes?
     </div>
     </td>
