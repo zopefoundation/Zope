@@ -58,10 +58,12 @@ init_strings(void)
     return 0;
 }
 
+#ifdef Py_DEBUG
 static void
-fatal(cPersistentObject *self, const char *caller, const char *detail)
+fatal_1350(cPersistentObject *self, const char *caller, const char *detail)
 {
 	char buf[1000];
+
 	PyOS_snprintf(buf, sizeof(buf),
 	    "cPersistence.c %s(): object at %p with type %.200s\n"
 	    "%s.\n"
@@ -72,6 +74,8 @@ fatal(cPersistentObject *self, const char *caller, const char *detail)
 	    caller, self, self->ob_type->tp_name, detail);
 	Py_FatalError(buf);
 }
+#endif
+
 static void ghostify(cPersistentObject*);
 
 /* Load the state of the object, unghostifying it.  Upon success, return 1.
@@ -103,9 +107,16 @@ unghostify(cPersistentObject *self)
         self->state = cPersistent_UPTODATE_STATE;
         Py_DECREF(r);
         if (self->cache && self->ring.r_next == NULL) {
-        	fatal(self, "unghostify",
-		      "is not in the cache despite that we just "
-		      "unghostified it");
+#ifdef Py_DEBUG
+        	fatal_1350(self, "unghostify",
+		    		 "is not in the cache despite that we just "
+		      		 "unghostified it");
+#else
+		PyErr_Format(PyExc_SystemError, "object at %p with type "
+			     "%.200s not in the cache despite that we just "
+			     "unghostified it", self, self->ob_type->tp_name);
+		return -1;
+#endif
 	}
     }
     return 1;
@@ -153,18 +164,19 @@ ghostify(cPersistentObject *self)
         return;
     }
 
-    if (! self->ring.r_next) {
-	fatal(self, "ghostify", "claims to be in a cache but isn't");
+    if (self->ring.r_next == NULL) {
+	/* There's no way to raise an error in this routine. */
+#ifdef Py_DEBUG
+	fatal_1350(self, "ghostify", "claims to be in a cache but isn't");
+#else
+	return;
+#endif
     }
 
-    /* XXX The next comment is nonsense. */
-    /* If the cache is still active, we must unlink the object. */
-    if (self->ring.r_next) {
-	/* if we're ghostifying an object, we better have some non-ghosts */
-	assert(self->cache->non_ghost_count > 0);
-	self->cache->non_ghost_count--;
-	ring_del(&self->ring);
-    }
+    /* If we're ghostifying an object, we better have some non-ghosts. */
+    assert(self->cache->non_ghost_count > 0);
+    self->cache->non_ghost_count--;
+    ring_del(&self->ring);
     self->state = cPersistent_GHOST_STATE;
     dictptr = _PyObject_GetDictPtr((PyObject *)self);
     if (dictptr && *dictptr) {
