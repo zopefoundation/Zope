@@ -102,7 +102,7 @@ except ImportError:
 # Import local classes
 from DummyEngine import DummyEngine
 
-FILE = "test/input/test1.xml"
+FILE = "test/input/test01.xml"
 
 def main():
     versionTest = 1
