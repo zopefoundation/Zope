@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -235,7 +235,7 @@ class PropertySheet(Persistent, Implicit):
             dict[p['id']]=p
         return dict
 
-    def dav__propstat(self, url, allprop, vals, join=string.join):
+    def dav__propstat(self, allprop, vals, join=string.join):
         # The dav__propstat method returns a chunk of xml containing
         # one or more propstat elements indicating property names,
         # values, errors and status codes. This is called by some
@@ -247,7 +247,7 @@ class PropertySheet(Persistent, Implicit):
                  '%s\n' \
                  '  </d:prop>\n' \
                  '  <d:status>HTTP/1.1 %s</d:status>\n' \
-                 '</d:propstat>'
+                 '</d:propstat>\n'
         result=[]
         if not self.propertyMap():
             return ''
@@ -280,7 +280,63 @@ class PropertySheet(Persistent, Implicit):
                         result.append(propstat % (nsdef, prop,'404 Not Found'))
             return join(result, '\n')
 
+    def odav__propstat(self, url, allprop, vals, iscol, join=string.join):
+        # The dav__propstat method returns an xml response element 
+        # containing one or more propstats indicating property names, 
+        # values, errors and status codes.
+        result=[]
+        propstat='<d:propstat>\n' \
+                  '<d:prop%s>\n' \
+                  '%s\n' \
+                  '</d:prop>\n' \
+                  '<d:status>HTTP/1.1 %s</d:status>\n' \
+                  '</d:/propstat>'        
+        if not allprop and not vals:
+            if hasattr(aq_base(self), 'propertyMap'):
+                for md in self.propertyMap():
+                    prop='<z:%s/>' % md['id']
+                    result.append(propstat % ('', prop, '200 OK'))
 
+        elif allprop:
+            if hasattr(aq_base(self), 'propertyMap'):
+                for md in self.propertyMap():
+                    name, type=md['id'], md.get('type', 'string')
+                    value=getattr(self, name)
+                    if type=='tokens':
+                        value=join(value, ' ')
+                    elif type=='lines':
+                        value=join(value, '\n')
+                    else: value=str(value)
+                    prop='<z:%s>%s</z:%s>' % (name, value, name)
+                    result.append(propstat % ('', prop, '200 OK'))
+        else:
+            prop_mgr=hasattr(aq_base(self), 'propertyMap')
+            for name, ns in vals:
+                if ns==zpns:
+                    if not prop_mgr or not self.hasProperty(name):
+                        prop='<z:%s/>' % name
+                        result.append(propstat % ('',prop,'404 Not Found'))
+                    else:
+                        value=getattr(self, name)
+                        type=self.getPropertyType(name)
+                        if type=='tokens':
+                            value=join(value, ' ')
+                        elif type=='lines':
+                            value=join(value, '\n')
+                        else: value=str(value)
+                        prop='<z:%s>%s</z:%s>' % (name, value, name)
+                        result.append(propstat % ('', prop, '200 OK'))
+
+                else:
+                    prop='<n:%s/>' % name
+                    ns=' xmlns:n="%s"' % ns
+                    result.append(propstat % (ns, prop, '404 Not Found'))
+
+        result='<d:response>\n' \
+                '<d:href>%s</d:href>\n' \
+                '%s\n' \
+                '</d:response>' % (url, join(result, '\n'))
+        return result
 
     # Web interface
     
@@ -485,7 +541,11 @@ class PropertySheets(Implicit):
 
     def __getitem__(self, n):
         return self.__propsets__()[n].__of__(self)
-    
+
+    def items(self):
+        propsets=self.__propsets__()
+        return map(lambda n, s=self: n.__of__(s), propsets)
+        
     def get(self, name, default=None):
         for propset in self.__propsets__():
             if propset.id==name or propset.xml_namespace()==name:
