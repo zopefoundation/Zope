@@ -33,7 +33,7 @@ values and click "Save Changes".
   </td>
   <td align="left" valign="top">
   <!--#if "'w' in _['sequence-item'].get('mode', 'awd')"-->
-  <!--#if "type in ('string', 'int', 'long', 'float', 'date')"-->
+  <!--#if "type in ('int', 'long', 'float', 'date')"-->
   <input type="text" name="<!--#var id-->:<!--#var type-->" size="35"
    value="<!--#var "_[id]"-->">
   <!--#elif "type=='string'"-->
