@@ -160,7 +160,6 @@ class ZopeCmd(ZDCmd):
         print "         manually using a Python interactive shell"
 
     def do_run(self, arg):
-        self.setuid()
         cmdline = self.get_startup_cmd(self.options.python,
             'import Zope; app=Zope.app(); execfile(\'%s\')' % arg)
         os.system(cmdline)
