@@ -97,3 +97,7 @@ class DefaultConfiguration:
 
         # ZServer.HTTPServer
         self.http_header_max_length = 8196
+
+        # VerboseSecurity
+        self.skip_ownership_checking = False
+        self.skip_authentication_checking = False
