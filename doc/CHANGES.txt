@@ -28,6 +28,9 @@ Zope Changes
 
         - Added Z Classes. Documentation is forthcoming.
 
+          ZClasses might be viewed as somewhat experimental, although
+          we're using them aggressively for internal projects.
+
         - Added Property Sheets. Documentation is forthcoming.
         
         - ZServer now included in distribution.
@@ -152,6 +155,10 @@ Zope Changes
           
         - Fixed a bug that prevented validate() from working if the top-level
           object were accessed and no default object (index_html) existed.
+
+	- Fixed a logic bug in security validation that allowed access to
+          unacquired objects that didn't have __roles__ even if the
+          containing object was protected.
 
     Zope  1.10.2
 
