@@ -19,13 +19,18 @@ __version__='$Revision: 1.15.2.1 $'[11:-2]
 """
 TODO:
 
- - Check the methods Node.addNode, Node.remap and Node del_attr
-   and find out if some code uses/requires these methods.
+ - Check the methods Node.addNode
+   and find out if some code uses/requires this method.
 
    => If yes implement them, else forget them.
 
    NOTE: So far i didn't have any problems.
          If you have problems please report them.
+
+ - We are using a hardcoded default of latin-1 for encoding unicode
+   strings. While this is suboptimal, it does match the expected
+   encoding from OFS.PropertySheet. We need to find a the encoding
+   somehow, maybe use the same encoding as the ZMI is using?
 
 """
 
@@ -92,24 +97,34 @@ class Node:
         return self.toxml().encode(zope_encoding)
 
     def name(self):  return self.node.localName
-    def attrs(self): return self.node.attributes
     def value(self): return self.node.nodeValue
     def nodes(self): return self.node.childNodes
     def nskey(self): return self.node.namespaceURI
 
     def namespace(self): return self.nskey()
 
+    def attrs(self):
+        return [Node(n) for n in self.node.attributes.values()]
+
     def del_attr(self, name):
-        # XXX: no support for removing attributes
-	#      zope can calls this after remapping to remove namespace
-	#      haven't seen this happening though
-        return None
+        # NOTE: zope calls this after remapping to remove namespace
+        #       zope passes attributes like xmlns:n
+        #       but the :n isnt part of the attribute name .. gash!
+
+        attr = name.split(':')[0]
+        return self.node.removeAttribute(attr)
 
     def remap(self, dict, n=0, top=1):
-        # XXX: this method is used to do some strange remapping of elements
-        #      and namespaces .. not sure how to do this with minidom
-        #      and if this is even required for something
-	#      zope calls this to change namespaces in PropPatch and Lock
+        # XXX:  this method is used to do some strange remapping of elements
+        #       and namespaces .. someone wants to explain that code?
+
+        # XXX:  i also dont understand why this method returns anything
+        #       as the return value is never used
+
+        # NOTE: zope calls this to change namespaces in PropPatch and Lock
+        #       we dont need any fancy remapping here and simply remove
+        #       the attributes in del_attr
+
         return {},0
 
     def __repr__(self):
