@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -65,6 +65,12 @@ class Image(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	RESPONSE['content-type']=self.content_type
         return self.data
 
+    def __str__(self):
+	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
+
+    def __len__(self):
+	# This is bogus and needed because of the way Python tests truth.
+	return 1 
 
 
 class ImageHandler:
