@@ -5,7 +5,7 @@
 <dtml-with "filteredSets[filteredSet]">
 
 <form action="manage_saveFilteredSet" method="post" enctype="multipart/form-data">
-<input type="hidden" name="filterId" value="&dtml-getId;" >
+<input type="hidden" name="filter_id" value="&dtml-getId;" >
 
 <table cellspacing="0" cellpadding="2" border="1" width="90%" align="center">
 

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.14 2003/08/16 16:44:48 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.15 2003/11/21 13:48:11 andreasjung Exp $'
 
 from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem

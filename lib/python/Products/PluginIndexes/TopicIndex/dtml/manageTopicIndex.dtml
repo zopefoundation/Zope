@@ -27,7 +27,7 @@
       <tr>
 
         <td align="center"> 
-        <input type="checkbox" name="filterIds:list" value="<dtml-var "fs.getId()" html_quote>">
+        <input type="checkbox" name="filter_ids:list" value="<dtml-var "fs.getId()" html_quote>">
         </td>
 
         <td align="center" valign="top">
@@ -93,7 +93,7 @@
     </div>
     </td>
     <td align="left" valign="top">
-    <input type="text" name="filterId" size="40" />
+    <input type="text" name="filter_id" size="40" />
     </td>
   </tr>
 
