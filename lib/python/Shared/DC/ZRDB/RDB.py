@@ -85,8 +85,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.28 2000/12/19 15:31:17 brian Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: RDB.py,v 1.29 2000/12/21 17:12:00 brian Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -154,20 +154,10 @@ class DatabaseResults:
             if schema.has_key(name):
                 raise ValueError, 'Duplicate column name, %s' % name
             schema[name]=i
-
-            # XXX temporary fix: SQLAliases have a leak that needs to
-            # be addressed, then we can take this out.
-            #
-            # n=lower(name)
-            # if n != name: aliases.append((n, SQLAlias(name)))
-            # n=upper(name)
-            # if n != name: aliases.append((n, SQLAlias(name)))
-
-            schema[lower(name)]=i
-            schema[upper(name)]=i
-
-            # / temporary fix
-            
+            n=lower(name)
+            if n != name: aliases.append((n, SQLAlias(name)))
+            n=upper(name)
+            if n != name: aliases.append((n, SQLAlias(name)))
             i=i+1
 
         self._nv=nv=len(names)
@@ -221,13 +211,10 @@ class DatabaseResults:
         for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
             setattr(r,k,getattr(Record,k))
 
-        # XXX temporary fix: SQLAliases have a leak that needs to
-        # be addressed, then we can add this back.
-        #
         # Add SQL Aliases
-        # d=r.__dict__
-        # for k, v in aliases:
-        #     if not hasattr(r,k): d[k]=v
+        d=r.__dict__
+        for k, v in aliases:
+            if not hasattr(r,k): d[k]=v
 
         if hasattr(brains, '__init__'):
             binit=brains.__init__
