@@ -124,7 +124,11 @@ class ZopeService(win32serviceutil.ServiceFramework):
                 # user did not send a service stop request, but
                 # the process died; this may be an error condition
                 status = win32process.GetExitCodeProcess(self.hZope)
-                if status != 0:
+                if status == 0:
+                    # the user shut the process down from the web
+                    # interface (or it otherwise exited cleanly)
+                    break
+                else:
                     # this was an abormal shutdown.  if we can, we want to
                     # restart the process but if it seems hopeless,
                     # don't restart an infinite number of times.
