@@ -20,6 +20,7 @@ import math
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IIBTree, IIBucket, IITreeSet
 from BTrees.IIBTree import intersection, difference
+import BTrees.Length
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
@@ -52,6 +53,8 @@ def unique(L):
 class BaseIndex(Persistent):
 
     __implements__ = IIndex
+    
+    word_count = 0
 
     def __init__(self, lexicon):
         self._lexicon = lexicon
@@ -80,13 +83,18 @@ class BaseIndex(Persistent):
         # docid -> WidCode'd list of wids
         # Used for un-indexing, and for phrase search.
         self._docwords = IOBTree()
-
+        
+        # Use a BTree length for efficient length computation w/o conflicts
+        self.length = BTrees.Length.Length()
+        
     def length(self):
         """Return the number of words in the index."""
+        # This is overridden per instance
         return len(self._wordinfo)
 
     def get_words(self, docid):
         """Return a list of the wordids for a given docid."""
+        # Note this is overridden in the instance
         return WidCode.decode(self._docwords[docid])
 
     # A subclass may wish to extend or override this.
@@ -239,6 +247,7 @@ class BaseIndex(Persistent):
         doc2score = self._wordinfo.get(wid)
         if doc2score is None:
             doc2score = {}
+            self.length.change(1)
         else:
             # _add_wordinfo() is called for each update.  If the map
             # size exceeds the DICT_CUTOFF, convert to an IIBTree.
@@ -262,15 +271,19 @@ class BaseIndex(Persistent):
     def _mass_add_wordinfo(self, wid2weight, docid):
         dicttype = type({})
         get_doc2score = self._wordinfo.get
+        new_word_count = 0
         for wid, weight in wid2weight.items():
             doc2score = get_doc2score(wid)
             if doc2score is None:
                 doc2score = {}
+                new_word_count += 1
             elif (isinstance(doc2score, dicttype) and
                   len(doc2score) == self.DICT_CUTOFF):
                 doc2score = IIBTree(doc2score)
             doc2score[docid] = weight
             self._wordinfo[wid] = doc2score # not redundant:  Persistency!
+        self.length.change(new_word_count)
+        
 
     def _del_wordinfo(self, wid, docid):
         doc2score = self._wordinfo[wid]
@@ -278,6 +291,7 @@ class BaseIndex(Persistent):
         numdocs = len(doc2score)
         if numdocs == 0:
             del self._wordinfo[wid]
+            self.length.change(-1)
             return
         if numdocs == self.DICT_CUTOFF:
             new = {}
