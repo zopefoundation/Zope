@@ -585,6 +585,10 @@ else:
 
 if READ_ONLY:
     lg = logger.file_logger('-') # log to stdout
+elif os.environ.has_key('ZSYSLOG'):
+    lg = logger.syslog_logger(os.environ['ZSYSLOG'])
+elif os.environ.has_key('ZSYSLOG_SERVER'):
+    lg = logger.syslog_logger(string.split(os.environ['ZSYSLOG_SERVER'], ':'))
 else:
     lg = logger.file_logger(LOG_PATH)
 
