@@ -7,8 +7,7 @@ from string import split, join, replace, expandtabs, strip, find
 
 def indention(str,front = re.compile("^\s+").match):
     """ 
-    Convert all tabs to the appropriate number of spaces.
-    Find the number of leading spaces. If none, return 0
+    Find the number of leading spaces. If none, return 0.
     """
     
     result = front(str)
