@@ -13,7 +13,7 @@
 ##############################################################################
 """ZCatalog Text Index
 
-Experimental plugin text index for ZCatalog.
+Plugin text index for ZCatalog.
 """
 
 from PipelineFactory import element_factory
