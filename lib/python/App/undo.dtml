@@ -38,9 +38,9 @@
       <td valign=top><input type=checkbox name="transaction_info:list"
 	  value="<dtml-var id html_quote>"></td>
       <td valign=top>
-	  <strong><dtml-var description></strong> by <strong>
+	  <strong><dtml-var description html_quote></strong> by <strong>
           <dtml-if user_name>
-	    <dtml-var user_name>
+	    <dtml-var user_name html_quote>
           <dtml-else>
             <em>Zope</em>
           </dtml-if>
