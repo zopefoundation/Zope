@@ -71,6 +71,8 @@ class file_logger:
         pass
         
     def log (self, message):
+        print 'msg',message
+
         if message[-1] not in ('\r', '\n'):
             self.write (message + '\n')
         else:
@@ -244,7 +246,7 @@ class unresolving_logger:
         self.logger = logger
         
     def log (self, ip, message):
-        self.logger.log ('%s%s' % (ip, message))
+        self.logger.log ('%s %s' % (ip, message))
         
         
 def strip_eol (line):
