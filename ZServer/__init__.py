@@ -11,29 +11,15 @@
 #
 ##############################################################################
 
-import sys, os
-
-# HACKERY to get around asyncore issues. This ought to go away! We're
-# currently using the Python 2.2 asyncore bundled with Zope to override
-# brokenness in the Python 2.1 version. We need to do some funny business
-# to make this work, as a 2.2-ism crept into the asyncore code.
-if os.name == 'posix':
-    import fcntl
-    if not hasattr(fcntl, 'F_GETFL'):
-        import FCNTL
-        fcntl.F_GETFL = FCNTL.F_GETFL
-        fcntl.F_SETFL = FCNTL.F_SETFL
+import sys
 
 from medusa import asyncore
 sys.modules['asyncore'] = asyncore
-
-
 
 from medusa.test import max_sockets
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
 ZSERVER_VERSION='1.1b1'
-import App.FindHomes
 try:
     import App.version_txt
     ZOPE_VERSION=App.version_txt.version_txt()
@@ -44,8 +30,12 @@ except:
 # Try to poke zLOG default logging into asyncore
 # XXX We should probably should do a better job of this,
 #     however that would mean that ZServer required zLOG.
+#     (Is that really a bad thing?)
 try:
     from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
+except ImportError:
+    pass
+else:
     register_subsystem('ZServer')
     severity={'info':INFO, 'warning':WARNING, 'error': ERROR}
 
@@ -59,22 +49,18 @@ try:
 
     import asyncore
     asyncore.dispatcher.log_info=log_info
-except:
-    pass
 
 # A routine to try to arrange for request sockets to be closed
 # on exec. This makes it easier for folks who spawn long running
 # processes from Zope code. Thanks to Dieter Maurer for this.
 try:
     import fcntl
-    try:
-        from fcntl import F_SETFD, FD_CLOEXEC
-    except ImportError:
-        from FCNTL import F_SETFD, FD_CLOEXEC
 
     def requestCloseOnExec(sock):
-        try:    fcntl.fcntl(sock.fileno(), F_SETFD, FD_CLOEXEC)
-        except: pass
+        try:
+            fcntl.fcntl(sock.fileno(), fcntl.F_SETFD, fcntl.FD_CLOEXEC)
+        except: # XXX What was this supposed to catch?
+            pass
 
 except (ImportError, AttributeError):
 
