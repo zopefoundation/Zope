@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.39 1998/03/17 21:16:08 brian Exp $'''
-__version__='$Revision: 1.39 $'[11:-2]
+$Id: DA.py,v 1.40 1998/03/18 13:45:04 jim Exp $'''
+__version__='$Revision: 1.40 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -62,11 +62,12 @@ class DA(
     # Specify how individual operations add up to "permissions":
     __ac_permissions__=(
 	('View management screens', ('manage_tabs','manage_main', 'index_html',
-				     'manage_properties', 'manage_advancedForm',
+				     'manage_advancedForm',
 				     )),
 	('Change permissions',      ('manage_access',)            ),
 	('Change',                  ('manage_edit','manage_advanced')  ),
 	('Test',                  ('manage_testForm','manage_test')  ),
+	('Use', ('__call__',)),
 	('Shared permission', ['',]),
 	)
    
@@ -95,7 +96,18 @@ class DA(
 	    del self.rotor
 
     def manage_edit(self,title,connection_id,arguments,template,REQUEST=None):
-	'change query properties'
+	"""Change database method  properties
+
+	The 'connection_id' argument is the id of a database connection
+	that resides in the current folder or in a folder above the
+	current folder.  The database should understand SQL.
+
+	The 'arguments' argument is a string containing an arguments
+	specification, as would be given in the SQL method cration form.
+
+	The 'template' argument is a string containing the source for the
+	SQL Template.
+	"""
 	self.title=title
 	self.connection_id=connection_id
 	self.arguments_src=arguments
@@ -109,7 +121,38 @@ class DA(
     def manage_advanced(self, key, max_rows, max_cache, cache_time,
 			class_name, class_file,
 			REQUEST):
-	'Change advanced parameters'
+	"""Change advanced properties
+
+	The arguments are:
+
+	key -- The encryption key used for communication with Principia
+	       network clients.
+
+	max_rows -- The maximum number of rows to be returned from a query.
+
+	max_cache -- The maximum number of results to cache
+
+	cache_time -- The maximum amound of time to use a cached result.
+
+	class_name -- The name of a class that provides additional
+	  attributes for result record objects. This class will be a
+	  base class of the result record class.
+
+	class_file -- The name of the file containing the class
+	  definition.
+
+	The class file normally resides in the 'Extensions'
+	directory, however, the file name may have a prefix of
+	'product.', indicating that it should be found in a product
+	directory.
+
+	For example, if the class file is: 'ACMEWidgets.foo', then an
+	attempt will first be made to use the file
+	'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
+	failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
+	used.
+  
+	"""
 	self._setKey(key)
 	self.max_rows_ = max_rows
 	self.max_cache_, self.cache_time_ = max_cache, cache_time
@@ -120,19 +163,19 @@ class DA(
 	if REQUEST: return self.manage_editedDialog(REQUEST)
     
     def manage_testForm(self, REQUEST):
-	"""Provide testing interface"""
+	" "
 	input_src=default_input_form(self.title_or_id(),
 				     self._arg, 'manage_test',
 				     '<!--#var manage_tabs-->')
 	return DocumentTemplate.HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
     def manage_test(self, REQUEST):
-	'Perform an actual query'
+	' '
 
 	src="Could not render the query template!"
 	result=()
 	try:
-	    src=self(REQUEST,1)
+	    src=self(REQUEST, src__=1)
 	    result=self(REQUEST)
 	    r=custom_default_report(self.id, result)
 	except:
@@ -190,7 +233,17 @@ class DA(
 
 	return result
 
-    def __call__(self, REQUEST=None, src__=0, **kw):
+    def __call__(self, REQUEST=None, __ick__=None, src__=0, **kw):
+	"""Call the database method
+
+	The arguments to the method should be passed via keyword
+	arguments, or in a single mapping object. If no arguments are
+	given, and if the method was invoked through the Web, then the
+	method will try to acquire and use the Web REQUEST object as
+	the argument mapping.
+
+	The returned value is a sequence of record objects.
+	"""
 
 	if REQUEST is None:
 	    if kw: REQUEST=kw
@@ -372,6 +425,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.40  1998/03/18 13:45:04  jim
+# Added doc strings.
+#
 # Revision 1.39  1998/03/17 21:16:08  brian
 # Changed __call__ to detect whether it is being called via the
 # web, or via dtml, and bind itself accordingly.
