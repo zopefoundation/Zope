@@ -96,7 +96,7 @@ from Lazy import LazyMap, LazyFilter, LazyCat
 
 
 class NoBrainer:
-    """ This is the default class that gets instanciated for records
+    """ This is the default class that gets instantiated for records
     returned by a __getitem__ on the Catalog.  By default, no special
     methods or attributes are defined.
     """
@@ -121,8 +121,8 @@ class Catalog(Persistent, Acquisition.Implicit):
     """ An Object Catalog
 
     An Object Catalog maintains a table of object metadata, and a
-    series of managable indexes to quickly search for objects
-    (references in the metadata) that satify a search query.
+    series of manageable indexes to quickly search for objects
+    (references in the metadata) that satisfy a search query.
     """
 
     _v_brains = NoBrainer
@@ -134,12 +134,12 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.names = ()     # sequence of column names
         self.indexes = {}   # maping from index name to index object
 
-        # the catalog maintains a BTree of object meta_data for
-        # convienient display on result pages.  meta_data attributes
+        # The catalog maintains a BTree of object meta_data for
+        # convenient display on result pages.  meta_data attributes
         # are turned into brain objects and returned by
         # searchResults.  The indexing machinery indexes all records
         # by an integer id (rid).  self.data is a mapping from the
-        # iteger id to the meta_data, self.uids is a mapping of the
+        # integer id to the meta_data, self.uids is a mapping of the
         # object unique identifier to the rid, and self.paths is a
         # mapping of the rid to the unique identifier.
         
@@ -154,7 +154,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
 
     def __getitem__(self, index):
-        """ returns instances of self._v_brains, or whatever is passed 
+        """ Returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
         """
         r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
@@ -320,7 +320,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         Catalog identifier
 
         Note, the uid must be the same as when the object was
-        cataloged, otherwise it will not get removed from the catalog
+        catalogued, otherwise it will not get removed from the catalog
 
         """
         
