@@ -8,6 +8,8 @@ Zope Changes
 
     Features added
 
+     - Show known medusa servers in Control_Panel.
+
      - New module: App.config.  New API for getting a configuration
        object.  This should be the preferred way for all code in Zope
        to get configured values for many settings.  For settings made
