@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
 import ZODB
 from Products.Transience.Transience import TransientObjectContainer,\
-     MaxTransientObjectsExceeded
+     MaxTransientObjectsExceeded, SPARE_BUCKETS, getCurrentTimeslice
 from Products.Transience.TransientObject import TransientObject
 import Products.Transience.Transience
 import Products.Transience.TransientObject
@@ -379,6 +379,18 @@ class TestTransientObjectContainer(TestBase):
             self.t[x] = x
         fauxtime.sleep(180)
         self.assertEqual(len(self.t.keys()), 100)
+
+    def testGarbageCollection(self):
+        # this is pretty implementation-dependent :-(
+        for x in range(0, 100):
+            self.t[x] = x
+        sleeptime = self.period * SPARE_BUCKETS
+        fauxtime.sleep(sleeptime)
+        self.t._invoke_finalize_and_gc()
+        max_ts = self.t._last_finalized_timeslice()
+        keys = list(self.t._data.keys())
+        for k in keys:
+            self.assert_(k > max_ts, "k %s < max_ts %s" % (k, max_ts))
 
     def _maxOut(self):
         for x in range(11):

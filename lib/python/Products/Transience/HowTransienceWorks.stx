@@ -42,6 +42,7 @@ Data Structures Maintained by a Transient Object Container
     inside of the "_data" structure.  There is a concept of a
     "current" bucket, which is the bucket that is contained within the
     _data structured with a key equal to the "current" timeslice.
+    A current bucket must always exist (this is an invariant).
 
   - A "max_timeslice" integer, which is equal to the "largest"
     timeslice for which there exists a bucket in the _data structure.
@@ -74,10 +75,13 @@ Housekeeping: Finalization, Garbage Collection, and Bucket
 Replentishing
 
   The TOC performs "finalization", "garbage collection", and "bucket
-  replentishing".  It performs these tasks "in-band".  This means that
-  the TOC does not maintain a separate thread that wakes up every so
-  often to do these housekeeping tasks.  Instead, during the course of
-  normal operations, the TOC opportunistically performs them.
+  replentishing".  It typically performs these tasks "in-band"
+  (although it is possible to do the housekeeping tasks "out of band"
+  as well: see the methods of the Transient Object Container with
+  "housekeep" in their names).  "In band" housekeeping implies that
+  the TOC does not maintain a separate thread or process that wakes up
+  every so often to clean up.  Instead, during the course of normal
+  operations, the TOC opportunistically performs housekeeping functions.
 
   Finalization is defined as optionally calling a function at bucket
   expiration time against all transient objects contained within that

@@ -16,6 +16,8 @@ Simple ZODB-based transient object implementation.
 $Id$
 """
 
+__version__='$Revision: 1.9.68.5 $'[11:-2]
+
 from Persistence import Persistent
 from Acquisition import Implicit
 import time, random, sys, os
@@ -192,69 +194,59 @@ class TransientObject(Persistent, Implicit):
     # Other non interface code
     #
 
-    def _p_independent(self):
-        # My state doesn't depend on or materially effect the state of
-        # other objects (eliminates read conflicts).
-        return 1
-
     def _p_resolveConflict(self, saved, state1, state2):
         DEBUG and TLOG('entering TO _p_rc')
         DEBUG and TLOG('states: sv: %s, s1: %s, s2: %s' % (
             saved, state1, state2))
-        try:
-            states = [saved, state1, state2]
+        states = [saved, state1, state2]
 
-            # We can clearly resolve the conflict if one state is invalid,
-            # because it's a terminal state.
-            for state in states:
-                if state.has_key('_invalid'):
-                    DEBUG and TLOG('TO _p_rc: a state was invalid')
-                    return state
-            # The only other times we can clearly resolve the conflict is if
-            # the token, the id, or the creation time don't differ between
-            # the three states, so we check that here.  If any differ, we punt
-            # by raising ConflictError.
-            attrs = ['token', 'id', '_created']
-            for attr in attrs:
-                svattr = saved.get(attr)
-                s1attr = state1.get(attr)
-                s2attr = state2.get(attr)
-                DEBUG and TLOG('TO _p_rc: attr %s: sv: %s s1: %s s2: %s' %
-                               (attr, svattr, s1attr, s2attr))
-                if not svattr==s1attr==s2attr:
-                    DEBUG and TLOG('TO _p_rc: cant resolve conflict')
-                    raise ConflictError
+        # We can clearly resolve the conflict if one state is invalid,
+        # because it's a terminal state.
+        for state in states:
+            if state.has_key('_invalid'):
+                DEBUG and TLOG('TO _p_rc: a state was invalid')
+                return state
 
-            # Now we need to do real work.
-            #
-            # Data in our _container dictionaries might conflict.  To make
-            # things simple, we intentionally create a race condition where the
-            # state which was last modified "wins".  It would be preferable to
-            # somehow merge our _containers together, but as there's no
-            # generally acceptable way to union their states, there's not much
-            # we can do about it if we want to be able to resolve this kind of
-            # conflict.
+        # The only other times we can clearly resolve the conflict is if
+        # the token, the id, or the creation time don't differ between
+        # the three states, so we check that here.  If any differ, we punt
+        # by raising ConflictError.
+        attrs = ['token', 'id', '_created']
+        for attr in attrs:
+            svattr = saved.get(attr)
+            s1attr = state1.get(attr)
+            s2attr = state2.get(attr)
+            DEBUG and TLOG('TO _p_rc: attr %s: sv: %s s1: %s s2: %s' %
+                           (attr, svattr, s1attr, s2attr))
+            if not svattr==s1attr==s2attr:
+                DEBUG and TLOG('TO _p_rc: cant resolve conflict')
+                raise ConflictError
 
-            # We return the state which was most recently modified, if
-            # possible.
-            states.sort(lastmodified_sort)
-            if states[0].get('_last_modified'):
-                DEBUG and TLOG('TO _p_rc: returning last mod state')
-                return states[0]
+        # Now we need to do real work.
+        #
+        # Data in our _container dictionaries might conflict.  To make
+        # things simple, we intentionally create a race condition where the
+        # state which was last modified "wins".  It would be preferable to
+        # somehow merge our _containers together, but as there's no
+        # generally acceptable way to union their states, there's not much
+        # we can do about it if we want to be able to resolve this kind of
+        # conflict.
 
-            # If we can't determine which object to return on the basis
-            # of last modification time (no state has been modified), we return
-            # the object that was most recently accessed (last pulled out of
-            # our parent).  This will return an essentially arbitrary state if
-            # all last_accessed values are equal.
-            states.sort(lastaccessed_sort)
-            DEBUG and TLOG('TO _p_rc: returning last_accessed state')
+        # We return the state which was most recently modified, if
+        # possible.
+        states.sort(lastmodified_sort)
+        if states[0].get('_last_modified'):
+            DEBUG and TLOG('TO _p_rc: returning last mod state')
             return states[0]
-        except ConflictError:
-            raise
-        except:
-            LOG.info('Conflict resolution error in TransientObject',
-                      exc_info=sys.exc_info())
+
+        # If we can't determine which object to return on the basis
+        # of last modification time (no state has been modified), we return
+        # the object that was most recently accessed (last pulled out of
+        # our parent).  This will return an essentially arbitrary state if
+        # all last_accessed values are equal.
+        states.sort(lastaccessed_sort)
+        DEBUG and TLOG('TO _p_rc: returning last_accessed state')
+        return states[0]
 
     getName = getId # this is for SQLSession compatibility
 

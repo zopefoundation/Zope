@@ -13,7 +13,7 @@ Transient data will persist, but only for a user-specified period of time
 (the "data object timeout") after which it will be flushed.
 </p>
 
-<dtml-call nudge><!-- turn the buckets if necessary -->
+<dtml-call housekeep><!-- turn the buckets if necessary -->
 
 <p class="form-label">
 <font color="green">
