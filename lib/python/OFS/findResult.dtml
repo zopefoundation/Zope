@@ -19,23 +19,23 @@ function new_wnd()
 <!--#/in-->
 
 <!--#if btn_submit-->
-<!--#call expr="REQUEST.set('results', PrincipiaFind(this(), 
-                                       obj_ids=obj_ids, 
-                                       obj_metatypes=obj_metatypes, 
-                                       obj_searchterm=obj_searchterm, 
-                                       obj_expr=obj_expr, 
-                                       obj_mtime=obj_mtime, 
-                                       obj_mspec=obj_mspec, 
-                                       obj_permission=obj_permission, 
-                                       obj_roles=obj_roles, 
-                                       search_sub=search_sub, 
-                                       REQUEST=REQUEST))"-->
-<!--#call expr="REQUEST.set('result_len', _.len(results))"-->
+<!--#with "_.namespace(
+    results=PrincipiaFind(this(), 
+	obj_ids=obj_ids, 
+        obj_metatypes=obj_metatypes, 
+        obj_searchterm=obj_searchterm, 
+        obj_expr=obj_expr, 
+        obj_mtime=obj_mtime, 
+        obj_mspec=obj_mspec, 
+        obj_permission=obj_permission, 
+        obj_roles=obj_roles, 
+        search_sub=search_sub, 
+        REQUEST=REQUEST))"-->
 
 <!--#if results-->
 <HR>
 <STRONG>
-Found <!--#var result_len--> item<!--#if expr="result_len != 1"-->s<!--#/if-->. 
+Found <!--#var results fmt=collection-length--> item<!--#if expr="_.len(results) != 1"-->s<!--#/if-->. 
 </STRONG>
 <HR>
 
@@ -65,6 +65,7 @@ No items were found matching this query.
 </STRONG>
 <HR>
 <!--#/if-->
+<!--#/with-->
 <!--#/if-->
 
 </BODY>
