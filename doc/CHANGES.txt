@@ -124,6 +124,10 @@ Zope Changes
       - Fixed bad interaction between ZCatalog and dtml-in (submitted by
         Steve Alexander)
    
+      - Multiple links in a paragraph with mixed link notation
+        (quotation+colon+URL or quotation+comma+whitespace+URL) did not
+        work properly (thanks to Alastair Burt for reporting and submitting 
+        the patch).
 
     Zope 2.4 beta 2
 
