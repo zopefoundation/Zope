@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.14 1997/11/11 18:13:48 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.15 1997/11/12 19:44:13 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -281,10 +281,13 @@ def parse_params(text,
 try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
-TemplateDict.pop.__roles__=TemplateDict.push.__roles__=()
+# TemplateDict.pop.__roles__=TemplateDict.push.__roles__=()
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.15  1997/11/12 19:44:13  jim
+# Took out setting __roles__ for pop and push.
+#
 # Revision 1.14  1997/11/11 18:13:48  jim
 # updated expr machinery to use parse-tree manipulation
 #
