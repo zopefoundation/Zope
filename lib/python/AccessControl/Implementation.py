@@ -31,12 +31,18 @@ def getImplementationName():
 
 
 def setImplementation(name):
-    """Select the policy implementation to use.
-
-    'name' must be either 'PYTHON' or 'C'.
+    """Select the policy implementation to use. The 'name' must be either
+       'PYTHON' or 'C'. NOTE: this function is intended to be called
+       exactly once, so that the Zope config file can dictate the policy
+       implementation to be used. Subsequent calls to this function will
+       have no effect!!
     """
     import sys
     global _implementation_name
+    global _implementation_set
+
+    if _implementation_set:
+        return
 
     name = name.upper()
     if name == _implementation_name:
@@ -57,8 +63,10 @@ def setImplementation(name):
         if hasattr(mod, "initialize"):
             mod.initialize(impl)
 
+    _implementation_set = 1
 
 _implementation_name = None
+_implementation_set = 0
 
 _policy_names = {
     "AccessControl": ("setDefaultBehaviors",
