@@ -10,15 +10,15 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.2 1997/07/28 21:27:17 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Aqueduct.py,v 1.3 1997/07/28 22:32:20 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import ManageHTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
 DateTime.now=DateTime.DateTime
 
 
-dtml_dir="%s/Aqueduct/" % SOFTWARE_HOME
+dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
 default_report_src=open(dtml_dir+'defaultReport.dtml').read()
 
 class BaseQuery:
@@ -325,6 +325,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.3  1997/07/28 22:32:20  jim
+# *** empty log message ***
+#
 # Revision 1.2  1997/07/28 21:27:17  jim
 # Changed generated input forms to use post.
 #
