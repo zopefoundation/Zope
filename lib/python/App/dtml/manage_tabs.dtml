@@ -161,7 +161,7 @@
 
 <dtml-if Zope-Version>
 <div class="system-msg">
-<em>You are currently working in version <dtml-var Zope-Version html_quote></em>
+<em>You are currently working in version <a href="&dtml-SERVER_URL;&dtml-Zope-Version;/manage_main"><dtml-var Zope-Version html_quote></a></em>
 </div>
 </dtml-if>
 </dtml-unless>
