@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.53 2001/09/14 20:00:13 shane Exp $
+  $Id: Acquisition.c,v 1.54 2001/12/23 15:12:34 Brian Exp $
 
   If you have questions regarding this software,
   contact:
@@ -153,6 +153,13 @@ Wrapper__init__(Wrapper *self, PyObject *args)
   PyObject *obj, *container;
 
   UNLESS(PyArg_Parse(args,"(OO)",&obj,&container)) return NULL;
+
+  if (self == WRAPPER(obj)) {
+  	PyErr_SetString(PyExc_ValueError,
+		"Cannot wrap acquisition wrapper in itself (Wrapper__init__)");
+  	return NULL;
+  }
+
   Py_INCREF(obj);
   Py_INCREF(container);
   self->obj=obj;
@@ -217,6 +224,13 @@ newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
     {
       UNLESS(self = PyObject_NEW(Wrapper, Wrappertype)) return NULL;
     }
+
+  if (self == WRAPPER(obj)) {
+  	PyErr_SetString(PyExc_ValueError,
+		"Cannot wrap acquisition wrapper in itself (newWrapper)");
+	Py_DECREF(self);
+	return NULL;
+  }
 
   Py_INCREF(Wrappertype);
   Py_XINCREF(obj);
@@ -430,6 +444,11 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
     {
       if (isWrapper(self->obj))
 	{
+	  if (self == WRAPPER(self->obj)) {
+	  	PyErr_SetString(PyExc_RuntimeError,
+			"Recursion detected in acquisition wrapper");
+		return NULL;
+	  }
 	  if ((r=Wrapper_findattr(WRAPPER(self->obj),
 				 oname, filter, extra, orig, 1, 
 
@@ -1508,7 +1527,7 @@ initAcquisition(void)
 {
   PyObject *m, *d;
   PyObject *api;
-  char *rev="$Revision: 1.53 $";
+  char *rev="$Revision: 1.54 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1527,7 +1546,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.53 2001/09/14 20:00:13 shane Exp $\n",
+	   "$Id: Acquisition.c,v 1.54 2001/12/23 15:12:34 Brian Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
