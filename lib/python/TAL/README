@@ -50,6 +50,8 @@ driver.py		script to demonstrate TAL expansion
 timer.py		script to time various processing phases
 setpath.py		hack to set sys.path and import ZODB
 __init__.py		empty file that makes this directory a package
+runtest.sh		shell script to run regression tests
+test/			drectory with test files and output
 
 Author and License
 ------------------

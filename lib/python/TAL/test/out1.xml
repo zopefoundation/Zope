@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<html>
+
+  <head>dadada</head>
+
+  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo as python:1">
+
+    <h1 z:insert="str:This Is The Replaced Title">This Is The Replaced Title</h1>
+
+  <!-- examples adapted from TemplateAttributeLanguageSyntax -->
+
+    <span z:insert="str:here/id">here/id</span>
+
+    <p z:define="x as str:template/title; global five as python:2+3" z:insert="text var:x">template/title</p>
+
+    <p z:replace="for car in python:['honda', 'subaru', 'acura']">
+      honda
+    </p><p z:replace="for car in python:['honda', 'subaru', 'acura']">
+      subaru
+    </p><p z:replace="for car in python:['honda', 'subaru', 'acura']">
+      acura
+    </p>
+
+  <!-- more examples -->
+
+    <ul z:insert="for car in python:['honda', 'subaru', 'acura']">
+      <li z:insert="var:car">honda</li>
+    
+      <li z:insert="var:car">subaru</li>
+    
+      <li z:insert="var:car">acura</li>
+    </ul>
+
+    <a href="http://python.org" z:attributes="href = python:'http://python.org' ">python</a>
+
+  </body>
+
+</html>

@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<p>
+  <span xmlns:z="http://xml.zope.org/namespaces/tal" z:define="local x as str:hello brave new world">
+    <span z:insert="text local:x">hello brave new world</span>
+    <span z:define="local x as str:goodbye cruel world">
+      <span z:insert="text local:x">goodbye cruel world</span>
+    </span>
+    <span z:insert="text local:x">hello brave new world</span>
+  </span>
+</p>
