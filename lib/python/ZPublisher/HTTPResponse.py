@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.25 2000/02/14 18:44:22 amos Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: HTTPResponse.py,v 1.26 2000/03/31 17:11:33 jim Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -150,6 +150,7 @@ for key, val in status_reasons.items():
     status_codes[lower(join(split(val, ' '), ''))]=key
     status_codes[lower(val)]=key
     status_codes[key]=key
+    status_codes[str(key)]=key
 en=filter(lambda n: n[-5:]=='Error', dir(__builtins__))
 for name in map(lower, en):
     status_codes[name]=500
