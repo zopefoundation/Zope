@@ -1,5 +1,5 @@
 #! /usr/bin/env python1.5
-"""Test suite for nsgmllib.py."""
+"""Tests for HTMLParser.py."""
 
 import sys
 
@@ -10,6 +10,7 @@ from TAL import HTMLParser
 
 
 class EventCollector(HTMLParser.HTMLParser):
+
     def __init__(self):
         self.events = []
         self.append = self.events.append
@@ -35,6 +36,9 @@ class EventCollector(HTMLParser.HTMLParser):
     def finish_starttag(self, tag, attrs):
         self.append(("starttag", tag, attrs))
 
+    def finish_startendtag(self, tag, attrs):
+        self.append(("startendtag", tag, attrs))
+
     def finish_endtag(self, tag):
         self.append(("endtag", tag))
 
@@ -57,6 +61,7 @@ class EventCollector(HTMLParser.HTMLParser):
 
 
 class HTMLParserTestCase(unittest.TestCase):
+
     def _run_check(self, source, events):
         parser = EventCollector()
         if isinstance(source, type([])):
@@ -66,6 +71,13 @@ class HTMLParserTestCase(unittest.TestCase):
             parser.feed(source)
         parser.close()
         assert parser.get_events() == events, parser.get_events()
+
+    def _parse_error(self, source):
+        def parse(source=source):
+            parser = HTMLParser.HTMLParser()
+            parser.feed(source)
+            parser.close()
+        self.assertRaises(HTMLParser.HTMLParseError, parse)
 
     def check_processing_instruction_only(self):
         self._run_check("<?processing instruction>", [
@@ -155,12 +167,19 @@ text
     def check_starttag_junk_chars(self):
         self._parse_error("<a $>")
 
-    def _parse_error(self, source):
-        def parse(source=source):
-            parser = HTMLParser.HTMLParser()
-            parser.feed(source)
-            parser.close()
-        self.assertRaises(HTMLParser.HTMLParseError, parse)
+    def check_startendtag(self):
+        self._run_check("<p/>", [
+            ("startendtag", "p", []),
+            ])
+        self._run_check("<p></p>", [
+            ("starttag", "p", []),
+            ("endtag", "p"),
+            ])
+        self._run_check("<p><img src='foo' /></p>", [
+            ("starttag", "p", []),
+            ("startendtag", "img", [("src", "foo")]),
+            ("endtag", "p"),
+            ])
 
 
 # Support for the Zope regression test framework:
