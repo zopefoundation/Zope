@@ -352,7 +352,7 @@ class zhttp_channel(http_channel):
             self.current_request=None
         while self.producer_fifo:
             p=self.producer_fifo.first()
-            if p is not None:
+            if p is not None and type(p) != types.StringType:
                 p.more() # free up resources held by producer
             self.producer_fifo.pop()
         dispatcher.close(self)
