@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.34 1999/11/04 20:29:04 petrilli Exp $'
-__version__='$Revision: 1.34 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.35 1999/12/01 23:48:56 jim Exp $'
+__version__='$Revision: 1.35 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -264,14 +264,19 @@ class Var:
 
         if val is None:
             if md.has_key(name):
-                val = md[name]
+                if have_arg('url'):
+                    val=md.getitem(name,0)
+                    val=val.absolute_url()
+                else:
+                    val = md[name]
             else:
                 if have_arg('missing'):
                     return args['missing']
                 else:
-                    raise KeyError
+                    raise KeyError, name
         else:
             val=val.eval(md)
+            if have_arg('url'): val=val.absolute_url()
 
         __traceback_info__=name, val, args
 
@@ -279,7 +284,6 @@ class Var:
             # Treat None as special case wrt null
             return args['null']
             
-        if have_arg('url'): val=val.absolute_url()
 
         # handle special formats defined using fmt= first
         if have_arg('fmt'):
