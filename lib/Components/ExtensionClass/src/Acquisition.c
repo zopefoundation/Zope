@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.11 1997/11/07 19:00:34 jim Exp $
+  $Id: Acquisition.c,v 1.12 1997/11/19 13:39:32 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -379,7 +379,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 	  else if(has__of__(r))
 	    ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
 	  if(filter)
-	    switch(apply_filter(filter,self->obj,oname,r,extra,orig))
+	    switch(apply_filter(filter,self,oname,r,extra,orig))
 	      {
 	      case -1: return NULL;
 	      case 1: return r;
@@ -623,14 +623,11 @@ static PyMappingMethods Wrapper_as_mapping = {
 static PyObject *
 Wrapper_acquire_method(Wrapper *self, PyObject *args)
 {
-  PyObject *name, *filter=0, *extra=Py_None, *orig;
+  PyObject *name, *filter=0, *extra=Py_None;
 
   UNLESS(PyArg_ParseTuple(args,"O|OO",&name,&filter,&extra)) return NULL;
 
-  if(self->obj) orig=self->obj;
-  else orig=Py_None;
-
-  return Wrapper_acquire(self,name,filter,extra,orig);
+  return Wrapper_acquire(self,name,filter,extra,self);
 }
 
 static struct PyMethodDef Wrapper_methods[] = {
@@ -755,7 +752,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -770,7 +767,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 		     "Provide base classes for acquiring objects\n\n"
-		     "$Id: Acquisition.c,v 1.11 1997/11/07 19:00:34 jim Exp $\n",
+		     "$Id: Acquisition.c,v 1.12 1997/11/19 13:39:32 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -792,6 +789,10 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.12  1997/11/19 13:39:32  jim
+  Changed filter machinery so that wrapped objects are used as
+  inst and parent in filter.
+
   Revision 1.11  1997/11/07 19:00:34  jim
   Added compile option to implicitly acquire __roles__.
 
