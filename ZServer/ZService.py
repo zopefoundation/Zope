@@ -95,30 +95,131 @@ Features:
   * If ZServer is shutdown from the web, the service stops.
   * If ZServer cannot be restarted, the service stops.
 
+Usage:
+
+  Installation
+  
+    The ZServer service should be installed by the Zope Windows
+    installer. You can manually install, uninstall the service from
+    the commandline.
+    
+      ZService.py [options] install|update|remove|start [...]
+          |stop|restart [...]|debug [...]
+
+    Options for 'install' and 'update' commands only:
+    
+     --username domain\username : The Username the service is to run
+                                  under
+     
+     --password password : The password for the username
+     
+     --startup [manual|auto|disabled] : How the service starts, 
+                                        default = manual
+  
+    Commands
+           
+      install : Installs the service
+     
+      update : Updates the service, use this when you change
+               ZServer.py
+     
+      remove : Removes the service
+     
+      start : Starts the service, this can also be done from the
+              services control panel
+     
+      stop : Stops the service, this can also be done from the
+             services control panel
+     
+      restart : Restarts the service
+     
+      debug : Runs the service in debug mode
+  
+    You can view the usage options by running ZServer.py without any
+    arguments.
+    
+    Note: you may have to register the Python service program first,
+      
+      win32\pythonservice.exe /register
+    
+  Starting Zope
+  
+    Start Zope by clicking the 'start' button in the services control
+    panel. You can set Zope to automatically start at boot time by
+    choosing 'Auto' startup by clicking the 'statup' button.
+  
+  Stopping Zope
+  
+    Stop Zope by clicking the 'stop' button in the services control
+    panel. You can also stop Zope through the web by going to the
+    Zope control panel and by clicking 'Shutdown'. 
+  
+  Event logging
+  
+    Zope events are logged to the NT application event log. Use the
+    event viewer to keep track of Zope events.
+
+  Registry Settings
+  
+    You can change how the service starts ZServer by editing a registry
+    key.
+    
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\
+        <Service Name>\Parameters\start
+
+    The value of this key is the command which the service uses to
+    start ZServer. For example:
+    
+      "C:\Program Files\Zope\bin\python.exe"
+        "C:\Program Files\Zope\z2.py" -w 8888
+
+    
 TODO:
 
-  * Document it.
   * Integrate it into the Windows installer.
-  * Figure out a solution for ZServer information, i.e. remembering/
-    setting commandline args, knowing where Python is, etc.
-  * Add event logging.  
-  * Get Zope version from Zope
+  * Fix event logging, probably switch to new Zope logging framework
+  * Make it easier to run multiple Zope services with one Zope install
 
 This script does for NT the same sort of thing zdeamon.py does for UNIX.
 Requires Python win32api extensions.
-
 """
+
 import win32api, win32serviceutil, win32service, win32event, win32process
 import win32evtlog, win32evtlogutil
-import time
+import time, imp, sys
 
-def get_zope_version():
-    # retrieve from Zope
-    return "Experimental"
+try:
+    import App.version_txt
+    ZOPE_VERSION=App.version_txt.version_txt()
+except:
+    ZOPE_VERSION='1.10'
+
+# pythoncom and pywintypes are special, and require these hacks when
+# we dont have a standard Python installation around.
+
+def magic_import(modulename, filename):
+    # by Mark Hammond
+    try:
+        # See if it does import first!
+        return __import__(modulename)
+    except ImportError:
+        pass
+    # win32 can find the DLL name.
+    h = win32api.LoadLibrary(filename)
+    found = win32api.GetModuleFileName(h)
+    # Python can load the module
+    mod = imp.load_module(modulename, None, found, ('.dll', 'rb', imp.C_EXTENSION))
+    # inject it into the global module list.
+    sys.modules[modulename] = mod
+    # And finally inject it into the namespace.
+    globals()[modulename] = mod
+    win32api.FreeLibrary(h)
+
+magic_import('pywintypes','pywintypes15.dll')
 
 class ZServerService(win32serviceutil.ServiceFramework):
     _svc_name_ = "ZServerService"
-    _svc_display_name_ = "Zope (%s)" % get_zope_version()
+    _svc_display_name_ = "Zope (%s) %s" % (ZOPE_VERSION, _svc_name_)
     
     restart_min_time=5 # if ZServer restarts before this many
                        # seconds then we have a problem, and
@@ -127,8 +228,9 @@ class ZServerService(win32serviceutil.ServiceFramework):
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
+        # win32evtlog.pyd doesn't seem to be a good event source, hmm
         dll = win32api.GetModuleFileName(win32api.GetModuleHandle("win32evtlog.pyd"))
-        win32evtlogutil.AddSourceToRegistry("Zope",dll)
+        win32evtlogutil.AddSourceToRegistry(self._svc_name_, dll)
     
     def SvcDoRun(self):
         self.start_zserver()
@@ -144,7 +246,7 @@ class ZServerService(win32serviceutil.ServiceFramework):
     def SvcStop(self):
         try:
             self.stop_zserver()
-            win32evtlogutil.ReportEvent('Zope', 2,
+            win32evtlogutil.ReportEvent(self._svc_name_, 2,
                  eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
                  strings=["Stopping Zope."]
              )
@@ -158,7 +260,7 @@ class ZServerService(win32serviceutil.ServiceFramework):
                 None, None, 0, 0, None, None, win32process.STARTUPINFO())
         self.hZServer=result[0]
         self.last_start_time=time.time()
-        win32evtlogutil.ReportEvent('Zope', 1,
+        win32evtlogutil.ReportEvent(self._svc_name_, 1,
             eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
             strings=["Starting Zope."]
             )    
@@ -168,7 +270,7 @@ class ZServerService(win32serviceutil.ServiceFramework):
         
     def restart_zserver(self):
         if time.time() - self.last_start_time < self.restart_min_time:
-            win32evtlogutil.ReportEvent('Zope', 4,
+            win32evtlogutil.ReportEvent(self._svc_name_, 4,
                 eventType=win32evtlog.EVENTLOG_ERROR_TYPE,
                 strings=["Zope died and could not be restarted."]
             ) 
@@ -179,16 +281,23 @@ class ZServerService(win32serviceutil.ServiceFramework):
             # assume that shutdown is intentional.
             self.SvcStop()
         else:
-            win32evtlogutil.ReportEvent('Zope', 3,
+            win32evtlogutil.ReportEvent(self._svc_name_, 3,
                 eventType=win32evtlog.EVENTLOG_WARNING_TYPE,
                 strings=["Restarting Zope."]
             ) 
             self.start_zserver()
 
     def get_start_command(self):
-        # where should this info be stored, the registry?
-        return '"d:\\program files\\zope1.11.0pr0\\bin\\python.exe" "d:\\program files\\zope1.11.0pr0\\zserver\\mystart.py" -w 8888'
+        return win32serviceutil.GetServiceCustomOption(self,'start')
         
+        
+def option_handler(options):
+    for opt, value in options:
+        if opt == '-z':
+            win32serviceutil.SetServiceCustomOption(ZServerService,'start',value)
+            print "Setting ZServer start command"
+
 if __name__=='__main__':
-    win32serviceutil.HandleCommandLine(ZServerService)
+    win32serviceutil.HandleCommandLine(ZServerService, 
+            customInstallOptions='z:', customOptionHandler=option_handler)
     
