@@ -23,6 +23,12 @@ Zope changes
         - The property management screens now include the types for
           existing properties.
 
+        - Added support at Python level for user-defined
+          __get/set/delattr__ methods on persistent objects. These
+          have essentially the same semantics as for Python, except
+          that overridden __set/delattr__ methods must explicitly
+          signal changes that should be persistent.
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
@@ -76,4 +82,20 @@ Zope changes
           send() will send only 8192 bytes at a time.
 
         - A bug that broke import in the alpha was fixed.
+
+        - A bug in the transaction handling logic could cause infinite
+          loops if objects were registered incorrectly.
+
+        - A bug in the transaction machinery could cause objects to
+          be aborted multiple times if errors occurred.
+
+
+
+
+
+
+
+
+
+
 
