@@ -149,7 +149,7 @@ Options:
 
   m port
   
-    The secure monitor server port. IF this is an empty string, then the
+    The secure monitor server port. If this is an empty string, then the
     monitor server is disabled. The monitor server allows interactive
     Python style access to a running ZServer. To access the server see
     medusa/monitor_client.py or medusa/monitor_client_win32.py. The monitor
@@ -229,7 +229,7 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:n:d:w:f:p:2')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:2')
 
     # Get environment variables
     for a in args:
@@ -250,6 +250,7 @@ try:
             NUMBER_OF_THREADS=v
         elif o=='-a': IP_ADDRESS=v
         elif o=='-d': DNS_IP=v
+        elif o=='-u': UID=v
         elif o=='-m':
             if v:
                 try: v=string.atoi(v)
