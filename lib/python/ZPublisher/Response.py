@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.23 1997/12/31 17:22:56 jim Exp $'''
+$Id: Response.py,v 1.24 1998/01/14 16:32:56 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.23 1997/12/31 17:22:56 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -266,17 +266,14 @@ class Response:
 	'Returns the current HTTP status code as an integer. '
 	return self.status
 
-    def setBase(self,base, URL):
+    def setBase(self,base):
 	'Set the base URL for the returned document.'
+	if base[-1:] != '/': base=base+'/'
 	self.base=base
-	self.URL=URL
 	self.insertBase()
 
-    def host(self,base):
-	return base[:find(base,'/',find(base,'//'))]
-
     def insertBase(self,
-		   base_re=regex.compile('\(<base[\0- ]+\([^>]+\)>\)',
+		   base_re=regex.compile('<base[\0- ]+[^>]+>\)',
 					 regex.casefold)
 		   ):
         if (self.headers.has_key('content-type') and
@@ -291,25 +288,6 @@ class Response:
 		    if b < 0:
 			self.body=('%s\t<base href="%s">\n%s' %
 				   (body[:e],self.base,body[e:]))
-		    elif self.URL:
-			href=base_re.group(2)
-			base=''
-			if href[:1]=='/':
-			    base=self.host(self.base)+href
-			elif href[:1]=='.':
-			    base=self.URL
-			    while href[:1]=='.':
-				if href[:2]=='./' or href=='.':
-				    href=href[2:]
-				elif href[:3]=='../' or href=='..':
-				    href=href[3:]
-				    base=base[:rfind(base,'/')]
-				else:
-				    break
-			if base:
-			    self.body=("%s<base %s>%s" %
-				       (body[:b],base,
-					body[b+len(base_re.group(1)):]))
 
     def appendCookie(self, name, value):
 	'''\

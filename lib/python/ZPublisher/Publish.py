@@ -362,7 +362,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.74 1998/01/14 14:25:10 jim Exp $"""
+$Id: Publish.py,v 1.75 1998/01/14 16:32:42 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -417,7 +417,7 @@ $Id: Publish.py,v 1.74 1998/01/14 14:25:10 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 
 def main():
@@ -715,7 +715,7 @@ class ModulePublisher:
     	    entry_name=method
     	    try:
     		if hasattr(object,entry_name):
-		    response.setBase(URL+'/','')
+		    response.setBase(URL)
     		    path=[entry_name]
     		else:
     		    try:
@@ -782,7 +782,7 @@ class ModulePublisher:
 		# Check for method:
 		if not path:
 		    if hasattr(object,method) and entry_name != method:
-			response.setBase(URL+'/','')
+			response.setBase(URL)
 			path=[method]
 		    elif (hasattr(object, '__call__') and
 			  hasattr(object.__call__,'__roles__')):
