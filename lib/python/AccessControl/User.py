@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.111 $'[11:-2]
+__version__='$Revision: 1.112 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -449,10 +449,32 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # Try to get user
         user=self.getUser(name)
         if user is None:
+
+            # If the user was not found and we are the top level user
+            # database and the Anonymous user is allowed to access the
+            # requested object, return the Anonymous user.
+            if self._isTop() and self._nobody.allowed(parent, roles):
+                user=self._nobody.__of__(self)
+                return user
+
+            # Otherwise, return None which will defer to higher level user
+            # databases or cause an unauthorized to be raised in the
+            # publisher layer.
             return None
 
-        # Try to authenticate user
+        # Try to authenticate the user
         if not user.authenticate(password, request):
+
+            # If no user was authenticated and we are the top level user
+            # database and the Anonymous user is allowed to access the
+            # requested object, return the Anonymous user.
+            if self._isTop() and self._nobody.allowed(parent, roles):
+                user=self._nobody.__of__(self)
+                return user
+
+            # Otherwise, return None which will defer to higher level user
+            # databases or cause an unauthorized to be raised in the
+            # publisher layer.
             return None
 
         # We need the user to be able to acquire!
