@@ -5,7 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<FORM ACTION="manage_edit" METHOD="POST" TARGET="manage_main">
+<FORM ACTION="manage_edit" METHOD="POST">
   <TABLE CELLSPACING="2">
     <TR>
       <TH ALIGN="LEFT" VALIGN="TOP">Id</STRONG></TH>
