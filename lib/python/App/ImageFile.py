@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 from Globals import package_home
@@ -93,6 +93,7 @@ from string import rfind, split
 from DateTime import DateTime
 from time import time
 from os import stat
+import mimetypes
 import Acquisition
 
 
@@ -105,7 +106,11 @@ class ImageFile(Acquisition.Explicit):
             _prefix=package_home(_prefix)
         path='%s/%s' % (_prefix, path)
         self.path=path
-        self.content_type='image/%s' % path[rfind(path,'.')+1:]
+        content_type, enc=mimetypes.guess_type(path)
+        if content_type:
+            self.content_type=content_type
+        else:
+            self.content_type='image/%s' % path[rfind(path,'.')+1:]
         self.__name__=path[rfind(path,'/')+1:]
         # Determine a reasonable last-modification time 
         # to support aggressive image caching.
