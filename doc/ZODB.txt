@@ -1,0 +1,104 @@
+The Zope Object Database, ZODB, version 3.0
+
+  ZODB is the next generation of our object database architecture.
+  It provides a number of advantages over or existing databases:
+
+  - Support for concurrency,
+
+  - Well-defined storage management interface that will allow many
+    different storage management strategies to be used, from file
+    storage, to RDBMS storage, to memory storage,
+
+  - More robust file storage format,
+
+  - Much better version support and integrations of 
+    versions with the transaction system.  For example,
+    it is possible to commit from one version to another, 
+    to undo version commit and abort, and to use "temporary
+    versions" to reduce memory use when manipulating large
+    quantities of data.
+
+  - Support for multiple databases in the same object system. 
+
+  - Support for multi-process storage managers, although the
+    standard distribution will not include any multiple process
+    storage managers.
+
+  Note: Using ZODB 3 from Python
+
+    In ZODB 2, you could access the top-level application object
+    with::
+
+      import Main
+      app=Main.app
+
+    You could then navigate from the top-level object by getting
+    attributes, calling methods, etc..
+
+    In ZODB 3, you get the top-level object like this::
+
+      import Zope
+      app=Zope.app()
+
+      ... do stuff with objects
+
+      # and when you're done:
+      app._p_jar.close()
+
+    You have to import the Zope application module, which uses
+    ZODB 2 rather than ZODB 2.  In ZODB 3, you have to get a
+    connection to a database before you access an object.  The
+    'app()' function combines opening a connection and getting the
+    top level object.  When your done using the top-level object
+    (or any objects accessible from it) you can close the database
+    connection by calling the 'close' method on the '_p_jar'
+    attribute, which is the database connection.  You don't need
+    to close the connection if you are going to exit Python
+    without doing any more work.
+
+    Don't forget to::
+
+      get_transaction().commit()
+
+    If you want any changes to made to be saved.
+
+  Note: Converting ZODB 2 (aka BoboPOS) data files to ZODB 3.
+
+    The bbb.py script in utilities can be used to convert data
+    files from ZODB 2 to ZODB 3 format::
+
+      utilities/bbb.py -f output_file input_file
+
+    Here's a example::
+
+       utilities/bbb.py -f var/Data.fs var/Data.bbb
+
+	You can also convert export files from ZODB 2 by inclding the
+    -x option::
+
+       utilities/bbb.py -x -f output.zexp input.bbe
+
+  ZODB 3 and Zope Database Adapters
+
+    Most database adapters are *currently* likely to be problematic unless
+    the underlying extensions and libraries:
+	
+      - allow multiple simultaneous database connections,
+	
+      - are thread safe,
+	
+      - give up the Python global interpreter lock when
+        making database calls.
+	
+    This is only a problem when running Zope 2 with multiple
+    threads.
+
+  ZODB 3 Futures
+
+    These are features that are lkely to wait for releases after 2.0. 
+
+    - Multiple database support
+
+    - OPTIMIZATION: FileStorage will get a more efficient data
+      structure for maintaining index information and key methods
+      in the ZODB framework will move to C.
