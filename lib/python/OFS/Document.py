@@ -1,13 +1,13 @@
 """Document object"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import shared_dt_globals,HTMLFile
 from string import join, split, strip
 import AccessControl.ACL
 
-class Document(HTML):
+class Document(HTML, AccessControl.ACL.RoleManager):
     """A Document object"""
     meta_type  ='Document'
     title=''
@@ -29,7 +29,7 @@ class Document(HTML):
     def manage_edit(self,data,title,roles,REQUEST=None):
 	"""Edit method"""
 	self.title=title
-	AccessControl.ACL.parse_roles_string(self, roles)
+	self.parse_roles_string(roles)
 	return HTML.manage_edit(self,data,REQUEST)
 
 
@@ -56,7 +56,7 @@ class DocumentHandler:
 	if not file: file=default_html
         i=Document(file, __name__=id)
 	i.title=title
-	AccessControl.ACL.parse_roles_string(i, roles)
+	i.parse_roles_string(roles)
 	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
