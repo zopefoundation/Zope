@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.15 2003/04/25 16:32:02 evan Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Tree.py,v 1.16 2003/07/15 17:01:56 mj Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -295,7 +295,7 @@ def decodeExpansion(s, nth=None):
     if nth is not None:
         nth_pair = (None, None)
     for step in s.split(':'):
-        if step[0] == '_':
+        if step.startswith('_'):
             pop = len(step) - 1
             continue
         if pop < 0:
