@@ -1,11 +1,12 @@
 """Document object"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from STPDocumentTemplate import HTML
-from Globals import shared_dt_globals,HTMLFile
+from Globals import HTMLFile
 from string import join, split, strip
 import AccessControl.ACL
+import regex
 
 class Document(HTML, AccessControl.ACL.RoleManager):
     """A Document object"""
@@ -14,17 +15,22 @@ class Document(HTML, AccessControl.ACL.RoleManager):
     icon       ='OFS/Document_icon.gif'
 
     __state_names__=HTML.__state_names__+('title','__roles__')
-    shared_globals =shared_dt_globals
-    manage_edit__allow_groups__    ={None:None}
 
     def document_template_form_header(self):
 	try: roles=join(self.__roles__)
 	except: roles=''
-	return ("""<br>Title: 
-                   <input type=text name=title SIZE="50" value="%s">
-		   <br>Roles:
-                   <input type=text name=roles SIZE="50" value="%s">
-                   <P>""" % (self.title, roles))
+	return ("""<table>
+	           <tr><th>Title:</th><td>
+                   <input type=text name=title SIZE="50" value="%s"></td></tr>
+		   <tr><th>Roles:</th><td>
+                   <input type=text name=roles SIZE="50" value="%s"></td></tr>
+                   </table>""" % (self.title, roles))
+
+    def index_html(self, REQUEST, PARENTS, RESPONSE):
+	"""Run the document as a web object with possible HTTP headers"""
+	return decapitate(self(PARENTS[1],REQUEST), RESPONSE)
+	
+	
 
     def manage_edit(self,data,title,roles,REQUEST=None):
 	"""Edit method"""
@@ -80,3 +86,44 @@ class DocumentHandler:
 		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
+
+
+
+def decapitate(html, RESPONSE=None,
+	       header_re=regex.compile(
+		   '\(\('
+		   	  '[^\0- <>:]+:[^\n]*\n'
+		      '\|'
+		   	  '[ \t]+[^\0- ][^\n]*\n'
+		   '\)+\)[ \t]*\n\([\0-\377]+\)'
+		   ),
+	       space_re=regex.compile('\([ \t]+\)'),
+	       name_re=regex.compile('\([^\0- <>:]+\):\([^\n]*\)'),
+	       ):
+    if header_re.match(html) < 0: return html
+
+    headers, html = header_re.group(1,3)
+
+    headers=split(headers,'\n')
+
+    i=1
+    while i < len(headers):
+	if not headers[i]:
+	    del headers[i]
+	elif space_re.match(headers[i]) >= 0:
+	    headers[i-1]="%s %s" % (headers[i-1],
+				    headers[i][len(space_re.group(1)):])
+	    del headers[i]
+	else:
+	    i=i+1
+
+    for i in range(len(headers)):
+	if name_re.match(headers[i]) >= 0:
+	    k, v = name_re.group(1,2)
+	    v=strip(v)
+	else:
+	    raise ValueError, 'Invalid Header (%d): %s ' % (i,headers[i])
+	RESPONSE.setHeader(k,v)
+
+    return html
+
