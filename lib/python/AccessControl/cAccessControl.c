@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.4 2001/06/29 17:48:50 matt Exp $
+  $Id: cAccessControl.c,v 1.5 2001/06/29 18:10:18 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -107,6 +107,8 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args);
 static int imPermissionRole_length(imPermissionRole *self);
 static PyObject *imPermissionRole_getitem(imPermissionRole *self,
 	PyObject *item);
+static PyObject *imPermissionRole_get(imPermissionRole *self,
+	int item);
 static void imPermissionRole_dealloc(imPermissionRole *self);
 
 static PyObject *rolesForPermissionOn(PyObject *self, PyObject *args);
@@ -247,6 +249,20 @@ static PyMethodDef imPermissionRole_methods[] = {
 	{ NULL, NULL }
 };
 
+static PySequenceMethods imSequenceMethods = {
+	(inquiry) imPermissionRole_length,	/* sq_length	*/
+	(binaryfunc) NULL,			/* sq_concat	*/
+	(intargfunc) NULL,			/* sq_repeat	*/
+	(intargfunc) imPermissionRole_get,	/* sq_item	*/
+	(intintargfunc) NULL,			/* sq_slice	*/
+	(intobjargproc)  NULL,			/* sq_ass_item	*/
+	(intintobjargproc) NULL,		/* sq_ass_slice */
+	(objobjproc) NULL,			/* sq_contains	*/
+	(binaryfunc) NULL,			/* sq_inplace_concat */
+	(intargfunc) NULL			/* sq_inplace_repeat */
+};
+
+
 static PyMappingMethods imMappingMethods = {
 	(inquiry) imPermissionRole_length,	/* mp_length	*/
 	(binaryfunc) imPermissionRole_getitem,	/* mp_subscript	*/
@@ -267,7 +283,7 @@ static PyExtensionClass imPermissionRoleType = {
 	NULL,					/* tp_repr	*/
 	/* Method suites	*/
 	NULL,					/* tp_as_number	*/
-	NULL,					/* tp_as_sequence*/
+	&imSequenceMethods,			/* tp_as_sequence*/
 	&imMappingMethods,			/* tp_as_mapping */
 	/* More standard ops  	*/
 	NULL,					/* tp_hash	*/
@@ -1366,7 +1382,6 @@ static int imPermissionRole_length(imPermissionRole *self) {
 		v = PyObject_CallMethod(OBJECT(self), "__of__", 
 			"O", pa);
 
-		Py_XDECREF(self->_v);
 		self->_v = v;
 
 		Py_XDECREF(self->_pa);
@@ -1374,7 +1389,6 @@ static int imPermissionRole_length(imPermissionRole *self) {
 	}
 
 	l = PyObject_Length(v);
-	Py_DECREF(v);
 
 	return l;
 
@@ -1408,7 +1422,6 @@ static PyObject *imPermissionRole_getitem(imPermissionRole *self,
 		v = PyObject_CallMethod(OBJECT(self), "__of__", 
 			"O", pa);
 
-		Py_XDECREF(self->_v);
 		self->_v = v;
 
 		Py_XDECREF(self->_pa);
@@ -1416,7 +1429,45 @@ static PyObject *imPermissionRole_getitem(imPermissionRole *self,
 	}
 
 	result = PyObject_GetItem(v, item);
-	Py_DECREF(v);
+
+	return result;
+}
+
+/*
+** imPermissionRole_get
+*/
+
+static PyObject *imPermissionRole_get(imPermissionRole *self,
+	int item) {
+
+	PyObject *v;
+	PyObject *pa;
+	PyObject *result;
+
+	/*| try:
+	**|	v = self._v
+	**| except:
+	**|	v = self._v = self.__of__(self._pa)
+	**|	del self._pa
+	**| return v[i]
+	*/
+
+	v = self->_v;
+
+	if (v == NULL) {
+		pa = self->_pa;
+		if (pa == NULL) return NULL;
+
+		v = PyObject_CallMethod(OBJECT(self), "__of__", 
+			"O", pa);
+
+		self->_v = v;
+
+		Py_XDECREF(self->_pa);
+		self->_pa = NULL;
+	}
+
+	result = PySequence_GetItem(v, item);
 
 	return result;
 }
@@ -1534,7 +1585,7 @@ static PyObject *permissionName(PyObject *name) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.4 $";
+	char *rev = "$Revision: 1.5 $";
 
 	if (!ExtensionClassImported) return;
 
