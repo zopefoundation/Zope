@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python2.3
 
 ##############################################################################
@@ -1115,7 +1116,6 @@ def skel_visit(skel, dirname, names):
 
 installed_data_files = [
     ["../../doc", ['doc/*.txt']],
-    ["../../doc/changenotes", ['doc/changenotes/*.stx']],
     ["../../import", ['import/*.zexp']],
     ["../../bin", ['utilities/README.txt',]],
     ]
