@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -187,6 +187,13 @@ class _cache:
 
     _zmap={'aest':'GMT+1000', 'aedt':'GMT+1100',
            'aus eastern standard time':'GMT+1000',
+           'sydney standard time':'GMT+1000',
+           'tasmania standard time':'GMT+1000',
+           'e. australia standard time':'GMT+1000',
+           'aus central standard time':'GMT+0930',
+           'cen. australia standard time':'GMT+0930',
+           'w. australia standard time':'GMT+0800',
+
            'brazil/acre':'Brazil/Acre',
            'brazil/denoronha':'Brazil/Denoronha',
            'brazil/east':'Brazil/East','brazil/west':'Brazil/West',
@@ -207,6 +214,9 @@ class _cache:
            'mountain standard time':'US/Mountain',
            'pacific standard time':'US/Pacific',
            'gb-eire':'GB-Eire','gmt':'GMT',
+
+           'gmt+0000':'GMT+0', 'gmt+0':'GMT+0',
+           'gmt+0930':'GMT+0930',
 
            'gmt+0100':'GMT+1', 'gmt+0200':'GMT+2', 'gmt+0300':'GMT+3',
            'gmt+0400':'GMT+4', 'gmt+0500':'GMT+5', 'gmt+0600':'GMT+6',
@@ -681,11 +691,14 @@ class DateTime:
     except:
         try:
             t=time()
-            localzone=mktime(gmtime(t))-t
-            localzone=int(round(-localzone/(60*60)))
-            if localzone >= 0:
-                lz='+%d' % localzone
-            else: lz=str(localzone)
+            localzone=float(int(mktime(gmtime(t))) - int(t))
+            offset=(-localzone/(60*60))
+            majorOffset=int(offset)
+            if majorOffset != 0 :
+                minorOffset=abs(int((offset % majorOffset) * 60.0))
+            else: minorOffset = 0
+            m=majorOffset >= 0 and '+' or ''
+            lz='%s%0.02d%0.02d' % (m, majorOffset, minorOffset)
             _localzone=_cache._zmap[lower('GMT%s' % lz)]
         except: _localzone=''
 
