@@ -23,7 +23,7 @@ entityref = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*)[^a-zA-Z0-9]')
 charref = re.compile('&#([0-9]+)[^0-9]')
 
 starttagopen = re.compile('<[a-zA-Z]')
-piopen = re.compile('<\?')
+piopen = re.compile(r'<\?')
 piclose = re.compile('>')
 endtagopen = re.compile('</[a-zA-Z]')
 special = re.compile('<![^<>]*>')
@@ -147,6 +147,7 @@ class HTMLParser:
             if i < j: self.handle_data(rawdata[i:j])
             i = self.updatepos(i, j)
             if i == n: break
+            assert rawdata[i] in "<&", "interesting.search() lied"
             if rawdata[i] == '<':
                 if starttagopen.match(rawdata, i):
                     if self.literal:
@@ -213,8 +214,6 @@ class HTMLParser:
                         k = k-1
                     i = self.updatepos(i, k)
                     continue
-            else:
-                raise HTMLParserError('neither < nor & ??', self.getpos())
             # We get here only if incomplete matches but
             # nothing else
             match = incomplete.match(rawdata, i)
@@ -237,9 +236,7 @@ class HTMLParser:
     # Internal -- parse comment, return length or -1 if not terminated
     def parse_comment(self, i):
         rawdata = self.rawdata
-        if rawdata[i:i+4] != '<!--':
-            raise HTMLParseError('unexpected call to parse_comment()',
-                                 self.getpos())
+        assert rawdata[i:i+4] == '<!--', 'unexpected call to parse_comment()'
         match = commentclose.search(rawdata, i+4)
         if not match:
             return -1
@@ -283,9 +280,7 @@ class HTMLParser:
     # Internal -- parse processing instr, return length or -1 if not terminated
     def parse_pi(self, i):
         rawdata = self.rawdata
-        if rawdata[i:i+2] != '<?':
-            raise HTMLParseError('unexpected call to parse_pi()',
-                                 self.getpos())
+        assert rawdata[i:i+2] == '<?', 'unexpected call to parse_pi()'
         match = piclose.search(rawdata, i+2)
         if not match:
             return -1
@@ -311,9 +306,7 @@ class HTMLParser:
         # Now parse the data between i+1 and j into a tag and attrs
         attrs = []
         match = tagfind.match(rawdata, i+1)
-        if not match:
-            raise HTMLParseError('unexpected call to parse_starttag()',
-                                 self.getpos())
+        assert match, 'unexpected call to parse_starttag()'
         k = match.end(0)
         self.lasttag = tag = string.lower(rawdata[i+1:k])
 
