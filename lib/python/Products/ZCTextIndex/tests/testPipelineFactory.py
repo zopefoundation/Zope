@@ -29,14 +29,19 @@ class PipelineFactoryTest(TestCase):
         self.huey = NullPipelineElement()
         self.dooey = NullPipelineElement()
         self.louie = NullPipelineElement()
+        self.daffy = NullPipelineElement()
         
     def testPipeline(self):
         pf = PipelineElementFactory()
-        pf.registerFactory('huey', self.huey)
-        pf.registerFactory('dooey', self.dooey)
-        pf.registerFactory('louie', self.louie)
-        self.assertRaises(ValueError, pf.registerFactory, 'huey', self.huey)
-        self.assertEqual(pf.getFactoryNames(), ['dooey', 'huey', 'louie'])
+        pf.registerFactory('donald', 'huey', self.huey)
+        pf.registerFactory('donald', 'dooey',  self.dooey)
+        pf.registerFactory('donald', 'louie', self.louie)
+        pf.registerFactory('looney', 'daffy', self.daffy)
+        self.assertRaises(ValueError, pf.registerFactory,'donald',  'huey', 
+                          self.huey)
+        self.assertEqual(pf.getFactoryGroups(), ['donald', 'looney'])
+        self.assertEqual(pf.getFactoryNames('donald'), 
+                         ['dooey', 'huey', 'louie'])
     
 def test_suite():
     return makeSuite(PipelineFactoryTest)

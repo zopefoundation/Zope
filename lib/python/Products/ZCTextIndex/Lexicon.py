@@ -20,8 +20,7 @@ from BTrees.OIBTree import OIBTree
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
 from Products.ZCTextIndex.ParseTree import QueryError
-from Products.ZCTextIndex.PipelineFactory import \
-     splitter_factory, element_factory
+from Products.ZCTextIndex.PipelineFactory import element_factory
 
 class Lexicon:
 
@@ -169,20 +168,26 @@ class Splitter:
             result += self.rxGlob.findall(s)
         return result
         
-splitter_factory.registerFactory('Regex Splitter', Splitter)
+element_factory.registerFactory('Word Splitter', 
+                                 'Whitespace splitter', 
+                                 Splitter)
 
 class CaseNormalizer:
 
     def process(self, lst):
         return [w.lower() for w in lst]
         
-element_factory.registerFactory('Case Normalizer', CaseNormalizer)
+element_factory.registerFactory('Case Normalizer',
+                                'Case Normalizer', 
+                                CaseNormalizer)
+
+element_factory.registerFactory('Stop Words', 
+                                ' Don\'t remove stop words', 
+                                None)
 
 class StopWordRemover:
 
     dict = get_stopdict().copy()
-    for c in range(255):
-        dict[chr(c)] = None
 
     try:
         from Products.ZCTextIndex.stopper import process as _process
@@ -193,6 +198,17 @@ class StopWordRemover:
     else:
         def process(self, lst):
             return self._process(self.dict, lst)
+
+element_factory.registerFactory('Stop Words', 
+                                'Remove listed stop words only', 
+                                StopWordRemover)
+
+class StopWordAndSingleCharRemover(StopWordRemover):
+
+    dict = get_stopdict().copy()
+    for c in range(255):
+        dict[chr(c)] = None
             
-            
-element_factory.registerFactory('Stop Word Remover', StopWordRemover)
+element_factory.registerFactory('Stop Words', 
+                                'Remove listed and single char words', 
+                                StopWordAndSingleCharRemover)

@@ -33,29 +33,29 @@
     </td>
   </tr>
 
-  <tr>
-    <td align="left" valign="top">
-      <div class="form-label">Word Splitter</div>
-    </td>
-    <td align="left" valign="top">
-      <select name="splitter_name">
-        <dtml-in name="getSplitterNames">
-          <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
-        </dtml-in>
-      </select>
-    </td>
-  </tr>
-
-  <dtml-in name="getElementNames">
-    <tr>
-      <td align="left" valign="top">
-        <div class="form-label">&dtml-sequence-item;</div>
-      </td>
-      <td align="left" valign="top">
-      <input type="checkbox" name="element_names:list" 
-             value="&dtml-sequence-item;" checked />
-      </td>
-    </tr>
+  <dtml-in name="getElementGroups" prefix="group">
+    <dtml-let elements="getElementNames(group_item)">
+      <tr>
+        <td align="left" valign="top">
+          <div class="form-label">&dtml-group_item;</div>
+        </td>
+        <td align="left" valign="top">
+          <input type="hidden" name="elements.group:records" 
+                 value="&dtml-group_item;" />
+          <dtml-if expr="_.len(elements) > 1">
+            <select name="elements.name:records">
+              <dtml-in name="elements">
+                <option value="&dtml-sequence-item;"
+                >&dtml-sequence-item;</option>
+              </dtml-in>
+            </select>
+          <dtml-else>
+            <input type="checkbox" name="elements.name:records" 
+                   value="<dtml-var expr="elements[0]">" checked />
+          </dtml-if>
+        </td>
+      </tr>
+    </dtml-let>
   </dtml-in>
 
   <tr>

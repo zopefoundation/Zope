@@ -13,7 +13,7 @@
 ##############################################################################
 
 from Products.ZCTextIndex.ISplitter import ISplitter
-from Products.ZCTextIndex.PipelineFactory import splitter_factory
+from Products.ZCTextIndex.PipelineFactory import element_factory
 
 import re
 
@@ -45,7 +45,9 @@ class HTMLWordSplitter:
         return [word for word in text.split()
                 if len(word) > 1 and rx.search(word)]
                 
-splitter_factory.registerFactory('HTML Word Splitter', HTMLWordSplitter)
+element_factory.registerFactory('Word Splitter', 
+                                'HTML aware splitter',
+                                HTMLWordSplitter)
 
 if __name__ == "__main__":
     import sys

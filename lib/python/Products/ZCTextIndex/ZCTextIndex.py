@@ -31,7 +31,7 @@ from Products.ZCTextIndex.Lexicon import \
      Lexicon, Splitter, CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
-from PipelineFactory import splitter_factory, element_factory
+from PipelineFactory import element_factory
 
 from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
@@ -174,16 +174,23 @@ manage_addZCTextIndexForm = DTMLFile('dtml/addZCTextIndex', globals())
 
 manage_addLexiconForm = DTMLFile('dtml/addLexicon', globals())
 
-def manage_addLexicon(self, id, title='', splitter_name=None, 
-                      element_names=None, REQUEST=None):
+def manage_addLexicon(self, id, title='', elements=[], REQUEST=None):
     """Add ZCTextIndex Lexicon"""
     
-    elements = [element_factory.instantiate(name) for name in element_names]
-    
-    if splitter_name:
-        elements.insert(0, splitter_factory.instantiate(splitter_name))
+    pipeline = []
+    for el_record in elements:
+        if not hasattr(el_record, 'name'): 
+            continue # Skip over records that only specify element group
+        element = element_factory.instantiate(el_record.group, el_record.name)
+        if element is not None:
+            if el_record.group == 'Word Splitter':
+                # I don't like hardcoding this, but its a simple solution
+                # to get the splitter element first in the pipeline
+                pipeline.insert(0, element)
+            else:
+                pipeline.append(element)
 
-    lexicon = PLexicon(id, title, *elements)
+    lexicon = PLexicon(id, title, *pipeline)
     self._setObject(id, lexicon)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
