@@ -1,3 +1,5 @@
+#! /usr/bin/env python1.5
+
 # runtest.py
 
 import sys
@@ -43,7 +45,6 @@ def main():
     if not args:
         args = glob.glob(os.path.join("test", "test*.xml"))
     for arg in args:
-        print
         print arg,
         sys.stdout.flush()
         save = sys.stdout, sys.argv
@@ -65,12 +66,24 @@ def main():
             expected = f.readlines()
             f.close()
         stdout.seek(0)
-        actual = stdout.readlines()
+        if hasattr(stdout, "readlines"):
+            actual = stdout.readlines()
+        else:
+            actual = readlines(stdout)
         if actual == expected:
             print "OK"
         else:
             print "not OK"
             showdiff(expected, actual)
+
+def readlines(f):
+    L = []
+    while 1:
+        line = f.readline()
+        if not line:
+            break
+        L.append(line)
+    return L
 
 if __name__ == "__main__":
     main()
