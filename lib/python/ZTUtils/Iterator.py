@@ -84,8 +84,10 @@
 ##############################################################################
 __doc__='''Iterator class
 
-$Id: Iterator.py,v 1.1 2001/04/27 16:38:52 evan Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Iterator.py,v 1.2 2001/08/07 20:53:54 evan Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
+
+import string
 
 class Iterator:
     '''Simple Iterator class'''
@@ -123,6 +125,20 @@ class Iterator:
     def Letter(self):
         return self.letter(base=ord('A'))
 
+    def Roman(self, rnvalues=(
+                    (1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),
+                    (100,'C'),(90,'XC'),(50,'L'),(40,'XL'),
+                    (10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')) ):
+        n = self.index + 1
+        s = ''
+        for v, r in rnvalues:
+            rct, n = divmod(n, v)
+            s = s + r * rct
+        return s
+
+    def roman(self, lower=string.lower):
+        return lower(self.Roman())
+
     def start(self): return self.nextIndex == 1
 
     def end(self):
@@ -135,3 +151,4 @@ class Iterator:
 
     def length(self):
         return len(self.seq)
+
