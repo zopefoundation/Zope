@@ -98,7 +98,7 @@ class ZServerConfigurationTestCase(BaseTest):
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.HTTPServerFactory))
         self.assert_(factory.force_connection_close)
-        self.assertEqual(factory.host, '')
+        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
         self.assertEqual(factory.port, 81)
         self.assertEqual(factory.webdav_source_clients, "cadaever")
         self.check_prepare(factory)
