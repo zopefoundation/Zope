@@ -27,6 +27,14 @@ License
   The Zope License is included in LICENSE.txt Send your feeback
   about the license to zope-license@zope.org. 
 
+Important
+
+  This is an alpha release.
+
+  This release requires Python 1.5.2.
+
+  See notes on Zope 2 and ZODB 3 in CHANGES.txt.
+
 Installing Zope:
 
   Follow the instructions in doc/INSTALL.txt to install Zope. You
