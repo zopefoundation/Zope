@@ -4,6 +4,10 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+        - Collector #2390: Objects of type 'Help Image' were not properly
+          re-registered inside registerHelp().
+
+
     Zope 2.4 beta 2
 
       Bugs fixed

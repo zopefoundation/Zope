@@ -357,7 +357,7 @@ class ProductContext:
         help.lastRegistered=DateTime()
 
         if clear:
-            for id in help.objectIds('Help Topic'):
+            for id in help.objectIds(['Help Topic','Help Image']):
                 help._delObject(id)
 
         for file in os.listdir(path):
