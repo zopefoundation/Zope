@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 import sys, os, math, regex, DateTimeZone
@@ -608,7 +608,7 @@ class DateTime:
             hr,mn,sc,tz=0,0,0,0
             yr=(yr>100) and yr or yr+CENTURY
             if not self._validDate(yr,mo,dy):
-                raise self.DateTimeError, 'Invalid date: %s' % args
+                raise self.DateTimeError, 'Invalid date: %s' % (args,)
             args=args[3:]
             if args:
                 hr,args=args[0],args[1:]
