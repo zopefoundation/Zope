@@ -217,14 +217,16 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.46 2001/10/29 16:56:43 andreasjung Exp $'
-__version__='$Revision: 1.46 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.47 2001/11/09 18:52:21 andreasjung Exp $'
+__version__='$Revision: 1.47 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
 from urllib import quote, quote_plus
 from cgi import escape
 from html_quote import html_quote # for import by other modules, dont remove!
+from types import StringType
+from Acquisition import aq_base
 
 class Var: 
     name='var'
@@ -419,7 +421,16 @@ def structured_text(v, name='(Unknown name)', md={}):
     global StructuredText
     if StructuredText is None: 
         from StructuredText.StructuredText import HTML
-    return HTML(str(v),level=3,header=0)
+
+    if isinstance(v,StringType): txt = v
+
+    elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
+        txt = aq_base(v).raw
+
+    else: txt = str(v)
+        
+    return HTML(txt,level=3,header=0)
+        
 
 def sql_quote(v, name='(Unknown name)', md={}):
     """Quote single quotes in a string by doubling them.

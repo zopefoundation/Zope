@@ -43,6 +43,9 @@ Zope Changes
 
       - Updated DTMLMethod validation support patch with version
         by Steve Alexander
+
+      - <dtml-var "..." fmt="structured-text"> did not work 
+        properly under some acquisition related reaons.
         
 
   Zope 2.5 Alpha 2
