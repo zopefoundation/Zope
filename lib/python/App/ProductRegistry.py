@@ -165,25 +165,18 @@ class ProductRegistryMixin:
         self, product, permission, methods=(), default=('Manager',)
         ):
 
-        pid=product.id
-
         permissions=self._getProductRegistryData('permissions')
 
         for d in permissions:
             if d['name']==permission:
-                if not d.has_key('product'): d['product']=pid
-                if d['product'] != pid:
-                    raise 'Type Exists', (
-                        'The permission <em>%s</em> is already defined.'
-                        % permission)
-                d['methods']=methods
-                d['default']=default
-                return
-
-        d={'name': permission, 'methods': methods, 'default': default}
-        if permission: d['permission']=permission
+                raise 'Type Exists', (
+                    'The permission <em>%s</em> is already defined.'
+                    % permission)
         
-        self._setProductRegistryData('permissions', permissions+(d,))
+        d={'name': permission, 'methods': methods, 'permission': permission,
+                'default': default, 'product': product.id}
+        
+        self._setProductRegistryData('permissions', permissions + (d,))
         self._setProductRegistryData(
             'ac_permissions',
             self._getProductRegistryData('ac_permissions')
