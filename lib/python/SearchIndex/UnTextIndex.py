@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -106,7 +106,7 @@ import operator
 from Splitter import Splitter
 from string import strip
 import string, regex, regsub, ts_regex
-
+from zLOG import LOG, ERROR
 
 
 from Lexicon import Lexicon, stop_word_dict
@@ -299,7 +299,9 @@ class UnTextIndex(Persistent, Implicit):
                     index[word_id] = r
                     unindex[i].append(word_id)
                     
-                else: r[i] = score
+                else:
+                    r[i] = score
+                    unindex[i].append(word_id)
             else:
                 index[word_id] = i, score
                 unindex[i].append(word_id)
@@ -313,7 +315,6 @@ class UnTextIndex(Persistent, Implicit):
 
         ## return the number of words you indexed
         return times
-
 
     def unindex_object(self, i, tt=type(()) ): 
         """ carefully unindex document with integer id 'i' from the text
@@ -330,11 +331,12 @@ class UnTextIndex(Persistent, Implicit):
                     try:
                         del index[n][i]
                     except (KeyError, IndexError, TypeError):
-                        pass
+                        LOG('UnTextIndex', PROBLEM,
+                            'unindex_object tried to unindex nonexistent'
+                            ' document %s' % str(i))
             del unindex[i]
             self._index = index
-
-
+            self._unindex = unindex
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"

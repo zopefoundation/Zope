@@ -96,6 +96,7 @@ from MultiMapping import MultiMapping
 from string import lower
 import Record
 from Missing import MV
+from zLOG import LOG, ERROR
 
 from Lazy import LazyMap, LazyFilter, LazyCat
 
@@ -174,6 +175,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if brains is not None:
             self._v_brains = brains
             
+        self.updateBrains()
+
+    def updateBrains(self):
         self.useBrains(self._v_brains)
 
     def __getitem__(self, index, ttype=type(())):
@@ -200,7 +204,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """ initialize your brains.  This method is called when the
         catalog is first activated (from the persistent storage) """
         Persistent.__setstate__(self, state)
-        self.useBrains(self._v_brains)
+        self.updateBrains()
         if not hasattr(self, 'lexicon'):
             self.lexicon = Lexicon()
 
@@ -262,7 +266,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         self.schema = schema
 
         # new column? update the brain
-        self.useBrains(self._v_brains)
+        self.updateBrains()
             
         self.__changed__(1)    #why?
             
@@ -274,6 +278,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         _index = names.index(name)
 
         if not self.schema.has_key(name):
+            LOG('Catalog', ERROR, ('delColumn attempted to delete '
+                                   'nonexistent column %s.' % str(name)))
             return
 
         names.remove(name)
@@ -288,7 +294,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         self.names = tuple(names)
 
         # update the brain
-        self.useBrains(self._v_brains)
+        self.updateBrains()
 
         # remove the column value from each record
         for key in self.data.keys():
@@ -372,6 +378,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if hasattr(x, 'index_object'):
                 blah = x.index_object(i, object, threshold)
                 total = total + blah
+            else:
+                LOG('Catalog', ERROR, ('catalogObject was passed '
+                                       'bad index object %s.' % str(x)))
 
         self.data = data
 
@@ -405,9 +414,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 try:
                     del btree[rid]
                 except KeyError:
-                    pass
+                    LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
+                                           'attempted to delete rid %s '
+                                           'from paths or data btree.' % rid))
             del uids[uid]
-
+            self.data = data
+        else:
+            LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
+                                   'attempted to uncatalog an object '
+                                   'with a uid of %s. ' % rid))
+            
     def clear(self):
         """ clear catalog """
         

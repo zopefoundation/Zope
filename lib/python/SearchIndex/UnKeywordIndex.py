@@ -1,5 +1,6 @@
 from UnIndex import UnIndex, MV, intSet
 from types import ListType, TupleType
+from zLOG import LOG, ERROR
 
 class UnKeywordIndex(UnIndex):
 
@@ -50,12 +51,16 @@ class UnKeywordIndex(UnIndex):
 
         kws = unindex.get(i, None)
         if kws is None:
-            return None
-        
+            LOG('UnKeywordIndex', ERROR,('unindex_object was called with bad '
+                                          'integer id' % str(i)))
         for kw in kws:
             set = index.get(kw, None)
-            if set is not None: set.remove(i)
-        
+            if set is not None:
+                set.remove(i)
+            else:
+                LOG('UnKeywordIndex', ERROR, ('unindex_object could not '
+                                              'remove %s from set'
+                                              % str(i)))
         del unindex[i]
         
         self._index = index

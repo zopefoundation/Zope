@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -94,6 +94,7 @@ from intSet import intSet
 import operator
 from Missing import MV
 import string, pdb
+from zLOG import LOG, ERROR
 
 ListType=type([])
 StringType=type('s')
@@ -193,11 +194,20 @@ class UnIndex(Persistent, Implicit):
 
         k = unindex.get(i, None)
         if k is None:
+            LOG('UnIndex', ERROR, ('unindex_object couldn\'t unindex '
+                                  'document %s.  This should not happen.'
+                                   % str(i)))
             return None
         set = index.get(k, None)
         if set is not None:
-            try: set.remove(i)
-            except: pass
+            LOG('UnIndex', ERROR, ('unindex_object tried to retrieve set %s'
+                                  'from index %s but couldn\'t.  This '
+                                  'should not happen.' % (repr(set), str(k))))
+            try:
+                set.remove(i)
+            except:
+                LOG('UnIndex', ERROR, ('unindex_object could not remove '
+                                       'integer id %s from index.' % str(k))) 
         del unindex[i]
         
         self._index = index
