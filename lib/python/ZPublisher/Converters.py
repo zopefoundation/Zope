@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import regex
 from string import atoi, atol, atof, join, split, strip
@@ -149,6 +149,15 @@ def field2date(v):
     else: v=str(v)
     return DateTime(v)
 
+def field2date(v):
+    from DateTime import DateTime
+    if hasattr(v,'read'): v=v.read()
+    else: v=str(v)
+    return DateTime(v)
+
+def field2boolean(v):
+    return v
+
 ListType=type([])
 
 def field2list(v):
@@ -171,5 +180,6 @@ type_converters = {
     'tokens':   field2tokens,
     'lines':    field2lines,
     'text':     field2text,
+    'boolean':     field2boolean,
     }
 
