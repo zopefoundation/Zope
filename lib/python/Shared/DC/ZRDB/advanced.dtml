@@ -30,7 +30,7 @@
 <tr><td colspan=2><br><br>
 You may specify a <strong>class</strong> for the data records.  This
 class must be defined in a file that resides in the <code>Extensions</code>
-directory of this Principia installation.
+directory of this Zope installation.
 </td>
 <tr>	<th align='LEFT'><em>Class name</em></th>
 	<td align='LEFT'><input name="class_name" size="30"
