@@ -20,8 +20,7 @@
 #   following.  You can tell by searching for the next byte with the
 #   high bit set (or the end of the string).
 #
-# The int to be encoded can contain no more than 24 bits.
-# XXX this could certainly be increased
+# The int to be encoded can contain no more than 28 bits.
 #
 # If it contains no more than 7 bits, 0abcdefg, the encoding is
 #     1abcdefg
