@@ -84,14 +84,14 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.4 2001/01/08 22:46:58 brian Exp $"""
+$Id: Cache.py,v 1.5 2001/01/11 20:53:14 chrism Exp $"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import time, sys
 from string import join
 import Globals
-from Globals import HTMLFile
+from Globals import DTMLFile
 from Acquisition import aq_get, aq_acquire, aq_inner, aq_parent, aq_base
 from zLOG import LOG, WARNING
 from AccessControl import getSecurityManager
@@ -176,7 +176,7 @@ class Cacheable:
           ), ('Manager',)),
         )
 
-    ZCacheable_manage = HTMLFile('dtml/cacheable', globals())
+    ZCacheable_manage = DTMLFile('dtml/cacheable', globals())
 
     _v_ZCacheable_cache = None
     _v_ZCacheable_manager_timestamp = 0
@@ -547,7 +547,7 @@ class CacheManager:
                 global manager_timestamp
                 manager_timestamp = time.time()
 
-    ZCacheManager_associate = HTMLFile('dtml/cmassoc', globals())
+    ZCacheManager_associate = DTMLFile('dtml/cmassoc', globals())
 
     def ZCacheManager_locate(self, require_assoc, subfolders,
                              meta_types=[], REQUEST=None):
