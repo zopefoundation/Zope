@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.9 2003/11/04 17:27:16 chrism Exp $
+# $Id: ZReST.py,v 1.10 2003/11/28 16:46:28 jim Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -91,7 +91,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         return self.source
 
     # edit form, which is also the primary interface
-    security.declareProtected('Edit ReStructuredText', 'manage_editForm')
+    security.declareProtected('Edit ReStructuredText', 'manage_main')
     manage_main = DTMLFile('dtml/manage_editForm', globals())
 
     # edit action
