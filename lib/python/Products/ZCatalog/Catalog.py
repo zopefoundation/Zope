@@ -91,6 +91,7 @@ from intSet import intSet
 from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex, Query
 from SearchIndex.Lexicon import Lexicon
 import regex, pdb
+from MultiMapping import MultiMapping
 from string import lower
 import Record
 from Missing import MV
@@ -103,6 +104,14 @@ class NoBrainer:
     methods or attributes are defined.
     """
     pass
+
+class KWMultiMapping(MultiMapping):
+    def has_key(self, name):
+        try:
+            r=self[name]
+            return 1
+        except KeyError:
+            return 0
 
 def orify(seq,
           query_map={
