@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -296,6 +296,7 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """
+    if type(file) is not type(''): file=file.read()
     if not file: file=default_dd_html
     ob=DTMLDocument(file, __name__=id)
     ob.title=title
