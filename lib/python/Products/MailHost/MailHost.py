@@ -84,10 +84,10 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.59 2001/01/08 22:47:00 brian Exp $"""
-__version__ = "$Revision: 1.59 $"[11:-2]
+$Id: MailHost.py,v 1.60 2001/01/11 15:03:52 chrism Exp $"""
+__version__ = "$Revision: 1.60 $"[11:-2]
 
-from Globals import Persistent, HTMLFile, HTML, MessageDialog
+from Globals import Persistent, DTMLFile, HTML, MessageDialog
 from smtplib import SMTP
 from AccessControl.Role import RoleManager
 from operator import truth
@@ -99,7 +99,7 @@ from cStringIO import StringIO
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
-manage_addMailHostForm=HTMLFile('dtml/addMailHost_form', globals())
+manage_addMailHostForm=DTMLFile('dtml/addMailHost_form', globals())
 def manage_addMailHost(self, id, title='', smtp_host=None,
                        localhost='localhost', smtp_port=25,
                        timeout=1.0, REQUEST=None):
@@ -127,7 +127,7 @@ add = manage_addMailHost
 class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     'a mailhost...?'
     meta_type='Mail Host'
-    manage=manage_main=HTMLFile('dtml/manageMailHost', globals())
+    manage=manage_main=DTMLFile('dtml/manageMailHost', globals())
     index_html=None
     icon='misc_/MailHost/MHIcon'
 
