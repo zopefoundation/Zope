@@ -13,7 +13,7 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -29,6 +29,11 @@ from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from webdav.common import isDavCollection
 from cgi import escape
+
+
+# DM: we would like to import this from somewhere
+BadRequestException= 'Bad Request'
+
 
 class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
@@ -600,6 +605,9 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         )
 
 
+    # optionally to be overridden by derived classes
+    PropertySheetClass= PropertySheet
+
     webdav =DAVProperties()
     def _get_defaults(self):
         return (self.webdav,)
@@ -639,12 +647,14 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
                 return propset.__of__(self)
         return default
 
-    def manage_addPropertySheet(self, id, ns):
+    def manage_addPropertySheet(self, id, ns, REQUEST=None):
         """ """
         md={'xmlns':ns}
-        ps=PropertySheet(id, md)
+        ps= self.PropertySheetClass(id, md)
         self.addPropertySheet(ps)
-        return 'OK'
+        if REQUEST is None: return ps
+        ps= self.get(id)
+        REQUEST.RESPONSE.redirect('%s/manage' % ps.absolute_url())
 
     def addPropertySheet(self, propset):
         propsets=self.aq_parent.__propsets__
@@ -657,6 +667,25 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
             if propset.getId() != name and  propset.xml_namespace() != name:
                 result.append(propset)
         self.aq_parent.__propsets__=tuple(result)
+
+    ## DM: deletion support
+    def isDeletable(self,name):
+        '''currently, we say that *name* is deletable when it is not a
+        default sheet. Later, we may further restrict deletability
+        based on an instance attribute.'''
+        ps= self.get(name)
+        if ps is None: return 0
+        if ps in self._get_defaults(): return 0
+        return 1
+
+    def manage_delPropertySheets(self, ids=(), REQUEST=None):
+        '''delete all sheets identified by *ids*.'''
+        for id in ids:
+            if not self.isDeletable(id):
+                raise BadRequestException, 'attempt to delete undeletable property sheet: ' + id
+            self.delPropertySheet(id)
+        if REQUEST is not None: 
+            REQUEST.RESPONSE.redirect('%s/manage' % self.absolute_url())
 
     def __len__(self):
         return len(self.__propsets__())
@@ -677,7 +706,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         if r is None:
             pre='../'
         else:
-            pre=r['URL']
+            pre=r['URLPATH0']
             for i in (1,2):
                 l=pre.rfind('/')
                 if l >= 0:

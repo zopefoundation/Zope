@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1058: Several fixes for PropertySheets when used
+       outside ZClasses
+
      - Collector #1053: parseIndexRequest turned empty sequence of search
        terms into unrestricted search.
 

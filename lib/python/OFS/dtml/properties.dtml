@@ -41,6 +41,7 @@ property values, edit the values and click &quot;Save Changes&quot;.
 </tr>
 
 <dtml-in propertyMap mapping>
+<dtml-let type="not _.has_key('type') and 'string' or type">
 <tr>
   <td align="left" valign="top" width="16">
   <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
@@ -156,6 +157,7 @@ property values, edit the values and click &quot;Save Changes&quot;.
   </div>
   </td>
 </tr>
+</dtml-let>
 </dtml-in>
 <tr>
   <td colspan="2">&nbsp;</td>
