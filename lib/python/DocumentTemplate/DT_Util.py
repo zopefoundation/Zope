@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.81 2001/06/21 19:08:59 shane Exp $''' 
-__version__='$Revision: 1.81 $'[11:-2]
+'''$Id: DT_Util.py,v 1.82 2001/07/05 12:19:40 andreas Exp $''' 
+__version__='$Revision: 1.82 $'[11:-2]
 
 import re, os
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -161,7 +161,7 @@ def careful_hasattr(md, inst, name):
         get = getattr
     try:
         get(inst, name)
-    except (AttributeError, ValidationError):
+    except (AttributeError, ValidationError, KeyError):
         return 0
     else:
         return 1
