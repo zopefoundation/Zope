@@ -105,17 +105,22 @@ FILE = "test/test1.xml"
 
 def main():
     noVersionTest = 0
+    macros = 0
     compile = 0
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "cn")
+        opts, args = getopt.getopt(sys.argv[1:], "cmn")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
-        sys.stderr.write("usage: driver.py [-n] [file]\n")
-        sys.stderr.write("-n turns of the Python 1.5.2 test\n")
+        sys.stderr.write("usage: driver.py [-c] [-m] [-n] [file]\n")
+        sys.stderr.write("-c -- compiled mode (faster)\n")
+        sys.stderr.write("-m -- macro expansion only\n")
+        sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
         sys.exit(2)
     for o, a in opts:
         if o == '-c':
-            compile = not compile
+            compile = 1
+        if o == '-m':
+            macros = 1
         if o == '-n':
             noVersionTest = 1
     if not noVersionTest:
@@ -128,8 +133,11 @@ def main():
     else:
         file = FILE
     doc = parsefile(file)
-    if compile:
-        it = compiletree(doc)
+    if macros or compile:
+        if macros:
+            it = precompiletree(doc)
+        else:
+            it = compiletree(doc)
         interpretit(it)
     else:
         doc = talizetree(doc)
@@ -155,6 +163,10 @@ def talizetree(root, dom=None, engine=None):
     if engine is None:
         engine = DummyEngine()
     return TALVisitor(root, dom, engine)()
+
+def precompiletree(root):
+    from TALCompiler import METALCompiler
+    return METALCompiler(root)()
 
 def compiletree(root):
     from TALCompiler import TALCompiler
