@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.34 1997/04/23 16:53:27 chris Exp $'''
+$Id: InvertedIndex.py,v 1.35 1997/04/23 16:56:31 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,10 @@ $Id: InvertedIndex.py,v 1.34 1997/04/23 16:53:27 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.35  1997/04/23 16:56:31  chris
+# fixed bug in Index __getitem__() that caused it not to return
+# ResultLists
+#
 # Revision 1.34  1997/04/23 16:53:27  chris
 # *** empty log message ***
 #
@@ -196,7 +200,7 @@ $Id: InvertedIndex.py,v 1.34 1997/04/23 16:53:27 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 import regex, string, copy
@@ -616,7 +620,7 @@ class Index:
             return List()
     
 	try:
-            return index[key]
+            return List(index[key])
 	except KeyError:
             return List()
   
@@ -736,7 +740,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.34 1997/04/23 16:53:27 chris Exp $'''
+$Id: InvertedIndex.py,v 1.35 1997/04/23 16:56:31 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -788,6 +792,10 @@ $Id: InvertedIndex.py,v 1.34 1997/04/23 16:53:27 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.35  1997/04/23 16:56:31  chris
+# fixed bug in Index __getitem__() that caused it not to return
+# ResultLists
+#
 # Revision 1.34  1997/04/23 16:53:27  chris
 # *** empty log message ***
 #
@@ -902,7 +910,7 @@ $Id: InvertedIndex.py,v 1.34 1997/04/23 16:53:27 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 import regex, string, copy
