@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.132 1999/07/14 15:09:12 jim Exp $"""
-__version__='$Revision: 1.132 $'[11:-2]
+$Id: Publish.py,v 1.133 1999/08/03 15:40:38 jim Exp $"""
+__version__='$Revision: 1.133 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -146,13 +146,11 @@ def publish(request, module_name, after_list, debug=0,
 
     # Record transaction meta-data
     if transaction is not None:
-        info="\t" + request_get('PATH_INFO')   
+        get_transaction().note(request_get('PATH_INFO'))
         auth_user=request_get('AUTHENTICATED_USER',None)
         if auth_user is not None:
-            
-            info=("%s %s" %
-                  (request_get('AUTHENTICATION_PATH'), auth_user))+info
-        get_transaction().note(info)
+            get_transaction().setUser(auth_user,
+                                      request_get('AUTHENTICATION_PATH'))
 
     result=mapply(object, request.args, request,
                   call_object,1,
