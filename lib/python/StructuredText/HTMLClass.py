@@ -279,7 +279,10 @@ class HTMLClass:
         for row in doc.getRows()[0]:
             output("<tr>\n")
             for column in row.getColumns()[0]:
-                str = "<td colspan=%s>" % column.getSpan()
+                if hasattr(column,"getAlign"):
+                    str = "<td colspan=%s align=%s valign=%s>" % (column.getSpan(),column.getAlign(),column.getValign())
+                else:
+                    str = "<td colspan=%s>" % column.getSpan()
                 output(str)
                 #for c in doc.getChildNodes():
                 #    getattr(self, self.element_types[c.getNodeName()])(c, level, output)

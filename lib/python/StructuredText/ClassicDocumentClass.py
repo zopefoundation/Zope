@@ -430,6 +430,7 @@ class DocumentClass:
        return result
     
     def doc_table(self,paragraph, expr = re.compile('(\s*)([||]+)').match):
+        #print "paragraph=>", type(paragraph), paragraph, paragraph._src
         text    = paragraph.getColorizableTexts()[0]
         m       = expr(text)
         

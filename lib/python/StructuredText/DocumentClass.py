@@ -222,7 +222,11 @@ class StructuredTextRow(ST.StructuredTextDocument):
         apply(ST.StructuredTextDocument.__init__,(self,[]),kw)
         self._columns = []
         for column in row:            
-            self._columns.append(StructuredTextColumn(column[0],column[1],kw))
+            self._columns.append(StructuredTextColumn(column[0],
+                                                      column[1],
+                                                      column[2],
+                                                      column[3],
+                                                      kw))
 
     def getColumns(self):
         return [self._columns]
@@ -245,15 +249,29 @@ class StructuredTextColumn(ST.StructuredTextParagraph):
     or StructuredTextTableData.
     """
     
-    def __init__(self,text,span,kw):
+    def __init__(self,text,span,align,valign,kw):
         apply(ST.StructuredTextParagraph.__init__,(self,text,[]),kw)
         self._span = span
+        self._align = align
+        self._valign = valign
     
     def getSpan(self):
         return self._span
     
     def _getSpan(self):
         return self._span
+    
+    def getAlign(self):
+        return self._align
+    
+    def _getAlign(self):
+        return self.getAlign()
+    
+    def getValign(self):
+        return self._valign
+    
+    def _getValign(self):
+        return self.getValign()
 
 class StructuredTextTableHeader(ST.StructuredTextDocument): pass
 
@@ -599,10 +617,94 @@ class DocumentClass:
                     ROWS.append(COLS)
                     COLS = []
                 else:
-                    COLS[index][0] = COLS[index][0] + strip(row[index][0]) + "\n"
+                    #COLS[index][0] = COLS[index][0] + strip(row[index][0]) + "\n"
+                    COLS[index][0] = COLS[index][0] + (row[index][0]) + "\n"
                     COLS[index][1] = row[index][1]
         
-        return StructuredTextTable(ROWS,text,subs,indent=paragraph.indent)
+        # now that each cell has been munged together,
+        # determine the cell's alignment.
+        # Default is to center. Also determine the cell's
+        # vertical alignment, top, middle, bottom. Default is
+        # to middle        
+        rows = []
+        cols = []
+        for row in ROWS:
+            for index in range(len(row)):
+                topindent       = 0
+                bottomindent    = 0
+                leftindent      = 0
+                rightindent     = 0
+                left            = []
+                right           = []                                    
+                text            = row[index][0]
+                text            = split(text,'\n')
+                text            = text[:len(text)-1]
+                align           = ""
+                valign          = ""
+                for t in text:
+                    t = strip(t)
+                    if not t:
+                        topindent = topindent + 1
+                    else:
+                        break
+                text.reverse()
+                for t in text:
+                    t = strip(t)
+                    if not t:
+                        bottomindent = bottomindent + 1
+                    else:
+                        break
+                text.reverse()
+                tmp   = join(text[topindent:len(text)-bottomindent],"\n")
+                pars  = re.compile("\n\s*\n").split(tmp)
+                for par in pars:
+                    if index > 0:
+                        par = par[1:]
+                    par = split(par, ' ')
+                    for p in par:
+                        if not p:
+                            leftindent = leftindent+1
+                        else:
+                            break
+                    left.append(leftindent)
+                    leftindent = 0
+                    par.reverse()
+                    for p in par:
+                        if not p:
+                            rightindent = rightindent + 1
+                        else:
+                            break
+                    right.append(rightindent)
+                    rightindent = 0
+                left.sort()
+                right.sort()
+
+                if topindent == bottomindent:
+                    valign="middle"
+                elif topindent < 1:
+                    valign="top"
+                elif bottomindent < 1:
+                    valign="bottom"
+                else:
+                    valign="middle"
+
+                if left[0] == right[0]:
+                    align="center"
+                elif left[0] < 1:
+                    align="left"
+                elif right[0] < 1:
+                    align="right"
+                else:
+                    align="left"
+
+                cols.append(row[index][0],row[index][1],align,valign)
+                #print text, align, valign
+                #print text, topindent, bottomindent, left[0], right[0]
+            rows.append(cols)
+            cols = []
+
+        return StructuredTextTable(rows,text,subs,indent=paragraph.indent)
+        #return StructuredTextTable(ROWS,text,subs,indent=paragraph.indent)
             
     def doc_bullet(self, paragraph, expr = re.compile('\s*[-*o]\s+').match):
         top=paragraph.getColorizableTexts()[0]
