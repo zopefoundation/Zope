@@ -10,7 +10,7 @@ Folder - Add: Add a Folder.
 
     'Title' -- The optional title of the Folder.
 
-    'Create public interface' -- Creates an 'index_html' DTML Method
+    'Create public interface' -- Creates an 'index_html' Page Template
     inside the new Folder.
 
     'Create user folder' -- Creates a User Folder inside the new
