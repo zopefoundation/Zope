@@ -60,7 +60,7 @@ Options
 				  is called.  Finally, enter 's'
 				  followed a carriage return.
 
-   -s                             Don't generate any output
+   -s                             Don\'t generate any output
 
 Examples
 
@@ -74,7 +74,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.11 1997/04/22 03:47:29 jim Exp $
+$Id: Test.py,v 1.12 1997/09/02 21:15:34 jim Exp $
 '''
 #     Copyright 
 #
@@ -128,7 +128,7 @@ $Id: Test.py,v 1.11 1997/04/22 03:47:29 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 #! /usr/local/bin/python
@@ -214,6 +214,7 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None):
     timeit=t
     silent=s
 
+    if not script: script='+Main'
     if script[0]=='+': script='../../lib/python/'+script[1:]
 
     env=e
@@ -295,8 +296,8 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None):
 
 	fbreak(db,ModulePublisher.publish)
 	fbreak(db,ModulePublisher.call_object)
-	fbreak(db,cgi_module_publisher.new_find_object)
-	fbreak(db,cgi_module_publisher.old_find_object)
+	#fbreak(db,cgi_module_publisher.new_find_object)
+	#fbreak(db,cgi_module_publisher.old_find_object)
 
 	dbdata={'breakpoints':(), 'env':env}
 	b=''
@@ -337,6 +338,10 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.12  1997/09/02 21:15:34  jim
+# Added 'Main' as default module.
+# Took out break in non-existent xxx_find_object.
+#
 # Revision 1.11  1997/04/22 03:47:29  jim
 # *** empty log message ***
 #
