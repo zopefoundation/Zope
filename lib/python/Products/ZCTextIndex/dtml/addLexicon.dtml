@@ -27,15 +27,7 @@
     </td>
   </tr>
 
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    splitter?
-    </td>
-    <td align="left" valign="top">
-    <input type="checkbox" name="splitter" checked />
-    </td>
-  </tr>
+    <input type="hidden" name="splitter" checked />
 
   <tr>
     <td align="left" valign="top">
