@@ -1,3 +1,3 @@
 *shared*
-zlib zlib.c -Izlib zlib/adler32.c zlib/compress.c zlib/crc32.c zlib/gzio.c zlib/uncompr.c zlib/deflate.c zlib/trees.c zlib/zutil.c zlib/inflate.c zlib/infblock.c zlib/inftrees.c zlib/infcodes.c zlib/infutil.c zlib/inffast.c
+zlib zlib.c adler32.c compress.c crc32.c gzio.c uncompr.c deflate.c trees.c zutil.c inflate.c infblock.c inftrees.c infcodes.c infutil.c inffast.c
 
