@@ -91,12 +91,33 @@ def main():
     if not (user or os.path.exists(inituser)):
         user, password = get_inituser()
 
+    # we need to distinguish between python.exe and pythonw.exe under
+    # Windows in order to make Zope run using python.exe when run in a
+    # console window and pythonw.exe when run as a service, so we do a bit
+    # of sniffing here.
+    psplit = os.path.split(sys.executable)
+    exedir = os.path.join(*psplit[:-1])
+    pythonexe = os.path.join(exedir, 'python.exe')
+    pythonwexe = os.path.join(exedir, 'pythonw.exe')
+
+    if ( os.path.isfile(pythonwexe) and os.path.isfile(pythonexe) and
+         (sys.executable in [pythonwexe, pythonexe]) ):
+        # we're using a Windows build with both python.exe and pythonw.exe
+        # in the same directory
+        PYTHON = pythonexe
+        PYTHONW = pythonwexe
+    else:
+        # we're on UNIX or we have a nonstandard Windows setup
+        PYTHON = PYTHONW = sys.executable
+
     kw = {
-        "PYTHON": sys.executable,
+        "PYTHON":PYTHON,
+        "PYTHONW":PYTHONW,
         "INSTANCE_HOME": instancehome,
         "SOFTWARE_HOME": softwarehome,
         "ZOPE_HOME": zopehome,
         }
+
     copyzopeskel.copyskel(skelsrc, skeltarget, None, None, **kw)
     write_inituser(inituser, user, password)
 
