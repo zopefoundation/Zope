@@ -35,6 +35,8 @@ Zope changes
           permission stored in the metatype registry, if available
           (Collector #1975).
 
+        - StructuredText now takes care of your locale settings. 
+
     Zope 2.3.0 beta 3
 
       Features Added
