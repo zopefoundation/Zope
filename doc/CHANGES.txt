@@ -50,6 +50,8 @@ Zope changes
           support products that implement virtual hosts. Keep an eye on
           http://www.zope.org/Members/michel/Projects/Interfaces/ImplementingVirtualHosts
 
+        - The distributions now have an Extensions directory by default.
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
