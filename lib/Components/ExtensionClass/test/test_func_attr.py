@@ -37,16 +37,3 @@ try:
     i.m.foo
     print 'failed'
 except AttributeError: pass
-
-if verbose: print 'Trying setting built-in function attribute'
-max.color='red'
-if max.color != 'red': print 'failed'
-if max(1,2) != 2: print 'failed'
-
-if verbose: print 'Trying setting built-in method attribute'
-import sys
-try: 
-    sys.stdout.write.color='green'
-    print 'failed'
-except TypeError: pass
-
