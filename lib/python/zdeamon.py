@@ -138,9 +138,12 @@ VERBOSE = 1
 # activities = (('http://localhost:9222/Heart/heart', 'michel', '123'),
 #               )
 
+import zLOG
 
-def pstamp(message):
-    print "zdeamon: %s: %s" % (time.ctime(time.time()), message)
+#this is a bit of a hack so I dont have to change too much code
+def pstamp(message, sev):
+    zLOG.LOG("zdeamon", sev,
+             ("zdeamon: %s: %s" % (time.ctime(time.time()), message)))
 
 def heartbeat():
     print 'tha-thump'
@@ -149,11 +152,12 @@ def heartbeat():
             try:
                 result = ZPublisher.Client.call(a[0], a[1], a[2])
             except:
-                pstamp('activity %s failed!' % a[0])
+                pstamp('activity %s failed!' % a[0], zLOG.WARNING)
                 return
 
             if result and VERBOSE:
-                pstamp('activity %s returned: %s' % (a[0], result))
+                pstamp('activity %s returned: %s' % (a[0], result),
+                       zLOG.BLATHER)
 
 
 def forkit(attempts = FORK_ATTEMPTS):
@@ -163,14 +167,27 @@ def forkit(attempts = FORK_ATTEMPTS):
         try:
             pid = os.fork()
         except os.error:
-            pstamp('Houston, the fork failed')
+            pstamp('Houston, the fork failed', zLOG.ERROR)
             time.sleep(2)
         else:
-            pstamp('Houston, we have forked')
+            pstamp('Houston, we have forked', zLOG.INFO)
             return pid
 
 def run(argv, pidfile=''):
-    if os.environ.has_key('ZDEAMON_MANAGED'): return
+    if os.environ.has_key('ZDEAMON_MANAGED'):
+        # We're the child at this point.  Don't ask. :/
+        sys.stdin.close()
+        sys.stdout.close()
+        sys.stderr.close()
+        try:
+            sys.stdin = open('/dev/null', "r")
+            sys.stdout = open('/dev/null', "r+")
+            sys.stderr = open('/dev/null', "r+")
+        except:
+            zLOG.LOG("z2", zLOG.ERROR, "couldn't close standard files")
+
+        return
+    
     os.environ['ZDEAMON_MANAGED']='TRUE'
     while 1:
         lastt=time.time()
@@ -182,7 +199,7 @@ def run(argv, pidfile=''):
 
             elif pid:
                 # Parent 
-                pstamp(('Hi, I just forked off a kid: %s' % pid))
+                pstamp(('Hi, I just forked off a kid: %s' % pid), zLOG.INFO)
                 # here we want the pid of the parent
                 if pidfile:
                     pf = open(pidfile, 'w+')
@@ -200,12 +217,13 @@ def run(argv, pidfile=''):
                             continue
                     if s:
                         pstamp(('Aiieee! %s exited with error code: %s' 
-                                % (p, s)))
+                                % (p, s)), zLOG.ERROR)
                         if time.time()-lastt < 20:
                             raise ForkError # We're probably hosed
                     else:
                         raise ForkError
-                        pstamp(('The kid, %s, died on me.' % pid))
+                        pstamp(('The kid, %s, died on me.' % pid),
+                               zLOG.WARNING)
 
                     raise KidDiedOnMeError
 
