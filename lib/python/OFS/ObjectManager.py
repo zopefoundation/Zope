@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.89 2000/05/11 18:54:14 jim Exp $"""
+$Id: ObjectManager.py,v 1.90 2000/05/12 01:23:49 tseaver Exp $"""
 
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -99,8 +99,12 @@ from cStringIO import StringIO
 import marshal
 import App.Common
 from AccessControl import getSecurityManager
+from zLOG import LOG, ERROR
+import sys
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
+
+class BeforeDeleteException( Exception ): pass # raise to veto deletion
 
 _marker=[]
 class ObjectManager(
@@ -271,12 +275,26 @@ class ObjectManager(
         for object in self.objectValues():
             try: s=object._p_changed
             except: s=0
-            object.manage_beforeDelete(item, container)
+            try:
+                 object.manage_beforeDelete(item, container)
+            except BeforeDeleteException, ob:
+                raise
+            except:
+                LOG('Zope',ERROR,'manage_beforeDelete() threw',
+                    error=sys.exc_info())
+                pass
             if s is None: object._p_deactivate()
 
     def _delObject(self, id, dp=1):
         object=self._getOb(id)
-        object.manage_beforeDelete(object, self)
+        try:
+            object.manage_beforeDelete(object, self)
+        except BeforeDeleteException, ob:
+            raise
+        except:
+            LOG('Zope',ERROR,'manage_beforeDelete() threw',
+                error=sys.exc_info())
+            pass
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
 
