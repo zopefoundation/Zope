@@ -105,11 +105,11 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.7 1998/12/04 20:15:28 jim Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.8 1999/03/04 18:39:31 jim Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
-
+from DT_Util import TemplateDict
 class With:
     blockContinuations=()
     name='with'
@@ -117,24 +117,33 @@ class With:
     
     def __init__(self, blocks):
         tname, args, section = blocks[0]
-        args=parse_params(args, name='', expr='', mapping=1)
+        args=parse_params(args, name='', expr='', mapping=1, only=1)
         name,expr=name_param(args,'with',1)
         if expr is None: expr=name
         else: expr=expr.eval
         self.__name__, self.expr = name, expr
         self.section=section.blocks
         if args.has_key('mapping') and args['mapping']: self.mapping=1
+        if args.has_key('only') and args['only']: self.only=1
 
     def render(self, md):
         expr=self.expr
         if type(expr) is type(''): v=md[expr]
         else: v=expr(md)
-        
-        if self.mapping: md._push(v)
-        else:
-            if type(v) is type(()) and len(v)==1: v=v[0]
-            md._push(InstanceDict(v,md))
 
+        if not self.mapping:
+            if type(v) is type(()) and len(v)==1: v=v[0]
+            v=InstanceDict(v,md)
+
+        if self.only:
+            _md=md
+            md=TemplateDict()
+            if hasattr(_md, 'AUTHENTICATED_USER'):
+                md.AUTHENTICATED_USER=_md.AUTHENTICATED_USER
+            if hasattr(_md, 'validate'):
+                md.validate=_md.validate
+
+        md._push(v)
         try: return render_blocks(self.section, md)
         finally: md._pop(1)
 
