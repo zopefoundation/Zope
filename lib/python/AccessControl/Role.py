@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -110,7 +110,8 @@ class RoleManager(ExtensionClass.Base):
           'rolesOfPermission', 'acquiredRolesAreUsedBy',
           'manage_defined_roles', 'userdefined_roles',
           'manage_listLocalRoles', 'manage_editLocalRoles',
-          'manage_setLocalRoles',  'manage_delLocalRoles',
+          'manage_setLocalRoles', 'manage_addLocalRoles',
+          'manage_delLocalRoles',
           )),
 #        ('View management screens', ('manage_access',)),
         )
@@ -327,6 +328,19 @@ class RoleManager(ExtensionClass.Base):
     def get_local_roles_for_userid(self, userid):
         dict=self.__ac_local_roles__ or {}
         return dict.get(userid, [])
+
+    def manage_addLocalRoles(self, userid, roles, REQUEST=None):
+        """Set local roles for a user."""
+        if not roles:
+            raise ValueError, 'One or more roles must be given!'
+        if not self.validate_roles(roles):
+            raise ValueError, 'Invalid role given.'
+        dict=self.__ac_local_roles__ or {}
+        dict[userid] = dict[userid] + roles
+        self.__ac_local_roles__=dict
+        if REQUEST is not None:
+            stat='Your changes have been saved.'
+            return self.manage_listLocalRoles(self, REQUEST, stat=stat)
 
     def manage_setLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
