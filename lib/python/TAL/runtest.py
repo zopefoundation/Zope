@@ -126,7 +126,11 @@ def main():
         del args[0]
     if not args:
         prefix = os.path.join("test", "test*.")
-        args = glob.glob(prefix + "xml") + glob.glob(prefix + "html")
+        xmlargs = glob.glob(prefix + "xml")
+        xmlargs.sort()
+        htmlargs = glob.glob(prefix + "html")
+        htmlargs.sort()
+        args = xmlargs + htmlargs
     errors = 0
     for arg in args:
         print arg,
