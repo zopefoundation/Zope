@@ -107,13 +107,18 @@ try:
 except:
     import ZODB.FileStorage
     DB=ZODB.FileStorage.FileStorage(Globals.BobobaseName)
+    DB=ZODB.DB(DB)
 else:
     m=imp.load_module('Zope.custom_zodb', m[0], m[1], m[2])
-    DB=m.Storage
+    if hasattr(m,'DB'):
+        DB=m.DB
+    else:
+        DB=m.Storage
+        DB=ZODB.DB(DB)
+        
     Globals.BobobaseName = DB.getName()
     sys.modules['Zope.custom_zodb']=m
 
-DB=ZODB.DB(DB)
 Globals.DB=DB # Ick, this is temporary until we come up with some registry
 
 # Hook for providing multiple transaction object manager undo support:
