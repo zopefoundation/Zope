@@ -132,6 +132,16 @@ class FileTests(unittest.TestCase):
         self.assertEqual(len(s), len(str(data)))
         self.assertEqual(len(s), size)
 
+    def testBigPdata(self):
+        # Test that a big enough string is split into several Pdata
+        # From a file
+        s = "a" * (1 << 16) * 3
+        data, size = self.file._read_data(StringIO(s))
+        self.failIfEqual(data.next, None)
+        # From a string
+        data, size = self.file._read_data(s)
+        self.failIfEqual(data.next, None)
+
     def testManageEditWithFileData(self):
         self.file.manage_edit('foobar', 'text/plain', filedata='ASD')
         self.assertEqual(self.file.title, 'foobar')

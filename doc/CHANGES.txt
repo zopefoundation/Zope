@@ -34,6 +34,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #934: Image and File objects are now always internally
+        split into small chunks even when initialized from a string.
+
       - docutils: updated to V 0.3.5. The Zope core now contains a full copy of
         the docutils package except some GPLed files which can not be included
         with the Zope distribution due to license constraints on svn.zope.org.

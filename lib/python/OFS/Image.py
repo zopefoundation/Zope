@@ -479,8 +479,10 @@ class File(Persistent, Implicit, PropertyManager,
         if type(file) is StringType:
             size=len(file)
             if size < n: return file, size
-            return Pdata(file), size
-        elif isinstance(file, FileUpload) and not file:
+            # Big string: cut it into smaller chunks
+            file = StringIO(file)
+
+        if isinstance(file, FileUpload) and not file:
             raise ValueError, 'File not specified'
 
         if hasattr(file, '__class__') and file.__class__ is Pdata:
