@@ -68,19 +68,6 @@ Document templates support conditional and sequence insertion
 
     %(In)s
 
-Accessibility of names:
-
-    The programmer of a module can specify the visibility of all
-    attributes available to a Document Template editor in two ways.  A
-    mapping object whose keys are accessible attributes and whose
-    values are short descriptions can be passed to the document
-    template.  Any name not appearing as a key in that list will not
-    be acecssible from the document template.  In addition to, or as
-    an alternative to, the mapping object, a validation function can
-    be specified.  The validation function takes the name and the
-    value of the attribute being accessed as arguments and returns a
-    non-zero result if the access is allowed.
-
 Document Templates may be created 4 ways:
 
     DocumentTemplate.String -- Creates a document templated from a
@@ -213,7 +200,7 @@ HTML__doc__="""HTML Document Templates
 	<!--#/if args-->
 	And I'm 100% sure!
 	</body></html>
-	''', __names__={'num':'number', 'arg':'argument'})(aa)
+	''')(aa)
 
 
 	# This is a basic example of batch processing.
@@ -257,10 +244,7 @@ HTML__doc__="""HTML Document Templates
 		    <!--#/in inventory-->
 		  </dl>
 		</body></html>
-		''', __names__={'dealer':'Dealer name',
-				'make':'Make of car',
-				'model':'Car model',
-				'year':'Year of manufacture'})
+		''')
 	
 	print html(inventory=RDB.File("dealer-inventory.rdb"), first_car=18)
 	
@@ -311,10 +295,7 @@ HTML__doc__="""HTML Document Templates
 		    <!--#/in inventory-->
 		  </dl>
 		</body></html>
-		''', __names__={'dealer':'Dealer name',
-				'make':'Make of car',
-				'model':'Car model',
-				'year':'Year of manufacture'})
+		''')
 	
 	print html(inventory=RDB.File("dealer-inventory.rdb"), first_car=18)
 

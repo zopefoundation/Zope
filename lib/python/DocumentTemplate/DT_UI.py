@@ -1,7 +1,7 @@
 
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.2 1997/09/02 19:04:52 jim Exp $''' 
+$Id: DT_UI.py,v 1.3 1997/10/27 17:37:13 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -55,7 +55,7 @@ $Id: DT_UI.py,v 1.2 1997/09/02 19:04:52 jim Exp $'''
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -109,35 +109,11 @@ HTML._manage_editForm = HTML(
     </center>
     </FORM>
     
-    <!--#if vars-->
-      <p>The following variables may be used in this template:</p>
-      <table border>
-      <tr>
-      <th>Variables
-      <th>Description
-      <!--#in vars-->
-        <tr>
-           <td><!--#var sequence-key--></td>
-           <td><!--#var __str__--></td>
-        </tr>
-      <!--#/in vars-->
-      </table>
-    <!--#/if vars-->
-
     <BR CLEAR="ALL">
     <!--#var document_template_edit_footer-->
     
     </BODY>
-    </HTML>""", #"
-    __names__={
-    'HTTP_REFERER':'Referring URL',
-    'PARENT_URL':"This page's parent",
-    'document_template_edit_header':"(internal)",
-    'document_template_edit_footer':"(internal)",
-    '__str__':"(internal)",
-    'vars':'list of DTML variables you can manipulate',
-    'descrip':'desciption of DTML variables you can manipulate',
-    })
+    </HTML>""",)
 
 HTML.editConfirmation=HTML(
     """<html><head><title>Change Successful</title></head><body>
@@ -152,14 +128,13 @@ HTML.editConfirmation=HTML(
       <center>
     	 <em><!--#var dt_edit_name--></em><br>has been changed.
       </center>
-    <!--#/if CANCEL_ACTION-->""",#"
-    __names__={
-    'CANCEL_ACTION':'???',
-    'PARENT_URL':"This page's parent",
-    })
+    <!--#/if CANCEL_ACTION-->""")
 
 ############################################################################
 # $Log: DT_UI.py,v $
+# Revision 1.3  1997/10/27 17:37:13  jim
+# Removed old validation machinery.
+#
 # Revision 1.2  1997/09/02 19:04:52  jim
 # Got rid of ^Ms
 #

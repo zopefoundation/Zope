@@ -2,7 +2,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.1 1997/08/27 18:55:44 jim Exp $'
+__rcs_id__='$Id: DTtest.py,v 1.2 1997/10/27 17:40:02 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: DTtest.py,v 1.1 1997/08/27 18:55:44 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -116,7 +116,7 @@ def test1():
         %(else args)]
 	And thats da trooth.
 	</body></html>
-	""", __names__={'args':'args', 'num':1})
+	""")
 
     print ss(aa)
 
@@ -160,7 +160,7 @@ def test2():
 	<!--#/if values-->
 	And I\'m 100% sure!
 	</body></html>
-	''',__names__={'values':'doc'})(aa)
+	''')(aa)
 
 def test3():
     test2()
@@ -194,7 +194,7 @@ def test3():
 	<!--#/if args-->
 	And I\'m 100% sure!
 	</body></html>
-	''', __validator__=test3_okay)
+	''')
 
     size,orphan=5,0
     for end in range(20):
@@ -312,18 +312,9 @@ def test4():
 	    <!--#/in inventory-->
 	  </dl>
 	</body></html>
-	''', __validator__=test4_okay)
+	''')
 
     print html(inventory=items, first_ad=15)
-
-def test4_okay(key, val):
-    global cache
-    try: x = cache
-    except NameError: cache = {}
-    if not cache.has_key(key):
-	print 'Validating', key
-	cache[key] = 1
-    return 1
 
 def test5():
     html=HTML(
@@ -357,7 +348,7 @@ def test5():
 	</CENTER>
 	</body>
 	
-	</html>''',__names__={'affiliates':'empty', 'PARENT_URL':'www'})
+	</html>''')
 
     print html(affiliates=[], PARENT_URL='www')
 
@@ -392,7 +383,7 @@ def test6():
 	     ---------------
 	  <!--#/if sequence-end-->
 	<!--#/in data-->
-	""",__names__={'data':'list of names and ages'})
+	""")
     print html(data=data)
 
 def test7():
@@ -411,13 +402,8 @@ def test8():
     %(name capitalize spacify)s is
     %(date fmt=year)s/%(date fmt=month)s/%(date fmt=day)s
     """)
-    html.validator(test8_okay)
     print html(date=DateTime.DateTime(),
 	       name='todays_date')
-
-def test8_okay(key, val):
-    print 'Validating', key
-    return 1
 
 def test9():
     html=HTML(
@@ -427,12 +413,10 @@ def test9():
 	      <!--#var sequence-item-->
 	   <!--#/in sequence-item-->
 	<!--#/in spam-->
-	""",__names__={'spam':'spam'})
-    html.validator(test8_okay)
+	""")
     print html(spam=[[1,2,3],[4,5,6]])
 
 def test9a():
-    # no name validation - should raise KeyError...
     html=HTML(
 	"""
 	<!--#in spam-->
@@ -448,7 +432,7 @@ def test10():
     html=HTML(
 	"""
 	      <!--#var spam fmt="$%.2f bob's your uncle" null="spam%eggs!|"-->
-	""",__names__={'spam':'spam'}) #"
+	""")
     print html(spam=42)
     print html(spam=None)
     #print html(spam=Missing.Value)
@@ -467,7 +451,7 @@ def test11():
 	dollars,: <!--#var spam fmt=dollars-with-commas-->
 	cents,:   <!--#var spam fmt=dollars-and-cents-with-commas-->
 
-	""",__names__={'spam':'spam'})
+	""")
     
     print html(spam=4200000)
     print html(spam=None)
@@ -548,6 +532,9 @@ if __name__ == "__main__":
 
 ############################################################################
 # $Log: DTtest.py,v $
+# Revision 1.2  1997/10/27 17:40:02  jim
+# Removed old validation machinery.
+#
 # Revision 1.1  1997/08/27 18:55:44  jim
 # initial
 #
