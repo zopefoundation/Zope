@@ -12,19 +12,11 @@
 #
 ##############################################################################
 
-# Python 2.2 and earlier requires the pybsddb distutils package, but for
-# Python 2.3, we really want to use the standard bsddb package.  Also, we want
-# to set a flag that other modules can easily tests to see if this stuff is
-# available or not.  Python 2.2 and 2.3 has bool() but not Python 2.1.
+# Requirements:
 #
-# Get the pybsddb extension module from pybsddb.sourceforge.net and the
-# BerkeleyDB libraries from www.sleepycat.com.
-
-try:
-    bool
-except NameError:
-    def bool(x):
-        return not not x
+# All: BerkeleyDB 4.1.25, available from www.sleepycat.com
+# Python 2.2: PyBSDDB 4.1.3 or better, from pybsddb.sf.net
+# Python 2.3: nothing extra
 
 try:
     from bsddb import db
@@ -34,6 +26,7 @@ except ImportError:
     except ImportError:
         db = None
 
+# This flag tells other components whether Berkeley storage is available
 is_available = bool(db)
 
 # Useful constants

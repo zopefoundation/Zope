@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-"""Base class for BerkeleyStorage implementations.
+"""Base class for BerkeleyDB-based storage implementations.
 """
 
 import os
@@ -28,7 +28,7 @@ from BDBStorage import db, ZERO
 
 # BaseStorage provides primitives for lock acquisition and release, and a host
 # of other methods, some of which are overridden here, some of which are not.
-from ZODB.lock_file import LockFile
+from ZODB.lock_file import lock_file
 from ZODB.BaseStorage import BaseStorage
 from ZODB.referencesf import referencesf
 import ThreadLock
@@ -56,15 +56,26 @@ class PackStop(Exception):
 
 
 class BerkeleyConfig:
-    """Bag of bits for describing various underlying configuration options.
+    """Bag of attributes for configuring Berkeley based storages.
 
     Berkeley databases are wildly configurable, and this class exposes some of
     that.  To customize these options, instantiate one of these classes and
     set the attributes below to the desired value.  Then pass this instance to
     the Berkeley storage constructor, using the `config' keyword argument.
 
+    BerkeleyDB stores all its information in an `environment directory'
+    (modulo log files, which can be in a different directory, see below).  By
+    default, the `name' argument given to the storage constructor names this
+    directory, but you can set this option to explicitly point to a different
+    location:
+
+    - envdir if not None, names the BerkeleyDB environment directory.  The
+      directory will be created if necessary, but its parent directory must
+      exist.  Additional configuration is available through the BerkeleyDB
+      DB_CONFIG mechanism.
+
     Berkeley storages need to be checkpointed occasionally, otherwise
-    automatic recover can take a huge amount of time.  You should set up a
+    automatic recovery can take a huge amount of time.  You should set up a
     checkpointing policy which trades off the amount of work done periodically
     against the recovery time.  Note that the Berkeley environment is
     automatically, and forcefully, checkpointed twice when it is closed.
@@ -80,7 +91,7 @@ class BerkeleyConfig:
 
     - min is passed directly to txn_checkpoint()
 
-    You can acheive one of the biggest performance wins by moving the Berkeley
+    You can achieve one of the biggest performance wins by moving the Berkeley
     log files to a different disk than the data files.  We saw between 2.5 and
     7 x better performance this way.  Here are attributes which control the
     log files.
@@ -111,17 +122,18 @@ class BerkeleyConfig:
       to autopack to.  E.g. if packtime is 14400, autopack will pack to 4
       hours in the past.  For Minimal storage, this value is ignored.
 
-    - classicpack is an integer indicating how often an autopack phase should
-      do a full classic pack.  E.g. if classicpack is 24 and frequence is
-      3600, a classic pack will be performed once per day.  Set to zero to
-      never automatically do classic packs.  For Minimal storage, this value
-      is ignored -- all packs are classic packs.
+    - gcpack is an integer indicating how often an autopack phase should do a
+      full garbage collecting pack.  E.g. if gcpack is 24 and frequence is
+      3600, a gc pack will be performed once per day.  Set to zero to never
+      automatically do gc packs.  For Minimal storage, this value is ignored;
+      all packs are gc packs.
 
     Here are some other miscellaneous configuration variables:
 
     - read_only causes ReadOnlyError's to be raised whenever any operation
       (except pack!) might modify the underlying database.
     """
+    envdir = None
     interval = 120
     kbyte = 0
     min = 0
@@ -129,13 +141,14 @@ class BerkeleyConfig:
     cachesize = 128 * 1024 * 1024
     frequency = 0
     packtime = 4 * 60 * 60
-    classicpack = 0
-    read_only = 0
+    gcpack = 0
+    read_only = False
 
     def __repr__(self):
         d = self.__class__.__dict__.copy()
         d.update(self.__dict__)
         return """<BerkeleyConfig (read_only=%(read_only)s):
+\tenvironment dir:: %(envdir)s
 \tcheckpoint interval: %(interval)s seconds
 \tcheckpoint kbytes: %(kbyte)s
 \tcheckpoint minutes: %(min)s
@@ -145,7 +158,7 @@ class BerkeleyConfig:
 \t----------------------
 \tautopack frequency: %(frequency)s seconds
 \tpack to %(packtime)s seconds in the past
-\tclassic pack every %(classicpack)s autopacks
+\tclassic pack every %(gcpack)s autopacks
 \t>""" % d
 
 
@@ -238,7 +251,7 @@ class BerkeleyBase(BaseStorage):
         else:
             self._autopacker = None
         self.log('ready')
-
+        
     def _version_check(self, txn):
         raise NotImplementedError
 
@@ -260,12 +273,12 @@ class BerkeleyBase(BaseStorage):
         # Our storage is based on the underlying BSDDB btree database type.
         if reclen is not None:
             d.set_re_len(reclen)
+        # DB 4.1 requires that operations happening in a transaction must be
+        # performed on a database that was opened in a transaction.  Since we
+        # do the former, we must do the latter.  However, earlier DB versions
+        # don't transactionally protect database open, so this is the most
+        # portable way to write the code.
         openflags = db.DB_CREATE
-        # DB 4.1.24 requires that operations happening in a transaction must
-        # be performed on a database that was opened in a transaction.  Since
-        # we do the former, we must do the latter.  However, earlier DB
-        # versions don't transactionally protect database open, so this is the
-        # most portable way to write the code.
         try:
             openflags |= db.DB_AUTO_COMMIT
         except AttributeError:
@@ -312,10 +325,11 @@ class BerkeleyBase(BaseStorage):
         If last is provided, the new oid will be one greater than that.
         """
         # BAW: the last parameter is undocumented in the UML model
+        newoid = BaseStorage.new_oid(self, last)
         if self._len is not None:
             # Increment the cached length
             self._len += 1
-        return BaseStorage.new_oid(self, last)
+        return newoid
 
     def getSize(self):
         """Return the size of the database."""
@@ -401,8 +415,10 @@ class BerkeleyBase(BaseStorage):
         # can't hurt and is more robust.
         self._env.txn_checkpoint(0, 0, db.DB_FORCE)
         self._env.txn_checkpoint(0, 0, db.DB_FORCE)
+        lockfile = os.path.join(self._env.db_home, '.lock')
         self._lockfile.close()
         self._env.close()
+        os.unlink(lockfile)
 
     # A couple of convenience methods
     def _update(self, deltas, data, incdec):
@@ -466,7 +482,15 @@ def env_from_string(envname, config):
     # This is required in order to work around the Berkeley lock
     # exhaustion problem (i.e. we do our own application level locks
     # rather than rely on Berkeley's finite page locks).
-    lockfile = LockFile(os.path.join(envname, '.lock'))
+    lockpath = os.path.join(envname, '.lock')
+    try:
+        lockfile = open(lockpath, 'r+')
+    except IOError, e:
+        if e.errno <> errno.ENOENT: raise
+        lockfile = open(lockpath, 'w+')
+    lock_file(lockfile)
+    lockfile.write(str(os.getpid()))
+    lockfile.flush()
     try:
         # Create, initialize, and open the environment
         env = db.DBEnv()

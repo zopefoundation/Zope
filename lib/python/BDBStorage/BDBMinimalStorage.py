@@ -15,9 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.30 $'[-2:][0]
-
-from __future__ import nested_scopes
+__version__ = '$Revision: 1.31 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -30,12 +28,6 @@ from BerkeleyBase import BerkeleyBase, PackStop, _WorkThread
 ABORT = 'A'
 COMMIT = 'C'
 PRESENT = 'X'
-
-try:
-    True, False
-except NameError:
-    True = 1
-    False = 0
 
 BDBMINIMAL_SCHEMA_VERSION = 'BM01'
 
@@ -292,6 +284,8 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         return newserial
 
     def store(self, oid, serial, data, version, transaction):
+        if self._is_read_only:
+            raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
         # We don't support versions
