@@ -97,7 +97,7 @@ class CosineIndex(BaseIndex):
         return len(wids)
 
     def unindex_doc(self, docid):
-        for wid in self._get_undoinfo(docid):
+        for wid in self.get_words(docid):
             self._del_wordinfo(wid, docid)
         del self._docwords[docid]
         del self._docweight[docid]
@@ -218,9 +218,6 @@ class CosineIndex(BaseIndex):
 
     def _add_undoinfo(self, docid, wids):
         self._docwords[docid] = WidCode.encode(wids)
-
-    def _get_undoinfo(self, docid):
-        return WidCode.decode(self._docwords[docid])
 
     # The rest are helper methods to support unit tests
 

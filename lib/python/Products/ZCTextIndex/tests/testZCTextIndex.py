@@ -94,7 +94,7 @@ class ZCIndexTestsBase:
             if word != "question":
                 wids = self.lexicon.termToWordIds(word)
                 self.assertEqual(wids, [])
-        self.assertEqual(len(self.index._get_undoinfo(1)), 1)
+        self.assertEqual(len(self.index.get_words(1)), 1)
 
     def testDocUpdate(self):
         docid = 1

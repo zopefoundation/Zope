@@ -61,7 +61,7 @@ class BaseIndex(Persistent):
         # across indices, and a query can contain a word some other
         # index knows about but we don't).  A word is in-vocabulary for
         # this index if and only if _wordinfo.has_key(wid).  Note that
-        # wid 0 most not be a key in _wordinfo.
+        # wid 0 must not be a key in _wordinfo.
         self._wordinfo = IOBTree()
 
         # docid -> WidCode'd list of wids
@@ -193,10 +193,6 @@ class BaseIndex(Persistent):
                 new[k] = v
             map = new
         self._wordinfo[wid] = map # Not redundant, because of Persistency!
-
-    # Used only by tests.
-    def _get_undoinfo(self, docid):
-        return WidCode.decode(self._docwords[docid])
 
 def inverse_doc_frequency(term_count, num_items):
     """Return the inverse doc frequency for a term,

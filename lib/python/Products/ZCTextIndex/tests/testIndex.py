@@ -48,7 +48,7 @@ class IndexTest(TestCase):
         self.assertEqual(self.num_docs_known(), 1)
         self.assertEqual(len(self.index._wordinfo), 5)
         self.assertEqual(len(self.index._docwords), 1)
-        self.assertEqual(len(self.index._get_undoinfo(DOCID)), 5)
+        self.assertEqual(len(self.index.get_words(DOCID)), 5)
         for map in self.index._wordinfo.values():
             self.assertEqual(len(map), 1)
             self.assert_(map.has_key(DOCID))
@@ -70,7 +70,7 @@ class IndexTest(TestCase):
         self.assertEqual(self.num_docs_known(), 2)
         self.assertEqual(len(self.index._wordinfo), 8)
         self.assertEqual(len(self.index._docwords), 2)
-        self.assertEqual(len(self.index._get_undoinfo(DOCID)), 4)
+        self.assertEqual(len(self.index.get_words(DOCID)), 4)
         wids = self.lexicon.termToWordIds("document")
         self.assertEqual(len(wids), 1)
         document_wid = wids[0]
@@ -91,7 +91,7 @@ class IndexTest(TestCase):
         self.check_docid_known(DOCID)
         self.assertEqual(len(self.index._wordinfo), 4)
         self.assertEqual(len(self.index._docwords), 1)
-        self.assertEqual(len(self.index._get_undoinfo(DOCID)), 4)
+        self.assertEqual(len(self.index.get_words(DOCID)), 4)
         for map in self.index._wordinfo.values():
             self.assertEqual(len(map), 1)
             self.assert_(map.has_key(DOCID))
@@ -102,7 +102,7 @@ class IndexTest(TestCase):
         self.check_docid_known(DOCID)
         self.assertEqual(len(self.index._wordinfo), 5)
         self.assertEqual(len(self.index._docwords), 1)
-        self.assertEqual(len(self.index._get_undoinfo(DOCID)), 7)
+        self.assertEqual(len(self.index.get_words(DOCID)), 7)
         wids = self.lexicon.termToWordIds("repeat")
         self.assertEqual(len(wids), 1)
         repititive_wid = wids[0]
