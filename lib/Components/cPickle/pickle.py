@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.9 1997/02/28 23:18:53 jim Exp $
+#     $Id: pickle.py,v 1.10 1997/03/04 19:45:03 jim Exp $
 #
 #     Copyright 
 #
@@ -185,7 +185,7 @@ __version__ = "1.6"                     # Code version
 
 from types import *
 from copy_reg import *
-import string, marshal, math, newstruct
+import string, marshal
 
 format_version = "1.2"                  # File format version we write
 compatible_formats = ["1.0", "1.1"]     # Old format versions we can read
@@ -289,9 +289,9 @@ class Pickler:
 
 	if ((t is TupleType) and (len(object) == 0)):
 	    if (self.bin):
-                save_empty_tuple(object)
+                self.save_empty_tuple(object)
             else:
-                save_tuple(object)
+                self.save_tuple(object)
             return
 
         if memo.has_key(d):
@@ -668,10 +668,6 @@ class Unpickler:
     def load_float(self):
         self.append(string.atof(self.readline()[:-1]))
     dispatch[FLOAT] = load_float
-
-    def load_binfloat(self):
-        self.append(newstruct.unpack('>d', self.read(8))[0])
-    dispatch[BINFLOAT] = load_binfloat
 
     def load_string(self):
         self.append(eval(self.readline()[:-1],

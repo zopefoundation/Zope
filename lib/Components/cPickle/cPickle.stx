@@ -110,10 +110,10 @@ cPickle, A C Pickle Implementation
   for writing and reading binary pickles.
   
   Status
-  
-    The current release of cPickle is 0.2.1 [Down-load]. The
-    implementation is about three thousand lines in size, including
-    comments.  This release requires Python version 1.4.  
+
+    The current release of cPickle is "0.2.1",
+    http://www.digicool.com/ftp/pub/releases/cPickle/cPickle-0.2.1.tar.gz.
+    This release requires Python version 1.4.
 
     This version introduces a special binary mode format for floats.
     Since this could not be implemented in the python version, it is
@@ -200,10 +200,9 @@ cPickle, A C Pickle Implementation
 
        
 
-[1] An earlier version of the pickle module provided for saving extension type
-    instances that had __class__ attributes.  Using cPickle, extension types can only be
-    be pickled using the mechanism described in the section "Pickling Extension Types"
-    above.       
-
-.. [Down-load] http://www.digicool.com/ftp/pub/releases/cPickle-0.2.1.tar.gz
+.. [1] An earlier version of the pickle module provided for saving
+    extension type instances that had __class__ attributes.  Using
+    cPickle, extension types can only be be pickled using the
+    mechanism described in the section "Pickling Extension Types"
+    above.
 
