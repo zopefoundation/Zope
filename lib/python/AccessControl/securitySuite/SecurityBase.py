@@ -90,7 +90,7 @@ import ZPublisher, ResultObject
 
 class SecurityBase(unittest.TestCase) :
     """ Base class for all security tests 
-    $Id: SecurityBase.py,v 1.1 2001/10/08 14:49:45 andreasjung Exp $
+    $Id: SecurityBase.py,v 1.2 2001/10/09 14:16:34 andreasjung Exp $
     """
 
     status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
@@ -196,7 +196,7 @@ class SecurityBase(unittest.TestCase) :
         return s
         
 
-    def _roles_debug(self,hier,expected_roles,got_roles):
+    def _roles_debug(self,hier,got_roles,expected_roles):
 
         s = 'Object: %s' % hier
         s+= ', has roles: %s ' % got_roles        
