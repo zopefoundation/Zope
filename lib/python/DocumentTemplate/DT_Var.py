@@ -164,8 +164,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.20 1998/09/08 16:12:24 jim Exp $'
-__version__='$Revision: 1.20 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.21 1998/09/11 15:04:51 jim Exp $'
+__version__='$Revision: 1.21 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -358,7 +358,9 @@ special_formats={
     'dollars-and-cents-with-commas': dollars_and_cents_with_commas,
     }
 
-def spacify(val): return gsub('_', ' ', val)
+def spacify(val):
+    if find(val,'_') >= 0: val=join(split(val,'_'))
+    return val
 
 modifiers=(html_quote, url_quote, newline_to_br, string.lower, string.upper,
 	   string.capitalize, spacify, thousands_commas, sql_quote)
@@ -390,6 +392,9 @@ class Comment:
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.21  1998/09/11 15:04:51  jim
+# Removed gsub from spacify.
+#
 # Revision 1.20  1998/09/08 16:12:24  jim
 # cleaned up some imports
 #
