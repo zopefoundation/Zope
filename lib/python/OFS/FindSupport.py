@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -150,7 +150,7 @@ class FindSupport(ExtensionClass.Base):
 
         if not hasattr(base, 'objectItems'):
             return result
-        try:    items=base.objectItems()
+        try:    items=obj.objectItems()
         except: return result
 
         try: add_result=result.append
@@ -242,7 +242,7 @@ class FindSupport(ExtensionClass.Base):
 
         if not hasattr(base, 'objectItems'):
             return result
-        try:    items=base.objectItems()
+        try:    items=obj.objectItems()
         except: return result
 
         try: add_result=result.append
