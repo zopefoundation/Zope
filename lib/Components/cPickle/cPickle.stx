@@ -127,13 +127,13 @@ cPickle, A C Pickle Implementation
     part of Python1.4.  A copy of this make file is included with this
     release.  See the instructions in the make file, itself.  
 
-  Note that cPickle requires that both copy_reg and cStringIO be importable.
+    Note that cPickle requires that both copy_reg and cStringIO be importable.
 
   Files
   
      Makefile.pre.in  -- The Universal Unix Makefile for Python extensions
      
-     Setup	      -- a configuration file used bu the Universal
+     Setup	      -- a configuration file used by the Universal
 		         Unix Makefile for Python extensions 
 
      cPickle.stx      -- This file in structured text format
@@ -235,6 +235,15 @@ cPickle, A C Pickle Implementation
      
         This release includes a number of changes made for 1.5,
         and changes to make 'gcc -Wall -pedantic' happy.
+
+	0.3.1 -- Bug Fix
+
+	  - There is a reference counting bug in the code that
+	    unpickles global objects.  (I incorrectly assumed that
+	    PyEval_GetGlobals incremented the reference cound of the
+	    object it returned.)  This bug caused really bizarre
+	    things to happen after unpickling a pickle with lots of
+	    global references.
 	       
 
   To do
