@@ -1729,6 +1729,9 @@ Zope Changes
         - The python-pickle format used to export data from ZODB 2 was
           updated to handle string data differently.
 
+        - Update syslog clients to try for SOCK_DGRAM first, since newer
+          syslogd won't accept SOCK_STREAM connections (Collector #888).
+
       Bugs fixed
 
         - A number of bugs and features were left out of the 
