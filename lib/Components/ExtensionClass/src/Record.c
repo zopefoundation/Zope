@@ -1,6 +1,7 @@
 /*****************************************************************************
 
-  Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+  Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+  All Rights Reserved.
   
   This software is subject to the provisions of the Zope Public License,
   Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -12,7 +13,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.14 2002/01/25 15:34:06 gvanrossum Exp $"
+"\n$Id: Record.c,v 1.15 2002/02/11 23:40:40 gvanrossum Exp $"
 ;
 
 #ifdef PERSISTENCE

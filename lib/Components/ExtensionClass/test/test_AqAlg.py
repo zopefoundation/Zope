@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -13,8 +14,8 @@
 __doc__='''Examples from the Acquisition Algebra Presentation
 
 
-$Id: test_AqAlg.py,v 1.2 2001/11/28 15:50:51 matt Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: test_AqAlg.py,v 1.3 2002/02/11 23:40:41 gvanrossum Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Acquisition
 

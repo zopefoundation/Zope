@@ -1,3 +1,17 @@
+##############################################################################
+#
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+# 
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+# 
+##############################################################################
+
 # CommitLog class
 #
 # This class implements the action log for writes to non-committed
@@ -16,7 +30,7 @@
 # using the CommitLog instance, and derived classes provide a more specific
 # interface for the storage.
 
-__version__ = '$Revision: 1.9 $'.split()[-2:][0]
+__version__ = '$Revision: 1.10 $'.split()[-2:][0]
 
 import sha
 import struct
