@@ -85,7 +85,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import string, sys, time, getopt
 
@@ -190,7 +190,7 @@ class Cumulative:
                 t = t + elapsed
         return t
 
-def analyze(f, top, sortf):
+def analyze(f, top, sortf, start=None, end=None):
     requests={}
     while 1:
         line = f.readline()
@@ -205,8 +205,21 @@ def analyze(f, top, sortf):
             code, id, timestr, desc = tup
         else:
             continue
-        gmtimetup = time.strptime(timestr, '%Y-%m-%dT%H:%M:%S')
-        fromepoch = time.mktime(gmtimetup)
+        #gmtimetup = time.strptime(timestr, '%Y-%m-%dT%H:%M:%S')
+        # this doesn't work on windows
+        timestr = string.strip(timestr)
+        year = int(timestr[:4])
+        month = int(timestr[5:7])
+        day = int(timestr[8:10])
+        hour = int(timestr[11:13])
+        minute = int(timestr[14:16])
+        second = int(timestr[17:19])
+        gmttup = (year, month, day, hour, minute, second, 0, 0, -1)
+        fromepoch = time.mktime(gmttup)
+        if start is not None:
+            if fromepoch < start: continue
+        if end is not None:
+            if fromepoch > end: continue
         request = requests.get(id)
         if request is None:
             request = Request()
@@ -278,13 +291,15 @@ The default is 'total'.  The sort order is decending unless indicated.
 If the 'top' argument is specified, only report on the top 'n' requests in
 the log (as per the sort).  The default is 10.
 
-If the 'verbose' argument is specified, do not trim url to fit into 80 cols."""
+If the 'verbose' argument is specified, do not trim url to fit into 80 cols.
+
+If the 'today' argument is specified, limit results to hits received today."""
     return details
 
 def usage(basic=1):
     usage = (
         """
-Usage: %s filename [--sort=spec] [--top=n] [--verbose] [--help]
+Usage: %s filename [--sort=spec] [--top=n] [--verbose] [--today] [--help]
         
 Provides a profile of the detailed (-M) Zope request log.
 """ % sys.argv[0]
@@ -303,9 +318,11 @@ if __name__ == '__main__':
     top = 10
     verbose = 0
     sortby = 'total'
+    start = None
+    end = None
     try:
         opts, extra = getopt.getopt(
-            sys.argv[2:], '', ['sort=', 'top=', 'help', 'verbose']
+            sys.argv[2:], '', ['sort=', 'top=', 'help', 'verbose', 'today']
             )
     except:
         print usage()
@@ -317,7 +334,16 @@ if __name__ == '__main__':
         if opt=='--verbose':
             global verbose
             verbose = 1
-        
+        if opt=='--today':
+            now = time.gmtime(time.time())
+            # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
+            start = list(now)
+            start[3] = start[4] = start[5] = 0
+            start = time.mktime(start)
+            end = list(now)
+            end[3] = 23; end[4] = 59; end[5] = 59
+            end = time.mktime(end)
+            
     if sortby in ['url', 'hits', 'hangs', 'max', 'min', 'median', 'mean',
                   'total']:
         if sortby == 'url':
@@ -326,7 +352,7 @@ if __name__ == '__main__':
         else:
             sortf = Sort(sortby)
         try:
-            analyze(open(sys.argv[1]), top, sortf)
+            analyze(open(sys.argv[1]), top, sortf, start, end)
         except:
             import traceback
             traceback.print_exc()
