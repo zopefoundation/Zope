@@ -44,6 +44,13 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
+def unique(l):
+    """Return a list of the unique elements in l."""
+    d = {}
+    for elt in l:
+        d[elt] = 1
+    return d.keys()
+
 class BaseIndex(Persistent):
 
     __implements__ = IIndex
@@ -108,7 +115,7 @@ class BaseIndex(Persistent):
 
     # A subclass may wish to extend or override this.
     def unindex_doc(self, docid):
-        for wid in self.get_words(docid):
+        for wid in unique(self.get_words(docid)):
             self._del_wordinfo(wid, docid)
         del self._docwords[docid]
         del self._docweight[docid]
@@ -184,9 +191,8 @@ class BaseIndex(Persistent):
         # space when it is live in memory.  An IIBTree stores two C
         # arrays of ints, one for the keys and one for the values.  It
         # holds upto 120 key-value pairs in a single bucket.
-        try:
-            map = self._wordinfo[wid]
-        except KeyError:
+        map = self._wordinfo.get(wid)
+        if map is None:
             map = {}
         else:
             # _add_wordinfo() is called for each update.  If the map
@@ -197,10 +203,19 @@ class BaseIndex(Persistent):
         self._wordinfo[wid] = map # Not redundant, because of Persistency!
 
     def _del_wordinfo(self, wid, docid):
+        # XXX Not clear if the try/excepts here are guarding against
+        # corrupt data structures or if it is possible for the index
+        # to get in a state where it thinks an entry exits for the
+        # wid, docid pair and it doesn't.
         try:
             map = self._wordinfo[wid]
+        except KeyError:
+##            print "No info for wid", wid
+            return
+        try:
             del map[docid]
         except KeyError:
+##            print "doc %s does not use %s" % (docid, wid)
             return
         if len(map) == 0:
             del self._wordinfo[wid]
