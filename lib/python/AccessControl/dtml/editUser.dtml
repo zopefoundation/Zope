@@ -50,6 +50,8 @@ New Password
 </dtml-if>
 <TR>
 <TD VALIGN="TOP">
+
+<dtml-if domainAuthModeEnabled>
 <div class="form-optional">
 Domains
 </div>
@@ -59,7 +61,10 @@ Domains
   VALUE="<dtml-if expr="user.domains"><dtml-in expr="user.domains"><dtml-var sequence-item html_quote> </dtml-in></dtml-if>" />
 </TD>
 </TR>
-
+<dtml-else>
+<input type="hidden" name="domains:tokens"
+  value="<dtml-if expr="user.domains"><dtml-in expr="user.domains"><dtml-var sequence-item html_quote> </dtml-in></dtml-if>" />
+</dtml-if>
 <TR>
 <TD VALIGN="TOP">
 <div class="form-label">

@@ -9,7 +9,8 @@
 <p class="form-help">
 To add a new user, enter the name <dtml-unless remote_user_mode__>
 ,password, confirmation</dtml-unless> and roles for the new user and 
-click &quot;Add&quot;. <em>Domains</em> is an optional list of domains 
+click &quot;Add&quot;. <dtml-if domainAuthModeEnabled>
+<em>Domains</em> is an optional list of domains</dtml-if>
 from which the user is allowed to login. 
 </p>
 
@@ -54,6 +55,8 @@ from which the user is allowed to login.
 
 <tr>
 <td align="left" valign="top">
+
+<dtml-if domainAuthModeEnabled>
 <div class="form-optional">
 Domains
 </div>
@@ -62,6 +65,9 @@ Domains
 <input type="text" name="domains:tokens" size="30" value="" />
 </td>
 </tr>
+<dtml-else>
+<input type="hidden" name="domains:tokens" value=""/>
+</dtml-if>
 
 <tr>
   <td align="left" valign="top">
