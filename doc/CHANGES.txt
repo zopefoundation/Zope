@@ -19,6 +19,8 @@ Zope Changes
       - Collector #72: Start on Windows 95 machines with no network
         devices installed.
 
+      - Collector #79: Don't swallow App.FindHomes exceptions.
+
   Zope 2.6.0 alpha 1
 
     Features Added

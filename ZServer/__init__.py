@@ -33,8 +33,9 @@ from medusa.test import max_sockets
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
 ZSERVER_VERSION='1.1b1'
+import App.FindHomes
 try:
-    import App.version_txt, App.FindHomes
+    import App.version_txt
     ZOPE_VERSION=App.version_txt.version_txt()
 except:
     ZOPE_VERSION='experimental'
