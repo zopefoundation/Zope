@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -684,7 +684,7 @@ class DateTime:
             localzone=mktime(gmtime(t))-t
             localzone=int(round(-localzone/(60*60)))
             if localzone >= 0:
-                zn='+%d' % localzone
+                lz='+%d' % localzone
             else: lz=str(localzone)
             _localzone=_cache._zmap[lower('GMT%s' % lz)]
         except: _localzone=''
