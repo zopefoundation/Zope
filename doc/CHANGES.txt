@@ -122,6 +122,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1213: Fixed wrong labels of cache parameters 
+
      - Collector #1265: Fixed handling of orphans in ZTUtil.Batch
 
      - Collector #1293: missing 'address' parameters within one of the server

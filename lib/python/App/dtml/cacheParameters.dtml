@@ -63,8 +63,8 @@
 
 <tr class="list-header">
     <th><div class="list-item">Cache Name</div></th>
-    <th><div class="list-item">Number of objects in memory</div></th>
-    <th><div class="list-item">Number of ghost objects</div></th>
+    <th><div class="list-item">Number of active objects</div></th>
+    <th><div class="list-item">Total active and non-active objects</div></th>
 </tr>
 <dtml-in cache_detail_length mapping>
 <dtml-if name="sequence-odd"><tr class="row-normal">
