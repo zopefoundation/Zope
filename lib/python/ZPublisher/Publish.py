@@ -12,11 +12,10 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.154 2001/11/28 15:51:20 matt Exp $"""
-__version__='$Revision: 1.154 $'[11:-2]
+$Id: Publish.py,v 1.155 2002/01/02 15:56:04 andreasjung Exp $"""
+__version__='$Revision: 1.155 $'[11:-2]
 
 import sys, os
-from string import lower, atoi, rfind, strip
 from Response import Response
 from Request import Request
 from maybe_lock import allocate_lock
@@ -68,7 +67,7 @@ def publish(request, module_name, after_list, debug=0,
     
         # First check for "cancel" redirect:
         cancel=''
-        if lower(strip(request_get('SUBMIT','')))=='cancel':
+        if request_get('SUBMIT','').strip().lower()=='cancel':
             cancel=request_get('CANCEL_ACTION','')
             if cancel: raise 'Redirect', cancel
     
@@ -81,7 +80,7 @@ def publish(request, module_name, after_list, debug=0,
             bobo_before()
     
         # Get a nice clean path list:
-        path=strip(request_get('PATH_INFO'))
+        path=request_get('PATH_INFO').strip()
     
         request['PARENTS']=parents=[object]
         

@@ -10,9 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
-from string import join, split, find, rfind, lower, upper
 from urllib import quote
 
 UNSPECIFIED_ROLES=''
@@ -162,7 +161,7 @@ class BaseRequest:
     def __str__(self):
         L1 = self.items()
         L1.sort()
-        return join(map(lambda item: "%s:\t%s" % item, L1), "\n")
+        return '\n'.join(map(lambda item: "%s:\t%s" % item, L1))
 
     __repr__=__str__
 
@@ -182,7 +181,7 @@ class BaseRequest:
         if path[:1]=='/':  path=path[1:]
         if path[-1:]=='/': path=path[:-1]
         clean=[]
-        for item in split(path, '/'):
+        for item in path.split('/'):
             # Make sure that certain things that dont make sense
             # cannot be traversed.
             if item in ('REQUEST', 'aq_self', 'aq_base'):
@@ -195,7 +194,7 @@ class BaseRequest:
         path=clean
     
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
-        method=req_method=upper(request_get('REQUEST_METHOD', 'GET'))
+        method=req_method=request_get('REQUEST_METHOD', 'GET').upper()
         
         no_acquire_flag=0
 
@@ -261,7 +260,7 @@ class BaseRequest:
                         hasattr(object.__call__,'__roles__')):
                         roles=object.__call__.__roles__
                     if request._hacked_path:
-                        i=rfind(URL,'/')
+                        i=URL.rfind('/')
                         if i > 0: response.setBase(URL[:i])
                     break
                 if not entry_name: continue
@@ -407,7 +406,7 @@ class BaseRequest:
         if user is not None:
             if validated_hook is not None: validated_hook(self, user)
             request['AUTHENTICATED_USER']=user
-            request['AUTHENTICATION_PATH']=join(steps[:-i],'/')
+            request['AUTHENTICATION_PATH']='/'.join(steps[:-i])
 
         # Remove http request method from the URL.
         request['URL']=URL

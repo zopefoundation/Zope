@@ -12,16 +12,16 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.52 2001/11/28 15:51:20 matt Exp $'''
-__version__='$Revision: 1.52 $'[11:-2]
+$Id: HTTPResponse.py,v 1.53 2002/01/02 15:56:04 andreasjung Exp $'''
+__version__='$Revision: 1.53 $'[11:-2]
 
-import string, types, sys,  re
-from string import find, rfind, lower, upper, strip, split, join, translate
+import  types, sys,  re
+from string import translate, maketrans
 from types import StringType, InstanceType, LongType
 from BaseResponse import BaseResponse
 from zExceptions import Unauthorized
 
-nl2sp=string.maketrans('\n',' ')
+nl2sp=maketrans('\n',' ')
 
 status_reasons={
 100: 'Continue',
@@ -76,13 +76,13 @@ status_codes={}
 # Add mappings for builtin exceptions and
 # provide text -> error code lookups.
 for key, val in status_reasons.items():
-    status_codes[lower(join(split(val, ' '), ''))]=key
-    status_codes[lower(val)]=key
+    status_codes[''.join(val.split(' ')).lower()]=key
+    status_codes[val.lower()]=key
     status_codes[key]=key
     status_codes[str(key)]=key
 en=filter(lambda n: n[-5:]=='Error', dir(__builtins__))
-for name in map(lower, en):
-    status_codes[name]=500
+for name in en:
+    status_codes[name.lower()]=500
 status_codes['nameerror']=503
 status_codes['keyerror']=503
 status_codes['redirect']=300
@@ -165,7 +165,7 @@ class HTTPResponse(BaseResponse):
             return
                 
         if type(status) is types.StringType:
-            status=lower(status)
+            status=status.lower()
         if status_codes.has_key(status): status=status_codes[status]
         else: status=500
         self.status=status
@@ -182,7 +182,7 @@ class HTTPResponse(BaseResponse):
         literal flag is true, the case of the header name is preserved,
         otherwise word-capitalization will be performed on the header
         name on output.'''
-        key=lower(name)
+        key=name.lower()
         if accumulate_header(key):
             self.accumulated_headers=(
                 "%s%s: %s\n" % (self.accumulated_headers, name, value))
@@ -232,7 +232,7 @@ class HTTPResponse(BaseResponse):
 
         body=str(body)
         l=len(body)
-        if ((l < 200) and body[:1]=='<' and find(body,'>')==l-1 and 
+        if ((l < 200) and body[:1]=='<' and body.find('>')==l-1 and 
             bogus_str_search(body) is not None):
             self.notFoundError(body[1:-1])
         else:
@@ -258,8 +258,8 @@ class HTTPResponse(BaseResponse):
         content_type=self.headers['content-type']
         if content_type == 'text/html' or latin1_alias_match(
             content_type) is not None:
-            body = join(split(body,'\213'),'&lt;')
-            body = join(split(body,'\233'),'&gt;')
+            body = '&lt;'.join(body.split('\213'))
+            body = '&gt;'.join(body.split('\233'))
 
         self.setHeader('content-length', len(self.body))
         self.insertBase()
@@ -276,7 +276,7 @@ class HTTPResponse(BaseResponse):
                    ):
 
         # Only insert a base tag if content appears to be html.
-        content_type = split(self.headers.get('content-type', ''), ';')[0]
+        content_type = self.headers.get('content-type', '').split(';')[0]
         if content_type and (content_type != 'text/html'):
             return
 
@@ -355,14 +355,14 @@ class HTTPResponse(BaseResponse):
         self.setHeader(name,h)
 
     def isHTML(self,str):
-        return lower(strip(str)[:6]) == '<html>' or find(str,'</') > 0
+        return str.strip().lower()[:6] == '<html>' or str.find('</') > 0
 
     def quoteHTML(self,text,
                   subs={'&':'&amp;', "<":'&lt;', ">":'&gt;', '\"':'&quot;'}
                   ):
         for ent in '&<>\"':
-            if find(text, ent) >= 0:
-                text=join(split(text,ent),subs[ent])
+            if text.find( ent) >= 0:
+                text=subs[ent].join(text.split(ent))
 
         return text
          
@@ -391,13 +391,12 @@ class HTTPResponse(BaseResponse):
                 except: pass
                 tb = tb.tb_next
                 n = n + 1
-        result.append(join(traceback.format_exception_only(etype, value),
-                           ' '))
+        result.append(' '.join(traceback.format_exception_only(etype, value)))
         return result
 
     def _traceback(self, t, v, tb):
         tb = self.format_exception(t, v, tb, 200)
-        tb = join(tb, '\n')
+        tb = '\n'.join(tb)
         tb = self.quoteHTML(tb)
         if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
         else:               _tbopen, _tbclose = '''<pre
@@ -533,7 +532,7 @@ class HTTPResponse(BaseResponse):
             et = translate(str(t), nl2sp)
             self.setHeader('bobo-exception-type', et)
             ev = translate(str(v), nl2sp)
-            if find(ev, '<html>') >= 0:
+            if ev.find( '<html>') >= 0:
                 ev = 'bobo exception'
             self.setHeader('bobo-exception-value', ev[:255])
             # Get the tb tail, which is the interesting part:
@@ -590,8 +589,8 @@ class HTTPResponse(BaseResponse):
                 'Sorry, a site error occurred.<p>'
                  + self._traceback(t, v, tb)),
                  is_error=1)
-        elif (lower(strip(b)[:6])=='<html>' or
-              lower(strip(b)[:14])=='<!doctype html'):
+        elif b.strip().lower()[:6]=='<html>' or \
+              b.strip().lower()[:14]=='<!doctype html':
             # error is an HTML document, not just a snippet of html
             body = self.setBody(b + self._traceback(t, '(see above)', tb),
                               is_error=1)
@@ -614,7 +613,7 @@ class HTTPResponse(BaseResponse):
 
             cookie='Set-Cookie: %s="%s"' % (name, attrs['value'])
             for name, v in attrs.items():
-                name=lower(name)
+                name=name.lower()
                 if name=='expires': cookie = '%s; Expires=%s' % (cookie,v)
                 elif name=='domain': cookie = '%s; Domain=%s' % (cookie,v)
                 elif name=='path': cookie = '%s; Path=%s' % (cookie,v)
@@ -658,20 +657,20 @@ class HTTPResponse(BaseResponse):
         if headers.has_key('status'):
             del headers['status']
         for key, val in headers.items():
-            if lower(key)==key:
+            if key.lower()==key:
                 # only change non-literal header names
-                key="%s%s" % (upper(key[:1]), key[1:])
+                key="%s%s" % (key[:1].upper(), key[1:])
                 start=0
-                l=find(key,'-',start)
+                l=key.find('-',start)
                 while l >= start:
-                    key="%s-%s%s" % (key[:l],upper(key[l+1:l+2]),key[l+2:])
+                    key="%s-%s%s" % (key[:l],key[l+1:l+2].upper(),key[l+2:])
                     start=l+1
-                    l=find(key,'-',start)
+                    l=key.find('-',start)
             append("%s: %s" % (key, val))
         if self.cookies:
             headersl=headersl+self._cookie_list()
         headersl[len(headersl):]=[self.accumulated_headers, body]
-        return join(headersl,'\n')
+        return '\n'.join(headersl)
 
     def write(self,data):
         """\

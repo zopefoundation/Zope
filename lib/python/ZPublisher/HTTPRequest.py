@@ -11,10 +11,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
-import re, sys, os, string, urllib, time, whrandom, cgi
-from string import lower, atoi, rfind, split, strip, join, upper, find
+import re, sys, os,  urllib, time, whrandom, cgi
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage, escape
@@ -159,7 +158,7 @@ class HTTPRequest(BaseRequest):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
         if type(path) is type(''):
-            path = filter(None, split(path, '/'))
+            path = filter(None, path.split( '/'))
         self._script[:] = map(quote, path)
         del self._steps[:]
         parents = other['PARENTS']
@@ -171,7 +170,7 @@ class HTTPRequest(BaseRequest):
     def physicalPathToVirtualPath(self, path):
         """ Remove the path to the VirtualRoot from a physical path """
         if type(path) is type(''):
-            path = split(path, '/')
+            path = path.split( '/')
         rpp = self.other.get('VirtualRootPhysicalPath', ('',))
         i = 0
         for name in rpp[:len(path)]:
@@ -188,7 +187,7 @@ class HTTPRequest(BaseRequest):
             path.insert(0, '')
         else:
             path.insert(0, self['SERVER_URL'])
-        return join(path, '/')
+        return '/'.join(path)
 
     def physicalPathFromURL(self, URL):
         """ Convert a URL into a physical path in the current context.
@@ -196,9 +195,9 @@ class HTTPRequest(BaseRequest):
             hosting context, a ValueError is raised."""
         other = self.other
         bad_server_url = 0
-        path = filter(None, split(URL, '/'))
+        path = filter(None, URL.split( '/'))
 
-        if find(URL, '://') >= 0:
+        if URL.find( '://') >= 0:
             path = path[2:]
 
         # Check the path against BASEPATH1
@@ -216,8 +215,8 @@ class HTTPRequest(BaseRequest):
 
     def _resetURLS(self):
         other = self.other
-        other['URL'] = join([other['SERVER_URL']] + self._script +
-                            self._steps, '/')
+        other['URL'] = '/'.join([other['SERVER_URL']] + self._script +
+                            self._steps)
         for x in self._urls:
             del self.other[x]
         self._urls = ()
@@ -249,20 +248,20 @@ class HTTPRequest(BaseRequest):
         ################################################################
         # Get base info first. This isn't likely to cause
         # errors and might be useful to error handlers.
-        b=script=strip(get_env('SCRIPT_NAME',''))
+        b=script=get_env('SCRIPT_NAME','').strip()
 
         # _script and the other _names are meant for URL construction
-        self._script = map(quote, filter(None, split(script, '/')))
+        self._script = map(quote, filter(None, script.split( '/')))
         
         while b and b[-1]=='/': b=b[:-1]
-        p = rfind(b,'/')
+        p = b.rfind('/')
         if p >= 0: b=b[:p+1]
         else: b=''
         while b and b[0]=='/': b=b[1:]
 
         server_url=get_env('SERVER_URL',None)
         if server_url is not None:
-             other['SERVER_URL'] = server_url = strip(server_url)
+             other['SERVER_URL'] = server_url = server_url.strip()
         else:
              if have_env('HTTPS') and (
                  environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
@@ -273,7 +272,7 @@ class HTTPRequest(BaseRequest):
              else: protocol = 'http'
 
              if have_env('HTTP_HOST'):
-                 host = strip(environ['HTTP_HOST'])
+                 host = environ['HTTP_HOST'].strip()
                  hostname, port = splitport(host)
 
                  # NOTE: some (DAV) clients manage to forget the port. This
@@ -288,7 +287,7 @@ class HTTPRequest(BaseRequest):
                  #         port=s_port
 
              else:
-                 hostname = strip(environ['SERVER_NAME'])
+                 hostname = environ['SERVER_NAME'].strip()
                  port = environ['SERVER_PORT']
              self.setServerURL(protocol=protocol, hostname=hostname, port=port)
              server_url = other['SERVER_URL']
@@ -329,7 +328,6 @@ class HTTPRequest(BaseRequest):
         getattr=getattr,
         setattr=setattr,
         search_type=re.compile('(:[a-zA-Z][a-zA-Z0-9_]+|\\.[xy])$').search,
-        rfind=string.rfind,
         ):
         """Process request inputs
 
@@ -396,7 +394,7 @@ class HTTPRequest(BaseRequest):
                 # a re search.
                 
 
-                l=rfind(key,':')
+                l=key.rfind(':')
                 if l >= 0:
                     mo = search_type(key,l)
                     if mo: l=mo.start(0)
@@ -434,7 +432,7 @@ class HTTPRequest(BaseRequest):
                         elif type_name == 'ignore_empty':
                             if not item: flags=flags|EMPTY
     
-                        l=rfind(key,':')
+                        l=key.rfind(':')
                         if l < 0: break
                         mo=search_type(key,l)
                         if mo: l = mo.start(0)
@@ -452,8 +450,8 @@ class HTTPRequest(BaseRequest):
 
                     #Split the key and its attribute
                     if flags&REC:
-                        key=split(key,".")
-                        key, attr=join(key[:-1],"."), key[-1]
+                        key=key.split(".")
+                        key, attr=".".join(key[:-1]), key[-1]
                        
                     # defer conversion
                     if flags&CONVERTED:
@@ -632,13 +630,13 @@ class HTTPRequest(BaseRequest):
             if tuple_items:
                 for key in tuple_items.keys():
                    # Split the key and get the attr
-                   k=split(key, ".")
-                   k,attr=join(k[:-1], "."), k[-1]
+                   k=key.split( ".")
+                   k,attr='.'.join(k[:-1]), k[-1]
                    a = attr
                    # remove any type_names in the attr
                    while not a=='':
-                      a=split(a, ":")
-                      a,new=join(a[:-1], ":"), a[-1]
+                      a=a.split( ":")
+                      a,new=':'.join(a[:-1]), a[-1]
                    attr = new
                    if form.has_key(k):
                       # If the form has the split key get its value
@@ -688,7 +686,7 @@ class HTTPRequest(BaseRequest):
         # namespace (e.g. the host, port or script name dont
         # match that of the current request), a ValueError will
         # be raised.
-        if find(url, self.script) != 0:
+        if url.find(self.script) != 0:
             raise ValueError, 'Different namespace.'
         path=url[len(self.script):]
         while path and path[0]=='/':  path=path[1:]
@@ -746,7 +744,7 @@ class HTTPRequest(BaseRequest):
         should all return the Content-Type header, if available.
         """
         environ=self.environ
-        name=upper(join(split(name,"-"),"_"))
+        name=('_'.join(name.split("-"))).upper()
         val=environ.get(name, None)
         if val is not None:
             return val
@@ -783,7 +781,7 @@ class HTTPRequest(BaseRequest):
                     path = [''] + path[:n]
                 else:
                     path = [other['SERVER_URL']] + path[:n]
-                other[key] = URL = join(path, '/')
+                other[key] = URL = '/'.join(path)
                 self._urls = self._urls + (key,)
                 return URL
 
@@ -813,7 +811,7 @@ class HTTPRequest(BaseRequest):
                     v.insert(0, '')
                 else:
                     v.insert(0, other['SERVER_URL'])
-                other[key] = URL = join(v, '/')
+                other[key] = URL = '/'.join(v)
                 self._urls = self._urls + (key,)
                 return URL
 
@@ -960,10 +958,10 @@ class HTTPRequest(BaseRequest):
         global base64
         auth=self._auth
         if auth:
-            if lower(auth[:6]) == 'basic ':
+            if auth[:6].lower() == 'basic ':
                 if base64 is None: import base64
-                [name,password] = split(
-                    base64.decodestring(split(auth)[-1]), ':')
+                [name,password] = \
+                    base64.decodestring(split(auth)[-1]).split(':')
                 return name, password
 
 
@@ -1100,14 +1098,13 @@ class record:
     def __str__(self):
         L1 = self.__dict__.items()
         L1.sort()
-        return join(map(lambda item: "%s: %s" % item, L1), ", ") 
+        return ", ".join(map(lambda item: "%s: %s" % item, L1)) 
 
     def __repr__(self):
         L1 = self.__dict__.items()
         L1.sort()
-        return join(
-            map(lambda item: "%s: %s" % (item[0], repr(item[1])), L1)
-            , ", ") 
+        return ', '.join(
+            map(lambda item: "%s: %s" % (item[0], repr(item[1])), L1))
 
 # Flags
 SEQUENCE=1

@@ -20,7 +20,6 @@ information about XML-RPC and Zope.
 """
 
 import sys
-from string import replace
 from HTTPResponse import HTTPResponse
 import xmlrpclib
 
@@ -47,7 +46,7 @@ def parse_input(data):
     #     ('examples.getStateName', (41,))
     params, method = xmlrpclib.loads(data)
     # Translate '.' to '/' in meth to represent object traversal.
-    method = replace(method, '.', '/')
+    method = method.replace('.', '/')
     return method, params
 
 # See below

@@ -19,9 +19,9 @@ flag-interface and some support functions for implementing this functionality.
 For an implementation example, see the File class in OFS/Image.py.
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
-import re, string, sys
+import re, sys
 import Interface
 
 WHITESPACE = re.compile('\s*', re.MULTILINE)
@@ -45,13 +45,13 @@ def parseRange(header):
     header = WHITESPACE.sub('', header)
 
     # A range header only can specify a byte range
-    try: spec, sets = string.split(header, '=')
+    try: spec, sets = header.split('=')
     except ValueError: return None
     if spec != 'bytes':
         return None
 
     # The sets are delimited by commas.
-    sets = string.split(sets, ',')
+    sets = sets.split(',')
     # Filter out empty values, things like ',,' are allowed in the spec
     sets = filter(None, sets)
     # We need at least one set
@@ -59,7 +59,7 @@ def parseRange(header):
         return None
 
     for set in sets:
-        try: start, end = string.split(set, '-')
+        try: start, end = set.split('-')
         except ValueError: return None
 
         # Catch empty sets

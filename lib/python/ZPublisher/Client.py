@@ -31,7 +31,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import sys, re, socket, mimetools
 from httplib import HTTP
@@ -41,7 +41,7 @@ from random import random
 from base64 import encodestring
 from urllib import urlopen, quote
 from types import FileType, ListType, DictType, TupleType
-from string import strip, split, atoi, join, rfind, translate, maketrans, replace, lower
+from string import translate, maketrans
 from urlparse import urlparse
 
 class Function:
@@ -59,7 +59,7 @@ class Function:
         self.headers=headers
         if not headers.has_key('Host') and not headers.has_key('host'):
             headers['Host']=urlparse(url)[1]
-        self.func_name=url[rfind(url,'/')+1:]
+        self.func_name=url[url.rfind('/')+1:]
         self.__dict__['__name__']=self.func_name
         self.func_defaults=()
         
@@ -73,7 +73,7 @@ class Function:
         mo = urlregex.match(url)
         if mo is not None:
             host,port,rurl=mo.group(1,2,3)
-            if port: port=atoi(port[1:])
+            if port: port=int(port[1:])
             else: port=80
             self.host=host
             self.port=port
@@ -117,7 +117,7 @@ class Function:
 
         url=self.rurl
         if query:
-            query=join(query,'&')
+            query='&'.join(query)
             method=method or 'POST'
             if method == 'PUT':
                 headers['Content-Length']=str(len(query))
@@ -133,8 +133,9 @@ class Function:
             not headers.has_key('Authorization')):
             headers['Authorization']=(
                 "Basic %s" %
-                replace(encodestring('%s:%s' % (self.username,self.password)),
-				     '\012',''))
+                encodestring('%s:%s' % (self.username,self.password)).replace(
+				     '\012','')
+                )
 	    
         try:
             h=HTTP()
@@ -196,10 +197,10 @@ class Function:
         for n,v in self.headers.items():
             rq.append('%s: %s' % (n,v))
         if self.username and self.password:
-            c=replace(encodestring('%s:%s' % (self.username,self.password)),'\012','')
+            c=encodestring('%s:%s' % (self.username,self.password)).replace('\012','')
             rq.append('Authorization: Basic %s' % c)
         rq.append(MultiPart(d).render())
-        rq=join(rq,'\r\n')   
+        rq='\r\n'.join(rq)   
 
         try:
             sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -210,14 +211,14 @@ class Function:
             line=reply.readline()
 
             try:
-                [ver, ec, em] = split(line, None, 2)
+                [ver, ec, em] = line.split(None, 2)
             except ValueError:
                 raise 'BadReply','Bad reply from server: '+line
             if ver[:5] != 'HTTP/':
                 raise 'BadReply','Bad reply from server: '+line
 
-            ec=atoi(ec)
-            em=strip(em)
+            ec=int(ec)
+            em=em.strip()
             headers=mimetools.Message(reply,0)
             response=reply.read()
         finally:
@@ -295,7 +296,7 @@ def marshal_list(n,l,tname='list', lt=type([]), tt=type(())):
             raise TypeError, 'Invalid recursion in data to be marshaled.'
         r.append(marshal_whatever("%s:%s" % (n,tname) ,v))
     
-    return join(r,'&')
+    return '&'.join(r)
 
 def marshal_tuple(n,l):
     return marshal_list(n,l,'tuple')
@@ -317,7 +318,7 @@ def querify(items):
     query=[]
     for k,v in items: query.append(marshal_whatever(k,v))
 
-    return query and join(query,'&') or ''
+    return query and '&'.join(query) or ''
 
 NotFound     ='bci.NotFound'
 InternalError='bci.InternalError'
@@ -400,9 +401,9 @@ class MultiPart:
 
         elif dt==FileType or hasattr(val,'read'):
             if hasattr(val,'name'):
-                fn=replace(val.name, '\\', '/')
-                fn=fn[(rfind(fn,'/')+1):]
-                ex=lower(fn[(rfind(fn,'.')+1):])
+                fn=val.name.replace( '\\', '/')
+                fn=fn[(fn.rfind('/')+1):]
+                ex=(fn[(fn.rfind('.')+1):]).lower()
                 if self._extmap.has_key(ex):
                     ct=self._extmap[ex]
                 else:
@@ -454,12 +455,12 @@ class MultiPart:
             b=self._boundary
             for d in self._data: p.append(d.render())
             t.append('--%s\n' % b)
-            t.append(join(p,'\n--%s\n' % b))
+            t.append(('\n--%s\n' % b).join(p))
             t.append('\n--%s--\n' % b)
-            t=join(t,'')
+            t=''.join(t)
             s.append('Content-Length: %s\r\n\r\n' % len(t))
             s.append(t)
-            return join(s,'')
+            return ''.join(s)
 
         else:
             for n,v in h.items():
@@ -475,11 +476,11 @@ class MultiPart:
                 b=self._boundary
                 for d in self._data: p.append(d.render())
                 s.append('--%s\n' % b)
-                s.append(join(p,'\n--%s\n' % b))
+                s.append(('\n--%s\n' % b).join(p))
                 s.append('\n--%s--\n' % b)
-                return join(s,'')
+                return ''.join(s)
             else:
-                return join(s+self._data,'')
+                return ''.join(s+self._data)
 
 
     _extmap={'':     'text/plain',
@@ -526,7 +527,6 @@ The headers of the response are written to standard error.
 
 def main():
     import getopt
-    from string import split
 
     user=None
 
@@ -535,11 +535,11 @@ def main():
         url=args[0]
         u =filter(lambda o: o[0]=='-u', optlist)
         if u:
-            [user, pw] = split(u[0][1],':')
+            [user, pw] = u[0][1].split(':')
 
         kw={}
         for arg in args[1:]:
-            [name,v]=split(arg,'=')
+            [name,v]=arg.split('=')
             if name[-5:]==':file':
                 name=name[:-5]
                 if v=='-': v=sys.stdin
@@ -554,7 +554,7 @@ def main():
     f=Function(url)
     if user: f.username, f.password = user, pw
     headers, body = apply(f,(),kw)
-    sys.stderr.write(join(map(lambda h: "%s: %s\n" % h, headers.items()),"")
+    sys.stderr.write(''.join(map(lambda h: "%s: %s\n" % h, headers.items()))
                      +"\n\n")
     print body
 

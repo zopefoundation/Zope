@@ -10,16 +10,17 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import re
-from string import atoi, atol, atof, join, split, strip
-from types import ListType, TupleType
+from types import ListType, TupleType, UnicodeType
 
 def field2string(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    return v
+    if hasattr(v,'read'): return v.read()
+    elif isinstance(v,UnicodeType) :
+        return v
+    else:  
+        return str(v)
 
 def field2text(v, nl=re.compile('\r\n|\n\r').search):
     if hasattr(v,'read'): v=v.read()
@@ -38,12 +39,12 @@ def field2text(v, nl=re.compile('\r\n|\n\r').search):
 
     r.append(v[s:])
         
-    return join(r,'\n')
+    return '\n'.join(r)
 
 def field2required(v):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    if strip(v): return v
+    if v.strip(): return v
     raise ValueError, 'No input for required field<p>'
 
 def field2int(v):
@@ -52,7 +53,7 @@ def field2int(v):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     if v:
-        try: return atoi(v)
+        try: return int(v)
         except ValueError:
             raise ValueError, (
                 "An integer was expected in the value '%s'" % v
@@ -65,7 +66,7 @@ def field2float(v):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     if v:
-        try: return atof(v)
+        try: return float(v)
         except ValueError:
             raise ValueError, (
                 "A floating-point number was expected in the value '%s'" % v
@@ -83,7 +84,7 @@ def field2long(v):
     if v[-1:] in ('L', 'l'):
         v = v[:-1]
     if v:
-        try: return atol(v)
+        try: return long(v)
         except ValueError:
             raise ValueError, (
                 "A long integer was expected in the value '%s'" % v
@@ -93,7 +94,7 @@ def field2long(v):
 def field2tokens(v):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    return split(v)
+    return v.split()
 
 def field2lines(v):
     if type(v) in (ListType, TupleType):
@@ -101,7 +102,7 @@ def field2lines(v):
         for item in v:
             result.append(str(item))
         return result
-    return split(field2text(v),'\n')
+    return field2text(v).split('\n')
 
 def field2date(v):
     from DateTime import DateTime

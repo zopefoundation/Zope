@@ -12,11 +12,10 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.11 2002/01/02 15:01:20 andreasjung Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: BaseResponse.py,v 1.12 2002/01/02 15:56:04 andreasjung Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import  types, sys
-from string import find, rfind, lower, upper, strip, split, join, translate
 from types import StringType, InstanceType
 from zExceptions import Unauthorized
 

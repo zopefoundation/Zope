@@ -90,18 +90,18 @@ Examples
             s
 
 
-$Id: Test.py,v 1.38 2001/11/28 15:51:21 matt Exp $
+$Id: Test.py,v 1.39 2002/01/02 15:56:04 andreasjung Exp $
 '''
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
-import sys, traceback, profile, os, getopt, string
+import sys, traceback, profile, os, getopt
 from time import clock
 repeat_count=100
 TupleType=type(())
 
 
 def main():
-    import sys, os, getopt, string
+    import sys, os, getopt
     global repeat_count
 
     try:
@@ -127,9 +127,9 @@ def main():
         elif opt=='-p':
             profile=val
         elif opt=='-r':
-            repeat_count=string.atoi(val)
+            repeat_count=int(val)
         elif opt=='-e':
-            opt=string.find(val,'=')
+            opt=val.find('=')
             if opt <= 0: raise 'Invalid argument to -e', val
             env[val[:opt]]=val[opt+1:]
 
@@ -266,7 +266,7 @@ def publish(script=None,path_info='/',
     env['SERVER_HOSTNAME']='bobo.server.host'
     env['GATEWAY_INTERFACE']='CGI/1.1 '
     env['SCRIPT_NAME']=script
-    p=string.split(path_info,'?')
+    p=path_info.split('?')
     if   len(p)==1: env['PATH_INFO'] = p[0]
     elif len(p)==2: [env['PATH_INFO'], env['QUERY_STRING']]=p
     else: raise TypeError, ''
