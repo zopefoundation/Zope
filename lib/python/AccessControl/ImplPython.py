@@ -68,11 +68,7 @@ def rolesForPermissionOn(perm, object, default=_default_roles, n=None):
                 # with the new permission name.  If the permission
                 # name is '', then treat as private!
                 if roles:
-                    if roles != n:
-                        n = roles
-                    # If we find a name that is the same as the
-                    # current name, we just ignore it.
-                    roles = None
+                    n = roles
                 else:
                     return _what_not_even_god_should_do
 
