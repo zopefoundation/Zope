@@ -298,8 +298,11 @@ class ZServerService(win32serviceutil.ServiceFramework):
         
         
 def set_start_command(value):
-    "sets the ZServer start command"
-    win32serviceutil.SetServiceCustomOption(ZServerService,'start',value)
+    "sets the ZServer start command if the start command is not already set"
+    current=win32serviceutil.GetServiceCustomOption(ZServerService,
+                                                    'start', None)
+    if current is None:
+        win32serviceutil.SetServiceCustomOption(ZServerService,'start',value)
             
 
 if __name__=='__main__':
