@@ -74,7 +74,7 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
   To add a new item, select an item type and click &quot;Add&quot;.
 </TD>
 <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var URL1-->" METHOD="GET">
+  <FORM ACTION="<!--#var URL1-->/" METHOD="GET">
   <SELECT NAME=":method">
   <!--#in all_meta_types mapping sort=name-->
     <OPTION value="<!--#var action-->"><!--#var name-->
