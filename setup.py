@@ -1092,7 +1092,7 @@ distutils.core.setup(
     author=AUTHOR,
 
     data_files=installed_data_files,
-    scripts=["bin/mkzeoinstance", "bin/mkzopeinstance"],
+    scripts=["utilities/mkzeoinstance", "utilities/mkzopeinstance"],
     distclass=ZopeDistribution,
     )
 

@@ -15,6 +15,7 @@ BASE_DIR=<<BASE_DIR>>
 BUILD_BASE=<<BUILD_BASE>>
 DISTUTILS_OPTS=<<DISTUTILS_OPTS>>
 INSTALL_FLAGS=<<INSTALL_FLAGS>>
+TESTOPTS=-v1 -e -d lib/python
 BUILD_FLAGS=--build-base="${BUILD_BASE}" \
             --build-lib="${BUILD_BASE}/build-lib" \
             --build-scripts="${BUILD_BASE}/build-scripts"\
@@ -28,19 +29,26 @@ CD=cd
 LN=ln -sf
 CP=cp
 
-.PHONY : clean install uninstall instance untestinst testinst
+.PHONY : clean install uninstall instance untestinst testinst build unbuild
 .PHONY : default
 
+# default:     The default step (invoked when make is called without a target)
 default: build
 	@echo
 	@echo Zope built.  Next, do \'make install\' \(or \'make instance\'
 	@echo to run a Zope instance directly from the build directory\).
 	@echo
 
+# build:       Do whatever 'setup.py build' implies
 build:
 	${PYTHON} "${BASE_DIR}/setup.py" \
            ${DISTUTILS_OPTS} build ${BUILD_FLAGS}
 
+# unbuild:     Remove the build directory (undo the make build step)
+unbuild:
+	${RMRF} ${BUILD_BASE}
+
+# install:     Install a software home.
 install: build
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} install \
 	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
@@ -48,37 +56,52 @@ install: build
 	@echo Zope binaries installed successfully.
 	@echo Now run \'${PREFIX}/bin/mkzopeinstance\'
 
-inplace:
-	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} build_ext -i
-
-instance:  inplace
-	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" .
-
-# testinst makes an instance home in the build directory without asking
-# any questions.  this is useful when testing.  instances made with
-# this can be removed via "make untestinst"
-testinst: build
-	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} build_ext -i
-	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" --user=admin:admin .
-
-# remove the instance files made with testinst (w/ prejudice)
-untestinst:
-	${RM} "${BASE_DIR}/bin/zopectl.py"
-	${RM} "${BASE_DIR}/bin/ntservice.py"
-	${RMRF} "${BASE_DIR}/etc"
-	${RMRF} "${BASE_DIR}/log"
-
+# uninstall:   Uninstall a software home.
 uninstall:
 	${RMRF} "${PREFIX}"
 
-TESTOPTS=-v1 -e -d lib/python
+# inplace:     Install a software home into to the source directory.
+#
+# Note: We used to run 'build_ext -i' for 'inplace', but that was
+# suboptimal because it had a tendency to try to rebuild all of the
+# (possibly  already-built) extensions that might be built during a
+# previous 'make' step.  built_ext doesn't understand '--build-base'
+# and friends so we can't stop it from doing this easily.  So instead,
+# we rely on the stock install step and name the prefix as the current
+# directory.  This is a little less efficient than just building the
+# extensions because it also compiles bytecode, but it's more intuitive and
+# less expensive in the common case than letting distutils
+# potentially rebuild the binaries when we've done that already.
+inplace: PREFIX=${BASE_DIR} install
 
+# instance:    Do an inplace build and create an instance home in the resulting
+#              software home.
+instance: inplace
+	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" ${MKZ_FLAGS} "${BASE_DIR}" 
+
+# uninstance:  Remove the instance files made by make instance (w/ prejudice)
+uninstance:
+	${RMRF} "${BASE_DIR}/bin"
+	${RMRF} "${BASE_DIR}/etc"
+	${RMRF} "${BASE_DIR}/log"
+	${RMRF} "${BASE_DIR}/var"
+	${RMRF} "${BASE_DIR}/Products"
+
+# testinst:    Perform an inplace build and create an instance home in the
+#              resulting software home without asking questions.  Useful when
+#              performing automated testing.
+testinst: MKZ_FLAGS=--user=admin:admin
+testinst: instance
+
+# test:        Do an inplace build and run the Zope test suite.
 test: inplace
 	${PYTHON} "${BASE_DIR}/utilities/testrunner.py" ${TESTOPTS}
 
-clean:
-	${RMRF} "${BUILD_BASE}"
+# clean:       Delete the build files and any binaries/bytecode files in
+#              the source directory for good measure.
+clean: unbuild
 	${FIND} "${BASE_DIR}" \
          -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
 
-clobber: clean untestinst
+# clobber:     Make the source tree 'pristine' again.
+clobber: clean uninstance
