@@ -3,7 +3,13 @@
 
 <table border=0 width="100%" cellpadding=0 cellspacing=0>
 <tr>
-  <td align=left  width="90%"><H2><!--#var title_or_id--></H2></td>
+  <td align=left  width="90%">
+    <H2><!--#var title_or_id--></H2>
+    <!--#if Principia-Session-->
+      <em>You are currently working in session
+      <!--#var Principia-Session--></em><br><br>
+    <!--#/if-->
+  </td>
   <td align=right width="10%">
   <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/Help_icon.gif" BORDER=0>
   </td>
@@ -48,7 +54,7 @@ click on the item's title and id.
 </TD>
 
 <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_addObject" METHOD="GET">
+  <FORM ACTION="manage_addObject" METHOD="GET">
   <SELECT NAME="type">
   <!--#in all_meta_types mapping-->
     <OPTION><!--#var name-->
@@ -66,7 +72,7 @@ click on the item's title and id.
 </TD>
 
 <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
+  <FORM ACTION="manage_delObjects" METHOD="GET">
   <SELECT NAME="ids:list" MULTIPLE SIZE="4">
   <!--#in objectValues_d-->
     <OPTION VALUE="<!--#var id-->">

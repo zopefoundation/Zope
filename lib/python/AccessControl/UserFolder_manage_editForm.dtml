@@ -5,7 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <H2>Change User</H2>
 <P>
-<FORM ACTION="<!--#var PARENT_URL-->/manage_editUser" METHOD="POST">
+<FORM ACTION="manage_editUser" METHOD="POST">
 <TABLE>
 <TR>
 <TD VALIGN="TOP">

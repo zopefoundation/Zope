@@ -21,7 +21,7 @@ Access Control
   <I>Change Member</I> button.
   </TD>
   <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_memberForm" METHOD="POST">
+  <FORM ACTION="manage_memberForm" METHOD="POST">
   <SELECT NAME="name">
   <!--#in memberNames-->
   <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
@@ -50,7 +50,7 @@ Access Control
 </TR>
 <TR>
   <TD COLSPAN="2" VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_addMember" METHOD="POST">
+  <FORM ACTION="manage_addMember" METHOD="POST">
   <TABLE>
   <TR>
   <TD VALIGN="TOP">Name</TD>
@@ -81,7 +81,7 @@ Access Control
   </TD>
   <TD VALIGN="TOP">
   <BR>
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_deleteMember" METHOD="POST">
+  <FORM ACTION="manage_deleteMember" METHOD="POST">
   <SELECT NAME="names:list" MULTIPLE SIZE="5" >
   <!--#in memberNames-->
   <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->

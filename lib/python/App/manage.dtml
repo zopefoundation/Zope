@@ -4,9 +4,9 @@
 <!--#var id--><!--#/if title--></TITLE>
 </HEAD>
 <FRAMESET FRAMEBORDER="NO" BORDER="0" FRAMESPACING="0" COLS="150,*">
-  <FRAME SRC="<!--#var PARENT_URL-->/manage_menu" NAME="manage_menu"
+  <FRAME SRC="manage_menu" NAME="manage_menu"
          MARGINWIDTH="6" MARGINHEIGHT="6" SCROLLING="auto">
-  <FRAME SRC="<!--#var PARENT_URL-->/manage_main" NAME="manage_main"
+  <FRAME SRC="manage_main" NAME="manage_main"
          MARGINWIDTH="0" MARGINHEIGHT="0" SCROLLING="auto">
 </FRAMESET>
 <NOFRAMES>

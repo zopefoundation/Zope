@@ -79,8 +79,7 @@ Click &quot;Shutdown&quot; to shutdown the Site Studio process.
 It will be restarted on the next web request.
 </TD>
 <TD ALIGN="LEFT" VALIGN="TOP">
-<FORM ACTION="<!--#var PARENT_URL-->/manage_shutdown"
- METHOD="POST" TARGET="_top">
+<FORM ACTION="manage_shutdown" METHOD="POST" TARGET="_top">
 <BR><INPUT TYPE="SUBMIT" VALUE="Shutdown">
 </FORM>
 </TD>

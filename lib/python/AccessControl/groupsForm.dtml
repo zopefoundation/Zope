@@ -22,7 +22,7 @@ the product documentation or online help.
   group and click the <I>Change Group</I> button.
   </TD>
   <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_groupForm" METHOD="POST">
+  <FORM ACTION="manage_groupForm" METHOD="POST">
   <SELECT NAME="name">
 
   <!--#in groupNames-->
@@ -49,7 +49,7 @@ the product documentation or online help.
   </TD>
   <TD VALIGN="TOP">
   <BR>
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_addGroup" METHOD="POST">
+  <FORM ACTION="manage_addGroup" METHOD="POST">
   <INPUT TYPE="TEXT" NAME="name" SIZE="30">
   <BR>
   <INPUT TYPE="SUBMIT" VALUE="Add Group">
@@ -65,7 +65,7 @@ the product documentation or online help.
   </TD>
   <TD VALIGN="TOP">
   <BR>
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_deleteGroup" METHOD="POST">
+  <FORM ACTION="manage_deleteGroup" METHOD="POST">
   <SELECT NAME="names:list" MULTIPLE SIZE="5">
   <!--#in groupNames-->
   <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->

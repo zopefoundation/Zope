@@ -10,7 +10,7 @@ Access Control
 </FONT>
 <BR>
 <P>
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_editMember" METHOD="POST">
+  <FORM ACTION="manage_editMember" METHOD="POST">
   <TABLE>
   <TR>
   <TD VALIGN="TOP">Name</TD>

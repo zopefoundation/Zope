@@ -9,7 +9,7 @@
   <TD ALIGN="LEFT" COLSPAN="2">
   <IMG SRC="<!--#var SOFTWARE_URL-->/App/logo.jpg" WIDTH="102" HEIGHT="54">
   <BR>
-  <A HREF="<!--#var PARENT_URL-->/manage_copyright" TARGET="manage_main">
+  <A HREF="manage_copyright" TARGET="manage_main">
   <FONT SIZE="-2"><CENTER>
   &copy; 1997 Digital Creations</FONT></CENTER></A>
   </TD>
