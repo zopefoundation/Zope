@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.19 2000/08/07 15:44:26 brian Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Factory.py,v 1.20 2000/08/14 14:34:23 shane Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
@@ -123,6 +123,11 @@ class Factory(
         self.initial=initial
         self.permission=permission
 
+    initializePermission__roles__ = ()
+    def initializePermission(self):
+        self.manage_setPermissionMapping(('Use Factories',),
+                                         (self.permission,))
+
     def manage_edit(self, title, object_type, initial, permission='',
                     REQUEST=None):
         "Modify factory properties."
@@ -140,8 +145,6 @@ class Factory(
             container=self.aq_parent
         elif item is not self:
             container=None
-        self.manage_setPermissionMapping(('Use Factories',),
-                                         (self.permission,))
         if (item is self or
             getattr(container, '__class__', None) is Product.Product):
             self._register()

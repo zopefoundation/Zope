@@ -204,6 +204,8 @@ class Product(Folder, PermissionManager):
         ' '
         i=Factory(id, title, object_type, initial, permission)
         self._setObject(id,i)
+        factory = self._getOb(id)
+        factory.initializePermission()
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
 
