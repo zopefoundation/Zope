@@ -1,6 +1,8 @@
+import sys
 import string
 
 from TALGenerator import TALGenerator
+from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS
 from nsgmllib import SGMLParser
 
 BOOLEAN_HTML_ATTRS = [
@@ -116,7 +118,30 @@ class HTMLTALParser(SGMLParser):
             self.tagstack.append(tag)
         else:
             self.tagstack.append(tag)
-        self.gen.emitStartTag(tag, attrs)
+        attrlist, taldict, metaldict = self.extractattrs(attrs)
+        self.gen.emitStartElement(tag, attrlist, taldict, metaldict)
+
+    def extractattrs(self, attrs):
+        attrlist = []
+        taldict = {}
+        metaldict = {}
+        for item in attrs:
+            key, value = item
+            if ':' in key:
+                prefix, suffix = string.split(key, ':', 1)
+                nsuri = self.nsdict.get(prefix)
+                if nsuri == ZOPE_METAL_NS:
+                    value = unescape(value)
+                    item = (key, value)
+                    metaldict[suffix] = value
+                    if suffix == "define-macro":
+                        item = (key,value,"macroHack")
+                elif nsuri == ZOPE_TAL_NS:
+                    value = unescape(value)
+                    item = (key, value)
+                    taldict[suffix] = value
+            attrlist.append(item)
+        return attrlist, taldict, metaldict
 
     def _close_to_level(self, close_to):
         if close_to > -1:
@@ -145,11 +170,11 @@ class HTMLTALParser(SGMLParser):
             white = data[len(prefix):]
             if data:
                 self.gen.emitRawText(prefix)
-            self.gen.emitEndTag(tag)
+            self.gen.emitEndElement(tag)
             if white:
                 self.gen.emitRawText(white)
         else:
-            self.gen.emitEndTag(tag)
+            self.gen.emitEndElement(tag)
 
     def handle_charref(self, name):
         self.gen.emitRawText("&#%s;" % name)
@@ -165,3 +190,13 @@ class HTMLTALParser(SGMLParser):
 
     def handle_pi(self, data):
         self.gen.emitRawText("<?%s>" % data)
+
+# Helper
+
+def unescape(s):
+    if '&' not in s:
+        return s
+    s = string.replace(s, "&lt;", "<")
+    s = string.replace(s, "&gt;", ">")
+    s = string.replace(s, "&amp;", "&") # Must be last
+    return s
