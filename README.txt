@@ -27,10 +27,6 @@ License
   The Zope License is included in "doc/LICENSE.txt" Send your feedback
   about the license to zope-license@zope.org.
 
-Important
-
-  This release requires Python 2.2.3.
-
 Installing Zope
 
   Follow the instructions in "doc/INSTALL.txt" to install Zope.
