@@ -17,33 +17,26 @@ from Products.ZCTextIndex.PipelineFactory import element_factory
 
 import re
 
-class HTMLSplitter:
-
-    __implements__ = ISplitter
-
-    def process(self, text):
-        return re.sub('<[^>]*>', ' ', text).split()
-
 class HTMLWordSplitter:
 
     __implements__ = ISplitter
 
-    def process(self, text):
+    def process(self, text, wordpat=r"\w+"):
         splat = []
         for t in text:
-            splat += self._split(t)
+            splat += self._split(t, wordpat)
         return splat
 
-    def _split(self, text):
+    def processGlob(self, text):
+        return self.process(text, r"\w+[\w*?]*") # see Lexicon.globToWordIds()
+
+    def _split(self, text, wordpat):
         text = text.lower()
-        remove = ["<[^>]*>",
-                  "&[A-Za-z]+;",
-                  "\W+"]
+        remove = [r"<[^<>]*>",
+                  r"&[A-Za-z]+;"]
         for pat in remove:
             text = re.sub(pat, " ", text)
-        rx = re.compile("[A-Za-z]")
-        return [word for word in text.split()
-                if len(word) > 1 and rx.search(word)]
+        return re.findall(wordpat, text)
                 
 element_factory.registerFactory('Word Splitter', 
                                 'HTML aware splitter',
