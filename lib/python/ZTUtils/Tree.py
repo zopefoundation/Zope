@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.1 2001/04/27 16:38:52 evan Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Tree.py,v 1.2 2001/04/27 20:51:20 evan Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -158,6 +158,8 @@ class TreeMaker:
             node.state = -1 # collapsed
         if not subtree:
             node.depth = 0
+            if hasattr(self, 'markRoot'):
+                self.markRoot(node)
         return node
 
     def node(self, object):

@@ -82,90 +82,48 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Batch class, for iterating over a sequence in batches
+__doc__='''Simple Tree classes
 
-$Id: Batch.py,v 1.2 2001/04/27 20:51:20 evan Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: SimpleTree.py,v 1.1 2001/04/27 20:51:20 evan Exp $'''
+__version__='$Revision: 1.1 $'[11:-2]
 
-from ExtensionClass import Base
+from Tree import TreeMaker, TreeNode, b2a
 
-class LazyPrevBatch(Base):
-    def __of__(self, parent):
-        return Batch(parent._sequence, parent._size,
-                     -1, parent.first + parent.overlap,
-                     parent.orphan, parent.overlap)
+class SimpleTreeNode(TreeNode):
+    def branch(self):
+        if self.state == 0:
+            return {'link': None, 'img': '&nbsp;&nbsp;'}
 
-class LazyNextBatch(Base):
-    def __of__(self, parent):
-        try: parent._sequence[parent.end]
-        except IndexError: return None
-        return Batch(parent._sequence, parent._size,
-                     parent.end - parent.overlap, 0,
-                     parent.orphan, parent.overlap)
-
-class Batch(Base):
-    """Create a sequence batch"""
-    __allow_access_to_unprotected_subobjects__ = 1
-
-    previous = LazyPrevBatch()
-    next = LazyNextBatch()
-    
-    def __init__(self, sequence, size, start=0, end=0,
-                 orphan=3, overlap=0):
-
-        start = start + 1
-
-        start,end,sz = opt(start,end,size,orphan,sequence)
-
-        self._sequence = sequence
-        self.size = sz
-        self._size = size
-        self.start = start
-        self.end = end
-        self.orphan = orphan
-        self.overlap = overlap
-        self.first = max(start - 1, 0)
-        self.length = self.end - self.first
-        if self.first == 0:
-            self.previous = None
-        
-        
-    def __getitem__(self, index):
-        if index < 0:
-            if index + self.end < self.first: raise IndexError, index
-            return self._sequence[index + self.end]
-        
-        if index >= self.size: raise IndexError, index
-        return self._sequence[index+self.first]
-
-    def __len__(self):
-        return self.length
-
-def opt(start,end,size,orphan,sequence):
-    if size < 1:
-        if start > 0 and end > 0 and end >= start:
-            size=end+1-start
-        else: size=7
-
-    if start > 0:
-
-        try: sequence[start-1]
-        except: start=len(sequence)
-
-        if end > 0:
-            if end < start: end=start
+        if self.state < 0:
+            setst = 'expand'
+            exnum = self.aq_parent.expansion_number
+            img = 'pl'
         else:
-            end=start+size-1
-            try: sequence[end+orphan-1]
-            except: end=len(sequence)
-    elif end > 0:
-        try: sequence[end-1]
-        except: end=len(sequence)
-        start=end+1-size
-        if start - 1 < orphan: start=1
-    else:
-        start=1
-        end=start+size-1
-        try: sequence[end+orphan-1]
-        except: end=len(sequence)
-    return start,end,size
+            setst = 'collapse'
+            exnum = self.expansion_number
+            img = 'mi'
+
+        base = self.aq_acquire('baseURL')
+        obid = self.id
+        pre = self.aq_acquire('tree_pre')
+
+        return {'link': '?%s-setstate=%s,%s,%s#%s' % (pre, setst[0],
+                                                      exnum, obid, obid),
+        'img': '<img src="%s/p_/%s" alt="%s" border="0">' % (base, img, setst)}
+        
+
+class SimpleTreeMaker(TreeMaker):
+    '''Generate Simple Trees'''
+
+    def __init__(self, tree_pre="tree"):
+        self.tree_pre = tree_pre
+
+    def node(self, object):
+        node = SimpleTreeNode()
+        node.object = object
+        node.id = b2a(self.getId(object))
+        return node
+
+    def markRoot(self, node):
+        node.tree_pre = self.tree_pre
+        node.baseURL = node.object.REQUEST['BASEPATH1']

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Package of template utility classes and functions.
 
-$Id: __init__.py,v 1.1 2001/04/27 16:38:52 evan Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 2001/04/27 20:51:20 evan Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 __allow_access_to_unprotected_subobjects__ = 1
 __roles__ = None
@@ -93,3 +93,4 @@ __roles__ = None
 from Batch import Batch
 from Iterator import Iterator
 from Tree import TreeMaker, encodeExpansion, decodeExpansion, a2b, b2a
+from SimpleTree import SimpleTreeMaker
