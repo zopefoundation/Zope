@@ -9,6 +9,7 @@ from Testing.makerequest import makerequest
 from webdav.common import rfc1123_date
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 
 from mimetools import Message
 from multifile import MultiFile
@@ -46,32 +47,29 @@ class UnitTestUser( Acquisition.Implicit ):
     def allowed( self, object, object_roles=None ):
         return 1
 
-_CONNECTION = None
-_ROOT = None
-_APP = None
-
 def makeConnection():
+    import ZODB
+    from ZODB.DemoStorage import DemoStorage
 
-    global _CONNECTION
-    global _ROOT
-    global _APP
+    s = DemoStorage(quota=(1<<20))
+    return ZODB.DB( s ).open()
 
-    if not _CONNECTION:
-        import ZODB
-        from ZODB.DemoStorage import DemoStorage
-        responseOut = cStringIO.StringIO()
-        s = DemoStorage(quota=(1<<20))
-        _CONNECTION = ZODB.DB( s ).open()
+class TestCopySupport( unittest.TestCase ):
+ 
+    def setUp( self ):
+
+        self.connection = makeConnection()
         try:
-            r = _CONNECTION.root()
+            r = self.connection.root()
             a = Application()
             r['Application'] = a
-            _ROOT = a
-            _APP = makerequest( _ROOT, stdout=responseOut )
-            manage_addFolder( _APP, 'folder1' )
-            manage_addFolder( _APP, 'folder2' )
-            folder1 = getattr( _APP, 'folder1' )
-            folder2 = getattr( _APP, 'folder2' )
+            self.root = a
+            responseOut = self.responseOut = cStringIO.StringIO()
+            self.app = makerequest( self.root, stdout=responseOut )
+            manage_addFolder( self.app, 'folder1' )
+            manage_addFolder( self.app, 'folder2' )
+            folder1 = getattr( self.app, 'folder1' )
+            folder2 = getattr( self.app, 'folder2' )
 
             folder1.all_meta_types = folder2.all_meta_types = \
                                     ( { 'name'        : 'File'
@@ -89,16 +87,8 @@ def makeConnection():
             # later and pretend we didn't touch the ZODB.
             get_transaction().commit()
         except:
-            _CONNECTION.close()
+            self.connection.close()
             raise
-
-    return _CONNECTION, _ROOT, _APP
-
-class TestCopySupport( unittest.TestCase ):
- 
-    def setUp( self ):
-
-        self.connection, self.root, self.app = makeConnection()
         get_transaction().begin()
         self.folder1 = getattr( self.app, 'folder1' )
         self.folder2 = getattr( self.app, 'folder2' )
@@ -108,11 +98,15 @@ class TestCopySupport( unittest.TestCase ):
         newSecurityManager( None, UnitTestUser().__of__( self.root ) )
 
     def tearDown( self ):
+        noSecurityManager()
         del self.policy
-        del self.folder1
         del self.folder2
+        del self.folder1
         get_transaction().abort()
+        self.app._p_jar.sync()
+        self.connection.close()
         del self.app
+        del self.responseOut
         del self.root
         del self.connection
 

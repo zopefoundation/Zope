@@ -99,9 +99,6 @@ def makeConnection():
     import ZODB
     from ZODB.DemoStorage import DemoStorage
 
-    dfi = os.path.join( os.environ['SOFTWARE_HOME']
-                      , '..', '..', 'var', 'Data.fs.in')
-    dfi = os.path.abspath(dfi)
     s = DemoStorage(quota=(1<<20))
     return ZODB.DB( s ).open()
 
@@ -155,7 +152,8 @@ class TestRequestRange(unittest.TestCase):
     def tearDown(self):
         try: self.app._delObject(TESTFOLDER_NAME)
         except AttributeError: pass
-        get_transaction().commit()
+        get_transaction().abort()
+        self.app._p_jar.sync()
         self.connection.close()
         self.app = None
         del self.app
