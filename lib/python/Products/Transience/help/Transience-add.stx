@@ -33,7 +33,9 @@ TransientObjectContainer - Add
      - **Maximum number of subobjects **
 
        The maximum number of subobjects that this container may
-       simultaneously hold.
+       simultaneously hold. Since transient objects normally hold
+       session data, this number is this is the effective limit for
+       the number of simultaneous sessions.
 
        If the value is "0", the number of objects addable to the container
        will be not be artificially limited.

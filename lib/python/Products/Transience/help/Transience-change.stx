@@ -11,7 +11,7 @@ TransientObjectContainer - Manage
      A Transient Object Container is used by Session Data Mangers to store
      session data.
 
-  To create a Transient Object Container, specify the following:
+  Editing Form
 
      - **Id**
 
@@ -37,7 +37,9 @@ TransientObjectContainer - Manage
      - **Maximum number of subobjects **
 
        The maximum number of subobjects that this container may
-       simultaneously hold.
+       simultaneously hold. Since transient objects normally hold
+       session data, this number is this is the effective limit for
+       the number of simultaneous sessions.
 
        If the value is "0", the number of objects addable to the container
        will be not be artificially limited.
@@ -89,6 +91,11 @@ TransientObjectContainer - Manage
              def deleteScript(item, container):
                  from zLOG import LOG
                  LOG(100, 'test', 'id: %s' % item.getId())
+
+  Environment Variables
+
+    You can control some transient object settings with environment
+    variables. See 'doc/ENVIORNMENT.txt' for more informatin.
 
   See Also
 
