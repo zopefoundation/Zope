@@ -56,6 +56,11 @@ Zope Changes
         "javascript" as editable through the File edit form, just like
         text/<foo> types
 
+      - Zope X3 3.0.0's 'src/zope' package is included now.
+
+      - Five (Zope 3 integration technology for Zope 2) is included
+        now in Products/Five.
+
     Bugs fixed
  
       - Collector #1507: Zope now binds again to all available IP addresses if
