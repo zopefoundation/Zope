@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -398,7 +398,7 @@ class ApplicationManager(Folder,CacheManager):
             #for db in Globals.opened: db.close()
             Lifetime.shutdown(1)
             return """<html>
-            <head><meta HTTP-EQUIV=REFRESH CONTENT="5; URL=%s/manage_main">
+            <head><meta HTTP-EQUIV=REFRESH CONTENT="10; URL=%s/manage_main">
             </head>
             <body>Zope is restarting</body></html>
             """ % escape(URL1, 1)
