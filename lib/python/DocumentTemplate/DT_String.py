@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.37 2000/08/17 14:03:42 brian Exp $"
+"$Id: DT_String.py,v 1.38 2000/09/01 14:00:41 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -345,7 +345,7 @@ class String:
     def name(self): return self.__name__
     id=name
 
-    setName__roles__=[]
+    setName__roles__=()
     def setName(self,v): self.__dict__['__name__']=v
 
     default__roles__=()
