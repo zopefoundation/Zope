@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -418,7 +418,8 @@ class ApplicationManager(Folder,CacheManager):
                 continue
             version_txt = None
             for name in ('VERSION.TXT', 'VERSION.txt', 'version.txt'):
-                if exists(path_join(package_dir, name)):
+                v = path_join(package_dir, name))
+                if exists(v):
                     version_txt = v
                     break
             if version_txt is not None:
