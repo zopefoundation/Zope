@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -582,30 +582,31 @@ class HTTPRequest(BaseRequest):
 
             #insert defaults into form dictionary
             if defaults:
-                for keys, values in defaults.items():
-                    if not form.has_key(keys):
+                for key, value in defaults.items():
+                    if not form.has_key(key):
                         # if the form does not have the key,
                         # set the default
-                        form[keys]=values
+                        form[key]=value
                     else:
                         #The form has the key
-                        if isinstance(values, record):
+                        if isinstance(value, record):
                             # if the key is mapped to a record, get the
                             # record
-                            r = form[keys]
-                            for k, v in values.__dict__.items():
-                                # loop through the attributes and values
+                            r = form[key]
+                            for k, v in value.__dict__.items():
+                                # loop through the attributes and value
                                 # in the default dictionary
                                 if not hasattr(r, k):
                                     # if the form dictionary doesn't have
                                     # the attribute, set it to the default
                                     setattr(r,k,v)
-                                    form[keys] = r    
-                        elif values == type([]):
-                            # the key is mapped to a list
-                            l = form[keys]
-                            for x in values:
-                                # for each x in the list
+                            form[key] = r    
+                        elif isinstance(value, lt):
+                            # the default value is a list
+                            l = form[key]
+                            if not isinstance(l, lt):
+                                l = [l]
+                            for x in value:
                                 if isinstance(x, record):
                                     # if the x is a record
                                     for k, v in x.__dict__.items():
@@ -627,9 +628,9 @@ class HTTPRequest(BaseRequest):
                                                 setattr(y, k, v)
                                 else:
                                     # x is not a record
-                                    if not a in l:
-                                        l.append(a)
-                            form[keys] = l
+                                    if not x in l:
+                                        l.append(x)
+                            form[key] = l
                         else:
                             # The form has the key, the key is not mapped
                             # to a record or sequence so do nothing
