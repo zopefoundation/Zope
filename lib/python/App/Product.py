@@ -120,6 +120,14 @@ class ProductFolder(Folder):
     meta_type ='Product Management'
     icon='p_/ProductFolder_icon'
 
+    manage_options=(
+    {'label':'Contents', 'action':'manage_main'},
+    {'label':'Properties', 'action':'manage_propertiesForm'},
+    {'label':'Security', 'action':'manage_access'},
+    {'label':'Undo', 'action':'manage_UndoForm'},
+    {'label':'Find', 'action':'manage_findFrame'},
+    )
+
     all_meta_types={'name': 'Product', 'action': 'manage_addProductForm'},
     meta_types=all_meta_types
 
@@ -167,9 +175,14 @@ class Product(Folder):
             },
         )
 
-    manage_options=Folder.manage_options+(
-        {'label':'Distribution', 'action':'manage_distributionView'},
-        )
+    manage_options=(
+    {'label':'Contents', 'action':'manage_main'},
+    {'label':'Properties', 'action':'manage_propertiesForm'},
+    {'label':'Security', 'action':'manage_access'},
+    {'label':'Undo', 'action':'manage_UndoForm'},
+    {'label':'Find', 'action':'manage_findFrame'},
+    {'label':'Distribution', 'action':'manage_distributionView'},
+    )
 
     manage_distributionView=Globals.HTMLFile('distributionView',globals())
 
