@@ -1,5 +1,5 @@
 __doc__="""Copy interface"""
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile
 from marshal import loads, dumps
@@ -89,8 +89,8 @@ class CopyContainer:
             for ob in oblist:
                 if not ob.cb_isCopyable():
                     raise CopyError, eNotSupported % absattr(ob.id)
-                id=_get_id(self, absattr(ob.id))
                 ob=ob._getCopy(self)
+                id=_get_id(self, absattr(ob.id))
                 ob._setId(id)
                 self._setObject(id, ob)
                 ob=ob.__of__(self)
@@ -110,9 +110,9 @@ class CopyContainer:
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
                 id=_get_id(self, id)
+                ob._setId(id)
                 self._setObject(id, ob)
                 ob=ob.__of__(self)            
-                ob._setId(id)
                 ob._postCopy(self, op=1)
 
             if REQUEST is not None:
@@ -395,6 +395,11 @@ eNotSupported=fMessageDialog(
 ############################################################################## 
 #
 # $Log: CopySupport.py,v $
+# Revision 1.22  1998/10/07 15:21:13  jim
+# Rearranged order of operations to make move and copy consistent.
+# In particular, copy or moved object has new ID *before* it gets
+# added to the collection.
+#
 # Revision 1.21  1998/09/21 20:01:50  brian
 # Added support for pasting of "Product" based objects
 #
