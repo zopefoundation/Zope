@@ -373,7 +373,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.83 1998/04/15 11:27:45 jim Exp $"""
+$Id: Publish.py,v 1.84 1998/04/15 12:01:56 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -428,10 +428,11 @@ $Id: Publish.py,v 1.83 1998/04/15 11:27:45 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
+import CGIResponse
 from CGIResponse import Response
 from urllib import quote, unquote
 from cgi import FieldStorage, MiniFieldStorage
@@ -881,6 +882,7 @@ def get_module_info(module_name, modules={},
 
     acquire()
     try:
+      try:
 	module=__import__(module_name)
     
 	realm=module_name
@@ -938,8 +940,11 @@ def get_module_info(module_name, modules={},
 		object, doc, published, realm, module_name)
     
 	modules[module_name]=modules[module_name+'.cgi']=info
-	
+
 	return info
+      except:
+	raise ImportError, (
+	    sys.exc_type, sys.exc_value, sys.exc_traceback)
     finally: release()
 
 def str_field(v):
