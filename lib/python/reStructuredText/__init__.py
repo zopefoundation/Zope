@@ -17,9 +17,14 @@ __all__ = ["HTML" ]
 
 import docutils.core 
 from docutils.io import StringOutput, StringInput 
-import sys
+import sys, os
+
+default_input_encoding = os.environ.get("REST_INPUT_ENCODING", sys.getdefaultencoding())
+default_output_encoding = os.environ.get("REST_OUTPUT_ENCODING", sys.getdefaultencoding())
+
 
 class Warnings:
+
     def __init__(self):
         self.messages = []
 
@@ -28,7 +33,8 @@ class Warnings:
 
 
 def HTML(src, writer='html4zope', report_level=1, stylesheet='default.css',
-         input_encoding=None, output_encoding=None):
+         input_encoding=default_input_encoding, 
+         output_encoding=default_output_encoding):
     """ render HTML from a reStructuredText string 
 
         - 'src'  -- string containing a valid reST document
@@ -43,12 +49,6 @@ def HTML(src, writer='html4zope', report_level=1, stylesheet='default.css',
     pub = docutils.core.Publisher()
     pub.set_reader('standalone', None, 'restructuredtext')
     pub.set_writer(writer)
-
-    if input_encoding is None:
-        input_encoding = sys.getdefaultencoding()
-
-    if output_encoding is None:
-        output_encoding = sys.getdefaultencoding()
 
     # go with the defaults
     pub.get_settings()
@@ -78,6 +78,5 @@ def HTML(src, writer='html4zope', report_level=1, stylesheet='default.css',
     warnings = ''.join(pub.settings.warning_stream.messages)
 
     # do the format
-    print pub.writer.write(document, pub.destination)
     return pub.writer.write(document, pub.destination)
 
