@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.7 2001/10/19 15:12:26 shane Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.8 2001/10/19 16:36:07 shane Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os
 import unittest
@@ -94,7 +94,8 @@ import unittest
 if __name__=='__main__':
     here = os.curdir
 else:
-    here = os.path.split(__file__)[0]
+    from DocumentTemplate import tests
+    here = tests.__path__[0]
 
 def read_file(name):
     f = open(os.path.join(here, name), 'rb')
@@ -102,7 +103,7 @@ def read_file(name):
     f.close()
     return res
 
-from DocumentTemplate import HTML, String
+from DocumentTemplate.DT_HTML import HTML, String
 from ExtensionClass import Base
 class D:
     __allow_access_to_unprotected_subobjects__ = 1
