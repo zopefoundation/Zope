@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -120,6 +120,7 @@ class BaseRequest:
     _file=None
     common={} # Common request data
     _auth=None
+    _held=()
 
     def __init__(self, other=None, **kw):
         """The constructor is not allowed to raise errors
@@ -131,6 +132,7 @@ class BaseRequest:
 
     def close(self):
         del self.other
+        self._held=None
 
     def processInputs(self):
         """Do any input processing that could raise errors
@@ -453,7 +455,6 @@ class BaseRequest:
     retry_count=0
     def supports_retry(self): return 0
 
-    _held=()
     def _hold(self, object):
         """Hold a reference to an object to delay it's destruction until mine
         """
