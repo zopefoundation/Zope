@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.5 1997/08/08 22:55:32 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: DA.py,v 1.6 1997/08/15 22:29:12 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -144,7 +144,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	
 	argdata=self._argdata(REQUEST,1)
 	query_string=self._query_string(argdata,'manage_test')
-	query=self.template(self,REQUEST)
+	query=self.template(self,argdata)
 	result=DB__.query(query)
 	result=Aqueduct.RDB.RDB(StringIO(result))
 	return result
@@ -157,7 +157,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	
 	argdata=self._argdata(REQUEST,1)
 	query_string=self._query_string(argdata,'manage_test')
-	query=self.template(self,REQUEST)
+	query=self.template(self,argdata)
 	result=DB__.query(query)
 	result=Aqueduct.RDB.RDB(StringIO(result))
 	self.result_names=result.names()
@@ -213,6 +213,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.6  1997/08/15 22:29:12  jim
+# Fixed bug in passing query arguments.
+#
 # Revision 1.5  1997/08/08 22:55:32  jim
 # Improved connection status management and added database close method.
 #
