@@ -104,7 +104,7 @@ KNOWN_METAL_ATTRIBUTES = [
 KNOWN_TAL_ATTRIBUTES = [
     "define",
     "condition",
-    "insert",
+    "content",
     "replace",
     "repeat",
     "attributes",
@@ -138,7 +138,7 @@ def parseAttributeReplacements(arg):
 def parseSubstitution(arg):
     m = _subst_re.match(arg)
     if not m:
-        print "Bad syntax in insert/replace:", `arg`
+        print "Bad syntax in replace/content:", `arg`
         return None, None
     key, expr = m.group(1, 2)
     if not key:

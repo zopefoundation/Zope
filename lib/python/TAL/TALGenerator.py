@@ -128,12 +128,12 @@ class TALGenerator:
             if item[0] == "endTag":
                 collect.append("</%s>" % item[1])
                 continue
-            if item[0] == "startTag" and not item[2]:
-                collect.append("<%s>" % item[1])
-                continue
-            if item[0] == "startEndTag" and not item[2]:
-                collect.append("<%s/>" % item[1])
-                continue
+            if item[0] == "startTag":
+                if self.optimizeStartTag(collect, item[1], item[2], ">"):
+                    continue
+            if item[0] == "startEndTag":
+                if self.optimizeStartTag(collect, item[1], item[2], "/>"):
+                    continue
             text = string.join(collect, "")
             if text:
                 output.append(("rawtext", text))
@@ -142,6 +142,11 @@ class TALGenerator:
             rawseen = cursor+1
             collect = []
         return output
+
+    def optimizeStartTag(self, collect, name, attrlist, end):
+        if not attrlist:
+            collect.append("<%s%s" % (name, end))
+            return 1
 
     def todoPush(self, todo):
         self.todoStack.append(todo)
@@ -299,7 +304,7 @@ class TALGenerator:
         fillSlot = metaldict.get("fill-slot")
         defines = taldict.get("define")
         condition = taldict.get("condition")
-        insert = taldict.get("insert")
+        content = taldict.get("content")
         replace = taldict.get("replace")
         repeat = taldict.get("repeat")
         attrsubst = taldict.get("attributes")
@@ -311,11 +316,11 @@ class TALGenerator:
         if n > 1:
             raise METALError("only one METAL attribute per element")
         n = 0
-        if insert: n = n+1
+        if content: n = n+1
         if replace: n + n+1
         if repeat: n = n+1
         if n > 1:
-            raise TALError("can't use insert, replace, repeat together")
+            raise TALError("can't use content, replace, repeat together")
         repeatWhitespace = None
         if repeat:
             # Hack to include preceding whitespace in the loop program
@@ -340,8 +345,8 @@ class TALGenerator:
         if condition:
             self.pushProgram()
             todo["condition"] = condition
-        if insert:
-            todo["insert"] = insert
+        if content:
+            todo["content"] = content
         elif replace:
             todo["replace"] = replace
             self.pushProgram()
@@ -356,7 +361,7 @@ class TALGenerator:
         else:
             repldict = {}
         self.emitStartTag(name, self.replaceAttrs(attrlist, repldict))
-        if insert:
+        if content:
             self.pushProgram()
         self.todoPush(todo)
 
@@ -366,9 +371,9 @@ class TALGenerator:
             # Shortcut
             self.emitEndTag(name)
             return
-        insert = todo.get("insert")
-        if insert:
-            self.emitSubstitution(insert)
+        content = todo.get("content")
+        if content:
+            self.emitSubstitution(content)
         self.emitEndTag(name)
         repeat = todo.get("repeat")
         if repeat:
