@@ -267,6 +267,10 @@ class HTMLClass:
     def sgml(self,doc,level,output):
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
+
+    def xref(self, doc, level, output):
+        val = doc.getNodeValue()
+        output('<a href="#%s">[%s]</a>' % (val, val) )
     
     def table(self,doc,level,output):
         """
