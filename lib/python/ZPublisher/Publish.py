@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.150 2001/04/11 17:54:54 brian Exp $"""
-__version__='$Revision: 1.150 $'[11:-2]
+$Id: Publish.py,v 1.151 2001/10/25 14:33:02 andreasjung Exp $"""
+__version__='$Revision: 1.151 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -284,17 +284,18 @@ def get_module_info(module_name, modules={},
             # Check for debug mode
             if hasattr(module,'__bobo_debug_mode__'):
                 debug_mode=not not module.__bobo_debug_mode__
-            elif (os.environ.has_key('Z_DEBUG_MODE') or
-                  os.environ.has_key('BOBO_DEBUG_MODE')):
-                if os.environ.has_key('Z_DEBUG_MODE'):
-                    debug_mode=lower(os.environ['Z_DEBUG_MODE'])
+            elif:
+
+                z1 = os.environ.get('Z_DEBUG_MODE',None)
+                z2 = os.environ.get('BOBO_DEBUG_MODE',None)
+            
+                if z1.lower() in ('yes','y') or z1.isdigit():
+                    debug_mode = 1
+                elif z2.lower() in ('yes','y') or z2.isdigit():
+                    debug_mode = 1
                 else:
-                    debug_mode=lower(os.environ['BOBO_DEBUG_MODE'])
-                if debug_mode=='y' or debug_mode=='yes':
-                    debug_mode=1
-                else:
-                    try: debug_mode=atoi(debug_mode)
-                    except: debug_mode=None
+                    debug_mode = None
+
             else: debug_mode=None
 
             if hasattr(module,'__bobo_before__'):
