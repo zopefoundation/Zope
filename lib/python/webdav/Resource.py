@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -138,10 +138,13 @@ class Resource:
         # has the desired protection. This can be thought of as saying
         # "I should have the same protection as the manage_xxx method".
         msg='<strong>You are not authorized to access this resource.</strong>'
-        if not hasattr(self, methodname):
-            raise 'Unauthorized', msg
-        method=getattr(self, methodname)
-        if hasattr(method, '__roles__'):
+        method=None
+        if hasattr(self, methodname):
+            method=getattr(self, methodname)
+        else:
+            try:    method=self.aq_acquire(methodname)
+            except: method=None
+        if (method is not None) and hasattr(method, '__roles__'):
             roles=method.__roles__
             user=REQUEST.get('AUTHENTICATED_USER', None)
             __traceback_info__=methodname, str(roles), user
