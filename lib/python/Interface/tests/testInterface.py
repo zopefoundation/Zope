@@ -128,7 +128,10 @@ class _I1(Interface):
     def f11(): pass
     def f12(): pass
 
-class _I2(_I1):
+class __I1(_I1): pass
+class ___I1(__I1): pass
+
+class _I2(___I1):
     def f21(): pass
     def f22(): pass
     def f23(): pass

@@ -14,7 +14,7 @@
 """Interface object implementation
 
 Revision information:
-$Id: _InterfaceClass.py,v 1.3 2002/06/10 16:47:38 chrism Exp $
+$Id: _InterfaceClass.py,v 1.4 2002/06/10 20:00:42 jim Exp $
 """
 
 from inspect import currentframe
@@ -131,7 +131,7 @@ class Interface(Element):
         for name in self.__attrs.keys():
             r[name] = 1
         for base in self.__bases__:
-            for name in base.names():
+            for name in base.names(all):
                 r[name] = 1
         return r.keys()
             
@@ -146,7 +146,7 @@ class Interface(Element):
             r[name] = d
             
         for base in self.__bases__:
-            for name, d in base.namesAndDescriptions():
+            for name, d in base.namesAndDescriptions(all):
                 if not r.has_key(name):
                     r[name] = d
 
