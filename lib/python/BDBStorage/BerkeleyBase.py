@@ -28,7 +28,7 @@ from BDBStorage import db, ZERO
 
 # BaseStorage provides primitives for lock acquisition and release, and a host
 # of other methods, some of which are overridden here, some of which are not.
-from ZODB.lock_file import lock_file
+from ZODB.lock_file import LockFile
 from ZODB.BaseStorage import BaseStorage
 from ZODB.referencesf import referencesf
 import ThreadLock
@@ -401,10 +401,8 @@ class BerkeleyBase(BaseStorage):
         # can't hurt and is more robust.
         self._env.txn_checkpoint(0, 0, db.DB_FORCE)
         self._env.txn_checkpoint(0, 0, db.DB_FORCE)
-        lockfile = os.path.join(self._env.db_home, '.lock')
         self._lockfile.close()
         self._env.close()
-        os.unlink(lockfile)
 
     # A couple of convenience methods
     def _update(self, deltas, data, incdec):
@@ -468,15 +466,7 @@ def env_from_string(envname, config):
     # This is required in order to work around the Berkeley lock
     # exhaustion problem (i.e. we do our own application level locks
     # rather than rely on Berkeley's finite page locks).
-    lockpath = os.path.join(envname, '.lock')
-    try:
-        lockfile = open(lockpath, 'r+')
-    except IOError, e:
-        if e.errno <> errno.ENOENT: raise
-        lockfile = open(lockpath, 'w+')
-    lock_file(lockfile)
-    lockfile.write(str(os.getpid()))
-    lockfile.flush()
+    lockfile = LockFile(os.path.join(envname, '.lock'))
     try:
         # Create, initialize, and open the environment
         env = db.DBEnv()
