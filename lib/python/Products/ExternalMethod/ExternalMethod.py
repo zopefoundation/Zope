@@ -35,14 +35,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
     func_code=None
     
     manage_options=(
-	{'icon':icon,              'label':'Properties',
-	'action':'manage_main',   'target':'manage_main'},
-	{'icon':icon,
-	 'label':'Try It',
-	 'action':'',   'target':'manage_main'},
-	{'icon':'AccessControl/AccessControl_icon.gif',
-	 'label':'Access Control',
-	 'action':'manage_rolesForm',   'target':'manage_main'},
+	{'label':'Properties', 'action':'manage_main'},
+	{'label':'Try It', 'action':''},
+	{'label':'Access Control', 'action':'manage_access'},
 	)
 
     def __init__(self, id='', title='', module='', function=''):
@@ -63,6 +58,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 	module, function = join(names[:-1],'.'), names[-1]
 	self._module=module
 	self._function=function
+	try: del modules[module]
+	except: pass
 	self.getFunction()
 	if REQUEST: return MessageDialog(
 	    title  ='Changed %s' % self.id,
