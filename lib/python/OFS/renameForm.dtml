@@ -43,7 +43,7 @@
 <TR>
 <TD></TD>
 <TD COLSPAN="3">
-  <INPUT TYPE="HIDDEN" NAME=":default_method" VALUE="manage_renameObject">
+  <INPUT TYPE="HIDDEN" NAME=":default_method" VALUE="manage_renameObjects">
   <INPUT TYPE="submit" NAME="manage_renameObjects:method" VALUE=" Ok ">
   <INPUT TYPE="submit" NAME="manage_main:method" VALUE="Cancel">
 </TD>
