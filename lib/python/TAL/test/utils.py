@@ -24,7 +24,7 @@ def run_suite(suite, outf=None, errf=None):
 ##         map(print_error, result.errors)
 ##         print
 ##     if result.failures:
-##         print "Failures:"
+##         print "Failures (assertion failures):"
 ##         map(print_error, result.failures)
 ##         print
     newerrs = len(result.errors) + len(result.failures)
