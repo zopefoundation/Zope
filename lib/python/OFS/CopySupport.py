@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -305,13 +305,13 @@ class CopyContainer(ExtensionClass.Base):
                       title='Rename Error',
                       message=sys.exc_info()[1],
                       action ='manage_main')
+        self._delObject(id)
         ob = aq_base(ob)
         ob._setId(new_id)
         
         # Note - because a rename always keeps the same context, we
         # can just leave the ownership info unchanged.
         self._setObject(new_id, ob, set_owner=0)
-        self._delObject(id)
 
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, update_menu=1)
