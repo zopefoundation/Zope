@@ -536,7 +536,13 @@ static struct PyMethodDef WordSequence_module_methods[] = {
     { NULL, NULL }
 };
 
-static char WordSequence_module_documentation[] = "";
+static char WordSequence_module_documentation[] = 
+"Parse source strings into sequences of words\n"
+"\n"
+"for use in an inverted index\n"
+"\n"
+"$Id: WordSequence.c,v 1.5 1997/06/19 19:38:48 jim Exp $\n"
+;
 
 void
 initWordSequence() 

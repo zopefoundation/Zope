@@ -1,6 +1,6 @@
 /*
 
-  $Id: MultiMapping.c,v 1.3 1997/02/17 16:34:09 jim Exp $
+  $Id: MultiMapping.c,v 1.4 1997/06/19 19:36:22 jim Exp $
 
   Sample extension class program that implements multi-mapping objects. 
 
@@ -219,10 +219,11 @@ void
 initMultiMapping()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
 
   m = Py_InitModule4("MultiMapping", MultiMapping_methods,
-		     "MultiMapping -- Wrap multiple mapping objects for lookup",
+		     "MultiMapping -- Wrap multiple mapping objects for lookup"
+		     "\n\n$Id: MultiMapping.c,v 1.4 1997/06/19 19:36:22 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);
@@ -236,6 +237,9 @@ initMultiMapping()
 /*****************************************************************************
 
   $Log: MultiMapping.c,v $
+  Revision 1.4  1997/06/19 19:36:22  jim
+  Added ident string.
+
   Revision 1.3  1997/02/17 16:34:09  jim
   Made changes to be more useful for DocumentTemplates.
 
