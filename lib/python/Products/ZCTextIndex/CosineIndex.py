@@ -19,7 +19,6 @@ import math
 from BTrees.IIBTree import IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
-from Products.ZCTextIndex import WidCode
 from Products.ZCTextIndex.BaseIndex import BaseIndex, \
                                            inverse_doc_frequency, \
                                            scaled_int, SCALE_FACTOR
