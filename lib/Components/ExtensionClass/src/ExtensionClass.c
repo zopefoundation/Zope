@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.7 1997/02/24 23:17:47 jim Exp $
+  $Id: ExtensionClass.c,v 1.8 1997/03/08 12:44:31 jim Exp $
 
   Extension Class
 
@@ -56,6 +56,9 @@
       (540) 371-6909
 
   $Log: ExtensionClass.c,v $
+  Revision 1.8  1997/03/08 12:44:31  jim
+  Moved INSTANCE_DICT macro to public interface.
+
   Revision 1.7  1997/02/24 23:17:47  jim
   Fixed bug in subclass_nonzero.
 
@@ -97,7 +100,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.7 1997/02/24 23:17:47 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.8 1997/03/08 12:44:31 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -114,9 +117,6 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 #define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
-
-#define INSTANCE_DICT(inst) \
-*(((PyObject**)inst) + (inst->ob_type->tp_basicsize/sizeof(PyObject*) - 1))
 
 
 /* Declarations for objects of type ExtensionClass */
@@ -2802,7 +2802,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;

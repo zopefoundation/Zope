@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.4 1997/02/17 16:26:59 jim Exp $
+  $Id: ExtensionClass.h,v 1.5 1997/03/08 12:44:13 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,9 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.5  1997/03/08 12:44:13  jim
+  Moved INSTANCE_DICT macro to public interface.
+
   Revision 1.4  1997/02/17 16:26:59  jim
   Many changes in access to CAPI.
 
@@ -350,6 +353,9 @@ static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
     (((PyExtensionClass*)((O)->ob_type))->class_flags & \
      EXTENSIONCLASS_BINDABLE_FLAG))
 
+/* Get an object's instance dictionary.  Use with caution */
+#define INSTANCE_DICT(inst) \
+*(((PyObject**)inst) + (inst->ob_type->tp_basicsize/sizeof(PyObject*) - 1))
 
 
 /*****************************************************************************
