@@ -10,18 +10,22 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.11 1997/09/25 22:33:01 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Aqueduct.py,v 1.12 1997/09/26 22:17:36 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
-from Globals import HTMLFile
+from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
-import binascii
+import binascii, Acquisition
 DateTime.now=DateTime.DateTime
 from cStringIO import StringIO
+from OFS import SimpleItem
+from AccessControl.Role import RoleManager
+from DocumentTemplate import HTML
 
 dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
 
-class BaseQuery:
+class BaseQuery(Persistent, SimpleItem.Item, Acquisition.Implicit, RoleManager):
+
     def query_year(self): return self.query_date.year()
     def query_month(self): return self.query_date.month()
     def query_day(self): return self.query_date.day()
@@ -33,70 +37,82 @@ class BaseQuery:
 
     MissingArgumentError='Bad Request'
 
-    def _argdata(self,REQUEST,raw=0,return_missing_keys=0):
+    def _argdata(self, REQUEST):
+
+	r={}
 	args=self._arg
-	argdata={}
 	id=self.id
-	missing_keys=[]
-	for arg in args.keys():
-	    a=arg
-	    l=string.find(arg,':')
-	    if l > 0: arg=arg[:l]
-	    v=REQUEST
+	missing=[]
+
+	for name in args.keys():
+	    idname="%s/%s" % (id, name)
 	    try:
-		try: v=REQUEST[arg]
-		except (KeyError, AttributeError): pass
-		if v is REQUEST:
-		    try: v=REQUEST["%s.%s" % (id,arg)]
-		    except (KeyError, AttributeError): pass
-		if v is REQUEST:
-		    l=string.find(arg,'.')
-		    if l > 0 and raw:
-			arg=arg[l+1:]
-			try: v=REQUEST[arg]
-			except (KeyError, AttributeError): pass
-			if v is REQUEST:
-			    try: v=REQUEST["%s.%s" % (id,arg)]
-			    except (KeyError, AttributeError): pass
+		r[name]=REQUEST[idname]
 	    except:
-		# Hm, we got another error, must have been an invalid
-		# input.
-		raise 'Bad Request', (
-		    'The value entered for <em>%s</em> was invalid' % arg)
-		
-	    if v is REQUEST:
-		try: v=args[a]['default']
-		except: v=None
-		if v is None:
-		    if hasattr(self,arg): v=getattr(self,arg)
-		    else:
-			if return_missing_keys:
-			    missing_keys.append(arg)
-			else:
-			    raise self.MissingArgumentError, (
-				'''The required value <em>%s</em> was
-				ommitted''' % arg)
+		try: r[name]=REQUEST[name]
+		except:
+		    arg=args[name]
+		    try: r[name]=arg['default']
+		    except:
+			try:
+			    if not arg['optional']: missing.append(name)
+			except: missing.append(name)
+		    
+	if missing:
+	    raise self.MissingArgumentError, missing
 
-	    if raw:
-		argdata[a]=v
-	    else:
-		argdata[arg]=v
+	return r
 
-	if return_missing_keys and missing_keys:
-	    raise self.MissingArgumentError, missing_keys
+    _col=None
+    _arg={}
 
-	return argdata
+class Searchable(BaseQuery):
 
-    def _query_string(self,argdata,query_method='query'):
-	return "%s?%s" % (
-	    query_method,
-	    string.joinfields(
-		map(lambda k, d=argdata:
-		    "%s=%s" % (k, urllib.quote(str(d[k])))
-		    , argdata.keys())
-		)
-	    )
+    def _searchable_arguments(self): return self._arg
 
+    def _searchable_result_columns(self): return self._col
+
+    def manage_testForm(self, REQUEST):
+	"""Provide testing interface"""
+	input_src=default_input_form(self.title_or_id(),
+				     self._arg, 'manage_test')
+	return HTML(input_src)(self, REQUEST)
+
+    def manage_test(self, REQUEST):
+	'Perform an actual query'
+	
+	result=self(REQUEST)
+	report=HTML(custom_default_report(self.id, result))
+	return apply(report,(self,REQUEST),{self.id:result})
+
+    def index_html(self, PARENT_URL):
+	" "
+	raise 'Redirect', ("%s/manage_testForm" % PARENT_URL)
+
+class Composite:    
+
+    def _getquery(self,id):
+
+	o=self
+	i=0
+	while 1:
+	    __traceback_info__=o
+	    q=getattr(o,id)
+	    try:
+		if hasattr(q,'_searchable_arguments'):
+		    try: q=q.__of__(self.aq_parent)
+		    except: pass
+		    return q
+	    except: pass
+	    if i > 100: raise AttributeError, id
+	    i=i+1
+	    o=o.aq_parent
+	    
+    def myQueryIds(self):
+	return map(
+	    lambda k, queries=self.queries:
+	    {'id': k, 'selected': k in queries},
+	    self.aqueductQueryIds())
 
 def default_input_form(id,arguments,action='query'):
     if arguments:
@@ -114,7 +130,7 @@ def default_input_form(id,arguments,action='query'):
 		string.joinfields(
 		    map(
 			lambda a:
-			('<tr>\t<td><strong>%s</strong>:</td>\n'
+			('<tr>\t<th>%s</th>\n'
 		         '\t<td><input name="%s" width=30 value="%s">'
 			 '</td></tr>'
 			 % (nicify(a[0]),
@@ -128,7 +144,7 @@ def default_input_form(id,arguments,action='query'):
 			, items
 			),
 		'\n'),
-		'\n<tr><td></td><td>\n'
+		'\n<tr><td colspan=2 align=center>\n'
 		'<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
 		'<!--#if HTTP_REFERER-->\n'
 		'  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
@@ -200,44 +216,6 @@ def decodestring(s):
 	g = StringIO()
 	decode(f, g)
 	return g.getvalue()
-
-def parse(text,
-	  prefix=None,
-	  result=None,
-	  unparmre=regex.compile(
-	      '\([\0- ]*\([^\0- =\"]+\)\)'),
-	  parmre=regex.compile(
-	      '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-	  qparmre=regex.compile(
-	      '\([\0- ]*\([^\0- =\"]+\)="\([^"]+\)\"\)'),
-	  ):
-
-    if result is None: result = {}
-
-    __traceback_info__=text
-
-    if parmre.match(text) >= 0:
-	name=parmre.group(2)
-	value=parmre.group(3)
-	l=len(parmre.group(1))
-    elif qparmre.match(text) >= 0:
-	name=qparmre.group(2)
-	value=qparmre.group(3)
-	l=len(qparmre.group(1))
-    elif unparmre.match(text) >= 0:
-	name=unparmre.group(2)
-	l=len(unparmre.group(1))
-	if prefix: name="%s.%s" % (prefix,name)
-	result[name]=None
-	return parse(text[l:],prefix,result)
-    else:
-	if not text or not strip(text): return result
-	raise InvalidParameter, text
-
-    if prefix: name="%s.%s" % (prefix,name)
-    result[name]=value
-
-    return parse(text[l:],prefix,result)
 
 def parse(text,
 	     result=None,
@@ -365,6 +343,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.12  1997/09/26 22:17:36  jim
+# more
+#
 # Revision 1.11  1997/09/25 22:33:01  jim
 # fixed argument handling bugs
 #

@@ -36,7 +36,7 @@ Edit
 	<td><input name="arguments" size="40" value="<!--#var arguments_src-->"></td>
 		</tr>
 <tr>	<td colspan=2><strong>Query template:</strong><br>
-	    <textarea name="template" rows=10 cols=60>
+	    <textarea name="template:text" rows=10 cols=60>
 <!--#var quoted_src-->
 </textarea></td></tr>
 

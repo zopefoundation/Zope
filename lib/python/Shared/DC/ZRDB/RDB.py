@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.4 1997/09/25 18:40:58 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: RDB.py,v 1.5 1997/09/26 22:17:37 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -101,6 +101,8 @@ class File:
 	# Create a record class to hold the records.
 	class r(Record): pass
 	r.__record_schema__=schema
+	for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
+	    setattr(r,k,getattr(Record,k))
 	self._class=r
 
 	# OK, we've read meta data, now get line indexes
@@ -157,6 +159,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.5  1997/09/26 22:17:37  jim
+# more
+#
 # Revision 1.4  1997/09/25 18:40:58  jim
 # new interfaces and RDB
 #

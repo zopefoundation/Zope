@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.11 1997/09/25 21:11:52 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: DA.py,v 1.12 1997/09/26 22:17:45 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -157,8 +157,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
-	argdata=self._argdata(REQUEST,1)
-	query_string=self._query_string(argdata,'manage_test')
+	argdata=self._argdata(REQUEST)
 	query=self.template(self,argdata)
 	result=DB__.query(query)
 	result=Aqueduct.RDB.File(StringIO(result))
@@ -210,6 +209,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.12  1997/09/26 22:17:45  jim
+# more
+#
 # Revision 1.11  1997/09/25 21:11:52  jim
 # got rid of constructor
 #
