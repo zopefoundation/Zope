@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.72 1999/08/30 18:01:09 jim Exp $'''
-__version__='$Revision: 1.72 $'[11:-2]
+$Id: DA.py,v 1.73 1999/10/28 13:16:30 brian Exp $'''
+__version__='$Revision: 1.73 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -379,7 +379,8 @@ class DA(
         try: dbc=getattr(self, self.connection_id)
         except AttributeError:
             raise AttributeError, (
-                "The database connection, <em>%s</em>, cannot be found.")
+                "The database connection <em>%s</em> cannot be found." % (
+                self.connection_id))
 
         try: DB__=dbc()
         except: raise 'Database Error', (
