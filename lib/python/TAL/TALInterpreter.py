@@ -157,7 +157,7 @@ class TALInterpreter:
         self.macros = macros
         self.engine = engine
         self.TALESError = engine.getTALESError()
-        self.CancelAction = engine.getCancelAction()
+        self.Default = engine.getDefault()
         self.stream = stream or sys.stdout
         self.debug = debug
         self.wrap = wrap
@@ -265,7 +265,7 @@ class TALInterpreter:
                 if action <= 1 and self.tal:
                     if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
                         evalue = self.engine.evaluateBoolean(item[3])
-                        if evalue is self.CancelAction:
+                        if evalue is self.Default:
                             if action == 1: # Cancelled insert
                                 continue
                         elif not evalue:
@@ -274,7 +274,7 @@ class TALInterpreter:
                             value = None
                     else:
                         evalue = self.engine.evaluateText(item[3])
-                        if evalue is self.CancelAction:
+                        if evalue is self.Default:
                             if action == 1: # Cancelled insert
                                 continue
                         else:
@@ -285,6 +285,8 @@ class TALInterpreter:
                       name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro
+                elif action == 1:
+                    continue # Unexecuted insert
             if value is None:
                 s = name
             else:
@@ -327,7 +329,7 @@ class TALInterpreter:
         text = self.engine.evaluateText(expr)
         if text is None:
             return
-        if text is self.CancelAction:
+        if text is self.Default:
             self.interpret(block)
             return
         text = cgi.escape(text)
@@ -340,7 +342,7 @@ class TALInterpreter:
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
             return
-        if structure is self.CancelAction:
+        if structure is self.Default:
             self.interpret(block)
             return
         text = str(structure)
@@ -397,7 +399,7 @@ class TALInterpreter:
             self.interpret(block)
             return
         macro = self.engine.evaluateMacro(macroExpr)
-        if macro is self.CancelAction:
+        if macro is self.Default:
             self.interpret(block)
             return
         if not isCurrentVersion(macro):
