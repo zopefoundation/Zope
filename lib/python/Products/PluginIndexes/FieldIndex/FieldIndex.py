@@ -32,6 +32,9 @@ class FieldIndex(UnIndex):
         {'label': 'Settings',
          'action': 'manage_main',
          'help': ('FieldIndex','FieldIndex_Settings.stx')},
+        {'label': 'Browse',
+         'action': 'manage_browse',
+         'help': ('FieldIndex','FieldIndex_Settings.stx')},
     )
 
     query_options = ["query","range"]
@@ -39,6 +42,7 @@ class FieldIndex(UnIndex):
     index_html = DTMLFile('dtml/index', globals())
 
     manage_workspace = DTMLFile('dtml/manageFieldIndex', globals())
+    manage_browse = DTMLFile('../dtml/browseIndex', globals())
 
 
 manage_addFieldIndexForm = DTMLFile('dtml/addFieldIndex', globals())
