@@ -14,10 +14,10 @@ rem If this script doesnt work for you for some reason, instead just run
 rem "YOUR_PYTHON_EXECUTABLE inst\configure.py --prefix=ZOPE_TARGET_DIR"
 rem to build Zope.
 
-rem $Id: configure.bat,v 1.2 2003/03/22 17:02:12 chrism Exp $
-rem $Revision: 1.2 $
+rem $Id: configure.bat,v 1.3 2003/06/21 13:46:56 chrism Exp $
+rem $Revision: 1.3 $
 
-set PYTHON_TARGET_VER=2.2
+set PYTHON_TARGET_VER=2.3
 set DEFAULT_PREFIX=C:\Zope
 echo.
 
