@@ -215,11 +215,6 @@ Lots of discussion!
 
    AAA This is to service to-be-chrooted installs.
 
- - zopectl debug (opens up a Python interpreter shell with the app
-   name bound to the root application object) and zopectl run
-   (execfiles a module with the app name bound to the root application
-   object).
-
  - Explain how to set up and use a ZEO server using mkzeoinst
    included in 2.7's ZEO.
 
