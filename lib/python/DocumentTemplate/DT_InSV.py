@@ -85,8 +85,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.14 1999/08/25 19:19:25 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: DT_InSV.py,v 1.15 1999/10/28 17:08:36 petrilli Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 from string import lower, rfind
 from math import sqrt
@@ -237,6 +237,8 @@ class sequence_variables:
                 if mapping: item=item[name]
                 else: item=getattr(item,name)
                 try:
+                    if item is mv:
+                        item = None
                     s=item*item
                     sum=sum+item
                     sumsq=sumsq+s
