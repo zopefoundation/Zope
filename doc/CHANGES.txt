@@ -128,6 +128,8 @@ Zope Changes
 	  corruption.  Code has been added to check for this case and
 	  recover by truncating the file with a log message.
 
+        - The Zope version was not shown in the control panel.
+
     Zope 2.0 beta 3
     
       Features added
