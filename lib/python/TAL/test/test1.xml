@@ -5,7 +5,8 @@
 
   <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo as python:1">
 
-    <h1 z:insert="str:This Is The Replaced Title">Title</h1>
+    <h1 z:insert="str:This Is The Replaced Title">Title</h1><span
+    z:omit="">This stuff is omitted</span>
 
   <!-- examples adapted from TemplateAttributeLanguageSyntax -->
 
