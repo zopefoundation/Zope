@@ -25,7 +25,7 @@
     <tr><td></td></tr>
     <dtml-if first_transaction>
        <tr><td colspan=2 align=center>
-       <a href="manage_UndoForm?first_transaction:int=<dtml-var
+        <a href="manage_UndoForm?first_transaction:int=<dtml-var
 	 expr="first_transaction*2-last_transaction"
 	 >&last_transaction:int=<dtml-var first_transaction
          >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
@@ -49,19 +49,19 @@
       </td>
     </tr>
     </dtml-in>
-    <tr><td colspan=2 align=center>
     <dtml-if expr="_.len(undoable_transactions) == PrincipiaUndoBatchSize">
+       <tr><td colspan=2 align=center>
        <a href="manage_UndoForm?first_transaction:int=<dtml-var
 	 last_transaction>&last_transaction:int=<dtml-var
 	 expr="last_transaction+PrincipiaUndoBatchSize"
          >&PrincipiaUndoBatchSize:int=<dtml-var PrincipiaUndoBatchSize
          >">
        Earlier Transactions</a>
+       </td></tr>
     </dtml-if>
-    </td></tr>
     <tr><td></td></tr>
     <tr><td colspan=2 align=center><INPUT TYPE="SUBMIT" VALUE=" Undo ">
-    </td></tr>
+        </td></tr>
   </table>
   </FORM>
 
