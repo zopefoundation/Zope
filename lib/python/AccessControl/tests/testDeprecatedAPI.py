@@ -89,8 +89,8 @@ To be removed together with the API in due time.
 
 """
 
-__rcs_id__='$Id: testDeprecatedAPI.py,v 1.1 2001/10/16 21:42:12 mj Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: testDeprecatedAPI.py,v 1.2 2001/10/17 15:44:43 mj Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
 import ZODB # Sigh. Persistent needs to be set, so we import ZODB.
 from AccessControl import User
@@ -116,7 +116,8 @@ class DeprecatedAPI(unittest.TestCase):
         try:
             self.userObject.allowed(None)
         except DeprecationWarning:
-            self.fail('Expected DeprecationWarning, none given')
+            self.fail('Unexpected DeprecationWarning, '
+                'no warnings expected here')
         else:
             pass
 
