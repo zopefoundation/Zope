@@ -101,20 +101,20 @@ BoboPOS.PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
-SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
+VersionBase=Globals.VersionBase=TJar.TM(Bobobase)
 
 if os.environ.has_key('ZOPE_DATABASE_QUOTA'):
     quota=string.atoi(os.environ['ZOPE_DATABASE_QUOTA'])
     Bobobase._jar.db.set_quota(
-        lambda x, quota=quota, otherdb=SessionBase.TDB:
+        lambda x, quota=quota, otherdb=VersionBase.TDB:
         x + otherdb.pos > quota)
-    SessionBase.TDB.set_quota(
+    VersionBase.TDB.set_quota(
         lambda x, quota=quota, otherdb=Bobobase._jar.db:
         x + otherdb.pos > quota)
 
 
 
-SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
+SingleThreadedTransaction.Transaction.commit=VersionBase.committer()
 
 bobo_application=app=Bobobase['Application']
 

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -96,7 +96,7 @@ from App.Dialogs import MessageDialog
 from Product import ProductFolder
 
 class Fake:
-    def locked_in_session(self): return 0
+    def locked_in_version(self): return 0
 
 class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Database management"""
@@ -217,7 +217,7 @@ class ApplicationManager(Folder,CacheManager):
         db=Globals.Bobobase._jar.db
         db.save_index()
         db.file.close()
-        db=Globals.SessionBase.TDB
+        db=Globals.VersionBase.TDB
         db.save_index()
         db.file.close()
         sys.exit(0)
@@ -225,9 +225,9 @@ class ApplicationManager(Folder,CacheManager):
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
         if self._p_jar.db is not Globals.Bobobase._jar.db:
-            raise 'Session Error', (
+            raise 'Version Error', (
                 '''You may not pack the application database while
-                working in a <em>session</em>''')
+                working in a <em>version</em>''')
         t=time.time()-days*86400
         if Globals.Bobobase.has_key('_pack_time'):
             since=Globals.Bobobase['_pack_time']

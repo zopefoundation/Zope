@@ -25,13 +25,13 @@
   <A HREF="<!--#var sequence-key url_quote-->/manage_workspace">
   <!--#var sequence-key--> <!--#if title-->(<!--#var title-->)<!--#/if-->
   </A>
-  <!--#if locked_in_session-->
-    <!--#if modified_in_session-->
+  <!--#if locked_in_version-->
+    <!--#if modified_in_version-->
       <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
-       ALT="This item has been modified in this session">
+       ALT="This item has been modified in this version">
     <!--#else-->
       <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
-       ALT="This item has been modified in another session">
+       ALT="This item has been modified in another version">
     <!--#/if-->
   <!--#/if-->
   </TD>

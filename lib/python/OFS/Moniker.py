@@ -86,11 +86,11 @@
 
    An object moniker is an intelligent reference to a
    persistent object. A moniker can be turned back into
-   a real object that retains its correct session context
+   a real object that retains its correct version context
    and aquisition relationships via a simple interface.
 
 """
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 import Globals
@@ -98,7 +98,7 @@ import Globals
 class Moniker:
     """An object moniker is an intelligent reference to a
     persistent object. A moniker can be turned back into
-    a real object that retains its correct session context
+    a real object that retains its correct version context
     and aquisition relationships via a simple interface."""
     
     def __init__(self, ob=None):
@@ -123,7 +123,7 @@ class Moniker:
     def bind(self):
         "Return the real object named by this moniker"
         if self.jar is None: jar=Globals.Bobobase._jar
-        else: jar=Globals.SessionBase[self.jar].jar
+        else: jar=Globals.VersionBase[self.jar].jar
         ob=None
         for n in self.ids:
             o=jar[n]

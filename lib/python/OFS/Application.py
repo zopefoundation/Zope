@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.91 1999/03/22 17:30:08 jim Exp $'''
-__version__='$Revision: 1.91 $'[11:-2]
+$Id: Application.py,v 1.92 1999/03/22 18:13:42 michel Exp $'''
+__version__='$Revision: 1.92 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -257,8 +257,8 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     Redirect=ZopeRedirect=PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
-        if name is None and REQUEST.has_key(Globals.SessionNameName):
-            pd=Globals.SessionBase[REQUEST[Globals.SessionNameName]]
+        if name is None and REQUEST.has_key(Globals.VersionNameName):
+            pd=Globals.VersionBase[REQUEST[Globals.VersionNameName]]
             alternate_self=pd.jar[self._p_oid]
             if hasattr(self, 'aq_parent'):
                 alternate_self=alternate_self.__of__(self.aq_parent)

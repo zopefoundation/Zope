@@ -5,11 +5,11 @@
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <!--#var manage_tabs-->
 
-<!--#if Principia-Session-->
+<!--#if Principia-Version-->
 <p>
-<em>You are currently working in session <!--#var Principia-Session--></em>
+<em>You are currently working in version <!--#var Principia-Version--></em>
 </p>
-<!--#/if Principia-Session-->
+<!--#/if Principia-Version-->
 
 <form action="." method="POST">
 <!--#if propertyMap-->

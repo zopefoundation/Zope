@@ -17,9 +17,9 @@ the <em>Zope</em> process. <em>Zope</em> be restarted on the next web request.
 <BR><INPUT TYPE="SUBMIT" VALUE="Shutdown">
 </FORM>
 
-<!--#if Principia-Session-->
-<EM>You are currently working in session <!--#var Principia-Session--></EM>
-<!--#/if Principia-Session-->
+<!--#if Principia-Version-->
+<EM>You are currently working in version <!--#var Principia-Version--></EM>
+<!--#/if Principia-Version-->
 <P>
 
 <TABLE>
@@ -35,13 +35,13 @@ the <em>Zope</em> process. <em>Zope</em> be restarted on the next web request.
   <A HREF="<!--#var sequence-key-->/manage_workspace">
   <!--#var title--> 
   </A>
-  <!--#if locked_in_session-->
-    <!--#if modified_in_session-->
+  <!--#if locked_in_version-->
+    <!--#if modified_in_version-->
       <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
-       ALT="This item has been modified in this session">
+       ALT="This item has been modified in this version">
     <!--#else-->
       <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
-       ALT="This item has been modified in another session">
+       ALT="This item has been modified in another version">
     <!--#/if-->
   <!--#/if-->
   </TD>

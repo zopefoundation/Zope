@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -177,12 +177,12 @@ class PersistentUtil:
         except: t=0
         return DateTime(t)
 
-    def locked_in_session(self):
+    def locked_in_version(self):
         oid=self._p_oid
-        return (oid and SessionBase.locks.has_key(oid)
-                and SessionBase.verify_lock(oid))
+        return (oid and VersionBase.locks.has_key(oid)
+                and VersionBase.verify_lock(oid))
 
-    def modified_in_session(self):
+    def modified_in_version(self):
         jar=self._p_jar
         if jar is None:
             if hasattr(self,'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
@@ -235,7 +235,7 @@ BobobaseName = '%s/Data.bbb' % data_dir
 
 from App.Dialogs import MessageDialog
 
-SessionNameName='Principia-Session'
+VersionNameName='Principia-Version'
     
 # utility stuff
 
