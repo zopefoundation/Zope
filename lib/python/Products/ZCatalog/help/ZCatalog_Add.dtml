@@ -1,0 +1,9 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../ZCatalog.dtml">ZCatalog</a>&gt;Add</h1>
+<p>This view allows you to create a new ZCatalog.</p>
+<p>The <tt>Id</tt> field specifies the id of the ZCatalog.
+		  The <tt>Title</tt> field allows you to specify the title of the
+		  ZCatalog. Click the <tt>Add</tt> button to create a new
+		  ZCatalog.</p>
+<dtml-var standard_html_footer>
