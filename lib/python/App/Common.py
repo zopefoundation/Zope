@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, time
 from string import rfind
@@ -76,7 +76,15 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
     # subobject of its aq_parent object.
     if not hasattr(ob, 'aq_parent'):
         return 0
-    if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
+
+    parent = aq_base(ob.aq_parent)
+    absId  = absattr(ob.id)
+    
+    if hasattr(parent,'_objects'):
+        if absId+' ' in parent.objectIds():
+            return 0
+
+    if hasattr(parent, absId):
         return 0
     if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
             ob.isTopLevelPrincipiaApplicationObject:
