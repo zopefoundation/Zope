@@ -115,6 +115,7 @@ class DebugLogger:
         l=thread.allocate_lock()
         self._acquire=l.acquire
         self._release=l.release
+        self.log('U', '000000000', 'System startup')
         
     def log(self, code, request_id, data=''):
         self._acquire()
