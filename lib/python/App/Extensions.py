@@ -12,8 +12,8 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.1 1998/08/03 13:43:26 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Extensions.py,v 1.2 1998/09/16 16:52:42 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
@@ -42,7 +42,9 @@ def getObject(module, name, reload=0, modules={}):
     d,n = path_split(module)
     if d: raise ValueError, (
         'The file name, %s, should be a simple file name' % module)
-    m={}
+
+    execsrc=None
+
     d=find(n,'.')
     if d > 0:
         d,n=n[:d],n[d+1:]
@@ -53,14 +55,23 @@ def getObject(module, name, reload=0, modules={}):
             data=zlib.decompress(
                 rotor.newrotor(d+' shshsh').decrypt(open(n).read())
                 )
-            exec compile(data,module,'exec') in m
-        else:       
-            exec open("%s/Extensions/%s.py" %
-                      (SOFTWARE_HOME, module)) in m
-    else:
-        exec open("%s/Extensions/%s.py" % (SOFTWARE_HOME, module)) in m
+            execsrc=compile(data,module,'exec')
 
-    r=m[name]
+    if execsrc is None:
+        try: execsrc=open("%s/Extensions/%s.py" % (SOFTWARE_HOME, module))
+        except: raise "Module Error", (
+            "The specified module, <em>%s</em>, couldn't be opened."
+            % module)
+
+    m={}
+    exec execsrc in m
+
+    try: r=m[name]
+    except KeyError:
+        raise 'Invalid Object Name', (
+            "The specified object, <em>%s</em>, was not found in module, "
+            "<em>%s</em>." % (name, module))
+
     if old:
         for k, v in m.items(): old[k]=v
     else: modules[module]=m
@@ -88,6 +99,9 @@ def getBrain(module, class_name, reload=0):
 ############################################################################## 
 #
 # $Log: Extensions.py,v $
+# Revision 1.2  1998/09/16 16:52:42  jim
+# Improved error reporting.
+#
 # Revision 1.1  1998/08/03 13:43:26  jim
 # new folderish control panel and product management
 #
