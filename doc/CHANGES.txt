@@ -4,6 +4,13 @@ Zope changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+        - Data.fs.in index_html now shows zope_quick_start instead
+          of old, inaccurate content.
+
+        - Changed index_html, standard_html_header, standard_html_footer,
+          and standard_error_message in Data.fs.in to use "new" DTML syntax
+          (as opposed to SSI-style syntax).
+
     Zope 2.3.0 beta 1
 
       Features Added
