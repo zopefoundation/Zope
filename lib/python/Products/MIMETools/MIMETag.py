@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.6 2001/04/27 20:27:41 shane Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.7 2001/11/27 14:28:39 andreasjung Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -182,7 +182,9 @@ class MIMETag:
 
     def render(self, md):
         contents=[]
-        mw = MimeWriter(StringIO())
+        IO = StringIO()
+        IO.write("Mime-Version: 1.0\n")
+        mw = MimeWriter(IO)
         outer = mw.startmultipartbody(self.multipart)
         for x in self.sections:
             a, b = x
