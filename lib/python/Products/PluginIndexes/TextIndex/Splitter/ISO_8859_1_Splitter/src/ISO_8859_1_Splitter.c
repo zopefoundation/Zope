@@ -84,7 +84,7 @@ static void initSplitterTrtabs(void)
     }
 
     for (i=0;i<sizeof(DIGITSETC);i++) {
-        letdig[(int)DIGITSETC[i]]=1;
+        letdig[(unsigned char)DIGITSETC[i]]=1;
     }
 }
 
@@ -574,7 +574,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ISO_8859_1_Splitter.c,v 1.10 2002/07/18 21:53:45 bwarsaw Exp $\n"
+    "$Id: ISO_8859_1_Splitter.c,v 1.11 2002/07/22 20:32:58 matt Exp $\n"
     ;
 
 
