@@ -88,10 +88,9 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.32 $'[11:-2]
-from Acquisition import Explicit
+__version__='$Revision: 1.33 $'[11:-2]
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
-import OFS.SimpleItem
+import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
 import AccessControl.Role, sys, os, stat, traceback
 from OFS.SimpleItem import pretty_tb
@@ -127,7 +126,7 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
 
-class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
+class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
                      AccessControl.Role.RoleManager):
     """Web-callable functions that encapsulate external python functions.
 
@@ -148,6 +147,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
     meta_type='External Method'
     func_defaults=()
     func_code=None
+
+    ZopeTime=Acquisition.Acquired
     
     manage_options=(
         {'label':'Properties', 'action':'manage_main'},
