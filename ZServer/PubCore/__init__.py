@@ -85,4 +85,18 @@
 
 import ZRendezvous
 
-handle=ZRendezvous.ZRendevous().handle
+_handle=None
+_n=1
+
+def handle(*args, **kw):
+    global _handle
+
+    if _handle is None: _handle=ZRendezvous.ZRendevous(_n).handle
+
+    return apply(_handle, args, kw)
+
+def setNumberOfThreads(n):
+    global _n
+    _n=n
+    global setNumberOfThreads
+    del setNumberOfThreads
