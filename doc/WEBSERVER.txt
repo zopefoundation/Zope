@@ -2,35 +2,35 @@ Using Zope with an existing web server
 --------------------------------------
 
   While Zope comes with a web server, you may wish to use it with an
-  existing web server. Use Persistent CGI (PCGI) to allow your existing
-  web server to work with Zope on Unix and Windows.
+  existing web server.  Use Persistent CGI (PCGI) to allow your
+  existing web server to work with Zope on Unix and Windows.
 
   Roughly, PCGI is a protocol for translating CGI requests from a web
   server into Zope requests.  CGI requests are traditionally one shot
   events; the web server handles a request for a CGI script by
-  spawning a new process to handle the requests, returning the results 
+  spawning a new process to handle the requests, returning the results
   of the request when the process dies.
 
   Zope is a long running process, which means that it does not start
-  up and die on each request like traditional CGI programs (if it did, 
-  each request would take far too long due to the time to start and
-  stop an application as large as Zope).  In order to gateway from the 
-  separate CGI processes to the Zope long running Process, PCGI must
-  be used.
+  up and die on each request like traditional CGI programs.  If it
+  did, each request would take far too long due to the time to start
+  and stop an application server like Zope.  Thus, PCGI is one of the
+  options for gatewaying from the separate CGI processes to the Zope
+  long running process.
 
-Using Zope in multi threaded mode with ZServer
+Using Zope in multi-threaded mode with ZServer
 ----------------------------------------------
 
   ZServer is a general purpose TCP server for publishing Zope objects
   over various transport protocols.  For Zope to run multi-threaded,
   you must run ZServer.
 
-  ZServer is based on Sam Rushing's medusa software.  The benefit of
-  using medusa as the ZServer core is that it is not protocol specific 
-  (medusa provides libraries to program for any protocol) and it is
-  easily extensible.  Because medusa is written in Python, is extremely 
-  high performance by design, and comes with an HTTP and FTP server,
-  we chose it for the Zope core.
+  ZServer is based on Sam Rushing's Medusa software.  The benefit of
+  using Medusa as the ZServer core is that it is not protocol specific
+  (Medusa provides libraries to program for any protocol) and it is
+  easily extensible.  Because Medusa is written in Python, is
+  extremely high performance by design, and comes with an HTTP and FTP
+  server, we chose it for the Zope core.
 
   It is not necessary, however, for ZServer to actually listen for
   incoming HTTP requests.  If you want Apache to do the actual
@@ -38,18 +38,19 @@ Using Zope in multi threaded mode with ZServer
   communicate with Apache.
 
   To run ZServer with PCGI, you must specify the -p option to the
-  z2.py startup script.  From the top level Zope directory, you can:
+  'z2.py' startup script.  From the top level Zope directory, you
+  can::
 
     bash% python1.5.2 z2.py -p
 
-  Note, you must have gone through the directions in INSTALL.txt for
-  this to work. 
+  Note, you must have gone through the directions in 'INSTALL.txt' for
+  this to work.
 
   This command will start ZServer up with PCGI (by default, it will
   also start up an HTTP and FTP server).  For PCGI to work, the
-  webserver and apache must agree on a PCGI resource file.  If this
-  file is not named 'Zope.cgi' and is not in the same directory as
-  z2.py, then you can specify the file name after the '-p', like:
+  webserver and Zope must agree on a PCGI resource file.  If this file
+  is not named 'Zope.cgi' and is not in the same directory as 'z2.py',
+  then you can specify the file name after the '-p', like::
 
     bash% python.1.5.2 z2.py -p /path/to/PCGI/resource/file
 
@@ -57,11 +58,11 @@ Using Zope in multi threaded mode with ZServer
   component is loaded and ready to receive CGI requests from your
   webserver.  
 
-  The installation process should create a 'Zope.cgi' PCGI file. Copy the
-  'Zope.cgi' file to your web server's cgi-bin directory.
+  The installation process should create a 'Zope.cgi' PCGI file. Copy
+  the 'Zope.cgi' file to your web server's 'cgi-bin' directory.
   
-  On Unix you can also create a symbolic link to 'Zope.cgi' from your cgi-bin
-  directory. For example::
+  On Unix you can also create a symbolic link to 'Zope.cgi' from your
+  cgi-bin directory. For example::
 
     ln -s /home/amos/Zope/Zope.cgi /usr/local/apache/cgi-bin/Zope
 
@@ -72,23 +73,22 @@ Using Zope in multi threaded mode with ZServer
   http://starship.skyport.net/crew/jbauer/persistcgi/.
 
   When your Zope.cgi file is correctly configured as a CGI script with
-  your web server, you are ready to access Zope through the web. You should
-  point your browser at:
+  your web server, you are ready to access Zope through the web. You
+  should point your browser at:
 
     'http://youmachine.example.com:8998/cgi-bin/Zope.cgi/manage'
 
   (Your URL maybe be different depending on how your web server is configured.)
 
-  You should be prompted to enter a username and password. Enter the Zope
-  "super manager" name and password.
-
+  You should be prompted to enter a username and password.  Enter the
+  Zope "super manager" name and password.
 
   Note: Apache requires some tricky configuration to get it to pass
   the HTTP authentication header information to Zope.  See the section 
   'Zope authentication with existing web servers'.
 
 
-Using Zope in single threaded mode with pcgi_publisher
+Using Zope in single-threaded mode with pcgi_publisher
 ------------------------------------------------------
 
   The installation process should create a 'Zope.cgi' PCGI file. Copy the
@@ -106,25 +106,26 @@ Using Zope in single threaded mode with pcgi_publisher
   http://starship.skyport.net/crew/jbauer/persistcgi/.
 
   When your Zope.cgi file is correctly configured as a CGI script with
-  your web server, you are ready to access Zope through the web. You should
-  point your browser at:
+  your web server, you are ready to access Zope through the web. You
+  should point your browser at:
 
     'http://youmachine.example.com:8998/cgi-bin/Zope.cgi/manage'
 
-  (Your URL maybe be different depending on how your web server is configured.)
+  (Your URL maybe be different depending on how your web server is
+  configured.)
 
   You should be prompted to enter a username and password. Enter the Zope
   "super manager" name and password.
 
-
 Zope authentication with existing web servers
 ---------------------------------------------
 
-  Zope normally performs both authentication and authorization of users.
-  Some web servers don't pass authentication information to CGI scripts.
-  If you keep getting rejected when you try to access Zope through the
-  web with the "super manager" user name and password, there is a good chance
-  that your web server is not passing authentication information to Zope.
+  Zope normally performs both authentication and authorization of
+  users.  Some web servers don't pass authentication information to
+  CGI scripts.  If you keep getting rejected when you try to access
+  Zope through the web with the "super manager" user name and
+  password, there is a good chance that your web server is not passing
+  authentication information to Zope.
 
   Tricking Apache to pass authentication headers
 
@@ -133,16 +134,18 @@ Zope authentication with existing web servers
     precompiled version of Apache for Linux that drops right into Zope
     with no hassles.  Even if you want to use your own Apache, or if
     you use it on a different platform than Linux, it is very helpful
-    to have Zap's .conf file to guide you through configuring Apache.
+    to have Zap's 'httpd.conf' file to guide you through configuring
+    Apache.
 
     Zap can be found on the Zope website at:
 
       http://www.zope.org/Download/Releases/Zap-1.1.0
 
     If you are using Apache you will need to trick Apache into passing
-    authentication headers to Zope. The easiest way to do this with 
+    authentication headers to Zope. The easiest way to do this with
     Apache 1.3 and above is to use mod_rewrite. Here is an example of
-    configuration information which you would place in an Apache conf file::
+    configuration information which you would place in an Apache conf
+    file::
 
       # Zope configuration maps /Zope/ to the Zope.cgi CGI script
       RewriteEngine on
@@ -159,15 +162,14 @@ Zope authentication with existing web servers
     if it seems too difficult to convince it to pass authentication
     information to Zope.
 
-    As of 1.0.9, Zope began supporting a mode that allowed the web
+    As of 1.9, Zope began supporting a mode that allowed the web
     server to handle authentication.  The 'REMOTE_USER' environment
-    variable is then matched to the identity of a user object in
-    Zope.
+    variable is then matched to the identity of a user object in Zope.
 
-    The following provide step-by-step instructions for setting this up in
-    Apache, allowing both the Zope "super manager" defined in the Zope
-    'access' file and users defined in Zope User Folders to be authenticated
-    via the web server.
+    The following provide step-by-step instructions for setting this
+    up in Apache, allowing both the Zope "super manager" defined in
+    the Zope 'access' file and users defined in Zope User Folders to
+    be authenticated via the web server.
 
       Get Apache to authenticate /cgi-bin/Zope
 
@@ -181,11 +183,13 @@ Zope authentication with existing web servers
 	 </Location>
 
 	Then send Apache a '-1' signal to tell it to re-read its
-	configuration files.  *Note*: the above presumes that
-	'/cgi-bin/Zope' has been made executable by some other Apache
-	directive in the configuration file.
+	configuration files.
 
-      Ensure Apache Has 'superuser'
+	*Note*: The above presumes that '/cgi-bin/Zope' has been made
+	executable by some other Apache directive in the configuration
+	file.
+
+      Ensure Apache has 'superuser'
 
 	Using Apache's tools for managing a user database, make 
 	sure that the 'AuthUserFile' defined above has a valid user 
@@ -221,28 +225,30 @@ Zope authentication with existing web servers
   
     Apache
     
-      * As mentioned above, Apache does not pass authorization information
-      to CGI scripts by default. See above for information on how to deal
-      with this situation.
+      * As mentioned above, Apache does not pass authorization
+      information to CGI scripts by default. See above for information
+      on how to deal with this situation.
  
-      * An Apache module to support PCGI (mod_pcgi) is under development.
+      * An Apache module to support PCGI (mod_pcgi) is under
+        development.
  
     Netscape Servers
   
-      * Like Apache, Netscape does not pass HTTP Authorization information to
-      CGI scripts.  We have a plugin at our website that addresses this.
-      http://www.digicool.com
+      * Like Apache, Netscape does not pass HTTP Authorization
+      information to CGI scripts.  We have a plugin at our website
+      that addresses this.  http://www.digicool.com
   
       * Alternatively, you can allow the web server to perform the
       authentication step. See above for more information.
       
     IIS
   
-      * You must turn off Windows NT Challenge/Response authentication.
-      To do this, go to IIS Manager, right-click on the server, select
-      Service Properties, and deselect *both* 'Windows NT
-      Challenge/Response' and, strangely, Basic Authentication from the
-      Password Authentication area of the Service tabbed worksheet.
+      * You must turn off Windows NT Challenge/Response
+      authentication.  To do this, go to IIS Manager, right-click on
+      the server, select Service Properties, and deselect *both*
+      'Windows NT Challenge/Response' and, strangely, Basic
+      Authentication from the Password Authentication area of the
+      Service tabbed worksheet.
   
       * IIS kindly throws out PATH_INFO when writing to its logs, so if
       you want to log which Zope objects are actually being
