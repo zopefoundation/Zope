@@ -14,11 +14,12 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.33 $'.split()[-2:][0]
+__version__ = '$Revision: 1.34 $'.split()[-2:][0]
 
 import os
 import time
 import errno
+import shutil
 import threading
 from types import StringType
 
@@ -431,6 +432,10 @@ class BerkeleyBase(BaseStorage):
         finally:
             self._lock_release()
 
+    def cleanup(self):
+        """Remove the entire environment directory for this storage."""
+        cleanup(self._env.db_home)
+
 
 
 def env_from_string(envname, config):
@@ -472,6 +477,16 @@ def env_from_string(envname, config):
         lockfile.close()
         raise
     return env, lockfile
+
+
+
+def cleanup(envdir):
+    """Remove the entire environment directory for a Berkeley storage."""
+    try:
+        shutil.rmtree(envdir)
+    except OSError, e:
+        if e.errno <> errno.ENOENT:
+            raise
 
 
 
