@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -1480,6 +1480,7 @@ class record:
 
     # Allow access to record methods and values from DTML
     __allow_access_to_unprotected_subobjects__=1
+    _guarded_writes = 1
 
     def __getattr__(self, key, default=None):
         if key in ('get', 'keys', 'items', 'values', 'copy', 'has_key'):

@@ -8,6 +8,8 @@ Zope Changes
 
     Features added
 
+     - Allow untrusted code to mutate ZPublisher record objects.
+
      - Added a "mime-types" configuration value which names a file
        giving additional MIME type to filename extension mappings.
        The "mime-types" setting may be given more than once in the
