@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.45 2001/04/27 18:07:16 andreas Exp $'''
-__version__='$Revision: 1.45 $'[11:-2]
+$Id: Aqueduct.py,v 1.46 2001/04/28 06:10:27 chrism Exp $'''
+__version__='$Revision: 1.46 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -275,7 +275,7 @@ custom_default_report_src=DocumentTemplate.File(
     os.path.join(dtml_dir,'customDefaultReport.dtml'))
 
 def custom_default_report(id, result, action='', no_table=0,
-                          goofy=re.compile(r'\W').search
+                          goofy=re.compile('\W').search
                           ):
     columns=result._searchable_result_columns()
     __traceback_info__=columns
@@ -344,11 +344,11 @@ def parse(text,
           result=None,
           keys=None,
           unparmre=re.compile(
-              r'([\0- ]*([^\0- =\"]+))'),
+              r'([\000- ]*([^\000- ="]+))'),
           parmre=re.compile(
-              r'([\0- ]*([^\0- =\"]+)=([^\0- =\"]+))'),
+              r'([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
           qparmre=re.compile(
-              r'([\0- ]*([^\0- =\"]+)="([^"]*)\")'),
+              r'([\000- ]*([^\000- ="]+)="([^"]*)")'),
           ):
 
     if result is None:
@@ -409,13 +409,13 @@ def nicify(name):
 def decapitate(html, RESPONSE=None,
                header_re=re.compile(
                    r'(('
-                          '[^\0- <>:]+:[^\n]*\n'
-                      '\|'
-                          '[ \t]+[^\0- ][^\n]*\n'
-                   ')+)[ \t]*\n([\0-\377]+)'
-                   ),
+                           '[^\000- <>:]+:[^\n]*\n'
+                       '|'
+                           '[ \011]+[^\000- ][^\n]*\n'
+                   ')+)[ \t]*\n([\000-\377]+)'
+                   ), # please kill me now
                space_re=re.compile(r'([ \t]+)'),
-               name_re=re.compile(r'([^\0- <>:]+):([^\n]*)'),
+               name_re=re.compile(r'([^\000- <>:]+):([^\n]*)'),
                ):
 
 
