@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.14 $'[11:-2]
+__version__ = '$Revision: 1.15 $'[11:-2]
 
 
 import string, re
@@ -191,16 +191,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         self.clear()
 
-        if extra:   
-            self.vocabulary_id = extra.vocabulary
-            self.catalog       = extra.catalog
-        else:           
-            self.vocabulary_id = "Vocabulary"
-            self.catalog       = None
-
-        
-
-        
+        if extra:   self.vocabulary_id = extra.vocabulary
+        else:       self.vocabulary_id = "Vocabulary"
 
         
 
