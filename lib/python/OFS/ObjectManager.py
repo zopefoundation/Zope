@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.62 1999/04/06 19:16:11 brian Exp $"""
+$Id: ObjectManager.py,v 1.63 1999/04/08 14:04:54 brian Exp $"""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -199,23 +199,20 @@ class ObjectManager(
         except: t=None
         self._objects=self._objects+({'id':id,'meta_type':t},)
         self._setOb(id,object)
-
-        # This is a nasty hack that provides a workaround for any
-        # existing customers with the acl_users/__allow_groups__
-        # bug. Basically when you add an object, we'll do the check
-        # an make the fix if necessary.
-        have=self.__dict__.has_key
-        if have('__allow_groups__') and (not have('acl_users')):
-            delattr(self, '__allow_groups__')
-
         return id
 
     def _delObject(self,id):
         if id=='acl_users':
             # Yikes - acl_users is referred to by two names and
-            # must be treated as a special case!
-            try:    delattr(self, '__allow_groups__')
-            except: pass
+            # must be treated as a special case! Only get rid of
+            # __allow_groups__ if it is an instance attribute, to
+            # avoid deleting the class-default __allow_groups__
+            # in the top-level application object which is needed
+            # to allow people to replace the top-level userfolder.
+            if hasattr(self, '__allow_groups__') and \
+               self.__dict__.has_key('__allow_groups__'):
+                delattr(self, '__allow_groups__')
+
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
 

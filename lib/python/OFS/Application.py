@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.98 1999/04/01 16:04:32 jim Exp $'''
-__version__='$Revision: 1.98 $'[11:-2]
+$Id: Application.py,v 1.99 1999/04/08 14:04:54 brian Exp $'''
+__version__='$Revision: 1.99 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -170,8 +170,14 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     _reserved_names=('standard_html_header',
                      'standard_html_footer',
                      'standard_error_message',
-                     'acl_users',
                      'Control_Panel')
+
+    # This class-default __allow_groups__ ensures that the
+    # superuser can still access the system if the top-level
+    # UserFolder is deleted. This is necessary to allow people
+    # to replace the top-level UserFolder object.
+    
+    __allow_groups__=UserFolder()
 
     def _init(self):
         # Initialize users
