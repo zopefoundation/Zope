@@ -122,6 +122,16 @@
   at /<!--#var 
   expr="tabs_path_info(SCRIPT_NAME, PATH_INFO)"-->
   </strong>
+  <!--#if locked_in_version-->
+    <!--#if modified_in_version-->
+      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
+       ALT="This item has been modified in this version">
+    <!--#else-->
+      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
+       ALT="This item has been modified in another version">
+            (<em><!--#var locked_in_version--></em>)
+    <!--#/if-->
+  <!--#/if-->
   </td>
 </tr>
 </table>
