@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -687,6 +687,7 @@ Globals.default__class_init__(UserFolder)
 def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
     """ """
     f=UserFolder()
+    self=self.this()
     try:    self._setObject('acl_users', f)
     except: return MessageDialog(
                    title  ='Item Exists',
