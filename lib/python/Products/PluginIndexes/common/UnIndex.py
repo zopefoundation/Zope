@@ -94,6 +94,8 @@ class UnIndex(SimpleItem):
         else:
             self.indexed_attrs = list(ia)
         self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ] 
+        if not self.indexed_attrs:
+            self.indexed_attrs = [id]
 
         self._length = BTrees.Length.Length()
         self.clear()

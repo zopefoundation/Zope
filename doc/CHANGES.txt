@@ -24,6 +24,16 @@ Zope Changes
 
    - check if ExtendedPathIndex might be a reasonable replacement for PathIndex
 
+
+  after Zope 2.8a2 
+
+    Features added
+
+    Bugs fixed
+
+      - Collector #1721: Fixed handling of an empty indexed_attrs parameter
+
+
   Zope 2.8a2 (2005/04/02)
 
     Features added
