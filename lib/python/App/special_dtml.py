@@ -112,9 +112,17 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     def __call__(self, *args, **kw):
         if Globals.DevelopmentMode:
             __traceback_info__=self.raw
-            t=os.stat(self.raw)
-            if t != self._v_last_read:
+            try:    mtime=os.stat(self.raw)[8]
+            except: mtime=0
+            if mtime != self._v_last_read:
                 self.cook()
-                self._v_last_read=t
+                self._v_last_read=mtime
         return apply(HTMLFile.inheritedAttribute('__call__'),
                      (self,)+args[1:],kw)
+
+
+
+
+
+
+
