@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -130,7 +130,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if SUPPORTS_WEBDAV_LOCKS and self.wl_isLocked():
             raise ResourceLockedError, "File is locked via WebDAV"
 
-        if not isinstance(file, StringType): 
+        if type(file) is not StringType:
             if not file: raise ValueError, 'File not specified'
             file = file.read()
             
