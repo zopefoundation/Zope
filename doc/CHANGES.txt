@@ -130,6 +130,10 @@ Zope Changes
           'xscale' and 'yscale' arguments that will automatically scale 
           the output height and width tag attributes.
 
+        - The Products folder in the Control Panel now has an 'Import/Export'
+          tab to allow easier importing and exporting of Control Panel
+          Products.
+
       Features Changed
 
         - ZCatalog uses subtransactions to keep memory consuption low
