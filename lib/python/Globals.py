@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay, string
@@ -102,19 +102,18 @@ InitializeClass = default__class_init__
 from App.Dialogs import MessageDialog
 from App.ImageFile import ImageFile
 
-DevelopmentMode=None
 VersionNameName='Zope-Version'
 
 data_dir = os.path.join(INSTANCE_HOME, 'var')
-
-for n in 'Z', 'BOBO':
-    if os.environ.has_key('%s_DEBUG_MODE' % n):
-        n=string.lower(os.environ['%s_DEBUG_MODE' % n])
-        if n=='no' or n=='off': continue
-        try: n=string.atoi(n)
-        except: pass
-        if n: DevelopmentMode=1
-
 opened=[]
 
+# Check,if DEBUG variables are set
+DevelopmentMode=None
 
+z1 = os.environ.get('Z_DEBUG_MODE','')
+z2 = os.environ.get('BOBO_DEBUG_MODE','')
+
+if z1.lower() in ('yes','y') or z1.isdigit():
+    DevelopmentMode=1
+elif z2.lower() in ('yes','y') or z2.isdigit():
+    DevelopmentMode=1

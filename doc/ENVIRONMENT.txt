@@ -127,8 +127,8 @@ Debugging and Logging
         See also: LOGGING.txt
 
 
-    Z_DEBUG_MODE      "yes"
-    BOBO_DEBUG_MODE   "yes"  (obsolete)
+    Z_DEBUG_MODE      "yes" or "no"
+    BOBO_DEBUG_MODE   "yes" or "no"  (obsolete)
      
         Run Zope in debug mode if set. Same as -D options (z2.py)
 
