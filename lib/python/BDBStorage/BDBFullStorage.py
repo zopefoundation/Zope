@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.5 $
+# $Revision: 1.6 $
 __version__ = '0.1'
 
 import struct
@@ -618,6 +618,18 @@ class Full(BerkeleyBase):
             lrevid = self._metadata.get(roid+serial, txn=txn)[16:24]
             # Now recurse...
             self._decref(roid, lrevid, txn)
+
+    def transactionalUndo(self, tid, transaction):
+        if transaction is not self._transaction:
+            raise POSException.StorageTransactionError(self, transaction)
+
+        oids=[]
+        self._lock_acquire()
+        try:
+            return oids
+        finally:
+            self._lock_release()
+
 
     def undo(self, tid):
         # Attempt to undo transaction.  NOTE: the current storage interface
