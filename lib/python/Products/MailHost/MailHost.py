@@ -12,10 +12,10 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.66 2002/01/15 04:23:08 jens Exp $"""
-__version__ = "$Revision: 1.66 $"[11:-2]
+$Id: MailHost.py,v 1.67 2002/01/15 04:31:24 jens Exp $"""
+__version__ = "$Revision: 1.67 $"[11:-2]
 
-from Globals import Persistent, DTMLFile, MessageDialog, InitializeClass
+from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
 from AccessControl.Role import RoleManager
 from operator import truth
@@ -87,11 +87,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.title=title
         self.smtp_host=smtp_host
         self.smtp_port=smtp_port
-        if REQUEST: return MessageDialog(
-            title  ='Changed %s' % self.__name__,
-            message='%s has been updated' % self.id,
-            action =REQUEST['URL2']+'/manage_main',
-            target ='manage_main')
+        if REQUEST is not None:
+            msg = 'MailHost %s updated' % self.id
+            return self.manage_main( self
+                                   , REQUEST
+                                   , manage_tabs_message=msg
+                                   )
     
     security.declareProtected( use_mailhost_services, 'sendTemplate' )
     def sendTemplate(trueself, self, messageTemplate, 
