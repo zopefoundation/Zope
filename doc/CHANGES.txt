@@ -170,6 +170,10 @@ Zope Changes
         work properly (thanks to Alastair Burt for reporting and submitting 
         the patch).
 
+      - Fixed case where DTMLMethod.py complained when it tried to remove
+        the accelerated DTML security validation routine after recursive
+	entry.
+
     Zope 2.4 beta 2
 
       Bugs fixed

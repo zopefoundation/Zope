@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -200,7 +200,8 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
         finally:
             security.removeContext(self)
-            del self.__dict__['validate']
+            try: del self.__dict__['validate']
+            except: pass
 
         have_key=RESPONSE.headers.has_key
         if not (have_key('content-type') or have_key('Content-Type')):
@@ -213,6 +214,9 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if not self._cache_namespace_keys:
             self.ZCacheable_set(result)
         return result
+
+    def validate(self, inst, parent, name, value, md=None):
+        return getSecurityManager().validate(inst, parent, name, value)
 
     def ZDocumentTemplate_beforeRender(self, md, default):
         # Tries to get a cached value.
