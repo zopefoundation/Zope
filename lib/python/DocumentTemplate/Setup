@@ -17,4 +17,3 @@ cDocumentTemplate cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install DocumentTemplate.py
 # install __init__.py
 # install cDocumentTemplate.c
-# install pDocumentTemplate.py
