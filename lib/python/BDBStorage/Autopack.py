@@ -14,7 +14,7 @@
 
 """An autopacking Berkeley storage without undo and versioning.
 """
-__version__ = '$Revision: 1.1 $'.split()[-2:][0]
+__version__ = '$Revision: 1.2 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -122,9 +122,7 @@ class Autopack(BerkeleyBase):
             c = self._oids.cursor()
             try:
                 rec = c.first()
-                while 1:
-                    if rec is None:
-                        break
+                while rec is not None:
                     oid, data = rec
                     lastrevid = self._serials.get(oid, txn=txn)
                     if lastrevid:
@@ -151,9 +149,7 @@ class Autopack(BerkeleyBase):
             c = self._oids.cursor()
             try:
                 rec = c.first()
-                while 1:
-                    if rec is None:
-                        break
+                while rec is not None:
                     oid, data = rec
                     self._actions.put(tid+oid, DEC, txn=txn)
                     rec = c.next()
