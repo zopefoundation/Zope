@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.26 2000/07/26 15:44:05 brian Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: Connection.py,v 1.27 2000/08/29 15:05:10 brian Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -93,8 +93,9 @@ from App.Dialogs import MessageDialog
 from Globals import HTMLFile
 from string import find, join, split
 from Aqueduct import custom_default_report
+from cStringIO import StringIO
 from Results import Results
-import DocumentTemplate
+import DocumentTemplate, RDB
 
 class Connection(
     Globals.Persistent,
@@ -178,7 +179,15 @@ class Connection(
         "Executes the SQL in parameter 'query' and returns results"
         dbc=self()      #get our connection
         res=dbc.query(query)
-        result=Results(res)
+
+        if type(res) is type(''):
+            f=StringIO()
+            f.write(res)
+            f.seek(0)
+            result=RDB.File(f)
+        else:
+            result=Results(res)
+
         if REQUEST is None:
             return result       #return unadulterated result objects
         
