@@ -90,15 +90,7 @@ class ObjectManagerItem:
     Object Manager Items.
 
     Attributes
-
-      'id' -- The id of the object.
-
-         This is the unique name of the object within its parent
-         object manager. This should be a string, and can contain
-         letters, digits, underscores, dashes, commas, and spaces.
          
-         This attribute should not be changed directly.
-
       'title' -- The title of the object.
       
         This is an optional one-line string description of the object.
@@ -115,6 +107,19 @@ class ObjectManagerItem:
       
         This object is acquired and should not be set.
     """
+
+    def getId(self):
+        """
+        Returns the object's id.
+
+        The 'id' is the unique name of the object within its parent
+        object manager. This should be a string, and can contain
+        letters, digits, underscores, dashes, commas, and spaces.
+
+        This method replaces direct access to the 'id' attribute.
+
+        Permission -- Always available
+        """
     
     def title_or_id(self):
         """
