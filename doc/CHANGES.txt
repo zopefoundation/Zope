@@ -89,6 +89,22 @@ Zope changes
           created.  This provides a way to reset the password after
           a new user installs Zope but ignores the generated password.
 
+        - The basic user folder implementation in User.py was changed
+          to use the Zope security policy machinery.  see
+          http://dev.zope.org/Wikis/DevSite/Proposals/
+          ChangeUserFoldersToUseSecurityPolicyAPI for details.
+
+        - ZCatalogs have a reduced number of management interface tabs.
+
+        - ZCatalog keyword and field indexes have been modified to use
+          a merge strategy when existing indexes are updated.  When an
+          existing object is indexed, the contents of field and
+          keyword indexes are merged with the changes detected between
+          the existing contents of the index and the new content.
+
+        - CatalogPathAware class added.  This will eventually replace
+          CatalogAware.
+
     Zope 2.3.0 alpha 1
     
       Features Added
