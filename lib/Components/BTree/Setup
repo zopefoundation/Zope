@@ -1,4 +1,5 @@
-#shared#
+*shared*
+
 BTree BTree.c     -I../../Packages/BoboPOS -I../ExtensionClass
 IIBTree IIBTree.c -I../../Packages/BoboPOS -I../ExtensionClass
 IOBTree IOBTree.c -I../../Packages/BoboPOS -I../ExtensionClass
