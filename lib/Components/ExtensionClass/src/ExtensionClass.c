@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.44 2001/02/19 19:16:07 jeremy Exp $
+  $Id: ExtensionClass.c,v 1.45 2001/03/27 21:09:40 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.44 2001/02/19 19:16:07 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.45 2001/03/27 21:09:40 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -119,7 +119,7 @@ static PyObject *concat_fmt=0;
 static PyObject *subclass_watcher=0;  /* Object that subclass events */
 
 static void
-init_py_names()
+init_py_names(void)
 {
 #define INIT_PY_NAME(N) py ## N = PyString_FromString(#N)
   INIT_PY_NAME(__add__);
@@ -3527,10 +3527,10 @@ TrueExtensionClassCAPI = {
 };
 
 void
-initExtensionClass()
+initExtensionClass(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.44 $";
+  char *rev="$Revision: 1.45 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
