@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.10 2001/10/12 20:05:06 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.11 2001/10/15 21:40:25 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -167,10 +167,6 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         
         if level > self._depth: self._depth = level
 
-        # reverse index
-        if not self._unindex.has_key(id):
-            self._unindex[id] = OOSet()
-        self._unindex[id].insert( (comp,level) )
             
 
     def index_object(self, documentId, obj ,threshold=100):
