@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.33 $'[-2:][0]
+__version__ = '$Revision: 1.34 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -158,10 +158,10 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         self._pending.truncate(txn)
 
     def _abort(self):
-        self._withtxn(self._doabort, self._serial)
+        self._withtxn(self._doabort, self._tid)
 
     def _docommit(self, txn, tid):
-        self._pending.put(self._serial, COMMIT, txn)
+        self._pending.put(self._tid, COMMIT, txn)
         deltas = {}
         co = cs = None
         try:
@@ -248,7 +248,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         # will be aborted.
         txn = self._env.txn_begin()
         try:
-            self._pending.put(self._serial, ABORT, txn)
+            self._pending.put(self._tid, ABORT, txn)
         except:
             txn.abort()
             raise
@@ -271,7 +271,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
                     oid=oid, serials=(oserial, serial), data=data)
         # Optimistically write to the serials and pickles table.  Be sure
         # to also update the oids table for this object too.
-        newserial = self._serial
+        newserial = self._tid
         self._serials.put(oid, newserial, txn=txn)
         self._pickles.put(oid+newserial, data, txn=txn)
         self._oids.put(oid, PRESENT, txn=txn)
@@ -305,7 +305,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         # _docommit() twiddles the pending flag to COMMIT now since after the
         # vote call, we promise that the changes will be committed, no matter
         # what.  The recovery process will check this.
-        self._withtxn(self._docommit, self._serial)
+        self._withtxn(self._docommit, self._tid)
 
     #
     # Accessor interface
@@ -340,7 +340,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
                 return None
             if len(serials) == 1:
                 return serials[0]
-            pending = self._pending.get(self._serial)
+            pending = self._pending.get(self._tid)
             assert pending in (ABORT, COMMIT)
             if pending == ABORT:
                 return serials[0]
@@ -363,7 +363,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
             self._lock_release()
 
     def modifiedInVersion(self, oid):
-        # So BaseStorage.getSerial() just works.  Note that this storage
+        # So BaseStorage.getTid() just works.  Note that this storage
         # doesn't support versions.
         return ''
 
@@ -548,7 +548,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
     # versionEmpty(self, version)
     # versions(self, max=None)
     # loadSerial(self, oid, serial)
-    # getSerial(self, oid)
+    # getTid(self, oid)
     # transactionalUndo(self, tid, transaction)
     # undoLog(self, first=0, last=-20, filter=None)
     # history(self, oid, version=None, size=1, filter=None)

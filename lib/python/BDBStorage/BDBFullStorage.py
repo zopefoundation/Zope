@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.76 $
+$Revision: 1.77 $
 """
 
 import time
@@ -59,18 +59,11 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         #
         # The Full storage uses the following tables:
         #
-        # serials -- {oid -> [serial | serial+tid]}
-        #     Maps oids to serial numbers, to make it easy to look up the
-        #     serial number for the current revision of the object.  The value
+        # serials -- {oid -> [tid]}
+        #     Maps oids to txn ids, to make it easy to look up the
+        #     txn id for the current revision of the object.  The value
         #     combined with the oid provides a revision id (revid) which is
-        #     used to point into the other tables.  Usually the serial is the
-        #     tid of the transaction that modified the object, except in the
-        #     case of abortVersion().  Here, the serial number of the object
-        #     won't change (by definition), but of course the abortVersion()
-        #     happens in a new transaction so the tid pointer must change.  To
-        #     handle this rare case, the value in the serials table can be a
-        #     16-byte value, in which case it will contain both the serial
-        #     number and the tid pointer.
+        #     used to point into the other tables.
         #
         # metadata -- {oid+tid -> vid+nvrevid+lrevid+previd}
         #     Maps object revisions to object metadata.  This mapping is used
@@ -385,7 +378,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         self._withtxn(self._doabort, tid)
 
     def _docommit(self, txn, tid):
-        self._pending.put(self._serial, COMMIT, txn)
+        self._pending.put(self._tid, COMMIT, txn)
         # Almost all the data's already written by now so we don't need to do
         # much more than update reference counts.  Even there, our work is
         # easy because we're not going to decref anything here.
@@ -399,7 +392,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 oid = rec[0]
                 rec = co.next()
                 # Get the pointer to the live pickle data for this revision
-                metadata = self._metadata[oid + self._serial]
+                metadata = self._metadata[oid + self._tid]
                 lrevid = unpack('>8s', metadata[16:24])[0]
                 # Incref all objects referenced by this pickle, but watch out
                 # for the George Bailey Event, which has no pickle.
@@ -457,10 +450,10 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         self._txnMetadata.put(tid, data, txn=txn)
 
     def _begin(self, tid, u, d, e):
-        self._withtxn(self._dobegin, self._serial, u, d, e)
+        self._withtxn(self._dobegin, self._tid, u, d, e)
 
     def _finish(self, tid, u, d, e):
-        self._withtxn(self._docommit, self._serial)
+        self._withtxn(self._docommit, self._tid)
         self._ltid = tid
 
     #
@@ -475,22 +468,22 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # a single transaction.  It's not clear though under what
         # situations that can occur or what the semantics ought to be.
         # For now, we'll assume this doesn't happen.
-        oserial, orevid = self._getSerialAndTidMissingOk(oid)
-        if oserial is None:
+        prev = tid = self._getTidMissingOk(oid)
+        if tid is None:
             # There's never been a previous revision of this object.
-            oserial = ZERO
-        elif serial <> oserial:
+            prev = ZERO
+        elif serial != tid:
             # The object exists in the database, but the serial number
             # given in the call is not the same as the last stored serial
             # number.  First, attempt application level conflict
             # resolution, and if that fails, raise a ConflictError.
-            rdata = self.tryToResolveConflict(oid, oserial, serial, data)
+            rdata = self.tryToResolveConflict(oid, tid, serial, data)
             if rdata:
                 conflictresolved = True
                 data = rdata
             else:
                 raise POSException.ConflictError(
-                    oid=oid, serials=(oserial, serial), data=data)
+                    oid=oid, serials=(tid, serial), data=data)
         # Do we already know about this version?  If not, we need to record
         # the fact that a new version is being created.  version will be the
         # empty string when the transaction is storing on the non-version
@@ -501,8 +494,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # the object.  We need to get the tid of the previous transaction to
         # modify this object.  If that transaction is in a version, it must
         # be the same version as we're making this change in now.
-        if orevid:
-            rec = self._metadata[oid+orevid]
+        if tid:
+            rec = self._metadata[oid + prev]
             ovid, onvrevid = unpack('>8s8s', rec[:16])
             if ovid == ZERO:
                 # The last revision of this object was made on the
@@ -510,8 +503,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 # made.  But if we're storing this change on a version then
                 # the non-version revid will be the previous revid
                 if version:
-                    nvrevid = orevid
-            elif ovid <> vid:
+                    nvrevid = prev
+            elif ovid != vid:
                 # We're trying to make a change on a version that's different
                 # than the version the current revision is on.  Nuh uh.
                 raise POSException.VersionLockError(
@@ -523,16 +516,16 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 # revision of the object.
                 nvrevid = onvrevid
         # Now optimistically store data to all the tables
-        newserial = self._serial
+        newserial = self._tid
         revid = oid + newserial
         self._serials.put(oid, newserial, txn=txn)
         self._pickles.put(revid, data, txn=txn)
-        self._metadata.put(revid, vid+nvrevid+newserial+oserial, txn=txn)
+        self._metadata.put(revid, vid+nvrevid+newserial+prev, txn=txn)
         self._txnoids.put(newserial, oid, txn=txn)
         # Update the object revisions table, but only if this store isn't
         # the first one of this object in a new version.
         if not version or ovid <> ZERO:
-            self._objrevs.put(newserial+oid, oserial, txn=txn)
+            self._objrevs.put(newserial+oid, prev, txn=txn)
         # Update the log tables
         self._oids.put(oid, PRESENT, txn=txn)
         if vid <> ZERO:
@@ -556,10 +549,10 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             self._lock_release()
 
     def _dorestore(self, txn, oid, serial, data, version, prev_txn):
-        tid = self._serial
+        tid = self._tid
         vid = nvrevid = ovid = ZERO
         prevrevid = prev_txn
-        # self._serial contains the transaction id as set by
+        # self._tid contains the transaction id as set by
         # BaseStorage.tpc_begin().
         revid = oid + tid
         # Calculate and write the entries for version ids
@@ -569,7 +562,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # weren't told what to believe, via prev_txn
         if prevrevid is None:
             # Get the metadata for the current revision of the object
-            cserial, crevid = self._getSerialAndTidMissingOk(oid)
+            crevid = self._getTidMissingOk(oid)
             if crevid is None:
                 # There's never been a previous revision of this object
                 prevrevid = ZERO
@@ -608,12 +601,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # updated in _docommit().
             self._pickles.put(revid, data, txn=txn)
             lrevid = tid
-        # Update the serials table, but if the transaction id is different
-        # than the serial number, we need to write our special long record
-        if serial <> tid:
-            self._serials.put(oid, serial+tid, txn=txn)
-        else:
-            self._serials.put(oid, serial, txn=txn)
+        self._serials.put(oid, serial, txn=txn)
         # Update the rest of the tables
         self._metadata.put(revid, vid+nvrevid+lrevid+prevrevid, txn=txn)
         self._txnoids.put(tid, oid, txn=txn)
@@ -632,7 +620,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # differences:
         #
         # - serial is the serial number of /this/ revision, not of the
-        #   previous revision.  It is used instead of self._serial, which is
+        #   previous revision.  It is used instead of self._tid, which is
         #   ignored.
         #
         # - Nothing is returned
@@ -705,7 +693,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 # This object was modified
                 rtnoids[oid] = True
                 # Calculate the values for the new transaction metadata
-                serial, tid = self._getSerialAndTid(oid)
+                tid = self._getTid(oid)
                 meta = self._metadata[oid+tid]
                 curvid, nvrevid = unpack('>8s8s', meta[:16])
                 assert curvid == vid
@@ -722,13 +710,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                     # non-version data that might have an lrevid.
                     lrevid = DNE
                 # Write all the new data to the serials and metadata tables.
-                # Note that in an abortVersion the serial number of the object
-                # must be the serial number used in the non-version data,
-                # while the transaction id is the current transaction.  This
-                # is the one case where serial <> tid, and a special record
-                # must be written to the serials table for this.
-                newserial = self._serial
-                self._serials.put(oid, nvrevid+newserial, txn=txn)
+                newserial = self._tid
+                self._serials.put(oid, newserial, txn=txn)
                 self._metadata.put(oid+newserial, ZERO+ZERO+lrevid+tid,
                                    txn=txn)
                 self._txnoids.put(newserial, oid, txn=txn)
@@ -751,13 +734,15 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # fine in practice since the number of versions should be quite
             # small over the lifetime of the database.  Maybe we can figure
             # out a way to do this in the pack operations.
-            return rtnoids.keys()
+            return self._tid, rtnoids.keys()
         finally:
             c.close()
 
     def abortVersion(self, version, transaction):
         # Abort the version, but retain enough information to make the abort
         # undoable.
+        if self._is_read_only:
+            raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
         # We can't abort the empty version, because it's not a version!
@@ -799,7 +784,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 # This object was modified
                 rtnoids[oid] = True
                 # Calculate the values for the new transaction metadata
-                serial, tid = self._getSerialAndTid(oid)
+                tid = self._getTid(oid)
                 meta = self._metadata[oid+tid]
                 curvid, nvrevid, lrevid = unpack('>8s8s8s', meta[:24])
                 assert curvid == svid
@@ -808,7 +793,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 # source version.
                 if not dest:
                     nvrevid = ZERO
-                newserial = self._serial
+                newserial = self._tid
                 self._serials.put(oid, newserial, txn=txn)
                 self._metadata.put(oid+newserial, dvid+nvrevid+lrevid+tid,
                                    txn=txn)
@@ -824,7 +809,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                     self._objrevs.put(newserial+oid, nvrevid, txn=txn)
                 c.delete()
                 rec = c.next()
-            return rtnoids.keys()
+            return self._tid, rtnoids.keys()
         finally:
             c.close()
 
@@ -833,6 +818,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # perfectly valid to move an object from one version to another.  src
         # and dest are version strings, and if we're committing to a
         # non-version, dest will be empty.
+        if self._is_read_only:
+            raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
         # Sanity checks
@@ -851,7 +838,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         self._lock_acquire()
         try:
             # Let KeyErrors percolate up
-            serial, tid = self._getSerialAndTid(oid)
+            tid = self._getTid(oid)
             vid = self._metadata[oid+tid][:8]
             if vid == ZERO:
                 # Not in a version
@@ -912,33 +899,89 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
     # Accessor interface
     #
 
-    def load(self, oid, version):
+    def _load(self, oid, tid, version):
+        # Get the metadata associated with this revision of the object.
+        # All we really need is the vid, the non-version revid and the
+        # pickle pointer revid.
+        rec = self._metadata[oid+tid]
+        vid, nvrevid, lrevid = unpack('>8s8s8s', rec[:24])
+        if lrevid == DNE:
+            raise KeyError, 'Object does not exist: %r' % oid
+        # If the object isn't living in a version, or if the version the
+        # object is living in is the one that was requested, we simply
+        # return the current revision's pickle.
+        if vid == ZERO:
+            return self._pickles[oid+lrevid], tid, ""
+        if self._versions.get(vid) == version:
+            return self._pickles[oid+lrevid], tid, version
+        # The object was living in a version, but not the one requested.
+        # Semantics here are to return the non-version revision.  Allow
+        # KeyErrors to percolate up (meaning there's no non-version rev).
+        lrevid = self._metadata[oid+nvrevid][16:24]
+        return self._pickles[oid+lrevid], tid, ""
+
+    def loadEx(self, oid, version):
         self._lock_acquire()
         try:
             # Get the current revision information for the object.  As per the
             # protocol, let Key errors percolate up.
-            serial, tid = self._getSerialAndTid(oid)
-            # Get the metadata associated with this revision of the object.
-            # All we really need is the vid, the non-version revid and the
-            # pickle pointer revid.
-            rec = self._metadata[oid+tid]
-            vid, nvrevid, lrevid = unpack('>8s8s8s', rec[:24])
-            if lrevid == DNE:
-                raise KeyError, 'Object does not exist: %r' % oid
-            # If the object isn't living in a version, or if the version the
-            # object is living in is the one that was requested, we simply
-            # return the current revision's pickle.
-            if vid == ZERO or self._versions.get(vid) == version:
-                return self._pickles[oid+lrevid], serial
-            # The object was living in a version, but not the one requested.
-            # Semantics here are to return the non-version revision.  Allow
-            # KeyErrors to percolate up (meaning there's no non-version rev).
-            lrevid = self._metadata[oid+nvrevid][16:24]
-            return self._pickles[oid+lrevid], nvrevid
+            tid = self._getTid(oid)
+            return self._load(oid, tid, version)
         finally:
             self._lock_release()
 
-    def _getSerialAndTidMissingOk(self, oid):
+    def load(self, oid, version):
+        return self.loadEx(oid, version)[:2]
+
+    def loadBefore(self, oid, tid):
+        self._lock_acquire()
+        try:
+            c = self._metadata.cursor()
+            try:
+                # The range search will return the smallest key greater
+                # than oid + tid.  We need to look at the previous record.
+                try:
+                    p = c.set_range(oid + tid)
+                except db.DBNotFoundError:
+                    # If tid > cur tid for oid, then we'll get a not-found
+                    # error.  Perhaps the current tid is sufficient?
+                    cur_tid = self._getTid(oid)
+                    # if cur_tid >= tid, set_range() would have worked
+                    assert cur_tid < tid
+                    data, tid, ver = self._load(oid, cur_tid, "")
+                    return data, cur_tid, None
+
+                next_tid = p[0][8:]
+                return self._search_before(c, oid, tid, next_tid)
+            finally:
+                c.close()
+        finally:
+            self._lock_release()
+
+    def _search_before(self, c, oid, tid, end_tid):
+        # Operates on the cursor created by loadBefore().
+        p = c.prev()
+        if p is None:
+            return None
+        key, rec = p
+        # If the previous record is for a different oid, then
+        # there is no matching record.
+        if key[:8] != oid:
+            return None
+        # It's possible that the range search hits oid, tid + 1 exactly,
+        # but only the first time.
+        if key == oid + tid:
+            return self._noncurrent_search(c, oid, tid, tid)
+        vid, nvrevid, lrevid = unpack(">8s8s8s", rec[:24])
+        if vid == ZERO:
+            revid = lrevid
+        else:
+            revid = nvrevid
+        data = self._pickles[oid+revid]
+        tid = key[8:]
+        return data, tid, end_tid
+
+    def _getTidMissingOk(self, oid):
         # For the object, return the curent serial number and transaction id
         # of the last transaction that modified the object.  Usually these
         # will be the same, unless the last transaction was an abortVersion.
@@ -972,32 +1015,29 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 serials.append(rec[1])
                 rec = c.next_dup()
             if not serials:
-                return None, None
+                return None
             if len(serials) == 1:
-                data = serials[0]
+                return serials[0]
             else:
-                pending = self._pending.get(self._serial)
+                pending = self._pending.get(self._tid)
                 assert pending in (ABORT, COMMIT), 'pending: %s' % pending
                 if pending == ABORT:
-                    data = serials[0]
+                    return serials[0]
                 else:
-                    data = serials[1]
-            if len(data) == 8:
-                return data, data
-            return data[:8], data[8:]
+                    return serials[1]
         finally:
             c.close()
 
-    def _getSerialAndTid(self, oid):
+    def _getTid(self, oid):
         # For the object, return the curent serial number and transaction id
         # of the last transaction that modified the object.  Usually these
         # will be the same, unless the last transaction was an abortVersion
-        serial, tid = self._getSerialAndTidMissingOk(oid)
-        if serial is None and tid is None:
+        tid = self._getTidMissingOk(oid)
+        if tid is None:
             raise KeyError, 'Object does not exist: %r' % oid
-        return serial, tid
+        return tid
 
-    def _loadSerialEx(self, oid, serial):
+    def _loadSerialEx(self, oid, serial, want_version=True):
         # Just like loadSerial, except that it returns the pickle data, the
         # version this object revision is living in, and a backpointer.  The
         # backpointer is None if the lrevid for this metadata record is the
@@ -1008,39 +1048,43 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # Get the pointer to the pickle for the given serial number.  Let
             # KeyErrors percolate up.
             metadata = self._metadata[oid+serial]
-            vid, ign, lrevid = unpack('>8s8s8s', metadata[:24])
+            vid, nrevid, lrevid = unpack('>8s8s8s', metadata[:24])
             if vid == ZERO:
                 version = ''
             else:
                 version = self._versions[vid]
+            revid = lrevid
+            if not want_version and vid != ZERO:
+                revid = nrevid
             # Check for an zombification event, possible with transactional
             # undo.  Use data==None to specify that.
-            if lrevid == DNE:
+            if revid == DNE:
                 return None, version, None
             backpointer = None
-            if lrevid <> serial:
+            if revid != serial:
                 # This transaction shares its pickle data with a previous
                 # transaction.  We need to let the caller know, esp. when it's
                 # the iterator code, so that it can pass this information on.
-                backpointer = lrevid
-            return self._pickles[oid+lrevid], version, backpointer
+                backpointer = revid
+            return self._pickles[oid+revid], version, backpointer
         finally:
             self._lock_release()
 
     def loadSerial(self, oid, serial):
-        return self._loadSerialEx(oid, serial)[0]
+        return self._loadSerialEx(oid, serial, want_version=False)[0]
 
-    def getSerial(self, oid):
+    def getTid(self, oid):
         # Return the serial number for the current revision of this object,
         # irrespective of any versions.
         self._lock_acquire()
         try:
-            serial, tid = self._getSerialAndTid(oid)
+            tid = self._getTid(oid)
+            # XXX Do we really need to check for DNE?
             # See if the object has been uncreated
             lrevid = unpack('>8s', self._metadata[oid+tid][16:24])[0]
             if lrevid == DNE:
                 raise KeyError
-            return serial
+            return tid
         finally:
             self._lock_release()
 
@@ -1153,7 +1197,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 # that would be restored if we were undoing the current
                 # revision.  Otherwise, we attempt application level conflict
                 # resolution.  If that fails, we raise an exception.
-                cserial, ctid = self._getSerialAndTid(oid)
+                ctid = self._getTid(oid)
                 if ctid == tid:
                     newrevs.append(self._undo_current_tid(oid, ctid))
                 else:
@@ -1165,8 +1209,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # new metadata records (and potentially new pickle records).
         rtnoids = {}
         for oid, metadata, data in newrevs:
-            newserial = self._serial
-            revid = oid + self._serial
+            newserial = self._tid
+            revid = oid + self._tid
             # If the data pickle is None, then this undo is simply
             # re-using a pickle stored earlier.  All we need to do then is
             # bump the pickle refcount to reflect this new reference,
@@ -1194,9 +1238,11 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             rtnoids[oid] = True
             # Add this object revision to the autopack table
             self._objrevs.put(newserial+oid, prevrevid, txn=txn)
-        return rtnoids.keys()
+        return self._tid, rtnoids.keys()
 
     def transactionalUndo(self, tid, transaction):
+        if self._is_read_only:
+            raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
         self._lock_acquire()
@@ -1286,7 +1332,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # start with the most recent revision of the object, then search
             # the transaction records backwards until we find enough records.
             history = []
-            serial, tid = self._getSerialAndTid(oid)
+            tid = self._getTid(oid)
             # BAW: Again, let KeyErrors percolate up
             while len(history) < size:
                 # Some information comes out of the revision metadata...
@@ -1311,7 +1357,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 d = {'time'       : TimeStamp(tid).timeTime(),
                      'user_name'  : user,
                      'description': desc,
-                     'serial'     : serial,
+                     'tid'        : tid,
                      'version'    : retvers,
                      'size'       : len(data),
                      }
@@ -1635,7 +1681,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # BAW: Maybe this could probably be more efficient by not doing so
         # much searching, but it would also be more complicated, so the
         # tradeoff should be measured.
-        serial, tid = self._getSerialAndTid(oid)
+        tid = self._getTid(oid)
         c = self._metadata.cursor(txn=txn)
         try:
             rec = c.set_range(oid)
@@ -1647,11 +1693,11 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                     # We found the end of the metadata records for this
                     # object prior to the pack time.
                     break
-                serial = ctid
+                tid = ctid
                 rec = c.next()
         finally:
             c.close()
-        return serial
+        return tid
 
     def _rootset(self, packtid, txn):
         # Find the root set for reachability purposes.  A root set is a tuple
@@ -1753,7 +1799,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                     raise PackStop, 'stopped in _sweep()'
                 oid = rec[0]
                 rec = c.next()
-                serial, tid = self._getSerialAndTid(oid)
+                tid = self._getTid(oid)
                 # If the current revision of this object newer than the
                 # packtid, we'll ignore this object since we only care about
                 # root reachability as of the pack time.
@@ -1977,7 +2023,7 @@ class _Record:
     # Object Id
     oid = None
     # Object serial number (i.e. revision id)
-    serial = None
+    tid = None
     # Version string
     version = None
     # Data pickle
@@ -1985,9 +2031,9 @@ class _Record:
     # The pointer to the transaction containing the pickle data, if not None
     data_txn = None
 
-    def __init__(self, oid, serial, version, data, data_txn):
+    def __init__(self, oid, tid, version, data, data_txn):
         self.oid = oid
-        self.serial = serial
+        self.tid = tid
         self.version = version
         self.data = data
         self.data_txn = data_txn

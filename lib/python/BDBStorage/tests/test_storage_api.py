@@ -21,20 +21,32 @@ import BDBStorage
 from BDBStorage.tests import BerkeleyTestBase
 
 from ZODB.tests.BasicStorage import BasicStorage
+from ZODB.tests.HistoryStorage import HistoryStorage
+from ZODB.tests.IteratorStorage import IteratorStorage, ExtendedIteratorStorage
+from ZODB.tests.MTStorage import MTStorage
+from ZODB.tests.PackableStorage import PackableStorage, PackableUndoStorage
+from ZODB.tests.PersistentStorage import PersistentStorage
+from ZODB.tests.ReadOnlyStorage import ReadOnlyStorage
+from ZODB.tests.RecoveryStorage import RecoveryStorage
 from ZODB.tests.RevisionStorage import RevisionStorage
-from ZODB.tests.VersionStorage import VersionStorage
+from ZODB.tests.Synchronization import SynchronizedStorage
 from ZODB.tests.TransactionalUndoStorage import TransactionalUndoStorage
 from ZODB.tests.TransactionalUndoVersionStorage import \
      TransactionalUndoVersionStorage
-from ZODB.tests.PackableStorage import PackableStorage
-from ZODB.tests.HistoryStorage import HistoryStorage
-from ZODB.tests.IteratorStorage import IteratorStorage, ExtendedIteratorStorage
-from ZODB.tests.RecoveryStorage import RecoveryStorage
+from ZODB.tests.VersionStorage import VersionStorage
+
 from ZODB.tests import ConflictResolution
 
 
 
-class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
+class MinimalTest(BerkeleyTestBase.MinimalTestBase,
+                  BasicStorage,
+                  MTStorage,
+                  PackableStorage,
+                  ReadOnlyStorage,
+                  SynchronizedStorage,
+                  ):
+
     def checkVersionedStoreAndLoad(self):
         # This storage doesn't support versions, so we should get an exception
         oid = self._storage.new_oid()
@@ -47,11 +59,15 @@ class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage,
                RevisionStorage, VersionStorage,
                TransactionalUndoStorage,
                TransactionalUndoVersionStorage,
-               PackableStorage,
+               PackableStorage, PackableUndoStorage,
                HistoryStorage,
                IteratorStorage, ExtendedIteratorStorage,
                ConflictResolution.ConflictResolvingStorage,
-               ConflictResolution.ConflictResolvingTransUndoStorage):
+               ConflictResolution.ConflictResolvingTransUndoStorage,
+               SynchronizedStorage,
+               PersistentStorage,
+               MTStorage,
+               ReadOnlyStorage):
     pass
 
 

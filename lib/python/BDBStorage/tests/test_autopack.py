@@ -52,12 +52,13 @@ class C(Persistent):
 
 
 class TestAutopackBase(BerkeleyTestBase):
-    def _config(self):
+    def _config(self, read_only=False):
         config = BerkeleyConfig()
         # Autopack every 1 second, 2 seconds into the past, no classic packs
         config.frequency = 1
         config.packtime = 2
         config.gcpack = 0
+        config.read_only = read_only
         return config
 
     def _wait_for_next_autopack(self):
@@ -114,13 +115,14 @@ class TestAutopack(TestAutopackBase):
 class TestAutomaticClassicPack(TestAutopackBase):
     ConcreteStorage = BDBFullStorage
 
-    def _config(self):
+    def _config(self, read_only=False):
         config = BerkeleyConfig()
         # Autopack every 1 second, 2 seconds into the past, classic packing
         # every time.
         config.frequency = 1
         config.packtime = 2
         config.gcpack = 1
+        config.read_only = read_only
         return config
 
     def testAutomaticClassicPack(self):
@@ -196,10 +198,11 @@ class TestAutomaticClassicPack(TestAutopackBase):
 class TestMinimalPack(TestAutopackBase):
     ConcreteStorage = BDBMinimalStorage
 
-    def _config(self):
+    def _config(self, read_only=False):
         config = BerkeleyConfig()
         # Autopack every 3 seconds
         config.frequency = 3
+        config.read_only = read_only
         return config
 
     def testRootUnreachable(self):

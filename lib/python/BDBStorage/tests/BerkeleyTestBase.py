@@ -29,20 +29,21 @@ DBHOME = 'test-db'
 
 
 class BerkeleyTestBase(StorageTestBase):
-    def _config(self):
+    def _config(self, read_only=False):
         # Checkpointing just slows the tests down because we have to wait for
         # the thread to properly shutdown.  This can take up to 10 seconds, so
         # for the purposes of the test suite we shut off this thread.
         config = BerkeleyConfig()
         config.interval = 0
+        config.read_only = read_only
         return config
 
     def _envdir(self):
         return DBHOME
 
-    def open(self):
+    def open(self, read_only=False):
         self._storage = self.ConcreteStorage(
-            self._envdir(), config=self._config())
+            self._envdir(), config=self._config(read_only))
 
     def _zap_dbhome(self, dir=None):
         if dir is None:
