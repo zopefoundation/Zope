@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.75 1999/06/30 15:56:46 amos Exp $"""
+$Id: ObjectManager.py,v 1.76 1999/07/08 11:28:50 jim Exp $"""
 
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -171,8 +171,11 @@ class ObjectManager(
     def filtered_meta_types(self, user):
         "Those meta types for which a user has adequite permissions."
         meta_types=[]
-        all=callable(self.all_meta_types) and self.all_meta_types() or \
-                self.all_meta_types 
+        if callable(self.all_meta_types):
+            all=self.all_meta_types()
+        else:
+            all=self.all_meta_types
+
         for meta_type in all:
             if meta_type.has_key('permission'):
                 if user.has_permission(meta_type['permission'],self):
