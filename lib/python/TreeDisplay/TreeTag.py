@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.10 1997/12/02 00:06:56 jim Exp $'
-__version__='$Revision: 1.10 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.11 1997/12/02 00:40:02 jim Exp $'
+__version__='$Revision: 1.11 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -25,7 +25,11 @@ class Tree:
 	tname, args, section = blocks[0]
 	args=parse_params(args, name=None, expr=None,
 			  expand=None, leaves=None,
-			  header=None, footer=None)
+			  header=None, footer=None,
+			  nowrap=1)
+	if args.has_key('name'): name=args['name']
+	elif args.has_key(''): name=args['name']=args['']
+	else: name='a tree tag'
 	self.__name__ = name
 	self.section=section
 	self.args=args
@@ -198,8 +202,10 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 
     # add item text
     dataspan=colspan-level
-    output('<TD%s VALIGN="TOP">' %
-	   (dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''))
+    output('<TD%s%s VALIGN="TOP">' %
+	   ((dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''),
+	   (have_arg('nowrap') and args['nowrap'] and ' NOWRAP' or ''))
+	   )
     output(section(self, md))
     output('</TD>\n</TR>\n')
 
