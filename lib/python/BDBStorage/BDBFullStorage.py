@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.65 $
+$Revision: 1.66 $
 """
 
 import time
@@ -1610,7 +1610,6 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # oidqueue is a BerkeleyDB Queue that holds the list of object ids to
         # look at next, and by using this we don't need to keep an in-memory
         # dictionary.
-        assert len(self._packmark) == 0
         assert len(self._oidqueue) == 0
         # Quick exit for empty storages
         if not self._serials:

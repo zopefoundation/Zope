@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.25 $'[-2:][0]
+__version__ = '$Revision: 1.26 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -420,7 +420,6 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         # we'll save the mark data in the packmark table.  The oidqueue is a
         # BerkeleyDB Queue that holds the list of object ids to look at next,
         # and by using this we don't need to keep an in-memory dictionary.
-        assert len(self._packmark) == 0
         assert len(self._oidqueue) == 0
         # Quick exit for empty storages
         if not self._serials:
