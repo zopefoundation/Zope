@@ -90,7 +90,8 @@ Helper program to time TALVisitor and other DOM tree operations.
 import sys
 import time
 import getopt
-import cPickle
+from cPickle import dumps, loads
+from cStringIO import StringIO
 
 from driver import parsefile, copytree, talizetree, printtree, FILE
 from driver import compiletree, interpretit
@@ -110,13 +111,14 @@ def main():
         file = args[0]
     else:
         file = FILE
+    dummyfile = StringIO()
     doc = timefunc(count, parsefile, file)
     doc = timefunc(count, copytree, doc)
     doc2 = timefunc(count, talizetree, doc)
-    timefunc(count, printtree, doc, open("/dev/null", "w"))
+    timefunc(count, printtree, doc, dummyfile)
     timefunc(count, macroIndexer, doc)
     it = timefunc(count, compiletree, doc)
-    timefunc(count, interpretit, it, None, open("/dev/null", "w"))
+    timefunc(count, interpretit, it, None, dummyfile)
     s = timefunc(count, pickletree, doc)
     timefunc(count, unpickletree, s)
 
@@ -132,10 +134,10 @@ def timefunc(count, func, *args):
     return result
 
 def pickletree(doc):
-    return cPickle.dumps(doc)
+    return dumps(doc)
 
 def unpickletree(s):
-    return cPickle.loads(s)
+    return loads(s)
 
 if __name__ == "__main__":
     main()
