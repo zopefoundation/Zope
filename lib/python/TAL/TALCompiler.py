@@ -131,9 +131,9 @@ class METALCompiler(DOMVisitor):
         self.namespaceDict = self.namespaceStack.pop()
 
     def newNS(self, prefix, namespaceURI):
-        if self.namespaceDict is self.namespaceStack[-1]:
-            self.namespaceDict = self.namespaceDict.copy()
         if self.namespaceDict.get(prefix) != namespaceURI:
+            if self.namespaceDict is self.namespaceStack[-1]:
+                self.namespaceDict = self.namespaceDict.copy()
             self.namespaceDict[prefix] = namespaceURI
             return 1
         else:
@@ -255,7 +255,7 @@ class TALCompiler(METALCompiler):
 
     # Overriding METAL method to add attribute replacements
     def getAttributeList(self, node):
-        attrList = METALCompiler.getAttributeList(self, node);
+        attrList = METALCompiler.getAttributeList(self, node)
         attrDict = getAttributeReplacements(node)
         if not attrDict:
             return attrList
