@@ -85,6 +85,7 @@
 """Provide support for linking an external transaction manager with Zope's
 """
 
+
 class TM:
     """Mix-in class that provides transaction management support
 
@@ -95,15 +96,6 @@ class TM:
     """
 
     _registered=None
-
-    #class _p_jar:
-    #    # This is place holder for new transaction machinery 2pc
-    #    # I don't think this is needed.
-    #    def __init__(self, db=None): self.db=db
-    #    def begin_commit(self, *args): pass
-    #    def finish_commit(self, *args): pass
-    #
-    #_p_jar=_p_jar(_p_jar())
 
     def _register(self):
         if not self._registered:
