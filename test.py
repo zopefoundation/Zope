@@ -254,15 +254,31 @@ class ImmediateTestResult(unittest._TextTestResult):
         for i in range(n):
             print >>stream, "%6dms" % int(results[i][1] * 1000), results[i][0]
 
-    def _print_traceback(self, msg, err, test, errlist):
-        if self.showAll or self.dots or self._progress:
-            self.stream.writeln("\n")
-            self._lastWidth = 0
-
+    def _handle_problem(self, err, test, errlist):
+        
+        if self._debug:
+            raise err[0], err[1], err[2]
+        
+        if errlist is self.errors:
+            prefix = 'Error'
+        else:
+            prefix = 'Failure'
+            
         tb = "".join(traceback.format_exception(*err))
-        self.stream.writeln(msg)
-        self.stream.writeln(tb)
-        errlist.append((test, tb))
+        
+        if self._progress:
+            self.stream.writeln("\r")
+            self.stream.writeln("%s in test %s" % (prefix,test))
+            self.stream.writeln(tb)
+            self._lastWidth = 0
+        elif self.showAll:
+            self._lastWidth = 0
+            self.stream.writeln(prefix.upper())
+        elif self.dots:
+            self.stream.write(prefix[0])
+            
+        if not self._progress:
+            errlist.append((test, tb))
 
     def startTest(self, test):
         if self._progress:
@@ -300,20 +316,10 @@ class ImmediateTestResult(unittest._TextTestResult):
         return s[:self._maxWidth]
 
     def addError(self, test, err):
-        if self._progress:
-            self.stream.write("\r")
-        if self._debug:
-            raise err[0], err[1], err[2]
-        self._print_traceback("Error in test %s" % test, err,
-                              test, self.errors)
+        self._handle_problem(err, test, self.errors)
 
     def addFailure(self, test, err):
-        if self._progress:
-            self.stream.write("\r")
-        if self._debug:
-            raise err[0], err[1], err[2]
-        self._print_traceback("Failure in test %s" % test, err,
-                              test, self.failures)
+        self._handle_problem(err, test, self.failures)
 
     def printErrors(self):
         if self._progress and not (self.dots or self.showAll):

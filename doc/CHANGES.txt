@@ -139,6 +139,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1445: Fixed bad interaction between -p and -v(v)
+       options to test.py that resulted in exceptions being printed
+       when they shouldn't have been.
+
      - Collector #729: manage_main doesn't display the correct page title
        most of the time. It is not completely fixed but using title_or_id
        makes folders display the correct id as a fallback.
