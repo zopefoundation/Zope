@@ -466,7 +466,10 @@ except:
 
 # if it hasn't failed at this point, create a .pid file.
 pf = open(PID_FILE, 'w')
-pf.write(str(os.getpid()))
+pid=str(os.getpid())
+try: pid=str(os.getppid())+' '+pid
+except: pass
+pf.write(pid)
 pf.close()
 
 # Start Medusa, Ye Hass!
