@@ -635,12 +635,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Compute "sort_index", which is a sort index, or none:
         if kw.has_key('sort-on'):
             sort_index=kw['sort-on']
-            del kw['sort-on']
         elif hasattr(self, 'sort-on'):
             sort_index=getattr(self, 'sort-on')
         elif kw.has_key('sort_on'):
             sort_index=kw['sort_on']
-            del kw['sort_on']
         else: sort_index=None
         sort_order=''
         if sort_index is not None:
