@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -104,12 +104,12 @@ class Resource:
                       'MOVE',
                       )
 
-    def dav__init(self, r):
+    def dav__init(self, request, response):
         # Init expected HTTP 1.1 / WebDAV headers which are not
         # currently set by the response object automagically.
-        r.setHeader('Connection', 'close')
-        r.setHeader('Date', rfc1123_date())
-        r.setHeader('DAV', '1')
+        response.setHeader('Connection', 'close')
+        response.setHeader('Date', rfc1123_date())
+        response.setHeader('DAV', '1')
 
     dav__locks=()
     

@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -105,15 +105,15 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         self.__parent__=parent
         self.__roles__=parent.__roles__
 
-
     def __bobo_traverse__(self, REQUEST, name=None):
         # We must handle traversal so that we can recognize situations
         # where a 409 Conflict must be returned instead of the normal
         # 404 Not Found, per [WebDAV 8.3.1].
+        try:    return getattr(self, name)
+        except: pass
         method=REQUEST.get('REQUEST_METHOD', 'GET')
         if method in ('MKCOL',):
-            raise 'Conflict', `name`
-#            raise 'Conflict', 'Collection ancestors must already exist.'
+            raise 'Conflict', 'Collection ancestors must already exist.'
         raise 'Not Found', 'The requested resource was not found.'
 
     def HEAD(self, REQUEST, RESPONSE):
