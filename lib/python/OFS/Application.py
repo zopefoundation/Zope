@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.164 2001/11/17 15:56:01 chrism Exp $'''
-__version__='$Revision: 1.164 $'[11:-2]
+$Id: Application.py,v 1.165 2001/11/17 17:51:54 chrism Exp $'''
+__version__='$Revision: 1.165 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -474,12 +474,16 @@ def initialize(app):
 
     # b/c: Ensure that there's an Examples folder with examples
     if not hasattr(app, 'Examples'):
-        examples=app._p_jar.importFile(
-            os.path.join(Globals.data_dir, 'Examples.zexp'))
-        app._setObject('Examples', examples)
-        get_transaction().note('Added Examples folder')
-        get_transaction().commit()
-        del examples
+        examples_path = os.path.join(Globals.data_dir, 'Examples.zexp')
+        if os.path.isfile(os.path.join(examples_path)):
+            examples=app._p_jar.importFile(examples_path)
+            app._setObject('Examples', examples)
+            get_transaction().note('Added Examples folder')
+            get_transaction().commit()
+            del examples
+        else:
+            LOG('Zope Default Object Creation', INFO,
+                '%s examples import file could not be found.' % examples_path)
 
     # b/c: Ensure that Owner role exists.
     if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
