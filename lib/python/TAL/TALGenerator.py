@@ -103,8 +103,10 @@ class TALGenerator:
             expressionCompiler = DummyCompiler()
         self.expressionCompiler = expressionCompiler
         self.program = []
-        self.macros = {}
         self.stack = []
+        self.macros = {}
+        self.slots = {}
+        self.slotStack = []
 
     def compileExpression(self, expr):
         return self.expressionCompiler.compile(expr)
@@ -117,6 +119,15 @@ class TALGenerator:
         program = self.program
         self.program = self.stack.pop()
         return program
+
+    def pushSlots(self):
+        self.slotStack.append(self.slots)
+        self.slots = {}
+
+    def popSlots(self):
+        slots = self.slots
+        self.slots = self.slotStack.pop()
+        return slots
 
     def emit(self, *instruction):
         self.program.append(instruction)
@@ -173,7 +184,29 @@ class TALGenerator:
         else:
             assert key == "structure"
             self.emit("insertStructure", cexpr, attrDict, program)
-        
+
+    def emitDefineMacro(self, macroName):
+        program = self.popProgram()
+        if self.macros.has_key(macroName):
+            raise METALError("duplicate macro definition: %s" % macroName)
+        self.macros[macroName] = program
+        self.emit("defineMacro", macroName, program)
+
+    def emitUseMacro(self, expr):
+        cexpr = self.compileExpression(expr)
+        program = self.popProgram()
+        self.emit("useMacro", cexpr, self.popSlots(), program)
+
+    def emitDefineSlot(self, slotName):
+        program = self.popProgram()
+        self.emit("defineSlot", slotName, program)
+
+    def emitFillSlot(self, slotName):
+        program = self.popProgram()
+        if self.slots.has_key(slotName):
+            raise METALError("duplicate slot definition: %s" % slotName)
+        self.slots[slotName] = program
+        self.emit("fillSlot", slotName, program)
 
 def test():
     t = TALGenerator()
