@@ -90,7 +90,7 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
   <SELECT NAME=":method" ONCHANGE="location.href=this.options[this.selectedIndex].value">
     <OPTION value="manage_workspace" DISABLED>Available Objects
   <!--#in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name-->
-    <OPTION value="<!--#var action-->"><!--#var name-->
+    <OPTION value="<!--#var action fmt="url-quote"-->"><!--#var name-->
   <!--#/in-->
   </SELECT>
   <NOSCRIPT><INPUT TYPE="SUBMIT" VALUE=" Add "></NOSCRIPT>
@@ -102,7 +102,7 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
   <FORM ACTION="<!--#var URL1-->/" METHOD="GET">
     To add a new item click &quot;Add&quot;.
     <!--#in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name-->
-      <input type=hidden name=":method" value="<!--#var action-->">
+      <input type=hidden name=":method" value="<!--#var action fmt="url-quote"-->">
       <INPUT TYPE="SUBMIT" VALUE=" Add ">
     <!--#/in-->
   </FORM>
