@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -92,7 +92,7 @@ from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time, gmtime, localtime, asctime
 from time import timezone, strftime, mktime
 from time import daylight, timezone, altzone
-from types import InstanceType,IntType,FloatType,StringType
+from types import InstanceType,IntType,FloatType,StringType,UnicodeType
 try: from time import tzname
 except: tzname=('UNKNOWN','UNKNOWN')
 
@@ -700,7 +700,7 @@ class DateTime:
             if arg=='':
                 raise self.SyntaxError, arg
             
-            if type(arg)==StringType and lower(arg) in self._tzinfo._zidx:
+            if type(arg) in [StringType,UnicodeType] and lower(arg) in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
                 t,tz=time(),self._tzinfo._zmap[lower(arg)]
                 ms=(t-math.floor(t))
@@ -709,7 +709,7 @@ class DateTime:
                 x = _calcDependentSecond(tz, t)
                 yr,mo,dy,hr,mn,sc = _calcYMDHMS(x, ms)
 
-            elif type(arg)==StringType:
+            elif type(arg) in [StringType,UnicodeType]:
                 # Date/time string
                
                 if arg.find(' ')==-1 and arg[4]=='-':
