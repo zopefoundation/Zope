@@ -374,7 +374,7 @@ class Marshaller:
     # Python's None. the standard xmlrpclib raises an exception,
     # but marshalling it as a zero is more convenient.
     def dump_none(self, value):
-        self.write("<value><int>0</int></value>\n")
+        self.write("<value><boolean>0</boolean></value>\n")
     dispatch[NoneType] = dump_none
 
     def container(self, value):
