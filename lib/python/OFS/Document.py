@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Globals import HTML
 from Globals import HTMLFile
@@ -13,7 +13,7 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
     """A Document object"""
     meta_type  ='Document'
     icon       ='OFS/Document_icon.gif'
-    
+
     __state_names__=HTML.__state_names__+('title','__roles__')
 
     _formhead="""
@@ -66,6 +66,8 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 	self.func_defaults=(None,)
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+	kw['document_id']   =self.id
+        kw['document_title']=self.title
 	r=apply(HTML.__call__, (self, client, REQUEST), kw)
 	if RESPONSE is None: return r
 	return decapitate(r, RESPONSE)

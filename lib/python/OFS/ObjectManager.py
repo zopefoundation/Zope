@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.11 1997/09/25 14:30:39 brian Exp $"""
+$Id: ObjectManager.py,v 1.12 1997/09/25 15:43:35 brian Exp $"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -296,8 +296,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def manage_addProperty(self,id,value,type,REQUEST):
 	"""Add a new property (www)"""
-	try:    value=type_converters[type](value)
-	except: pass
+#	try:    value=type_converters[type](value)
+#	except: pass
+        value=type_converters[type](value)
 	self._setProperty(id,value,type)
 	return self.manage_propertiesForm(self,REQUEST)
 
@@ -394,6 +395,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.12  1997/09/25 15:43:35  brian
+# Added document_id, document_title
+#
 # Revision 1.11  1997/09/25 14:30:39  brian
 # Fixed property typing error
 #
