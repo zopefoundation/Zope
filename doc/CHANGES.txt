@@ -75,6 +75,10 @@ Zope Changes
         - The Find form in the management interface depended on javascript
           to function properly.
 
+        - Added a fix to compensate for the fact that Apache servers may 
+          rename the entire cgi environment when mod_rewrite rules are 
+          used in .htaccess files.
+
     Zope 1.9.0
 
       New Features
