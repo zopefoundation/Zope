@@ -28,6 +28,13 @@ Zope Changes
 
     Features added
 
+      - PluginIndexes: the ZCatalog's "Indexes" tab now show the number of
+        distinct values indexed by each index instead of a mixture of indexed
+        objects versus number of distinct values. Indexes derived from UnIndex 
+        show both values within their own ZMI screen. In addition most indexes 
+        have now a "Browse" tab to browse through the list of indexed 
+        values and their occurrences.
+
       - FTPServer: a RNFR (rename from) request is now being responded
         with a 550 error code if the source file does not exist
 
