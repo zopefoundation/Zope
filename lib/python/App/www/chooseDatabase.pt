@@ -1,0 +1,18 @@
+<h1 tal:replace="structure here/manage_page_header" />
+<h2 tal:replace="structure here/manage_tabs" />
+
+<h3>Databases</h3>
+
+<table tal:define="url_quote nocall:
+  modules/Products/PythonScripts/standard/url_quote">
+<tr tal:repeat="name here/getDatabaseNames">
+<td tal:define="qname python: url_quote(name)">
+<img src="/p_/DatabaseManagement_icon"
+   tal:attributes="src string:${request/BASE1}/p_/DatabaseManagement_icon" />
+<a tal:content="name" tal:attributes="href
+   string:${here/absolute_url}/${qname}/manage_main">Main</a>
+</td>
+</tr>
+</table>
+
+<h1 tal:replace="structure here/manage_page_footer" />

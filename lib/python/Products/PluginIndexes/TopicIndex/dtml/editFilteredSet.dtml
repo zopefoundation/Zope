@@ -1,0 +1,47 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<p>
+<dtml-with "filteredSets[filteredSet]">
+
+<form action="manage_saveFilteredSet" method="post" enctype="multipart/form-data">
+<input type="hidden" name="filter_id" value="&dtml-getId;" >
+
+<table cellspacing="0" cellpadding="2" border="1" width="90%" align="center">
+
+
+  <tr>
+    <th colspan="2">Edit FilteredSet</th>
+  </tr>
+   
+  <tr>
+    <th>FilteredSet Id</th>
+    <td> 
+      &dtml-getId;
+    </td>
+  </tr>
+
+  <tr>
+    <th>FilteredSet Type</th>
+    <td>&dtml-getType;</td>
+  </tr>
+
+  <tr>
+    <th>FilteredSet Expression</th>
+    <td>
+     <textarea name="expr" cols="60" rows="5">&dtml-getExpression;</textarea>
+    </td>
+  </tr>
+
+  <tr> 
+    <td colspan="2" align="center">
+      <input class="form-element" type="submit" value=" Save " /> 
+    </td>
+  </tr>
+
+</table>
+</form>
+
+</dtml-with>
+
+<dtml-var manage_page_footer>

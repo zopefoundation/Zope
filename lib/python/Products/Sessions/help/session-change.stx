@@ -1,0 +1,22 @@
+Session Data Manager - Change
+
+  The session data manager add form displays these options:
+
+    title -- choose a title for the session data manager
+
+    transient object container path -- 
+    the path in Zope to a transient object container which will
+    store the actual session data.  This path is 
+    /temp_folder/transient_container in a default Zope installation.
+
+    place SESSION in REQUEST as --
+    If set, the REQUEST variable will be populated with the session
+    object, stored as the given name (default is 'SESSION')
+
+  After reviewing and changing these options, click the "Change"
+  button to change the session data manager.
+
+See Also
+
+  - "Session API":SessionInterfaces.py
+

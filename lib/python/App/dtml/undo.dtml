@@ -1,0 +1,99 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if undoable_transactions>
+
+<form action="manage_undo_transactions" method="post">
+
+<p class="form-help">
+This application's transactional feature allows you to easily undo changes 
+made to the application's settings or data. You can revert the application 
+to a &quot;snapshot&quot; of its state at a previous point in time.
+</p>
+
+<p class="form-help">
+Select one or more transactions below and then click on the &quot;Undo&quot;
+button to undo those transactions.  Note that even though a transaction
+is shown below, you may not be able to undo it if later transactions
+modified objects that were modified by a selected transaction.
+</p>
+
+<dtml-unless first_transaction>
+<dtml-call "REQUEST.set('first_transaction', _.None)">
+</dtml-unless>
+
+<a name="t_list" />
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <tr class="list-header">
+    <td align="left" valign="top">
+    <div class="list-nav">
+<dtml-if first_transaction>
+    <a href="manage_UndoForm?first_transaction:int=<dtml-var expr="first_transaction*2-last_transaction"
+     >&last_transaction:int=&dtml-first_transaction;&PrincipiaUndoBatchSize:int=&dtml-PrincipiaUndoBatchSize;"
+     onMouseOver="window.status='View later transactions'; return true"
+     onMouseOut="window.status=''; return true">&lt; Later Transactions</a>
+<dtml-else>
+    &nbsp;
+</dtml-if>
+    </div>
+    </td>
+
+    <td align="right" valign="top" nowrap>
+    <div class="list-nav">
+<dtml-if expr="_.len(undoable_transactions) == PrincipiaUndoBatchSize">
+    <a href="manage_UndoForm?first_transaction:int=&dtml-last_transaction;&last_transaction:int=<dtml-var expr="last_transaction+PrincipiaUndoBatchSize"
+     >&PrincipiaUndoBatchSize:int=&dtml-PrincipiaUndoBatchSize;"
+     onMouseOver="window.status='View earlier transactions'; return true"
+     onMouseOut="window.status=''; return true">Earlier Transactions &gt;</a>
+ <dtml-else>
+    &nbsp;
+</dtml-if>
+    </div>
+    </td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<dtml-in undoable_transactions mapping>
+<dtml-if sequence-odd>   
+  <tr class="row-normal">
+<dtml-else>
+  <tr class="row-hilite">
+</dtml-if>
+    <td width="16" align="left" valign="top">
+    <input type="checkbox" name="transaction_info:list" 
+     value="&dtml-id;" />
+    </td>
+    <td align="left" valign="top">
+    <div class="list-item">
+    &dtml-description; by <strong><dtml-if 
+     user_name>&dtml-user_name;<dtml-else
+     ><em>Zope</em></dtml-if></strong>
+    </div>
+    </td>
+    <td align="right" valign="top" colspan="2" nowrap>
+    <div class="list-item">
+    <dtml-var time fmt="%Y-%m-%d %H:%M:%S">
+    </div>
+    </td>
+  </tr>
+</dtml-in>
+  <tr>
+    <td></td>
+    <td align="left" valign="top" colspan="2">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" value=" Undo " />
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-else>
+<p>
+There are no transactions that can be undone.
+</p>
+
+</dtml-if>
+
+<dtml-var manage_page_footer>

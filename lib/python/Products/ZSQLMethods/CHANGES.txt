@@ -1,0 +1,115 @@
+Aqueduct SQL Methods Changes
+
+  AqueductSQLMethods 1.2.1
+
+    Bugs Fixed
+
+      - The new Aqueduct.Results module was ommitted.
+
+  AqueductSQLMethods 1.2
+
+    Bugs Fixed
+
+      - Source changes were lost when resizing the editing screen.
+
+      - When testing, on DAs that use new DA protocol, 
+        non-select SQL is reported as such.
+
+    Features Added
+
+      - Support for new Aqueduct DA protocol, providing much faster
+        retrievals.
+
+      - Edit screen size preferences are now distinct from Document
+        size preferences. 
+
+  AqueductSQLMethods 1.1.5
+
+    Features Added
+
+      - Added permission settings to work with recent Principia versions.
+
+
+  Aqueduct SQL Methods 1.1.4
+  
+    Bugs Fixed
+  
+      - Generated reports failed in cases where column names contained
+	odd characters, as would be the case with::
+  
+	  select salary*1.2 from payrole
+  
+
+  Aqueduct SQL Methods 1.1.3
+  
+    Bugs Fixed
+  
+      - Changed permission settings to be in line with principia 1.2
+  
+
+  Aqueduct SQL Methods 1.1.2
+  
+    Bugs Fixed
+  
+      - If strings contained backslashes but not backslash-t or
+	backslash-n, then the backslashes were getting doubled.
+  
+  Aqueduct SQL Methods 1.1.1
+  
+    Bugs Fixed
+  
+      - The SQL string quoting done by the sqlvar and sqltest tags
+	failed on non-ANSI-SQL databases like mySQL.  Extra hooks
+	were added to allow database adapters to provide custom quoting 
+	logic.
+  
+  Aqueduct SQL Methods 1.1.0
+  
+    Features
+  
+      - New DTML tags are available in SQLMethods that greatly
+	improve the ease, safety, and flexibility of database methods.
+  
+      - SQL Templates are now rendered in the context of the containing
+	folder, rather than the method itself.
+  
+      - Input arguments are shown in input forms in the order that
+	they were defined, rather than in alphabetical order.
+  
+
+  Aqueduct SQL Methods 1.0.5
+  
+    Features Fixed
+  
+      - Database methods are slightly better about binding themselves
+	to the correct object when acquired.
+
+
+  Aqueduct SQL Methods 1.0.4
+  
+    Features Fixed
+  
+      - RDBMS transaction boundaries now coincide with Principia 
+	tranasaction boundaries.  For example, if a Document
+	runs 3 database methods and the third method raises an error, 
+	then the other methods are aborted.
+
+
+  Aqueduct SQL Methods 1.0.3
+  
+    Bugs Fixed
+  
+      - Add permissions were not editable.
+  
+      - Methods on database records could not use acquired attributes.
+
+
+  AqueductSQLMethods 1.0.1
+
+    Bug Fixes
+    
+      - Error reporting was broken in test mode.
+    
+    Features
+    
+      - Include generated SQL source in test output.

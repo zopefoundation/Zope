@@ -1,0 +1,16 @@
+Z SQL Method Object: Query relational databases with SQL
+
+  Description
+
+    Z SQL Methods allows you to access data in SQL databases.
+
+    Z SQL Methods define and call SQL statements on databases which
+    are defined by database adapter objects. To create a new Z SQL
+    Method you will need to setup a database adapter first.  Every Z
+    SQL Method is directly linked to a database connection through a
+    database adapter.
+
+    **Note:** You must associate a Z SQL method with a database
+    adapter.  If Zope cannot find a database adapter from your
+    location, you will not be able to create a Z SQL Method.
+

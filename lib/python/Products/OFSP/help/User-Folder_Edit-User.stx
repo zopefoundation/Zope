@@ -1,0 +1,22 @@
+User Folder - Edit User: Edit a user
+
+  Descriptions
+
+    This view allows you to edit a user.
+
+  Controls
+
+    'Name' -- The user's name.
+
+    'Password' -- The user's password.
+
+    'Confirm' -- Confirm the user's password.
+
+    'Domains' -- Optionally allows you to restrict the
+    Internet domains from which the user can log in. Domains should be 
+    separated by spaces.
+    For example, 'digicool.com zope.org'
+
+    'Roles' -- The user's roles
+
+    'Change' -- Change the user.

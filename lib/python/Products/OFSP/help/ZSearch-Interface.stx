@@ -1,0 +1,11 @@
+Z Search Interface: Search wizard.
+  
+  Description
+
+    A Search Interface is a wizard that creates search and results forms.
+  
+    The Search Interface will create a search-input form and a report
+    for displaying the search results. You can search ZSQL Methods,
+    ZCatalogs, or any other objects that implement the searchable
+    interface.
+

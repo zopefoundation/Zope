@@ -1,0 +1,41 @@
+Z SQL Method - Advanced: Manage advanced settings
+  
+    Description
+
+        Manage the advanced settings such as caching and plugable
+        brains of a SQL method.
+        
+    Controls
+
+        'ID' -- Indicates the id of the sql method.
+        
+        'Title' -- Allows you to specify the title of the sql method.
+
+        'Connection Hook' -- Specifies the id of a method to be called when the database connection is made. This method will return a string containing the id of the database connection to use. If left blank there is no effect, the connection id specified will be used.
+
+        'Maximum number of rows retrieved' -- Specify an upper limit
+        for the number of rows a sql method can retrieve. Setting this
+        option correctly (based on your specific environment) can
+        increase the execution time of the method.
+        
+        'Maximum number of results in the cache' -- Set the size of
+        the sql method cache.
+        
+        'Maximum time (seconds) to cache results' -- The time in
+        seconds that results are cached.  Setting to zero disables
+        caching.
+        
+	Rows returned from this method can be turned into 'Result
+	objects' that are instances of a class you can specify below.
+        
+        'Class name' -- Allows you to specify the name of the Python class. 
+        
+        'Class file' -- Allows you to specify the name of the Python
+        module that the class is defined in. The class file should
+        reside in the Zope 'Extensions' directory.
+
+
+
+
+
+

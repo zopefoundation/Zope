@@ -1,0 +1,11 @@
+Architecture of the Zope SecuritySuite
+
+  The base class of the suite is "SecurityBase" and contains
+  the basic function of perform tests for permissions, roles
+  and perform ZPublisher request:
+
+    - _checkPermission()
+
+    - _checkRoles()
+
+    - _request() 

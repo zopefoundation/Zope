@@ -1,0 +1,21 @@
+DTML Document/Method - Add: Create a DTML Document/Method
+
+  Description
+
+    Creates a new DTML Document or Method.
+
+  Controls
+
+    'Id' -- The id of the DTML Document or Method.
+
+    'Title' -- The optional title of the DTML Document or Method.
+
+    'File' -- Allows you to upload a file to provide the contents for
+    the DTML Document or Method.  Use the 'Browse...' button to select
+    a local file.
+
+    'Add' -- Create the DTML Document or Method.
+
+    'Add and Edit' -- Create the DTML Document or Method, and return
+    the 'Edit' view of the created object.
+

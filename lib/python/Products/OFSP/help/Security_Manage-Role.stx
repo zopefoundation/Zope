@@ -1,0 +1,13 @@
+Folder - Manage Role: Assign permissions to a role.
+  
+  Description
+
+    This view allows you to assign permissions to a role.
+      
+  Controls
+
+    '[Permissions List]' -- The permissions
+    assigned to the role.
+
+    'Change' -- Changes the security settings.
+

@@ -1,0 +1,150 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Gadfly: recovery</TITLE>
+<META NAME="Template" CONTENT="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<table><tr><td>
+<img src="gadfly.JPG">
+</td><td>
+<H1>Gadfly Recovery</H1>
+</td></tr></table>
+
+<P>In the event of a software glitch or crash Gadfly may terminate without having stored committed updates. 
+A recovery strategy attempts to make sure
+that the unapplied commited updates are applied when the database restarts. 
+It is always assumed that there is only one primary (server) process controlling the database (possibly with 
+multiple clients). </P>
+
+<P>Gadfly uses a simple LOG with deferred updates recovery mechanism. Recovery should be possible in the 
+presence of non-disk failures (server crash, system crash). Recovery after a disk crash is not available 
+for Gadfly as yet, sorry. </P>
+
+<P>Due to portability problems Gadfly does not prevent multiple processes from "controlling" the database at 
+once. For read only access multiple instances are not a problem, but for access with modification, the processes 
+may collide and corrupt the database. For a read-write database, make sure only one (server) process controls 
+the database at any given time. </P>
+
+<P>The only concurrency control mechanism that provides serializability for Gadfly as yet is the trivial one -- 
+the server serves all clients serially. This will likely change for some variant of the system at some point. </P>
+
+<P>This section explains the basic recovery mechanism. </P>
+
+<H1>Normal operation</H1>
+
+<H3>Precommit</H3>
+<P>During normal operations any active tables are in memory in the process. 
+Uncommitted updates for a transaction are kept in "shadow tables" until the transaction commits using
+<pre>
+   connection.commit()
+</pre>
+The shadow tables remember the mutations that have been applied to them. The permanent table copies 
+are only modified after commit time.  A commit commits all updates for all cursors for the connection.
+Unless the autocommit feature is disabled (see below) a
+commit normally always triggers a checkpoint too.</P>
+
+A rollback
+<pre>
+   connection.rollback()
+</pre>
+explicitly discards all uncommitted updates and restores the connection to the previously
+committed state.</p>
+
+<P>There is a 3rd level of shadowing for statement sequences executed by a cursor.
+In particular the design attempts to make sure that if 
+<pre>
+  cursor.execute(statement)
+</pre>
+fails with an error, then the shadow database will contain no updates from
+the partially executed statement (which may be a sequence of statements)
+but will reflect other completed updates that may have not been committed.
+
+<H3>Commit</H3>
+
+<P>At commit, operations applied to shadow tables are written 
+out in order of application to a log file before being permanently 
+applied to the active database. Finally a commit record is written to 
+the log and the log is flushed. At this point the transaction is considered 
+committed and recoverable, and a new transaction begins.
+Finally the values of the shadow tables replace 
+the values of the permanent tables in the active database,
+(but not in the database disk files until checkpoint, if autocheckpoint
+is disabled). </P>
+
+<H3>Checkpoint</H3>
+<P>A checkpoint operation brings the persistent copies of the tables on 
+disk in sync with the in-memory copies in the active database. Checkpoints 
+occur at server shut down or periodically during server operation. 
+The checkpoint operation runs in isolation (with no database access 
+allowed during checkpoint). </P>
+
+<p><em>Note: database connections normally run a checkpoint
+after every commit, unless you set
+<pre>
+    connection.autocheckpoint = 0
+</pre>
+which asks that checkpoints be done explicitly by the program using
+<pre>
+    connection.commit() # if appropriate
+    connection.checkpoint()
+</pre>
+Explicit checkpoints should make the database perform better,
+since the disk files are written less frequently, but
+in order to prevent unneeded (possibly time consuming)
+recovery operations after a database
+is shutdown and restarted it is important to always execute an explicit
+checkpoint at server shutdown, and periodically during long server
+runs.</em></p>
+
+<p><strong>Note that if any outstanding operations are uncommitted
+at the time of a checkpoint (when autocheckpoint is disabled) the
+updates will be lost (ie, it is equivalent to a rollback).
+</strong></p>
+
+<P>At checkpoint the old persistent value of each table that has been updated since 
+the last checkpoint is copied to a back up file, and the currently active value is 
+written to the permanent table file.  Finally if the data definitions have changed
+the old definitions are stored to a backup file and the new definitions are written
+to the permanent data definition file.  To signal successful checkpoint the
+log file is then deleted.</P>
+<P>
+ At this point (after log deletion) the database is considered 
+quiescent (no recovery required). Finally all back up table files are deleted. 
+[Note, it might be good to keep old logs around... Comments?] </P>
+
+<P>Each table file representation is annotated with a checksum, 
+so the recovery system can check that the file was stored correctly. </P>
+
+<H1>Recovery</H1>
+<P>When a database restarts it automatically determines whether 
+the last active instance shut down normally and whether recovery 
+is required. Gadfly discovers the need for recovery by detecting 
+a non-empty current log file. </P>
+
+<P>To recover the system Gadfly first scans the log file to determine committed transactions. 
+Then Gadfly rescans the log file applying the operations of committed 
+transactions to the in memory table values in the order recorded. 
+When reading in table values for the purpose of recovery Gadfly looks 
+for a backup file for the table first. If the backup is not corrupt, 
+its value is used, otherwise the permanent table file is used. </P>
+<P>After recovery Gadfly runs a normal checkpoint before resuming 
+normal operation. </P>
+<p>
+<strong>
+Please note: Although I have attempted to provide a robust
+implementation
+for this software I do not guarantee its correctness.  I hope
+it will work well for you but I do not assume any legal
+responsibility for problems anyone may have during use
+of these programs.
+</strong>
+
+<p>
+<a href="mailto:arw@ifu.net">feedback</a><br>
+<a href="../index.html">home</a><br>
+<a href="index.html">Gadfly home</a>
+</BODY>
+</HTML>

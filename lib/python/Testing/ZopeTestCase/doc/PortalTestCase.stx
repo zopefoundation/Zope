@@ -1,0 +1,93 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+PortalTestCase Readme
+
+    The PortalTestCase class is a close relative of the ZopeTestCase
+    class. It was devised at the Plone Castle Sprint to form the base of an
+    integration testing framework for Plone 2.0. Thanks to Gidon Friedman 
+    and Godefroid Chapelle for their collaboration.
+
+
+Much of what is true for ZopeTestCase is true for PortalTestCase as well:
+
+    * PortalTestCase handles the ZODB connection, transaction, and 
+      application object; and it provides a REQUEST.
+    
+    * PortalTestCase sets up a user folder and a user.
+
+    * PortalTestCase provides the same hooks as ZopeTestCase.
+    
+    * PortalTestCase implements the same security interfaces as 
+      ZopeTestCase.
+
+
+What's different?
+
+    * PortalTestCase is designed for testing CMF-based applications.
+
+    * The fixture is slightly more complex, consisting of a portal object,
+      a userfolder + user, and the user's memberarea.
+
+    * For flexibility, the portal is *not* created by the base class but 
+      must be provided by the user (typically a derived xTestCase) of the
+      PortalTestCase base class.
+    
+    * Subclasses will have to override 'getPortal' to return the object 
+      serving as the portal.
+
+    * The portal will however be configured by the machinery which means
+      creating a user and a fresh memberarea for every test.
+
+    * Subclasses may override 'createMemberarea' to provide customized
+      and/or more lightweight memberareas to the tests. This can improve 
+      performance quite significantly.
+    
+
+Feature Comparison:
+
+    ZopeTestCase
+
+        * 1 user + 1 role
+
+        * Folder contains user folder and role definition
+
+        * Folder also serves as workarea
+
+        * User is logged in
+
+        * Provides attributes::
+
+          self.app
+          self.app.REQUEST
+          self.folder
+          self.folder.acl_users
+
+    PortalTestCase
+
+        * 1 user + 'Member' role
+
+        * Portal contains user folder and role definition
+
+        * User's home folder serves as workarea
+
+        * User is logged in
+
+        * Provides attributes::
+
+          self.app
+          self.app.REQUEST
+          self.portal
+          self.portal.acl_users
+          self.folder
+
+
+Read the Source
+
+    As always, I recommend to look at the source code of both 
+    'ZopeTestCase.py' and 'PortalTestCase.py' for all the details you may need.
+    Interface documentation can be found in 'interfaces.py'.
+
+    The test framework shipping with Plone 2.0 is a good example of how the 
+    PortalTestCase class can be put to use.
+
+

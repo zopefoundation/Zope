@@ -1,0 +1,32 @@
+<dtml-var manage_page_header>
+<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
+
+<p class="form-text">
+Permissions assigned to the role <strong>&dtml-role_to_manage;</strong>
+</p>
+
+<form action="manage_role" method="post">
+<p>
+<input type=hidden name=role_to_manage value="&dtml-role_to_manage;">
+<div class="form-element">
+<select name="permissions:list" multiple size="10">
+<dtml-in expr="permissionsOfRole(role_to_manage)" mapping=1>
+  <option &dtml-selected;>&dtml-name;</option>
+</dtml-in>
+</select>
+</div>
+</p>
+
+<p>
+<div class="form-element">
+<input class="form-element" type="submit" name="submit" value="Save Changes" />
+</div>
+</p>
+</form>
+
+<dtml-var manage_page_footer>
+
+
+
+
+

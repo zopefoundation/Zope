@@ -1,0 +1,70 @@
+on-error: Handle errors
+  
+  Syntax
+
+    'tal:on-error' syntax::
+
+      argument ::= (['text'] | 'structure') expression
+
+  Description
+
+    The 'tal:on-error' statement provides error handling for your
+    template.  When a TAL statement produces an error, the TAL
+    interpreter searches for a 'tal:on-error' statement on the same
+    element, then on the enclosing element, and so forth. The first
+    'tal:on-error' found is invoked. It is treated as a 'tal:content'
+    statement.
+
+    A local variable 'error' is set. This variable has these
+    attributes:
+
+      'type' -- the exception type
+
+      'value' -- the exception instance
+
+      'traceback' -- the traceback object
+
+    The simplest sort of 'tal:on-error' statement has a literal error
+    string or *nothing* for an expression.  A more complex handler may
+    call a script that examines the error and either emits error text
+    or raises an exception to propagate the error outwards.  
+
+  Examples
+
+    Simple error message::
+
+      <b tal:on-error="string: Username is not defined!" 
+	 tal:content="here/getUsername">Ishmael</b>
+
+    Removing elements with errors::
+
+      <b tal:on-error="nothing"
+         tal:content="here/getUsername">Ishmael</b>
+
+    Calling an error-handling script::
+
+      <div tal:on-error="structure here/errorScript">
+        ...
+      </div>
+
+    Here's what the error-handling script might look like::
+
+      ## Script (Python) "errHandler"
+      ##bind namespace=_
+      ##
+      error=_['error']
+      if error.type==ZeroDivisionError:
+          return "<p>Can't divide by zero.</p>"
+      else
+          return """<p>An error ocurred.</p>
+                    <p>Error type: %s</p>
+                    <p>Error value: %s</p>""" % (error.type,
+                                                 error.value)
+
+  See Also
+
+    "Python Tutorial: Errors and
+    Exceptions":http://www.python.org/doc/current/tut/node10.html
+
+    "Python Built-in
+    Exceptions":http://www.python.org/doc/current/lib/module-exceptions.html

@@ -1,0 +1,79 @@
+TALES Path expressions
+
+  Syntax
+
+    Path expression syntax::
+
+      PathExpr  ::= Path [ '|' Path ]*
+      Path      ::= variable [ '/' URL_Segment ]*
+      variable  ::= Name
+
+  Description
+
+    A path expression consists of one or more *paths* separated by
+    vertical bars (|).  A path consists of one or more non-empty
+    strings separated by slashes. The first string must be a variable
+    name (built-in variable or a user defined variable), and the
+    remaining strings, the *path segments*, may contain letters,
+    digits, spaces, and the punctuation characters underscore, dash,
+    period, comma, and tilde.
+
+    For example::
+
+      request/cookies/oatmeal
+      nothing
+      here/some-file 2001_02.html.tar.gz/foo
+      root/to/branch | default
+      request/name | string:Anonymous Coward
+
+    When a path expression is evaluated, Zope attempts to traverse the
+    path, from left to right, until it succeeds or runs out of paths
+    segments.  To traverse a path, it first fetches the object stored
+    in the variable.  For each path segment, it traverses from the
+    current object to the subobject named by the path
+    segment. Subobjects are located according to standard Zope
+    traversal rules (via getattr, getitem, or traversal hooks).
+
+    Once a path has been successfully traversed, the resulting object
+    is the value of the expression.  If it is a callable object, such
+    as a method or template, it is called.
+
+    If a traversal step fails, evaluation immediately proceeds to the next
+    path.  If there are no further paths, an error results.
+
+    The expression in a series of paths seperated by vertical bars can
+    be any TALES expression. For example, 'request/name |
+    string:Anonymous Coward'. This is useful chiefly for providing
+    default values such as strings and numbers which are not
+    expressable as path expressions.
+
+    If no path is given the result is *nothing*.
+
+    Since every path must start with a variable name, you need a set
+    of starting variables that you can use to find other objects and
+    values.  See the "TALES overview":tales.stx for a list of
+    built-in variables.  Since variable names are looked up first in
+    locals, then in globals, then in this list, these names act just
+    like built-ins in Python; They are always available, but they can
+    be shadowed by a global or local variable declaration. You can
+    always access the built-in names explicitly by prefixing them with
+    *CONTEXTS*. (e.g. CONTEXTS/root, CONTEXTS/nothing, etc).
+
+  Examples
+
+    Inserting a cookie variable or a property::
+
+      <span tal:replace="request/cookies/pref | here/pref">
+        preference
+      </span>
+
+    Inserting the user name::
+
+      <p tal:content="user/getUserName">
+        User name
+      </p>
+
+
+
+
+

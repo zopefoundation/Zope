@@ -1,0 +1,117 @@
+How Transience Works
+
+  The object responsible for managing the expiration of "transient"
+  objects is the TransientObjectContainer, the class definition for
+  which is located in
+  Products.Transience.Transience.TransientObjectContainer.  An
+  instance of this class is found in the default Zope installation at
+  /temp_folder/session_data.
+
+  The TransientObjectContainer (TOC) holds Transient Objects (TOs).
+
+  A TO is obtained via its container via a call to
+  TOC.new_or_existing(key), where "key" is usually the "browser id"
+  associated with a visitor (See Products.Session.BrowserIdManager).
+
+  If the TOC has a "current" TO corresponding to "key", it is
+  returned.
+
+  If the TOC does not have a "current" TO corresponding to "key", (due
+  to the expiration of the TO or because it never existed in the first
+  place) a "new" TO is manufactured and returned.
+
+Timeslices
+
+  Transience defines the notion of a "timeslice".  A "timeslice" is an
+  integer that represents some "slice" of time, defined by a "period".
+  For example, if a period is 20 seconds long, three ordered time
+  slices might be expressed as 0, 20, and 40.  The next timeslice
+  would be 60, and so on.  For an absolute time to "belong" to a
+  timeslice, it would need to be equal to or greater than one
+  timeslice integer, but less than the subsequent timeslice integer.
+
+Data Structures Maintained by a Transient Object Container
+
+  The TOC maintains three important kinds of data structures:
+
+  - a "_data" structure, which is an IOBTree mapping a "timeslice"
+    integer to a "bucket" (see next bullet for definition of bucket).
+
+  - One or more "buckets", which are OOBTree objects which map a "key"
+    (usually browser id) to a TransientObject.  Buckets are stored
+    inside of the "_data" structure.  There is a concept of a
+    "current" bucket, which is the bucket that is contained within the
+    _data structured with a key equal to the "current" timeslice.
+    A current bucket must always exist (this is an invariant).
+
+  - A "max_timeslice" integer, which is equal to the "largest"
+    timeslice for which there exists a bucket in the _data structure.
+    This is an optimization given that key operations against BTrees
+    can be slow and could cause conflicts (the same could be achieved
+    via _data.maxKey() otherwise).
+
+  When a Transient Object is created via new_or_existing, it is added
+  to the "current" bucket.  As time goes by, the bucket to which the
+  TO was added ceases to be the "current" bucket.  If the transient
+  object is "accessed" (it is called up out of the TOC via the TOC's
+  'get' method), it is again moved to the "current" bucket defined by
+  the current time's timeslice.
+
+  During the course of normal operations, a TransientObject will move
+  from an "old" bucket to the "current" bucket many times, as long as
+  it continues to be accessed.  It is possible for a TransientObject
+  to never expire, as long as it is called up out of its TOC often
+  enough.
+
+  If a TransientObject is not accessed in the period of time defined by
+  the TOC's "timeout", it is eventually garbage collected.
+
+How the TransientObjectContainer Determines if a TransientObject is "Current"
+
+  All "current" timeslice buckets (as specified by the timeout) are
+  searched for the transient object, most recent bucket first.
+
+Housekeeping: Finalization, Garbage Collection, and Bucket
+Replentishing
+
+  The TOC performs "finalization", "garbage collection", and "bucket
+  replentishing".  It typically performs these tasks "in-band"
+  (although it is possible to do the housekeeping tasks "out of band"
+  as well: see the methods of the Transient Object Container with
+  "housekeep" in their names).  "In band" housekeeping implies that
+  the TOC does not maintain a separate thread or process that wakes up
+  every so often to clean up.  Instead, during the course of normal
+  operations, the TOC opportunistically performs housekeeping functions.
+
+  Finalization is defined as optionally calling a function at bucket
+  expiration time against all transient objects contained within that
+  bucket.  The optional function call is user-defined, but it is
+  managed by the "notifyDel" method of the TOC.
+
+  Garbage collection is defined as deleting "expired" buckets in the
+  _data structure (the _data structure maps a timeslice to a bucket).
+  Typically this is done by throwing away one or more buckets in the
+  _data structure after they expire.
+
+  Bucket replentishing is defined as the action of (opportunistically)
+  creating more buckets to insert into the the _data structure,
+  replacing ones that are deleted during garbage collection.  The act
+  of deleting a bucket does not necessarily imply that a new bucket
+  will be immediately created thereafter.  We create new buckets in
+  batches to reduce the possibility of conflicts.
+
+  Finalization is attempted on every call to the transience machinery
+  to make TOs appear to expire "on time".  Garbage collection and
+  replentishment is performed on a somewhat random basis to avoid
+  unnecessary conflicts.
+
+Goals
+
+ - A low number of ZODB conflict errors (which reduce performance).
+
+ - Stability.
+
+To Do
+
+  - Testing under ZEO.
+

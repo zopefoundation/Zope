@@ -1,0 +1,331 @@
+<html>
+<head>
+<title>
+Gadfly SQL constructs
+</title>
+</head>
+<body bgcolor="#ffffff">
+
+<table>
+<tr>
+<td>
+<img src="gadfly.JPG">
+</td>
+<td>
+<h1>Gadfly SQL constructs</h1>
+</td></tr></table>
+
+<blockquote>
+This document describes SQL constructs supported by Gadfly.
+The presentation
+does not define the complete syntax -- see sqlgram.py for
+the precise syntax as BNF -- nor the complete semantics --
+see a good book on SQL for more detailed coverage of semantic
+(or use the source, Luke ;c) ).
+Also, please have a look at my
+<a href="http://mulder.rutgers.edu/~aaron/dbnotes.cgi">evolving
+database course notes</a> for more coverage of SQL.
+Examples of all supported constructs are also shown in the
+test suite source file gftest.py.
+This document is only
+a very brief guide, primarily of use to those who already
+understand something about SQL -- it is neither a tutorial
+nor a detailed discussion of syntax and semantics.
+</blockquote>
+
+<h1>The Standard, with omissions</h1>
+
+<p>
+Gadfly supports a large subset of ODBC 2.0 SQL.  The reason
+ODBC 2.0 is chosen is because it provides a fairly strong set of
+constructs, but does not include some of the more obscure
+features of other SQL standards which would be extremely
+difficult and complex to implement correctly
+(and perhaps, not used very frequently (?)).  
+<p>
+Supported features include views, groupings, aggregates,
+subquery expressions, quantified subquery comparisons,
+EXISTS, IN, UNION, EXCEPT, INTERSECT, searched mutations and
+Indices, among others (see below).
+
+<p>
+Some important omissions from ODBC 2.0 at this point are
+<pre>
+Nulls.
+Outer joins.
+CHECK conditions.
+Enforced data type constraints.
+Alter table (can't implement until NULLs arrive).
+Date, Time, and Interval data types
+</pre>
+It is hoped these will be implemented at some future time.
+<p>
+Less important omissions include
+<pre>
+Cursor based updates and deletes
+  (justification: if you really need them the db design
+   is flawed, and it's possible to use python instead).
+LIKE string predicate
+  (justification: use Python regexes in python code).
+Users and permissions
+  (justification: Gadfly is not intended for full multiuser
+   use at this time).
+</pre>
+These may or may not be implemented at some future time.
+
+<h1>Statements</h1>
+
+All interaction with SQL databases is mediated by
+SQL statements, or statement sequences.  Statement
+sequences are statements separated by semicolons.
+SQL keywords and user defined names are not case
+sensitive (but string values are, of course).
+<p>
+SQL statements include the following.
+
+<h3>Select Statement</h3>
+The select statement derives a table from tables
+in the database.  It's general form is
+<pre>
+sub_query
+     optorder_by
+</pre>
+Where sub_query is given by
+<pre>
+SELECT alldistinct select_list
+     FROM table_reference_list
+     optwhere 
+     optgroup 
+     opthaving 
+     optunion
+</pre>
+Read the statement:
+<pre>
+SELECT [DISTINCT|ALL] expressions or *
+FROM tables
+[WHERE condition]
+[GROUP BY group-expressions]
+[HAVING aggregate-condition]
+[union-clause]
+[ORDER BY columns]
+</pre>
+as follows: 
+<pre>
+1) Make all combinations of rows from the tables (FROM line)
+2) Eliminate those combinations not satisfying condition (WHERE line)
+3) (if GROUP present) form aggregate groups that match on group-expressions
+4) (if HAVING present) eliminate aggregate groups that don't satisfy
+   the aggregate-condition.
+5) compute the columns to keep (SELECT line).
+6) (if union-clause present) combine (union, except, intersect)
+   the result with the result of another select statement.
+7) if DISTINCT, throw out redundant entries.
+8) (if ORDER present) order the result by the columns (ascending
+   or descending as specified, with precedence as listed).
+</pre>
+This reading has little to do with the actual implementation,
+but the answer produced should match this intuitive reading.
+
+<h3>Create and drop table</h3>
+
+The create and drop table constructs
+initialize and destroy a table structure, respectively.
+<pre>
+CREATE TABLE user_defined_name ( colelts )
+
+DROP TABLE user_defined_name
+</pre>
+The colelts declare the names of the columns for
+the table and their data types.  The data types are
+not checked or enforced in any way at this time.
+
+<h3>Table mutations (INSERT, UPDATE, DELETE)</h3>
+
+Insert, Update, and Delete statements insert rows
+into tables, modify rows in tables in place, or
+remove rows from tables respectively.
+<pre>
+INSERT INTO table_name optcolids insert_spec
+
+DELETE FROM user_defined_name optwhere
+
+UPDATE user_defined_name
+     SET assns
+     optwhere
+</pre>
+The insert statement has two variants (in this implementation)
+INSERT sub-select and INSERT VALUES.  
+<pre>
+insert into r (a,b,c) select a,b,c from s
+
+insert into r (a,b,c) values (1,2,3)
+</pre>
+The first inserts
+the result of a SELECT statement into the target table
+and the other inserts explicit values (which may be dynamic
+parameters, see below).
+<P>
+Cursor based updates are not supported at the SQL level,
+eg
+<pre>
+  update r set a=1 where current of curs
+</pre>
+is not supported.
+
+<h3>Indices</h3>
+The create and drop index statements initialize and
+destroy index structures respectively.
+<pre>
+CREATE INDEX user_defined_name
+     ON user_defined_name
+     ( namelist )
+
+DROP INDEX user_defined_name
+</pre>
+Indices allow fast access to a table, based on values
+for the indexed columns in the namelist.
+<p>
+Indices can be UNIQUE, meaning that the attributes
+of the index cannot take on the same values in the table
+twice.
+<pre>
+CREATE UNIQUE INDEX user_defined_name 
+  ON user_defined_name ( namelist )
+</pre>
+Unique indices can be used to enforce primary and
+secondary key constraints.  After a UNIQUE index on
+a table is created inserts that attempt to insert
+repeat values for the indexed columns will be rejected.
+
+<h3>Views</h3>
+
+Create view and drop view statements initialize and
+drop views, respectively.
+<pre>
+CREATE VIEW user_defined_name optnamelist 
+  AS select_statement
+
+DROP VIEW user_defined_name
+</pre>
+Views are "derived tables" which are defined
+as stored SELECT statements.  They can be used
+as tables, except that they cannot be directly
+mutated.
+<p>
+It is possible to "implement your own views
+in Python".  Please see remotetest.py, gfintrospect
+and the FAQ for discussion.
+
+<h1>Conditions</h1>
+
+Conditions are truth valued boolean expressions
+formed from basic conditions possibly combined using
+NOT, AND, OR (where NOT has highest precedence and
+OR has lowest precedence) and parentheses.
+<p>
+Basic conditions include simple comparisons
+<pre>
+expression = expression
+expression &lt; expression
+expression &gt; expression
+expression &lt;= expression
+expression &gt;= expression
+expression &lt;&gt; expression
+</pre>
+Variants of the simple comparisons are the quantified
+subquery comparisons
+<pre>
+expression = ANY ( subquery )
+expression = ALL ( subquery )
+</pre>
+(and similarly for the other comparison operators).
+The IN predicate tests membership (like =ANY)
+<pre>
+expression IN ( subquery )
+expression NOT IN ( subquery )
+</pre>
+For all the quantified comparisons and IN the
+subquery must generate a single column table.
+<p>
+Also included are the the BETWEEN and NOT BETWEEN predicates
+<pre>
+expression BETWEEN expression AND expression
+expression NOT BETWEEN expression AND expression
+</pre>
+<p>
+The most general subquery predicate is EXISTS and NOT EXISTS
+which places no restriction on the subquery:
+<pre>
+EXISTS (subquery)
+NOT EXISTS (subquery)
+</pre>
+
+<h1>Expressions</h1>
+
+Expressions occur in conditions (WHERE, HAVING, etc.),
+in UPDATE searched assignments,
+and in the select list of select statements.
+<p>
+Expressions are formed from primary expressions,
+possibly combined using the standard arithmetic operators
+and parentheses with the normal precedence.
+<p>
+Primary expressions include numeric and string literals.
+Numeric literals supported are the Python numeric literals.
+String constants are set off by apostrophies, where two
+apostrophe's in sequence represent an  apostrophy in the
+string:
+<pre>
+'SQL string literals ain''t pretty'
+</pre>
+Column name expressions may be unqualified if they are
+unambiguous, or may be qualified with a table name
+or table alias
+<pre>
+bar
+frequents.bar
+f.bar
+</pre>
+The rules for scoping of column names are not covered
+here.  Column names in subqueries may refer to bindings
+in the query (or queries) that contain the sub-query.
+<p>
+Subquery expressions of form
+<pre>
+( select_statement )
+</pre>
+must produce a single column and single row table.
+<p>
+Aggregate operations are only permitted in the select
+list or in the HAVING condition of SELECT statements
+(including subselects).
+<pre>
+COUNT(*)
+COUNT(expression)
+AVG(expression)
+MAX(expression)
+SUM(expression)
+MIN(expression)
+</pre>
+<em><strong>and also including the non-standard extension MEDIAN
+<pre>
+MEDIAN(expression)
+</pre>
+</strong></em>
+Aggregate operations can be applied to distinct values
+as in
+<pre>
+COUNT(DISTINCT expression)
+</pre>
+The Dynamic expression "?" is a placeholder for a value
+bound at evaluation time (from Python values).  See the
+<a href="gadfly.html">
+API discussions </a>
+(Use) for more details on the use of
+dynamic parameters.
+<p>
+<a href="mailto:arw@ifu.net">feedback</a><br>
+<a href="../index.html">home</a><br>
+<a href="index.html">Gadfly home</a>
+</body>
+</html>

@@ -1,0 +1,57 @@
+Security - Define security settings.
+
+  Description
+
+    This view allows you to define security settings.
+      
+    Security settings are defined in terms of *roles* and
+    *permissions*. When a role is assigned to a permission users with
+    the given role will be able to perform tasks associated with the
+    permission on the object.
+
+  Controls
+      
+    Assign Roles to Permissions
+
+      Roles are listed in columns and permissions are listed in rows.
+      To assign a role to a permission check the checkbox at the
+      intersection of the row and column. You can also manage roles
+      and permissions individually by clicking on their name links.
+      
+    Create Roles
+      
+      You can create new roles by entering the role name in the text
+      entry field under the 'User defined roles' heading and clicking
+      the 'Add Role' button. You can delete any existing user defined
+      roles by selecting them from the selection list under the 'User
+      defined roles' heading and clicking the 'Delete Role' button.
+
+    Local Roles
+
+      You can create and manage local roles by clicking the
+      'local roles' link. 
+
+    Assign Permissions to a Role
+
+      You can manage the permissions assigned to a role by clicking on
+      the role name.
+
+    Assign Roles to a Permission
+
+      You can manage the roles assigned to a permission by clicking on
+      the permission name.
+
+    Acquire Permissions
+
+      The 'Acquire permission settings' check box next to each
+      permission indicates whether this item should inherit security
+      settings for this permission from its container object.  The
+      acquired permission settings may be augmented by selecting roles
+      for a permission in addition to selecting to acquire
+      permissions.
+
+      You can manage the acquisition of permission
+      settings individually by clicking the 'Acquire permission
+      settings' link. 
+ 
+

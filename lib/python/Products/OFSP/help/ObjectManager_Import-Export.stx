@@ -1,0 +1,29 @@
+Folder - Import/Export: Import/export Zope objects.
+  
+  Description
+
+    This view allows you to import or export Zope objects. Imported
+    objects will be inserted into the current object. Exported objects
+    will be saved to a file on the Zope server or downloaded to the
+    local client.
+
+  Controls
+
+    'Export object id' -- The id of the object to be exported.
+    **Note: The exported object must be contained by the current
+    object.**
+
+    'Export to' -- Where you want to save the exported file. 'Download
+    to local machine' downloads the export file to your client, 'Save to
+    file server' saves the export file to the Zope 'var' directory.
+
+    'XML format?' -- Whether the exported object
+    is in a binary format or in XML format.
+
+    'Export' -- Exports the object.
+
+    'Import file name' -- The filename of the Zope export file that
+    you would like to import. The file must be located in the Zope
+    'import' directory.
+
+    'Import' -- Imports the object.

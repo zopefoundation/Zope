@@ -1,0 +1,14 @@
+ZCatalog: Index and Search for Zope objects
+  
+    Description
+
+        ZCatalogs allow you to index and search for Zope objects.
+        
+        But ZCatalog is not just simply a data managemengt system that
+        allows you to search through content. You have the choice
+        which properties are stored in the Catalog and which
+        attributes are used for searching.
+        
+        Once a set of objects is inserted into the Catalog, you will
+        be able to update this object inventory by updating the
+        objects, or deleting and adding them.

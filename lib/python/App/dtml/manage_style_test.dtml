@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>System Stylesheet Test</title>
+<link rel="stylesheet" type="text/css" href="&dtml.url_quote-SCRIPT_NAME;/manage_style_css">
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#555555">
+
+&dtml-HTTP_USER_AGENT;
+
+<h3>Text Styles</h3>
+
+<p class="small-st">
+This is small-st. 
+This is small-st. 
+This is small-st. 
+This is small-st. 
+</p>
+
+<p class="small-un">
+This is small-un. 
+This is small-un. 
+This is small-un. 
+This is small-un. 
+</p>
+
+<p class="small-em">
+This is small-em. 
+This is small-em. 
+This is small-em. 
+This is small-em. 
+</p>
+
+<p class="small-tx">
+This is small-tx. 
+This is small-tx. 
+This is small-tx. 
+This is small-tx. 
+</p>
+
+<p class="normal-st">
+This is normal-st. 
+This is normal-st. 
+This is normal-st. 
+This is normal-st. 
+</p>
+
+<p class="normal-un">
+This is normal-un. 
+This is normal-un. 
+This is normal-un. 
+This is normal-un. 
+</p>
+
+<p class="normal-em">
+This is normal-em. 
+This is normal-em. 
+This is normal-em. 
+This is normal-em. 
+</p>
+
+
+<p class="normal-tx">
+This is normal-tx. 
+This is normal-tx. 
+This is normal-tx. 
+This is normal-tx. 
+</p>
+
+<p class="large-st">
+This is large-st. 
+This is large-st. 
+This is large-st. 
+This is large-st. 
+</p>
+
+<p class="large-un">
+This is large-un. 
+This is large-un. 
+This is large-un. 
+This is large-un. 
+</p>
+
+<p class="large-em">
+This is large-em. 
+This is large-em. 
+This is large-em. 
+This is large-em. 
+</p>
+
+<p class="large-tx">
+This is large-tx. 
+This is large-tx. 
+This is large-tx. 
+This is large-tx. 
+</p>
+
+<table><tr>
+<td class="infobox" background="/misc_/OFSP/Folder_icon.gif">
+<div background="/misc_/OFSP/Folder_icon.gif">
+This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+</div>
+</td></tr></table>
+
+
+
+<h3>Form Elements</h3>
+
+<form>
+
+<div class="form-element">
+<input type="text" size="30" class="form-element" value="This is some text"/>
+</div>
+
+<br>
+
+<div class="form-element">
+<select name="dummy_1" class="form-element" size="1">
+<option>This is option 1</option>
+<option>This is option 2</option>
+<option>This is option 3</option>
+<option>This is option 4</option>
+</select>
+</div>
+
+<br>
+
+<div class="form-element">
+<input type="checkbox" name="c_1" class="form-element" value="1"/> This is option 1<br>
+<input type="checkbox" name="c_2" class="form-element" value="1"/> This is option 2<br>
+<input type="checkbox" name="c_3" class="form-element" value="1"/> This is option 3
+</div>
+
+<br>
+
+<div class="form-element">
+<input type="radio" name="r_1" class="form-element" value="1"/> This is option 1<br>
+<input type="radio" name="r_1" class="form-element" value="1"/> This is option 2<br>
+<input type="radio" name="r_1" class="form-element" value="1"/> This is option 3
+</div>
+
+<br>
+
+<div class="form-mono">
+<textarea name="dummy_2" rows="4" cols="60">This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+This is some text. This is some text. This is some text. 
+</textarea>
+</div>
+
+<br>
+
+<div class="form-element">
+<input type="button" name="b1" value="Action 1" class="form-element"/> 
+<input type="submit" name="b1" value="Action 2" class="form-element"/> 
+<input type="submit" name="b1" value="Action 3" class="form-element"/> 
+<input type="submit" name="b1" value="Action 4" class="form-element"/> 
+</div>
+
+</body>
+</html>

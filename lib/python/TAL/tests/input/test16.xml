@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<body xmlns:tal="http://xml.zope.org/namespaces/tal">
+
+<ImG href="foo" Alt="bar" 
+ tal:attributes="Href string:about:foo;alT string:baz" />
+
+</body>

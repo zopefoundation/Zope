@@ -1,0 +1,115 @@
+Edit View: Edit A Script (Python)
+  
+    Description
+
+        This view allows you to edit the logic which composes a script
+        in Python.  Script instances execute in a restricted
+        context, bounded by your user's privilege level in Zope, and
+        certain global restrictions of all through-the-web code.  For
+        information about what you "can" and "cannot" do in a Script
+        instance as opposed to non-through-the-web Python,
+        see the API Reference documentation for "Script (Python)" in
+        this help system.
+        
+    Controls
+
+        'Title' -- Allows you to specify the Zope title of the script.
+        
+        'Id' -- Allows you to specify the id of the script.
+        
+        'Parameter List' -- Enter function parameters for this script
+          separated by commas.  For example: *foo, bar, baz*
+        
+    Status Elements
+
+        'Bound Names' -- the names used by this script for bindings.
+         You may use these names in the body of the script to refer to
+         bound elements.  The defaults are::
+
+          context -- the script's "parent" respective to acquisition.
+
+          container -- the script's "parent" respective to containment.
+
+          script -- the script object itself.
+
+          traverse_subpath -- if the script is called directly from a URL,
+           this is the portion of the URL path after the script's name,
+           split at slash separators, into a list of strings.  If the script
+           was not called directly from a URL, this will be an empty list.
+
+         Another possible name binding, to the "namespace" object, is
+         not set by default.  If this was set, if the Script was
+         called from DTML, it would represent the namespace of the
+         calling DTML object.
+
+         More information about bindings can be found by visiting the
+         help screens of the "Bindings" tab of a Script (Python)
+         instance.
+
+   Buttons and Other Form Elements
+
+        'Save Changes' -- saves changes you make to the body, title, or
+          parameter list.
+
+        'Taller'/'Shorter'/'Wider'/'Narrower' -- make the body textarea
+          taller, shorter, wider, or narrower.
+
+        'File' -- upload a file into this Script (Python) instance.
+
+   File Upload Details
+
+        Files uploaded into a Script (Python) instance may either
+        consist only of the actual body of the function, or the file
+        containing the function body may contain at its head a set of
+        lines starting with "##" which describe bindings, parameters,
+        and the title.  For example, a file uploaded into a Script
+        (Python) instance might be simply::
+
+            return "Hello"
+
+        If you upload this file into a Script (Python) instance, the
+        existing settings (or default settings) for bindings,
+        parameters, and title will remain.
+
+        However, if you wished to, you could develop a Script (Python)
+        on disk which looked like::
+
+            ## Script (Python) "foo"
+            ##bind container=container
+            ##bind context=context
+            ##bind namespace=
+            ##bind script=script
+            ##bind subpath=traverse_subpath
+            ##parameters=goop, fudge
+            ##title=
+            ##
+            return "Fudge was %s, goop was %s" % (fudge, goop)
+
+        The lines preceded by "##" are metadata about the Script
+        (Python) instance which can survive a round trip via FTP or
+        through the web interface.  When these lines are encountered
+        by the parser after an upload (or webform save), they serve to
+        *modify* the settings of the Script (Python) instance with the
+        metadata contained within the blocked area.
+
+        Lines beginning with "##" without any spaces after the "##"
+        are contextually meaningful to the file upload parser.  There
+        are three keywords which can directly follow a "##": "bind",
+        "parameters", and "title".
+
+        The "bind" keyword following a "##" binds a name to a object
+        in the context this Script (Python) instance's body.  For
+        example, the line "##bind container=goober" binds the name
+        "goober" to the acquisition parent of the script, allowing you
+        to refer to "goober" in the script body.  Legal objects to
+        which to bind are: container, context, namespace, script, and
+        subpath.  See the help available from the "bindings" tab of
+        Script (Python) instances for more details about what bindings
+        mean.
+
+        The "title" keyword following a "##" provides a title to the
+        script.  E.g. "title=A Really Neat Script"
+
+        The "parameters" keyword following a "##" provides parameters
+        to the Script (Python) instance.  E.g. "parameters=foo,bar,baz".
+

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>
+Object Reference
+</title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555">
+
+<h2>Object Reference</h2>
+<p>
+The object reference documents the interfaces of 
+objects which are built in to the system or have 
+been installed as add-on products. This reference 
+focuses on those object services useful in 
+<em>DTML scripting</em>. 
+</p>
+
+
+<ul>
+<dtml-in hs_objectvalues>
+<dtml-with sequence-item>
+<li> <a href="&dtml-BASEPATH1/HelpSys/ObjectRef/&dtml.url_quote-meta_type;/hs_main">&dtml-meta_type;</a>
+</dtml-with>
+</li>
+</dtml-in>
+</ul>
+
+<p>
+<a href="../hs_main">
+<img src="&dtml-BASEPATH1;/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Help</a>
+</p>
+
+</body>
+</html>

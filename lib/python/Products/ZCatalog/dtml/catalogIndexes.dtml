@@ -1,0 +1,236 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+
+<p class="form-help"> 
+This list defines what indexes the Catalog will contain.  When objects 
+get cataloged, the values of any attributes which match 
+an index in this list will get indexed.
+</p>
+
+<p class="form-help"> 
+<b>
+If you add indexes to a Catalog which contains indexed objects, you MUST
+at the least re-index your newly added index. You may want to update the 
+whole Catalog.
+</b>
+</p>
+
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = true ;
+      isSelected = true;
+      document.objectItems.selectButton.value = "Deselect All";
+      return isSelected;
+  }
+  else {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = false ;
+      isSelected = false;
+      document.objectItems.selectButton.value = "Select All";
+      return isSelected;       
+  }
+}
+
+//-->
+</script>
+
+<dtml-unless skey><dtml-call expr="REQUEST.set('skey', 'id')"></dtml-unless>
+<dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
+
+<dtml-with Indexes>
+
+<!-- Add object widget -->
+<br />
+<dtml-if filtered_meta_types>
+  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tr>
+  <td align="left" valign="top">&nbsp;</td>
+  <td align="right" valign="top">
+  <div class="form-element">
+  <form action="&dtml-absolute_url;" method="get">
+  <dtml-if "_.len(filtered_meta_types) > 1">
+    <select class="form-element" name=":action" 
+     onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
+    <option value="manage_workspace" disabled>Select type to add...</option>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <option value="&dtml.url_quote-action;">&dtml-name;</option>
+    </dtml-in>
+    </select>
+    <input class="form-element" type="submit" name="submit" value=" Add " />
+  <dtml-else>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <input type="hidden" name=":method" value="&dtml.url_quote-action;" />
+    <input class="form-element" type="submit" name="submit" value=" Add &dtml-name;" />
+    </dtml-in>
+  </dtml-if>
+  </form>
+  </div>
+  </td>
+  </tr>
+  </table>
+</dtml-if>
+
+
+
+<form action="&dtml-URL1;/" name="objectItems" method="post">
+<dtml-if objectItems>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td>&nbsp;
+  </td>
+  <td width="30%" align="left"><div class="list-item"><a 
+   href="./manage_catalogIndexes?skey=id<dtml-if 
+   "rkey == ''">&rkey=id</dtml-if>"
+   onMouseOver="window.status='Sort objects by name'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'id' or rkey == 'id'"
+   ><strong>Name</strong><dtml-else>Name</dtml-if></a></div>
+  </td>
+  <td width="30%" align="left"><div class="list-item"><a 
+   href="./manage_catalogIndexes?skey=meta_type<dtml-if 
+   "rkey == ''">&rkey=meta_type</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by type'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'meta_type' or rkey == 'meta_type'"
+   ><strong>Index type</strong><dtml-else>Index type</dtml-if></a></div>
+  </td>
+
+  <td width="20%" align="left"><div class="list-item"><a 
+   href="./manage_catalogIndexes?skey=indexSize<dtml-if 
+   "rkey == ''">&rkey=indexSize</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by number of distinct values indexed'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'indexSize' or rkey == 'indexSize'"
+   ><strong># distinct values</strong><dtml-else># distinct values</dtml-if></a></div>
+  </td>
+
+  <td width="20%" align="left"><div class="list-item"><a 
+   href="./manage_catalogIndexes?skey=bobobase_modification_time<dtml-if 
+   "rkey == ''">&rkey=bobobase_modification_time</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by modification time'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
+   ><strong>Last&nbsp;modified</strong><dtml-else>Last&nbsp;modified</dtml-if></a></div>
+  </td>
+
+</tr>
+
+<dtml-call "REQUEST.set('oldidx',0)">
+
+<dtml-in objectItems sort_expr="skey" reverse_expr="rkey">
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
+  <td align="left" valign="top" width="16">
+  <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
+  </td>
+  <td align="left" valign="top">
+  <div class="list-item">
+  <a href="Indexes/&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-sequence-key; 
+  <dtml-try>
+   <dtml-let source_names="_['sequence-item'].getIndexSourceNames()">
+    <dtml-if expr="_.len(source_names) != 1
+                   or source_names[0] != _['sequence-key']">
+     (indexed attributes: <dtml-var "', '.join(source_names)">)
+    </dtml-if>
+   </dtml-let>
+  <dtml-except>
+    <dtml-if title> (&dtml-title;) </dtml-if>
+  </dtml-try>
+  </a>
+  </div>
+
+   </td>
+
+  <dtml-with sequence-key>
+
+    <td>
+    <div class="list-item">
+      <dtml-var meta_type>
+      <dtml-if isDeprecatedIndex>
+         <dtml-call "REQUEST.set('oldidx',1)">
+         (pre-2.4 index)
+      </dtml-if>
+    </div>
+    </td>
+
+    <td>
+      <div class="list-item">
+        <dtml-var indexSize missing="n/a">
+      </div>
+    </td>
+
+    <td>
+      <div class="list-item">
+        <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
+      </div>
+    </td>
+
+  </dtml-with>
+
+</tr>
+</dtml-in>
+
+</table>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top" width="16"></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+
+  <input class="form-element" type="submit" name="manage_delIndex:method"     value="Remove index">
+  <input class="form-element" type="submit" name="manage_reindexIndex:method" value="Reindex">
+  <input class="form-element" type="submit" name="manage_clearIndex:method"   value="Clear index">
+  <dtml-if oldidx>
+    <input class="form-element" type="submit" name="manage_convertIndex:method" value="Convert index">
+  </dtml-if>
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+//-->
+</script>
+  </div>
+  </td>
+</tr>
+</table>
+
+<dtml-else>
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+<td>
+<div class="std-text">
+<em>There are currently no indexes</em>
+<br /><br />
+</div>
+</td>
+</tr>
+</table>
+</dtml-if>
+</form>
+
+<dtml-if update_menu>
+<script type="text/javascript">
+<!--
+window.parent.update_menu();
+//-->
+</script>
+</dtml-if>
+</dtml-with>
+
+<dtml-var manage_page_footer>

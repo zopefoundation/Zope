@@ -1,0 +1,131 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Search Interface',
+           help_product='OFSP',
+           help_topic='ZSearch-Interface_Add.stx'
+	   )">
+
+<form action="manage_addZSearch" method="POST">
+
+<p class="form-help">
+A Search Interface allows you to search Zope databases.
+The Search Interface will create a 
+ search-input form and a report for displaying the search results.
+</p>
+
+<p class="form-help">
+In the form below, <em>seachable objects</em> are the objects
+(usually SQL Methods) to be searched. <em>report id</em> and 
+<em>search input id</em> are the ids of the 
+report and search form objects that will be created.
+<em>report style</em> indicates the type of report to generate.
+</p>
+
+<table>    
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Select one<br>or more<br>searchable <br>objects
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name="queries:list" size="4" multiple>
+<dtml-in ZQueryIds>
+  <option>&dtml-sequence-item;</option>
+</dtml-in>
+  </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Report Id
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="report_id" size="40" value="" />
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-optional">
+  Report Title
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="report_title" size="40" value="" />
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Report Style
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name='report_style:int'>
+  <option value="0">Tabular</option>
+  <option value="1">Records</option>
+  </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-optional">
+  Search Input Id
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="input_id" size="40" value="" />
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-optional">
+  Search Input Title
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="input_title" size="40" value="" />
+  </td>
+</tr
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="radio" name="object_type" 
+   value="dtml_methods">Generate DTML Methods
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="radio" name="object_type" 
+   value="page_templates">Generate Page Templates
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" 
+   value="Add">
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>
+

@@ -1,0 +1,47 @@
+Debug Management - Profile: Performance testing.
+
+  Description
+
+    Zope can provide real-time profiling information.  Profiling helps
+    product authors to speed up sections of code that are taking too
+    long to perform their tasks. 
+
+    In order to use profiling Zope has to be started with the
+    'PROFILE_PUBLISHER' environment variable set to a non-empty
+    value. If the variable is set to a valid filesystem path, then the
+    accumulated profile information will be dumped to the named file
+    when Zope is shut down. If the variable is simply set to a
+    non-empty value that is not a valid filesystem path then Zope will
+    still run in profiling mode, but profile information will only be
+    available through the web interface.
+
+    **Note: Profiling will slow Zope performance significantly.** 
+
+    Once Zope has started in profiling mode visit your site with your Web
+    browser - Zope will accumulate profiling information as you are
+    working with your site.  When you want to view the profiling
+    information, visit the Control Panel, click on the 'Debugging
+    information' link and select the 'Profiling' tab.
+
+    The profiling screen will show a list of methods and the amount of
+    time each method is taking. Multiple views are available by
+    changing the sort order and pushing the "update" button. The
+    online profiler is based on the standard Python profile module.
+    For specific information on the meaning of the profile
+    information, see the standard Python documentation for the
+    'profile' module.
+
+    When you are done profiling turn profiling off by restarting Zope
+    without the 'PROFILE_PUBLISHER' environment variable set.
+
+  Controls
+
+    'Sort' -- How to sort function calls.
+
+    'Limit' -- How many function calls to display.
+
+    'Update' -- Updates the profiling information.
+
+  See Also
+
+    "Python profiler documentation":http://www.python.org/doc/current/lib/module-profile.html

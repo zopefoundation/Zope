@@ -1,0 +1,111 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
+<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if>
+</dtml-with>
+<dtml-if stat>
+<hr>
+<font color="red">&dtml-stat;</font>
+<hr>
+</dtml-if>
+
+<p class="form-help">
+Local roles allow you to give particular users extra roles in the context 
+of this object, in addition to the roles they already have. 
+</p>
+
+<dtml-if has_local_roles>
+<p class="form-help">
+The following users have been given local roles. To modify the local roles 
+given to a particular user, click on the name of the user. To remove all 
+local roles from a user, select the checkbox next to the name of the user 
+and click the <em>Remove</em> button.
+</p>
+<form action="manage_delLocalRoles" method="POST">
+<table cellspacing="0" cellpadding="2" border="0">
+<dtml-in get_local_roles>
+<tr>
+  <td align="left" valign="top">
+  <input type="checkbox" name="userids:list" value="&dtml-sequence-key;" />
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <a href="manage_editLocalRoles?userid=&dtml.url_quote-sequence-key;">&dtml-sequence-key;</a> (<dtml-in 
+   sequence-item>&dtml-sequence-item;<dtml-unless 
+   sequence-end>, </dtml-unless></dtml-in>)
+  </div>
+  </td>
+</tr>
+</dtml-in>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value="Remove" />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+</dtml-if>
+
+<p>
+To give a user extra roles when accessing this object (and its children), 
+select a user from the <em>User</em> list below, select the extra 
+roles that should be given to that user from the <em>Roles</em> list.
+</p>
+
+<form action="manage_setLocalRoles" method="POST">
+<table cellpadding="2" cellspacing="0" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  User
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Roles
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-try>
+  <select name="userid" size="5">
+  <dtml-in get_valid_userids>
+  <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+  </dtml-in>
+  </select>
+  <dtml-except OverflowError>
+
+  <input name="userid" size=10>
+  
+  </dtml-try>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name="roles:list" size="5" multiple>
+<dtml-in valid_roles><dtml-if 
+"_vars['sequence-item'] not in ('Anonymous', 'Shared', 'Authenticated')">
+<option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+</dtml-if>
+</dtml-in>
+  </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value=" Add " />
+  </div>
+  </td>
+  <td></td>
+</tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

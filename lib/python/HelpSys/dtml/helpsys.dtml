@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html lang="en">
+<head>
+<title>Z Object Publishing Environment Help</title>
+</head>
+<frameset cols="180,*">
+  <frame src="&dtml-BASEPATH1;/HelpSys/hs_menu" name="hs_tframe"
+   marginwidth="2" marginheight="2" scrolling="auto">
+  <frame src="&dtml-BASEPATH1;/HelpSys/hs_main" NAME="hs_cframe"
+   marginwidth="2" marginheight="2" scrolling="auto">
+</frameset>
+<noframes>
+This item requires the use of a <em>frames-capable</em> web browser.
+</noframes>
+</html>

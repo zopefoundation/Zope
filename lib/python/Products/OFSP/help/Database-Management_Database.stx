@@ -1,0 +1,21 @@
+Database Management - Database: Zope database information and pack.
+  
+  Description
+
+    This view gives you information about the size and location of the
+    Zope database. The Zope database stores all Zope objects.
+
+    You can reduce the size of your Zope database by packing
+    it. Packing removes old revisions of objects, thus freeing up
+    space but also limiting your ability to undo object changes.    
+
+  Controls
+
+    'Pack' -- Pack will remove all versions of objects from the Zope
+    database. This will reduce the size of your database. **Note Pack
+    will prevent you from undoing some or all old transactions.**
+
+    You can control which old revisions of objects are removed from
+    the database by specifying how many days old the revisions must be
+    to be removed. If you specify 0 days old, then all old object
+    revisions will be removed.

@@ -1,0 +1,69 @@
+<h1 tal:replace="structure here/manage_page_header">Header</h1>
+
+<h2 tal:define="form_title string:Add ZODB Mount Points"
+    tal:replace="structure here/manage_form_title">Form Title</h2>
+
+<p class="form-help">
+Use this form to finalize the mount points configured in zope.conf.
+To make more mount points available, edit zope.conf.
+</p>
+
+<div tal:define="stats here/manage_getMountStatus">
+<div tal:condition="stats">
+
+<form action="manage_addMounts" method="POST">
+<table cellspacing="0" cellpadding="2" border="0">
+
+<tr>
+<th>
+</th>
+<th align="left">
+Path
+</th>
+<th align="left">
+Database
+</th>
+<th align="left">
+Status
+</th>
+</tr>
+
+<tr tal:repeat="stat stats">
+<td>
+<input tal:condition="not: stat/exists" tal:attributes="value stat/path"
+  type="checkbox" name="paths:list" checked="checked" />
+</td>
+<td valign="top" nowrap="nowrap">
+<span tal:content="stat/path">/virtual_hosts</span>
+</td>
+<td valign="top" nowrap="nowrap">
+<span tal:content="stat/name">Virtual Hosts</span>
+</td>
+<td valign="top">
+<span tal:content="stat/status">Ok</span>
+</td>
+</tr>
+
+</table>
+
+&nbsp;<br />
+
+<input class="form-element" type="checkbox" name="create_mount_points" />
+<span class="form-element">Create new folders if the mounted objects don't yet exist</span>
+
+<br />
+
+<input class="form-element" type="submit" name="submit" 
+ value="Create selected mount points" /> 
+
+</form>
+
+</div>
+
+<div tal:condition="not:stats">
+<em>No mount points configured.</em>
+</div>
+
+</div>
+
+<h1 tal:replace="structure here/manage_page_footer">Footer</h1>

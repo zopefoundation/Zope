@@ -1,0 +1,34 @@
+content: Replace the content of an element
+  
+  Syntax
+
+    'tal:content' syntax::
+  
+      argument ::= (['text'] | 'structure') expression
+  
+  Description
+
+    Rather than replacing an entire element, you can insert text or
+    structure in place of its children with the 'tal:content'
+    statement.  The statement argument is exactly like that of
+    'tal:replace', and is interpreted in the same fashion.  If the
+    expression evaluates to *nothing*, the statement element is left
+    childless.  If the expression evaluates to *default*, then the
+    element's contents are unchanged.
+
+    *Note: The default replacement behavior is 'text'.*
+
+  Examples
+
+    Inserting the user name::
+
+      <p tal:content="user/getUserName">Fred Farkas</p>
+
+    Inserting HTML/XML::
+
+      <p tal:content="structure here/getStory">marked <b>up</b>
+      content goes here.</p>
+
+  See Also
+
+    "'tal:replace'":tal-replace.stx

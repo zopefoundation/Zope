@@ -1,0 +1,14 @@
+a = 0
+b = 1
+try:
+    int('$')
+except ValueError:
+    a = 1
+
+try:
+    int('1')
+except:
+    b = 0
+
+return a, b
+

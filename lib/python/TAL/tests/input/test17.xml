@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<body xmlns:z="http://xml.zope.org/namespaces/tal"
+      xmlns:z2="http://xml.zope.org/namespaces/metal">
+<z:block z:content="string:Yes">No</z:block>
+<z:block content="string:Yes">No</z:block>
+<z:block>Yes</z:block>
+
+<z2:block z:content="string:Yes">No</z2:block>
+<z2:block>Yes</z2:block>
+</body>

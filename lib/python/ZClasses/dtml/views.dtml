@@ -1,0 +1,144 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Views')">
+<dtml-var manage_tabs>
+</dtml-with>
+
+<form action="&dtml-URL1;" method="post">
+<table width="100%"  cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td align="left" valign="top">
+  &nbsp;
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Method
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Help Topic
+  </div>
+  </td>
+<dtml-in data mapping>
+  <tr>
+  <td align="left" valign="top">
+       <input type="checkbox" name="selected:list"
+              value="&dtml-label;" />
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  &dtml-label;
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+       <select name="actions:list">
+         <dtml-in zclass_candidate_view_actions>
+           <option
+              <dtml-if "_['sequence-item'] == action">SELECTED
+              </dtml-if>>&dtml-sequence-item;</option>
+         </dtml-in>
+       </select>
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+	   <select name="helps:list">
+	     <option></option>
+               <dtml-in "getProductHelp().helpValues()">
+		 <option
+		   <dtml-if "_.has_key('help') and (_.len(help) >= 2) and _.getitem('sequence-item').id() == help[1]">SELECTED</dtml-if>>&dtml-id;</option>
+	       </dtml-in>
+	   </select>
+  </div>
+  </td>
+  </tr>
+</dtml-in>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top" colspan="3">
+  <div class="form-element">
+    <input class="form-element" type="submit" value=" Change " 
+     name="manage_edit:method">
+    <input class="form-element" type="submit" value=" Delete " 
+     name="manage_delete:method">
+    <input class="form-element" type="submit" value=" First " 
+     name="manage_first:method">
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<p class="form-help">
+To create a new view, enter a name for the view and select the 
+method that implements the view and the help topic to be used 
+for the view.
+</p>
+
+<form action="manage_add" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="label" size="20" value="" />
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Method
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+    <select name="action"> 
+      <dtml-in zclass_candidate_view_actions>
+	   <option>&dtml-sequence-item;</option>
+      </dtml-in>
+    </select>
+  </div>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Help Topic
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name="help">
+  <option></option>
+  <dtml-in "getProductHelp().helpValues()">
+  <option>&dtml-id;</option>
+  </dtml-in>
+  </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  </td>
+  <td align="left" valign="top" colspan="3">
+  <div class="form-element">
+    <input class="form-element" type="submit" name="submit" value=" Add " /> 
+  </div>
+  </td>
+</tr>
+
+</table>
+</form>
+
+<dtml-var manage_page_footer>

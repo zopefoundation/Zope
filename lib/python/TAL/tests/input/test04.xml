@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<html>
+
+  <body xmlns:m="http://xml.zope.org/namespaces/metal" xmlns:z="http://xml.zope.org/namespaces/tal" m:define-macro="body" z:define="global count python:0">
+
+    <ul m:define-macro="whoops">
+        <li z:repeat="item python:range(count)">
+          <span z:replace="item">1</span>
+          <span z:replace="global:message"/>
+        </li>
+    </ul>
+
+    <span z:define="global count python:2; global message str:hello world"/>
+
+    <p m:use-macro="whoops">use-macro
+      <span m:fill-slot="whoops">fill-slot</span>
+    </p>
+
+    <span z:define="global message str:goodbye cruel world"/>
+
+    <p m:use-macro="whoops">use-macro</p>
+
+    <p m:define-slot="whoops">define-slot</p>
+
+  </body>
+
+</html>

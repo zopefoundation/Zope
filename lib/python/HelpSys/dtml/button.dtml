@@ -1,0 +1,19 @@
+<div align="right">
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+  function openHelpWindow(url) { 
+    helpWindow = window.open(url,"zope_help","width=600,height=500,menubar=yes,toolbar=yes,scrollbars=yes,resizable=yes"); 
+    helpWindow.focus();
+	return false;
+  } 
+//-->
+</SCRIPT>
+<font face="Verdana, Arial, Helvetica" size="1">
+<FORM ACTION="&dtml-absolute_url;" METHOD="get" target="zope_help" 
+ onSubmit="return openHelpWindow('&dtml-absolute_url;?help_url=&dtml.url_quote_plus-helpURL;');">
+<input type="hidden" name="help_url" value="&dtml-helpURL;">
+<input type="submit" name="submit" value=" Help ">
+</FORM>
+</font>
+</div>
+

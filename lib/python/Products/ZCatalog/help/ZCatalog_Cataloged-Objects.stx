@@ -1,0 +1,32 @@
+ZCatalog - Cataloged Objects: Manage catalog entries
+  
+    Description
+
+        This view allows you to manage catalog entries.
+        
+        The catalog holds records which refer to Zope objects. If the
+        catalog currently contains records they will be listed in this
+        view.  For debugging purposes, you may click on the link to
+        the item in the Catalog and it will open a debugging view of
+        that entry in the Catalog.
+        
+    Controls
+
+        '[List of objects]' -- Each lines describes one object. The
+        checkbox in the front of the line, allows you to checkmark the
+        object for deletion ('Delete') or to update the objects
+        ('Update'). Next the object type is listed, followed by the
+        object path and the object title. Clicking on the path and
+        title of the object, you can examine individual catalog
+        records by clicking on the record name links.
+        
+        'Next/Previos XX entries' -- Allows you to see more of the
+        cataloged objects. These two links will only appear if you
+        have enough objects in the Catalog.
+        
+        'Update' -- When clicked, Zope updates its indexes and
+        metadata for the object.
+        
+        'Remove' -- When clicked, it removes all the selected objects
+        from the Catalog.  **Note:** No objects are deleted from the
+        database.

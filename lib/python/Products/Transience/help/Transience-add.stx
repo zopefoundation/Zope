@@ -1,0 +1,98 @@
+TransientObjectContainer - Add
+
+  Transient Object Containers
+
+     A Transient Object Container contains objects which expire after
+     a user-settable period of time.  Items placed into transient object
+     must have string keys, but may have any type of value.
+
+  Common Usages
+
+     A Transient Object Container is used by Session Data Managers to store
+     session data.
+
+  To create a Transient Object Container, specify the following:
+
+     - **Id**
+
+       The Zope id of the Transient Object Container.
+
+     - **Title** 
+
+       *Optional*
+
+       The title of the object.
+
+     - **Data object timeout (in minutes)**
+
+       The minimum number of minutes that objects in the container will
+       persist for.  Objects in the container are passively deleted, so
+       they may not be deleted exactly after this number of minutes elapses.
+       A setting of "0" indicates that objects should not expire.
+
+     - **Timeout resolution (in seconds)**
+
+       Defines what the "resolution" of item timeout is. Setting this
+       higher allows the transience machinery to do fewer "writes" at
+       the expense of causing items to time out later than the "Data
+       object timeout value" by a factor of (at most) this many
+       seconds. This number must divide evenly into the number of
+       timeout seconds ("Data object timeout value" * 60) and cannot
+       be set higher than the timeout value in seconds.
+       
+     - **Maximum number of subobjects **
+
+       The maximum number of subobjects that this container may
+       simultaneously hold. Since transient objects normally hold
+       session data, this number is this is the effective limit for
+       the number of simultaneous sessions.
+
+       If the value is "0", the number of objects addable to the container
+       will be not be artificially limited.
+
+       Note: This setting is useful to prevent accidental or deliberate denial
+       of service due to RAM shortage if the transient object container is
+       instantiated in a storage which is backed solely by RAM, such
+       as a Temporary Folder.
+
+     - **Script to call when objects are added**
+
+       *Optional*
+
+       The physical path of of a Zope script which will receive notifications
+       when objects are added to the Transient Object Container.
+
+       Ex: '/path/to/add/script'.
+
+       For more information, see "Add and Delete Scripts" below.
+
+     - **Script to call when objects are deleted**
+
+       *Optional*
+
+       The physical path of a Zope script which will receive notifications
+       when objects are deleted from the Transient Object Container, either
+       explicitly or through timeout-related expiration.
+
+       Ex: '/path/to/delete/script'
+
+       For more information, see "Add and Delete Scripts" below.
+
+  Add and Delete Scripts
+
+        Add and Delete scripts are Zope scripts which are called,
+        respectively, when an object is added or removed from a
+        Transient Object Container.   An add or delete script is specified
+        by naming it by its full Zope object path with slash separators,
+        e.g. "/path/to/method".
+
+	Add and delete scripts are called with two arguments.  The first
+	argument is the item being added or removed from the container;
+        the second argument is the Transient Object Container itself.
+        The container will be acquisition wrapped, allowing the
+        it to be used as a context to reference other Zope objects.
+
+  See Also
+
+     - "Transience API":TransienceInterfaces.py
+

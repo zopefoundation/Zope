@@ -1,0 +1,31 @@
+ZTUtils changes
+
+  This file contains change information for the current release. 
+  Change information for previous versions can be found in the
+  file HISTORY.txt.
+
+    After Version 1.1.4
+
+      Features Added
+
+        - Added 'sequence_length' attribute to batches.      
+
+    Version 1.1.4
+
+      Features Added
+
+        - Under Python 2.2, Iterator both accepts and produces Python
+          iterator objects.
+
+        - first() and last() methods allow you to tell whether the
+          current element is different from the next or previous
+          element.  This is most useful when the sequence is sorted.
+
+      Bugs Fixed
+
+        - Handle both string and class Unauthorized exceptions.
+
+        - Batch construction masked sequence errors, such as
+          Unauthorized.
+
+

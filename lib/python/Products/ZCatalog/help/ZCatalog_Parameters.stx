@@ -1,0 +1,51 @@
+ZCatalog - searchResults: specifying parameters for a search query
+  
+    The searchResults() method of the ZCatalog accepts parameters that
+    define a query to be made on that catalog.  A query can either be
+    passed as keyword argument to searchResults(), as a mapping, or as
+    part of a Zope REQUEST object, typically from HTML forms.
+
+    The index of the catalog to query is either the name of the
+    keyword argument, a key in a mapping, or an attribute of a record
+    object.
+
+    Attributes of record objects
+  
+      'query' -- either a sequence of objects or a single value to be
+      passed as query to the index (mandatory)
+
+      'operator' -- specifies the combination of search results when
+      query is a sequence of values. (optional, default: 'or').
+       
+        Allowed values:
+
+         'and', 'or' -- for Keyword Indexes and Path Indexes
+        
+         'and', 'or', 'andnot', 'near' -- for Text Indexes
+
+      'range' -- defines a range search on a Field Index (optional,
+      default: not set).
+
+        Allowed values:
+
+          'min' -- Searches for all objects with values larger than
+          the minimum of the values passed in the 'query' parameter.
+    
+          'max' -- Searches for all objects with values smaller than
+          the maximum of the values passed in the 'query' parameter.
+    
+          'minmax' -- Searches for all objects with values smaller
+          than the maximum of the values passed in the 'query'
+          parameter and larger than the minimum of the values passwd
+          in the 'query' parameter.
+
+      'level' -- only applies to Path Index. Specifies the directory
+      level to start searching. (optional, default: 0)
+
+    
+    Parameters for searchResults():
+
+     'optimize' -- ZCatalog performs a query optimization for queries
+     not passed through the web (either as dictionary or mapping). To
+     disable this optimization set optimize to 0 (optional, default: 1).
+     Optimization is disabled for searches through the web.

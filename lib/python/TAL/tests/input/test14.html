@@ -1,0 +1,10 @@
+<table>
+  <tr>
+    <td tal:repeat="x python:['car', 'bike', 'broomstick']" tal:content="x">
+    </td>
+  </tr>
+</table>
+
+<p>
+  <span tal:repeat="x python:['Harry', 'Ron', 'Hermione']" tal:replace="x" />
+</p>

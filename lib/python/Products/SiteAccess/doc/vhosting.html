@@ -1,0 +1,151 @@
+<dtml-comment>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+ <HEAD> <TITLE>Virtual Site Hosting</TITLE> </HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#000066" VLINK="#606060" TOPMARGIN="0" LEFTMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+</dtml-comment>
+<dtml-var doc_header>
+
+
+<h4>Getting Started</h4>
+Before you can set up virtual hosting in Zope, you need to answer two questions:
+<ul>
+<li>What is the URI of each site's logical root?</li>
+<li>What is the corresponding path to the physical root?</li>
+</ul>
+Suppose, for example, that you want to use Zope to host the domain www.hotsite.com,
+and you want 'http://www.hotsite.com' to publish the Zope object '/hotsite/index_html'.
+Then 'http://www.hotsite.com' is the URI of your logical root, and '/hotsite' is the
+path to your physical root.
+<h4>Example 1: One Site</h4>
+Put a SiteRoot in '/hotsite', your site's physical root, and accept the
+ default Path.  Create a DTML Method in the Zope root folder containing
+<pre>
+Is the first-level domain 'hotsite.com'? Ignore sub-domains and port number.
+&lt;dtml-if &quot;_.string.split(_.string.split(HTTP_HOST, ':')[0], '.')[-2:]==['hotsite', 'com']&quot;&gt;
+  Add physical root: 
+  &lt;dtml-call &quot;REQUEST['TraversalRequestNameStack'].append('hotsite')&quot;&gt;
+&lt;/dtml-if &gt;
+</pre>
+Use "Set Access Rule" with the DTML Method's Id.  Want to understand this? Read on.
+<h4>Getting Physical</h4>
+The first half of virtual hosting is rewriting incoming URIs into physical
+ paths.  Many people run ZServer behind Apache, or another HTTP server with
+ rewriting capabilities, or a proxy.  In these cases, you can tell the
+ front-end HTTP server to rewrite 'http://www.hotsite.com/(.*)' to
+ '/blah/cgi/Zope.cgi/hotsite/$1', for example.
+<br><br>
+This works perfectly well, but if your clients are connecting directly to
+ ZServer, or if you would like to keep all of the virtual hosting logic
+ in Zope, you will need to do your rewriting in an Access Rule.
+<br><br>
+An Access Rule is just a regular method (DTML Method or Document, External
+ Method, Python Method, etc.) on which you have used SiteAccess' 
+"Set Access Rule" method.  In this case, the method lives in the root, so it
+ will examine every incoming request and decide how to deal with it.
+<br><br>
+The example DTML Method above is the simplest kind of rewrite rule, forcing
+all requests to traverse the 'hotsite' object before any others in the URI.
+<h4>Getting Logical</h4>
+The second, and more difficult, half of virtual hosting is getting your Zope
+ objects to generate correct logical URIs for links and images.  For example,
+ if you are rewriting hotsite as described above, then a standard DTML snippet
+ such as
+<pre>
+&lt;a href=&quot;&amp;dtml-URL;/hottopics&quot;&gt;
+</pre>
+in object '/hotsite/forum' will generate
+<pre>
+&lt;a href=&quot;http://www.hotsite.com/hotsite/forum/hottopics&quot;&gt;
+rather than
+&lt;a href=&quot;http://www.hotsite.com/forum/hottopics&quot;&gt;
+</pre>
+To prevent this, all of the URLn and BASEn request variables and the
+ absolute_url() method need to be told to strip off '/hotsite'.  That's what
+ SiteRoot objects do.
+<br><br>
+A SiteRoot object should be placed in the physical root folder ('/hotsite', in
+ this case) and told the logical URL at which to base all requests passing
+ through this folder.  You tell it by setting its Path property, which in this
+ case should have the value '/'. 
+<br><br>
+For flexibility's sake, Path can also be set
+ as a property 'SiteRootPATH' of the '/hotsite' folder or of the root folder,
+ or it can be set in the rewriting Access Rule with a call to 
+ "REQUEST.set('SiteRootPATH', '/')", or it can be passed in from the
+ mediating web server as an environment variable.  You can also provide
+ a Base ('SiteRootBASE') value, which will then replace the host:port/script
+ portion of URIs.
+<h4>Example 2: Multiple Sites</h4>
+Suppose we are hosting 'hotsite.net', 'fooflowers.com', and 'openmouths.org'
+ from '/hotsite', '/foof', and '/openm' respectively.  We are distinguishing
+ requests via HTTP_HOST, and we don't care what subdomain or port was specified.
+<br><br>
+Put a SiteRoot in each of '/hotsite', '/foof', and '/openm'.
+In each one, <b>erase</b> the default Path and leave Base blank.
+Make a DTML Method in the root folder containing
+<pre>
+Extract the part of HTTP_HOST we care about, and declare our rewrite dictionary.
+&lt;dtml-let hostname=&quot;_.string.join(_.string.split(_.string.split(HTTP_HOST, ':')[0], '.')[-2:], '.')&quot;
+          sitemap=&quot;{'hotsite.net': 'hotsite',
+                    'fooflowers.com': 'foof',
+                    'openmouths.org': 'openm'}&quot;&gt;
+    Do we have a match?
+    &lt;dtml-if expr=&quot;sitemap.has_key(hostname)&quot;&gt;
+Set the logical root: &lt;dtml-call &quot;REQUEST.set('SiteRootPATH', '/')&quot;&gt;
+Add physical root: &lt;dtml-call &quot;REQUEST['TraversalRequestNameStack'].append(sitemap[hostname])&quot;&gt;
+    &lt;/dtml-if&gt;
+&lt;/dtml-let&gt;
+</pre>
+Use "Set Access Rule" with the DTML Method's Id.  An almost identical method
+ can be used to distinguish sites by SERVER_ADDRESS and SERVER_PORT instead
+ of HTTP_HOST.  In that case, though, you would probably add a line to set the
+ appropriate SiteRootBASE.
+<br><br>
+If you wanted all of these virtual hosts' root folders to live in the folder
+ 'vhosts', you could add the line:
+<pre>
+Add vhost root: &lt;dtml-call &quot;REQUEST['TraversalRequestNameStack'].append('vhosts')&quot;&gt; 
+</pre>
+<b>after</b> the 'Add physical root' line.  If you wanted to add multiple path
+ elements for each site, you could use path.extend instead of path.append and
+ map 'fooflowers.org', for example, to ['foof', 'f', 'comsites'].  This would
+ place the root of fooflowers in folder '/comsites/f/foof/'.
+<h4>Minor Notes</h4>
+<ul>
+<li>The return value of an Access Rule is ignored and discarded.  This allows
+ embedded string comments such as in the examples above, and the use of
+ &lt;dtml-return &quot; 'ignored' &quot;&gt; to exit the Rule.
+It also means that if you want to redirect within an Access Rule, you must use
+&lt;dtml-raise type=&quot;Redirect&quot;&gt; instead of
+ &quot;RESPONSE.redirect()&quot;</li>
+<li>A SiteRoot object is essentially an Access Rule which calls<br>
+REQUEST.setServerURL(SiteRootBASE) and REQUEST.setVirtualRoot(SiteRootPATH).
+<li>You might want to exempt management access from being affected by the
+ virtual hosting.  One way to do this is to have a 'magic folder' start all
+ management interactions.  I use 'Z', and wrap the rest of the Access Rule
+ code in something like:
+<pre>
+Is there a path, and does it start with 'Z'?
+&lt;dtml-let stack=&quot;REQUEST['TraversalRequestNameStack']&quot;&gt;
+&lt;dtml-if &quot;stack and stack[-1]=='Z'&quot;&gt;
+Get rid of 'Z':     &lt;dtml-call &quot;stack.pop()&quot;&gt;
+Put it back logically: &lt;dtml-call &quot;REQUEST.setVirtualRoot('Z')&quot;&gt;
+&lt;dtml-else&gt;
+...
+&lt;/dtml-if&gt;
+&lt;/dtml-let&gt;
+</pre>
+</li>
+<li>If a SiteRooted folder is <strong>ever</strong> accessed through URLs with
+a base or path that does not get rewritten to match the Base and Path of the SiteRoot,
+you should make the SiteRoot's Base and Path blank and dynamically create SiteRootPATH/SiteRootBASE
+variables.  For example, if you made a 'Zope' global-access prefix as described
+above, then the 'else' part should contain something like
+&lt;dtml-call &quot;REQUEST.set('SiteRootPATH', '/')&quot;&gt;.
+</li>
+</ul>
+<dtml-var doc_footer>
+<dtml-comment>
+</BODY></HTML>
+</dtml-comment>

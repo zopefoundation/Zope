@@ -1,0 +1,31 @@
+Z Search Interface - Add: Add a Zope Search Interface
+
+  Description
+
+    This view allows you to create new a search results document and
+    optionally a search input form.
+
+  Controls
+
+    'Select one or more seachable objects' -- The objects to be searched.
+
+    'Report Id' -- The id of the results document.
+
+    'Report Title' -- The optional title of the results document.
+
+    'Report Style' -- Search results format.
+
+    'Search Input Id' -- The id of the input form.
+
+      **Note: If you do not enter a search input id then no search
+      input form will be created.**
+
+    'Search Input Title' -- The optional title of the input form.
+
+    'Add' -- Creates a results document and optionally a search input
+    form.
+
+
+
+
+

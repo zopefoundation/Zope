@@ -1,0 +1,61 @@
+<span metal:define-macro="OUTER">
+  AAA
+  <span metal:define-macro="INNER">INNER</span>
+  BBB
+</span>
+
+<xxx metal:use-macro="OUTER">
+</xxx>
+
+<xxx metal:use-macro="INNER">
+</xxx>
+
+<span metal:define-macro="OUTER2">
+  AAA
+  <xxx metal:define-slot="OUTERSLOT">
+  <span metal:define-macro="INNER2">INNER</span>
+  </xxx>
+  BBB
+</span>
+
+<xxx metal:use-macro="OUTER2">
+</xxx>
+
+<xxx metal:use-macro="INNER2">
+</xxx>
+
+<xxx metal:use-macro="OUTER2">
+  <yyy metal:fill-slot="OUTERSLOT">OUTERSLOT</yyy>
+</xxx>
+
+<span metal:define-macro="OUTER3">
+  AAA
+  <xxx metal:define-slot="OUTERSLOT">
+  <span metal:define-macro="INNER3">INNER
+    <xxx metal:define-slot="INNERSLOT">INNERSLOT</xxx>
+  </span>
+  </xxx>
+  BBB
+</span>
+
+<xxx metal:use-macro="OUTER3">
+</xxx>
+
+<xxx metal:use-macro="OUTER3">
+  <yyy metal:fill-slot="OUTERSLOT">OUTERSLOT</yyy>
+</xxx>
+
+<xxx metal:use-macro="INNER3">
+</xxx>
+
+<xxx metal:use-macro="INNER3">
+  <yyy metal:fill-slot="INNERSLOT">INNERSLOT</yyy>
+</xxx>
+
+<xxx metal:use-macro="INNER3">
+  <yyy metal:fill-slot="INNERSLOT">
+    <zzz metal:define-macro="INSLOT">INSLOT</zzz>
+  </yyy>
+</xxx>
+
+<xxx metal:use-macro="INSLOT"></xxx>

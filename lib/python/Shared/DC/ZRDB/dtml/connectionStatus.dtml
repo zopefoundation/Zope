@@ -1,0 +1,24 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+    
+<p class="form-text">
+The database connection is <dtml-if 
+connected>open<dtml-else>closed</dtml-if>.
+</p>
+<p>
+<div class="form-element">
+<dtml-if connected>
+<form action="manage_close_connection" method="get">
+<input class="form-element" type="submit" name="submit" 
+ value="Close Connection">
+</form>
+<dtml-else>
+<form action="manage_open_connection" method="get">
+<input class="form-element" type="submit" name="submit" 
+ value="Open Connection">
+</form>
+</dtml-if>
+</div>
+</p>
+
+<dtml-var manage_page_footer>

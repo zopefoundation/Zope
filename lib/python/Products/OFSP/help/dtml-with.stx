@@ -1,0 +1,49 @@
+with: Controls DTML variable look up
+
+  The 'with' tag pushes an object onto the DTML namespace. Variables
+  will be looked up in the pushed object first.
+
+  Syntax
+
+    'with' tag syntax::
+
+      <dtml-with Variable|expr="Expression">
+      </dtml-with>
+
+    The 'with' tag is a block tag. It pushes the named variable or
+    variable expression onto the DTML namespace for the duration of
+    the 'with' block. Thus names are looked up in the pushed object
+    first. 
+
+  Attributes
+
+    only -- Limits the DTML namespace to only include the one defined
+    in the 'with' tag.
+
+    mapping -- Indicates that the variable or expression is a mapping
+    object. This ensures that variables are looked up correctly in the
+    mapping object.
+
+  Examples
+
+    Looking up a variable in the REQUEST::
+
+      <dtml-with REQUEST only>
+        <dtml-if id>
+          <dtml-var id>
+        <dtml-else>
+          'id' was not in the request.
+        </dtml-if>
+      </dtml-with>
+
+    Pushing the first child on the DTML namespace::
+
+      <dtml-with expr="objectValues()[0]">
+        First child's id: <dtml-var id>
+      </dtml-with>
+
+  See Also
+
+    "let tag":dtml-let.stx
+
+

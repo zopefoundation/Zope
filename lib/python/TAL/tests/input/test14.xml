@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<html xmlns:tal="http://xml.zope.org/namespaces/tal">
+
+<table>
+  <tr>
+    <td tal:repeat="x python:['car', 'bike', 'broomstick']" tal:content="x">
+    </td>
+  </tr>
+</table>
+
+<p>
+  <span tal:repeat="x python:['Harry', 'Ron', 'Hermione']" tal:replace="x" />
+</p>
+
+</html>

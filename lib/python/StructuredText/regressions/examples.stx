@@ -1,0 +1,47 @@
+Small Trials for Structured Text Formatting
+
+  This paragraph should be preceded by a level 1 header.  It should
+  not, itself, be made into a header, just a regular paragraph.
+
+  Here are a few presentation styles, in a list [1]:
+
+  - A word: *emphasized*.
+
+  - A word: _underlined_.
+
+  - A word **strong**.
+ 
+  - An inline example: '1+2'.
+
+  - Another example with a different format:
+    ``x='spam''' or ``y='spam''' or ``<dtml-var spam>''.'
+
+    We can use expressions in the DTML var tag as 
+    in ``<dtml-var "x+'.txt'">''
+
+  - A mult-line example::
+
+     blah
+
+     *foo bar*
+
+     <dtml-var yeha>
+
+
+.. [1] (The referring text should be a paragraph, not a header, and
+should contain a reference to this footnote, footnote "[1]".)
+
+  Some hrefs, in a definition list:
+
+  _Regular_ -- "http://www.zope.org/":http://www.zope.org
+
+  _W/trailing punctuation_ -- "http://www.zope.org/":http://www.zope.org.
+
+  _W protocol implicit_ -- "locallink"::locallink
+
+  _W protocol implicit_, alternate -- "locallink", :locallink
+
+  |||| A Simple Two-column Table ||
+  || Column A || Column B ||
+  || Apples   || Oranges  ||
+

@@ -1,0 +1,52 @@
+<dtml-var manage_page_header>
+<dtml-with "_(management_view='Proxy')">
+<dtml-var manage_tabs>
+</dtml-with>
+
+<p class="form-help">
+Proxy roles allow you to control the access that a DTML document or
+method has. Proxy roles replace the roles of the user who is viewing
+the document or method.  This can be used to both expand and limit
+access to resources. Select the proxy roles for this object from 
+the list below.
+</p>
+
+<form action="manage_proxy" method="post">
+<table cellpadding="2" cellspacing="0" border="0">
+<tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Proxy Roles
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <select name="roles:list" size="7" multiple>
+  <dtml-in valid_roles>
+  <dtml-if expr="_vars['sequence-item'] != 'Shared'">
+  <option <dtml-if 
+   expr="manage_haveProxy(_vars['sequence-item'])">selected</dtml-if
+  >>&dtml-sequence-item;</option>
+  </dtml-if>
+  </dtml-in valid_roles>
+  </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top" colspan="2">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="SUBMIT" value="Save Changes">
+  </div>
+  </td>
+</tr>
+</table>
+
+</form>
+
+<dtml-var manage_page_footer>
+
+
+
+

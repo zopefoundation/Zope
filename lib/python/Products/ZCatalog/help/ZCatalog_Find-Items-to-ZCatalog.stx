@@ -1,0 +1,9 @@
+ZCatalog - Find Items to ZCatalog: Add records to the Catalog
+  
+    Description
+
+        This view allows you to add records to the catalog.
+        
+        This view operates like a normal find view (see "Folder - Find") 
+        to locate objects for cataloging. Objects which match the find criteria 
+        will be added to the catalog.
