@@ -61,7 +61,9 @@ and roles for the new user and click &quot;Add&quot;.
   <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
   <!--#in valid_roles-->
   <!--#if expr="_vars['sequence-item'] != 'Anonymous'"-->
+  <!--#if expr="_vars['sequence-item'] != 'Shared'"-->
   <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#/if-->
   <!--#/if-->
   <!--#/in valid_roles-->
   </SELECT>
