@@ -89,9 +89,22 @@ usage=""" [options] url file .....
 
     where options are:
 
+      -D
+
+         For HTML documents, replace the start of the content, up to
+         and including the opening body tag with a DTML var tag that
+         inserts the standard header. Also replace the closing body
+         and html tag with a DTML var tag that inserts the standard
+         footer.
+
+      -I
+
+         For each index.html, add an index_html that redirects.
+
       -p path
 
-         Path to ZPublisher
+         Path to ZPublisher.  If not provided, load_site will
+         make an attempt to figure it out.
 
       -u user:password
 
@@ -110,26 +123,45 @@ import sys, getopt, os, string
 ServerError=''
 verbose=0
 old=0
+doctor=0
+index_html=0
 
 def main():
     user, password = 'superuser', '123'
-    opts, args = getopt.getopt(sys.argv[1:], 'p:u:v9')
+    opts, args = getopt.getopt(sys.argv[1:], 'p:u:DIv9')
     global verbose
     global old
+    global doctor
+    global index_html
+    havepath=None
     for o, v in opts:
         if o=='-p':
             d, f = os.path.split(v)
             if f=='ZPublisher': sys.path.insert(0,d)
             else: sys.path.insert(0,v)
+            havepath=1
         elif o=='-u':
             v = string.split(v,':')
             user, password = v[0], string.join(v[1:],':')
+        elif o=='-D': doctor=1
+        elif o=='-I': index_html=1
         elif o=='-v': verbose=1
         elif o=='-9': old=1
 
     if not args:
         print sys.argv[0]+usage
         sys.exit(1)
+
+    if not havepath:
+        here=os.path.split(sys.argv[0])[0]
+        if os.path.exists(os.path.join(here,'ZPublisher')):
+            sys.path.insert(0,here)
+        else:
+            here=os.path.split(here)[0]
+            here=os.path.join(here,'lib','python')
+            if os.path.exists(os.path.join(here,'ZPublisher')):
+                sys.path.insert(0,here)
+        
 
     url=args[0]
     files=args[1:]
@@ -161,7 +193,7 @@ def upload_file(object, f):
         return globals()['upload_'+ext](object, f)
 
     if verbose: print 'upload_file', f, ext
-    call(object.manage_addFile, id=name, file=open(f))
+    call(object.manage_addFile, id=name, file=open(f,'rb'))
 
 def upload_dir(object, f):
     if verbose: print 'upload_dir', f
@@ -276,38 +308,55 @@ def parse_html(infile):
 def upload_html(object, f):
     dir, name = os.path.split(f)
     f=open(f)
-    # There is a Document bugs that causes file uploads to fail.
-    # Waaa.  This will be fixed in 1.10.2.
-    #f=f.read()
 
-    title, head, body = parse_html(f)
+    if doctor: title, head, body = parse_html(f)
+    else:
+        if old: f=f.read()
+        title, head, body = '', '', f
 
     if old:
         call(object.manage_addDocument, id=name, file=body)
+        if index_html and name in ('index.html', 'index.htm'):
+            call(object.manage_addDocument, id='index_html',
+                 file=('<!--#raise Redirect-->'
+                       '<!--#var URL1-->/%s'
+                       '<!--#/raise-->' % name
+                       ))
     else:
         call(object.manage_addDTMLDocument, id=name, title=title, file=body)
+        if index_html and name in ('index.html', 'index.htm'):
+            call(object.manage_addDTMLMethod, id='index_html',
+                 file=('<dtml-raise Redirect>'
+                       '<dtml-var URL1>/%s'
+                       '</dtml-raise>' % name
+                       ))
 
     # Now add META and other tags as property
     if head:
       object=object.__class__(object.url+'/'+name,
                             username=object.username,
                             password=object.password)
-      call(object.manage_addProperty, id="loadsite-head", type="text", value=head)
+      call(object.manage_addProperty,
+           id="loadsite-head", type="text", value=head)
+
 # ----- /phd -----
     
 upload_htm=upload_html
 
 def upload_dtml(object, f):
     dir, name = os.path.split(f)
+    f=open(f)
+
     if old:
-        call(object.manage_addDocument, id=name, file=open(f))
+        f=f.read()
+        call(object.manage_addDocument, id=name, file=f)
     else:
-        call(object.manage_addDTMLDocument, id=name, file=f)
+        call(object.manage_addDTMLMethod, id=name, file=f)
         
 
 def upload_gif(object, f):
     dir, name = os.path.split(f)
-    call(object.manage_addImage, id=name, file=open(f))
+    call(object.manage_addImage, id=name, file=open(f,'rb'))
 
 upload_jpg=upload_gif
 upload_png=upload_gif
