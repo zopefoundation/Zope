@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -502,13 +502,19 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         pass
 
     def possible_permissions(self):
-        r=map(
-            lambda p: p[0],
-            Products.__ac_permissions__+
-            self.aq_acquire('_getProductRegistryData')('ac_permissions')
-            )
-        r.sort()
-        return r
+        d={}
+        for p in Products.__ac_permissions__:
+            d[p[0]]=1
+        for p in self.aq_acquire('_getProductRegistryData')('ac_permissions'):
+            d[p[0]]=1
+
+        for p in self.ac_inherited_permissions(1):
+            d[p[0]]=1
+
+        d=d.keys()
+        d.sort()
+        
+        return d
 
 
 Globals.default__class_init__(RoleManager)
