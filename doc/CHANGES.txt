@@ -4,6 +4,11 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+    Features added
+
+     - deny attributes being both part of tal:attributes
+       and having a messageid in i18n:attributes
+
   2.7.0b1
 
     Features added
