@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Globals import Persistent
 import BTree
@@ -152,6 +152,7 @@ class UnIndex(Persistent):
 
     def index_object(self, i, obj, threshold=None):
         """ index and object 'obj' with integer id 'i'"""
+
         index = self._index
         unindex = self._unindex
 
@@ -161,18 +162,21 @@ class UnIndex(Persistent):
             k=getattr(obj, id)
             if callable(k):
                 k = k()
+            print 'found %s' % k
         except:
             k = MV
+            print 'couldnt get %s of %s' % (id, obj)
  
-        if k is None or k == MV:
-            return 0
+##        if k is None or k == MV:
+##            return 0
 
         set = index.get(k)
-        if set is None: 
+        if set is None:
             index[k] = set = intSet()
-
+            
         set.insert(i)
         unindex[i] = k
+
 
         self._index = index
         self._unindex = unindex
@@ -232,7 +236,7 @@ class UnIndex(Persistent):
         if request.has_key(id+'_usage'):
             # see if any usage params are sent to field
             opr=string.split(string.lower(request[id+"_usage"]),':')
-            pdb.set_trace()
+#            pdb.set_trace()
             opr, opr_args=opr[0], opr[1:]
 
         if opr=="range":
@@ -243,25 +247,42 @@ class UnIndex(Persistent):
 
             anyTrue=1
             try:
-                if hi: setlist = index.items(lo,hi)
-                else:  setlist = index.items(lo)
-                for k,set in setlist:
-                    if r is None: r = set
-                    else: r = r.union(set)
-            except KeyError: pass
+                if hi:
+                    setlist = index.items(lo,hi)
+                else:
+                    setlist = index.items(lo)
+
+                for k, set in setlist:
+                    print 'adding set %s to %s' % (tuple(set), id)
+                    if r is None:
+                        r = set
+                    else:
+                        r = r.union(set)
+
+            except KeyError:
+                pass
+
         else:           #not a range
             get = index.get
             for key in keys:
-                if key: anyTrue = 1
+                if key:
+                    anyTrue = 1
                 set=get(key)
                 if set is not None:
-                    if r is None: r = set
-                    else: r = r.union(set)
+                    if r is None:
+                        r = set
+                    else:
+                        r = r.union(set)
 
         if r is None:
-            if anyTrue: r=intSet()
-            else: return None
+            if anyTrue:
+                r=intSet()
+            else:
+                return None
 
+#        pdb.set_trace()
+        # print 'r is %s' % tuple(r)
+        print 'UnIndex says there are %s records' % len(r)
         return r, (id,)
 
 
