@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.27 1999/06/24 20:21:20 brian Exp $"
+"$Id: DT_String.py,v 1.28 1999/06/28 22:04:32 michel Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -136,6 +136,7 @@ class String:
         'comment': Comment,
         'raise': ('raise', 'DT_Raise','Raise'),
         'try': ('try', 'DT_Try','Try'),
+        'let': ('let', 'DT_Let', 'Let'),
         }
 
     def SubTemplate(self, name): return String('', __name__=name)

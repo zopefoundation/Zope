@@ -84,7 +84,7 @@
 ##############################################################################
 
 ''' The Let tag was contributed to Zope by and is copyright, 1999
-    Philip J. Eby.  Permission has been granted to release the Let tag
+    Phillip J. Eby.  Permission has been granted to release the Let tag
     under the Zope Public License.
     
 
@@ -112,7 +112,6 @@
    as desired.
 ''' 
 
-from DocumentTemplate.DT_String import String
 from DocumentTemplate.DT_Util import render_blocks, str, Eval, expr_globals, Eval, ParseError, regex, strip
 
 class Let:
@@ -176,4 +175,3 @@ def parse_let_params(text,
 	if text: return apply(parse_let_params,(text,result,tag),parms)
 	else: return result
 
-String.commands['let']=Let
