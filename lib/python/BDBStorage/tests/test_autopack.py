@@ -17,13 +17,14 @@ import time
 import unittest
 import threading
 
+from persistent.TimeStamp import TimeStamp
+
 from ZODB import DB
 from ZODB.Transaction import Transaction
 from ZODB.referencesf import referencesf
-from ZODB.TimeStamp import TimeStamp
 from ZODB.tests.MinPO import MinPO
 from ZODB.tests.StorageTestBase import zodb_pickle
-from Persistence import Persistent
+from persistent import Persistent
 
 import BDBStorage
 if BDBStorage.is_available:

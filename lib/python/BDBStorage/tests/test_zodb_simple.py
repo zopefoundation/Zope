@@ -21,7 +21,7 @@ import unittest
 
 import BDBStorage
 from BDBStorage.tests.ZODBTestBase import ZODBTestBase
-from Persistence import PersistentMapping
+from persistent.mapping import PersistentMapping
 
 
 

@@ -32,7 +32,7 @@ else:
 from BDBStorage.tests.ZODBTestBase import ZODBTestBase
 from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
 
-from Persistence import Persistent
+from persistent import Persistent
 
 ZERO = '\0'*8
 

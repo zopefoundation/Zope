@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.32 $'[-2:][0]
+__version__ = '$Revision: 1.33 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -262,11 +262,13 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
             # The object exists in the database, but the serial number
             # given in the call is not the same as the last stored serial
             # number.  Raise a ConflictError.
-            data = self.tryToResolveConflict(oid, oserial, serial, data)
-            if data:
+            rdata = self.tryToResolveConflict(oid, oserial, serial, data)
+            if rdata:
                 conflictresolved = True
+                data = rdata
             else:
-                raise POSException.ConflictError(serials=(oserial, serial))
+                raise POSException.ConflictError(
+                    oid=oid, serials=(oserial, serial), data=data)
         # Optimistically write to the serials and pickles table.  Be sure
         # to also update the oids table for this object too.
         newserial = self._serial

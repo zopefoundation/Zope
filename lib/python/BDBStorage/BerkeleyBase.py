@@ -32,7 +32,6 @@ from BDBStorage import db, ZERO
 from ZODB.lock_file import lock_file
 from ZODB.BaseStorage import BaseStorage
 from ZODB.referencesf import referencesf
-import ThreadLock
 import zLOG
 
 GBYTES = 1024 * 1024 * 1000
@@ -219,7 +218,7 @@ class BerkeleyBase(BaseStorage):
         self._is_read_only = config.read_only
 
         # Instantiate a pack lock
-        self._packlock = ThreadLock.allocate_lock()
+        self._packlock = threading.RLock()
         self._stop = self._closed = False
         # Initialize a few other things
         self._prefix = prefix

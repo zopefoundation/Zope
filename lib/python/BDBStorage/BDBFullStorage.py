@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.75 $
+$Revision: 1.76 $
 """
 
 import time
@@ -24,7 +24,7 @@ from struct import pack, unpack
 from ZODB import POSException
 from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
-from ZODB.TimeStamp import TimeStamp
+from persistent.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
 from BDBStorage import db, ZERO
@@ -484,11 +484,13 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             # given in the call is not the same as the last stored serial
             # number.  First, attempt application level conflict
             # resolution, and if that fails, raise a ConflictError.
-            data = self.tryToResolveConflict(oid, oserial, serial, data)
-            if data:
+            rdata = self.tryToResolveConflict(oid, oserial, serial, data)
+            if rdata:
                 conflictresolved = True
+                data = rdata
             else:
-                raise POSException.ConflictError(serials=(oserial, serial))
+                raise POSException.ConflictError(
+                    oid=oid, serials=(oserial, serial), data=data)
         # Do we already know about this version?  If not, we need to record
         # the fact that a new version is being created.  version will be the
         # empty string when the transaction is storing on the non-version

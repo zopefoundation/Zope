@@ -63,7 +63,7 @@ import marshal
 from bsddb3 import db
 
 from ZODB import utils
-from ZODB.TimeStamp import TimeStamp
+from persistent.TimeStamp import TimeStamp
 from ZODB.FileStorage import FileStorage
 from BDBStorage.BDBFullStorage import BDBFullStorage
 

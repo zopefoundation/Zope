@@ -23,10 +23,17 @@
 #error "Must be using at least Python 2.2"
 #endif
 
+/* Increment an 8-byte unsigned integer (represented as an 8-byte raw string),
+ * by a Python integer.
+ * The arguments are an 8-byte Python string, and a Python int or long.
+ * The result is an 8-byte Python string, representing their sum.
+ * XXX It's unclear what this intends to do if the sum overflows an 8-byte
+ * XXX unsigned integer.  _PyLong_AsByteArray should raise OverflowError then.
+ */
 static PyObject*
 helper_incr(PyObject* self, PyObject* args)
 {
-    PyObject *pylong, *incr, *sum;
+    PyObject *pylong = NULL, *incr, *sum = NULL, *result = NULL;
     char *s, x[8];
     int len, res;
 
@@ -42,21 +49,25 @@ helper_incr(PyObject* self, PyObject* args)
     pylong = _PyLong_FromByteArray(s, len,
                                    0 /* big endian */,
                                    0 /* unsigned */);
-    
+
     if (!pylong)
         return NULL;
 
     sum = PyNumber_Add(pylong, incr);
     if (!sum)
-        return NULL;
+	goto err;
 
     res = _PyLong_AsByteArray((PyLongObject*)sum, x, 8,
                               0 /* big endian */,
                               0 /* unsigned */);
     if (res < 0)
-        return NULL;
+	goto err;
 
-    return PyString_FromStringAndSize(x, 8);
+    result = PyString_FromStringAndSize(x, 8);
+ err:
+    Py_XDECREF(pylong);
+    Py_XDECREF(sum);
+    return result;
 }
 
 
