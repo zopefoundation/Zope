@@ -85,23 +85,13 @@
 """
 Session initialization routines
 
-$Id: __init__.py,v 1.2 2001/11/01 19:20:35 matt Exp $
+$Id: __init__.py,v 1.3 2001/11/01 20:19:57 matt Exp $
 """
 
 import BrowserIdManager
-import RAM_DB
 import SessionDataManager
 
 def initialize(context):
-    context.registerClass(
-        RAM_DB.MountedRAM_DB,
-        permission=RAM_DB.ADD_RAMDB_PERM,
-        icon='www/ramdb.gif',
-        meta_type='Temporary Folder',
-        constructors=(RAM_DB.constructRAMDBForm,
-                      RAM_DB.constructRAMDB)
-        )
-
     context.registerClass(
         BrowserIdManager.BrowserIdManager,
         icon="www/idmgr.gif",
