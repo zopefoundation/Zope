@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -44,11 +44,12 @@ class CopyContainer:
 	try:    obj=moniker.bind()
 	except: return eNotFound
 
+	obj=obj._getCopy(self)
+
 	# Acquire roles from new environment
 	try:    del obj.__roles__
 	except: pass
 
-	obj=obj._getCopy(self)
         obj._setId(clip_id)
 	self._setObject(clip_id, obj)
 	obj._postCopy(self)
