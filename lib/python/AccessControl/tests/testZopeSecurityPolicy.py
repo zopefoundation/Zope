@@ -13,8 +13,8 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.9 2004/01/27 16:59:23 tseaver Exp $'
-__version__='$Revision: 1.9 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.10 2004/01/27 19:22:51 Brian Exp $'
+__version__='$Revision: 1.10 $'[11:-2]
 
 import os, sys, unittest
 
@@ -37,8 +37,11 @@ sysadmin_roles = ('RoleOfSysAdmin',)
 
 
 class App(Explicit):
-    pass
-
+    def unrestrictedTraverse(self, path):
+        ob = self
+        for el in path:
+            ob = getattr(ob, el)
+        return ob
 
 class PublicMethod (Method):
     def getOwner(self):
@@ -73,10 +76,25 @@ class setuidMethod (PublicMethod):
     _proxy_roles = sysadmin_roles
 
 
+class OwnedSetuidMethod(Implicit):
+    __roles__ = eo_roles
+    _proxy_roles = sysadmin_roles
+
+    def getOwner(self, info=0):
+        if info:
+            return (('subobject', 'acl_users'), 'theowner')
+        else:
+            return self.aq_parent.aq_parent.acl_users.getUserById('theowner')
+
+    def getWrappedOwner(self):
+        acl_users = self.aq_parent.aq_parent.acl_users
+        user = acl_users.getUserById('theowner')
+        return user.__of__(acl_users)
+
+
 class DangerousMethod (PublicMethod):
     # Only accessible to sysadmin or people who use proxy roles
     __roles__ = sysadmin_roles
-
 
 class SimpleItemish (Implicit):
     public_m = PublicMethod()
@@ -87,10 +105,21 @@ class SimpleItemish (Implicit):
     public_prop = 'Public Value'
     private_prop = 'Private Value'
 
+class ImplictAcqObject(Implicit):
+    pass
+
 
 class UnprotectedSimpleItem (SimpleItemish):
 
     __allow_access_to_unprotected_subobjects__ = 1
+
+
+class OwnedSimpleItem(UnprotectedSimpleItem):
+    def getOwner(self, info=0):
+        if info:
+            return (('subobject', 'acl_users'), 'theowner')
+        else:
+            return self.aq_parent.acl_users.getuserById('theowner')
 
 
 class RestrictedSimpleItem (SimpleItemish):
@@ -257,6 +286,39 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
                                   '', '', name, '', None)
             else:
                 policy.validate('', '', name, '', None)
+
+    def testProxyRoleScope(self):
+        self.a.subobject = ImplictAcqObject()
+        subobject = self.a.subobject
+        subobject.acl_users = UserFolder()
+        subobject.acl_users._addUser('theowner', 'password', 'password', 
+                                      eo_roles + sysadmin_roles, ())
+        subobject.item = UnprotectedSimpleItem()
+        subitem = subobject.item
+        subitem.owned_setuid_m = OwnedSetuidMethod()
+        subitem.getPhysicalRoot = lambda root=self.a: root
+        
+        item = self.a.item
+        item.getPhysicalRoot = lambda root=self.a: root
+        self.context.stack.append(subitem.owned_setuid_m.__of__(subitem))
+        
+        # Out of owner context
+        self.assertPolicyAllows(item, 'public_m')
+        self.assertPolicyDenies(item, 'protected_m')
+        self.assertPolicyDenies(item, 'owned_m')
+        self.assertPolicyAllows(item, 'setuid_m')
+        self.assertPolicyDenies(item, 'dangerous_m')
+
+        # Inside owner context
+        self.assertPolicyAllows(subitem, 'public_m')
+        self.assertPolicyDenies(subitem, 'protected_m')
+        self.assertPolicyDenies(subitem, 'owned_m')
+        self.assertPolicyAllows(subitem, 'setuid_m')
+        self.assertPolicyAllows(subitem, 'dangerous_m')
+
+    def testUnicodeName(self):
+        policy = self.policy
+        assert policy.validate('', '', u'foo', '', None)
 
     if 0:
         # This test purposely generates a log entry.
