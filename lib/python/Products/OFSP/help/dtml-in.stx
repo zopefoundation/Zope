@@ -65,6 +65,14 @@ in: Loops over sequences
     (_) instead of hyphens (-).  The prefix must start with a letter and
     contain only alphanumeric characters and underscores (_).
 
+    sort_expr=expression -- Sorts the sequence by an attribute named
+    by the value of the expression. This allows you to sort on
+    different attributes.
+
+    reverse_expr=expression -- Reverses the sequence if the expression
+    evaluates to true. This allows you to selectively reverse the
+    sequence.
+
   Tag Variables
 
     Current Item Variables
