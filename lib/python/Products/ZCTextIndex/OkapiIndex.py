@@ -24,8 +24,6 @@ from Products.ZCTextIndex.BaseIndex import BaseIndex, \
                                            inverse_doc_frequency, \
                                            scaled_int
 
-import ZODB
-
 class OkapiIndex(BaseIndex):
 
     __implements__ = IIndex

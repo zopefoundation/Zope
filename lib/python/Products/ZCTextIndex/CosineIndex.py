@@ -23,8 +23,6 @@ from Products.ZCTextIndex.BaseIndex import BaseIndex, \
                                            inverse_doc_frequency, \
                                            scaled_int, SCALE_FACTOR
 
-import ZODB
-
 class CosineIndex(BaseIndex):
 
     __implements__ = IIndex
