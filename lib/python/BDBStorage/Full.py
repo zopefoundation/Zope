@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.37 $'.split()[-2:][0]
+__version__ = '$Revision: 1.38 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -527,6 +527,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 version = ''
             else:
                 version = self._versions[vid]
+            # Check for an zombification event, possible with
+            # transactionalUndo.  Use data==None to specify that.
+            if lrevid == DNE:
+                return None, version
             return self._pickles[oid+lrevid], version
         finally:
             self._lock_release()
@@ -1347,6 +1351,7 @@ class _TransactionsIterator:
     def __init__(self, storage):
         self._storage = storage
         self._tid = None
+        self._closed = 0
 
     def __getitem__(self, i):
         """Return the ith item in the sequence of transaction data.
@@ -1355,10 +1360,15 @@ class _TransactionsIterator:
         RecordsIterator.  An IndexError will be raised after all of the items
         have been returned.
         """
+        if self._closed:
+            raise IOError, 'iterator is closed'
         # Let IndexErrors percolate up.
         tid, status, user, desc, ext = self._storage._nexttxn(self._tid)
         self._tid = tid
         return _RecordsIterator(self._storage, tid, status, user, desc, ext)
+
+    def close(self):
+        self._closed = 1
 
 
 
