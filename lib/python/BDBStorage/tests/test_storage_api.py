@@ -41,7 +41,7 @@ class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage, VersionStorage,
 
 
 
-def suite():
+def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
     suite.addTest(unittest.makeSuite(FullTest, 'check'))
@@ -50,4 +50,4 @@ def suite():
 
 
 if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+    unittest.main(defaultTest='test_suite')

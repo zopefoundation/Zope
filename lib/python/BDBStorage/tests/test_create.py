@@ -56,7 +56,7 @@ class FullOpenExistingTest(BerkeleyTestBase.BerkeleyTestBase,
 
 
 
-def suite():
+def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
     suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
@@ -66,4 +66,4 @@ def suite():
 
 
 if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+    unittest.main(defaultTest='test_suite')

@@ -10,7 +10,7 @@ def suite():
     alltests = unittest.TestSuite()
     for modname in MODULES:
         mod = __import__('test_'+modname)
-        alltests.addTest(mod.suite())
+        alltests.addTest(mod.test_suite())
     return alltests
 
 

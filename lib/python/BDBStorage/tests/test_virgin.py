@@ -30,7 +30,7 @@ class MinimalNewInsertsTest(ZODBTestBase, InsertMixin):
 
 
 
-def suite():
+def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MinimalNewInsertsTest, 'check'))
     suite.addTest(unittest.makeSuite(FullNewInsertsTest, 'check'))
@@ -39,4 +39,4 @@ def suite():
 
 
 if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+    unittest.main(defaultTest='test_suite')

@@ -61,7 +61,7 @@ class FullCommitAndRead(ZODBTestBase, CommitAndRead):
 
 
 
-def suite():
+def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MinimalCommitAndRead, 'check'))
     suite.addTest(unittest.makeSuite(FullCommitAndRead, 'check'))
@@ -70,4 +70,4 @@ def suite():
 
 
 if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+    unittest.main(defaultTest='test_suite')
