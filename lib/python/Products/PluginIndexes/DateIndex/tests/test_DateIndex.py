@@ -16,6 +16,8 @@ import unittest
 
 from DateTime import DateTime
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
+from types import IntType, FloatType
+import time
 
 class Dummy:
 
@@ -41,7 +43,9 @@ class DI_Tests(unittest.TestCase):
             (2, Dummy('c', DateTime('2002-05-08 15:16:17'))),
             (3, Dummy('d', DateTime('2032-05-08 15:16:17'))),
             (4, Dummy('e', DateTime('2062-05-08 15:16:17'))),
-            (5, Dummy('e', DateTime('2062-05-08 15:16:17')))
+            (5, Dummy('e', DateTime('2062-05-08 15:16:17'))),
+            (6, Dummy('f', 1072742620.0)),
+            (7, Dummy('f', 1072742900)),
         )
         self._index = DateIndex('date')
         self._noop_req  = {'bar': 123}
@@ -55,6 +59,8 @@ class DI_Tests(unittest.TestCase):
                            'date_usage': 'range:min:max'}
         self._zero_req  = {'date': 0}
         self._none_req  = {'date': None}
+        self._float_req = {'date': 1072742620.0}
+        self._int_req   = {'date': 1072742900}
 
     def _populateIndex( self ):
         for k, v in self._values:
@@ -71,7 +77,10 @@ class DI_Tests(unittest.TestCase):
             self.failUnless(k in result)
 
     def _convert(self, date):
-        yr, mo, dy, hr, mn = date.parts()[:5]
+        if type(date) in (FloatType, IntType):
+            yr, mo, dy, hr, mn = time.gmtime(date)[:5]
+        else:
+            yr, mo, dy, hr, mn = date.parts()[:5]
         return (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
 
     def test_empty(self):
@@ -119,9 +128,11 @@ class DI_Tests(unittest.TestCase):
         self.failUnless(index._apply_index(self._noop_req) is None)
 
         self._checkApply(self._request, values[1:2])
-        self._checkApply(self._min_req, values[3:])
-        self._checkApply(self._max_req, values[1:4])
-        self._checkApply(self._range_req, values[2:] )
+        self._checkApply(self._min_req, values[3:6])
+        self._checkApply(self._max_req, values[1:4] + values[6:])
+        self._checkApply(self._range_req, values[2:6] + values[6:] )
+        self._checkApply(self._float_req, [values[6]] )
+        self._checkApply(self._int_req, [values[7]] )
 
 def test_suite():
     suite = unittest.TestSuite()

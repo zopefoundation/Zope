@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.4 2002/06/26 13:37:19 caseman Exp $
+"""$Id: DateIndex.py,v 1.5 2002/06/30 05:45:35 chrism Exp $
 """
 
 from DateTime.DateTime import DateTime
@@ -24,6 +24,7 @@ from Globals import DTMLFile
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IISet, union, intersection, multiunion
+import time
 
 _marker = []
 
@@ -169,7 +170,7 @@ class DateIndex(UnIndex):
         """Convert Date/Time value to our internal representation"""
         if isinstance( value, DateTime ):
             t_tup = value.parts()
-        elif type( value ) is FloatType:
+        elif type( value ) in (FloatType, IntType):
             t_tup = time.gmtime( value )
         elif type( value ) is StringType:
             t_obj = DateTime( value )
