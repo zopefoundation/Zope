@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
 
@@ -197,7 +197,13 @@ class NameCaller:
         args = getattr(getattr(meth, 'func_code', None), 'co_argcount', 2)
         try:
             apply(meth, (container, request, None)[:args])
-        except:
+        except (ArithmeticError, AttributeError, FloatingPointError,
+                IOError, ImportError, IndexError, KeyError,
+                OSError, OverflowError, TypeError, ValueError,
+                ZeroDivisionError):
+            # Only catch exceptions that are likely to be logic errors.
+            # We shouldn't catch Redirects, Unauthorizeds, etc. since
+            # the programmer may want to raise them deliberately.
             from zLOG import LOG, ERROR
             import sys
             LOG('BeforeTraverse', ERROR,
