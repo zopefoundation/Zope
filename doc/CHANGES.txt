@@ -4,6 +4,16 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.7.0 alpha 1
+    
+    Features Added
+
+      - ZTUtils.Tree.TreeMaker now has additional methods for setting
+        various flags and attributes that influence how the tree is built,
+        making these aspects accessible to PythonScripts.
+  
+  Zope 2.6.0 beta 1
+
     Bugs Fixed
 
       - Collector #449: PathIndex did not index the last part of path.
