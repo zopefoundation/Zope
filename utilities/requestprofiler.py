@@ -15,7 +15,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -596,10 +596,12 @@ if __name__ == '__main__':
     for arg in sys.argv[1:]:
         if arg[:2] != '--':
             files.append(open(arg))
+            sys.argv.remove(arg)
             i = i + 1
+
     try:
         opts, extra = getopt.getopt(
-            sys.argv[i:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
+            sys.argv[1:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
                                'cumulative', 'detailed', 'timed','start=',
                                'end=','resolution=']
             )
