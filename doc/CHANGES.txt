@@ -6,7 +6,7 @@ Zope Changes
 
   Releases
 
-    Zope x.x.x
+    Zope  1.10 pr1
 
       New Features
 
@@ -97,6 +97,11 @@ Zope Changes
         - Added a new module, BoboPOS.winlock, that provides file
           locking on windows.  This should prevent many cases of data
           corruption. 
+
+        - Added FTP support to Documents, Files, Images, and Folders.
+          FTP interface is detailed in OFS/FTPInterface.py though it may
+          change. Basic FTP support was also added to SimpleItem to make
+          it easier for Zope objects to support FTP.
 
       Bugs Fixed
  
