@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.59 1997/10/22 22:49:20 jim Exp $"""
+$Id: Publish.py,v 1.60 1997/10/28 19:29:57 brian Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.59 1997/10/22 22:49:20 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 
 def main():
@@ -1243,28 +1243,29 @@ isCGI_NAME = {
 
 def parse_cookie(text,
 		 result=None,
-		 parmre=regex.compile(
-		     '\([\0- ]*'
-		     '\([^\0- ;,=\"]+\)=\([^\0- =\"]+\)'
-		     '\([\0- ]*[;,]\)?[\0- ]*\)'
-		     ),
 		 qparmre=regex.compile(
 		     '\([\0- ]*'
 		     '\([^\0- ;,=\"]+\)="\([^"]*\)\"'
 		     '\([\0- ]*[;,]\)?[\0- ]*\)'
 		     ),
+		 parmre=regex.compile(
+		     '\([\0- ]*'
+		     '\([^\0- ;,=\"]+\)=\([^\0;-=\"]*\)'
+		     '\([\0- ]*[;,]\)?[\0- ]*\)'
+		     ),
 		 ):
 
     if result is None: result={}
-    
-    if parmre.match(text) >= 0:
-	name=parmre.group(2)
-	value=parmre.group(3)
-	l=len(parmre.group(1))
-    elif qparmre.match(text) >= 0:
+    if qparmre.match(text) >= 0:
+	# Match quoted correct cookies
 	name=qparmre.group(2)
 	value=qparmre.group(3)
 	l=len(qparmre.group(1))
+    elif parmre.match(text) >= 0:
+	# Match evil MSIE cookies ;)
+	name=parmre.group(2)
+	value=parmre.group(3)
+	l=len(parmre.group(1))
     else:
 	if not text or not strip(text): return result
 	raise "InvalidParameter", text
@@ -1347,6 +1348,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.60  1997/10/28 19:29:57  brian
+# Fixed evil MSIE cookie handling.
+#
 # Revision 1.59  1997/10/22 22:49:20  jim
 # Fixed bug in handling of container.spam__doc__.
 #
