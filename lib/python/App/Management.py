@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.26 1999/07/08 11:58:10 jim Exp $"""
+$Id: Management.py,v 1.27 1999/08/11 18:19:25 jim Exp $"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -118,9 +118,9 @@ class Tabs(ExtensionClass.Base):
         help_option_=({'label': 'Help', 'action': 'manage_help',
                        'target':"z_help_wnd"},),
         ):
-        if REQUEST is None:
-            if hasattr(self, 'REQUEST'):
-                REQUEST=self.REQUEST
+        if REQUEST is None and hasattr(self, 'aq_acquire'):
+            try: REQUEST=self.aq_acquire('REQUEST')
+            except: pass
         try: user=REQUEST['AUTHENTICATED_USER']
         except: user=None
         
