@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -233,7 +233,7 @@ class PythonScript(Script, Historical, Cacheable):
         for name in split(self._params, ','):
             name = strip(name)
             if name and name[0] != '*':
-                param_names.append(name)
+                param_names.append(split(name, '=', 1)[0])
         return param_names
 
     def manage_historyCompare(self, rev1, rev2, REQUEST,
