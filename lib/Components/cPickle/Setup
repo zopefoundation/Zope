@@ -1,6 +1,0 @@
-*shared*
-
-cStringIO cStringIO.c
-cPickle cPickle.c -DFORMAT_1_3
-
-# install copy_reg.py

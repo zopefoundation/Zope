@@ -1,8 +1,0 @@
-Setup
-Makefile.pre.in
-cPickle.stx
-cPickle.html
-cPickle.c
-cStringIO.c
-cStringIO.h
-copy_reg.py
