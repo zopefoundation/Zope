@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.48 1998/02/12 16:24:52 brian Exp $'''
-__version__='$Revision: 1.48 $'[11:-2]
+$Id: Application.py,v 1.49 1998/02/12 23:03:29 brian Exp $'''
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -117,7 +117,8 @@ class Application(Folder.Folder):
 		alternate_self=alternate_self.__of__(self.aq_parent)
 	    return alternate_self
 
-	self._p_jar.cache.incrgc() # Perform incremental GC
+	try: self._p_jar.cache.incrgc() # Perform incremental GC
+	except: pass
 
 	try: return getattr(self, name)
 	except AttributeError:
@@ -294,7 +295,8 @@ def lic_check(product_name):
     product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
     package_dir=path_join(product_dir, product_name)
     bobobase   =Globals.Bobobase
-
+    if bobobase is None:
+	return 1
     try: f=open(path_join(package_dir,'%s.lic' % product_name), 'rb')
     except:
 	try:
@@ -376,6 +378,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.49  1998/02/12 23:03:29  brian
+# *** empty log message ***
+#
 # Revision 1.48  1998/02/12 16:24:52  brian
 # Fixed eval mode bug ;(
 #
