@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.29 1997/01/28 23:02:49 jim Exp $"""
+$Id: Publish.py,v 1.30 1997/01/28 23:04:10 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.29 1997/01/28 23:02:49 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 def main():
@@ -1206,7 +1206,7 @@ class Request:
 	'Regex':	field2Regex,
 	'regexs':	field2regexs,
 	'Regexs':	field2Regexs,
-	'Required':	field2Required,
+	'required':	field2required,
 	'tokens':	field2tokens,
 	'lines':	field2lines,
 	}
@@ -1399,6 +1399,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.30  1997/01/28 23:04:10  jim
+# *** empty log message ***
+#
 # Revision 1.29  1997/01/28 23:02:49  jim
 # Moved log.
 # Added new data type conversion options.
