@@ -177,16 +177,6 @@ def run(argv, pidfile=''):
     if os.environ.has_key('ZDAEMON_MANAGED'):
         # We're the child at this point.  Don't ask. :/
 
-##        sys.stdin.close()
-##        sys.stdout.close()
-##        sys.stderr.close()
-##        try:
-##            sys.stdin = open('/dev/null', "r")
-##            sys.stdout = open('/dev/null', "r+")
-##            sys.stderr = open('/dev/null', "r+")
-##        except:
-##            zLOG.LOG("z2", zLOG.ERROR, "couldn't close standard files")
-
         return
     
     os.environ['ZDAEMON_MANAGED']='TRUE'
