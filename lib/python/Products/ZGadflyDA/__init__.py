@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.10 1999/04/29 19:21:32 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: __init__.py,v 1.11 2000/04/11 16:37:34 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals, os
 
@@ -149,8 +149,8 @@ __ac_permissions__=(
       'manage_addZGadflyConnection')),
     )
 
-j=os.path.join
-d=j(j(INSTANCE_HOME,'var'),'gadfly')
-if not os.path.exists(d):
-    os.mkdir(d)
-    os.mkdir(j(d,'demo'))
+# j=os.path.join
+# d=j(j(INSTANCE_HOME,'var'),'gadfly')
+# if not os.path.exists(d):
+#     os.mkdir(d)
+#     os.mkdir(j(d,'demo'))
