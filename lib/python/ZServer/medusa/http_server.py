@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.29 2001/08/17 13:00:06 andreasjung Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.30 2001/09/20 13:29:28 andreasjung Exp $'
 
 # python modules
 import os
@@ -713,7 +713,7 @@ def get_header_match (head_reg, lines):
             return m
     return ''
     
-REQUEST = re.compile ('([^ ]+) ([^ ]+)(( HTTP/([0-9.]+))$|$)')
+REQUEST = re.compile ('([^ ]+) (?:[^ :?#]+://[^ ?#/]*)?([^ ]+)(( HTTP/([0-9.]+))$|$)')
 
 def crack_request (r):
     m = REQUEST.match (r)

@@ -42,6 +42,8 @@ Zope Changes
         control panel to make it easer to tell what configuration of
         Zope is running.
 
+      - Re-applied Medusa patch to allow proxy-like HTTP requests
+        (GET http://hostname:port/ HTTP/1.0)
 
     Bugs fixed
 
