@@ -85,12 +85,12 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
 from urllib import quote, unquote
-import Globals
+import Globals, time
 
 class Resource(ExtensionClass.Base):
     """The Resource mixin class provides basic WebDAV support for
@@ -348,21 +348,48 @@ class Resource(ExtensionClass.Base):
         return RESPONSE
 
 
-    # WebDAV Class 2 support
+    # WebDAV Class 2  is currently not really supported - the
+    # following merely fakes enough class 2 support to allow
+    # operation with MS O2K.
+
+    _v_dav_lock=None
+
+    def dav__genlocktoken(self):
+        return 'AA9F6414-1D77-11D3-B825-00105A989226:%.03f' % time.time()
 
     def LOCK(self, REQUEST, RESPONSE):
-        """A write lock MUST prevent a principal without the lock from
-        successfully executing a PUT, POST, PROPPATCH, LOCK, UNLOCK, MOVE,
-        DELETE, or MKCOL on the locked resource.  All other current methods,
-        GET in particular, function independently of the lock.
-        """
+        """Lock a resource"""
         self.dav__init(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
-    
+        token=self.dav__genlocktoken()
+        self._v_dav_lock=token
+        RESPONSE.setStatus(200)
+        RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+        RESPONSE.setHeader('Lock-Token', '<locktoken:%s>' % token)
+        RESPONSE.setBody(self.fake_lock_xml % token)
+        return RESPONSE
+
     def UNLOCK(self):
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
+        self._v_dav_lock=None
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
+    fake_lock_xml="""<?xml version="1.0" encoding="utf-8" ?>
+<d:prop xmlns:d="DAV:">
+  <d:lockdiscovery>
+    <d:activelock>
+      <d:locktype><d:write/></d:locktype>
+      <d:lockscope><d:exclusive/></d:lockscope>
+      <d:depth>0</d:depth>
+      <d:owner>you</d:owner>
+      <d:timeout>Second-120</d:timeout>
+      <d:locktoken>
+        <d:href>locktoken:%s</d:href>
+      </d:locktoken>
+    </d:activelock>
+  </d:lockdiscovery>
+</d:prop>"""
 
 
 Globals.default__class_init__(Resource)

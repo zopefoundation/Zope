@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals
 import Acquisition, OFS.content_types
@@ -166,16 +166,6 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
-
-    def LOCK(self, REQUEST, RESPONSE):
-        """Create a lock-null resource."""
-        self.dav__init(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
-    
-    def UNLOCK(self):
-        """Remove a lock-null resource."""
-        self.dav__init(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
 
 
 
