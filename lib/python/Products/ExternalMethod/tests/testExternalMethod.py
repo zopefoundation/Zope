@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: testExternalMethod.py,v 1.3 2002/04/23 13:04:20 jim Exp $
+$Id: testExternalMethod.py,v 1.4 2002/04/24 00:20:15 jim Exp $
 """
 
 import math, os
@@ -23,19 +23,20 @@ import ZODB # dead goat
 import Products.ExternalMethod.tests
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
 
+builtinsdict = getattr(__builtins__, '__dict__', __builtins__)
 
 class Test(TestCase):
 
     def setUp(self):
-        self._old = __builtins__.__dict__.get('INSTANCE_HOME')
-        __builtins__.INSTANCE_HOME = os.path.split(
+        self._old = builtinsdict.get('INSTANCE_HOME')
+        builtinsdict['INSTANCE_HOME'] = os.path.split(
             Products.ExternalMethod.tests.__file__)[0]
 
     def tearDown(self):
         if self._old is None:
-            del __builtins__.INSTANCE_HOME
+            del builtinsdict['INSTANCE_HOME']
         else:
-            __builtins__.INSTANCE_HOME = self._old
+            builtinsdict['INSTANCE_HOME'] = self._old
 
     def testStorage(self):
         em1 = ExternalMethod('em', 'test method', 'Test', 'testf')
