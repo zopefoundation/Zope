@@ -169,9 +169,12 @@ class TALInterpreter:
             self.do_startTag(name, attrList)
             self.do_endTag(name)
         else:
-            self.do_startTag(name, attrList, self.endsep)
+            self.startTagCommon(name, attrList, self.endsep)
 
-    def do_startTag(self, name, attrList, end=">"):
+    def do_startTag(self, name, attrList):
+        self.startTagCommon(name, attrList, ">")
+
+    def startTagCommon(self, name, attrList, end):
         if not attrList:
             self.stream_write("<%s%s" % (name, end))
             return
@@ -259,10 +262,6 @@ class TALInterpreter:
         iterator = self.engine.setRepeat(name, expr)
         while iterator.next():
             self.interpret(block)
-
-    def do_text(self, text):
-        text = cgi.escape(text)
-        self.stream_write(text)
 
     def do_rawtext(self, text):
         self.stream_write(text)
