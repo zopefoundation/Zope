@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.139 2001/07/05 13:19:02 andreas Exp $"""
+$Id: ObjectManager.py,v 1.140 2001/07/05 15:44:50 andreas Exp $"""
 
-__version__='$Revision: 1.139 $'[11:-2]
+__version__='$Revision: 1.140 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -521,7 +521,7 @@ class ObjectManager(
         return r
 
     def manage_exportObject(self, id='', download=None, toxml=None,
-                            RESPONSE=None):
+                            RESPONSE=None,REQUEST=None):
         """Exports an object to a file and returns that file."""        
         if not id:
             # can't use getId() here (breaks on "old" exported objects)
@@ -547,12 +547,13 @@ class ObjectManager(
             XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
         else:
             ob._p_jar.exportFile(ob._p_oid, f)
-        if RESPONSE is not None:
-            return MessageDialog(
-                    title="Object exported",
-                    message="<EM>%s</EM> sucessfully\
-                    exported to <pre>%s</pre>." % (id, f),
-                    action="manage_main")
+
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, 
+                manage_tabs_message=
+                '<em>%s</em> sucessfully exported to <em>%s</em>' % (id,f),
+                title = 'Object exported')
+
 
     manage_importExportForm=DTMLFile('dtml/importExport',globals())
 
@@ -594,14 +595,12 @@ class ObjectManager(
         ob=self._getOb(id)
         ob.manage_changeOwnershipType(explicit=0)
 
-        
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, 
                 manage_tabs_message='<em>%s</em> sucessfully imported' % id,
                 title = 'Object imported',
                 update_menu=1)
 
-        
 
     # FTP support methods
     
