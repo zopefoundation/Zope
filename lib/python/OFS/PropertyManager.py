@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -161,7 +161,7 @@ class PropertyManager:
 
     def valid_property_id(self, id):
         if not id or id[:1]=='_' or (' ' in id) \
-           or hasattr(aq_base(self), id):
+           or hasattr(self.aq_base, id):
             return 0
         return 1
 
@@ -275,7 +275,7 @@ class PropertyManager:
         propdict=self.propdict()
         nd=self._reserved_names
         for id in ids:
-            if not hasattr(aq_base(self), id):
+            if not hasattr(self.aq_base, id):
                 raise 'BadRequest', (
                       'The property <em>%s</em> does not exist' % id)
             if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):
@@ -288,79 +288,3 @@ class PropertyManager:
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
-    def propertyMap_d(self):
-        v=self._properties
-        try:    n=self._reserved_names
-        except: return v
-        return filter(lambda x,r=n: x['id'] not in r, v)
-
-    def _defaultInput(self,n,t,v):
-        return '<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>' % (n,t,v)
-
-    def _stringInput(self,n,t,v):
-        return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
-                % (n,t,html_quote(v)))
-
-##     def _booleanInput(self,n,t,v):
-##         if v: v="CHECKED"
-##         else: v=''
-##         return ('<INPUT TYPE="CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
-##                 % (n,t,v))
-
-    def _selectInput(self,n,t,v):
-        s=['<SELECT NAME="%s:%s">' % (n,t)]
-        map(lambda i: s.append('<OPTION>%s' % i), v)
-        s.append('</SELECT>')
-        return join(s,'\n')
-
-    def _linesInput(self,n,t,v):
-        try: v=html_quote(join(v,'\n'))
-        except: v=''
-        return (
-        '<TEXTAREA NAME="%s:lines" ROWS="10" COLS="40">%s</TEXTAREA>'
-        % (n,v))
-
-    def _tokensInput(self,n,t,v):
-        try: v=html_quote(join(v,' '))
-        except: v=''
-        return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
-                % (n,t,html_quote(v)))
-
-    def _textInput(self,n,t,v):
-        return ('<TEXTAREA NAME="%s:text" ROWS="10" COLS="40">%s</TEXTAREA>'
-                % (n,html_quote(v)))
-
-    _inputMap={
-        'float':        _defaultInput,
-        'int':          _defaultInput,
-        'long':         _defaultInput,
-        'string':       _stringInput,
-        'lines':        _linesInput,
-        'text':         _textInput,
-        'date':         _defaultInput,
-        'tokens':       _tokensInput
-        }
-
-    propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
-    propertyTypes.sort()
-    propertyTypes=map(lambda key:
-                      {'id': key[1],
-                       'selected': key[1]=='string' and 'SELECTED' or ''},
-                      propertyTypes)
-
-           
-    def propertyInputs(self):
-        imap=self._inputMap
-        r=[]
-        for p in self._properties:
-            n=p['id']
-            t=p['type']
-            v=getattr(self,n)
-            r.append({'id': n, 'input': imap[t](None,n,t,v)})
-        return r
-
-
-def aq_base(ob):
-    if hasattr(ob, 'aq_base'):
-        return ob.aq_base
-    return ob

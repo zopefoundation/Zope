@@ -93,9 +93,12 @@ button.
   <th align="left" valign="top">Type</th>
   <td align="left" valign="top">
     <select name="type">
-    <!--#in propertyTypes mapping-->
-      <option <!--#var selected-->><!--#var id-->
-    <!--#/in propertyTypes-->
+    <!--#in "('int', 'float', 'long', 'string', 
+              'lines', 'text', 'date','tokens',
+             )"-->
+      <option<!--#if "_['sequence-item']=='string'"--> selected<!--#/if
+      -->><!--#var sequence-item-->
+    <!--#/in-->
     </select>
   </td>
 </tr>
