@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.10 1998/03/13 22:19:04 jim Exp $
+  $Id: ExtensionClass.h,v 1.11 1998/03/23 23:05:09 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,9 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.11  1998/03/23 23:05:09  jim
+  Updated doc.
+
   Revision 1.10  1998/03/13 22:19:04  jim
   Added an interface for testing subclass relationships.
 
@@ -420,12 +423,15 @@ static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
 #define INSTANCE_DICT(inst) \
 *(((PyObject**)inst) + (inst->ob_type->tp_basicsize/sizeof(PyObject*) - 1))
 
+/* Test whether an ExtensionClass, S, is a subclass of ExtensionClass C. */
 #define ExtensionClassSubclass_Check(S,C) ( \
   ((PyObject*)(S)->ob_type==PyExtensionClassCAPI->ExtensionClassType) && \
   ((PyObject*)(C)->ob_type==PyExtensionClassCAPI->ExtensionClassType) && \
   (PyExtensionClassCAPI->issubclass((PyExtensionClass *)(S), \
 				    (PyExtensionClass *)(C))))
 
+/* Test whether an ExtensionClass instance , I, is a subclass of 
+   ExtensionClass C. */
 #define ExtensionClassSubclassInstance_Check(I,C) ( \
   ((PyObject*)(I)->ob_type->ob_type== \
                              PyExtensionClassCAPI->ExtensionClassType) && \
