@@ -63,6 +63,11 @@ Zope Changes
           If necessary, other records are removed as well to avoid 
           partially-written transactions.
 
+        - Lack of sys.argv in the win32 service version of Zope caused 
+          it to raise errors under certain conditions.
+
+        - A ZPublisher bug caused PUT requests to fail.
+
     Zope 1.9.0
 
       New Features
