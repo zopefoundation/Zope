@@ -34,12 +34,15 @@ import Scheduler.Scheduler
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
 
-bobo_application=Bobobase['Application']
+bobo_application=app=Bobobase['Application']
 
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.11  1997/11/07 18:29:06  jim
+# Added app alias.
+#
 # Revision 1.10  1997/11/07 17:32:30  jim
 # Moved bobobase open to OFS.Application.
 #
