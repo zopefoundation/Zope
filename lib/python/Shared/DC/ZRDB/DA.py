@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.19 1998/01/08 21:28:21 jim Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: DA.py,v 1.20 1998/01/09 20:37:40 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -120,16 +120,16 @@ class DA(
 	
 	try: 
 	    result=self(REQUEST)
-	    result=custom_default_report(self.id, result)
+	    r=custom_default_report(self.id, result)
 	except:
-	    result=(
+	    r=(
 		'<hr><strong>Error, <em>%s</em>:</strong> %s'
 		% (sys.exc_type, sys.exc_value))
 
 	report=HTML(
 	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
 	    '<!--#var manage_tabs-->\n%s\n</body></html>'
-	    % result)
+	    % r)
 
 	return apply(report,(self,REQUEST),{self.id:result})
 
@@ -333,6 +333,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.20  1998/01/09 20:37:40  jim
+# Fixed stupid bug in manage_test.
+#
 # Revision 1.19  1998/01/08 21:28:21  jim
 # Fixed to show errors when run in testing mode.
 #
