@@ -85,7 +85,7 @@
 
 
 # Implement the manage_addProduct method of object managers
-import Acquisition, sys
+import Acquisition, sys, Products
 from string import rfind
 from AccessControl.PermissionMapping import aqwrap
 
@@ -96,17 +96,23 @@ class ProductDispatcher(Acquisition.Implicit):
     __allow_access_to_unprotected_subobjects__=1
 
     def __getitem__(self, name):
-        product=self.aq_acquire('_getProducts')()._product(name)
-        dispatcher=FactoryDispatcher(product, self.aq_parent)
-        return dispatcher.__of__(self)
+        return self.__bobo_traverse__(None, name)
 
     def __bobo_traverse__(self, REQUEST, name):
         product=self.aq_acquire('_getProducts')()._product(name)
-        dispatcher=FactoryDispatcher(product, self.aq_parent, REQUEST)
+
+        # Try to get a custom dispatcher from a Python product
+        dispatcher_class=getattr(
+            getattr(Products, name, None),
+            '__FactoryDispatcher__',
+            FactoryDispatcher)
+        
+        dispatcher=dispatcher_class(product, self.aq_parent, REQUEST)
         return dispatcher.__of__(self)
 
 class FactoryDispatcher(Acquisition.Implicit):
-    " "
+    """Provide a namspace for product "methods"
+    """
 
     def __init__(self, product, dest, REQUEST=None):
         if hasattr(product,'aq_base'): product=product.aq_base
