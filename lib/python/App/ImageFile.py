@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -130,7 +130,7 @@ class ImageFile(Acquisition.Explicit):
 #                return response
 #        response.setHeader('Expires', rfc1123_date(time()+86400.0))
         response.setHeader('Content-Type', self.content_type)
-        response.setHeader('Last-Modified', self.lmh)
+#        response.setHeader('Last-Modified', self.lmh)
 
         
     def index_html(self, REQUEST, RESPONSE):
