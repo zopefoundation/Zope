@@ -145,6 +145,9 @@ Zope Changes
           methods was not protected, so anonymous users could read
           their source.
 
+        - Fixed a bug in ZOM which caused getElementsByTagName to fail
+          when using XML Document. Thanks to Andrew Kuchling.
+
     Zope 2.0 beta 6
 
       Features Added
