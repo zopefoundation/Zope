@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 #XXX I strongly suspect that this is broken, but I'm not going to fix it. :(
 
@@ -463,7 +463,7 @@ QueryError='TextIndex.QueryError'
 def query(s, index, default_operator = Or,
           ws = (string.whitespace,)):
     # First replace any occurences of " and not " with " andnot "
-    s = ts_regex.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
+    s = ts_regex.gsub('[%s]+and[%s]+not[%s]+' % (ws * 3), ' andnot ', s)
     q = parse(s)
     q = parse2(q, default_operator)
     return evaluate(q, index)
