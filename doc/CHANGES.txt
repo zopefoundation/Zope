@@ -19,6 +19,10 @@ Zope Changes
           can be given in any order.  This makes startup scripts loke
           serve.py quite a bit simpler.
 
+        - ZopeHTTPServer now sports preliminary support for PUT publishing.
+          
+        - ZopeHTTPServer now serves from port 9673 by default, not 8080.
+
       Bugs fixed
 
         - The start.bat file used to start ZopeHTTPServer on win32 was
