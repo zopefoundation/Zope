@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -126,6 +126,9 @@ class BaseRequest:
         else:
             for k, v in kw.items(): other[k]=v
         self.other=other
+
+    def __len__(self):
+        return 1
 
     def __setitem__(self,key,value):
         """Set application variables
