@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.55 1998/05/22 23:25:28 jim Exp $
+     $Id: cPickle.c,v 1.56 1998/08/12 12:07:42 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.55 1998/05/22 23:25:28 jim Exp $\n"
+"$Id: cPickle.c,v 1.56 1998/08/12 12:07:42 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -147,6 +147,7 @@ typedef struct {
      PyObject *pers_func;
      PyObject *inst_pers_func;
      int bin;
+     int fast; /* Fast mode doesn't save in memo, don't use if circ ref */
      int (*write_func)();
      char *write_buf;
      int buf_size;
@@ -547,7 +548,7 @@ get(Picklerobject *self, PyObject *id) {
 
 static int
 put(Picklerobject *self, PyObject *ob) {
-    if (ob->ob_refcnt < 2)
+    if (ob->ob_refcnt < 2 || self->fast)
         return 0;
 
     return put2(self, ob);
@@ -559,6 +560,9 @@ put2(Picklerobject *self, PyObject *ob) {
     char c_str[30];
     int p, len, res = -1;
     PyObject *py_ob_id = 0, *memo_len = 0, *t = 0;
+
+    if (self->fast) return 0;
+
     if ((p = PyDict_Size(self->memo)) < 0)
         goto finally;
 
@@ -1762,6 +1766,7 @@ newPicklerobject(PyObject *file, int bin) {
     self->inst_pers_func = NULL;
     self->write_buf = NULL;
     self->bin = bin;
+    self->fast = 0;
     self->buf_size = 0;
     self->dispatch_table = NULL;
 
@@ -1876,6 +1881,12 @@ Pickler_getattr(Picklerobject *self, char *name) {
         Py_INCREF(PicklingError);
         return PicklingError;
     }
+
+    if(strcmp(name, "binary")==0)
+      return PyInt_FromLong(self->bin);
+
+    if(strcmp(name, "fast")==0)
+      return PyInt_FromLong(self->fast);
   
     return Py_FindMethod(Pickler_methods, (PyObject *)self, name);
 }
@@ -1883,6 +1894,13 @@ Pickler_getattr(Picklerobject *self, char *name) {
 
 int 
 Pickler_setattr(Picklerobject *self, char *name, PyObject *value) {
+
+    if(! value) {
+        PyErr_SetString(PyExc_TypeError,
+			"attribute deletion is not supported");
+	return -1;
+    }
+  
     if (strcmp(name, "persistent_id") == 0) {
         Py_XDECREF(self->pers_func);
         self->pers_func = value;
@@ -1895,6 +1913,27 @@ Pickler_setattr(Picklerobject *self, char *name, PyObject *value) {
         self->inst_pers_func = value;
         Py_INCREF(value);
         return 0;
+    }
+
+    if (strcmp(name, "memo") == 0) {
+        if(! PyDict_Check(value)) {
+	  PyErr_SetString(PyExc_TypeError, "memo must be a dictionary");
+	  return -1;
+	}
+        Py_XDECREF(self->memo);
+        self->memo = value;
+        Py_INCREF(value);
+        return 0;
+    }
+
+    if(strcmp(name, "binary")==0) {
+        self->bin=PyObject_IsTrue(value);
+	return 0;
+    }
+
+    if(strcmp(name, "fast")==0) {
+        self->fast=PyObject_IsTrue(value);
+	return 0;
     }
 
     PyErr_SetString(PyExc_AttributeError, name);
@@ -4009,9 +4048,27 @@ Unpickler_getattr(Unpicklerobject *self, char *name) {
 
 static int
 Unpickler_setattr(Unpicklerobject *self, char *name, PyObject *value) {
+
+    if(! value) {
+        PyErr_SetString(PyExc_TypeError,
+			"attribute deletion is not supported");
+	return -1;
+    }
+
     if (!strcmp(name, "persistent_load")) {
         Py_XDECREF(self->pers_func);
         self->pers_func = value;
+        Py_INCREF(value);
+        return 0;
+    }
+
+    if (strcmp(name, "memo") == 0) {
+        if(! PyDict_Check(value)) {
+	  PyErr_SetString(PyExc_TypeError, "memo must be a dictionary");
+	  return -1;
+	}
+        Py_XDECREF(self->memo);
+        self->memo = value;
         Py_INCREF(value);
         return 0;
     }
@@ -4268,7 +4325,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.55 $";
+    char *rev="$Revision: 1.56 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
