@@ -15,6 +15,9 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Python 2.3 BooleanType wasn't handled properly by ZTUtils
+       marshalling and ZPublisher's converters.
+
      - Collector #1065: bin/ scripts didn't export HOME envars.
 
      - Collector #572: WebDAV GET protected by 'FTP Access' permission.

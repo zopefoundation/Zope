@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
@@ -101,7 +101,6 @@ def field2lines(v):
     return field2text(v).split('\n')
 
 def field2date(v):
-
     v = field2string(v)
     try:
         v = DateTime(v)
@@ -118,6 +117,8 @@ def field2date_international(v):
     return v
 
 def field2boolean(v):
+    if v == 'False':
+        return not 1
     return not not v
 
 class _unicode_converter:
