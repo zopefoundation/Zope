@@ -87,7 +87,7 @@
 
 
 """
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -249,6 +249,8 @@ class UnTextIndex(Persistent):
             else:
                 del index[n][i]
 
+        del self._unindex[i]
+        
         self._index = index
 
 

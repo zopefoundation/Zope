@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Globals import Persistent
 import BTree
@@ -92,7 +92,7 @@ import IOBTree
 from intSet import intSet
 import operator
 from Missing import MV
-import string
+import string, pdb
 
 ListType=type([])
 StringType=type('s')
@@ -190,7 +190,8 @@ class UnIndex(Persistent):
             return None
         set = index.get(k)
         if set is not None: set.remove(i)
-
+        del unindex[i]
+        
         self._index = index
         self._unindex = unindex
 
@@ -231,6 +232,7 @@ class UnIndex(Persistent):
         if request.has_key(id+'_usage'):
             # see if any usage params are sent to field
             opr=string.split(string.lower(request[id+"_usage"]),':')
+            pdb.set_trace()
             opr, opr_args=opr[0], opr[1:]
 
         if opr=="range":
