@@ -2,6 +2,15 @@
 Aqueduct Gadfly Changes
 -----------------------
 
+  AqueductGadfly 1.1.1
+
+    Bugs fixed
+
+      - The management screens for connection objects were
+        inaccessible.
+
+      - The non-working "Design" was included in the management interface.
+
   AqueductGadfly 1.1
 
     Features Added
