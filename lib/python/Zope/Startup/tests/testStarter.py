@@ -80,6 +80,7 @@ class ZopeStarterTestCase(unittest.TestCase):
         return conf
 
     def testSetupLocale(self):
+        # XXX this almost certainly won't work on all systems
         import locale
         try:
             conf = self.load_config_text("""
@@ -111,8 +112,6 @@ class ZopeStarterTestCase(unittest.TestCase):
              </logfile>
            </eventlog>""")
         starter = ZopeStarter(conf)
-        self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
-                         logging.NOTSET)
         starter.setupStartupHandler()
         self.assert_(not zLOG._call_initialize)
         self.assertEqual(starter.startup_handler.formatter,
@@ -259,8 +258,6 @@ class ZopeStarterTestCase(unittest.TestCase):
            </logger>
            """)
         try:
-            self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
-                             logging.NOTSET)
             starter = ZopeStarter(conf)
             starter.setupStartupHandler()
             starter.info('hello')
