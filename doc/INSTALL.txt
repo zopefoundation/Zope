@@ -7,9 +7,8 @@ Building and installing Zope from source
 
 Important notes
 
-   This version of Zope supports Python 2.2.1 and later versions.
-   Whether it requires this or also runs with Python 2.1.3 and Python
-   2.2 is up for debate at the moment.
+   Starting with Zope 2.7, Zope *REQUIRES* Python 2.2.1 or later.
+   This is done to ease code sharing with Zope 3.
 
    See CHANGES.txt for important notes on this version of Zope.
 
