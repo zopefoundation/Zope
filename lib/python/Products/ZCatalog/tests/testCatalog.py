@@ -72,7 +72,8 @@ class CatalogBase:
 class TestAddDelColumn(CatalogBase,unittest.TestCase):
     def testAdd(self):
         self._catalog.addColumn('id')
-        assert self._catalog.schema.has_key('id') == 1, 'add column failed'
+        self.assertEqual(self._catalog.schema.has_key('id'), 1,
+                         'add column failed')
 
     def testAddBad(self):
         try:
@@ -85,45 +86,51 @@ class TestAddDelColumn(CatalogBase,unittest.TestCase):
     def testDel(self):
         self._catalog.addColumn('id')
         self._catalog.delColumn('id')
-        assert self._catalog.schema.has_key('id') != 1, 'del column failed'
+        self.assert_(self._catalog.schema.has_key('id') != 1,
+                     'del column failed')
 
 class TestAddDelIndexes(CatalogBase, unittest.TestCase):
     def testAddFieldIndex(self):
         idx = FieldIndex('id')
         self._catalog.addIndex('id', idx)
-        assert type(self._catalog.indexes['id']) is type(FieldIndex('id')),\
-               'add field index failed'
+        self.assert_(isinstance(self._catalog.indexes['id'],
+                                type(FieldIndex('id'))),
+                     'add field index failed')
 
     def testAddTextIndex(self):
         idx = TextIndex('id')
         self._catalog.addIndex('id', idx)
         i = self._catalog.indexes['id']
-        assert type(i) is type(TextIndex('id', None, None, Lexicon())),\
-               'add text index failed'
+        te = TextIndex('id', None, None, Lexicon())
+        self.assert_(isinstance(i, type(te)), 'add text index failed')
 
     def testAddKeywordIndex(self):
         idx = KeywordIndex('id')
         self._catalog.addIndex('id', idx)
         i = self._catalog.indexes['id']
-        assert type(i) is type(KeywordIndex('id')), 'add kw index failed'
+        self.assert_(isinstance(i, type(KeywordIndex('id'))),
+                     'add kw index failed')
 
     def testDelFieldIndex(self):
         idx = FieldIndex('id')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
-        assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
+        self.assert_(self._catalog.indexes.has_key('id') != 1,
+                     'del index failed')
 
     def testDelTextIndex(self):
         idx = TextIndex('id')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
-        assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
+        self.assert_(self._catalog.indexes.has_key('id') != 1,
+                     'del index failed')
 
     def testDelKeywordIndex(self):
         idx = KeywordIndex('id')
         self._catalog.addIndex('id', idx)
         self._catalog.delIndex('id')
-        assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
+        self.assert_(self._catalog.indexes.has_key('id') != 1,
+                     'del index failed')
 
 # Removed unittests dealing with catalog instantiation and vocabularies
 # since catalog no longer creates/manages vocabularies automatically (Casey)
@@ -153,12 +160,12 @@ class TestZCatalog(unittest.TestCase):
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..
         data = self._catalog.getMetadataForUID(testNum)
-        assert data['title'] == testNum
+        self.assertEqual(data['title'], testNum)
 
     def testGetIndexDataForUID(self):
         testNum = str(self.upper - 3)
         data = self._catalog.getIndexDataForUID(testNum)
-        assert data['title'][0] == testNum
+        self.assertEqual(data['title'][0], testNum)
 
     def testSearch(self):
         query = {'title': ['5','6','7']}
@@ -233,60 +240,63 @@ class TestCatalogObject(unittest.TestCase):
         self._vocabulary = self._catalog = None
 
     def testResultLength(self):
-        upper = self.upper
         a = self._catalog()
-        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        self.assertEqual(len(a), self.upper,
+                         'length should be %s, its %s' % (self.upper, len(a)))
 
     def testEmptyMappingReturnsAll(self):
         upper = self.upper
         a = self._catalog({})
-        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        self.assertEqual(len(a), upper,
+                         'length should be %s, its %s' % (upper, len(a)))
         # Queries consisting of empty strings should do the same
         a = self._catalog({'col1':'', 'col2':'', 'col3':''})
-        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        self.assertEqual(len(a), upper,
+                         'length should be %s, its %s' % (upper, len(a)))
 
     def testFieldIndexLength(self):
         a = self._catalog(att1='att1')
-        assert len(a) == self.upper, 'should be %s, but is %s' % (self.upper,
-                                                                  len(a))
+        self.assertEqual(len(a), self.upper,
+                         'should be %s, but is %s' % (self.upper, len(a)))
+
     def testTextIndexLength(self):
         a = self._catalog(att2='att2')
-        assert len(a) == self.upper, 'should be %s, but is %s' % (self.upper,
-                                                                  len(a))
+        self.assertEqual(len(a), self.upper,
+                         'should be %s, but is %s' % (self.upper, len(a)))
 
     def testKeywordIndexLength(self):
         a = self._catalog(att3='att3')
-        assert len(a) == self.upper, 'should be %s, but is %s' % (self.upper,
-                                                                  len(a))
+        self.assertEqual(len(a), self.upper,
+                         'should be %s, but is %s' % (self.upper, len(a)))
 
     def testUncatalogFieldIndex(self):
         self.uncatalog()
         a = self._catalog(att1='att1')
-        assert len(a) == 0, 'len: %s' % (len(a))
+        self.assertEqual(len(a), 0, 'len: %s' % len(a))
 
     def testUncatalogTextIndex(self):
         self.uncatalog()
         a = self._catalog(att2='att2')
-        assert len(a) == 0, 'len: %s' % (len(a))
+        self.assertEqual(len(a), 0, 'len: %s' % len(a))
 
     def testUncatalogKeywordIndex(self):
         self.uncatalog()
         a = self._catalog(att3='att3')
-        assert len(a) == 0, 'len: %s'%(len(a))
+        self.assertEqual(len(a), 0, 'len: %s' % len(a))
 
     def testBadUncatalog(self):
         try:
             self._catalog.uncatalogObject('asdasdasd')
         except:
-            assert 1==2, 'uncatalogObject raised exception on bad uid'
+            self.fail('uncatalogObject raised exception on bad uid')
 
     def testUniqueValuesForLength(self):
         a = self._catalog.uniqueValuesFor('att1')
-        assert len(a) == 1, 'bad number of unique values %s' % str(a)
+        self.assertEqual(len(a), 1, 'bad number of unique values %s' % a)
 
     def testUniqueValuesForContent(self):
         a = self._catalog.uniqueValuesFor('att1')
-        assert a[0] == 'att1', 'bad content %s' % str(a[0])
+        self.assertEqual(a[0], 'att1', 'bad content %s' % a[0])
 
     def testUncatalogTwice(self):
         self._catalog.uncatalogObject(`0`)
@@ -295,7 +305,7 @@ class TestCatalogObject(unittest.TestCase):
     def testCatalogLength(self):
         for x in range(0, self.upper):
             self._catalog.uncatalogObject(`x`)
-        assert len(self._catalog) == 0
+        self.assertEqual(len(self._catalog), 0)
 
     def _second(self):
         self._catalog.uncatalogObject(`0`)
@@ -307,9 +317,10 @@ class TestCatalogObject(unittest.TestCase):
     def testGoodSortIndex(self):
         upper = self.upper
         a = self._catalog(sort_on='num')
-        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        self.assertEqual(len(a), upper,
+                         'length should be %s, its %s' % (upper, len(a)))
         for x in range(self.upper):
-            assert a[x].num == x, x
+            self.assertEqual(a[x].num, x)
 
     def testBadSortIndex(self):
         self.assertRaises(CatalogError, self.badsortindex)
@@ -326,37 +337,39 @@ class TestCatalogObject(unittest.TestCase):
     def testTextIndexQWithSortOn(self):
         upper = self.upper
         a = self._catalog(sort_on='num', att2='att2')
-        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        self.assertEqual(len(a), upper,
+                         'length should be %s, its %s' % (upper, len(a)))
         for x in range(self.upper):
-            assert a[x].num == x, x
+            self.assertEqual(a[x].num, x)
 
     def testTextIndexQWithoutSortOn(self):
         upper = self.upper
         a = self._catalog(att2='att2')
-        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        self.assertEqual(len(a), upper,
+                         'length should be %s, its %s' % (upper, len(a)))
         for x in range(self.upper):
-            assert a[x].data_record_score_ == 1, a[x].data_record_score_
+            self.assertEqual(a[x].data_record_score_, 1)
 
     def testKeywordIndexWithMinRange(self):
         a = self._catalog(att3='att', att3_usage='range:min')
-        assert len(a) == self.upper
+        self.assertEqual(len(a), self.upper)
 
     def testKeywordIndexWithMaxRange(self):
         a = self._catalog(att3='att35', att3_usage='range:max')
-        assert len(a) == self.upper
+        self.assertEqual(len(a), self.upper)
 
     def testKeywordIndexWithMinMaxRangeCorrectSyntax(self):
         a = self._catalog(att3=['att', 'att35'], att3_usage='range:min:max')
-        assert len(a) == self.upper
+        self.assertEqual(len(a), self.upper)
 
     def testKeywordIndexWithMinMaxRangeWrongSyntax(self):
         # checkKeywordIndex with min/max range wrong syntax.
         a = self._catalog(att3=['att'], att3_usage='range:min:max')
-        assert len(a) != self.upper
+        self.assert_(len(a) != self.upper)
 
     def testCombinedTextandKeywordQuery(self):
         a = self._catalog(att3='att3', att2='att2')
-        assert len(a) == self.upper
+        self.assertEqual(len(a), self.upper)
 
     def testLargeSortedResultSetWithSmallIndex(self):
         # This exercises the optimization in the catalog that iterates
@@ -423,8 +436,8 @@ class testRS(unittest.TestCase):
                 { "number" : (m,n) ,
                   "length_usage" : "range:min:max" } ):
                 size = r.number
-                assert m<=size and size<=n , "%d vs [%d,%d]" % (r.number,m,n)
-
+                self.assert_(m<=size and size<=n,
+                             "%d vs [%d,%d]" % (r.number,m,n))
 
 
 def test_suite():
