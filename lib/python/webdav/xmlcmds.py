@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -127,9 +127,8 @@ class PropFind:
             depth=self.depth
             url=urlfix(self.request['URL'], 'PROPFIND')
             result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
-                         '<d:multistatus xmlns:d="DAV:">\n'
-        iscol=hasattr(aq_base(obj), 'isAnObjectManager') and \
-              obj.isAnObjectManager
+                         '<d:multistatus xmlns:d="DAV:">\n')
+        iscol=hasattr(obj, '__dav_collection__')
         if iscol and url[-1] != '/': url=url+'/'
         result.write('<d:response>\n<d:href>%s</d:href>\n' % url)
         if hasattr(obj, '__propsets__'):
@@ -184,8 +183,7 @@ class PropPatch:
 
     def apply(self, obj):
         url=urlfix(self.request['URL'], 'PROPPATCH')
-        if hasattr(aq_base(obj), 'isAnObjectManager') and \
-           obj.isAnObjectManager and url[-1] != '/':
+        if hasattr(obj, '__dav_collection__'):
             url=url+'/'
         result=StringIO()
         errors=[]

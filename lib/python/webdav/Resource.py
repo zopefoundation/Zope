@@ -85,12 +85,10 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
-import sys, os, string, time
-import mimetypes, xmlcmds
-from common import absattr, aq_base
-from common import urlfix, rfc1123_date
+import sys, os, string, mimetypes, xmlcmds
+from common import absattr, aq_base, urlfix, rfc1123_date
 
 
 class Resource:
