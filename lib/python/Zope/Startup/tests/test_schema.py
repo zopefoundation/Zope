@@ -30,14 +30,8 @@ from App.config import getConfiguration
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
-try:
-    __file__
-except NameError:
-    import sys
-    __file__ = sys.argv[0]
-
 def getSchema():
-    startup = os.path.dirname(os.path.dirname(__file__))
+    startup = os.path.dirname(os.path.realpath(Zope.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
     
