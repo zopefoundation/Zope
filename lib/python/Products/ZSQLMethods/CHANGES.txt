@@ -1,5 +1,11 @@
 Aqueduct SQL Methods Changes
 
+  AqueductSQLMethods 1.2.1
+
+    Bugs Fixed
+
+      - The new Aqueduct.Results module was ommitted.
+
   AqueductSQLMethods 1.2
 
     Bugs Fixed
