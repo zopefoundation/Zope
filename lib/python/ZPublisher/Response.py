@@ -1,6 +1,6 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.40 1998/09/24 14:43:11 jim Exp $'''
+$Id: Response.py,v 1.41 1998/11/10 21:45:13 amos Exp $'''
 #
 # Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.40 1998/09/24 14:43:11 jim Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -621,19 +621,17 @@ class Response:
 
         """
         self.body=self.body+data
-        if end_of_header_search(self.body) >= 0:
-            headers=self.headers
-            if headers.has_key('content-length'):
-                del headers['content-length']
-            if not self.headers.has_key('content-type'):
-                self.setHeader('content-type', 'text/html')
-            self.insertBase()
-            body=self.body
-            self.body=''
-            self.write=write=self.stdout.write
-            try: self.flush=self.stdout.flush
-            except: pass
-            write(str(self))
-            self._wrote=1
-            write('\n\n')
-            write(body)
+        headers=self.headers
+        if headers.has_key('content-length'):
+            del headers['content-length']
+        if not self.headers.has_key('content-type'):
+            self.setHeader('content-type', 'text/html')
+        self.insertBase()
+        body=self.body
+        self.body=''
+        self.write=write=self.stdout.write
+        try: self.flush=self.stdout.flush
+        except: pass
+        write(str(self))
+        self._wrote=1
+        write(body)
