@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -24,20 +24,13 @@ class Session(Persistent,Implicit,RoleManager,Item):
     meta_type='Session'
     icon     ='misc_/OFSP/session'
 
-    manage_options=({'label':'Join/Leave', 'action':'manage_main',
-		     'target':'manage_main',
-		    },
-		    {'label':'Properties', 'action':'manage_editForm',
-		     'target':'manage_main',
-	            },
-		    {'label':'Security', 'action':'manage_access',
-		     'target':'manage_main',
-		    },
+    manage_options=({'label':'Join/Leave', 'action':'manage_main'},
+		    {'label':'Properties', 'action':'manage_editForm'},
+		    {'label':'Security', 'action':'manage_access'},
 		   )
 
     __ac_permissions__=(
-    ('View management screens', ['manage','manage_tabs','manage_editForm',
-				 'index_html']),
+    ('View management screens', ['manage','manage_tabs','manage_editForm']),
     ('Change permissions', ['manage_access']),
     ('Edit session', ['manage_edit']),
     ('Join/leave session', ['enter','leave','leave_another']),
@@ -113,6 +106,9 @@ class Session(Persistent,Implicit,RoleManager,Item):
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.15  1998/03/11 18:21:56  jim
+# Fixed bug in permissions settings.
+#
 # Revision 1.14  1998/02/10 18:40:38  jim
 # Changed creation method names for latest security scheme.
 #
