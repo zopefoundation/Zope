@@ -71,6 +71,72 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 beta 6
+
+      Features Added
+
+        - The control panel process id display now also includes the
+          thread id.
+
+      Features Changed
+
+        Zope 2.0 introduces a new HTML DTML syntax that, among other
+        things, allows simple 'var' tags to be entered using the
+        entity-reference syntax, as in::
+
+          <input name=spam value="&dtml-spam;">
+
+        The entity reference syntax is mainly intended for use
+        when a var tag is used to insert text into an HTML tag.  In
+        these cases, the text needs to be html-quoted. For this
+        reason, use of the entity reference syntax now implies html
+        quoting. For example, the DTML snippet above is equivalent to::
+
+          <input name=spam value="<dtml-var spam html_quote>">
+
+        (Note that when inserting text to be used in a URL, as in an A
+        tag HREF attribute, we need to url-quote the text. Zope 2.1
+        will provide a means to do this with the entity-reference
+        syntax.)
+
+      Bugs Fixed
+
+        - Missing values were not formatted correctly with numeric
+          formats and did not work properly with the 'null' attribute of
+          the DTML 'var' tag.
+
+        - It wasn't possible to map some permissions of objects in
+          Products. For example, it wasn't possible to enable a
+          permission by mapping it to itself.  Attempts to do so lead
+          to a rather silly uninformative error message.
+
+        - When providing default values for input fields, few of the
+          built-in DTML methods used html quoting.  This lead to
+          incorrect behavior when default values included markup or
+          quotes.  
+
+        - View filtering failed to show tabs for views in some cases
+          where it should.
+
+        - Single-character variable names were'nt allowed in the
+          entity-reference DTML syntax.
+
+        - DTML batch processing didn't work properly.
+
+        - The DTML functions, '_.getattr', and '_.hasattr' incorrectly
+          acquired attributes even when explicit acquisition was used.
+
+        - Image dimensions were not autodetected for PNG 1.2 files.
+
+	- The "View" view didn't display correctly for images with ids
+          with characters that had special meaning in URLs.
+
+        - The 'optional' attribute in the 'sqltest' tag had no effect.
+
+        - With browsers (like lynx) that correctly implement RFC 1867
+          for file-upload support, non-file fields in file-upload
+          requests were treated as file fields.
+
     Zope 2.0 beta 5
     
       Features Removed
