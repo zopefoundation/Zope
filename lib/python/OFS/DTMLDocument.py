@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -162,13 +162,9 @@ class DTMLDocument(PropertyManager, DTMLMethod):
             r=apply(HTML.__call__, (self, bself, REQUEST), kw)
             if RESPONSE is None: return r
             return decapitate(r, RESPONSE)
-        try:
-            r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
-            if type(r) is not type(''): return r
-        except:
-            if self.id()=='standard_error_message':
-                raise sys.exc_type, sys.exc_value, sys.exc_traceback
-            return self.raise_standardErrorMessage(client, REQUEST)
+
+        r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
+        if type(r) is not type(''): return r
         if RESPONSE is None: return r
 
         hh=RESPONSE.headers.has_key

@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
@@ -243,20 +243,17 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
         __traceback_info__=args, kw, self.func_defaults
 
-        try:
-            try: return apply(f,args,kw)
-            except TypeError, v:
-                tb=sys.exc_traceback
-                try:
-                    if ((self.func_code.co_argcount-
-                         len(self.func_defaults or ()) - 1 == len(args))
-                        and self.func_code.co_varnames[0]=='self'):
-                        return apply(f,(self.aq_parent.this(),)+args,kw)
-                    
-                    raise TypeError, v, tb
-                finally: tb=None
-        except:
-            self.raise_standardErrorMessage()
+        try: return apply(f,args,kw)
+        except TypeError, v:
+            tb=sys.exc_traceback
+            try:
+                if ((self.func_code.co_argcount-
+                     len(self.func_defaults or ()) - 1 == len(args))
+                    and self.func_code.co_varnames[0]=='self'):
+                    return apply(f,(self.aq_parent.this(),)+args,kw)
+                
+                raise TypeError, v, tb
+            finally: tb=None
                 
 
     def function(self): return self._function
