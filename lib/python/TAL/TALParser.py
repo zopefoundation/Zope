@@ -72,7 +72,7 @@ class TALParser(XMLParser):
         for key, value in attrlist:
             key, keybase, keyns = self.fixname(key)
             ns = keyns or namens # default to tag namespace
-            item = key, value
+            item = key.lower(), value
             if ns == 'metal':
                 metaldict[keybase] = value
                 item = item + ("metal",)

@@ -113,13 +113,15 @@ _attr_re = re.compile(r"\s*([^\s]+)\s+([^\s].*)\Z", re.S)
 _subst_re = re.compile(r"\s*(?:(text|structure)\s+)?(.*)\Z", re.S)
 del re
 
-def parseAttributeReplacements(arg):
+def parseAttributeReplacements(arg, xml):
     dict = {}
     for part in splitParts(arg):
         m = _attr_re.match(part)
         if not m:
             raise TALError("Bad syntax in attributes:" + `part`)
         name, expr = m.group(1, 2)
+        if xml:
+            name = name.lower()
         if dict.has_key(name):
             raise TALError("Duplicate attribute name in attributes:" + `part`)
         dict[name] = expr
