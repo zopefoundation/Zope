@@ -68,4 +68,4 @@
   </table>
 </dtml-if>
 
-<dtml-var manage_page_footer
+<dtml-var manage_page_footer>
