@@ -27,17 +27,17 @@ count = 0
 import string
 
 def html_clean (s):
-	s = string.replace (s, '<', '&lt;')
-	s = string.replace (s, '>', '&gt;')
-	return s
-
+    s = string.replace (s, '<', '&lt;')
+    s = string.replace (s, '>', '&gt;')
+    return s
+    
 def main (request):
-	global count
-	count = count + 1
-	print '<html><h1>Hit Count=%d</h1>' % count
-	print '<h3>Request Attributes:</h3><ul>'
-	print '<li>command : %s'	% request.command
-	print '<li>uri: %s'			% html_clean (request.uri)
-	print '<li>channel: %s'		% html_clean (repr (request.channel))
-	print '</ul>'
-	print '</html>'
+    global count
+    count = count + 1
+    print '<html><h1>Hit Count=%d</h1>' % count
+    print '<h3>Request Attributes:</h3><ul>'
+    print '<li>command : %s'	% request.command
+    print '<li>uri: %s'			% html_clean (request.uri)
+    print '<li>channel: %s'		% html_clean (repr (request.channel))
+    print '</ul>'
+    print '</html>'

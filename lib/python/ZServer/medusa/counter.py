@@ -13,35 +13,35 @@
 # will overflow.
 
 class counter:
-	"general-purpose counter"
-
-	def __init__ (self, initial_value=0):
-		self.value = initial_value
-	
-	def increment (self, delta=1):
-		result = self.value
-		try:
-			self.value = self.value + delta
-		except OverflowError:
-			self.value = long(self.value) + delta
-		return result
-
-	def decrement (self, delta=1):
-		result = self.value
-		try:
-			self.value = self.value - delta
-		except OverflowError:
-			self.value = long(self.value) - delta
-		return result
-
-	def as_long (self):
-		return long(self.value)
-
-	def __nonzero__ (self):
-		return self.value != 0
-
-	def __repr__ (self):
-		return '<counter value=%s at %x>' % (self.value, id(self))
-
-	def __str__ (self):
-		return str(long(self.value))[:-1]
+    "general-purpose counter"
+    
+    def __init__ (self, initial_value=0):
+        self.value = initial_value
+        
+    def increment (self, delta=1):
+        result = self.value
+        try:
+            self.value = self.value + delta
+        except OverflowError:
+            self.value = long(self.value) + delta
+        return result
+        
+    def decrement (self, delta=1):
+        result = self.value
+        try:
+            self.value = self.value - delta
+        except OverflowError:
+            self.value = long(self.value) - delta
+        return result
+        
+    def as_long (self):
+        return long(self.value)
+        
+    def __nonzero__ (self):
+        return self.value != 0
+        
+    def __repr__ (self):
+        return '<counter value=%s at %x>' % (self.value, id(self))
+        
+    def __str__ (self):
+        return str(long(self.value))[:-1]

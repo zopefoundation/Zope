@@ -14,9 +14,9 @@ form = """<html><form method=POST action="form.mpy">
 </form></html>"""
 
 if data:
-	import cgi
-	info = '<h2>CGI variables:</h2>%s\r\n' % repr(cgi.parse_qs(data))
+    import cgi
+    info = '<h2>CGI variables:</h2>%s\r\n' % repr(cgi.parse_qs(data))
 else:
-	info = ''
-
+    info = ''
+    
 print form % info

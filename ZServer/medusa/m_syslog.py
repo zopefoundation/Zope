@@ -98,80 +98,80 @@ LOG_LOCAL6		= 22		#  reserved for local use
 LOG_LOCAL7		= 23		#  reserved for local use 
 
 priority_names = {
-	"alert":	LOG_ALERT,
-	"crit":		LOG_CRIT,
-	"debug":	LOG_DEBUG,
-	"emerg":	LOG_EMERG,
-	"err":		LOG_ERR,
-	"error":	LOG_ERR,		#  DEPRECATED 
-	"info":		LOG_INFO,
-	"notice":	LOG_NOTICE,
-	"panic": 	LOG_EMERG,		#  DEPRECATED 
-	"warn":		LOG_WARNING,		#  DEPRECATED 
-	"warning":	LOG_WARNING,
-	}
+        "alert":	LOG_ALERT,
+        "crit":		LOG_CRIT,
+        "debug":	LOG_DEBUG,
+        "emerg":	LOG_EMERG,
+        "err":		LOG_ERR,
+        "error":	LOG_ERR,		#  DEPRECATED 
+        "info":		LOG_INFO,
+        "notice":	LOG_NOTICE,
+        "panic": 	LOG_EMERG,		#  DEPRECATED 
+        "warn":		LOG_WARNING,		#  DEPRECATED 
+        "warning":	LOG_WARNING,
+        }
 
 facility_names = {
-	"auth":		LOG_AUTH,
-	"authpriv":	LOG_AUTHPRIV,
-	"cron": 	LOG_CRON,
-	"daemon":	LOG_DAEMON,
-	"kern":		LOG_KERN,
-	"lpr":		LOG_LPR,
-	"mail":		LOG_MAIL,
-	"news":		LOG_NEWS,
-	"security":	LOG_AUTH,		#  DEPRECATED 
-	"syslog":	LOG_SYSLOG,
-	"user":		LOG_USER,
-	"uucp":		LOG_UUCP,
-	"local0":	LOG_LOCAL0,
-	"local1":	LOG_LOCAL1,
-	"local2":	LOG_LOCAL2,
-	"local3":	LOG_LOCAL3,
-	"local4":	LOG_LOCAL4,
-	"local5":	LOG_LOCAL5,
-	"local6":	LOG_LOCAL6,
-	"local7":	LOG_LOCAL7,
-	}
+        "auth":		LOG_AUTH,
+        "authpriv":	LOG_AUTHPRIV,
+        "cron": 	LOG_CRON,
+        "daemon":	LOG_DAEMON,
+        "kern":		LOG_KERN,
+        "lpr":		LOG_LPR,
+        "mail":		LOG_MAIL,
+        "news":		LOG_NEWS,
+        "security":	LOG_AUTH,		#  DEPRECATED 
+        "syslog":	LOG_SYSLOG,
+        "user":		LOG_USER,
+        "uucp":		LOG_UUCP,
+        "local0":	LOG_LOCAL0,
+        "local1":	LOG_LOCAL1,
+        "local2":	LOG_LOCAL2,
+        "local3":	LOG_LOCAL3,
+        "local4":	LOG_LOCAL4,
+        "local5":	LOG_LOCAL5,
+        "local6":	LOG_LOCAL6,
+        "local7":	LOG_LOCAL7,
+        }
 
 import socket
 
 class syslog_client:
-	def __init__ (self, address='/dev/log'):
-		self.address = address
-		if type (address) == type(''):
-			self.socket = socket.socket (socket.AF_UNIX, socket.SOCK_STREAM)
-			self.socket.connect (address)
-			self.unix = 1
-		else:
-			self.socket = socket.socket (socket.AF_INET, socket.SOCK_DGRAM)
-			self.unix = 0
-
-	# curious: when talking to the unix-domain '/dev/log' socket, a
-	#   zero-terminator seems to be required.  this string is placed
-	#   into a class variable so that it can be overridden if
-	#   necessary.
-
-	log_format_string = '<%d>%s\000'
-
-	def log (self, message, facility=LOG_USER, priority=LOG_INFO):
-		message = self.log_format_string % (
-			self.encode_priority (facility, priority),
-			message
-			)
-		if self.unix:
-			self.socket.send (message)
-		else:
-			self.socket.sendto (message, self.address)
-
-	def encode_priority (self, facility, priority):
-		if type(facility) == type(''):
-			facility = facility_names[facility]
-		if type(priority) == type(''):
-			priority = priority_names[priority]			
-		return (facility<<3) | priority
-
-	def close (self):
-		if self.unix:
-			self.socket.close()
-
+    def __init__ (self, address='/dev/log'):
+        self.address = address
+        if type (address) == type(''):
+            self.socket = socket.socket (socket.AF_UNIX, socket.SOCK_STREAM)
+            self.socket.connect (address)
+            self.unix = 1
+        else:
+            self.socket = socket.socket (socket.AF_INET, socket.SOCK_DGRAM)
+            self.unix = 0
+            
+            # curious: when talking to the unix-domain '/dev/log' socket, a
+            #   zero-terminator seems to be required.  this string is placed
+            #   into a class variable so that it can be overridden if
+            #   necessary.
+            
+    log_format_string = '<%d>%s\000'
+    
+    def log (self, message, facility=LOG_USER, priority=LOG_INFO):
+        message = self.log_format_string % (
+                self.encode_priority (facility, priority),
+                message
+                )
+        if self.unix:
+            self.socket.send (message)
+        else:
+            self.socket.sendto (message, self.address)
+            
+    def encode_priority (self, facility, priority):
+        if type(facility) == type(''):
+            facility = facility_names[facility]
+        if type(priority) == type(''):
+            priority = priority_names[priority]			
+        return (facility<<3) | priority
+        
+    def close (self):
+        if self.unix:
+            self.socket.close()
+            

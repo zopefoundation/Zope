@@ -26,18 +26,18 @@ import logger
 import asyncore
 
 if len(sys.argv) > 1:
-	# process a few convenient arguments
-	[HOSTNAME, IP_ADDRESS, PUBLISHING_ROOT] = sys.argv[1:]
+        # process a few convenient arguments
+    [HOSTNAME, IP_ADDRESS, PUBLISHING_ROOT] = sys.argv[1:]
 else:
-	HOSTNAME			= 'www.nightmare.com'
-	# This is the IP address of the network interface you want
-	# your servers to be visible from.  This can be changed to ''
-	# to listen on all interfaces.
-	IP_ADDRESS			= '205.160.176.5'
-
-	# Root of the http and ftp server's published filesystems.
-	PUBLISHING_ROOT		= '/home/www'
-
+    HOSTNAME			= 'www.nightmare.com'
+    # This is the IP address of the network interface you want
+    # your servers to be visible from.  This can be changed to ''
+    # to listen on all interfaces.
+    IP_ADDRESS			= '205.160.176.5'
+    
+    # Root of the http and ftp server's published filesystems.
+    PUBLISHING_ROOT		= '/home/www'
+    
 HTTP_PORT		= 8080 # The standard port is 80
 FTP_PORT		= 8021 # The standard port is 21
 CHAT_PORT		= 8888
@@ -111,27 +111,27 @@ hs.install_handler (dh)
 # Unix user `public_html' directory support
 # ===========================================================================
 if os.name == 'posix':
-	import unix_user_handler
-	uh = unix_user_handler.unix_user_handler ('public_html')
-	hs.install_handler (uh)
-
-# ===========================================================================
-# FTP Server
-# ===========================================================================
-
-# Here we create an 'anonymous' ftp server.
-# Note: the ftp server is read-only by default. [in this mode, all
-# 'write-capable' commands are unavailable]
-
+    import unix_user_handler
+    uh = unix_user_handler.unix_user_handler ('public_html')
+    hs.install_handler (uh)
+    
+    # ===========================================================================
+    # FTP Server
+    # ===========================================================================
+    
+    # Here we create an 'anonymous' ftp server.
+    # Note: the ftp server is read-only by default. [in this mode, all
+    # 'write-capable' commands are unavailable]
+    
 ftp = ftp_server.ftp_server (
-	ftp_server.anon_authorizer (
-		PUBLISHING_ROOT
-		),
-	ip=IP_ADDRESS,
-	port=FTP_PORT,
-	resolver=rs,
-	logger_object=lg
-	)
+        ftp_server.anon_authorizer (
+                PUBLISHING_ROOT
+                ),
+        ip=IP_ADDRESS,
+        port=FTP_PORT,
+        resolver=rs,
+        logger_object=lg
+        )
 
 # ===========================================================================
 # Monitor Server:
@@ -169,13 +169,13 @@ cs = chat_server.chat_server (IP_ADDRESS, CHAT_PORT)
 # description of the status of the object.
 
 status_objects = [
-	hs,
-	ftp,
-	ms,
-	cs,
-	rs,
-	lg
-	]
+        hs,
+        ftp,
+        ms,
+        cs,
+        rs,
+        lg
+        ]
 
 # Create a status handler.  By default it binds to the URI '/status'...
 sh = status_handler.status_extension(status_objects)
@@ -184,15 +184,15 @@ hs.install_handler (sh)
 
 # become 'nobody'
 if os.name == 'posix':
-	import os
-	if hasattr (os, 'seteuid'):
-		# look in ~medusa/patches for {set,get}euid.
-		import pwd
-		[uid, gid] = pwd.getpwnam ('nobody')[2:4]
-		os.setegid (gid)
-		os.seteuid (uid)
-
-# Finally, start up the server loop!  This loop will not exit until
-# all clients and servers are closed.  You may cleanly shut the system
-# down by sending SIGINT (a.k.a. KeyboardInterrupt).
+    import os
+    if hasattr (os, 'seteuid'):
+            # look in ~medusa/patches for {set,get}euid.
+        import pwd
+        [uid, gid] = pwd.getpwnam ('nobody')[2:4]
+        os.setegid (gid)
+        os.seteuid (uid)
+        
+        # Finally, start up the server loop!  This loop will not exit until
+        # all clients and servers are closed.  You may cleanly shut the system
+        # down by sending SIGINT (a.k.a. KeyboardInterrupt).
 asyncore.loop()

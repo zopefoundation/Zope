@@ -26,39 +26,39 @@ SO_SYNCHRONOUS_ALERT   	= 0x10
 SO_SYNCHRONOUS_NONALERT	= 0x20
 
 def set_sync_option (on=1):
-	result = wsock32.getsockopt (
-		INVALID_SOCKET,
-		SOCKET_SOL,
-		SO_OPENTYPE,
-		option,
-		option_len
-		)
-	if result:
-		raise SystemError, "getsockopt: (%d)" % (
-			wsock32.WSAGetLastError()
-			)
-	else:
-		old = struct.unpack ('l', option.read())[0]
-	if on:
-		new = old | SO_SYNCHRONOUS_ALERT
-	else:
-		new = old & (~SO_SYNCHRONOUS_ALERT)
-	option.write (struct.pack ('l', new))
-	result = wsock32.setsockopt (
-		INVALID_SOCKET,
-		SOCKET_SOL,
-		SO_OPENTYPE,
-		option,
-		option_len
-		)
-	if result:
-		raise SystemError, "getsockopt: (%d)" % (
-			wsock32.WSAGetLastError()
-			)
-	return old
-
+    result = wsock32.getsockopt (
+            INVALID_SOCKET,
+            SOCKET_SOL,
+            SO_OPENTYPE,
+            option,
+            option_len
+            )
+    if result:
+        raise SystemError, "getsockopt: (%d)" % (
+                wsock32.WSAGetLastError()
+                )
+    else:
+        old = struct.unpack ('l', option.read())[0]
+    if on:
+        new = old | SO_SYNCHRONOUS_ALERT
+    else:
+        new = old & (~SO_SYNCHRONOUS_ALERT)
+    option.write (struct.pack ('l', new))
+    result = wsock32.setsockopt (
+            INVALID_SOCKET,
+            SOCKET_SOL,
+            SO_OPENTYPE,
+            option,
+            option_len
+            )
+    if result:
+        raise SystemError, "getsockopt: (%d)" % (
+                wsock32.WSAGetLastError()
+                )
+    return old
+    
 def sync_on():
-	return set_sync_option (1)
-
+    return set_sync_option (1)
+    
 def sync_off():
-	return set_sync_option (0)
+    return set_sync_option (0)
