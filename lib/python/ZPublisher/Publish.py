@@ -504,7 +504,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.27 1996/12/30 14:36:12 jim Exp $"""
+$Id: Publish.py,v 1.28 1997/01/08 23:22:45 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -557,6 +557,9 @@ $Id: Publish.py,v 1.27 1996/12/30 14:36:12 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.28  1997/01/08 23:22:45  jim
+# Added code to overcome Python 1.3 bug in string conversion functions.
+#
 # Revision 1.27  1996/12/30 14:36:12  jim
 # Fixed a spelling error.
 #
@@ -672,7 +675,7 @@ $Id: Publish.py,v 1.27 1996/12/30 14:36:12 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 def main():
@@ -1130,17 +1133,23 @@ def field2string(v):
 def field2int(v):
     try: v=v.read()
     except: v=str(v)
-    return string.atoi(v)
+    # we can remove the check for an empty string when we go to python 1.4
+    if v: return string.atoi(v)
+    raise ValueError, 'Empty entry when integer expected'
 
 def field2float(v):
     try: v=v.read()
     except: v=str(v)
-    return string.atof(v)
+    # we can remove the check for an empty string when we go to python 1.4
+    if v: return string.atof(v)
+    raise ValueError, 'Empty entry when floating-point number expected'
 
 def field2long(v):
     try: v=v.read()
     except: v=str(v)
-    return string.atol(v)
+    # we can remove the check for an empty string when we go to python 1.4
+    if v: return string.atol(v)
+    raise ValueError, 'Empty entry when integer expected'
 
 def field2Regex(v):
     try: v=v.read()
