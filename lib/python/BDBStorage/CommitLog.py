@@ -311,14 +311,48 @@ class FullLog(CommitLog):
     # undoable log records.
     #
     # Record types:
-    #     'o' - object state, consisting of an oid, and the object's pickle
-    #           data
+    #     'o' - object state, consisting of an oid, vid, non-version revision
+    #           id (nvrevid), live revision id (lrevid), the object's pickle,
+    #           and a previous revision id (prevrevid).  Note that there are
+    #           actually higher level API method that write essentially the
+    #           same record with some of the elements defaulted to the empty
+    #           string or the "all-zeros" string.
     #     'v' - new version record, consisting of a version string and a
     #           version id
     #     'd' - discard version, consisting of a version id
     #
-    def write_object(self, oid, pickle):
-        self._append('o', (oid, pickle))
+    def __init__(self, file=None, dir='.'):
+        """Initialize the `full' commit log, usually with a new file."""
+        CommitLog.__init__(self, file, dir)
+        self.__versions = {}
+
+    def finish(self):
+        CommitLog.finish(self)
+        self.__versions.clear()
+
+    def get_vid(self, version, missing=None):
+        """Given a version string, return the associated vid.
+        If not present, return `missing'.
+        """
+        return self.__versions.get(version, missing)
+
+    # read/write protocol
+
+    def write_object(self, oid, vid, nvrevid, pickle, prevrevid):
+        # Write an empty lrevid since that will be the same as the transaction
+        # id at the time of the commit to Berkeley.
+        self._append('o', (oid, vid, nvrevid, '', pickle, prevrevid))
+
+    def write_nonversion_object(self, oid, lrevid, prevrevid, zero='\0'*8):
+        # Write zeros for the vid and nvrevid since we're storing this object
+        # into version zero (the non-version).  Also, write an empty pickle
+        # since we'll since we'll reuse one already in the pickle table.
+        self._append('o', (oid, zero, zero, lrevid, '', prevrevid))
+
+    def write_moved_object(self, oid, vid, nvrevid, lrevid, prevrevid):
+        # Write an empty pickle since we're just moving the object and we'll
+        # reuse the pickle already in the database.
+        self._append('o', (oid, vid, nvrevid, lrevid, '', prevrevid))
 
     def write_new_version(self, version, vid):
         self._append('v', (version, vid))
@@ -331,7 +365,7 @@ class FullLog(CommitLog):
         # object record data.
         rec = self._next()
         if rec is None:
-            return NOne
+            return None
         try:
             key, data = rec
         except ValueError:
@@ -339,12 +373,3 @@ class FullLog(CommitLog):
         if key not in 'ovd':
             raise LogCorruptedError, 'bad record key: %s' % key
         return key, data
-
-
-    def store(self, oid, vid, nv, dataptr, pickle, previous,
-              dump=marshal.dump):
-        dump(('s',(oid,vid,nv,data,pickle,previous)), self._file)
-
-    def storeNV(self, oid, data, tid,
-                dump=marshal.dump, zero='\0\0\0\0\0\0\0\0'):
-        dump(('s',(oid,zero,zero,data,'',tid)), self._file)
