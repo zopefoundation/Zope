@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-def manage_addMailHost(self, id, title='', smtp_host=None,
+def manage_addMailHost(id, title='', smtp_host=None,
         localhost='localhost', smtp_port=25,
         timeout=1.0):
     """
@@ -97,18 +97,18 @@ class MailHost:
     """
 
     MailHost objects work as adapters to Simple Mail Transfer Protocol
-    (SMTP) servers.  MailHosts are used by '&lt;dtml-sendmail&gt; tags
+    (SMTP) servers.  MailHosts are used by DTML 'sendmail' tags
     to find the proper host to deliver mail to.
 
     """
 
     __constructor__=manage_addMailHost
     
-    def send(self, messageText, mto=None, mfrom=None, subject=None,
+    def send(messageText, mto=None, mfrom=None, subject=None,
              encode=None):
         """
-
         Sends an email message.
+        The arguments are:
 
           messageText -- The body of the mail message.
 
@@ -118,7 +118,7 @@ class MailHost:
 
           subject -- The subject of the message.
 
-          encode - is the rfc822 defined encoding of the message.  The
+          encode -- The rfc822 defined encoding of the message.  The
           default of 'None' means no encoding is done.  Valid values
           are 'base64', 'quoted-printable' and 'uuencode'.
 

@@ -89,7 +89,8 @@ class ObjectManagerItem:
     Almost all Zope objects that can be managed through the web are
     Object Manager Items.
 
-    Attributes
+    ObjectMangerItems have these instance
+    attributes:
          
       'title' -- The title of the object.
       

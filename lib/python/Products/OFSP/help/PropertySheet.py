@@ -168,7 +168,7 @@ class PropertySheet:
 
         Returns a tuple of mappings, giving meta-data for properties.
 
-        Perimssion -- Python only
+        Permssion -- Python only
 
         """
 
@@ -186,7 +186,8 @@ class PropertySheet:
 
         Add a new property with the given 'id', 'value' and 'type'.
 
-        Property Types
+        These are the
+        property types:
 
           'boolean' -- 1 or 0. 
 
@@ -216,12 +217,11 @@ class PropertySheet:
         cannot be converted, a ValueError will be raised.
 
         The value given for 'selection' and 'multiple selection'
-        properites must be a variable name.  The variable must also be
-        a sequence.
+        properites may be an attribute or method name.  The attribute
+        or method must return a sequence values.
 
-        *If the given 'type' is not recognized, the 'value' and 'type'
-        given are simply stored blindly by the object. This seems like
-        bad behavior - it should probably raise an exception instead.*
+        If the given 'type' is not recognized, the 'value' and 'type'
+        given are simply stored blindly by the object.
 
         If no value is passed in for 'REQUEST', the method will return
         'None'. If a value is provided for 'REQUEST' (as it will when
@@ -259,7 +259,7 @@ class PropertySheet:
         This method may be called via the web, from DTML or from
         Python code.
 
-        Permission - 'Manage Properties'
+        Permission -- 'Manage Properties'
 
         """
 
@@ -275,19 +275,17 @@ class PropertySheet:
 
         Some objects have "special" properties defined by product
         authors that cannot be deleted. If one of these properties is
-        named in 'ids', an HTML error message is returned (this is
-        lame and should be changed).
+        named in 'ids', an HTML error message is returned.
 
         If no value is passed in for 'REQUEST', the method will return
         None. If a value is provided for 'REQUEST' (as it will be when
-        
         called via the web), the property management form for the
         object will be rendered and returned.
 
         This method may be called via the web, from DTML or from
         Python code.
 
-        Permission - 'Manage Properties'
+        Permission -- 'Manage Properties'
 
         """
 

@@ -101,7 +101,8 @@ class DateTime:
     to many major timezones, as well as the ability to create a
     DateTime object in the context of a given timezone.
 
-    DateTime objects provide partial numerical behavior:
+    DateTime objects provide partial
+    numerical behavior:
 
       - Two date-time objects can be subtracted to obtain a time,
         in days between the two.
@@ -132,8 +133,6 @@ class DateTime:
     and numeric operations return a new DateTime object rather than
     modify the current object.
 
-    Return a new date-time object
-
     A DateTime object always maintains its value as an absolute 
     UTC time, and is represented in the context of some timezone
     based on the arguments used to create the object. A DateTime
@@ -142,8 +141,8 @@ class DateTime:
     Note that in all cases the local machine timezone is used for
     representation if no timezone is specified.
 
-    DateTimes may be created with from zero to seven arguments.
-
+    DateTimes may be created with from zero to
+    seven arguments.
 
       - If the function is called with no arguments, then the 
         current date/time is returned, represented in the 
@@ -189,17 +188,17 @@ class DateTime:
         values. The year value must be a one-, two-, or
         four-digit integer. If a one- or two-digit year is
         used, the year is assumed to be in the twentieth
-        century. The month may an integer, from 1 to 12, a
+        century. The month may be an integer, from 1 to 12, a
         month name, or a month abbreviation, where a period may
         optionally follow the abbreviation. The day must be an
         integer from 1 to the number of days in the month. The
         year, month, and day values may be separated by
-        periods, hyphens, forward, slashes, or spaces. Extra
+        periods, hyphens, forward slashes, or spaces. Extra
         spaces are permitted around the delimiters. Year,
         month, and day values may be given in any order as long
         as it is possible to distinguish the components. If all
         three components are numbers that are less than 13,
-        then a a month-day-year ordering is assumed.
+        then a month-day-year ordering is assumed.
 
         The time component consists of hour, minute, and second
         values separated by colons.  The hour value must be an
@@ -376,7 +375,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def greaterThan(self,t):
+    def greaterThan(t):
         """
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
@@ -388,7 +387,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def greaterThanEqualTo(self,t):
+    def greaterThanEqualTo(t):
         """
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
@@ -400,7 +399,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def equalTo(self,t):
+    def equalTo(t):
         """
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
@@ -412,7 +411,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def notEqualTo(self,t):
+    def notEqualTo(t):
         """
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
@@ -424,7 +423,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def lessThan(self,t):
+    def lessThan(t):
         """
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the
@@ -436,7 +435,7 @@ class DateTime:
         Permission -- Always available
         """
 
-    def lessThanEqualTo(self,t):
+    def lessThanEqualTo(t):
         """
         Compare this DateTime object to another DateTime object OR a
         floating point number such as that which is returned by the

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-def manage_addZCatalog(self, id, title, vocab_id=None):
+def manage_addZCatalog(id, title, vocab_id=None):
     """
 
     Add a ZCatalog object.
@@ -106,7 +106,8 @@ class ZCatalog:
     objects.  ZCatalog's can index either 'Field' values of object,
     'Text' values, or 'KeyWord' values:
 
-    Indexes
+    ZCatalogs have three types of
+    indexes:
 
       Text -- Text indexes index textual content.  The index can be
       used to search for objects containing certain words.
@@ -118,15 +119,13 @@ class ZCatalog:
       can be used to search for objects that match one or more of the
       search terms.
 
-    Meta-data
+    The ZCatalog can maintain a table of extra data about cataloged
+    objects.  This information can be used on search result pages to
+    show information about a search result.
 
-      The ZCatalog can maintain a table of extra data about cataloged
-      objects.  This information can be used on search result pages to
-      show information about a search result.
-
-      The meta-data table schema is used to build the schema for
-      ZCatalog Result objects.  The objects have the same attributes
-      as the column of the meta-data table.
+    The meta-data table schema is used to build the schema for
+    ZCatalog Result objects.  The objects have the same attributes
+    as the column of the meta-data table.
 
     ZCatalog does not store references to the objects themselves, but
     rather to a unique identifier that defines how to get to the
@@ -138,28 +137,28 @@ class ZCatalog:
 
     __constructor__=manage_addZCatalog
 
-    def catalog_object(self, obj, uid):
+    def catalog_object(obj, uid):
         """
 
         Catalogs the object 'obj' with the unique identifier 'uid'.
 
         """
 
-    def uncatalog_object(self, uid):
+    def uncatalog_object(uid):
         """
 
         Uncatalogs the object with the unique identifier 'uid'.
 
         """
 
-    def uniqueValuesFor(self, name):
+    def uniqueValuesFor(name):
         """
 
         returns the unique values for a given FieldIndex named 'name'.
 
         """
 
-    def getpath(self, rid):
+    def getpath(rid):
         """
         
         Return the path to a cataloged object given a
@@ -168,14 +167,14 @@ class ZCatalog:
         """
 
 
-    def getobject(self, rid, REQUEST=None):
+    def getobject(rid, REQUEST=None):
         """
         
         Return a cataloged object given a 'data_record_id_'
         
         """
 
-    def schema(self):
+    def schema():
         """
 
         Returns a sequence of names that correspond to columns in the
@@ -183,21 +182,21 @@ class ZCatalog:
 
         """
 
-    def indexes(self):
+    def indexes():
         """
 
         Returns a sequence of names that correspond to indexes.
 
         """
 
-    def index_objects(self):
+    def index_objects():
         """
 
         Returns a sequence of actual index objects.
 
         """
 
-    def searchResults(self, REQUEST=None, **kw):
+    def searchResults(REQUEST=None, **kw):
         """
         
         Search the catalog.  Search terms can be passed in the REQUEST
@@ -209,7 +208,7 @@ class ZCatalog:
 
         """
     
-    def __call__(self, REQUEST=None, **kw):
+    def __call__(REQUEST=None, **kw):
         """
         Search the catalog, the same way as 'searchResults'.
         """

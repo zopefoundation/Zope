@@ -96,7 +96,7 @@ def manage_addImage(id, file, title='', precondition='', content_type=''):
 
 class Image:
     """
-    A Image is a Zope object that contains image content.  A Image
+    An Image is a Zope object that contains image content.  An Image
     object can be used to upload or download image information with
     Zope.
 
@@ -105,29 +105,27 @@ class Image:
     uploaded. For image types that Zope does not understand, these
     properties may be undefined.
 
-    Examples:
+    Using a Image object in Zope is easy.  The most common usage is
+    to display the contents of an image object in a web page.  This
+    is done by simply referencing the object from DTML::
 
-      Using a Image object in Zope is easy.  The most common usage is
-      to display the contents of an image object in a web page.  This
-      is done by simply referencing the object from DTML::
+      <dtml-var standard_html_header>
+        <dtml-var ImageObject>
+      <dtml-var standard_html_footer>
 
-        <dtml-var standard_html_header>
-          <dtml-var ImageObject>
-        <dtml-var standard_html_footer>
+    This will generate an HTML IMG tag referencing the URL to the
+    Image. This is equivalent to::
 
-      This will generate an HTML IMG tag referencing the URL to the
-      Image. This is equivalent to::
+      <dtml-var standard_html_header>
+        <dtml-with ImageObject>
+          <img src="<dtml-var absolute_url>">
+        </dtml-with>
+      <dtml-var standard_html_footer>
 
-        <dtml-var standard_html_header>
-          <dtml-with ImageObject>
-            <img src="<dtml-var absolute_url>">
-          </dtml-with>
-        <dtml-var standard_html_footer>
-        
-      You can control the image display more precisely with the 'tag'
-      method. For example::
-      
-        <dtml-var "ImageObject.tag(border=5, align=left)">
+    You can control the image display more precisely with the 'tag'
+    method. For example::
+
+      <dtml-var "ImageObject.tag(border=5, align=left)">
     
     """
 

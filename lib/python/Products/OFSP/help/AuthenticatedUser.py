@@ -95,7 +95,7 @@ class AuthenticatedUser:
 
         Return the name of a user
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -105,7 +105,7 @@ class AuthenticatedUser:
         Return a value that is true if the user has the given roles on
         the given object and return false otherwise.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -115,7 +115,7 @@ class AuthenticatedUser:
         Returns a list of the roles the user has on the given object
         (in the current context?)
 
-        Permission - Always available
+        Permission -- Always available
 
         """
 
@@ -125,7 +125,7 @@ class AuthenticatedUser:
         Get the ID of the user. The ID can be used, at least from
         Python, to get the user from the user's UserDatabase.
 
-        Permission - Python only
+        Permission -- Python only
 
         """
 
@@ -136,7 +136,7 @@ class AuthenticatedUser:
         facility can be used to get the user database from the path
         returned by this method.
 
-        Permission - Python only
+        Permission -- Python only
 
         """
 

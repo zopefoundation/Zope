@@ -140,35 +140,39 @@ class DTMLDocument:
         Passing in a namespace to a DTML Document is often referred to
         as providing the Document with a *context*.
 
-        DTML Documents are called three ways:
+        DTML Documents can be called three ways.
 
-          From DTML -- A DTML Document can be called from another DTML
-            Method or Document::
+        From DTML
 
-              <dtml-var standard_html_header>
-                <dtml-var aDTMLDocument>
-              <dtml-var standard_html_footer>
+          A DTML Document can be called from another DTML
+          Method or Document::
 
-            In this example, the Document 'aDTMLDocument' is being called
-            from another DTML object by name.  The calling method
-            passes the value 'this' as the client argument and the
-            current DTML names pace as the REQUEST argument.  The above
-            is identical to this following usage in a DTML Python
-            expression::
+            <dtml-var standard_html_header>
+              <dtml-var aDTMLDocument>
+            <dtml-var standard_html_footer>
 
-              <dtml-var standard_html_header>
-                <dtml-var "aDTMLDocument(_.None, _)">
-              <dtml-var standard_html_footer>
+          In this example, the Document 'aDTMLDocument' is being called
+          from another DTML object by name.  The calling method
+          passes the value 'this' as the client argument and the
+          current DTML namespace as the REQUEST argument.  The above
+          is identical to this following usage in a DTML Python
+          expression::
 
-          From Python -- Products, External Methods, and PythonMethods 
-            can call a DTML Document in the same way as calling a DTML
-            Document from a Python expression in DTML; as shown in the
-            previous example.
+            <dtml-var standard_html_header>
+              <dtml-var "aDTMLDocument(_.None, _)">
+            <dtml-var standard_html_footer>
 
-          By the Publisher -- When the URL of a DTML Document is fetched 
-            from Zope, the DTML Document is called by the publisher.
-            The REQUEST object is passes as the second argument to the 
-            Document.  
+        From Python
+
+          Products, External Methods, and Scripts can call a DTML
+          Document in the same way as calling a DTML Document from a
+          Python expression in DTML; as shown in the previous example.
+
+        By the Publisher
+
+          When the URL of a DTML Document is fetched from Zope, the
+          DTML Document is called by the publisher.  The REQUEST
+          object is passed as the second argument to the Document.
           
         Permission -- 'View'
 

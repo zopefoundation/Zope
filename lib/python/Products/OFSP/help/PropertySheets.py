@@ -107,10 +107,10 @@ class PropertySheets:
     def values():
         """
 
-        Return a sequence of all of the PropertySheet objects for
+        Return a sequence of all of the PropertySheet objects
         in the collection.
 
-        Permission - Python only
+        Permission -- Python only
         
         """
 
@@ -120,7 +120,7 @@ class PropertySheets:
         Return a sequence containing an '(id, object)' tuple for
         each PropertySheet object in the collection.
 
-        Permission - Python only
+        Permission -- Python only
 
         """
 
@@ -130,7 +130,7 @@ class PropertySheets:
         Return the PropertySheet identified by 'name', or the value
         given in 'default' if the named PropertySheet is not found.
 
-        Permission - Python only
+        Permission -- Python only
         
         """
 

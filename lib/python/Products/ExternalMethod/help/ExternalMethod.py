@@ -85,7 +85,7 @@
 
 
 
-def manage_addExternalMethod(self, id, title, module, function):
+def manage_addExternalMethod(id, title, module, function):
     """
     Add an external method to an
     'ObjectManager'.
@@ -93,22 +93,22 @@ def manage_addExternalMethod(self, id, title, module, function):
     In addition to the standard object-creation arguments,
     'id' and title, the following arguments are defined:
 
-        function -- The name of the python function. This can be a
-          an ordinary Python function, or a bound method.
+      function -- The name of the python function. This can be a
+        an ordinary Python function, or a bound method.
 
-        module -- The name of the file containing the function
-          definition.
+      module -- The name of the file containing the function
+        definition.
 
-        The module normally resides in the 'Extensions'
-        directory, however, the file name may have a prefix of
-        'product.', indicating that it should be found in a product
-        directory.
+    The module normally resides in the 'Extensions'
+    directory, however, the file name may have a prefix of
+    'product.', indicating that it should be found in a product
+    directory.
 
-        For example, if the module is: 'ACMEWidgets.foo', then an
-        attempt will first be made to use the file
-        'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
-        failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
-        used.
+    For example, if the module is: 'ACMEWidgets.foo', then an
+    attempt will first be made to use the file
+    'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
+    failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
+    used.
 
     """
 
@@ -124,8 +124,8 @@ class ExternalMethod:
     'Extensions' subdirectory of a product directory.
 
     Due to the way ExternalMethods are loaded, it is not *currently*
-    possible to use Python modules that reside in the 'Extensions'
-    directory.  It is possible to load modules found in the
+    possible to import Python modules that reside in the 'Extensions'
+    directory.  It is possible to import modules found in the
     'lib/python' directory of the Zope installation, or in
     packages that are in the 'lib/python' directory.
 
@@ -133,7 +133,7 @@ class ExternalMethod:
 
     __constructor__=manage_addExternalMethod
 
-    def manage_edit(self, title, module, function, REQUEST=None):
+    def manage_edit(title, module, function, REQUEST=None):
         """
         Change the
         External Method.
@@ -148,7 +148,7 @@ class ExternalMethod:
 
         """
 
-    def __call__(self, *args, **kw):
+    def __call__(*args, **kw):
 
         """
         Call the
@@ -164,9 +164,11 @@ class ExternalMethod:
         - The supplied number of arguments is one less than the
           required number of arguments, and
 
-        - The name of the function\'s first argument is 'self'.
+        - The name of the function's first argument is 'self'.
 
         In this case, the URL parent of the object is supplied as the
         first argument.
 
         """
+
+

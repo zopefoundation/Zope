@@ -88,26 +88,24 @@ class ObjectManager:
     An ObjectManager contains other Zope objects. The contained
     objects are Object Manager Items.
 
-    Creating Objects in an ObjectManager
+    To create an object inside an object manager use 'manage_addProduct'::
 
-      To create an object inside an object manager use 'manage_addProduct'::
+      self.manage_addProduct['OFSP'].manage_addFolder(id, title)
 
-        self.manage_addProduct['OFSP'].manage_addFolder(id, title)
+    In DTML this would be::
 
-      In DTML this would be::
+        <dtml-call "manage_addProduct['OFSP'].manage_addFolder(id, title)">
 
-          <dtml-call "manage_addProduct['OFSP'].manage_addFolder(id, title)">
+    These examples create a new Folder inside the current
+    ObjectManager.
 
-      These examples create a new Folder inside the current
-      ObjectManager.
+    'manage_addProduct' is a mapping that provides access to product
+    constructor methods. It is indexed by product id.
 
-      'manage_addProduct' is a mapping that provides access to product
-      constructor methods. It is indexed by product id.
-
-      Constructor methods are registered during product initialization
-      and should be documented in the API docs for each addable
-      object.
-      """
+    Constructor methods are registered during product initialization
+    and should be documented in the API docs for each addable
+    object.
+    """
 
     def objectIds(type=None):
         """
@@ -137,13 +135,13 @@ class ObjectManager:
         """
         This method returns a sequence of contained objects.
         
-        Like objectValues and objectIds, it accepts one argument,
+        Like objectItems and objectIds, it accepts one argument,
         either a string or a list to restrict the results to objects
         of a given meta_type or set of meta_types.
 
         Example::
 
-          <dtml-in "objectValues('Folder')">
+          <dtml-in expr="objectValues('Folder')">
             <dtml-var icon>
             This is the icon for the: <dtml-var id> Folder<br>.
           <dtml-else>
@@ -151,7 +149,7 @@ class ObjectManager:
           </dtml-in>
 
         The results were restricted to Folders by passing a 
-        meta_type to 'objectItems' method.
+        meta_type to 'objectValues' method.
         
         Permission -- 'Access contents information'
         """
@@ -160,6 +158,10 @@ class ObjectManager:
         """
         This method returns a sequence of (id, object) tuples.
         
+        Like objectValues and objectIds, it accepts one argument,
+        either a string or a list to restrict the results to objects
+        of a given meta_type or set of meta_types.
+
         Each tuple's first element is the id of an object contained in
         the Object Manager, and the second element is the object
         itself.

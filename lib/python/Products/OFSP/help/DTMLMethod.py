@@ -141,35 +141,38 @@ class DTMLMethod:
         Passing in a namespace to a DTML Method is often referred to
         as providing the Method with a *context*.
 
-        DTML Methods are called three ways:
+        DTML Methods can be called three ways:
 
-          From DTML -- A DTML Method can be called from another DTML
-            Method or Document::
+        From DTML
 
-              <dtml-var standard_html_header>
-                <dtml-var aDTMLMethod>
-              <dtml-var standard_html_footer>
+          A DTML Method can be called from another DTML Method or
+          Document::
 
-            In this example, the Method 'aDTMLMethod' is being called
-            from another DTML object by name.  The calling method
-            passes the value 'this' as the client argument and the
-            current DTML names pace as the REQUEST argument.  The above
-            is identical to this following usage in a DTML Python
-            expression::
+            <dtml-var standard_html_header>
+              <dtml-var aDTMLMethod>
+            <dtml-var standard_html_footer>
 
-              <dtml-var standard_html_header>
-                <dtml-var "aDTMLMethod(_.None, _)">
-              <dtml-var standard_html_footer>
+          In this example, the Method 'aDTMLMethod' is being called
+          from another DTML object by name.  The calling method passes
+          the value 'this' as the client argument and the current DTML
+          namespace as the REQUEST argument.  The above is identical
+          to this following usage in a DTML Python expression::
 
-          From Python -- Products, External Methods, and PythonMethods 
-            can call a DTML Method in the same way as calling a DTML
-            Method from a Python expression in DTML; as shown in the
-            previous example.
+            <dtml-var standard_html_header>
+              <dtml-var "aDTMLMethod(_.None, _)">
+            <dtml-var standard_html_footer>
 
-          By the Publisher -- When the URL of a DTML Method is fetched 
-            from Zope, the DTML Method is called by the publisher.
-            The REQUEST object is passes as the second argument to the 
-            Method.
+        From Python
+
+          Products, External Methods, and Scripts can call a DTML
+          Method in the same way as calling a DTML Method from a
+          Python expression in DTML; as shown in the previous example.
+
+        By the Publisher
+
+          When the URL of a DTML Method is fetched from Zope, the DTML
+          Method is called by the publisher.  The REQUEST object is
+          passed as the second argument to the Method.
           
         Permission -- 'View'
         """

@@ -123,53 +123,52 @@ class Request:
     values will be looked up in the order: environment variables,
     other variables, form data, and then cookies.
 
-    Special Variables
+    These special variables are set in
+    the Request:
 
-      These special variables are set in the Request
+      'PARENTS' -- A list of the objects traversed to get to the
+      published object. So, 'PARENTS[0]' would be the ancestor of
+      the published object.
 
-        'PARENTS' -- A list of the objects traversed to get to the
-        published object. So, 'PARENTS[0]' would be the ancestor of
-        the published object.
+      'REQUEST' -- The Request object.
 
-        'REQUEST' -- The Request object.
+      'RESPONSE' -- The Response object.
 
-        'RESPONSE' -- The Response object.
+      'PUBLISHED' -- The actual object published as a result of
+      url traversal.
 
-        'PUBLISHED' -- The actual object published as a result of
-        url traversal.
+      'URL' -- The URL of the Request without query string.
 
-        'URL' -- The URL of the Request without query string.
+      *URLn* -- 'URL0' is the same as 'URL'. 'URL1' is the same as
+      'URL0' with the last path element removed. 'URL2' is the same
+      as 'URL1' with the last element removed. Etcetera.
 
-        *URLn* -- 'URL0' is the same as 'URL'. 'URL1' is the same as
-        'URL0' with the last path element removed. 'URL2' is the same
-        as 'URL1' with the last element removed. Etcetera.
+        For example if URL='http://localhost/foo/bar', then
+        URL1='http://localhost/foo' and URL2='http://localhost'.
 
-          For example if URL='http://localhost/foo/bar', then
-          URL1='http://localhost/foo' and URL2='http://localhost'.
+      *URLPATHn* -- 'URLPATH0' is the path portion of 'URL',
+      'URLPATH1' is the path portion of 'URL1', and so on.
 
-        *URLPATHn* -- 'URLPATH0' is the path portion of 'URL',
-        'URLPATH1' is the path portion of 'URL1', and so on.
+        For example if URL='http://localhost/foo/bar', then
+        URLPATH1='/foo' and URLPATH2='/'.
 
-          For example if URL='http://localhost/foo/bar', then
-          URLPATH1='/foo' and URLPATH2='/'.
+      *BASEn* -- 'BASE0' is the URL up to but not including the Zope
+      application object. 'BASE1' is the URL of the Zope application
+      object. 'BASE2' is the URL of the Zope application object with
+      an additional path element added in the path to the published
+      object. Etcetera.
 
-        *BASEn* -- 'BASE0' is the URL up to but not including the Zope
-        application object. 'BASE1' is the URL of the Zope application
-        object. 'BASE2' is the URL of the Zope application object with
-        an additional path element added in the path to the published
-        object. Etcetera.
+        For example if URL='http://localhost/Zope.cgi/foo/bar', then
+        BASE0='http://localhost', BASE1='http://localhost/Zope.cgi',
+        and BASE2='http://localhost/Zope.cgi/foo'.
 
-          For example if URL='http://localhost/Zope.cgi/foo/bar', then
-          BASE0='http://localhost', BASE1='http://localhost/Zope.cgi',
-          and BASE2='http://localhost/Zope.cgi/foo'.
-        
-        *BASEPATHn* -- 'BASEPATH0' is the path portion of 'BASE0',
-        'BASEPATH1' is the path portion of 'BASE1', and so on.
-        'BASEPATH1' is the externally visible path to the root Zope
-        folder, equivalent to CGI's 'SCRIPT_NAME', but virtual-host aware.
+      *BASEPATHn* -- 'BASEPATH0' is the path portion of 'BASE0',
+      'BASEPATH1' is the path portion of 'BASE1', and so on.
+      'BASEPATH1' is the externally visible path to the root Zope
+      folder, equivalent to CGI's 'SCRIPT_NAME', but virtual-host aware.
 
-          For example if URL='http://localhost/Zope.cgi/foo/bar', then
-          BASEPATH0='/', BASEPATH1='/Zope.cgi', and BASEPATH2='/Zope.cgi/foo'.
+        For example if URL='http://localhost/Zope.cgi/foo/bar', then
+        BASEPATH0='/', BASEPATH1='/Zope.cgi', and BASEPATH2='/Zope.cgi/foo'.
 
     """
 
@@ -180,7 +179,7 @@ class Request:
         Create a new name in the REQUEST object and assign it a value.
         This name and value is stored in the 'Other' category.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -190,11 +189,12 @@ class Request:
 
         Return the named HTTP header, or an optional default argument
         or None if the header is not found. Note that both original
-        and CGI-ified header names are recognized,
-        e.g. 'Content-Type', 'CONTENT_TYPE' and 'HTTP_CONTENT_TYPE'
-        should all return the Content-Type header, if available.
+        and CGI header names without the leading 'HTTP_' are
+        recognized, for example, 'Content-Type', 'CONTENT_TYPE' and
+        'HTTP_CONTENT_TYPE' should all return the Content-Type header,
+        if available.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -205,7 +205,7 @@ class Request:
         Returns a true value if the REQUEST object contains key,
         returns a false value otherwise.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -215,7 +215,7 @@ class Request:
 
         Returns a sorted sequence of all keys in the REQUEST object.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -225,7 +225,7 @@ class Request:
         Returns a sequence of (key, value) tuples for all the keys in
         the REQUEST object.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -235,7 +235,7 @@ class Request:
         Returns a sequence of values for all the keys in the REQUEST
         object.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -247,7 +247,7 @@ class Request:
 
         Provides virtual hosting support.
 
-        Permission - Always available
+        Permission -- Always available
 
         """
 
@@ -261,7 +261,7 @@ class Request:
         Provides virtual hosting support.  Intended to be called from
         publishing traversal hooks.
 
-        Permission - Always available
+        Permission -- Always available
 
         """
 

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-def manage_addZSQLMethod(self, id, title,
+def manage_addZSQLMethod(id, title,
                          connection_id, arguments, template):
     """
 
@@ -107,47 +107,39 @@ class ZSQLMethod:
 
     ZSQLMethods abstract SQL code in Zope.
 
-    They support three important abstractions:
+    SQL Methods behave like methods of the folders they are
+    accessed in.  In particular, they can be used from other
+    methods, like Documents, ExternalMethods, and even other SQL
+    Methods.
 
-      - Method
+    Database methods support the Searchable Object Interface.
+    Search interface wizards can be used to build user
+    interfaces to them.  They can be used in joins and
+    unions. They provide meta-data about their input parameters
+    and result data.
 
-        SQL Methods behave like methods of the folders they are
-        accessed in.  In particular, they can be used from other
-        methods, like Documents, ExternalMethods, and even other SQL
-        Methods.
+    For more information, see the searchable-object interface
+    specification. 
 
-      - Searchability
+    Database methods support URL traversal to access and invoke
+    methods on individual record objects. For example, suppose you
+    had an 'employees' database method that took a single argument
+    'employee_id'.  Suppose that employees had a 'service_record'
+    method (defined in a record class or acquired from a
+    folder). The 'service_record' method could be accessed with a
+    URL like::
 
-        Database methods support the Searchable Object Interface.
-        Search interface wizards can be used to build user
-        interfaces to them.  They can be used in joins and
-        unions. They provide meta-data about their input parameters
-        and result data.
+       employees/employee_id/1234/service_record
 
-        For more information, see the searchable-object interface
-        specification. 
-
-      - Containment
-
-        Database methods support URL traversal to access and invoke
-        methods on individual record objects. For example, suppose you
-        had an 'employees' database method that took a single argument
-        'employee_id'.  Suppose that employees had a 'service_record'
-        method (defined in a record class or acquired from a
-        folder). The 'service_record' method could be accessed with a
-        URL like::
-
-           employees/employee_id/1234/service_record
-
-        Search results are returned as Record objects.  The schema of
-        a Record objects matches the schema of the table queried in
-        the search.
+    Search results are returned as Record objects.  The schema of
+    a Record objects matches the schema of the table queried in
+    the search.
 
     """
 
     __constructor__=manage_addZSQLMethod
 
-    def __call__(self, REQUEST=None, **kw):
+    def __call__(REQUEST=None, **kw):
         """
 
         Call the ZSQLMethod.
@@ -163,7 +155,7 @@ class ZSQLMethod:
         """
     
 
-    def manage_edit(self,title,connection_id,arguments,template):
+    def manage_edit(title,connection_id,arguments,template):
         """
 
         Change database method properties.
@@ -173,7 +165,7 @@ class ZSQLMethod:
         above the current folder.  The database should understand SQL.
 
         The 'arguments' argument is a string containing an arguments
-        specification, as would be given in the SQL method cration
+        specification, as would be given in the SQL method creation
         form.
 
         The 'template' argument is a string containing the source for

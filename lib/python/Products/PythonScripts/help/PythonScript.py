@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-def manage_addPythonScript(self, id, REQUEST=None):
+def manage_addPythonScript(id, REQUEST=None):
     """Add a Python script to a folder.
     """
 
@@ -100,14 +100,14 @@ class PythonScript:
 
       o Calling the script from a method object, such as a DTML Method.
 
-    Python scripts can contain a "safe" subset of the python language.
+    Python Scripts can contain a "safe" subset of the python language.
     Python Scripts must be safe because they can be potentially edited by
     many different users through an insecure medium like the web.  The
     following safety issues drive the need for secure Python Scripts:
 
       o Because many users can use Zope, a Python Script must make sure it
         does not allow a user to do something they are not allowed to do,
-        like delete an object they do not have permission to delete.
+        like deleting an object they do not have permission to delete.
         Because of this requirement, Python Scripts do many security checks
         in the course of their execution.
 
@@ -134,20 +134,40 @@ class PythonScript:
         "exec" statement is not allowed in Python methods.
 
       o Because they may represent or cause security violations, some
-        Python builtin functions are not allowed or are restricted.  The
-        following Python builtins are not allowed:
+        Python builtin functions are not allowed.  The following
+        Python builtins are not allowed:
 
-          o open, input, raw_input
+          o open
 
-          o eval, execfile, compile
+          o input
 
-          o type, coerce, intern
+          o raw_input
 
-          o dir, globals, locals, vars
+          o eval
 
-          o buffer, reduce
+          o execfile
 
-        Other builtins are restricted in nature.  The following builtins
+          o compile
+
+          o type
+
+          o coerce
+
+          o intern
+
+          o dir
+
+          o globals
+
+          o locals
+
+          o vars
+
+          o buffer
+
+          o reduce
+
+      o Other builtins are restricted in nature.  The following builtins
         are restricted:
 
           range -- Due to possible memory denial of service attacks, the
@@ -156,16 +176,20 @@ class PythonScript:
 
           filter, map, tuple, list -- For the same reason, builtins
           that construct lists from sequences do not operate on strings.
-          
+
           getattr, setattr, delattr -- Because these may enable Python
           code to circumvent Zope's security system, they are replaced with
           custom, security constrained versions.
 
       o In order to be consistent with the Python expressions
-      available to DTML, the builtin functions are augmented with a
-      small number of functions and a class:
+        available to DTML, the builtin functions are augmented with a
+        small number of functions and a class:
 
-          o test, namespace, render
+          o test
+
+          o namespace
+
+          o render
 
           o same_type
 
@@ -177,7 +201,6 @@ class PythonScript:
         builtin name "printed" evaluates to the concatenation of all
         text printed so far during the current execution of the
         script.
-
     """
 
     __constructor__ = manage_addPythonScript
@@ -243,7 +266,7 @@ class PythonScript:
         """
 
 
-    def ZScriptHTML_tryParams(self):
+    def ZScriptHTML_tryParams():
         """
 
         Return a list of the required parameters with which to
@@ -252,7 +275,7 @@ class PythonScript:
         """
 
 
-    def read(self):
+    def read():
         """
 
         Return the body of the Python Script, with a special comment
@@ -261,7 +284,7 @@ class PythonScript:
 
         """
 
-    def write(self, text):
+    def write(text):
         """
 
         Change the script by parsing the text argument into parts.
