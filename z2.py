@@ -523,7 +523,8 @@ import ZServer
 
 # install signal handlers if on posix
 if os.name == 'posix':
-    from SignalHandler import SignalHandler
+    from Signals import Signals
+    Signals.registerZopeSignals()
 
 if Zpid and not READ_ONLY:
     import App.FindHomes
