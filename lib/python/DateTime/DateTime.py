@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -888,6 +888,28 @@ class DateTime:
            the current object\'s day, in the object\'s timezone context"""
         return self.__class__(self._year,self._month,self._day,
 			      23,59,59,self._tz)
+
+    def greaterThan(self,t):
+        """Compare this DateTime object to a floating point number
+           such as that which is returned by the python time module.
+           Return true if the object represents a date/time greater
+           than the specified time module style time."""
+        return (self._t > t)
+
+    def equalTo(self,t):
+        """Compare this DateTime object to a floating point number
+           such as that which is returned by the python time module.
+           Return true if the object represents a date/time equal
+           to the specified time module style time."""
+        return (self._t==t)
+
+    def lessThan(self,t):
+        """Compare this DateTime object to a floating point number
+           such as that which is returned by the python time module.
+           Return true if the object represents a date/time less
+           than the specified time module style time."""
+        return (self._t < t)
+
     def isLeapYear(self):
 	"""Return true if the current year (in the context of the object\'s
            timezone) is a leap year"""
@@ -898,6 +920,7 @@ class DateTime:
            the timezone representation of the object"""
 	d=int(self._d+(self._tzinfo[self._tz].info(self._t)[0]/86400.0))
 	return int((d+jd1901)-self._julianday(self._year,1,0))
+
 
     # Component access
     def parts(self):
@@ -965,6 +988,10 @@ class DateTime:
     def dow(self):
 	"""Return the integer day of the week, where sunday is 0"""
 	return self._dayoffset
+
+    def dow_1(self):
+	"""Return the integer day of the week, where sunday is 1"""
+	return self._dayoffset+1
 
     def h_12(self):
 	"""Return the 12-hour clock representation of the hour"""
@@ -1048,15 +1075,40 @@ class DateTime:
            added to a DateTime;  two DateTimes cannot be added."""
 	if type(other)==InstanceType:
 	    raise self.DateTimeError,'Cannot add two DateTimes'
-	return self.__class__(self._d+float(other))
+
+	# This stuff is necessary because the old datetime always
+	# stored and assumed local machine timezone when creating
+	# a DateTime from a float... 
+	o=float(other)
+        d=self._d+o
+	t=self._t+(o*86400.0)
+	_d=d+(self._tzinfo[self._localzone].info(self._t)[0]/86400.0)
+        yr,mo,dy=self._calendarday((_d+jd1901))
+	s=(_d-int(_d))*86400.0
+	hr=int(s/3600)
+	s=s-(hr*3600)
+	mn=int(s/60)
+	sc=s-(mn*60)
+        if(hr==23 and mn==59 and sc>59.999):
+	    # Fix formatting for positives
+	    hr,mn,sc=0,0,0.0
+	else:
+	    # Fix formatting for negatives
+	    if hr<0: hr=23+hr
+	    if mn<0: mn=59+mn
+	    if sc<0:
+	        if (sc-int(sc)>=0.999):
+		    sc=round(sc)
+		sc=59+sc
+        return self.__class__(yr,mo,dy,hr,mn,sc,self._tz,t,d,(d-int(d)))
     __radd__=__add__
 
     def __sub__(self,other):
 	"""Either a DateTime or a number may be subtracted from a
            DateTime, however, a DateTime may not be subtracted from 
 	   a number."""
-	return (type(other)==InstanceType) and \
-	        self._d - other._d or self.__class__(self._d-other)
+        try:    return self._d-other._d
+	except: return self.__add__(-(other))
 
     def __repr__(self):
         """Convert a DateTime to a string that 
@@ -1077,9 +1129,13 @@ class DateTime:
 	else: return '%4.4d/%2.2d/%2.2d' % (y,m,d)
 
     def __cmp__(self,other):
-	"""Compare a DateTime with another object"""
-	return (type(other)==InstanceType) and \
-                cmp(self._t,other._t) or cmp(self._t,other)
+	"""Compare a DateTime with another object. Note that the
+           value of a DateTime when doing comparisons is the 
+           number of days since 1901, in gmt. To compare a DateTime
+           with floats such as those used by the time module, use
+           the greaterThan, equalTo and lessThan methods."""
+	try:    return cmp(self._d,other._d)
+	except: return cmp(self._d,other)
 
     def __hash__(self):
 	"""Compute a hash value for a DateTime"""
@@ -1087,15 +1143,15 @@ class DateTime:
 		     self._day+self.time)*100)
 
     def __int__(self):
-	"""Convert to an integer number of days since Jan. 1, 1901"""
+	"""Convert to an integer number of days since Jan. 1, 1901 (gmt)"""
 	return int(self._d)
 
     def __long__(self):
-	"""Convert to a long-int number of days since Jan. 1, 1901"""
+	"""Convert to a long-int number of days since Jan. 1, 1901 (gmt)"""
 	return long(self._d)
 
     def __float__(self):
-	"""Convert to a floating-point number of days since Jan. 1, 1901"""
+	"""Convert to floating-point number of days since Jan. 1, 1901 (gmt)"""
 	return float(self._d)
 
 
