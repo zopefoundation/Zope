@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.2 1997/02/17 16:20:11 jim Exp $
+  $Id: Acquisition.c,v 1.3 1997/02/19 22:30:33 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: Acquisition.c,v $
+  Revision 1.3  1997/02/19 22:30:33  jim
+  Added $#@! missing static declaration.
+
   Revision 1.2  1997/02/17 16:20:11  jim
   Fixed bug in mix-in class declaration.
   Added __version__.
@@ -520,7 +523,7 @@ acquire_of(PyObject *self, PyObject *args)
   return (PyObject*)newWrapper(self,args);
 }
 
-struct PyMethodDef Acquirer_methods[] = {
+static struct PyMethodDef Acquirer_methods[] = {
   {"__of__",(PyCFunction)acquire_of,0,""},
   
   {NULL,		NULL}		/* sentinel */
@@ -533,7 +536,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   PURE_MIXIN_CLASS(Acquirer,
 	"Base class for objects that acquire attributes from containers\n"
 	, Acquirer_methods);

@@ -1,6 +1,6 @@
 /*
 
-  $Id: Xaq.c,v 1.1 1997/02/19 20:30:53 jim Exp $
+  $Id: Xaq.c,v 1.2 1997/02/19 22:30:22 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: Xaq.c,v $
+  Revision 1.2  1997/02/19 22:30:22  jim
+  Added $#@! missing static declaration.
+
   Revision 1.1  1997/02/19 20:30:53  jim
   *** empty log message ***
 
@@ -590,7 +593,7 @@ acquire_of(PyObject *self, PyObject *args)
   return (PyObject*)newWrapper(self,args);
 }
 
-struct PyMethodDef Acquirer_methods[] = {
+static struct PyMethodDef Acquirer_methods[] = {
   {"__of__",(PyCFunction)acquire_of,0,""},
   
   {NULL,		NULL}		/* sentinel */
@@ -603,7 +606,7 @@ void
 initXaq()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
   PURE_MIXIN_CLASS(Acquirer,
 	"Base class for objects that acquire attributes from containers\n"
 	, Acquirer_methods);
