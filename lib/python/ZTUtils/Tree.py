@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.17 2003/12/11 18:02:15 evan Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Tree.py,v 1.18 2004/01/15 23:00:17 tseaver Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -220,7 +220,7 @@ def simple_type(ob,
                            type(0L):1, type(None):1 }.has_key):
     return is_simple(type(ob))
 
-from binascii import b2a_base64, a2b_base64
+import base64
 from string import translate, maketrans
 import zlib
 
@@ -232,23 +232,11 @@ def b2a(s):
 
     Encoded string use only alpahnumeric characters, and "._-".
     '''
-    s = str(s)
-    if len(s) <= 57:
-        return translate(b2a_base64(s)[:-1], a2u_map)
-    frags = []
-    for i in range(0, len(s), 57):
-        frags.append(b2a_base64(s[i:i + 57])[:-1])
-    return translate(''.join(frags), a2u_map)
+    return translate(base64.encodestring(str(s)), a2u_map)
 
 def a2b(s):
     '''Decode a b2a-encoded string.'''
-    s = translate(s, u2a_map)
-    if len(s) <= 76:
-        return a2b_base64(s)
-    frags = []
-    for i in range(0, len(s), 76):
-        frags.append(a2b_base64(s[i:i + 76]))
-    return ''.join(frags)
+    return base64.decodestring(translate(s, u2a_map))
 
 def encodeExpansion(nodes, compress=1):
     '''Encode the expanded node ids of a tree into a string.
@@ -288,8 +276,9 @@ def decodeExpansion(s, nth=None, maxsize=8192):
     if s[0] == ':': # Compressed state
         dec = zlib.decompressobj()
         s = dec.decompress(a2b(s[1:]), maxsize)
-        if dec.decompress('', 1):
+        if dec.unconsumed_tail:
             raise ValueError('Encoded node map too large')
+        del dec
     
     map = m = {}
     mstack = []

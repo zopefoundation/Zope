@@ -12,10 +12,11 @@
 ##############################################################################
 __doc__='''Simple Tree classes
 
-$Id: SimpleTree.py,v 1.4 2002/10/03 21:08:40 mj Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: SimpleTree.py,v 1.5 2004/01/15 23:00:17 tseaver Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Tree import TreeMaker, TreeNode, b2a
+from cgi import escape
 
 class SimpleTreeNode(TreeNode):
     def branch(self):
@@ -35,9 +36,10 @@ class SimpleTreeNode(TreeNode):
         obid = self.id
         pre = self.aq_acquire('tree_pre')
 
-        return {'link': '?%s-setstate=%s,%s,%s#%s' % (pre, setst[0],
-                                                      exnum, obid, obid),
-        'img': '<img src="%s/p_/%s" alt="%s" border="0">' % (base, img, setst)}
+        return {'link': '?%s-setstate=%s,%s,%s#%s' % \
+                        (pre, setst[0], exnum, obid, obid),
+                'img': '<img src="%s/p_/%s" alt="%s" border="0">' % \
+                        (escape(base, 1), img, setst)}
 
 
 class SimpleTreeMaker(TreeMaker):
