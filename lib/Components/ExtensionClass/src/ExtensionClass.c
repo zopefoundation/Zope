@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.21 1997/12/23 13:39:16 jim Exp $
+  $Id: ExtensionClass.c,v 1.22 1998/01/02 18:18:28 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.21 1997/12/23 13:39:16 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.22 1998/01/02 18:18:28 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1565,7 +1565,15 @@ ExtensionClass_FindInstanceAttribute(PyObject *inst, PyObject *oname,
     }
   UNLESS(r)
     {
+      if(*name=='_' && name[1]=='_' && name[2]=='b' &&
+	 strcmp(name+2,"bases__")==0)
+	{
+	  PyErr_SetObject(PyExc_AttributeError, oname);
+	  return NULL;
+	}
+
       PyErr_Clear();
+
       UNLESS(r=CCL_getattr(self,oname,0)) return NULL;
 
       /* We got something from our class, maybe its an unbound method. */
@@ -3277,7 +3285,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.21 $";
+  char *rev="$Revision: 1.22 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3318,6 +3326,10 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.22  1998/01/02 18:18:28  jim
+  Fixed bug in instance getattr so that instances don't get __bases__
+  from their class.
+
   Revision 1.21  1997/12/23 13:39:16  jim
   Fixed bug in method setattr.
   Added checks for method attributes in get/setattr on user-defined
