@@ -13,12 +13,14 @@
 """Module Import Tests
 """
 
-__rcs_id__='$Id: testModuleSecurity.py,v 1.3 2002/08/14 21:28:08 mj Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: testModuleSecurity.py,v 1.4 2002/08/21 20:01:37 shane Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 import os, sys, unittest
 
+import Testing
 import ZODB
+from AccessControl import User
 from AccessControl import Unauthorized, ModuleSecurityInfo
 from AccessControl.ZopeGuards import guarded_import
 
