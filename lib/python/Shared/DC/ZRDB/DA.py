@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.18 1998/01/07 16:27:16 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: DA.py,v 1.19 1998/01/08 21:28:21 jim Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -49,7 +49,7 @@ class DA(
     
     manage_options=(
 	{'label':'Edit', 'action':'manage_main'},
-	{'label':'Test', 'action':'index_html'},
+	{'label':'Test', 'action':'manage_testForm'},
 	{'label':'Advanced', 'action':'manage_advancedForm'},
 	{'label':'Access Control', 'action':'manage_access'},
 	)
@@ -118,11 +118,19 @@ class DA(
     def manage_test(self, REQUEST):
 	'Perform an actual query'
 	
-	result=self(REQUEST)
+	try: 
+	    result=self(REQUEST)
+	    result=custom_default_report(self.id, result)
+	except:
+	    result=(
+		'<hr><strong>Error, <em>%s</em>:</strong> %s'
+		% (sys.exc_type, sys.exc_value))
+
 	report=HTML(
 	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
 	    '<!--#var manage_tabs-->\n%s\n</body></html>'
-	    % custom_default_report(self.id, result))
+	    % result)
+
 	return apply(report,(self,REQUEST),{self.id:result})
 
     def index_html(self, PARENT_URL):
@@ -325,6 +333,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.19  1998/01/08 21:28:21  jim
+# Fixed to show errors when run in testing mode.
+#
 # Revision 1.18  1998/01/07 16:27:16  jim
 # Brought up to date with latest Principia models.
 #
