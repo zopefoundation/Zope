@@ -8,6 +8,9 @@ Zope Changes
 
       Features Added
 
+        - Added a new lesson to the Zope tutorial which shows how to
+          insert data into a relational database.
+
         - Made the meta-type in the upper-left corner of ZClass instances'
           management interface into a link to the ZClass definition.
 
@@ -15,6 +18,10 @@ Zope Changes
           to override the default syslog facility 'user'
 
       Bugs fixed
+
+        - Updated the Zope tutorial a bit. Now it references the Zope
+          Book and the online help's DTML reference. Replaced ZopeTime
+          examples with DateTime in lesson 9.
 
         - The manage_afterClone hook was called too early for copied objects,
           before the cloned object was reattached to its context. This 
