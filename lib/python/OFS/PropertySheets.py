@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -483,10 +483,9 @@ class PropertySheet(Persistent, Implicit):
             for name, value in kw.items():
                 props[name]=value
         propdict=self._propdict()
-        vself=self.v_self()
         for name, value in props.items():
             if self.hasProperty(name):
-                vself._updateProperty(name, value)
+                self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
                 title  ='Success!',
