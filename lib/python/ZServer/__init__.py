@@ -127,3 +127,5 @@ from FTPServer import FTPServer
 from PubCore import setNumberOfThreads
 from medusa.monitor import secure_monitor_server
 
+# override the service name in logger.syslog_logger
+logger.syslog_logger.svc_name='ZServer'
