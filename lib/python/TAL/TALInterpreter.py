@@ -180,18 +180,7 @@ class TALInterpreter:
         self.macroStack.append([macroName, slots, entering, self.i18nContext])
 
     def popMacro(self):
-        stuff = self.macroStack.pop()
-        self.i18nContext = stuff[3]
-        return stuff
-
-    def macroContext(self, what):
-        macroStack = self.macroStack
-        i = len(macroStack)
-        while i > 0:
-            i = i-1
-            if macroStack[i][0] == what:
-                return i
-        return -1
+        return self.macroStack.pop()
 
     def __call__(self):
         assert self.level == 0
@@ -292,14 +281,21 @@ class TALInterpreter:
                 if _len(item) == 2:
                     name, s = item
                 else:
-                    ok, name, s = attrAction(self, item)
+                    # item[2] is the 'action' field:
+                    if item[2] in ('metal', 'tal', 'xmlns', 'i18n'):
+                        if not self.showtal:
+                            continue
+                        ok, name, s = self.attrAction(item)
+                    else:
+                        ok, name, s = attrAction(self, item)
                     if not ok:
                         continue
                 slen = _len(s)
                 if (wrap and
                     col >= align and
                     col + 1 + slen > wrap):
-                    append("\n" + " "*align)
+                    append("\n")
+                    append(" "*align)
                     col = align + slen
                 else:
                     append(" ")
@@ -314,8 +310,7 @@ class TALInterpreter:
 
     def attrAction(self, item):
         name, value, action = item[:3]
-        if action == 'insert' or (action in ('metal', 'tal', 'xmlns', 'i18n')
-                                  and not self.showtal):
+        if action == 'insert':
             return 0, name, value
         macs = self.macroStack
         if action == 'metal' and self.metal and macs:
@@ -345,8 +340,6 @@ class TALInterpreter:
         return 1, name, value
 
     def attrAction_tal(self, item):
-        if item[2] in ('metal', 'tal', 'xmlns', 'i18n'):
-            return self.attrAction(item)
         name, value, action = item[:3]
         ok = 1
         expr, xlat, msgid = item[3:]
@@ -408,14 +401,6 @@ class TALInterpreter:
         else:
             self.do_optTag(stuff)
     bytecode_handlers["optTag"] = do_optTag
-
-    def dumpMacroStack(self, prefix, suffix, value):
-        sys.stderr.write("+---- %s%s = %s\n" % (prefix, suffix, value))
-        for i in range(len(self.macroStack)):
-            what, macroName, slots = self.macroStack[i][:3]
-            sys.stderr.write("| %2d. %-12s %-12s %s\n" %
-                             (i, what, macroName, slots and slots.keys()))
-        sys.stderr.write("+--------------------------------------\n")
 
     def do_rawtextBeginScope(self, (s, col, position, closeprev, dict)):
         self._stream_write(s)
