@@ -255,7 +255,7 @@ class HTMLClass:
         output("</u>")
           
     def innerLink(self, doc, level, output):
-        output('<a href="#');
+        output('<a href="#ref');
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output('">[')
@@ -264,7 +264,7 @@ class HTMLClass:
         output(']</a>')
     
     def namedLink(self, doc, level, output):
-        output('<a name="')
+        output('<a name="ref')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         output('">[')
@@ -278,7 +278,7 @@ class HTMLClass:
 
     def xref(self, doc, level, output):
         val = doc.getNodeValue()
-        output('<a href="#%s">[%s]</a>' % (val, val) )
+        output('<a href="#ref%s">[%s]</a>' % (val, val) )
     
     def table(self,doc,level,output):
         """
@@ -287,17 +287,17 @@ class HTMLClass:
         is a type of StructuredTextParagraph and thus holds
         the actual data.
         """
-        output("<table border=1 cellpadding=2>\n")
+        output('<table border="1" cellpadding="2">\n')
         for row in doc.getRows()[0]:
             output("<tr>\n")
             for column in row.getColumns()[0]:
                 if hasattr(column,"getAlign"):
-                    str = "<%s colspan=%s align=%s valign=%s>" % (column.getType(),
+                    str = '<%s colspan="%s" align="%s" valign="%s">' % (column.getType(),
                                                                   column.getSpan(),
                                                                   column.getAlign(),
                                                                   column.getValign())
                 else:
-                    str = "<td colspan=%s>" % column.getSpan()
+                    str = '<td colspan="%s">' % column.getSpan()
                 output(str)
                 for c in column.getChildNodes():
                     getattr(self, self.element_types[c.getNodeName()])(c, level, output)
