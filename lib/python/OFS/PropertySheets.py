@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -574,6 +574,20 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
     
     id='propertysheets'
 
+
+    __ac_permissions__=(
+        ('Manage properties', ('manage_addPropertySheet',
+                               'addPropertySheet',
+                               'delPropertySheet'
+                               )),
+        ('Access contents information',
+         ('items', 'values', 'get', ''),
+         ('Anonymous', 'Manager'),
+         ),
+        ('View management screens', ('manage',)),
+        )
+
+
     webdav =DAVProperties()
     def _get_defaults(self):
         return (self.webdav,)
@@ -607,6 +621,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         return r
         
     def get(self, name, default=None):
+#        pdb.set_trace()
         for propset in self.__propsets__():
             if propset.id==name or propset.xml_namespace()==name:
                 return propset.__of__(self)
@@ -669,6 +684,8 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         return PropertySheets.inheritedAttribute('tabs_path_info')(
             self, script, path)
 
+Globals.default__class_init__(PropertySheets)
+
 
 class DefaultPropertySheets(PropertySheets):
     """A PropertySheets container that contains a default property
@@ -678,6 +695,8 @@ class DefaultPropertySheets(PropertySheets):
     webdav =DAVProperties()
     def _get_defaults(self):
         return (self.default, self.webdav)
+
+Globals.default__class_init__(DefaultPropertySheets)
 
 
 class FixedSchema(PropertySheet):
