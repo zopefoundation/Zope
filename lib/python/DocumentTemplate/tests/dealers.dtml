@@ -1,6 +1,6 @@
 <html><head><title>Inventory by Dealer</title></head><body>
 <dl>
-<dtml-in inventory mapping size=5 start=first_ad>
+<dtml-in inventory mapping size=5 start=first_ad orphan=3>
 <dtml-if previous-sequence>
 <dtml-in previous-batches mapping>
 (<dtml-var batch-start-var-dealer> <dtml-var
