@@ -10,9 +10,10 @@
   <input name="value" size="60" value="<!--#var connection_string-->"><p>
 
   <strong>Check here to test connection string:</strong>
-  <input name="check" type="CHECKBOX" value="YES" CHECKED>
+  <input name="check" type="CHECKBOX" value="YES" CHECKED><br>
 
-  <input type="SUBMIT" name="SUBMIT" value="Change Connection String">
+  <input type="SUBMIT" name="SUBMIT" value="Set Database Connection String">
+  <br>
 </form>
 
 <!--#if connected-->
