@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os, string, Globals
 from common import urlfix, rfc1123_date
@@ -101,11 +101,6 @@ class Collection(Resource):
     than those for non-collection resources."""
 
     __dav_collection__=1
-
-    __ac_permissions__=(
-        ('Add Documents, Images, and Files', ('PUT',)),
-        ('Delete objects',                   ('DELETE',)),
-    )
 
     def dav__init(self, request, response):
         # We are allowed to accept a url w/o a trailing slash

@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals
 import Acquisition, OFS.content_types
@@ -103,11 +103,8 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
     __ac_permissions__=(
         ('View',                             ('HEAD',)),
-        ('Access contents information',      ('PROPFIND',)),
-        ('Manage properties',                ('PROPPATCH',)),
         ('Add Documents, Images, and Files', ('PUT',)),
         ('Add Folders',                      ('MKCOL',)),
-        ('Delete objects',                   ('DELETE',)),
     )
 
     def __init__(self, parent, name, request=None):
