@@ -1,3 +1,63 @@
+/*
+
+  $Id: Query.c,v 1.3 1997/03/22 14:56:35 jim Exp $
+
+  Query objects for building tests without python code generation.
+
+     Copyright 
+
+       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
+       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
+       rights reserved.  Copyright in this software is owned by DCLC,
+       unless otherwise indicated. Permission to use, copy and
+       distribute this software is hereby granted, provided that the
+       above copyright notice appear in all copies and that both that
+       copyright notice and this permission notice appear. Note that
+       any product, process or technology described in this software
+       may be the subject of other Intellectual Property rights
+       reserved by Digital Creations, L.C. and are not licensed
+       hereunder.
+
+     Trademarks 
+
+       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
+       All other trademarks are owned by their respective companies. 
+
+     No Warranty 
+
+       The software is provided "as is" without warranty of any kind,
+       either express or implied, including, but not limited to, the
+       implied warranties of merchantability, fitness for a particular
+       purpose, or non-infringement. This software could include
+       technical inaccuracies or typographical errors. Changes are
+       periodically made to the software; these changes will be
+       incorporated in new editions of the software. DCLC may make
+       improvements and/or changes in this software at any time
+       without notice.
+
+     Limitation Of Liability 
+
+       In no event will DCLC be liable for direct, indirect, special,
+       incidental, economic, cover, or consequential damages arising
+       out of the use of or inability to use this software even if
+       advised of the possibility of such damages. Some states do not
+       allow the exclusion or limitation of implied warranties or
+       limitation of liability for incidental or consequential
+       damages, so the above limitation or exclusion may not apply to
+       you.
+
+    If you have questions regarding this software,
+    contact:
+   
+	   Digital Creations, L.C.
+	   910 Princess Ann Street
+	   Fredericksburge, Virginia  22401
+	
+	   info@digicool.com
+	
+	   (540) 371-6909
+
+****************************************************************************/
 #include "Python.h"
 
 #define UNLESS(E) if(!(E))
@@ -786,21 +846,36 @@ static char Query_module_documentation[] =
 "against objects.  Each object type define objects that can be called\n"
 "with a single argument or with 'getitem' to check whether an object,\n"
 "such as a database record or a collection item satisfies a query.\n"
+"\n$Id: Query.c,v 1.3 1997/03/22 14:56:35 jim Exp $"
 ;
 
 void
 initQuery()
 {
     PyObject *m, *d, *regex, *string;
+    char *rev="$Revision: 1.3 $";
 
-    AttrTesttype.ob_type  =&PyType_Type;
-    ItemTesttype.ob_type  =&PyType_Type;
-    Andtype.ob_type       =&PyType_Type;
-    Ortype.ob_type        =&PyType_Type;
-    Rangetype.ob_type     =&PyType_Type;
-    Cmptype.ob_type       =&PyType_Type;
-    Regextype.ob_type     =&PyType_Type;
-    Stringtype.ob_type    =&PyType_Type;
+    AttrTesttype.ob_type      =&PyType_Type;
+    CompAttrTesttype.ob_type  =&PyType_Type;
+    MethodTesttype.ob_type    =&PyType_Type;
+    ItemTesttype.ob_type      =&PyType_Type;
+    Andtype.ob_type           =&PyType_Type;
+    Ortype.ob_type            =&PyType_Type;
+    Rangetype.ob_type         =&PyType_Type;
+    Cmptype.ob_type           =&PyType_Type;
+    Regextype.ob_type         =&PyType_Type;
+    Stringtype.ob_type        =&PyType_Type;
+
+    UNLESS(regex = PyImport_ImportModule("regex")) return;
+    UNLESS_ASSIGN(regex, PyObject_CallMethod(regex, "compile", "s", "a"))
+      return;
+    RegexType = regex->ob_type;
+    Py_DECREF(regex);
+
+    UNLESS(string = PyImport_ImportModule("string")) return;
+
+    UNLESS(string_lower = PyObject_GetAttrString(string, "lower")) return;
+    Py_DECREF(string);
 
     /* Create the module and add the functions */
     m = Py_InitModule4("Query", Query_methods,
@@ -809,30 +884,17 @@ initQuery()
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "__version__",
+			 PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
-    if (!(regex = PyImport_ImportModule("regex")))
-        Py_FatalError("can't initialize module qbe:  "
-            "failed to import regex module");
-
-    UNLESS_ASSIGN(regex, PyObject_CallMethod(regex, 
-            "compile", "s", "a"))
-        Py_FatalError("can't initialize module qbe:  "
-            "failed to compile regular expression");
-
-    RegexType = regex->ob_type;
-    Py_DECREF(regex);
-
-    if (!(string = PyImport_ImportModule("string")))
-        Py_FatalError("can't initialize module qbe:  "
-            "failed to import string module");
-
-    if (!(string_lower = PyObject_GetAttrString(string, "lower")))
-        Py_FatalError("can't initalize module qbe:  "
-            "failed to import function lower() from string module");
-
-    Py_DECREF(string);
-
-    /* Check for errors */
-    if (PyErr_Occurred())
-        Py_FatalError("can't initialize module qbe");
 }
+
+/****************************************************************************
+
+ $Log: Query.c,v $
+ Revision 1.3  1997/03/22 14:56:35  jim
+ Added RCS keywords.
+ Rearranged init to handle errors better.
+
+
+ ****************************************************************************/
