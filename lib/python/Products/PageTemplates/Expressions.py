@@ -89,14 +89,14 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
      TALESError, Undefined
 from string import strip, split, join, replace, lstrip
 from DocumentTemplate.DT_Util import TemplateDict
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_inner, aq_parent
 
 _engine = None
 def getEngine():
@@ -116,21 +116,24 @@ def installHandlers(engine):
     reg('not', NotExpr)
     reg('import', ImportExpr)
 
-def render(ob):
+def render(ob, ns):
     """
     Calls the object, possibly a document template, or just returns it if
     not callable.  (From DT_Util.py)
     """
-    base = aq_base(ob)
-    if callable(base):
-        try:
-            if getattr(base, 'isDocTemp', 0):
-                ob = ob(ob, ob.REQUEST)
-            else:
-                ob = ob()
-        except AttributeError, n:
-            if str(n) != '__call__':
-                raise
+    if hasattr(ob, '__render_with_namespace__'):
+        ob = ob.__render_with_namespace__(ns)
+    else:
+        base = aq_base(ob)
+        if callable(base):
+            try:
+                if getattr(base, 'isDocTemp', 0):
+                    ob = ob(aq_parent(ob), ns)
+                else:
+                    ob = ob()
+            except AttributeError, n:
+                if str(n) != '__call__':
+                    raise
     return ob
 
 path_modifiers = {'if': 0, 'exists': 0, 'nocall':0}
@@ -172,7 +175,7 @@ class PathExpr:
         self._call_name = '_eval' + callname
 
     def _evalRender(self, econtext):
-        return render(self._eval(econtext))
+        return render(self._eval(econtext), econtext.contexts)
 
     def _evalIf(self, econtext):
         val = self._eval(econtext)
@@ -180,7 +183,7 @@ class PathExpr:
             return Undefined
         if self.modifiers.has_key('nocall'):
             return val
-        return render(val)
+        return render(val, econtext.contexts)
 
     def _evalExists(self, econtext):
         try:
@@ -196,7 +199,7 @@ class PathExpr:
             return Undefined
         if self.modifiers.has_key('nocall'):
             return val
-        return render(val)
+        return render(val, econtext.contexts)
 
     def _eval(self, econtext):
         base = self._base
@@ -225,7 +228,7 @@ class PathExpr:
                     ob = ob[step]
             return restrictedTraverse(ob, path)
         except (AttributeError, KeyError, TypeError, IndexError), e:
-            raise Undefined, (e.args, sys.exc_info()), sys.exc_info()[2]
+            raise Undefined, (self._s, sys.exc_info()), sys.exc_info()[2]
 
     def __call__(self, econtext):
         return getattr(self, self._call_name)(econtext)
@@ -436,7 +439,10 @@ def restrictedTraverse(self, path):
                     if not securityManager.validate(object, object, name, o):
                         raise 'Unauthorized', name
             else:
-                o=object[name]
+                try:
+                    o=object[name]
+                except (AttributeError, TypeError):
+                    raise AttributeError, name
                 if not securityManager.validate(object, object, None, o):
                     raise 'Unauthorized', name
         object = o
