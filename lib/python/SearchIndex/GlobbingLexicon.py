@@ -239,6 +239,14 @@ class GlobbingLexicon(Lexicon):
 
         return words
 
+    def Splitter(self, astring, words=None):
+        """ wrap the splitter """
+
+        ## don't do anything, less efficient but there's not much
+        ## sense in stemming a globbing lexicon.
+
+        return Splitter(astring)
+
 
     def translate(self, pat):
         """Translate a PATTERN to a regular expression.

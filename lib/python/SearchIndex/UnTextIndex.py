@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -164,7 +164,6 @@ class UnTextIndex(Persistent, Implicit):
             self.call_methods=call_methods
             self._index=IOBTree()
             self._unindex=IOBTree()
-            self._syn=stop_word_dict
 
         else:
             pass
@@ -176,6 +175,11 @@ class UnTextIndex(Persistent, Implicit):
         else:
             self._lexicon = lexicon
 
+
+    def __setstate(self, state):
+        Persistent.__setstate__(self, state)
+        if hasattr(self, '_syn'):
+            del self._syn
 
     def getLexicon(self, vocab_id):
         
@@ -194,10 +198,10 @@ class UnTextIndex(Persistent, Implicit):
     def __len__(self):
         return len(self._unindex)
 
-    def __setstate__(self, state):
-        Persistent.__setstate__(self, state)
-        if not hasattr(self, '_lexicon'):
-            self._lexicon = Lexicon()
+##    def __setstate__(self, state):
+##        Persistent.__setstate__(self, state)
+##        if not hasattr(self, '_lexicon'):
+##            self._lexicon = Lexicon()
         
 
     def clear(self):
@@ -240,7 +244,11 @@ class UnTextIndex(Persistent, Implicit):
 
         ## The Splitter should now be european compliant at least.
         ## Someone should test this.
-        src = self.getLexicon(self._lexicon).Splitter(k, self._syn)
+
+##        import pdb
+##        pdb.set_trace()
+        
+        src = self.getLexicon(self._lexicon).Splitter(k)
         ## This returns a tuple of stemmed words.  Stopwords have been 
         ## stripped.
         
@@ -324,7 +332,7 @@ class UnTextIndex(Persistent, Implicit):
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
         """
-        src = tuple(self.getLexicon(self._lexicon).Splitter(word, self._syn))
+        src = tuple(self.getLexicon(self._lexicon).Splitter(word))
         if not src: return ResultList({}, (word,), self)
         if len(src) == 1:
             src=src[0]
@@ -412,13 +420,13 @@ class UnTextIndex(Persistent, Implicit):
 
         r = []
         for word in words:
-            r = r+self.getLexicon(self._lexicon).Splitter(doc, self._syn).indexes(word)
+            r = r+self.getLexicon(self._lexicon).Splitter(doc).indexes(word)
         return r
 
 
     def _subindex(self, isrc, d, old, last):
 
-        src = self.getLexicon(self._lexicon).Splitter(isrc, self._syn)  
+        src = self.getLexicon(self._lexicon).Splitter(isrc)  
 
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)

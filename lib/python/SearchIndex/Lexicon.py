@@ -113,11 +113,27 @@ class Lexicon(Persistent, Implicit):
 
     """
 
-    counter = 0
 
-    def __init__(self):
+    def __init__(self, stop_syn=None):
         self._lexicon = OIBTree()
         self.counter = 0
+        if stop_syn is None:
+            self.stop_syn = {}
+        else:
+            self.stop_syn = {}
+
+                
+    def set_stop_syn(selfb, stop_syn):
+        """ pass in a mapping of stopwords and synonyms.  Format is:
+
+        {'word' : [syn1, syn2, ..., synx]}
+
+        Vocabularies do not necesarily need to implement this if their
+        splitters do not support stemming or stoping.
+
+        """
+        self.stop_syn = stop_syn
+        
 
     def set(self, word):
         """ return the word id of 'word' """
@@ -142,8 +158,11 @@ class Lexicon(Persistent, Implicit):
     def __len__(self):
         return len(self._lexicon)
 
-    def Splitter(self, astring, words):
+    def Splitter(self, astring, words=None):
         """ wrap the splitter """
+
+        if words is None:
+            word = self.stop_syn
         return Splitter(astring, words)
 
     def grep(self, query):

@@ -91,7 +91,7 @@ from Persistence import Persistent
 from OFS.SimpleItem import Item
 from SearchIndex import Lexicon, GlobbingLexicon
 
-from VocabularyInterface import VocabularyInterface
+from SearchIndex.Lexicon import stop_word_dict
 
 manage_addVocabularyForm=HTMLFile('addVocabulary',globals())
 
@@ -113,7 +113,6 @@ class Vocabulary(Item, Persistent, Implicit):
     meta_type = "Vocabulary"
     _isAVocabulary = 1
 
-    __extends__=(VocabularyInterface,)
     
     manage_options=(
             
@@ -137,6 +136,7 @@ class Vocabulary(Item, Persistent, Implicit):
          ['Anonymous', 'Manager']), 
         )
 
+    
 
 ##    manage_main = HTMLFile('vocab_manage_main', globals())
     manage_vocabulary = HTMLFile('manage_vocab', globals())
@@ -151,7 +151,7 @@ class Vocabulary(Item, Persistent, Implicit):
         if globbing:
             self.lexicon = GlobbingLexicon.GlobbingLexicon()
         else:
-            self.lexicon = Lexicon.Lexicon()
+            self.lexicon = Lexicon.Lexicon(stop_word_dict)
 
     def query(self, pattern):
         """ """
@@ -170,6 +170,11 @@ class Vocabulary(Item, Persistent, Implicit):
 
         if RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_vocabulary')
+
+    def manage_stop_syn(self, stop_syn, REQUEST=None):
+        pass
+
+
 
     def insert(self, word=''):
         self.lexicon.set(word)
