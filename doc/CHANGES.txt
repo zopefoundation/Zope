@@ -281,7 +281,10 @@ Zope Changes
         - The pyexpat extension module for using James Clark's 
           expat library for parsing XML is included in the
           distribution as Shared.DC.pyexpat.
-      
+
+        - ZGadflyDA has been updated to use the current (as of this
+          release) version of Gadfly.
+
       Bugs Fixed
       
         - You can no longer cd to an acquired directory in ZServer FTP.
