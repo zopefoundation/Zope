@@ -108,7 +108,7 @@ To set explicit security on this item, click the &quot;Add...&quot; button.
 </TABLE>
 </FORM>
 
-<!--#if access_debug-->
+<!--#if view_access_control_debug_info-->
 <BR><BR>
 <BR><BR>
 <BR><BR>
@@ -165,6 +165,6 @@ Attributes:
 </TR>
 <!--#/in access_debug_info-->
 </TABLE>
-<!--#/if access_debug-->
+<!--#/if view_access_control_debug_info-->
 </BODY>
 </HTML>
