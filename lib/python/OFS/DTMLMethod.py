@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -166,16 +166,16 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
 
             r=apply(HTML.__call__, (self, client, REQUEST), kw)
             if type(r) is not type(''): return r
-
             if RESPONSE is None: return r
 
         finally: security.removeContext(self)
 
-        # Ick.  I don't like this. But someone can override it with
-        # a header if they have to.
-        hh=RESPONSE.headers.has_key
-        if not (hh('content-type') or hh('Content-Type')):
-            c, e=guess_content_type(self.__name__, r)
+        have_key=RESPONSE.headers.has_key
+        if not (have_key('content-type') or have_key('Content-Type')):
+            if self.__dict__.has_key('content_type'):
+                c=self.content_type
+            else:
+                c, e=guess_content_type(self.__name__, r)
             RESPONSE.setHeader('Content-Type', c)
         return decapitate(r, RESPONSE)
 

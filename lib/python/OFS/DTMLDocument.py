@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -153,12 +153,14 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         Response, and key word arguments."""
         kw['document_id']   =self.id
         kw['document_title']=self.title
-        if hasattr(self, 'aq_explicit'): bself=self.aq_explicit
+        if hasattr(self, 'aq_explicit'):
+            bself=self.aq_explicit
         else: bself=self
         
         security=getSecurityManager()
         security.addContext(self)
-        try: 
+
+        try:
             if client is None:
                 # Called as subtemplate, so don't need error propigation!
                 r=apply(HTML.__call__, (self, bself, REQUEST), kw)
@@ -166,21 +168,19 @@ class DTMLDocument(PropertyManager, DTMLMethod):
                 return decapitate(r, RESPONSE)
 
             r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
+            if type(r) is not type(''): return r
+            if RESPONSE is None: return r
 
         finally: security.removeContext(self)
 
-
-        if type(r) is not type(''): return r
-        if RESPONSE is None: return r
-
-        hh=RESPONSE.headers.has_key
-        if not (hh('content-type') or hh('Content-Type')):
+        have_key=RESPONSE.headers.has_key
+        if not (have_key('content-type') or have_key('Content-Type')):
             if self.__dict__.has_key('content_type'):
                 c=self.content_type
             else:
                 c, e=guess_content_type(self.__name__, r)
             RESPONSE.setHeader('Content-Type', c)
-        return r
+        return decapitate(r, RESPONSE)
 
 
 
