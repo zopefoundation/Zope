@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.11 2002/10/07 19:43:15 mj Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Zope.py,v 1.12 2003/07/03 21:44:59 caseman Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -102,6 +102,7 @@ class TreeSkipMixin:
     def filterChildren(self, children):
         if self._values_filter:
             return self._values_filter(LazyFilter(children, skip=self.skip))
+        return children
 
 class TreeMaker(TreeSkipMixin, TreeMaker):
     _getChildren = TreeMaker.getChildren
