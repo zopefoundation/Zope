@@ -62,7 +62,7 @@
   <textarea name="body:text" wrap="off" style="width: 100%;"
    cols=<dtml-var dtpref_cols html_quote missing="50">
    rows=<dtml-var dtpref_rows html_quote missing="20">><dtml-var 
-   body></textarea>
+   body html_quote></textarea>
   </div>
     </td>
   </tr>
