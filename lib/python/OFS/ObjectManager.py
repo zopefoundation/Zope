@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.36 1998/03/09 19:58:20 jim Exp $"""
+$Id: ObjectManager.py,v 1.37 1998/03/18 17:54:29 brian Exp $"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -111,32 +111,39 @@ class ObjectManager(
         delattr(self,id)
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
 
-    def objectIds(self,t=None):
+    def objectIds(self, spec=None):
         # Return a list of subobject ids
-	if t is not None:
-	    if type(t)==type('s'): t=(t,)
-	    return filter(None, map(lambda x,v=t: 
-			  (x['meta_type'] in v) and x['id'] or None, 
-			  self._objects))
+	if spec is not None:
+	    if type(spec)==type('s'):
+		spec=[spec]
+	    set=[]
+	    for ob in self._objects:
+	        if ob['meta_type'] in spec:
+		    set.append(ob['id'])
+	    return set
 	return map(lambda i: i['id'], self._objects)
 
-    def objectValues(self,t=None):
+    def objectValues(self, spec=None):
         # Return a list of the actual subobjects
-	if t is not None:
-	    if type(t)==type('s'): t=(t,)
-	    return filter(None, map(lambda x,v=t,s=self: 
-			  (x['meta_type'] in v) and getattr(s,x['id']) or None,
-			  self._objects))
+	if spec is not None:
+	    if type(spec)==type('s'):
+		spec=[spec]
+	    set=[]
+	    for ob in self._objects:
+		if ob['meta_type'] in spec:
+		    set.append(getattr(self, ob['id']))
+	    return set
 	return map(lambda i,s=self: getattr(s,i['id']), self._objects)
 
-    def objectItems(self,t=None):
+    def objectItems(self, spec=None):
         # Return a list of (id, subobject) tuples
-	if t is not None:
-	    if type(t)==type('s'): t=(t,)
-	    return filter(None, map(lambda x,v=t,s=self: 
-	                  (x['meta_type'] in v) and \
-			  (x['id'],getattr(s,x['id'])) or None, 
-			  self._objects))
+	if spec is not None:
+	    if type(spec)==type('s'):
+		spec=[spec]
+	    set=[]
+	    for ob in self._objects:
+		if ob['meta_type'] in spec:
+		    set.append((ob['id'], getattr(self, ob['id'])))
 	return map(lambda i,s=self: (i['id'], getattr(s,i['id'])),
 		                    self._objects)
     def objectMap(self):
@@ -269,6 +276,7 @@ class ObjectManager(
 		    aclEChecked='', aclAChecked=' CHECKED', aclPChecked='')
 	raise 'BadRequest', 'Unknown object type: %s' % type
 
+
     def manage_delObjects(self,ids=[],submit='',clip_id='',
 			  clip_data='',REQUEST=None):
 	"""Delete a subordinate object"""
@@ -305,6 +313,7 @@ class ObjectManager(
 	        del ids[-1]
 	    if REQUEST is not None:
 		return self.manage_main(self, REQUEST, update_menu=1)
+
 
     def _setProperty(self,id,value,type='string'):
         self._checkId(id)
@@ -477,6 +486,10 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.37  1998/03/18 17:54:29  brian
+# Fixed bug that required objects to have a __len__ when a specifier was
+# given to objectValues, Ids, and Items.
+#
 # Revision 1.36  1998/03/09 19:58:20  jim
 # changed session marking support
 #
