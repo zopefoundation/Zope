@@ -3,7 +3,18 @@ Zope Installation Frequently Asked Questions
 
   Installing Zope
 
-    1. I am trying to build Zope on my BSD based system, but I
+    1. On certain Unix platforms (usually Solaris) I get a "checksum 
+       error" untarring the Zope distribution. Whats the deal?
+
+       Zope is built and distributed using GNU tar. Some vendor-supplied
+       tar implementations have problems with long path names as they 
+       appear in GNU tar created files. This is a problem that occurs in 
+       a number of software distributions created using GNU tar, not just 
+       Zope. We suggest that you install a GNU tar on your system to 
+       avoid this problem (not just with Zope, but with other software 
+       distributions as well).
+
+    2. I am trying to build Zope on my BSD based system, but I
        keep getting "symbol not found" errors and the build
        scripts stop. What do I do?
 
@@ -15,7 +26,7 @@ Zope Installation Frequently Asked Questions
        changing the line: do('make')  to: do('make -k').
 
 
-    2. I am having trouble building Zope on a libc 5 Linux machine.
+    3. I am having trouble building Zope on a libc 5 Linux machine.
     
        Zope requires Python be built with glibc 2.x (libc 6) on Linux.
        
