@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.67 1999/07/01 15:22:12 brian Exp $'''
-__version__='$Revision: 1.67 $'[11:-2]
+$Id: DA.py,v 1.68 1999/07/26 13:15:54 brian Exp $'''
+__version__='$Revision: 1.68 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -431,6 +431,10 @@ class DA(
 
     def connected(self):
         return getattr(getattr(self, self.connection_id), 'connected')()
+
+Globals.default__class_init__(DA)
+
+
 
 ListType=type([])
 class Traverse(ExtensionClass.Base):
