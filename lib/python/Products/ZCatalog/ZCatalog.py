@@ -553,6 +553,16 @@ class ZCatalog(Folder, Persistent, Implicit):
             obj = self.resolve_url(self.getpath(rid), REQUEST)
         return obj
 
+    def getMetadataForUID(self, uid):
+        """return the correct metadata given the uid, usually the path"""
+        rid = self._catalog.uids[uid]
+        return self._catalog.getMetadataForRID(rid)
+
+    def getIndexDataForUID(self, uid):
+        """return the current index contents given the uid, usually the path"""
+        rid = self._catalog.uids[uid]
+        return self._catalog.getIndexDataForRID(rid)
+
     def getMetadataForRID(self, rid):
         """return the correct metadata for the cataloged record id"""
         return self._catalog.getMetadataForRID(int(rid))
