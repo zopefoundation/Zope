@@ -1,6 +1,16 @@
 <HTML>
 <HEAD>
 <TITLE>Security</TITLE>
+
+<STYLE type="text/css">
+<!--
+TD {
+  font-size: 10pt;
+  color: black;
+}
+-->
+</STYLE>
+
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <!--#if manage_tabs-->
@@ -15,57 +25,73 @@ indicate where roles are assigned permissions.
 <!--#with expr="_.namespace(valid_roles=valid_roles())"-->
 <FORM ACTION="manage_changePermissions" METHOD="POST">
 <TABLE>
-<tr>
+<TR>
   <!--#unless isTopLevelPrincipiaApplicationObject-->
-  <td> </td>
+  <TD>
+  <STRONG>
+  Acquire<BR>permission<BR>settings?
+  </STRONG>
+  </TD>
   <!--#/unless-->
-  <td> </td>
-  <td aligh=left colspan=<!--#var expr="_.len(valid_roles)"-->>
-  <strong>Roles:</strong></th>
-</tr>
-<tr>
+  <TD>
+  <STRONG>
+  Permission
+  </STRONG>
+  </TD>
+  <TD ALIGN="LEFT" COLSPAN="<!--#var expr="_.len(valid_roles)"-->">
+  <STRONG>
+  Roles
+  </STRONG>
+  </TD>
+</TR>
+<TR>
   <!--#unless isTopLevelPrincipiaApplicationObject-->
-  <th>Acquire permission settings</th>
+  <TD></TD>
   <!--#/unless-->
-  <th>Permission</th>
+  <TD></TD>
   <!--#in valid_roles-->
-  <th><a href="manage_roleForm?role_to_manage=<!--#
-               var sequence-item url_quote-->">
-      <!--#var sequence-item--></a></th>
+  <TD CLASS="bold">
+  <A HREF="manage_roleForm?role_to_manage=<!--#
+     var sequence-item url_quote-->"><!--#var sequence-item--></A>
+  </TD>
   <!--#/in valid_roles-->
-</tr>
+</TR>
+
 <!--#in permission_settings mapping-->
-  <tr>
-    <!--#unless isTopLevelPrincipiaApplicationObject-->
-    <td align=center>
-        <input type=checkbox
-               name=a<!--#var sequence-index-->
-               <!--#var acquire-->>
-    </td>
-    <!--#/unless-->
-    <th align=left>
-        <a href="manage_permissionForm?permission_to_manage=<!--#
+<TR>
+  <!--#unless isTopLevelPrincipiaApplicationObject-->
+  <TD ALIGN="CENTER">
+  <INPUT TYPE="checkbox" NAME="a<!--#var sequence-index-->" 
+   <!--#var acquire-->>
+  </TD>
+  <!--#/unless-->
+  <TD ALIGN="LEFT">
+      <A HREF="manage_permissionForm?permission_to_manage=<!--#
                var name url_quote-->">
-        <!--#var name--></a></th>
-    <!--#in roles mapping-->
-    <td align=center>
-       <input type=checkbox name=<!--#var name--> <!--#var checked-->>
-    </td>
-    <!--#/in-->
-  </tr>
+      <!--#var name--></A>
+  </TD>
+  <!--#in roles mapping-->
+  <TD ALIGN="CENTER">
+     <INPUT TYPE="CHECKBOX" NAME="<!--#var name-->" <!--#var checked-->>
+  </TD>
+  <!--#/in-->
+</TR>
+
 <!--#/in permission_settings-->
-<tr>
+<TR>
 <!--#if isTopLevelPrincipiaApplicationObject-->
-<td colspan=<!--#var expr="_.len(valid_roles)+1"--> align=center>
+<TD COLSPAN="<!--#var expr="_.len(valid_roles)+1"-->" ALIGN="CENTER">
 <!--#else-->
-<td colspan=<!--#var expr="_.len(valid_roles)+2"--> align=center>
+<TD COLSPAN="<!--#var expr="_.len(valid_roles)+2"-->" ALIGN="CENTER">
 <!--#/if-->
-<input type=submit value="Change">
-</td></tr>
-</table>
-</form>
+<INPUT TYPE="SUBMIT" VALUE="Change">
+</TD>
+</TR>
+</TABLE>
+</FORM>
 <!--#/with-->
 
+<!--#if expr="meta_type != 'User Folder'"-->
 <P> 
 <FORM ACTION="manage_defined_roles" METHOD="POST">
 <TABLE CELLPADDING="2">
@@ -102,6 +128,8 @@ indicate where roles are assigned permissions.
 <!--#/if userdefined_roles-->
 </TABLE>
 </FORM>
+<!--#/if-->
+
 
 </BODY>
 </HTML>

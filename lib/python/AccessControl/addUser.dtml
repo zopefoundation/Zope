@@ -21,6 +21,7 @@ and roles for the new user and click &quot;Add&quot;.
   <INPUT TYPE="TEXT" NAME="name" SIZE="20">
   </TD>
 </TR>
+
 <!--#if remote_user_mode__-->
   <INPUT TYPE="HIDDEN" NAME="password" value="password">
   <INPUT TYPE="HIDDEN" NAME="confirm"  value="password">
@@ -30,7 +31,7 @@ and roles for the new user and click &quot;Add&quot;.
   <STRONG>Password</STRONG>
   </TD>
   <TD VALIGN="TOP">
-  <INPUT TYPE="PASSWORD" NAME="password" SIZE="20">
+  <INPUT TYPE="PASSWORD" NAME="password" SIZE="40">
   </TD>
 </TR>
 <TR>
@@ -38,10 +39,20 @@ and roles for the new user and click &quot;Add&quot;.
   <STRONG>(Confirm)</STRONG>
   </TD>
   <TD VALIGN="TOP">
-  <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20">
+  <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="40">
   </TD>
 </TR>
 <!--#/if-->
+
+<TR>
+<TD VALIGN="TOP">
+<STRONG>Domains</STRONG>
+</TD>
+<TD VALIGN="TOP">
+<INPUT TYPE="TEXT" NAME="domains:tokens" VALUE="" SIZE="40">
+</TD>
+</TR>
+
 <TR>
   <TD VALIGN="TOP">
   <STRONG>Roles</STRONG>

@@ -1,8 +1,8 @@
 """Access control package"""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
-
+import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
 from Persistence import Persistent
 from Globals import HTMLFile, MessageDialog
@@ -13,17 +13,28 @@ from OFS.SimpleItem import Item
 from base64 import decodestring
 from ImageFile import ImageFile
 from Role import RoleManager
-import Globals, App.Undo
+from string import split, join
 
 ListType=type([])
 
-class User(Implicit, Persistent):
-    def __init__(self,name,password,roles):
-	self.name =name
-	self.roles=roles
-	self.__   =password
 
-    def authenticate(self, password):
+
+
+class User(Implicit, Persistent):
+
+    # For backward compatibility
+    domains=[]
+
+    def __init__(self,name,password,roles,domains):
+	self.name   =name
+	self.roles  =roles
+	self.__     =password
+        self.domains=domains
+
+    def authenticate(self, password, request):
+        if self.domains:
+            return (password==self.__) and \
+                   domainSpecMatch(self.domains, request)
 	return password==self.__
 
     def _shared_roles(self, parent):
@@ -92,15 +103,17 @@ try:
     data=split(strip(f.readline()),':')
     f.close()
     _remote_user_mode=not data[1]
-    super=User(data[0],data[1],('manage',))
+    try:    ds=split(data[2], ' ')
+    except: ds=[]
+    super=User(data[0],data[1],('manage',), ds)
     del data
 except:
-    super=User('superuser','123',('manage',))
-
-super.hasRole=lambda parent, roles=None: 1
+    super=User('superuser','123',('manage',),[])
+super.allowed=lambda parent, roles=None: 1
 super.has_role=lambda roles=None: 1
+super.hasRole=super.allowed
 
-nobody=User('Anonymous User','',('Anonymous',))
+nobody=User('Anonymous User','',('Anonymous',), [])
 
 
 
@@ -152,11 +165,20 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def validate(self,request,auth='',roles=None):
 	parent=request['PARENTS'][0]
 
-	# If no authorization, only nobody can match
+	# If no authorization, only a user with a
+        # domain spec and no passwd or nobody can
+        # match
 	if not auth:
-	    if nobody.hasRole(parent, roles):
-		return nobody
-	    return None
+            for ob in self.data.values():
+                if ob.domains:
+                    if ob.authenticate('', request):
+                        if ob.allowed(parent, roles):
+                            ob=ob.__of__(self)
+                            return ob
+            if self._isTop() and nobody.allowed(parent, roles):
+                ob=nobody.__of__(self)
+                return ob
+            return None
 
 	# Only do basic authentication
 	if lower(auth[:6])!='basic ':
@@ -165,7 +187,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 	# Check for superuser
 	if self._isTop() and (name==super.name) and \
-	super.authenticate(password):
+	super.authenticate(password, request):
 	    return super
 
 	# Try to get user
@@ -173,14 +195,14 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	except: return None
 
 	# Try to authenticate user
-	if not user.authenticate(password):
+	if not user.authenticate(password, request):
 	    return None
 
         # We need the user to be able to acquire!
         user=user.__of__(self)
 
 	# Try to authorize user
-	if user.hasRole(parent, roles):
+	if user.allowed(parent, roles):
 	    return user
 	return None
 
@@ -192,46 +214,80 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     manage=manage_main=_mainUser
 
-    def _addUser(self,name,password,confirm,roles,REQUEST=None):
-	if not name or not password or not confirm:
+    def _addUser(self,name,password,confirm,roles,domains,REQUEST=None):
+        if not name:
             return MessageDialog(
 		   title  ='Illegal value', 
-                   message='Name, password and confirmation must be specified',
+                   message='A username must be specified',
+                   action ='manage_main')
+	if not password or not confirm:
+            if not domains:
+                return MessageDialog(
+                   title  ='Illegal value', 
+                   message='Password and confirmation must be specified',
                    action ='manage_main')
 	if self.data.has_key(name) or (name==super.name):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='A user with the specified name already exists',
                    action ='manage_main')
-	if password!=confirm:
+        if (password or confirm) and (password != confirm):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
+        
 	if not roles: roles=[]
-        self.data[name]=User(name,password,roles)
-	if REQUEST: return self._mainUser(self, REQUEST)
+        if not domains: domains=[]
 
-    def _changeUser(self,name,password,confirm,roles,REQUEST=None):
-	if not name or not password or not confirm:
+        if domains and not domainSpecValidate(domains):
             return MessageDialog(
 		   title  ='Illegal value', 
-                   message='Name, password and confirmation must be specified',
+                   message='Illegal domain specification',
+                   action ='manage_main')
+            
+        self.data[name]=User(name,password,roles,domains)
+        
+	if REQUEST: return self._mainUser(self, REQUEST)
+
+
+    def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
+        if not name:
+            return MessageDialog(
+		   title  ='Illegal value', 
+                   message='A username must be specified',
+                   action ='manage_main')
+	if not password or not confirm:
+            if not domains:
+                return MessageDialog(
+                   title  ='Illegal value', 
+                   message='Password and confirmation must be specified',
                    action ='manage_main')
 	if not self.data.has_key(name):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Unknown user',
                    action ='manage_main')
-	if password!=confirm:
+        if (password or confirm) and (password != confirm):
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
+
 	if not roles: roles=[]
+        if not domains: domains=[]
+
+        if domains and not domainSpecValidate(domains):
+            return MessageDialog(
+		   title  ='Illegal value', 
+                   message='Illegal domain specification',
+                   action ='manage_main')
+        
 	user=self.data[name]
 	user.__=password
 	user.roles=roles
+        user.domains=domains
+        
 	if REQUEST: return self._mainUser(self, REQUEST)
 
     def _delUsers(self,names,REQUEST=None):
@@ -268,14 +324,17 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
  	    password=reqattr(REQUEST, 'password')
  	    confirm =reqattr(REQUEST, 'confirm')
  	    roles   =reqattr(REQUEST, 'roles')
-	    return self._addUser(name,password,confirm,roles,REQUEST)
+            domains =reqattr(REQUEST, 'domains')
+	    return self._addUser(name,password,confirm,roles,domains,REQUEST)
 
 	if submit=='Change':
  	    name    =reqattr(REQUEST, 'name')
  	    password=reqattr(REQUEST, 'password')
  	    confirm =reqattr(REQUEST, 'confirm')
  	    roles   =reqattr(REQUEST, 'roles')
- 	    return self._changeUser(name,password,confirm,roles,REQUEST)
+            domains =reqattr(REQUEST, 'domains')
+ 	    return self._changeUser(name,password,confirm,roles,
+                                    domains,REQUEST)
 
 	if submit=='Delete':
 	    names=reqattr(REQUEST, 'names')
@@ -312,9 +371,16 @@ if _remote_user_mode:
 	    e=request.environ
 	    if e.has_key('REMOTE_USER'): name=e['REMOTE_USER']
 	    else:
-		if nobody.hasRole(parent, roles):
-		    return nobody
-		return None
+                for ob in self.data.values():
+                    if ob.domains:
+                        if ob.authenticate('', request):
+                            if ob.allowed(parent, roles):
+                                ob=ob.__of__(self)
+                                return ob
+                if self._isTop() and nobody.allowed(parent, roles):
+                    ob=nobody.__of__(self)
+                    return ob
+                return None
 
 	    # Check for superuser
 	    if self._isTop() and (name==super.name):
@@ -328,7 +394,7 @@ if _remote_user_mode:
             user=user.__of__(self)
 
 	    # Try to authorize user
-	    if user.hasRole(parent, roles):
+	    if user.allowed(parent, roles):
 		return user
 
 
@@ -341,6 +407,84 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
                    action ='%s/manage_main' % REQUEST['PARENT_URL'])
     self.__allow_groups__=self.acl_users
     if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
+
+
+
+
+
+addr_match=regex.compile('[0-9\.\*]*').match
+host_match=regex.compile('[A-Za-z0-9\.\*]*').match
+
+
+def domainSpecValidate(spec):
+    for ob in spec:
+        sz=len(ob)
+        if not ((addr_match(ob) == sz) or (host_match(ob) == sz)):
+            return 0
+    return 1
+
+
+def domainSpecMatch(spec, request):
+
+    if request.has_key('REMOTE_HOST'):
+        host=request['REMOTE_HOST']
+    else: host=''
+
+    if request.has_key('REMOTE_ADDR'):
+        addr=request['REMOTE_ADDR']
+    else: addr=''
+
+    if not host and not addr:
+        return 0
+
+    if not host:
+        host=socket.gethostbyaddr(addr)[0]
+    if not addr:
+        addr=socket.gethostbyname(host)
+
+    _host=split(host, '.')
+    _addr=split(addr, '.')
+    _hlen=len(_host)
+    _alen=len(_addr)
+    
+    for ob in spec:
+        sz=len(ob)
+        _ob=split(ob, '.')
+        _sz=len(_ob)
+
+        if addr_match(ob)==sz:
+            if _sz != _alen:
+                continue
+            fail=0
+            for i in range(_sz):
+                a=_addr[i]
+                o=_ob[i]
+                if (o != a) and (o != '*'):
+                    fail=1
+                    break
+            if fail:
+                continue
+            return 1
+
+        if host_match(ob)==sz:
+            if _hlen < _sz:
+                continue
+            elif _hlen > _sz:
+                _item=_host[-_sz:]
+            else:
+                _item=_host
+            fail=0
+            for i in range(_sz):
+                h=_item[i]
+                o=_ob[i]
+                if (o != h) and (o != '*'):
+                    fail=1
+                    break
+            if fail:
+                continue
+            return 1
+    return 0
+
 
 def absattr(attr):
     if callable(attr): return attr()
