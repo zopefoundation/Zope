@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -93,7 +93,7 @@ from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split
 from DocumentTemplate import html_quote
-from Acquisition import Implicit
+from Acquisition import Implicit, aq_base
 from Globals import Persistent
 from DateTime import DateTime
 
@@ -196,7 +196,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def valid_property_id(self, id):
         if not id or id[:1]=='_' or (' ' in id) \
-           or hasattr(self.aq_base, id):
+           or hasattr(aq_base(self), id):
             return 0
         return 1
 
@@ -386,7 +386,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         propdict=self.propdict()
         nd=self._reserved_names
         for id in ids:
-            if not hasattr(self.aq_base, id):
+            if not hasattr(aq_base(self), id):
                 raise 'BadRequest', (
                       'The property <em>%s</em> does not exist' % id)
             if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):

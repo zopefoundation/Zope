@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -97,6 +97,7 @@ from webdav.common import urlbase
 from ExtensionClass import Base
 from Globals import Persistent
 from Traversable import Traversable
+from Acquisition import aq_base
 
 class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
@@ -780,8 +781,3 @@ def absattr(attr):
     if callable(attr):
         return attr()
     return attr
-
-def aq_base(ob):
-    if hasattr(ob, 'aq_base'):
-        return ob.aq_base
-    return ob
