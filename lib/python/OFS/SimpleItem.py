@@ -107,10 +107,11 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.32 1999/01/27 22:10:31 brian Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: SimpleItem.py,v 1.33 1999/02/03 17:35:54 brian Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 import regex, sys, Globals, App.Management
+from ExtensionClass import Base
 from DateTime import DateTime
 from CopySupport import CopySource
 from string import join, lower
@@ -119,7 +120,7 @@ import marshal
 
 HTML=Globals.HTML
 
-class Item(CopySource, App.Management.Tabs):
+class Item(Base, CopySource, App.Management.Tabs):
     """A simple Principia object. Not Folderish."""
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
