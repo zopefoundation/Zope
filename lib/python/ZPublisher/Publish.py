@@ -375,10 +375,9 @@ Publishing a module using CGI
     o Do not copy the module to be published to the cgi-bin
       directory.
 
-    o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
-      and newcgi.pyc, to the directory containing the
-      module to be published, or to a directory in the standard
-      (compiled in) Python search path.
+    o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc
+      to the directory containing the module to be published, or to a
+      directory in the standard (compiled in) Python search path.
 
     o Copy the file cgi-module-publisher to the directory containing the
       module to be published.
@@ -387,7 +386,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.79 1998/03/18 20:20:34 jim Exp $"""
+$Id: Publish.py,v 1.80 1998/03/24 14:15:24 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -442,7 +441,7 @@ $Id: Publish.py,v 1.79 1998/03/18 20:20:34 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 
 def main():
