@@ -16,19 +16,49 @@ from Products.PythonScripts.PythonScript import PythonScript
 from ZODB.POSException import InvalidObjectReference
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
+from ZODB.DemoStorage import DemoStorage
+from OFS.Application import Application
 import time, threading, whrandom
 
 epoch = time.time()
+stuff = {}
+
+def _getApp():
+
+    app = stuff.get('app', None)
+    if not app:
+        ds = DemoStorage(quota=(1<<20))
+        db = ZODB.DB(ds)
+        conn = db.open()
+        root = conn.root()
+        app = Application()
+        root['Application']= app
+        get_transaction().commit()
+        stuff['app'] = app
+        stuff['conn'] = conn
+        stuff['db'] = db
+    return app
+
+def _openApp():
+    conn = stuff['db'].open()
+    root = conn.root()
+    app = root['Application']
+    return conn, app
+
+def _delApp():
+    get_transaction().abort()
+    stuff['conn'].close()
+    del stuff['conn']
+    del stuff['app']
+    del stuff['db']
+
 
 class TestBase(TestCase):
     def setUp(self):
-        import Zope
 
         Products.Transience.Transience.time = fauxtime
 
-        self.app = makerequest.makerequest(Zope.app())
-
-        del Zope
+        self.app = makerequest.makerequest(_getApp())
 
         timeout = self.timeout = 1
 
@@ -41,8 +71,9 @@ class TestBase(TestCase):
 
     def tearDown(self):
         get_transaction().abort()
-        self.app._p_jar.close()
-        self.app = None
+        #self.app._p_jar.close()
+        #self.app = None
+        _delApp()
         del self.app
 
 class TestLastAccessed(TestBase):
