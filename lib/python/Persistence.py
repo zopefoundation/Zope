@@ -85,4 +85,7 @@
 """Provide access to Persistent and PersistentMapping
 
 This avoids dependency on the database package name.
+
+While obviously there is nothing in this module, the correct names are
+inserted by the __init__.py in ZODB, jumpstarting the process.
 """
