@@ -84,3 +84,4 @@
 ##############################################################################
 from DateTime import DateTime
 from DateTime import Timezones
+from newDateTime import DateTime as newDateTime
