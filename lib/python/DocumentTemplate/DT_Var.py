@@ -195,8 +195,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.29 1999/06/21 18:24:11 jim Exp $'
-__version__='$Revision: 1.29 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.30 1999/08/03 16:40:27 jim Exp $'
+__version__='$Revision: 1.30 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -243,6 +243,11 @@ class Var:
         have_arg=args.has_key
 
         __traceback_info__=name, val, args
+
+        if val is None and have_arg('null'):
+            # Treat None as special case wrt null
+            return args['null']
+            
 
         # handle special formats defined using fmt= first
         if have_arg('fmt'):
