@@ -91,18 +91,11 @@ class ZClassOwner(ExtensionClass.Base):
     manage_addZClassForm=Globals.HTMLFile(
         'addZClass', globals(), default_class_='OFS.SimpleItem Item')
 
-    def manage_addZClass(self, id, title='', baseclasses=[], REQUEST=None):
-        """Add a Z Class
-        """
-        bases=[]
-        for b in baseclasses:
-            if Products.meta_classes.has_key(b):
-                bases.append(Products.meta_classes[b])
-            else:
-                bases.append(getattr(self, b))
-
-        self._setObject(id, ZClass.ZClass(id,title,bases))
-        if REQUEST is not None: return self.manage_main(self,REQUEST)
+    def manage_addZClass(self, id, title='', baseclasses=[], meta_type='',
+                         REQUEST=None):
+        "Add a ZClass"
+        return ZClass.manage_addZClass(
+            self, id, title, baseclasses, meta_type, REQUEST)
 
     def manage_subclassableClassNames(self):
         r={}
