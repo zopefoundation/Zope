@@ -143,6 +143,83 @@ class TestCopySupport( unittest.TestCase ):
         self.failUnless('newfile' in self.folder1.objectIds())
         self.failUnless('newfile' in self.folder2.objectIds())
 
+    def testPasteSingleNotSameID( self ):
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failIf( 'file' in self.folder2.objectIds() )
+        cookie = self.folder1.manage_copyObjects( ids=('file',) )
+        result = self.folder2.manage_pasteObjects( cookie )
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failUnless( 'file' in self.folder2.objectIds() )
+        self.failUnless( result == [{'id':'file', 'new_id':'file'}])
+
+    def testPasteSingleSameID( self ):
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failIf( 'file' in self.folder2.objectIds() )
+        manage_addFile(self.folder2, 'file',
+                       file='', content_type='text/plain')
+        cookie = self.folder1.manage_copyObjects( ids=('file',) )
+        result = self.folder2.manage_pasteObjects( cookie )
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failUnless( 'file' in self.folder2.objectIds() )
+        self.failUnless( 'copy_of_file' in self.folder2.objectIds() )
+        self.failUnless( result == [{'id':'file', 'new_id':'copy_of_file'}])
+
+    def testPasteMultiNotSameID( self ):
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failIf( 'file1' in self.folder2.objectIds() )
+        manage_addFile(self.folder1, 'file1',
+                       file='', content_type='text/plain')
+        self.failIf( 'file2' in self.folder2.objectIds() )
+        manage_addFile(self.folder1, 'file2',
+                       file='', content_type='text/plain')
+        self.failIf( 'file' in self.folder2.objectIds() )
+        self.failIf( 'file1' in self.folder2.objectIds() )
+        self.failIf( 'file2' in self.folder2.objectIds() )
+        cookie = self.folder1.manage_copyObjects( ids=('file','file1','file2',) )
+        result = self.folder2.manage_pasteObjects( cookie )
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failUnless( 'file1' in self.folder1.objectIds() )
+        self.failUnless( 'file2' in self.folder1.objectIds() )
+        self.failUnless( 'file' in self.folder2.objectIds() )
+        self.failUnless( 'file1' in self.folder2.objectIds() )
+        self.failUnless( 'file2' in self.folder2.objectIds() )
+        self.failUnless( result == [{'id':'file', 'new_id':'file'},
+                                    {'id':'file1', 'new_id':'file1'},
+                                    {'id':'file2', 'new_id':'file2'}])
+
+    def testPasteMultiSameID( self ):
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failIf( 'file1' in self.folder2.objectIds() )
+        manage_addFile(self.folder1, 'file1',
+                       file='', content_type='text/plain')
+        self.failIf( 'file2' in self.folder2.objectIds() )
+        manage_addFile(self.folder1, 'file2',
+                       file='', content_type='text/plain')
+        self.failIf( 'file' in self.folder2.objectIds() )
+        manage_addFile(self.folder2, 'file',
+                       file='', content_type='text/plain')
+        self.failIf( 'file1' in self.folder2.objectIds() )
+        manage_addFile(self.folder2, 'file1',
+                       file='', content_type='text/plain')
+        self.failIf( 'file2' in self.folder2.objectIds() )
+        manage_addFile(self.folder2, 'file2',
+                       file='', content_type='text/plain')
+        cookie = self.folder1.manage_copyObjects( ids=('file','file1','file2',) )
+        result = self.folder2.manage_pasteObjects( cookie )
+        self.failUnless( 'file' in self.folder1.objectIds() )
+        self.failUnless( 'file1' in self.folder1.objectIds() )
+        self.failUnless( 'file2' in self.folder1.objectIds() )
+        self.failUnless( 'file' in self.folder2.objectIds() )
+        self.failUnless( 'file1' in self.folder2.objectIds() )
+        self.failUnless( 'file2' in self.folder2.objectIds() )
+        self.failUnless( 'copy_of_file' in self.folder2.objectIds() )
+        self.failUnless( 'copy_of_file1' in self.folder2.objectIds() )
+        self.failUnless( 'copy_of_file2' in self.folder2.objectIds() )
+        self.failUnless( result == [{'id':'file', 'new_id':'copy_of_file'},
+                                    {'id':'file1', 'new_id':'copy_of_file1'},
+                                    {'id':'file2', 'new_id':'copy_of_file2'}])
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestCopySupport ) )

@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -137,6 +137,7 @@ class CopyContainer(ExtensionClass.Base):
         oblist=[]
         op=cp[0]
         app = self.getPhysicalRoot()
+        result = []
 
         for mdata in cp[1]:
             m = Moniker.loadMoniker(mdata)
@@ -156,7 +157,9 @@ class CopyContainer(ExtensionClass.Base):
                     message=sys.exc_info()[1],
                     action ='manage_main')
                 ob=ob._getCopy(self)
+                orig_id=ob.getId()
                 id=self._get_id(ob.getId())
+                result.append({'id':orig_id, 'new_id':id})
                 ob._setId(id)
                 self._setObject(id, ob)
                 ob = self._getOb(id)
@@ -186,7 +189,9 @@ class CopyContainer(ExtensionClass.Base):
                 
                 aq_parent(aq_inner(ob))._delObject(id)
                 ob = aq_base(ob)
+                orig_id=id
                 id=self._get_id(id)
+                result.append({'id':orig_id, 'new_id':id })
                 ob._setId(id)
 
                 self._setObject(id, ob, set_owner=0)
@@ -202,7 +207,7 @@ class CopyContainer(ExtensionClass.Base):
                 REQUEST['__cp'] = None
                 return self.manage_main(self, REQUEST, update_menu=1,
                                         cb_dataValid=0)
-        return ''
+        return result
 
 
     manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())

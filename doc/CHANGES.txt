@@ -144,6 +144,10 @@ Zope Changes
 
       - Collector #516 -- "title" property on image tags
 
+      - Collector #61 -- now manage_PasteObjects return a list of dictionaries
+	containing {'id':original_id,'new_id':newly_pasted_obj_id} when called
+	with REQUEST=None
+
   Zope 2.6.0 alpha 1
 
     Features Added
