@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -160,13 +160,12 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
                 
         if RESPONSE is None: return r
 
-        # This was bad for dynamic content!
-        #    RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
-
         # Ick.  I don't like this. But someone can override it with
         # a header if they have to.
-        c, e=guess_content_type(self.__name__, r)
-        RESPONSE.setHeader('Content-Type', c)
+        hh=RESPONSE.headers.has_key
+        if not (hh('content-type') or hh('Content-Type')):
+            c, e=guess_content_type(self.__name__, r)
+            RESPONSE.setHeader('Content-Type', c)
         return decapitate(r, RESPONSE)
 
     def get_size(self):

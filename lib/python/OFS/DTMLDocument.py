@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -181,17 +181,15 @@ class DTMLDocument(DTMLMethod, PropertyManager):
             return self.raise_standardErrorMessage(client, REQUEST)
         if RESPONSE is None: return r
 
-        # Try to handle content types intelligently...
-        if self.__dict__.has_key('content_type'):
-            c=self.content_type
-        else:
-            c, e=guess_content_type(self.__name__, r)
-
-        RESPONSE.setHeader('Content-Type', c)
+        hh=RESPONSE.headers.has_key
+        if not (hh('content-type') or hh('Content-Type')):
+            if self.__dict__.has_key('content_type'):
+                c=self.content_type
+            else:
+                c, e=guess_content_type(self.__name__, r)
+            RESPONSE.setHeader('Content-Type', c)
         return r
 
-        # We don't allow document to set headers
-        return decapitate(r, RESPONSE)
 
 
 
