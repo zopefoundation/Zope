@@ -94,6 +94,11 @@ Zope Changes
         - Fixed a bug which caused File objects of type 'text/html' be
           have the wrong Content-Length set.
 
+        - A bug in SQL methods could caused results to be returned without
+          an acquisition context.  This could cause methods provided
+          via ZClass brains to be inaccessable due to the dependence of
+          ZClass method security on a correct acquisition environment.
+
     Zope 2.1.1
 
       Bugs Fixed 
