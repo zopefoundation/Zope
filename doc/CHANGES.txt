@@ -8,6 +8,11 @@ Zope Changes
     
     Features Added
 
+      - Zope's shutdown process is now more careful and clean. It
+        avoids sending half-complete responses to clients, particularly
+        when running in a cluster using ICP.
+        http://dev.zope.org/Wikis/DevSite/Proposals/CleanShutdown 
+
       - ZTUtils.Iterator now handles any object that has a Python
         iterator, resolving Collector #385 and #577.  The
         implementation is somwhat simpler, as well.

@@ -906,5 +906,8 @@ except:
 
 # Start Medusa, Ye Hass!
 sys.ZServerExitCode=0
-asyncore.loop()
-sys.exit(sys.ZServerExitCode)
+import Lifetime
+Lifetime.loop()
+code = sys.ZServerExitCode
+zLOG.LOG("z2", zLOG.INFO, 'Exiting with code %d' % code )
+sys.exit(code)

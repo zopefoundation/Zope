@@ -33,6 +33,7 @@ ICP_OP_DENIED = 22
 class BaseICPServer(asyncore.dispatcher):
 
     REQUESTS_PER_LOOP = 4
+    _shutdown = 0
 
     def __init__ (self,ip,port):
         asyncore.dispatcher.__init__(self)
@@ -44,6 +45,21 @@ class BaseICPServer(asyncore.dispatcher):
         else:
             addr = ip
         self.log_info('ICP server started\n\tAddress: %s\n\tPort: %s' % (addr,port) )
+
+    def clean_shutdown_control(self,phase,time_in_this_phase):
+        if phase==1:
+            # Stop responding to requests.
+            if not self._shutdown:
+                self._shutdown = 1
+                self.log_info('shutting down ICP')
+            if time_in_this_phase<2.0:
+                # We have not yet been deaf long enough for our front end proxies to notice.
+                # Do not allow shutdown to proceed yet
+                return 1
+            else:
+                # Shutdown can proceed. We dont need a socket any more
+                self.close()
+                return 0
 
     def handle_read(self):
         for i in range(self.REQUESTS_PER_LOOP):
@@ -61,7 +77,7 @@ class BaseICPServer(asyncore.dispatcher):
                         self.socket.sendto(reply,whence)
 
     def readable(self):
-        return 1
+        return not self._shutdown
 
     def writable(self):
         return 0

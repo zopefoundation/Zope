@@ -281,7 +281,8 @@ class zhttp_handler:
 class zhttp_channel(http_channel):
     "http channel"
 
-    closed=0
+    closed = 0
+    no_more_requests = 0
     zombie_timeout=100*60 # 100 minutes
     max_header_len = 8196
 
@@ -302,10 +303,23 @@ class zhttp_channel(http_channel):
 
     push_with_producer=push
 
+    def clean_shutdown_control(self,phase,time_in_this_phase):
+        if phase==3:
+            # This is the shutdown phase where we are trying to finish processing
+            # outstanding requests, and not accept any more
+            self.no_more_requests = 1
+            if self.working or self.writable():
+                # We are busy working on an old request. Try to stall shutdown
+                return 1
+            else:
+                # We are no longer busy. Close ourself and allow shutdown to proceed
+                self.close()
+                return 0
+
     def work(self):
         "try to handle a request"
         if not self.working:
-            if self.queue:
+            if self.queue and not self.no_more_requests:
                 self.working=1
                 try: module_name, request, response=self.queue.pop(0)
                 except: return
@@ -367,6 +381,11 @@ class zhttp_server(http_server):
                         self.server_name,
                         self.server_port
                         ))
+
+    def clean_shutdown_control(self,phase,time_in_this_phase):
+        if phase==2:
+            self.log_info('closing HTTP to new connections')
+            self.close()
 
     def log_info(self, message, type='info'):
         if self.shutup: return

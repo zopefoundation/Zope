@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 
 import sys,os,time,Globals, Acquisition, os, Undo
@@ -28,6 +28,7 @@ from version_txt import version_txt
 from cStringIO import StringIO
 from AccessControl import getSecurityManager
 import zLOG
+import Lifetime
 
 try: import thread
 except: get_ident=lambda: 0
@@ -326,12 +327,12 @@ class ApplicationManager(Folder,CacheManager):
             zLOG.LOG("ApplicationManager", zLOG.INFO,
                      "Restart requested by %s" % user)
             for db in Globals.opened: db.close()
-            raise SystemExit, """<html>
+            Lifetime.shutdown(1)
+            return """<html>
             <head><meta HTTP-EQUIV=REFRESH CONTENT="5; URL=%s/manage_main">
             </head>
             <body>Zope is restarting</body></html>
             """ % URL1
-            sys.exit(1)
 
     def manage_shutdown(self):
         """Shut down the application"""
@@ -341,8 +342,13 @@ class ApplicationManager(Folder,CacheManager):
             user = 'unknown user'
         zLOG.LOG("ApplicationManager", zLOG.INFO,
                  "Shutdown requested by %s" % user)
-        for db in Globals.opened: db.close()
-        sys.exit(0)
+        #for db in Globals.opened: db.close()
+        Lifetime.shutdown(0)
+        return """<html>
+        <head>
+        </head>
+        <body>Zope is shutting down</body></html>
+        """
 
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""

@@ -609,6 +609,11 @@ class FTPServer(ftp_server):
                         self.port
                         ))
 
+    def clean_shutdown_control(self,phase,time_in_this_phase):
+        if phase==2:
+            self.log_info('closing FTP to new connections')
+            self.close()
+
     def log_info(self, message, type='info'):
         if self.shutup: return
         asyncore.dispatcher.log_info(self, message, type)
