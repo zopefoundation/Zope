@@ -32,7 +32,7 @@
 	  <br><em><font -1>
 	  Additional data sources may be created by making additional
 	  directories in the <code>var/gadfly</code> subdirectory of
-          your Principia installation.</font></em>
+          your Zope installation.</font></em>
           </td>
 	  <td align="LEFT" valign="TOP"><select name=connection size=5>
             <dtml-in data_sources>
