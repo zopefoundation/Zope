@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.2 2001/04/27 20:27:38 shane Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.3 2001/06/21 17:21:09 shane Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os
 import unittest
@@ -117,10 +117,11 @@ class SecurityTests (DTMLTests):
         class person:
             name='Jim'
 
+        doc = self.doc_class(
+            '<dtml-with person>Hi, my name is '
+            '<dtml-var name></dtml-with>')
         try:
-            res = self.doc_class(
-                '<dtml-with person>Hi, my name is '
-                '<dtml-var name></dtml-with>')(person=person)
+            doc(person=person)
         except Unauthorized:
             # Passed the test.
             pass
@@ -136,7 +137,7 @@ class SecurityTests (DTMLTests):
 
         html = self.doc_class('<dtml-var expr="myinst.somemethod()">')
         try:
-            res = html(myinst=myclass())
+            html(myinst=myclass())
         except Unauthorized:
             # Passed the test.
             pass
@@ -151,8 +152,8 @@ class SecurityTests (DTMLTests):
         expr = '<dtml-var expr="(lambda x, _read=(lambda ob:ob): x.y)(c)">'
         try:
             # This would be a security hole.
-            html = self.doc_class(expr)
-            html()
+            html = self.doc_class(expr)  # It might compile here...
+            html()                       # or it might compile here.
         except SyntaxError:
             # Passed the test.
             pass
