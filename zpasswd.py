@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.7 $ '[11:-2]
+__version__='$Revision: 1.8 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -99,7 +99,7 @@ def generate_salt():
     salt_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
                    "abcdefghijklmnopqrstuvwxyz" \
                    "0123456789./"
-    return whrandom.choice(salt_choices)
+    return whrandom.choice(salt_choices)+whrandom.choice(salt_choices)
 
 def generate_passwd(password, encoding):
     encoding=string.upper(encoding)
