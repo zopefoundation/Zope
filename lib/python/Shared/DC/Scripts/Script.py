@@ -41,7 +41,6 @@ class Script(SimpleItem, BindingsUI):
 
     __ac_permissions__ = (
         ('View management screens', ('ZScriptHTML_tryForm',)),
-        ('View', ('__call__','','ZPythonScriptHTML_tryAction')),
         )
 
     ZScriptHTML_tryForm = DTMLFile('dtml/scriptTry', globals())
