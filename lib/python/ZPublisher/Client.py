@@ -71,7 +71,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -293,11 +293,11 @@ class Object:
 	    method=self.method
 	    url="%s/%s" % (self.url, name)
 
-	f=BoboFunction(url,
-		       method=method,
-		       username=self.username,
-		       password=self.password,
-		       timeout=self.timeout)
+	f=Function(url,
+		   method=method,
+		   username=self.username,
+		   password=self.password,
+		   timeout=self.timeout)
 
 	f.headers=self.headers
 
