@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.15 1997/02/19 17:05:09 chris Exp $'''
+$Id: InvertedIndex.py,v 1.16 1997/02/21 19:37:01 cici Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.15 1997/02/19 17:05:09 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.16  1997/02/21 19:37:01  cici
+# *** empty log message ***
+#
 # Revision 1.15  1997/02/19 17:05:09  chris
 # *** empty log message ***
 #
@@ -132,7 +135,7 @@ $Id: InvertedIndex.py,v 1.15 1997/02/19 17:05:09 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 import regex, regsub, string, SingleThreadedTransaction, copy
@@ -609,7 +612,8 @@ class PersistentResultList(ResultList, SingleThreadedTransaction.Persistent):
   def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
 
-    apply(ResultList.addentry, (self, key) + info)
+    apply(PersistentResultList.inheritedAttribute('addentry'),
+	  (self, key) + info)
     self.__changed__(1)
 
 
