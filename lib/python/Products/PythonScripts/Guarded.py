@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -92,10 +92,13 @@ from DocumentTemplate.VSEval import careful_mul
 from DocumentTemplate.DT_Util import TemplateDict, \
      careful_pow, d, ValidationError
 from DocumentTemplate.DT_Var import special_formats
-from AccessControl import getSecurityManager, secureModule
-
-#import standard
-#standard.__allow_access_to_unprotected_subobjects__ = 1
+from AccessControl import getSecurityManager
+try:
+    from AccessControl import secureModule
+except:
+    # Allow pre-2.3 Zopes to operate without import capability
+    def secureModule(*args):
+        return
 
 safefuncs = TemplateDict()
 safebin = {}

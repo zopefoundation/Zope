@@ -83,11 +83,13 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.3 2000/12/07 22:35:12 michel Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 2000/12/13 19:06:37 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import PythonScript
-import standard
+try:
+    import standard
+except: pass
 
 __roles__ = None
 __allow_access_to_unprotected_subobjects__ = 1
