@@ -114,7 +114,7 @@ def error(message, error):
 
 def ch(path, user, group, mode=0600, quiet=0):
     if group:
-        mode=mode+060
+        mode=mode|060
         do("chgrp %s %s" % (group, path), 0, quiet)
 
     if user:
