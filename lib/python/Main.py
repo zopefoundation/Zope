@@ -112,7 +112,9 @@ OFS.Application.import_products()
 revision=read_only=None
 if os.environ.has_key('ZOPE_READ_ONLY'):
     read_only=1
-    try: revision=DateTime(os.environ['ZOPE_READ_ONLY']).timeTime()
+    try: 
+        from DateTime import DateTime
+        revision=DateTime(os.environ['ZOPE_READ_ONLY']).timeTime()
     except: pass
         
 Bobobase=Globals.Bobobase=BoboPOS.PickleDictionary(
