@@ -105,20 +105,26 @@ FILE = "test/test1.xml"
 def main():
     versionTest = 1
     macros = 0
+    html = 0
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "mn")
+        opts, args = getopt.getopt(sys.argv[1:], "hmnx")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
         sys.stderr.write(
-            "usage: driver.py [-m] [-n] [file]\n")
+            "usage: driver.py [-h|-x] [-m] [-n] [file]\n")
+        sys.stderr.write("-h/-x -- HTML/XML input (default XML)\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
         sys.exit(2)
     for o, a in opts:
+        if o == '-h':
+            html = 1
         if o == '-m':
             macros = 1
         if o == '-n':
             versionTest = 0
+        if o == '-x':
+            html = 0
     if not versionTest:
         if sys.version[:5] != "1.5.2":
             sys.stderr.write(
@@ -128,7 +134,7 @@ def main():
         file = args[0]
     else:
         file = FILE
-    it = compilefile(file)
+    it = compilefile(file, html=html)
     interpretit(it, tal=(not macros))
 
 def interpretit(it, engine=None, stream=None, tal=1):
@@ -138,9 +144,13 @@ def interpretit(it, engine=None, stream=None, tal=1):
         engine = DummyEngine(macros)
     TALInterpreter(program, macros, engine, stream, wrap=0, tal=tal)()
 
-def compilefile(file):
-    from TALParser import TALParser
-    p = TALParser()
+def compilefile(file, html=0):
+    if html:
+        from HTMLTALParser import HTMLTALParser
+        p = HTMLTALParser()
+    else:
+        from TALParser import TALParser
+        p = TALParser()
     p.parseFile(file)
     return p.getCode()
 

@@ -54,7 +54,9 @@ DummyEngine.py		simple-minded TALES execution engine
 TALInterpreter.py	class to interpret intermediate code
 TALGenerator.py		class to generate intermediate code
 XMLParser.py		base class to parse XML, avoiding DOM
-TALParser.py		class to parse TAL into intermediate code
+TALParser.py		class to parse XML with TAL into intermediate code
+HTMLTALParser.py	class to parse HTML with TAL into intermediate code
+nsgmllib.py		modified version of sgmllib.py
 driver.py		script to demonstrate TAL expansion
 timer.py		script to time various processing phases
 setpath.py		hack to set sys.path and import ZODB
