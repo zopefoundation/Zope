@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.8 1996/12/23 15:52:49 jim Exp $
+  $Id: cStringIO.c,v 1.9 1996/12/27 21:40:29 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,10 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.9  1996/12/27 21:40:29  jim
+  Took out some lamosities in interface, like returning self from
+  write.
+
   Revision 1.8  1996/12/23 15:52:49  jim
   Added ifdef to check for CObject before using it.
 
@@ -204,7 +208,8 @@ O_seek(Oobject *self, PyObject *args)
   self->pos = (position > self->string_size ? self->string_size : 
 	       (position < 0 ? 0 : position));
 
-  return PyInt_FromLong(self->pos);
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 static char O_read__doc__[] = 
@@ -317,27 +322,12 @@ O_write(Oobject *self, PyObject *args)
   int l, newl, space_needed;
 
   UNLESS(PyArg_Parse(args, "O", &s)) return NULL;
-  if(s!=Py_None)
-    {
-      UNLESS(-1 != (l=PyString_Size(s))) return NULL;
-      UNLESS(c=PyString_AsString(s)) return NULL;
-      UNLESS(-1 != O_cwrite(self,c,l)) return NULL;
-    }
-  else
-    {
-      self->pos=0;
-      self->string_size = 0;
-    }
+  UNLESS(-1 != (l=PyString_Size(s))) return NULL;
+  UNLESS(c=PyString_AsString(s)) return NULL;
+  UNLESS(-1 != O_cwrite(self,c,l)) return NULL;
 
-  Py_INCREF(self);
-  return (PyObject *)self;
-}
-
-static PyObject *
-O_repr(self)
-	Oobject *self;
-{
-  return PyString_FromStringAndSize(self->buf,self->string_size);
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 static PyObject *
@@ -503,27 +493,27 @@ static char Otype__doc__[] =
 
 static PyTypeObject Otype = {
 	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/*ob_size*/
-	"StringO",			/*tp_name*/
-	sizeof(Oobject),		/*tp_basicsize*/
-	0,				/*tp_itemsize*/
+	0,	       		/*ob_size*/
+	"StringO",     		/*tp_name*/
+	sizeof(Oobject),       	/*tp_basicsize*/
+	0,	       		/*tp_itemsize*/
 	/* methods */
 	(destructor)O_dealloc,	/*tp_dealloc*/
 	(printfunc)0,		/*tp_print*/
 	(getattrfunc)O_getattr,	/*tp_getattr*/
-	(setattrfunc)0,	/*tp_setattr*/
+	(setattrfunc)0,		/*tp_setattr*/
 	(cmpfunc)0,		/*tp_compare*/
-	(reprfunc)O_repr,		/*tp_repr*/
+	(reprfunc)0,		/*tp_repr*/
 	0,			/*tp_as_number*/
-	0,		/*tp_as_sequence*/
-	0,		/*tp_as_mapping*/
+	0,			/*tp_as_sequence*/
+	0,			/*tp_as_mapping*/
 	(hashfunc)0,		/*tp_hash*/
 	(ternaryfunc)0,		/*tp_call*/
 	(reprfunc)0,		/*tp_str*/
 
 	/* Space for future expansion */
 	0L,0L,0L,0L,
-	Otype__doc__ /* Documentation string */
+	Otype__doc__ 		/* Documentation string */
 };
 
 /* End of code for StringO objects */
@@ -602,27 +592,27 @@ static char Itype__doc__[] =
 
 static PyTypeObject Itype = {
 	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/*ob_size*/
-	"StringI",			/*tp_name*/
-	sizeof(Iobject),		/*tp_basicsize*/
-	0,				/*tp_itemsize*/
+	0,		       	/*ob_size*/
+	"StringI",	       	/*tp_name*/
+	sizeof(Iobject),       	/*tp_basicsize*/
+	0,		       	/*tp_itemsize*/
 	/* methods */
 	(destructor)I_dealloc,	/*tp_dealloc*/
 	(printfunc)0,		/*tp_print*/
 	(getattrfunc)I_getattr,	/*tp_getattr*/
-	(setattrfunc)0,	/*tp_setattr*/
+	(setattrfunc)0,		/*tp_setattr*/
 	(cmpfunc)0,		/*tp_compare*/
 	(reprfunc)0,		/*tp_repr*/
 	0,			/*tp_as_number*/
-	0,		/*tp_as_sequence*/
-	0,		/*tp_as_mapping*/
+	0,			/*tp_as_sequence*/
+	0,			/*tp_as_mapping*/
 	(hashfunc)0,		/*tp_hash*/
 	(ternaryfunc)0,		/*tp_call*/
 	(reprfunc)0,		/*tp_str*/
 
 	/* Space for future expansion */
 	0L,0L,0L,0L,
-	Itype__doc__ /* Documentation string */
+	Itype__doc__ 		/* Documentation string */
 };
 
 /* End of code for StringI objects */
@@ -648,8 +638,8 @@ IO_StringIO(self, args)
 /* List of methods defined in the module */
 
 static struct PyMethodDef IO_methods[] = {
-	{"StringIO",	(PyCFunction)IO_StringIO,	1,	IO_StringIO__doc__},
-	{NULL,		NULL}		/* sentinel */
+  {"StringIO",	(PyCFunction)IO_StringIO,	1,	IO_StringIO__doc__},
+  {NULL,		NULL}		/* sentinel */
 };
 
 
