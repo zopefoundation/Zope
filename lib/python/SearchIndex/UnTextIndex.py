@@ -87,13 +87,13 @@
 
 
 """
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
 BTree=BTree.BTree
 IOBTree=IOBTree.BTree
-IIBTree=IIBTree.Bucket
+IIBucket=IIBTree.Bucket
 OIBTree=OIBTree.BTree
 from intSet import intSet
 import operator
@@ -219,7 +219,7 @@ class UnTextIndex(Persistent):
                     
                 elif type(r) is dictType:
                     if len(r) > 4:
-                        b = IIBTree()
+                        b = IIBucket()
                         for k, v in r.items(): b[k] = v
                         r = b
                     r[i] = score
@@ -311,27 +311,35 @@ class UnTextIndex(Persistent):
 
         if request.has_key(id):
             keys = request[id]
-        else: return None
+        else:
+            return None
 
         if type(keys) is type(''):
-            if not keys or not strip(keys): return None
+            if not keys or not strip(keys):
+                return None
             keys = [keys]
         r = None
+        
         for key in keys:
             key = strip(key)
-            if not key: continue
-            rr = intSet()
+            if not key:
+                continue
+            rr = IIBucket()
             try:
-                for i,score in query(key,self).items():
-                    if score: rr.insert(i)
-            except KeyError: pass
-            if r is None: r = rr
+                for i, score in query(key,self).items():
+                    if score:
+                        rr[i] = score
+            except KeyError:
+                pass
+            if r is None:
+                r = rr
             else:
                 # Note that we *and*/*narrow* multiple search terms.
                 r = r.intersection(rr) 
 
-        if r is not None: return r, (id,)
-        return intSet(), (id,)
+        if r is not None:
+            return r, (id,)
+        return IIBucket(), (id,)
 
 class ResultList:
   

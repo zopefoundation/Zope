@@ -85,7 +85,9 @@
 
 from Persistence import Persistent
 import Acquisition
-import BTree, OIBTree, IOBTree
+import BTree, OIBTree, IOBTree, IIBTree
+IIBucket=IIBTree.Bucket
+from intSet import intSet
 from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex, Query
 import regex, pdb
 from string import lower
@@ -152,12 +154,22 @@ class Catalog(Persistent, Acquisition.Implicit):
             
         self.useBrains(self._v_brains)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, ttype=type(())):
         """ Returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
         """
-        r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
-        r.data_record_id_ = index
+##        import pdb
+##        pdb.set_trace()
+        if type(index) is ttype:
+            score, key = index
+            r=self._v_result_class(self.data[key]).__of__(self.aq_parent)
+            r.data_record_score_ = score
+            r.data_record_id_ = key
+        else:
+            r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
+            r.data_record_id_ = index
+            r.data_record_id_ = 1
+
         return r
 
     def __setstate__(self, state):
@@ -180,6 +192,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         scopy = self.schema.copy()
 
         scopy['data_record_id_']=len(self.schema.keys())
+        scopy['data_record_score_']=len(self.schema.keys())+1
         mybrains.__record_schema__ = scopy
 
         self._v_brains = brains
@@ -385,7 +398,8 @@ class Catalog(Persistent, Acquisition.Implicit):
 
 ## Searching engine
 
-    def _indexedSearch(self, args, sort_index, append, used):
+    def _indexedSearch(self, args, sort_index, append, used,
+                       IIBType=type(IIBucket()), intSType=type(intSet())):
 
         rs=None
         data=self.data
@@ -397,10 +411,16 @@ class Catalog(Persistent, Acquisition.Implicit):
                 if hasattr(index,'_apply_index'):
                     r=index._apply_index(args)
                     if r is not None:
-                        r,u=r
-                        for name in u: used[name]=1
-                        if rs is None: rs=r
-                        else: rs=rs.intersection(r)
+                        r, u = r
+                        for name in u:
+                            used[name]=1
+                        if rs is None:
+                            rs = r
+                        else:
+                            if type(rs) is intSType and type(r) is IIBType:
+                                rs=r.intersection(rs)
+                            else:
+                                rs=rs.intersection(r)
             except:
                 return used
 
@@ -412,7 +432,15 @@ class Catalog(Persistent, Acquisition.Implicit):
                 for k, intset in sort_index._index.items():
                     append((k,LazyMap(self.__getitem__, intset)))
         elif rs:
-            if sort_index is None:
+            if type(rs) is IIBType:
+                rset = []
+                for key, score in rs.items():
+                    rset.append((score, key))
+                rset.sort()
+                rset.reverse()
+                append(LazyMap(self.__getitem__, rset))
+                    
+            elif sort_index is None and type(rs) is intSType:
                 append(LazyMap(self.__getitem__, rs))
             else:
                 for k, intset in sort_index._index.items():
