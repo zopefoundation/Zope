@@ -1,6 +1,6 @@
-from Zope.Interfaces.Interface import Interface
+from Interface import Interface
 
-class CatalogAware:
+class CatalogAware(Interface):
     """
     Description of the Item interface
     """
@@ -47,13 +47,3 @@ class CatalogAware:
         object to try and reindex.
 
         """
-            
-
-CatalogAwareInterface=Interface(CatalogAware) # create the interface object
-
-
-
-
-
-
-
