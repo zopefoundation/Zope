@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 from urllib import quote
 
@@ -200,7 +200,7 @@ class BaseRequest:
             # Probably a browser
             no_acquire_flag=0
             # index_html is still the default method, only any object can
-            # override it by implementing its own browser_default method
+            # override it by implementing its own __browser_default__ method
             method = 'index_html'
         elif self.maybe_webdav_client:
             # Probably a WebDAV client.
@@ -252,16 +252,15 @@ class BaseRequest:
                 # Check for method:
                 if path:
                     entry_name = path.pop()
-                elif hasattr(getattr(object, 'aq_base', object), 
-                             'browser_default'):
+                elif hasattr(object, '__browser_default__'):
                     # If we have reached the end of the path. We look to see
-                    # if the object implements browser_default. If so, we
+                    # if the object implements __browser_default__. If so, we
                     # call it to let the object tell us how to publish it
-                    # browser_default returns the object to be published
+                    # __browser_default__ returns the object to be published
                     # (usually self) and a sequence of names to traverse to
                     # find the method to be published. (Casey)
                     request._hacked_path=1
-                    object, default_path = object.browser_default(request)
+                    object, default_path = object.__browser_default__(request)
                     if len(default_path) > 1:
                         path = list(default_path)
                         method = path.pop()
