@@ -304,6 +304,16 @@ class Product(Folder):
 
     Distributions=Distributions()
 
+    manage_traceback=Globals.HTMLFile('traceback',globals())
+    manage_readme=Globals.HTMLFile('readme',globals())
+    def manage_get_product_readme__(self):
+        try:
+            return open(os.path.join(
+                SOFTWARE_HOME, 'Products', self.id,'README.txt'
+                )).read()
+        except: return ''
+
+
 class CompressedOutputFile:
     def __init__(self, rot):
         self._c=zlib.compressobj()
@@ -372,18 +382,23 @@ class Distribution:
         RESPONSE['content-type']='application/x-gzip'
         return r
 
-def initializeProduct(name, home, app):
+def initializeProduct(productp, name, home, app):
     # Initialize a levered product
 
     products=app.Control_Panel.Products
 
+    if hasattr(productp, '__import_error__'): ie=productp.__import_error__
+    else: ie=None
+
     try: fver=strip(open(home+'/version.txt').read())
-    except: fver='under development'
+    except: fver=''
     old=None
     try:
         if ihasattr(products,name):
             old=getattr(products, name)
-            if ihasattr(old,'version') and old.version==fver:
+            if (ihasattr(old,'version') and old.version==fver and
+                hasattr(old, '__import_error__') and
+                old.__import_error__==ie):
                 return
     except: pass
     
@@ -393,7 +408,8 @@ def initializeProduct(name, home, app):
         product=Globals.Bobobase._jar.import_file(f)
         product._objects=meta['_objects']
     except:
-        product=Product(name, 'Installed product %s (%s)' % (name,fver))
+        f=fver and (" (%s)" % fver)
+        product=Product(name, 'Installed product %s%s' % (name,f))
 
     if old is not None: products._delObject(name)
     products._setObject(name, product)
@@ -404,6 +420,21 @@ def initializeProduct(name, home, app):
     product._distribution=None
     product.manage_distribution=None
     product.thisIsAnInstalledProduct=1
+
+    if ie:
+        product.import_error_=ie
+        product.title='Broken product %s' % name
+        product.icon='p_/BrokenProduct_icon'
+        product.manage_options=(
+            {'label':'README', 'action':'manage_readme'},
+            {'label':'Traceback', 'action':'manage_traceback'},
+            )
+
+    if os.path.exists(os.path.join(home, 'README.txt')):
+        product.manage_options=product.manage_options+(
+            {'label':'README', 'action':'manage_readme'},
+            )
+        
 
 def ihasattr(o, name):
     return hasattr(o, name) and o.__dict__.has_key(name)
