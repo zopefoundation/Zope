@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.15 $'[11:-2]
+__version__ = '$Revision: 1.16 $'[11:-2]
 
 
 import string, re
@@ -194,8 +194,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         if extra:   self.vocabulary_id = extra.vocabulary
         else:       self.vocabulary_id = "Vocabulary"
 
-        
-
         self._lexicon = None
 
         if lexicon is not None:
@@ -209,8 +207,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
     def getLexicon(self, vocab_id=None):
         """Return the Lexicon in use. Removed lots of stinking code"""
-
-        
 
         if self._lexicon is None:
             ## if no lexicon is provided, create a default one
@@ -232,6 +228,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         """Reinitialize the text index."""
         self._index   = IOBTree()
         self._unindex = IOBTree()
+        self.getLexicon().clear()
         self._lexicon = None
 
     def _convertBTrees(self, threshold=200):
