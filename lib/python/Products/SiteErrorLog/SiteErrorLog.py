@@ -19,6 +19,7 @@ $Id: SiteErrorLog.py,v 1.17 2003/11/18 13:17:07 tseaver Exp $
 import os
 import sys
 import time
+import logging
 from random import random
 from thread import allocate_lock
 from types import StringType, UnicodeType
@@ -29,7 +30,8 @@ from AccessControl import ClassSecurityInfo, getSecurityManager, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions.ExceptionFormatter import format_exception
-from zLOG import LOG, ERROR
+
+LOG = logging.getLogger('Zope.SiteErrorLog')
 
 # Permission names
 use_error_logging = 'Log Site Errors'
@@ -194,8 +196,7 @@ class SiteErrorLog (SimpleItem):
                 finally:
                     cleanup_lock.release()
             except:
-                LOG('SiteError', ERROR, 'Error while logging',
-                    error=sys.exc_info())
+                LOG.error('Error while logging', exc_info=sys.exc_info())
             else:
                 if self.copy_to_zlog:
                     self._do_copy_to_zlog(now,strtype,str(url),info)
@@ -209,7 +210,7 @@ class SiteErrorLog (SimpleItem):
             next_when = max(when, now-_rate_restrict_burst*_rate_restrict_period)
             next_when += _rate_restrict_period
             _rate_restrict_pool[strtype] = next_when
-            LOG('SiteError', ERROR, str(url), error=info)
+            LOG.error(str(url), exc_info=info)
 
     security.declareProtected(use_error_logging, 'getProperties')
     def getProperties(self):
