@@ -84,8 +84,9 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
+import History
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
 from SimpleItem import Item_w__name__, pretty_tb
@@ -103,7 +104,9 @@ from AccessControl import getSecurityManager
 
 
 class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
-                 ElementWithTitle, Item_w__name__):
+                 ElementWithTitle, Item_w__name__,
+                 History.Historical,
+                 ):
     """DTML Method objects are DocumentTemplate.HTML objects that act
        as methods of their containers."""
     meta_type='DTML Method'
@@ -127,6 +130,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
             {'label':'Proxy', 'action':'manage_proxyForm',
              'help':('OFSP','DTML-DocumentOrMethod_Proxy.dtml')},
             )
+        +History.Historical.manage_options
         +RoleManager.manage_options
         +Item_w__name__.manage_options
         )
@@ -294,6 +298,14 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         return self.read()
 
 
+    def manage_historyCompare(self, rev1, rev2, REQUEST,
+                              historyComparisonResults=''):
+        return DTMLMethod.inheritedAttribute('manage_historyCompare')(
+            self, rev1, rev2, REQUEST,
+            historyComparisonResults=History.html_diff(
+                rev1.read(), rev2.read()
+                ))
+
 import re
 from string import find, strip
 token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
@@ -321,8 +333,6 @@ def decapitate(html, RESPONSE=None):
             hkey = header.pop(0)
             RESPONSE.setHeader(hkey, join(header, ' '))
     return html[spos + 1:]
-
-
 
 default_dm_html="""<dtml-var standard_html_header>
 <h2><dtml-var title_or_id> <dtml-var document_title></h2>
