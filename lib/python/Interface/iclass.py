@@ -15,6 +15,15 @@ from types import FunctionType, ClassType
 import Exceptions
 from InterfaceBase import InterfaceBase
 
+try:
+    from ExtensionClass import Base
+except ImportError:
+    ClassTypes = (ClassType,)
+else:
+    class dummy (Base): pass
+    ClassTypes = (type(dummy), ClassType)
+
+
 _typeImplements={}
 
 class Interface(InterfaceBase):
@@ -68,7 +77,7 @@ class Interface(InterfaceBase):
         """Does the given object implement the interface?
         """
         t=type(object)
-        if t is ClassType:
+        if t in ClassTypes:
             if hasattr(object, '__class_implements__'):
                 implements=object.__class_implements__
             else: implements=Class
@@ -87,7 +96,7 @@ class Interface(InterfaceBase):
                                  tiget=_typeImplements.get):
         """Do instances of the given class implement the interface?
         """
-        if type(klass) is ClassType:
+        if type(klass) in ClassTypes:
             if hasattr(klass, '__implements__'):
                 implements=klass.__implements__
             else: return 0

@@ -1,5 +1,8 @@
-from iclass import Interface, Class, ClassType, Base, assertTypeImplements, _typeImplements #uuh..
+
+from iclass import Interface, Class, ClassTypes, Base, \
+     assertTypeImplements, _typeImplements #uuh..
 from types import FunctionType
+
 
 def impliedInterface(klass, __name__=None, __doc__=None):
     """Create an interface object from a class
@@ -26,7 +29,7 @@ def objectImplements(object, tiget=_typeImplements.get):
     r=[]
 
     t=type(object)
-    if t is ClassType:
+    if t in ClassTypes:
         if hasattr(object, '__class_implements__'):
             implements=object.__class_implements__
         else:
@@ -48,7 +51,7 @@ def instancesOfObjectImplements(klass, tiget=_typeImplements.get):
     """
     r=[]
 
-    if type(klass) is ClassType:
+    if type(klass) in ClassTypes:
         if hasattr(klass, '__implements__'):
             implements=klass.__implements__
         else: return r
