@@ -58,7 +58,7 @@ class Traverser(Persistent, Item):
                                                   self.priority)
     def _setId(self, id):
         if id != self.id:
-            raise Globals.MessageDialog(
+            raise MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a %s' % self.meta_type,
                 action ='./manage_main',)
