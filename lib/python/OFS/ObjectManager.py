@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.112 2000/10/10 18:55:33 evan Exp $"""
+$Id: ObjectManager.py,v 1.113 2000/10/11 17:49:43 brian Exp $"""
 
-__version__='$Revision: 1.112 $'[11:-2]
+__version__='$Revision: 1.113 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -250,11 +250,15 @@ class ObjectManager(
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
     def _getOb(self, id, default=_marker):
-        if not hasattr(aq_base(self), id):
-            if default is _marker:
-                raise AttributeError, id
-            return default
-        return getattr(self, id)
+        # FIXME: what we really need to do here is ensure that only
+        # sub-items are returned. That could have a measurable hit
+        # on performance as things are currently implemented, so for
+        # the moment we just make sure not to expose private attrs.
+        if id[:1] != '_' and hasattr(aq_base(self), id):
+            return getattr(self, id)
+        if default is _marker:
+            raise AttributeError, id
+        return default
 
     def _setObject(self,id,object,roles=None,user=None, set_owner=1):
         v=self._checkId(id)
@@ -483,7 +487,7 @@ class ObjectManager(
                             RESPONSE=None):
         """Exports an object to a file and returns that file."""        
         if not id:
-            # cant use getId() here, breaks on "old" objects
+            # can't use getId() here (breaks on "old" exported objects)
             id=self.id
             if hasattr(id, 'im_func'): id=id()
             ob=self
@@ -532,7 +536,7 @@ class ObjectManager(
             file, customImporters=customImporters)
         if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
         #id=ob.getId()
-        # can't use above, breaks on "old" imported objects.
+        #can't use above getId() call, it fails on 'old' exported objects
         id=ob.id
         if hasattr(id, 'im_func'): id=id()
         self._setObject(id, ob, set_owner=set_owner)
