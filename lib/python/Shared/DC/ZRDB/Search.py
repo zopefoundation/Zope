@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.10 1999/03/30 19:31:09 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Search.py,v 1.11 1999/05/26 15:35:48 brian Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify, Args
@@ -121,7 +121,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
             raise 'Unusable Searchable Error',(
                 """The input searchable object, <em>%s</em>,
                 has not been tested.  Until it has been tested,
-                it\'s outpuit schema is unknown, and a report
+                it\'s output schema is unknown, and a report
                 cannot be generated.  Before creating a report
                 from this query, you must try out the query.  To
                 try out the query, <a href="%s">click hear</a>.
@@ -223,11 +223,6 @@ def default_input_form(arguments,action='query',
                 '\n'),
                 '\n<tr><td colspan=2 align=center>\n'
                 '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
-                '<!--#if HTTP_REFERER-->\n'
-                '  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
-                '  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"\n'
-                '         VALUE="<!--#var HTTP_REFERER-->">\n'
-                '<!--#/if HTTP_REFERER-->\n'
                 '</td></tr>\n</table>\n</form>\n'
                 '<!--#var standard_html_footer-->\n'
                 )
@@ -239,11 +234,6 @@ def default_input_form(arguments,action='query',
             '<h2><!--#var document_title--></h2>\n'
             'This query requires no input.<p>\n'
             '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
-            '<!--#if HTTP_REFERER-->\n'
-            '  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
-            '  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"\n'
-            '         VALUE="<!--#var HTTP_REFERER-->">\n'
-            '<!--#/if HTTP_REFERER-->\n'
             '</td></tr>\n</table>\n</form>\n'
             '<!--#var standard_html_footer-->\n'
             % (tabs, action)
