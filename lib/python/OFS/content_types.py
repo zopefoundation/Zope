@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -97,6 +97,7 @@ ra, ram: audio/x-pn-realaudio
 txt, py, c, h, pl, bat, sh, ksh: text/plain
 avi: video/avi
 wav: audio/wav
+mp3: audio/mpeg
 tar: application/x-tar
 zip: application/x-zip
 """
