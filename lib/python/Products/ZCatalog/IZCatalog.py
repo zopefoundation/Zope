@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: IZCatalog.py,v 1.5 2002/12/05 21:17:05 caseman Exp $
+$Id: IZCatalog.py,v 1.6 2003/06/09 20:02:48 sidnei Exp $
 """
 
 from Interface import Interface
@@ -161,7 +161,7 @@ class IZCatalog(Interface):
 
           sort_order -- You can specify 'reverse' or 'descending'.
           Default behavior is to sort ascending.
-          
+
           sort_limit -- An optimization hint to tell the catalog how many
           results you are really interested in. See the limit argument
           to the search method for more details.
@@ -196,30 +196,36 @@ class IZCatalog(Interface):
     def __call__(REQUEST=None, **kw):
         """Search the catalog, the same way as 'searchResults'.
         """
-        
+
     def search(query_request, sort_index=None, reverse=0, limit=None, merge=1):
         """Programmatic search interface, use for searching the catalog from
         scripts.
-            
-        query_request -- Dictionary containing catalog query. This uses the 
+
+        query_request -- Dictionary containing catalog query. This uses the
         same format as searchResults.
-        
+
         sort_index -- Name of sort index
-        
+
         reverse -- Boolean, reverse sort order (defaults to false)
-        
+
         limit -- Limit sorted result count to the n best records. This is an
         optimization hint used in conjunction with a sort_index. If possible
         ZCatalog will use a different sort algorithm that uses much less memory
         and scales better then a full sort. The actual number of records
         returned is not guaranteed to be <= limit. You still need to apply the
-        same batching to the results. Since the len() of the results will no 
+        same batching to the results. Since the len() of the results will no
         longer be the actual result count, you can use the
         "actual_result_count" attribute of the lazy result object instead to
         determine the size of the full result set.
 
-        merge -- Return merged, lazy results (like searchResults) or raw 
+        merge -- Return merged, lazy results (like searchResults) or raw
         results for later merging. This can be used to perform multiple
         queries (even across catalogs) and merge and sort the combined results.
         """
+
+    def refreshCatalog():
+        """Reindex every object we can find, removing the unreachable
+        ones from the index.
+        """
+
 __doc__ = IZCatalog.__doc__ + __doc__

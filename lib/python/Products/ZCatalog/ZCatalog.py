@@ -135,13 +135,13 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         (search_zcatalog,
          ['searchResults', '__call__', 'uniqueValuesFor',
-          'getpath', 'schema', 'indexes', 'index_objects', 
+          'getpath', 'schema', 'indexes', 'index_objects',
           'all_meta_types', 'valid_roles', 'resolve_url',
           'getobject', 'search'],
          ['Anonymous', 'Manager']),
-         
-        (manage_zcatalog_indexes, 
-         ['getIndexObjects'], 
+
+        (manage_zcatalog_indexes,
+         ['getIndexObjects'],
          ['Manager']),
         )
 
@@ -614,24 +614,24 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         Search terms can be passed in the REQUEST or as keyword
         arguments.
-        
+
         The used argument is now deprecated and ignored
         """
 
         return self._catalog.searchResults(REQUEST, used, **kw)
 
     __call__=searchResults
-    
+
     def search(
         self, query_request, sort_index=None, reverse=0, limit=None, merge=1):
         """Programmatic search interface, use for searching the catalog from
         scripts.
-            
+
         query_request: Dictionary containing catalog query
         sort_index:    Name of sort index
         reverse:       Reverse sort order?
         limit:         Limit sorted result count (optimization hint)
-        merge:         Return merged results (like searchResults) or raw 
+        merge:         Return merged results (like searchResults) or raw
                        results for later merging.
         """
         if sort_index is not None:
