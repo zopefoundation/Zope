@@ -138,6 +138,17 @@
       </description>
     </key>
 
+    <key name="umask" datatype="zdaemon.zdoptions.octal_type"
+         required="no"
+         default="022">
+      <description>
+        Command-line option: -m or --umask.
+
+        When daemon mode is used, this option specifies the octal umask
+        of the subprocess.
+      </description>
+    </key>
+
     <key name="default-to-interactive" datatype="boolean"
 	 required="no" default="true">
       <description>

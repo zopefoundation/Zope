@@ -24,6 +24,7 @@ Options:
 -h/--help -- print this usage message and exit
 -i/--interactive -- start an interactive shell after executing commands
 -l/--logfile -- log file to be read by logtail command
+-m/--umask -- provide octal umask for files created by the managed process
 action [arguments] -- see below
 
 Actions are commands like "start", "stop" and "status".  If -i is
@@ -81,6 +82,7 @@ class ZopeCtlOptions(ZDOptions):
                  default=1)
         self.add("logfile", None, "l:", "logfile=")
         self.add("prompt", "runner.prompt", default="zopectl>")
+        self.add("umask", "runner.umask", "m:", "umask=")
 
     def realize(self, *args, **kw):
         ZDOptions.realize(self, *args, **kw)
