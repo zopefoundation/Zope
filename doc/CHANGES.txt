@@ -5,6 +5,10 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+
+      - Fixed brokenness of session data manager hasSessionData method.
+        The old method created a session data object as a result of the
+        call; it does not now.
     
       - Collector #458: Fixed broken reindex_all in CatalogAwareness classes.
 
