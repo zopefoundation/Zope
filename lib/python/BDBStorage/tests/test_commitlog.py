@@ -15,53 +15,52 @@ import CommitLog
 
 class CreateCommitLogTest(unittest.TestCase):
     def checkCreateNoFile(self):
-        """Commit log creation with auto-generation of log file"""
         log = CommitLog.CommitLog()
         filename = log.get_filename()
-        assert os.path.exists(filename)
-        os.unlink(filename)
+        try:
+            assert os.path.exists(filename)
+        finally:
+            log.close(unlink=1)
+            assert not os.path.exists(filename)
 
     def checkCreateWithFilename(self):
-        """Commit log creation with named file"""
         filename = 'commit.log'
         log = CommitLog.CommitLog(filename)
-        assert os.path.exists(filename)
-        os.unlink(filename)
+        try:
+            assert os.path.exists(filename)
+        finally:
+            log.close(unlink=1)
+            assert not os.path.exists(filename)
 
     def checkCreateWithFileobj(self):
-        """Commit log use of existing file object"""
         filename = 'commit.log'
         fp = open(filename, 'w+b')
-        self.assertRaises(CommitLog.TruncationError,
-                          CommitLog.CommitLog, fp)
-        os.unlink(filename)
+        try:
+            self.assertRaises(CommitLog.TruncationError,
+                              CommitLog.CommitLog, fp)
+        finally:
+            fp.close()
+            os.unlink(filename)
 
-
-
-class CloseCommitLogTest(unittest.TestCase):
-    def setUp(self):
-        self._log = CommitLog.CommitLog()
-        self._filename = self._log.get_filename()
-
-    def tearDown(self):
-        if self._filename:
-            os.unlink(self._filename)
+    def checkCloseNoUnlink(self):
+        log = CommitLog.CommitLog()
+        filename = log.get_filename()
+        log.close()
+        try:
+            assert os.path.exists(filename)
+        finally:
+            os.unlink(filename)
+            assert not os.path.exists(filename)
 
     def checkDel(self):
-        """CommitLog.__del__()"""
-        del self._log
-        assert os.path.exists(self._filename)
-
-    def checkCloseDefaults(self):
-        """CommitLog.close(), same as CommitLog.__del__()"""
-        self._log.close()
-        assert os.path.exists(self._filename)
-
-    def checkCloseWithUnlink(self):
-        """CommitLog.close(unlink=1)"""
-        self._log.close(unlink=1)
-        assert not os.path.exists(self._filename)
-        self._filename = None
+        log = CommitLog.CommitLog()
+        filename = log.get_filename()
+        del log
+        try:
+            assert os.path.exists(filename)
+        finally:
+            os.unlink(filename)
+            assert not os.path.exists(filename)
 
 
 
@@ -76,29 +75,24 @@ class BaseSetupTearDown(unittest.TestCase):
 
 class CommitLogStateTransitionTest(BaseSetupTearDown):
     def checkProperStart(self):
-        """Newly created log file initializes state to START"""
         # BAW: best we can do is make sure we can start a new commit log
         self._log.start()
 
     def checkAppendSetsOpen(self):
-        """First append sets log file state to OPEN"""
         # BAW: Best we can do is assert that the state isn't START
         self._log._append('x', 'ignore')
         self.assertRaises(CommitLog.StateTransitionError, self._log.start)
 
     def checkPromiseSetsPromise(self):
-        """Promising from START or OPEN sets state to PROMISE"""
         # BAW: Best we can do is assert that state isn't START
         self._log.promise()
         self.assertRaises(CommitLog.StateTransitionError, self._log.start)
 
     def checkBadDoublePromise(self):
-        """Promising an already promised transaction fails"""
         self._log.promise()
         self.assertRaises(CommitLog.StateTransitionError, self._log.promise)
 
     def checkFinishSetsStart(self):
-        """Finishing sets state to START"""
         self._log.finish()
         # BAW: best we can do is make sure we can start a new commit log
         self._log.start()
@@ -125,7 +119,6 @@ class Gen:
 
 class LowLevelStoreAndLoadTest(BaseSetupTearDown):
     def checkOneStoreAndLoad(self):
-        """Low-level storing one record and reading it back"""
         self._log.start()
         self._log._append('x', 'ignore')
         self._log.promise()
@@ -134,7 +127,6 @@ class LowLevelStoreAndLoadTest(BaseSetupTearDown):
         assert None == self._log._next()
 
     def checkTenStoresAndLoads(self):
-        """Low-level storing ten records and reading them back"""
         self._log.start()
         for k, v in Gen():
             self._log._append(k, v)
@@ -156,7 +148,6 @@ class PacklessLogTest(BaseSetupTearDown):
         self._log.start()
 
     def checkOneStoreAndLoad(self):
-        """PacklessLog: API for one object"""
         self._log.write_object(oid=10, pickle='ignore')
         self._log.promise()
         oid, pickle = self._log.next()
@@ -164,7 +155,6 @@ class PacklessLogTest(BaseSetupTearDown):
         assert None == self._log.next()
 
     def checkTenStoresAndLoads(self):
-        """PacklessLog: API storing ten objects and reading them back"""
         for k, v in Gen():
             self._log.write_object(v, k*10)
         self._log.promise()
@@ -186,7 +176,6 @@ class FullLogTest(BaseSetupTearDown):
         self._log.start()
 
     def checkOneStoreAndLoad(self):
-        """FullLog: API for one object"""
         oid = 10
         vid = 8
         nvrevid = 0
@@ -203,7 +192,6 @@ class FullLogTest(BaseSetupTearDown):
         assert None == self._log.next()
 
     def checkOtherWriteMethods(self):
-        """FullLog: check other write_*() methods"""
         oid = 10
         vid = 1
         nvrevid = 0
@@ -244,14 +232,12 @@ class FullLogTest(BaseSetupTearDown):
 
 def suite():
     suite = unittest.TestSuite()
-    # Creation
+    # Creation and closing
     suite.addTest(CreateCommitLogTest('checkCreateNoFile'))
     suite.addTest(CreateCommitLogTest('checkCreateWithFilename'))
     suite.addTest(CreateCommitLogTest('checkCreateWithFileobj'))
-    # Closing
-    suite.addTest(CloseCommitLogTest('checkDel'))
-    suite.addTest(CloseCommitLogTest('checkCloseDefaults'))
-    suite.addTest(CloseCommitLogTest('checkCloseWithUnlink'))
+    suite.addTest(CreateCommitLogTest('checkCloseNoUnlink'))
+    suite.addTest(CreateCommitLogTest('checkDel'))
     # State transitions
     suite.addTest(CommitLogStateTransitionTest('checkProperStart'))
     suite.addTest(CommitLogStateTransitionTest('checkAppendSetsOpen'))
