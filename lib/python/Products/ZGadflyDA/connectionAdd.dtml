@@ -5,20 +5,7 @@
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
   
     <h2>Add Zope <!--#var database_type--> Database Connection</h2>
-
-<p><em><strong>Note:</strong> 
-The Zope Gadfly product is a free Zope database adapter intended
-for demonstration purposes only.  It is only suitable for learning
-about Zope SQL Methods.  Database operations are performed in memory, so it
-should not be used to create large databases.  This installation is using a
-non-optimized version of Gadfly and should not be used to assess
-the performance of either Gadfly or Zope.</em></p>
-
-<p>The Zope Gadfly Product uses the 
-<a href="http://starship.skyport.net/crew/aaron_watters/kwParsing/">
-Gadfly SQL Database Engine</a> by Aaron Waters. See the Gadfly
-copyright below.</p> 
-
+    <p>See the note below.</p>
 
     <!--#if data_sources-->
     
@@ -77,6 +64,20 @@ copyright below.</p>
 
 
 <hr>
+
+<p><em><strong>Note:</strong> 
+The Zope Gadfly product is a free Zope database adapter intended
+for demonstration purposes only.  It is only suitable for learning
+about Zope SQL Methods.  Database operations are performed in memory, so it
+should not be used to create large databases.  This installation is using a
+non-optimized version of Gadfly and should not be used to assess
+the performance of either Gadfly or Zope.</em></p>
+
+<p>The Zope Gadfly Product uses the 
+<a href="http://starship.skyport.net/crew/aaron_watters/kwParsing/">
+Gadfly SQL Database Engine</a> by Aaron Waters. See the Gadfly
+copyright below.</p> 
+
 <h3>Gadfly Copyright Notice</h3>
 
 <p>The kjParsing source is copyrighted, but you can freely use and copy it
