@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -131,18 +131,20 @@ class PropertySheet(Persistent, Implicit):
        provide a web interface for managing its properties."""
 
     _properties=()
+    _extensible=1
+    def property_extensible_schema__(self): return self._extensible
 
     def __init__(self, id, md=None):
         # Create a new property set, using the given id and namespace
         # string. The namespace string should be usable as an xml name-
         # space identifier.
         self.id=id
-        self.md=md or {}
+        self._md=md or {}
         
     def xml_namespace(self):
         # Return a namespace string usable as an xml namespace
         # for this property set.
-        return self.md.get('xmlns', '')
+        return self._md.get('xmlns', '')
 
     def v_self(self):
         return self
@@ -175,8 +177,15 @@ class PropertySheet(Persistent, Implicit):
         # Note that different property sets may support different typing
         # systems.
         if not self.valid_property_id(id):
-            raise 'Bad Request', 'Invalid property id.'
+            raise 'Bad Request', 'Invalid property id, %s.' % id
+        if not self.property_extensible_schema__():
+            raise 'Bad Request', (
+                'Properties cannot be added to this property sheet')
         self=self.v_self()
+        if hasattr(aq_base(self),id):
+            raise 'Bad Request', (
+                'Invalid property id, %s. It is in use.' % id)
+            
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
         self._properties=self._properties+(prop,)
@@ -198,7 +207,7 @@ class PropertySheet(Persistent, Implicit):
             for prop in self.v_self()._properties:
                 if prop['id']==id: prop['meta']=meta
                 props.append(prop)
-            self.v_self()._properties=props
+            self.v_self()._properties=tuple(props)
         setattr(self.v_self(), id, value)
 
     def _delProperty(self, id):
@@ -235,7 +244,7 @@ class PropertySheet(Persistent, Implicit):
         # Return a tuple of mappings, giving meta-data for properties.
         return self.v_self()._properties
 
-    def propdict(self):
+    def _propdict(self):
         dict={}
         for p in self.propertyMap():
             dict[p['id']]=p
@@ -280,7 +289,7 @@ class PropertySheet(Persistent, Implicit):
             result=join(result, '\n')
             return propstat % (result, '200 OK', '')
         else:
-            propdict=self.propdict()
+            propdict=self._propdict()
             xml_id=self.xml_namespace()
             for name, ns in names:
                 if ns==xml_id:
@@ -309,6 +318,7 @@ class PropertySheet(Persistent, Implicit):
     
     manage_propertiesForm=HTMLFile('properties', globals())
     
+    
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
@@ -327,7 +337,7 @@ class PropertySheet(Persistent, Implicit):
         if kw:
             for name, value in kw.items():
                 props[name]=value
-        propdict=self.propdict()
+        propdict=self._propdict()
         vself=self.v_self()
         for name, value in props.items():
             if self.hasProperty(name):
@@ -347,7 +357,7 @@ class PropertySheet(Persistent, Implicit):
                    title='No property specified',
                    message='No properties were specified!',
                    action ='./manage_propertiesForm',)
-        propdict=self.propdict()
+        propdict=self._propdict()
         vself=self.v_self()
         if hasattr(vself, '_reserved_names'):
             nd=vself._reserved_names
@@ -365,7 +375,6 @@ class PropertySheet(Persistent, Implicit):
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
-
 class Virtual:
 
     def __init__(self):
@@ -380,14 +389,14 @@ class DefaultProperties(Virtual, PropertySheet):
        its owner."""
 
     id='default'
-    md={'xmlns': 'http://www.zope.org/propsets/default'}
+    _md={'xmlns': 'http://www.zope.org/propsets/default'}
 
 
 class DAVProperties(Virtual, PropertySheet):
     """WebDAV properties"""
 
     id='webdav'
-    md={'xmlns': 'DAV:'}
+    _md={'xmlns': 'DAV:'}
     pm=({'id':'creationdate',     'mode':'r'},
         {'id':'displayname',      'mode':'r'},
         {'id':'resourcetype',     'mode':'r'},
@@ -506,9 +515,19 @@ class PropertySheets(Implicit):
     def __getitem__(self, n):
         return self.__propsets__()[n].__of__(self)
 
-    def items(self):
+    def values(self):
         propsets=self.__propsets__()
         return map(lambda n, s=self: n.__of__(s), propsets)
+
+    def items(self):
+        propsets=self.__propsets__()
+        r=[]
+        for n in propsets:
+            if hasattr(n,'id'): id=n.id
+            else: id=''
+            r.append((id, n.__of__(self)))
+
+        return r
         
     def get(self, name, default=None):
         for propset in self.__propsets__():
@@ -538,6 +557,28 @@ class PropertySheets(Implicit):
     def __len__(self):
         return len(self.__propsets__())
 
+class FixedSchema(PropertySheet):
+
+    def __init__(self, id, base, md=None):
+        FixedSchema.inheritedAttribute('')(self, id, md)
+        self._base=base
+
+    def propertyMap(self):
+        # Return a tuple of mappings, giving meta-data for properties.
+        r=[]
+        for d in self._base.propertyMap():
+            mode=d.get('mode', 'wd')
+            if 'd' in mode:
+                dd={}
+                dd.update(d)
+                d=dd
+                d['mode']=filter(lambda c: c != 'd', mode)
+            r.append(d)
+            
+        return tuple(r)+self.v_self()._properties
+
+    def property_extensible_schema__(self): return self._base._extensible
+    
 
 
 class vps(Base):
@@ -551,8 +592,6 @@ class vps(Base):
         if hasattr(parent, 'aq_base'):
             parent=parent.aq_base
         return self.c(parent)
-
-
 
 def absattr(attr):
     if callable(attr):
