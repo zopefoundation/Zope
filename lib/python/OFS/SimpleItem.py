@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.17 1998/03/18 17:55:36 brian Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: SimpleItem.py,v 1.18 1998/04/09 17:18:28 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, App.Management
 from DateTime import DateTime
@@ -89,7 +89,8 @@ class Item(CopySource, App.Management.Tabs):
 
     def locked_in_session(self):
 	oid=self._p_oid
-	return oid and Globals.SessionBase.locks.has_key(oid)
+	return (oid and Globals.SessionBase.locks.has_key(oid)
+		and Globals.SessionBase.verify_lock(oid))
 
     def modified_in_session(self):
 	jar=self._p_jar
@@ -130,6 +131,10 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.18  1998/04/09 17:18:28  jim
+# Added extra logic to verify session locks, which can become
+# stale after a session undo.
+#
 # Revision 1.17  1998/03/18 17:55:36  brian
 # Added uniqueId and aqObjectBind
 #

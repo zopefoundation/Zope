@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.38 1998/03/18 20:48:10 jeffrey Exp $"""
+$Id: ObjectManager.py,v 1.39 1998/04/09 17:18:41 jim Exp $"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -523,7 +523,8 @@ class ObjectManager(
 
     def locked_in_session(self):
 	oid=self._p_oid
-	return oid and Globals.SessionBase.locks.has_key(oid)
+	return (oid and Globals.SessionBase.locks.has_key(oid)
+		and Globals.SessionBase.verify_lock(oid))
 
     def modified_in_session(self):
 	jar=self._p_jar
@@ -542,6 +543,10 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.39  1998/04/09 17:18:41  jim
+# Added extra logic to verify session locks, which can become
+# stale after a session undo.
+#
 # Revision 1.38  1998/03/18 20:48:10  jeffrey
 # Added some new property management options and Encyclopedia-esque doc
 # strings
