@@ -85,7 +85,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from time import time, asctime, gmtime
 import sys, os
@@ -118,7 +118,8 @@ def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
         return 0
     if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
         return 0
-    if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject'):
+    if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
+            ob.isTopLevelPrincipiaApplicationObject:
         return 0
     return 1
 
