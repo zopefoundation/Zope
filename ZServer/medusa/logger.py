@@ -103,11 +103,11 @@ class rotating_file_logger (file_logger):
     def next_backup (self, freq):
         (yr, mo, day, hr, min, sec, wd, jday, dst) = time.localtime(time.time())
         if freq == 'daily':
-            return time.mktime(yr,mo,day+1, 0,0,0, 0,0,-1)
+            return time.mktime((yr,mo,day+1, 0,0,0, 0,0,-1))
         elif freq == 'weekly':
-            return time.mktime(yr,mo,day-wd+7, 0,0,0, 0,0,-1)  # wd(monday)==0
+            return time.mktime((yr,mo,day-wd+7, 0,0,0, 0,0,-1))  # wd(monday)==0
         elif freq == 'monthly':
-            return time.mktime(yr,mo+1,1, 0,0,0, 0,0,-1)
+            return time.mktime((yr,mo+1,1, 0,0,0, 0,0,-1))
         else:
             return None                  # not a date-based backup
             
