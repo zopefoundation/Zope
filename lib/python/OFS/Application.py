@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.172 2001/11/26 18:42:03 evan Exp $'''
-__version__='$Revision: 1.172 $'[11:-2]
+$Id: Application.py,v 1.173 2001/11/26 20:14:24 matt Exp $'''
+__version__='$Revision: 1.173 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -444,7 +444,7 @@ def initialize(app):
        hasattr(app, '_Zope25_examples_have_been_added'):
         examples_path = os.path.join(Globals.data_dir, 'Examples.zexp')
         if os.path.isfile(examples_path):
-            app._importObjectFromFile(examples_path)
+            app._importObjectFromFile(examples_path, verify=0)
             app._Zope25_examples_have_been_added=1
             get_transaction().note('Added Examples folder')
             get_transaction().commit()
