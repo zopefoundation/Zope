@@ -60,10 +60,16 @@ class EventCollector(HTMLParser.HTMLParser):
         self.append(("pi", data))
 
 
+class EventCollectorExtra(EventCollector):
+
+    def handle_starttag(self, tag, attrs):
+        EventCollector.handle_starttag(self, tag, attrs)
+        self.append(("starttag_text", self.get_starttag_text()))
+
 class HTMLParserTestCase(unittest.TestCase):
 
-    def _run_check(self, source, events):
-        parser = EventCollector()
+    def _run_check(self, source, events, collector=EventCollector):
+        parser = collector()
         if isinstance(source, type([])):
             for s in source:
                 parser.feed(s)
@@ -71,6 +77,9 @@ class HTMLParserTestCase(unittest.TestCase):
             parser.feed(source)
         parser.close()
         self.assert_(parser.get_events() == events, parser.get_events())
+
+    def _run_check_extra(self, source, events):
+        self._run_check(source, events, EventCollectorExtra)
 
     def _parse_error(self, source):
         def parse(source=source):
@@ -171,7 +180,8 @@ text
         self._parse_error("</")
         self._parse_error("</a")
         self._parse_error("</a")
-##        self._parse_error("</a<a>")
+        self._parse_error("<a<a>")
+        self._parse_error("</a<a>")
         self._parse_error("<$")
         self._parse_error("<$>")
         self._parse_error("<!")
@@ -198,6 +208,12 @@ text
             ("startendtag", "img", [("src", "foo")]),
             ("endtag", "p"),
             ])
+
+    def check_get_starttag_text(self):
+        s = """<foo:bar   \n   one="1"\ttwo=2   >"""
+        self._run_check_extra(s, [
+            ("starttag", "foo:bar", [("one", "1"), ("two", "2")]),
+            ("starttag_text", s)])
 
 
 # Support for the Zope regression test framework:
