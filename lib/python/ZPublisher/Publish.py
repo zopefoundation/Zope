@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.68 1997/11/21 17:08:55 brian Exp $"""
+$Id: Publish.py,v 1.69 1997/12/03 21:39:53 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.68 1997/11/21 17:08:55 brian Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 
 def main():
@@ -1277,6 +1277,8 @@ def parse_cookie(text,
 		 ):
 
     if result is None: result={}
+    already_have=result.has_key
+
     if qparmre.match(text) >= 0:
 	# Match quoted correct cookies
 	name=qparmre.group(2)
@@ -1291,7 +1293,7 @@ def parse_cookie(text,
 	if not text or not strip(text): return result
 	raise "InvalidParameter", text
     
-    result[name]=value
+    if not already_have(name): result[name]=value
 
     return apply(parse_cookie,(text[l:],result))
 
@@ -1368,6 +1370,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.69  1997/12/03 21:39:53  jim
+# Fixed bug in cookie handling so now most specific cookie is used.
+# Later we should allow multiple values for the same name.
+#
 # Revision 1.68  1997/11/21 17:08:55  brian
 # Changed Request logic so that server_url will use www.foo.com rather than
 # www.foo.com:80 if the server uses the default port of 80.
