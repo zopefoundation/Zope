@@ -13,10 +13,14 @@
 """
 Temporary Folder initialization routines
 
-$Id: __init__.py,v 1.7 2003/07/20 16:18:26 chrism Exp $
+$Id: __init__.py,v 1.8 2003/08/02 17:49:06 chrism Exp $
 """
 
 import ZODB # for testrunner to be happy
+
+# we import this so that config files can use the shorter name,
+# it's not used directly
+from TemporaryFolder import SimpleTemporaryContainer as TemporaryContainer
 
 def initialize(context):
     import TemporaryFolder

@@ -22,15 +22,17 @@ lives in another ZODB.
 To understand this fully, you'll need to read the source of
 ZODB.Mount.MountPoint.
 
-$Id: TemporaryFolder.py,v 1.9 2003/07/20 16:18:26 chrism Exp $
+$Id: TemporaryFolder.py,v 1.10 2003/08/02 17:49:06 chrism Exp $
 """
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
+
+import os, os.path
 
 import Globals
 from Globals import HTMLFile
 from ZODB.Mount import MountPoint
-import OFS
-import os, os.path
+from OFS.Folder import Folder
+from OFS.SimpleItem import Item
 
 from ZODB.DB import DB
 from TemporaryStorage import TemporaryStorage
@@ -49,12 +51,12 @@ def constructTemporaryFolder(self, id, title=None, REQUEST=None):
 
 constructTemporaryFolderForm=HTMLFile('dtml/addTemporaryFolder', globals())
 
-class SimpleTemporaryContainer(OFS.Folder.Folder):
+class SimpleTemporaryContainer(Folder):
     # dbtab-style container class
     meta_type = 'Temporary Folder'
     icon = 'misc_/TemporaryFolder/tempfolder.gif'
 
-class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
+class MountedTemporaryFolder(MountPoint, Item):
     """
     A mounted RAM database with a basic interface for displaying the
     reason the database did not connect.
