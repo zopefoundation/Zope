@@ -17,11 +17,11 @@ import os
 ###
 
 # This should point to your Zope directory
-SOFTWARE_HOME='d:\\program files\\1.10.2'
+SOFTWARE_HOME = '/projects/users/zs_zope'
 
 # This should point at the directory where your var directory is located
-# Most of the time this is the same as SOFTWARE_HOME
-INSTANCE_HOME='d:\\program files\\1.10.2'
+# Most of the time this is the same as SOFTWARE_HOME/var
+INSTANCE_HOME = SOFTWARE_HOME + '/var'
 
 ### ZServer configuration 
 ###
@@ -35,14 +35,14 @@ IP_ADDRESS=''
 
 # Host name of the server machine. You may use 'localhost' if your server 
 # doesn't have a host name.
-HOSTNAME='localhost'
+HOSTNAME='tarzan.digicool.com'
 
 # IP address of your DNS server. If you have DNS service on your local machine
 # then you can set this to '127.0.0.1'
-DNS_IP='205.240.25.3'
+DNS_IP='216.164.72.2'
 
 # Port for HTTP Server. The standard port for HTTP services is 80.
-HTTP_PORT=9673
+HTTP_PORT=9222
 
 # Module to publish. If you are not using the Zope management framework,
 # this should be the name of your published module. Note that this module
@@ -52,13 +52,13 @@ MODULE='Main'
 # Location of the ZServer log file. This file logs all ZServer activity.
 # You may wish to create different logs for different servers. See
 # medusa/logger.py for more information.
-LOG_FILE=os.path.join(INSTANCE_HOME,'var','ZServer.log')
+LOG_FILE=os.path.join(INSTANCE_HOME, 'ZServer.log')
 
 ## FTP configuration
 ##
 
 # Port for the FTP Server. The standard port for FTP services is 21.
-FTP_PORT=8021
+FTP_PORT=9221
 
 ## PCGI configuration
 
@@ -96,6 +96,11 @@ from FTPServer import FTPServer
 
 # To disable some of the servers simply comment out the relevant stanzas. 
 
+# open and close the log file, to make sure one is there.
+
+v = open(LOG_FILE, 'a')
+v.close()
+
 # Resolver and Logger, used by other servers
 rs = resolver.caching_resolver(DNS_IP)
 lg = logger.file_logger(LOG_FILE)
@@ -125,6 +130,22 @@ zftp = FTPServer(
 #    resolver=rs,
 #    logger_object=lg)
 
+# if it hasn't failed at this point, create a .pid file.
+
+pf = open(INSTANCE_HOME + '/ZServer.pid', 'w+')  # truncate it if it exists
+pf.write(("%s" % os.getpid()))
+pf.close()
+
+
 # Start Medusa
+
 asyncore.loop()
+
+
+
+
+
+
+
+
 
