@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -164,5 +164,5 @@ class ImageFile(Acquisition.Explicit):
         return 1 
 
     def __str__(self):
-        return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
+        return '<img src="%s" alt="" />' % self.__name__ 
 
