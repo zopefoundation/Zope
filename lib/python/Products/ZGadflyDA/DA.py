@@ -10,8 +10,8 @@ database_type='Gadfly'
 ########################################################################### 
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.1 1998/04/15 15:10:37 jim Exp $''' % database_type
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: DA.py,v 1.2 1998/06/10 22:28:37 jim Exp $''' % database_type
+__version__='$Revision: 1.2 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -32,6 +32,7 @@ def manage_addAqueductGadflyConnection(
     return self.manage_main(self,REQUEST)	
 
 class Connection(DABase.Connection):
+    " "
     database_type=database_type
     id='%s_database_connection' % database_type
     meta_type=title='Aqueduct %s Database Connection' % database_type
@@ -57,12 +58,16 @@ class Connection(DABase.Connection):
 	s=self.connection_string
 	c=_connections
 	if c.has_key(s) and c[s] == self._p_oid: del c[s]
-	return Connection.inheritedAttribute('manage_close_connection')(self, REQUEST)
+	return Connection.inheritedAttribute('manage_close_connection')(
+            self, REQUEST)
 	
 
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.2  1998/06/10 22:28:37  jim
+# Added docstring to connection object so objects are publishable.
+#
 # Revision 1.1  1998/04/15 15:10:37  jim
 # initial
 #
