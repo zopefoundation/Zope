@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.24 1998/02/12 16:35:41 jim Exp $
+  $Id: ExtensionClass.c,v 1.25 1998/02/12 20:53:01 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.24 1998/02/12 16:35:41 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.25 1998/02/12 20:53:01 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -588,8 +588,8 @@ CMethod_setattro(CMethod *self, PyObject *oname, PyObject *v)
 
   if(self->self && ! PyEval_GetRestricted())	/* Psuedo attributes */
     {
-      UNLESS(oname=Py_BuildValue("sO", self->name, oname)) return NULL;
-      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
+      UNLESS(oname=Py_BuildValue("sO", self->name, oname)) return -1;
+      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return -1;
       r=PyObject_SetAttr(self->self, oname, v);
       Py_DECREF(oname);
       return r;
@@ -906,7 +906,7 @@ PMethod_setattro(PMethod *self, PyObject *oname, PyObject *v)
 	  UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return -1;
 	  oname=Py_BuildValue("OO", myname, oname);
 	  Py_DECREF(myname);
-	  UNLESS(oname) return NULL;
+	  UNLESS(oname) return -1;
 	  UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return -1;
 	  r=PyObject_SetAttr(self->self, oname, v);
 	  Py_DECREF(oname);
@@ -3295,7 +3295,7 @@ export_type(PyObject *dict, char *name, PyExtensionClass *typ)
       PyObject *modname = PyDict_GetItem(dict, py__name__);
       if (modname != NULL) {
 	if (PyDict_SetItem(typ->class_dictionary, py__module__, modname) < 0)
-	  return NULL;
+	  return -1;
       }
     }
   PyErr_Clear();
@@ -3319,7 +3319,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.24 $";
+  char *rev="$Revision: 1.25 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3360,6 +3360,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.25  1998/02/12 20:53:01  jim
+  Fixed some lame return values.
+
   Revision 1.24  1998/02/12 16:35:41  jim
   Fixed bug in handling method chains used for C inheritence.
 
