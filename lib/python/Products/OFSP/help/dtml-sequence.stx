@@ -1,34 +1,40 @@
 sequence: DTML Sequence Functions
 
-  The 'sequence' module provides sequence sorting function.
+  The 'sequence' module provides a sequence sorting function.
 
   Functions
 
-    sort(seq,(sort)) -- Sort the sequence *seq* of objects by the optional 
-    sort schema *sort*.  *sort* is a sequence of tuples (key,func,direction) 
-    that describe the sort order. 
+    sort(seq,(sort)) -- Sort the sequence *seq* of objects by the
+    optional sort schema *sort*.  *sort* is a sequence of tuples
+    '(key, func, direction)' that describe the sort order.
 
-
-      - *key* --  attribute of the object to be sorted.
+      - key -- Attribute of the object to be sorted.
  
-      - *func* -- defines the compare function (optional).  Allowed values:
-
+      - func -- Defines the compare function (optional).  Allowed values:
      
-         - "cmp" -- the standard comparison function
+         - "cmp" -- Standard Python comparison function
 
-         - "nocase" -- case-insensitive comparison
+         - "nocase" -- Case-insensitive comparison
 
-         - "strcoll" or "locale" -- locale-aware string comparison
+         - "strcoll" or "locale" -- Locale-aware string comparison
 
-         - "strcoll_nocase" or "locale_nocase" -- locale-aware 
+         - "strcoll_nocase" or "locale_nocase" -- Locale-aware 
            case-insensitive string comparison
         
-         - "xxx" -- a user-defined comparison function
+         - other -- A specified, user-defined comparison function,
+           should return 1, 0, -1.
 
-      - *direction* -- defines the sort direction for the key (optional).
+      - direction -- defines the sort direction for the key (optional).
         (allowed values: "asc", "desc") 
 
+  Examples
  
-    
+    XXX
+
+  See Also
+
+    "Python cmp function":http://www.python.org/doc/lib/built-in-funcs.html
+
+
 
 
