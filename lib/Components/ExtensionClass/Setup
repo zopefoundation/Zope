@@ -7,3 +7,4 @@ ThreadLock ThreadLock.c
 Missing Missing.c
 Sync Sync.c
 Record Record.c
+ComputedAttribute ComputedAttribute.c

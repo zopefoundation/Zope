@@ -1,13 +1,14 @@
 *shared*
 
-ExtensionClass ../Components/ExtensionClass/ExtensionClass.c -I../Components/ExtensionClass
-Acquisition    ../Components/ExtensionClass/Acquisition.c    -I../Components/ExtensionClass
-MethodObject   ../Components/ExtensionClass/MethodObject.c   -I../Components/ExtensionClass
-MultiMapping   ../Components/ExtensionClass/MultiMapping.c   -I../Components/ExtensionClass
-ThreadLock     ../Components/ExtensionClass/ThreadLock.c     -I../Components/ExtensionClass
-Missing        ../Components/ExtensionClass/Missing.c        -I../Components/ExtensionClass
-Sync           ../Components/ExtensionClass/Sync.c           -I../Components/ExtensionClass
-Record         ../Components/ExtensionClass/Record.c         -I../Components/ExtensionClass
+ExtensionClass 	  ../Components/ExtensionClass/ExtensionClass.c    -I../Components/ExtensionClass
+Acquisition    	  ../Components/ExtensionClass/Acquisition.c       -I../Components/ExtensionClass
+MethodObject   	  ../Components/ExtensionClass/MethodObject.c      -I../Components/ExtensionClass
+MultiMapping   	  ../Components/ExtensionClass/MultiMapping.c      -I../Components/ExtensionClass
+ThreadLock     	  ../Components/ExtensionClass/ThreadLock.c        -I../Components/ExtensionClass
+Missing           ../Components/ExtensionClass/Missing.c           -I../Components/ExtensionClass
+Sync              ../Components/ExtensionClass/Sync.c              -I../Components/ExtensionClass
+Record            ../Components/ExtensionClass/Record.c            -I../Components/ExtensionClass
+ComputedAttribute ../Components/ExtensionClass/ComputedAttribute.c -I../Components/ExtensionClass
 
 cStringIO      ../Components/cPickle/cStringIO.c
 cPickle        ../Components/cPickle/cPickle.c
