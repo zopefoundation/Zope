@@ -16,23 +16,33 @@ Simple ZODB-based transient object implementation.
 $Id$
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
-
 from Persistence import Persistent
 from Acquisition import Implicit
-import time, random, sys
-from TransienceInterfaces import ItemWithId, Transient, DictionaryLike,\
-     TTWDictionary, ImmutablyValuedMappingOfPickleableObjects,\
+import time, random, sys, os
+import thread
+from Products.Transience.TransienceInterfaces import ItemWithId, Transient, \
+     DictionaryLike, TTWDictionary, ImmutablyValuedMappingOfPickleableObjects,\
      TransientItemContainer
 from AccessControl import ClassSecurityInfo
 import Globals
-import sys
 import logging
+from ZODB.POSException import ConflictError
+
+DEBUG = int(os.environ.get('Z_TOC_DEBUG', 0))
+LOG = logging.getLogger('Zope.Transience')
+
+def TLOG(*args):
+    sargs = []
+    sargs.append(str(thread.get_ident()))
+    sargs.append(str(time.time()))
+    for arg in args:
+        sargs.append(str(arg))
+    msg = ' '.join(sargs)
+    LOG.info(msg)
 
 _notfound = []
 
 WRITEGRANULARITY=30 # Timing granularity for access write clustering, seconds
-LOG = logging.getLogger('Zope.Transience')
 
 class TransientObject(Persistent, Implicit):
     """ Dictionary-like object that supports additional methods
@@ -151,19 +161,6 @@ class TransientObject(Persistent, Implicit):
     #
 
     def __setitem__(self, k, v):
-        # if the key or value is a persistent instance,
-        # set up its _p_jar immediately
-        # XXX
-        # not sure why the below was here, so I'm taking it out
-        # because it apparently causes problems when a
-        # transaction is aborted (the connection attempts to
-        # invalidate an oid of None in "abort")
-##         if hasattr(v, '_p_jar') and v._p_jar is None:
-##             v._p_jar = self._p_jar
-##             v._p_changed = 1
-##         if hasattr(k, '_p_jar') and k._p_jar is None:
-##             k._p_jar = self._p_jar
-##             k._p_changed = 1
         self._container[k] = v
         self.setLastModified()
 
@@ -193,7 +190,9 @@ class TransientObject(Persistent, Implicit):
         return 1
 
     def _p_resolveConflict(self, saved, state1, state2):
-        LOG.debug('Resolving conflict in TransientObject')
+        DEBUG and TLOG('entering TO _p_rc')
+        DEBUG and TLOG('states: sv: %s, s1: %s, s2: %s' % (
+            saved, state1, state2))
         try:
             states = [saved, state1, state2]
 
@@ -201,18 +200,22 @@ class TransientObject(Persistent, Implicit):
             # because it's a terminal state.
             for state in states:
                 if state.has_key('_invalid'):
-                    LOG.debug('a state was invalid')
+                    DEBUG and TLOG('TO _p_rc: a state was invalid')
                     return state
             # The only other times we can clearly resolve the conflict is if
             # the token, the id, or the creation time don't differ between
             # the three states, so we check that here.  If any differ, we punt
-            # by returning None.  Returning None indicates that we can't
-            # resolve the conflict.
+            # by raising ConflictError.
             attrs = ['token', 'id', '_created']
             for attr in attrs:
-                if not (saved.get(attr)==state1.get(attr)==state2.get(attr)):
-                    LOG.debug('cant resolve conflict')
-                    return None
+                svattr = saved.get(attr)
+                s1attr = state1.get(attr)
+                s2attr = state2.get(attr)
+                DEBUG and TLOG('TO _p_rc: attr %s: sv: %s s1: %s s2: %s' %
+                               (attr, svattr, s1attr, s2attr))
+                if not svattr==s1attr==s2attr:
+                    DEBUG and TLOG('TO _p_rc: cant resolve conflict')
+                    raise ConflictError
 
             # Now we need to do real work.
             #
@@ -228,7 +231,7 @@ class TransientObject(Persistent, Implicit):
             # possible.
             states.sort(lastmodified_sort)
             if states[0].get('_last_modified'):
-                LOG.debug('returning last mod state')
+                DEBUG and TLOG('TO _p_rc: returning last mod state')
                 return states[0]
 
             # If we can't determine which object to return on the basis
@@ -237,7 +240,7 @@ class TransientObject(Persistent, Implicit):
             # our parent).  This will return an essentially arbitrary state if
             # all last_accessed values are equal.
             states.sort(lastaccessed_sort)
-            LOG.debug('returning last_accessed state')
+            DEBUG and TLOG('TO _p_rc: returning last_accessed state')
             return states[0]
         except:
             LOG.info('Conflict resolution error in TransientObject',
