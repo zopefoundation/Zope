@@ -14,6 +14,9 @@ Zope Changes
 
       Bugs Fixed
 
+        - Fixed a bug in ZopeHTTPServer which caused it to fail on POST
+          requests without content-type headers.
+
         - PUT and file uploads would fail if the content-type could
           not be determined. Now objects created via PUT and file
           upload will default to either 'application/octet-stream'
@@ -21,11 +24,11 @@ Zope Changes
           no content-type can be determined from headers or filename
           extensions.
 
-	- Fixed a permission bug left from a change to the Find support.
+        - Fixed a permission bug left from a change to the Find support.
 
         - Fixed misc typos in docstrings and docs.
 
-	- MailHost objects didn't do appropriate CRLF conversion or
+        - MailHost objects didn't do appropriate CRLF conversion or
           recognize 4xx server responses.
 
     Zope  1.10.0 pr1
@@ -42,8 +45,8 @@ Zope Changes
         - Default bobobase now includes a Zope button along with a link
           to the Zope site. This satisfies the ZPL attribution requirement.
           The button is created by a new builtin method
-	  'ZopeAttributionButton'. Also, both the source and the binary
-	  distributions now have the same default bobobase.
+          'ZopeAttributionButton'. Also, both the source and the binary
+          distributions now have the same default bobobase.
 
         - Made the logic for getting SOFTWARE_HOME a bit more robust, so that 
           it handles relative paths and paths starting with '.' and '..'.
@@ -80,7 +83,7 @@ Zope Changes
         - Added a new absolute_url method which can generate an absolute
           url for the object on which the method is called.
 
-	- GIF and PNG Images now figure out their own dimensions when
+        - GIF and PNG Images now figure out their own dimensions when
           uploaded. Image height and width properties are now editable.
 
         - Images now generate themselves as html IMG tags, using an absolute
@@ -89,7 +92,7 @@ Zope Changes
         - There is a new form input type, boolean, for inputing boolean
           data.
 
-	- Added a read_only option to the SimpleDB.MultipleRevision and 
+        - Added a read_only option to the SimpleDB.MultipleRevision and 
           PickleDictionary constructors to open a database in read_only
           mode.
 
@@ -101,14 +104,14 @@ Zope Changes
           made by another process after the database has been opened
           are not visible.
 
-	- Added a database_quota option to the SimpleDB.MultipleRevision and 
+        - Added a database_quota option to the SimpleDB.MultipleRevision and 
           PickleDictionary constructors and a
           SimpleDB.MultipleRevision.set_quota method to set a database
           quota. The quota is given as either an integer number of
           bytes, or a function taking an integer number of bytes
           argument and returning whether the quota has been exceeded.
 
-	- Added an environment variable, ZOPE_DATABASE_QUOTA, used by the
+        - Added an environment variable, ZOPE_DATABASE_QUOTA, used by the
           Zope framework. If this variable is set, it should be set to
           an integer number of bytes.  Additions to the database are
           not allowed if the database size exceeds the quota.          
@@ -135,10 +138,10 @@ Zope Changes
           The compiled-in paths have been changed to be relative to the
           Zope installation directory.
 
-	- Fixed a bug in ZPublisher's special handling the "cancel"
-	  submit buttons. The test for the cancel button was case
-	  sensitive.  I changed it so it would accept any case, as
-	  well as extra spaces.
+        - Fixed a bug in ZPublisher's special handling the "cancel"
+          submit buttons. The test for the cancel button was case
+          sensitive.  I changed it so it would accept any case, as
+          well as extra spaces.
 
           Cancel buttons should probably be handled using the new
           :method form type, but this would require the presense of an
@@ -325,11 +328,11 @@ Zope Changes
 
        - include a serve shell script along the lines of:
    
-	   #!/bin/sh
-	   python serve.py > var/serve.log 2> var/serve.errors &
+           #!/bin/sh
+           python serve.py > var/serve.log 2> var/serve.errors &
    
-	 Note that this script should be written by the installers
-	 and use sys.executable.
+         Note that this script should be written by the installers
+         and use sys.executable.
 
          (Brian)
 
@@ -350,13 +353,13 @@ Zope Changes
 
        - Need make_clean.py that:
    
-	 - runs make clobber for the extensions
+         - runs make clobber for the extensions
    
-	 - runs make clean in pcgi
+         - runs make clean in pcgi
    
-	 - prints an message reminding user to manually remove var
+         - prints an message reminding user to manually remove var
    
-	 (brian)
+         (brian)
 
        - The default access file should be handled a little differently.
          The installer should make people enter values, the default
