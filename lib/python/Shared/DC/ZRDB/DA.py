@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.57 1998/12/15 21:15:15 jim Exp $'''
-__version__='$Revision: 1.57 $'[11:-2]
+$Id: DA.py,v 1.58 1998/12/16 14:43:14 jim Exp $'''
+__version__='$Revision: 1.58 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -316,8 +316,10 @@ class DA(
 	if hasattr(self, '_v_brain'): brain=self._v_brain
 	else:
             brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
-        if type(result) is type(''): 
-            result=RDB.File(StringIO(result),brain,self)
+        if type(result) is type(''):
+            f=StringIO()
+            f.write(result)
+            result=RDB.File(f,brain,self)
         else:
             result=Results(result, brain, self)
 	columns=result._searchable_result_columns()
