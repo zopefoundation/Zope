@@ -389,7 +389,7 @@ class TALGeneratorTestCases(TestCaseBase):
                'name': 'bar', 'href': 'foo'},)),
             ('startTag', ('a',
              [('href', 'foo', 'replace', '$string:http://www.zope.org$'),
-              ('name', 'bar'),
+              ('name', 'name="bar"'),
               ('tal:attributes',
                'href string:http://www.zope.org; x string:y', 'tal'),
               ('x', None, 'insert', '$string:y$')])),
