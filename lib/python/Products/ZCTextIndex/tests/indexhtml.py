@@ -21,7 +21,7 @@ from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
 from Products.ZCTextIndex.Lexicon import Lexicon, StopWordRemover
 
-def make_index():
+def make_zc_index():
     # there's an elaborate dance necessary to construct an index
     class Struct:
         pass
@@ -32,8 +32,11 @@ def make_index():
     caller.lexicon = Lexicon(HTMLWordSplitter(), StopWordRemover())
     return ZCTextIndex("read", extra, caller)
 
+def make_old_index():
+    return TextIndex("read")
+
 def main(db, root, dir):
-    rt["index"] = index = make_index()
+    rt["index"] = index = INDEX()
     rt["files"] = paths = IOBTree()
     get_transaction().commit()
 
@@ -50,7 +53,10 @@ def main(db, root, dir):
             if not file.endswith(".html"):
                 continue
             docid += 1
-            print "%5d" % docid, file
+            if LIMIT is not None and docid > LIMIT:
+                break
+            if VERBOSE:
+                print "%5d" % docid, file
             f = open(file, "rb")
             paths[docid] = file
             index.index_object(docid, f)
@@ -60,12 +66,16 @@ def main(db, root, dir):
                 get_transaction().commit()
                 z1 = clock()
                 zodb_time += z1 - z0
+                if VERBOSE:
+                    print "commit took", z1 - z0, zodb_time
             if docid % PACK_INTERVAL == 0:
                 p0 = clock()
                 db.pack()
                 p1 = clock()
                 zodb_time += p1 - p0
-                zodb_time += p1 - p0
+                pack_time += p1 - p0
+                if VERBOSE:
+                    print "pack took", p1 - p0, pack_time
     z0 = clock()
     get_transaction().commit()
     z1 = t1 = clock()
@@ -84,8 +94,10 @@ if __name__ == "__main__":
     FSPATH = "Data.fs"
     TXN_INTERVAL = 100
     PACK_INTERVAL = 500
+    LIMIT = None
+    INDEX = make_zc_index
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vf:')
+        opts, args = getopt.getopt(sys.argv[1:], 'vf:t:p:n:T')
     except getopt.error, msg:
         print msg
         print __doc__
@@ -96,6 +108,15 @@ if __name__ == "__main__":
             VERBOSE += 1
         if o == '-f':
             FSPATH = v
+        if o == '-t':
+            TXN_INTERVAL = int(v)
+        if o == '-p':
+            PACK_INTERVAL = int(v)
+        if o == '-n':
+            LIMIT = int(v)
+        if o == '-T':
+            from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
+            INDEX = make_old_index
 
     if len(args) != 1:
         print "Expected on argument"
