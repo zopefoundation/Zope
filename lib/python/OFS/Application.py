@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.62 1998/04/20 19:48:14 jim Exp $'''
-__version__='$Revision: 1.62 $'[11:-2]
+$Id: Application.py,v 1.63 1998/05/08 14:55:18 jim Exp $'''
+__version__='$Revision: 1.63 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -54,11 +54,12 @@ page.  Thank you for your patience.</P>
 <!--#endif-->
 <!--#var standard_html_footer-->'''
 
-class Application(Folder.Folder):
+class Application(Globals.ApplicationDefaultPermissions, Folder.Folder):
     title    ='Principia'
     __roles__=['Manager', 'Anonymous']
-    __defined_roles__=('Manager','Anonymous','Shared')
+    __defined_roles__=('Manager','Anonymous')
     web__form__method='GET'
+    isTopLevelPrincipiaApplicationObject=1
 
     class misc_:
 	"Miscellaneous product information"
@@ -391,6 +392,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.63  1998/05/08 14:55:18  jim
+# Rearranged permission user interface machinery, alot.
+#
 # Revision 1.62  1998/04/20 19:48:14  jim
 # Fixed default license timeout.
 #
