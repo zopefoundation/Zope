@@ -51,6 +51,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1407: fixed XML escaping problem introduced in 2.7.4 b1
+
       - Collector #1151: HTTP compression was broken on error pages
 
       - The REQUEST now contains a new entry ACTUAL_URL which contains the
