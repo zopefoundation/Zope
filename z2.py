@@ -552,7 +552,7 @@ if MODULE=='Zope':
 
 from ZServer import resolver, logger, asyncore
 
-from ZServer import zhttp_server, zhttp_handler,
+from ZServer import zhttp_server, zhttp_handler
 from ZServer import PCGIServer,FTPServer,FCGIServer
 
 from ZServer import secure_monitor_server
