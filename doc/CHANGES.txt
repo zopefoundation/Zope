@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #587: fixed wrong migration to string methods in 
+        DTMLMethod.py
+
       - Collector #583: Searching for '/' with PathIndexes failed.
 
       - Fixed bug in manage_editProperties which used an incorrect default
