@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.123 $'[11:-2]
+__version__='$Revision: 1.124 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -98,6 +98,9 @@ from App.ImageFile import ImageFile
 from Role import RoleManager
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 from AuthEncoding import pw_validate
+from AccessControl import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 
 ListType=type([])
 NotImplemented='NotImplemented'
@@ -196,23 +199,23 @@ class BasicUser(Implicit):
 
     
     def _shared_roles(self, parent):
-        r=[]
-        while 1:
-            if hasattr(parent,'__roles__'):
-                roles=parent.__roles__
-                if roles is None: return 'Anonymous',
-                if 'Shared' in roles:
-                    roles=list(roles)
-                    roles.remove('Shared')
-                    r=r+roles
-                else:
-                    try: return r+list(roles)
-                    except: return r
-            if hasattr(parent, 'aq_parent'):
-                while hasattr(parent.aq_self,'aq_self'):
-                    parent=parent.aq_self
-                parent=parent.aq_parent
-            else: return r
+          r=[]
+          while 1:
+              if hasattr(parent,'__roles__'):
+                  roles=parent.__roles__
+                  if roles is None: return 'Anonymous',
+                  if 'Shared' in roles:
+                      roles=list(roles)
+                      roles.remove('Shared')
+                      r=r+roles
+                  else:
+                      try: return r+list(roles)
+                      except: return r
+              if hasattr(parent, 'aq_parent'):
+                  while hasattr(parent.aq_self,'aq_self'):
+                      parent=parent.aq_self
+                  parent=parent.aq_parent
+              else: return r
 
     def allowed(self, parent, roles=None):
         """Check whether the user has access to parent, assuming that
@@ -246,6 +249,8 @@ class BasicUser(Implicit):
 
         return None
 
+
+
     hasRole=allowed
     domains=[]
     
@@ -265,8 +270,7 @@ class BasicUser(Implicit):
 
     def has_permission(self, permission, object):
         """Check to see if a user has a given permission on an object."""
-        roles=rolesForPermissionOn(permission, object)
-        return self.has_role(roles, object)
+        return getSecurityManager().checkPermission(permission, object)
 
     def __len__(self): return 1
     def __str__(self): return self.getUserName()
@@ -437,27 +441,46 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Private UserFolder object interface
     # -----------------------------------
 
-
     _remote_user_mode=_remote_user_mode
     _emergency_user=emergency_user
     # Note: use of the '_super' name is deprecated.
     _super=emergency_user
     _nobody=nobody
+    _check_for_domain_defined_nobody=1
 
-    def validate(self,request,auth='',roles=None):
+    def identify(self, auth):
+        if auth and lower(auth[:6])=='basic ':
+            name, password=tuple(split(decodestring(split(auth)[-1]), ':', 1))
+            return name, password
+        else:
+            return None, None
 
-        if roles is _what_not_even_god_should_do:
-            request.response.notFoundError()
+    def authenticate(self, name, password, request):
+        emergency = self._emergency_user
+        if name is None:
+            return None
+        if emergency and name==emergency.getUserName():
+            user = emergency
+        else:
+            user = self.getUser(name)
+        if user is not None and user.authenticate(password, request):
+            return user
+        else:
+            return None
+
+    def authorize(self, user, accessed, container, name, value):
+        newSecurityManager(None, user)
+        if getSecurityManager().validate(accessed, container, name, value):
+            return 1
+        else:
+            noSecurityManager()
+            return 0
         
-        published = request.get('PUBLISHED', None)
-        if published is None:
-            published = self
-
+    def _setRemote(self, request):
         # If no authorization, only a user with a domain spec and no
         # passwd or nobody can match. We cache reverse DNS before
         # checking the users, otherwise it can get real slow looking
         # it up for every user.
-
         host=request.get('REMOTE_HOST', '')
         addr=request.get('REMOTE_ADDR', '')
         if host or addr:
@@ -472,117 +495,167 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                     request.set('REMOTE_ADDR', addr)
                 except: pass
 
+    def validate(self, request, auth='', roles=None):
+        """
+        this method performs identification, authentication, and
+        authorization
+        we ignore the roles argument in this method purposely due
+        to the availability of Zope 2.2+ security machinery
+        that makes its gathering superfluous, though we still need
+        to put it in the signature because it's part of the defacto
+        interface
+        v is the object (value) we're validating access to
+        n is the name used to access the object
+        a is the object the object was accessed through
+        c is the physical container of the object
+
+        We allow the publishing machinery to defer to higher-level user
+        folders or to raise an unauthorized by returning None from this
+        method.
+        """
+        self._setRemote(request)
+        v = request['PUBLISHED'] # the published object
+        a, c, n, v = self._getobcontext(v, request)
+
+        # we need to continue to support this silly mode
+        # where if there is no auth info, but if a user in our
+        # database has no password and he has domain restrictions,
+        # return him as the authorized user.
         if not auth:
-            for ob in self.getUsers():
-                domains=ob.getDomains()
-                if domains:
-                    if ob.authenticate('', request):
-                        if ob.allowed(published, roles):
-                            ob=ob.__of__(self)
-                            return ob
-            nobody=self._nobody
-            if self._isTop() and nobody.allowed(published, roles):
-                ob=nobody.__of__(self)
-                return ob
-            return None
+            if self._check_for_domain_defined_nobody:
+                for user in self.getUsers():
+                    if user.getDomains():
+                        if self.authenticate(user.getUserName(), '', request):
+                            if self.authorize(user, a, c, n, v):
+                                return user.__of__(self)
 
-        # Only do basic authentication
-        if lower(auth[:6])!='basic ':
-            return None
-        name,password=tuple(split(decodestring(split(auth)[-1]), ':', 1))
-
-        # Check for emergency user
-        emergency_user=self._emergency_user
-        if (emergency_user and self._isTop() and (
-            name == emergency_user.getUserName())
-            and emergency_user.authenticate(password, request)):
-            return emergency_user
-
-        # Try to get user
-        user=self.getUser(name)
-        if user is None:
-
-            # If the user was not found and we are the top level user
-            # database and the Anonymous user is allowed to access the
-            # requested object, return the Anonymous user.
-            if self._isTop() and self._nobody.allowed(published, roles):
-                user=self._nobody.__of__(self)
-                return user
-
-            # Otherwise, return None which will defer to higher level user
-            # databases or cause an unauthorized to be raised in the
-            # publisher layer.
-            return None
-
-        # Try to authenticate the user
-        if not user.authenticate(password, request):
-
-            # If no user was authenticated and we are the top level user
-            # database and the Anonymous user is allowed to access the
-            # requested object, return the Anonymous user.
-            if self._isTop() and self._nobody.allowed(published, roles):
-                user=self._nobody.__of__(self)
-                return user
-
-            # Otherwise, return None which will defer to higher level user
-            # databases or cause an unauthorized to be raised in the
-            # publisher layer.
-            return None
-
-        # We need the user to be able to acquire!
-        user=user.__of__(self)
-
-        # Try to authorize user
-        if user.allowed(published, roles):
-            return user
-
-        return None
-
-
+        name, password = self.identify(auth)
+        user = self.authenticate(name, password, request)
+        # user will be None if we can't authenticate him or if we can't find
+        # his username in this user database.
+        emergency = self._emergency_user
+        if emergency and user is emergency:
+            if self._isTop():
+                # we do not need to authorize the emergency user against the
+                # published object.
+                return emergency.__of__(self)
+            else:
+                # we're not the top-level user folder
+                return None
+        elif user is None:
+            # either we didn't find the username, or the user's password
+            # was incorrect.  try to authorize and return the anonymous user.
+            if self._isTop() and self.authorize(self._nobody, a, c, n, v):
+                return self._nobody.__of__(self)
+            else:
+                # anonymous can't authorize or we're not top-level user folder
+                return None
+        else:
+            # We found a user, his password was correct, and the user
+            # wasn't the emergency user.  We need to authorize the user
+            # against the published object.
+            if self.authorize(user, a, c, n, v):
+                return user.__of__(self)
+            # That didn't work.  Try to authorize the anonymous user.
+            elif self._isTop() and self.authorize(self._nobody, a, c, n, v):
+                return self._nobody.__of__(self)
+            else:
+                # we can't authorize the user, and we either can't authorize
+                # nobody against the published object or we're not top-level
+                return None
+            
     if _remote_user_mode:
         
-        def validate(self,request,auth='',roles=None):
-            published = request['PUBLISHED']
-            e=request.environ
-            if e.has_key('REMOTE_USER'):
-                name=e['REMOTE_USER']
+        def validate(self, request, auth='', roles=None):
+            self._setRemote(request)
+            v = request['PUBLISHED']
+            a, c, n, v = self._getobcontext(v, request)
+            name = request.environ.get('REMOTE_USER', None)
+            if name is None:
+                if self._check_for_domain_defined_nobody:
+                    for user in self.getUsers():
+                        if user.getDomains():
+                            if self.authenticate(
+                                user.getUserName(), '', request
+                                ):
+                                if self.authorize(user, a, c, n, v):
+                                    return user.__of__(self)
+
+            user = self.getUser(name)
+            # user will be None if we can't find his username in this user
+            # database.
+            emergency = self._emergency_user
+            if emergency and name==emergency.getUserName():
+                if self._isTop():
+                    # we do not need to authorize the emergency user against
+                    #the published object.
+                    return emergency.__of__(self)
+                else:
+                    # we're not the top-level user folder
+                    return None
+            elif user is None:
+                # we didn't find the username in this database
+                # try to authorize and return the anonymous user.
+                if self._isTop() and self.authorize(self._nobody, a, c, n, v):
+                    return self._nobody.__of__(self)
+                else:
+                    # anonymous can't authorize or we're not top-level user
+                    # folder
+                    return None
             else:
-                for ob in self.getUsers():
-                    domains=ob.getDomains()
-                    if domains:
-                        if ob.authenticate('', request):
-                            if ob.allowed(published, roles):
-                                ob=ob.__of__(self)
-                                return ob
-                nobody=self._nobody
-                if self._isTop() and nobody.allowed(published, roles):
-                    ob=nobody.__of__(self)
-                    return ob
-                return None
+                # We found a user and the user wasn't the emergency user.
+                # We need to authorize the user against the published object.
+                if self.authorize(user, a, c, n, v):
+                    return user.__of__(self)
+                # That didn't work.  Try to authorize the anonymous user.
+                elif self._isTop() and self.authorize(
+                    self._nobody, a, c, n, v):
+                    return self._nobody.__of__(self)
+                else:
+                    # we can't authorize the user, and we either can't
+                    # authorize nobody against the published object or
+                    # we're not top-level
+                    return None
 
-            # Check for emergency user
-            emergency_user=self._emergency_user
-            if (emergency_user and self._isTop() and
-                name==emergency_user.getUserName()):
-                return emergency_user
+    def _getobcontext(self, v, request):
+        """
+        v is the object (value) we're validating access to
+        n is the name used to access the object
+        a is the object the object was accessed through
+        c is the physical container of the object
+        """
+        n = request.steps[-1]
+        if hasattr(v, 'aq_parent'):
+            # this is not a method, we needn't treat it specially
+            a = v.aq_parent
+            c = v.aq_inner.aq_parent
+        elif hasattr(v, 'im_self'):
+            # this is a method, we need to treat it specially
+            a = getattr(v.im_self, 'aq_parent', None)
+            try:
+                c = v.im_self.aq_inner.aq_parent
+            except:
+                c = None
+        else:
+            # punt on setting accessed or container if its neither a
+            # method nor a regular object or if it's not aq-wrapped.
+            a = c = None
 
-            # Try to get user
-            user=self.getUser(name)
-            if user is None:
-                return None
+        request_container = getattr(request['PARENTS'][-1], 'aq_parent', [])
 
-            # We need the user to be able to acquire!
-            user=user.__of__(self)
+        if a is request_container:
+            # if pub's aq_parent is the request container, it
+            # means pub was accessed from and is contained in the root
+            root = request['PARENTS'][-1]
+            a = c = root
 
-            # Try to authorize user
-            if user.allowed(published, roles):
-                return user
-            return None
-
+        return a, c, n, v
 
     def _isTop(self):
-        try: return self.aq_parent.aq_base.isTopLevelPrincipiaApplicationObject
-        except: return 0
+        try:
+            return self.aq_parent.aq_base.isTopLevelPrincipiaApplicationObject
+        except:
+            return 0
 
     def __len__(self):
         return 1
@@ -717,10 +790,20 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             names=reqattr(REQUEST, 'names')
             return self._delUsers(names,REQUEST)
 
+        if submit=='Toggle':
+            self.toggleDomainDefinedNobodyMode()
+
         return self._mainUser(self, REQUEST)
 
     def user_names(self):
         return self.getUserNames()
+
+    def getDomainDefinedNobodyMode(self):
+        return self._check_for_domain_defined_nobody
+
+    def toggleDomainDefinedNobodyMode(self):
+        ck = self._check_for_domain_defined_nobody
+        self._check_for_domain_defined_nobody = not ck
 
     def manage_beforeDelete(self, item, container):
         if item is self:
