@@ -212,7 +212,7 @@
       of the module 'Missing', if present.
 '''
 
-__rcs_id__='$Id: DT_In.py,v 1.5 1997/09/25 20:58:24 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.6 1997/10/05 19:41:59 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -266,7 +266,7 @@ __rcs_id__='$Id: DT_In.py,v 1.5 1997/09/25 20:58:24 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -284,7 +284,7 @@ class In:
 	tname, args, section = blocks[0]
 	args=parse_params(args, name='', start='1',end='-1',size='10',
 			  orphan='3',overlap='1',mapping=1,
-			  previous=1, next=1, expr='')
+			  previous=1, next=1, expr='', sort='')
 	self.args=args
 	if args.has_key('start'):
 	    v=args['start']
@@ -332,6 +332,20 @@ class In:
 	    nbatchparams=nbatchparams-1
 	else:
 	    mapping=0
+
+	if params.has_key('sort'):
+	    sort=params['sort']
+	    nbatchparams=nbatchparams-1
+	    s=[]
+	    for client in sequence:
+		if type(client)==TupleType and len(client)==2: v=client[1]
+		else: v=client
+		if mapping: v=v[sort]
+		else: v=getattr(v, sort)
+		s.append((v,client))
+	    s.sort()
+	    sequence=[]
+	    for v, client in s: sequence.append(client)
 
 	next=previous=0
 	if nbatchparams:
@@ -756,6 +770,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.6  1997/10/05 19:41:59  jim
+# Added sort option.
+#
 # Revision 1.5  1997/09/25 20:58:24  jim
 # Added sequence-query to *vastly* simplify browse by batch!
 #
