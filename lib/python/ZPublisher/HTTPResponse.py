@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.46 2001/04/24 15:59:49 andreas Exp $'''
-__version__='$Revision: 1.46 $'[11:-2]
+$Id: HTTPResponse.py,v 1.47 2001/08/07 16:07:42 chrism Exp $'''
+__version__='$Revision: 1.47 $'[11:-2]
 
 import string, types, sys,  re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -540,13 +540,13 @@ class HTTPResponse(BaseResponse):
 </BODY>
 </HTML>""")
 
-    def notFoundError(self,entry='who knows!'):
+    def notFoundError(self,entry='Unknown'):
         self.setStatus(404)
         raise 'NotFound',self._error_html(
             "Resource not found",
-            "Sorry, the requested resource does not exist.<p>" +
-            "Check the URL and try again.<p>" +
-            "\n<!--\n%s\n-->" % entry)
+            "Sorry, the requested resource does not exist." +
+            "<p>Check the URL and try again.</p>" +
+            "<p><b>Reason:</b> %s</p>" % self.quoteHTML(entry))
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
