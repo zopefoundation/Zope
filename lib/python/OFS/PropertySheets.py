@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -775,7 +775,8 @@ class FixedSchema(PropertySheet):
             
         return tuple(r)
 
-    propertyMap = _propertyMap
+    def propertyMap(self):
+        return self._propertyMap()
 
     def property_extensible_schema__(self):
         return 0
