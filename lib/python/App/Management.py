@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.46 2001/01/16 20:01:09 evan Exp $"""
+$Id: Management.py,v 1.47 2001/01/16 21:26:56 chrism Exp $"""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -208,7 +208,7 @@ class Navigation(ExtensionClass.Base):
         )
 
     manage            =DTMLFile('dtml/manage', globals())
-    manage_menu       =HTMLFile('dtml/menu', globals())
+    manage_menu       =DTMLFile('dtml/menu', globals())
 
     manage_top_frame  =DTMLFile('dtml/manage_top_frame', globals())
     manage_page_header=DTMLFile('dtml/manage_page_header', globals())
@@ -249,7 +249,7 @@ You have been logged out.
         return
 
 
-    manage_zmi_prefs=HTMLFile('dtml/manage_zmi_prefs', globals())
+    manage_zmi_prefs=DTMLFile('dtml/manage_zmi_prefs', globals())
     manage_zmi_prefs__roles__ = None
 
 file = DTMLFile('dtml/manage_page_style.css', globals())
