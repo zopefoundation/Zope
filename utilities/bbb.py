@@ -248,60 +248,12 @@ def undo_log(pos, oid, start, tname, user, t, p, first, newtrans):
     
     sys.stdout.write("%s:\t%s\t%s\t%s\n" % (pos, start, user, t))
 
-def xml(pos, oid, start, tname, user, t, p, first, newtrans):
-    
-    global ppml
-    if ppml is None: import ppml
-    u=ppml.ToXMLUnpickler
-    
-    write=sys.stdout.write
-
-    if first: write('<?xml version="1.0">\n<ZopeData>\n')
-    if pos is None: 
-        write('</transaction>\n')
-        write('</ZopeData>\n')
-        return
-
-    if newtrans:
-        if pos > 9: write('</transaction>\n')
-        write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
-    l=len(p)
-    pp=p
-    f=StringIO(p)
-    u=u(f)
-    u.idprefix='%s.' % pos
-    p=u.load().__str__(4)
-    if f.tell() < l:
-        p=p+u.load().__str__(4)
-    write('  <rec id="%s" time="%s">\n%s  </rec>\n' % (oid, start, p))
-
-def xmls(pos, oid, start, tname, user, t, p, first, newtrans):
-    write=sys.stdout.write
-
-    if first: write('<?xml version="1.0">\n<transactions>\n')
-    if pos is None: 
-        write('</transaction>\n')
-        write('</transactioons>\n')
-        return
-
-    if newtrans:
-        if pos > 9: write('</transaction>\n')
-        write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
-
-
         
 reports={
     'none': (none,
              ('Read a database file checking for errors',
               'but producing no output')
              ),
-    'xml': (xml,
-            ('Convert the database to XML format',)
-            ),
-    'transactions': (xmls,
-                     ('Output a summary of the database',
-                      'transactions in XML')
-                     ),
     'oids': (oids,
              ('Read the database and output object ids',)),
     'positions': (positions,
