@@ -19,6 +19,15 @@ Zope changes
           hook to create PythonScripts (for MIMEtype 'text/x-python')
           and DTMLMethods (for other 'text' MIMEtypes) (Collector #998).
 
+      Bugs Fixed
+
+	- Mechanisms in the underbelly of the Catalog and Globbing
+	  Lexicon (which is the default for all new Catalogs) has been
+	  overhauled given substantial performance increases.  On
+	  simple queries, performance should double (or more) in many
+	  situations, whereas with globbed queries it may increase by
+	  substantially more.
+
     Zope 2.3.0 beta 1
 
       Features Added

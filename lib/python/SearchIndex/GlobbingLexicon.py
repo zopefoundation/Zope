@@ -83,28 +83,22 @@
 # 
 ##############################################################################
 
-import string, regex, ts_regex
-import regsub
-
-from Lexicon import Lexicon
-
-
 __doc__=""" Lexicon object that supports 
 
 """
-
+from Lexicon import Lexicon
 from Splitter import Splitter
-from Persistence import Persistent
-from Acquisition import Implicit
-import OIBTree, BTree, IOBTree
 from intSet import intSet
-OIBTree=OIBTree.BTree
-OOBTree=BTree.BTree
-IOBTree=IOBTree.BTree
-import re
-
 from UnTextIndex import Or
 
+import re, time
+import OIBTree, BTree, IOBTree, IIBTree
+OIBTree = OIBTree.BTree                 # Object -> Integer
+OOBTree = BTree.BTree                   # Object -> Object
+IOBTree = IOBTree.BTree                 # Integer -> Object
+IIBucket = IIBTree.Bucket               # Integer -> Integer
+
+import pdb
 class GlobbingLexicon(Lexicon):
     """
 
@@ -155,7 +149,6 @@ class GlobbingLexicon(Lexicon):
                     
                 set.insert(self.counter)
 
-            self._digrams = _digrams
             counter = self.counter
             self.counter = self.counter + 1
             return counter
@@ -163,14 +156,14 @@ class GlobbingLexicon(Lexicon):
 
     def get(self, pattern):
         """ Query the lexicon for words matching a pattern.
-
         """
-
         wc_set = [self.multi_wc, self.single_wc]
-        digrams = []
-        for i in range(len(pattern)):
 
+        digrams = []
+        globbing = 0
+        for i in range(len(pattern)):
             if pattern[i] in wc_set:
+                globbing = 1
                 continue
 
             if i == 0:
@@ -184,21 +177,19 @@ class GlobbingLexicon(Lexicon):
                 except IndexError:
                     digrams.append( (pattern[i] + self.eow) )
 
-
-
+        if not globbing:
+            result =  self._lexicon.get(pattern, ())
+            return (result, )
+        
         ## now get all of the intsets that contain the result digrams
-
-        result = None
+        result = IIBucket()
         for digram in digrams:
             if self._digrams.has_key(digram):
-                set = self._digrams[digram]
-                if set is not None:
-                    if result is None:
-                        result = set
-                    else:
-                        result.intersection(set)
+                matchSet = self._digrams[digram]
+                if matchSet is not None:
+                    result = IIBucket().union(matchSet)
 
-        if result is None:
+        if len(result) == 0:
             return ()
         else:
             ## now we have narrowed the list of possible candidates
@@ -211,10 +202,9 @@ class GlobbingLexicon(Lexicon):
             expr = re.compile(self.translate(pattern))
             words = []
             hits = []
-            for x in result:
-                if expr.search(self._inverseLex[x]):
+            for x in result.keys():
+                if expr.match(self._inverseLex[x]):
                     hits.append(x)
-
             return hits
                 
     def __getitem__(self, word):
@@ -226,14 +216,15 @@ class GlobbingLexicon(Lexicon):
 
         """
         words = []
+        wids = []
         for w in q:
             if ( (self.multi_wc in w) or
-                (self.single_wc in w) ):
+                 (self.single_wc in w) ):
                 wids = self.get(w)
                 for wid in wids:
                     if words:
                         words.append(Or)
-                    words.append(self._inverseLex[wid])
+                    words.append(wid)
             else:
                 words.append(w)
 
@@ -262,19 +253,7 @@ class GlobbingLexicon(Lexicon):
             if c == self.multi_wc:
                 res = res + '.*'
             elif c == self.single_wc:
-                res = res + '.'
+                res = res + '.?'
             else:
                 res = res + re.escape(c)
-        return res + "$"
-
-
-
-
-
-
-
-
-
-
-
-
+        return res + '$'

@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 from Globals import Persistent
@@ -368,24 +368,44 @@ class UnTextIndex(Persistent, Implicit):
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
-        """
-        src = tuple(self.getLexicon(self._lexicon).Splitter(word))
-        if not src: return ResultList({}, (word,), self)
-        if len(src) == 1:
-            src=src[0]
-            if src[:1]=='"' and src[-1:]=='"': return self[src]
-            r = self._index.get(self.getLexicon(self._lexicon).get(src)[0],
-                                None)
-            if r is None: r = {}
-            return ResultList(r, (src,), self)
-            
-        r = None
-        for word in src:
-            rr = self[word]
-            if r is None: r = rr
-            else: r = r.near(rr)
 
-        return r
+        Note that this differentiates between being passed an Integer
+        and a String.  Strings are looked up in the lexicon, whereas
+        Integers are assumed to be resolved word ids. """
+        
+        if type(word) is IntType:
+            # We have a word ID
+            result = self._index.get(word, {})
+            return ResultList(result, (word,), self)
+        else:
+            splitSource = tuple(self.getLexicon(self._lexicon).Splitter(word))
+
+            if not splitSource:
+                return ResultList({}, (word,), self)
+        
+            if len(splitSource) == 1:
+                splitSource = splitSource[0]
+                if splitSource[:1]=='"' and splitSource[-1:]=='"':
+                    return self[splitSource]
+
+                r = self._index.get(
+                     self.getLexicon(self._lexicon).get(splitSource)[0],
+                     None)
+
+                if r is None:
+                    r = {}
+
+                return ResultList(r, (splitSource,), self)
+
+            r = None
+            for word in splitSource:
+                rr = self[word]
+                if r is None:
+                    r = rr
+                else:
+                    r = r.near(rr)
+
+            return r
 
 
     def _apply_index(self, request, cid=''): 
@@ -482,12 +502,10 @@ class UnTextIndex(Persistent, Implicit):
         whole thing is 'evaluated'
 
         """
-
         # First replace any occurences of " and not " with " andnot "
         s = ts_regex.gsub(
             '[%s]+[aA][nN][dD][%s]*[nN][oO][tT][%s]+' % (ws * 3),
             ' andnot ', s)
-
 
         # do some parsing
         q = parse(s)
@@ -496,7 +514,7 @@ class UnTextIndex(Persistent, Implicit):
         ## For example, substitute wildcards, or translate words into
         ## various languages.
         q = self.getLexicon(self._lexicon).query_hook(q)
-
+        
         # do some more parsing
         q = parse2(q, default_operator)
 
@@ -509,65 +527,78 @@ class UnTextIndex(Persistent, Implicit):
         try:
             left  = q[i - 1]
             right = q[i + 1]
-        except IndexError: raise QueryError, "Malformed query"
+        except IndexError:
+            raise QueryError, "Malformed query"
 
-        t=type(left)
-        if t is ListType: left = evaluate(left, self)
-        elif t is StringType: left=self[left]
+        operandType = type(left)
+        if operandType is IntType:
+            left = self[left]
+        elif operandType is StringType:
+            left = self[left]        
+        elif operandType is ListType:
+            left = evaluate(left, self)
 
-        t=type(right)
-        if t is ListType: right = evaluate(right, self)
-        elif t is StringType: right=self[right]
+        operandType = type(right)
+        if operandType is IntType:
+            right = self[right]
+        elif operandType is StringType:
+            right = self[right]       
+        elif operandType is ListType:
+            right = evaluate(right, self)
 
         return (left, right)
 
 
-    def evaluate(self, q):
+    def evaluate(self, query):
         '''Evaluate a parsed query'''
-    ##    import pdb
-    ##    pdb.set_trace()
+        # There are two options if the query passed in is only one
+        # item. It means either it's an embedded query, in which case
+        # we'll recursively evaluate, other wise it's nothing for us
+        # to evaluate, and we just get the results and return them.
+        if (len(query) == 1):
+            if (type(query[0]) is ListType):
+                return evaluate(query[0], self)
 
-        if (len(q) == 1):
-            if (type(q[0]) is ListType):
-                return evaluate(q[0], self)
+            return self[query[0]]       # __getitem__
 
-            return self[q[0]]
-
+        # Now we need to loop through the query and expand out
+        # operators.  They are currently evaluated in the following
+        # order: AndNote -> And -> Or -> Near
         i = 0
-        while (i < len(q)):
-            if q[i] is AndNot:
-                left, right = self.get_operands(q, i)
+        while (i < len(query)):
+            if query[i] is AndNot:
+                left, right = self.get_operands(query, i)
                 val = left.and_not(right)
-                q[(i - 1) : (i + 2)] = [ val ]
+                query[(i - 1) : (i + 2)] = [ val ]
             else: i = i + 1
 
         i = 0
-        while (i < len(q)):
-            if q[i] is And:
-                left, right = self.get_operands(q, i)
+        while (i < len(query)):
+            if query[i] is And:
+                left, right = self.get_operands(query, i)
                 val = left & right
-                q[(i - 1) : (i + 2)] = [ val ]
+                query[(i - 1) : (i + 2)] = [ val ]
             else: i = i + 1
 
         i = 0
-        while (i < len(q)):
-            if q[i] is Or:
-                left, right = self.get_operands(q, i)
+        while (i < len(query)):
+            if query[i] is Or:
+                left, right = self.get_operands(query, i)
                 val = left | right
-                q[(i - 1) : (i + 2)] = [ val ]
+                query[(i - 1) : (i + 2)] = [ val ]
             else: i = i + 1
 
         i = 0
-        while (i < len(q)):
-            if q[i] is Near:
-                left, right = self.get_operands(q, i)
+        while (i < len(query)):
+            if query[i] is Near:
+                left, right = self.get_operands(query, i)
                 val = left.near(right)
-                q[(i - 1) : (i + 2)] = [ val ]
+                query[(i - 1) : (i + 2)] = [ val ]
             else: i = i + 1
 
-        if (len(q) != 1): raise QueryError, "Malformed query"
+        if (len(query) != 1): raise QueryError, "Malformed query"
 
-        return q[0]
+        return query[0]
 
 
 def parse(s):

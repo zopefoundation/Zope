@@ -101,8 +101,8 @@ from Catalog import Catalog, orify
 from SearchIndex import UnIndex, UnTextIndex
 from Vocabulary import Vocabulary
 import IOBTree
+from Shared.DC.ZRDB.TM import TM
 from AccessControl import getSecurityManager
-
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
@@ -217,7 +217,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     threshold=10000
     _v_total=0
-
+    _v_transaction = None
+    
     def __init__(self, id, title='', vocab_id=None, container=None):
         self.id=id
         self.title=title
@@ -401,14 +402,31 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def catalog_object(self, obj, uid):
         """ wrapper around catalog """
-        self._v_total = (self._v_total +
-                         self._catalog.catalogObject(obj, uid, self.threshold))
-
+        self._catalog.catalogObject(obj, uid, None)
+        # None passed in to catalogObject as third argument indicates
+        # that we shouldn't try to commit subtransactions within any
+        # indexing code.  We throw away the result of the call to
+        # catalogObject (which is a word count), because it's
+        # worthless to us here.
+        
         if self.threshold is not None:
+            # figure out whether or not to commit a subtransaction.
+            t = id(get_transaction())
+            if t != self._v_transaction:
+                self._v_total = 0
+            self._v_transaction = t
+            self._v_total = self._v_total + 1
+            # increment the _v_total counter for this thread only and get
+            # a reference to the current transaction.
+            # the _v_total counter is zeroed if we notice that we're in
+            # a different transaction than the last one that came by.
+            # self.threshold represents the number of times that
+            # catalog_object needs to be called in order for the catalog
+            # to commit a subtransaction.  The semantics here mean that
+            # we should commit a subtransaction if our threshhold is
+            # exceeded within the boundaries of the current transaction.
             if self._v_total > self.threshold:
-                # commit a subtransaction
                 get_transaction().commit(1)
-                # kick the chache, this may be overkill but ya never know
                 self._p_jar.cacheFullSweep(1)
                 self._v_total = 0
 
@@ -692,7 +710,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                   '%s unchanged.' % (len(fixed), len(removed), unchanged),
           action='./manage_main')
 
-
+    
 Globals.default__class_init__(ZCatalog)
 
 
