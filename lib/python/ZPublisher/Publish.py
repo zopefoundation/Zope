@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.127 1999/03/18 22:36:23 jim Exp $"""
-__version__='$Revision: 1.127 $'[11:-2]
+$Id: Publish.py,v 1.128 1999/04/12 16:18:20 amos Exp $"""
+__version__='$Revision: 1.128 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -237,16 +237,19 @@ def get_module_info(module_name, modules={},
 
 def publish_module(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-                   environ=os.environ, debug=0):
+                   environ=os.environ, debug=0, request=None, response=None):
     must_die=0
     status=200
     after_list=[None]
-    request=None
     try:
         try:
             try:
-                response=Response(stdout=stdout, stderr=stderr)
-                request=Request(stdin, environ, response)
+                if response is None:
+                    response=Response(stdout=stdout, stderr=stderr)
+                else:
+                    stdout=response.stdout
+                if request is None:
+                    request=Request(stdin, environ, response)
             finally:
                 pass
             response = publish(request, module_name, after_list, debug=debug)
