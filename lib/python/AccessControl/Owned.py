@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.9 2001/01/08 22:46:56 brian Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Owned.py,v 1.10 2001/01/12 15:23:05 chrism Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -119,7 +119,7 @@ class Owned(ExtensionClass.Base):
                      },
                    )
     
-    manage_owner=Globals.HTMLFile('dtml/owner', globals())
+    manage_owner=Globals.DTMLFile('dtml/owner', globals())
 
     def owner_info(self):
         """Get ownership info for display
