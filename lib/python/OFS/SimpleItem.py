@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.19 1998/05/01 14:41:59 jeffrey Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: SimpleItem.py,v 1.20 1998/05/08 14:58:48 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -28,9 +28,8 @@ HTML=Globals.HTML
 
 class Item(CopySource, App.Management.Tabs):
 
-    __roles__=['Manager', 'Shared']
-
     isPrincipiaFolderish=0
+    isTopLevelPrincipiaApplicationObject=0
 
     # Name, relative to SOFTWARE_URL of icon used to display item
     # in folder listings.
@@ -204,6 +203,9 @@ def pretty_tb(t,v,tb):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.20  1998/05/08 14:58:48  jim
+# Changed permission settings to be in line with new machinery.
+#
 # Revision 1.19  1998/05/01 14:41:59  jeffrey
 # added raise_standardErrorMessage logic
 #

@@ -79,7 +79,6 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
     ('Change permissions', ['manage_access']),
     ('Change', ['manage_edit',]),
     ('View', ['__call__',]),
-    ('Shared permission', ['',]),
     )
 
     def __init__(self, id, title, module, function):
@@ -155,7 +154,6 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
 	return f
 
-    __call____roles__='Manager', 'Shared'
     def __call__(self, *args, **kw):
 	"""Call an ExternalMethod
 

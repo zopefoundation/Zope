@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.42 1998/04/14 20:46:07 jim Exp $"""
+$Id: Folder.py,v 1.43 1998/05/08 14:56:50 jim Exp $"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -41,8 +41,6 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     The basic container object in Principia.  Folders can hold almost all
     other Principia objects.
     """
-    __roles__=['Manager', 'Shared']
-
     meta_type='Folder'
     id       ='folder'
     title    ='Folder object'
@@ -69,22 +67,21 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     )
 
     __ac_permissions__=(
-    ('View management screens',
-     ('manage','manage_menu','manage_main','manage_copyright',
-      'manage_tabs','manage_propertiesForm','manage_UndoForm',)),
-    ('Access Contents Information',
-     ('objectIds', 'objectValues', 'objectItems','hasProperty',
-      'propertyIds', 'propertyValues','propertyItems',)),
-    ('Undo changes',       ('manage_undo_transactions',)),
-    ('Change permissions', ('manage_access',)),
-    ('Add objects', ('manage_addObject',)),
-    ('Delete objects',     ('manage_delObjects',)),
-    ('Manage properties',
-     ('manage_addProperty', 'manage_editProperties',
-      'manage_delProperties', 'manage_changeProperties',)),
-    ('Shared permission', ('',)),
+	('View', ()),
+	('View management screens',
+	 ('manage','manage_menu','manage_main','manage_copyright',
+	 'manage_tabs','manage_propertiesForm','manage_UndoForm',)),
+	('Access Contents Information',
+	 ('objectIds', 'objectValues', 'objectItems','hasProperty',
+	  'propertyIds', 'propertyValues','propertyItems',)),
+	('Undo changes',       ('manage_undo_transactions',)),
+	('Change permissions', ('manage_access',)),
+	('Add objects', ('manage_addObject',)),
+	('Delete objects',     ('manage_delObjects',)),
+	('Manage properties',
+	('manage_addProperty', 'manage_editProperties',
+	 'manage_delProperties', 'manage_changeProperties',)),
     )
-    objectIds__roles__='Shared','Manager'
 
     def tpValues(self):
 	r=[]

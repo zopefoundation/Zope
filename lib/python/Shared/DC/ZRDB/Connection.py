@@ -10,8 +10,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.12 1998/04/29 18:31:45 jeffrey Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Connection.py,v 1.13 1998/05/08 15:00:08 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition, sys
 from DateTime import DateTime
@@ -41,7 +41,6 @@ class Connection(
 	('Change',                  ('manage_edit',)              ),
 	('Open/Close',              ('manage_open_connection',
 				     'manage_close_connection')),
-	('Shared permission', ['',]),
 	)
    
     # Define pre-defined types of access:
@@ -146,6 +145,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.13  1998/05/08 15:00:08  jim
+# Changed permission settings to be in line with new machinery.
+#
 # Revision 1.12  1998/04/29 18:31:45  jeffrey
 # *** empty log message ***
 #

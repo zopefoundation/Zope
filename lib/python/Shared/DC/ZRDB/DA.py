@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.45 1998/04/29 21:17:51 jim Exp $'''
-__version__='$Revision: 1.45 $'[11:-2]
+$Id: DA.py,v 1.46 1998/05/08 15:00:27 jim Exp $'''
+__version__='$Revision: 1.46 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -69,7 +69,6 @@ class DA(
 	('Change',                  ('manage_edit','manage_advanced')  ),
 	('Test',                  ('manage_testForm','manage_test')  ),
 	('Use', ('__call__',)),
-	('Shared permission', ['',]),
 	)
    
     # Define pre-defined types of access:
@@ -435,6 +434,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.46  1998/05/08 15:00:27  jim
+# Changed permission settings to be in line with new machinery.
+#
 # Revision 1.45  1998/04/29 21:17:51  jim
 # Changed to use acquired parent.
 #

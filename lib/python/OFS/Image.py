@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -43,9 +43,8 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     __ac_permissions__=(
     ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
-    ('Change/upload data', ['manage_edit','manage_upload','PUT']),
+    ('Change', ['manage_edit','manage_upload','PUT']),
     ('View', ['index_html','view_image_or_file','getSize','getContentType']),
-    ('Shared permission', ['',]),
     )
    
 
@@ -135,7 +134,6 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	RESPONSE['content-type'] =self.content_type
 	return ''
 
-    PUT__roles__=['Manager']
     def PUT(self, BODY, REQUEST):
 	'handle PUT requests'
 	self.data=Pdata(BODY)
@@ -188,8 +186,6 @@ class Image(File):
     manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='Image',
 			       kind='image')
     manage=manage_main=manage_editForm
-
-    PUT__roles__=['Manager']
 
     def __str__(self):
 	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
