@@ -5,7 +5,8 @@
 <title><dtml-if title><dtml-var title></dtml-if></title>
 <dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
      is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0"
-     use_css="REQUEST.get('zmi_use_css', '1')">
+     use_css="REQUEST.get('zmi_use_css', '1')"
+     zmi_embedded_css="1">
 <dtml-if use_css>
 <dtml-if is_nav4>
 <style type="text/css">
