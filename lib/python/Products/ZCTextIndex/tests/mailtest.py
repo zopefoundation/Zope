@@ -77,6 +77,7 @@ def index(rt, mboxfile, db):
     global NUM
     idx_time = 0
     pack_time = 0
+    start_time = time.time()
 
     lexicon = Lexicon(Splitter(), CaseNormalizer(), StopWordRemover())
     extra = Extra()
@@ -137,12 +138,16 @@ def index(rt, mboxfile, db):
         pack_time += p1 - p0
 
     if VERBOSE:
+        finish_time = time.time()
         print
-        print "Index time", idx_time
-        print "Pack time", pack_time
+        print "Index time", round(idx_time / 60, 3), "minutes"
+        print "Pack time", round(pack_time / 60, 3), "minutes"
         print "Index bytes", Message.total_bytes
         rate = (Message.total_bytes / idx_time) / 1024
-        print "Index rate %d KB/sec" % int(rate)
+        print "Index rate %.2f KB/sec" % rate
+        print "Indexing began", time.ctime(start_time)
+        print "Indexing ended", time.ctime(finish_time)
+        print "Wall clock minutes", round((finish_time - start_time)/60, 3)
 
 def query(rt, query_str):
     idx = rt["index"]
