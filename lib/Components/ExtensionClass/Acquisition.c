@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.35 1999/11/15 18:08:20 jim Exp $
+  $Id: Acquisition.c,v 1.36 1999/12/16 20:03:42 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -61,12 +61,11 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__mod__, *py__pow__, *py__divmod__, *py__lshift__, *py__rshift__,
   *py__and__, *py__or__, *py__xor__, *py__coerce__, *py__neg__,
-  *py__pos__, *py__abs__, *py__nonzero__, *py__inv__, *py__int__,
+  *py__pos__, *py__abs__, *py__nonzero__, *py__invert__, *py__int__,
   *py__long__, *py__float__, *py__oct__, *py__hex__,
   *py__getitem__, *py__setitem__, *py__delitem__,
   *py__getslice__, *py__setslice__, *py__delslice__,
-  *py__concat__, *py__repeat__, *py__len__, *py__of__, *py__call__,
-  *py__repr__, *py__str__;
+  *py__len__, *py__of__, *py__call__, *py__repr__, *py__str__, *py__cmp__;
 
 static PyObject *Acquired=0;
 
@@ -91,7 +90,7 @@ init_py_names()
   INIT_PY_NAME(__pos__);
   INIT_PY_NAME(__abs__);
   INIT_PY_NAME(__nonzero__);
-  INIT_PY_NAME(__inv__);
+  INIT_PY_NAME(__invert__);
   INIT_PY_NAME(__int__);
   INIT_PY_NAME(__long__);
   INIT_PY_NAME(__float__);
@@ -103,13 +102,12 @@ init_py_names()
   INIT_PY_NAME(__getslice__);
   INIT_PY_NAME(__setslice__);
   INIT_PY_NAME(__delslice__);
-  INIT_PY_NAME(__concat__);
-  INIT_PY_NAME(__repeat__);
   INIT_PY_NAME(__len__);
   INIT_PY_NAME(__of__);
   INIT_PY_NAME(__call__);
   INIT_PY_NAME(__repr__);
   INIT_PY_NAME(__str__);
+  INIT_PY_NAME(__cmp__);
   
 #undef INIT_PY_NAME
 }
@@ -657,9 +655,27 @@ Wrapper_setattro(Wrapper *self, PyObject *name, PyObject *v)
 }
 
 static int
-Wrapper_compare(Wrapper *v, Wrapper *w)
+Wrapper_compare(Wrapper *self, PyObject *w)
 {
-  return PyObject_Compare(v->obj,w->obj);
+  PyObject *m;
+  int r;
+
+  if (OBJECT(self) == w) return 0;
+
+  UNLESS (m=PyObject_GetAttr(OBJECT(self), py__cmp__))
+    {
+      PyErr_Clear();
+      return (OBJECT(self) < w) ? -1 : 1;
+    }
+
+  ASSIGN(m, PyObject_CallFunction(m, "O", w));
+  UNLESS (m) return -1;
+  
+  r=PyInt_AsLong(m);
+
+  Py_DECREF(m);
+
+  return r;  
 }
 
 static PyObject *
@@ -750,15 +766,15 @@ Wrapper_length(Wrapper *self)
 }
 
 static PyObject *
-Wrapper_concat(Wrapper *self, PyObject *bb)
+Wrapper_add(Wrapper *self, PyObject *bb)
 {
-  return CallMethodO(OBJECT(self),py__concat__,Build("(O)", bb) ,NULL);
+  return CallMethodO(OBJECT(self),py__add__,Build("(O)", bb) ,NULL);
 }
 
 static PyObject *
-Wrapper_repeat(Wrapper *self, int  n)
+Wrapper_mul(Wrapper *self, int  n)
 {
-  return CallMethodO(OBJECT(self),py__repeat__,Build("(i)", n),NULL);
+  return CallMethodO(OBJECT(self),py__mul__,Build("(i)", n),NULL);
 }
 
 static PyObject *
@@ -814,8 +830,8 @@ Wrapper_ass_slice(Wrapper *self, int  ilow, int  ihigh, PyObject *v)
 
 static PySequenceMethods Wrapper_as_sequence = {
 	(inquiry)Wrapper_length,		/*sq_length*/
-	(binaryfunc)Wrapper_concat,		/*sq_concat*/
-	(intargfunc)Wrapper_repeat,		/*sq_repeat*/
+	(binaryfunc)Wrapper_add,		/*sq_concat*/
+	(intargfunc)Wrapper_mul,		/*sq_repeat*/
 	(intargfunc)Wrapper_item,		/*sq_item*/
 	(intintargfunc)Wrapper_slice,		/*sq_slice*/
 	(intobjargproc)Wrapper_ass_item,	/*sq_ass_item*/
@@ -856,6 +872,178 @@ static PyMappingMethods Wrapper_as_mapping = {
   (binaryfunc)Wrapper_subscript,	/*mp_subscript*/
   (objobjargproc)Wrapper_ass_sub,	/*mp_ass_subscript*/
 };
+
+/* -------------------------------------------------------------- */
+
+/* Code to access Wrapper objects as numbers */
+
+static PyObject *
+Wrapper_sub(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__sub__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_div(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__div__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_mod(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__mod__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_divmod(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__divmod__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_pow(Wrapper *self, PyObject *o, PyObject *m)
+{
+  return CallMethodO(OBJECT(self),py__pow__,Build("(OO)", o, m),NULL);
+}
+
+static PyObject *
+Wrapper_neg(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__neg__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_pos(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__pos__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_abs(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__abs__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_invert(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__invert__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_lshift(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__lshift__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_rshift(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__rshift__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_and(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__and__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_xor(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__xor__,Build("(O)", o),NULL);
+}
+
+static PyObject *
+Wrapper_or(Wrapper *self, PyObject *o)
+{
+  return CallMethodO(OBJECT(self),py__or__,Build("(O)", o),NULL);
+}
+
+static int 
+Wrapper_coerce(Wrapper **self, PyObject **o)
+{
+  PyObject *m;
+
+  UNLESS (m=PyObject_GetAttr(OBJECT(*self), py__coerce__))
+    {
+      PyErr_Clear();
+      Py_INCREF(*self);
+      Py_INCREF(*o);
+      return 0;
+    }
+
+  ASSIGN(m, PyObject_CallFunction(m, "O", *o));
+  UNLESS (m) return -1;
+
+  UNLESS (PyArg_ParseTuple(m,"OO", self, o)) goto err;
+  Py_INCREF(*self);
+  Py_INCREF(*o);
+  Py_DECREF(m);
+  return 0;
+
+err:
+  Py_DECREF(m);
+  return -1;  
+}
+
+static PyObject *
+Wrapper_int(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__int__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_long(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__long__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_float(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__float__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_oct(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__oct__, NULL, NULL);
+}
+
+static PyObject *
+Wrapper_hex(Wrapper *self)
+{
+  return CallMethodO(OBJECT(self), py__hex__, NULL, NULL);
+}
+
+static PyNumberMethods Wrapper_as_number = {
+	(binaryfunc)Wrapper_add,	/*nb_add*/
+	(binaryfunc)Wrapper_sub,	/*nb_subtract*/
+	(binaryfunc)Wrapper_mul,	/*nb_multiply*/
+	(binaryfunc)Wrapper_div,	/*nb_divide*/
+	(binaryfunc)Wrapper_mod,	/*nb_remainder*/
+	(binaryfunc)Wrapper_divmod,	/*nb_divmod*/
+	(ternaryfunc)Wrapper_pow,	/*nb_power*/
+	(unaryfunc)Wrapper_neg,	/*nb_negative*/
+	(unaryfunc)Wrapper_pos,	/*nb_positive*/
+	(unaryfunc)Wrapper_abs,	/*nb_absolute*/
+	(inquiry)Wrapper_length,	/*nb_nonzero*/
+	(unaryfunc)Wrapper_invert,	/*nb_invert*/
+	(binaryfunc)Wrapper_lshift,	/*nb_lshift*/
+	(binaryfunc)Wrapper_rshift,	/*nb_rshift*/
+	(binaryfunc)Wrapper_and,	/*nb_and*/
+	(binaryfunc)Wrapper_xor,	/*nb_xor*/
+	(binaryfunc)Wrapper_or,	/*nb_or*/
+	(coercion)Wrapper_coerce,	/*nb_coerce*/
+	(unaryfunc)Wrapper_int,	/*nb_int*/
+	(unaryfunc)Wrapper_long,	/*nb_long*/
+	(unaryfunc)Wrapper_float,	/*nb_float*/
+	(unaryfunc)Wrapper_oct,	/*nb_oct*/
+	(unaryfunc)Wrapper_hex,	/*nb_hex*/
+};
+
 
 /* -------------------------------------------------------- */
 
@@ -916,7 +1104,7 @@ static PyExtensionClass Wrappertype = {
   (setattrfunc)0,			/*tp_setattr*/
   (cmpfunc)Wrapper_compare,    		/*tp_compare*/
   (reprfunc)Wrapper_repr,      		/*tp_repr*/
-  0,					/*tp_as_number*/
+  &Wrapper_as_number,			/*tp_as_number*/
   &Wrapper_as_sequence,			/*tp_as_sequence*/
   &Wrapper_as_mapping,			/*tp_as_mapping*/
   (hashfunc)Wrapper_hash,      		/*tp_hash*/
@@ -1016,7 +1204,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.35 $";
+  char *rev="$Revision: 1.36 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1035,7 +1223,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.35 1999/11/15 18:08:20 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.36 1999/12/16 20:03:42 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
