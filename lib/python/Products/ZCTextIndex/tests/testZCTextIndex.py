@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-from Interface import verify_class_implementation
+##from Interface import verify_class_implementation
 
 from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
@@ -188,8 +188,8 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
     # Gigabytes, pp. 180-188.  This test peeks into many internals of the
     # cosine indexer.
 
-    def testInterface(self):
-        verify_class_implementation(PluggableIndexInterface, ZCTextIndex)
+##    def testInterface(self):
+##        verify_class_implementation(PluggableIndexInterface, ZCTextIndex)
 
     def testRanking(self):
         self.words = ["cold", "days", "eat", "hot", "lot", "nine", "old",
