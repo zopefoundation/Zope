@@ -169,6 +169,24 @@ instancehome $INSTANCE
 #
 #    locale fr_FR
 
+
+# Directives: port-base
+#
+# Description:
+#     Offset applied to the port numbers used for ZServer
+#     configurations.  For example, if the http-server port is 8080 and
+#     the port-base is 1000, the HTTP server will listen on port 9080.
+#     This makes it easy to change the complete set of ports used by a
+#     Zope server process
+#
+# Default:
+#
+#     0
+#
+# Example:
+#
+#     port-base 1000
+
 # Directive: datetime-format
 #
 # Description:
@@ -271,20 +289,6 @@ instancehome $INSTANCE
 # Example:
 #
 #    structured-text-header-level 1
-
-# Directive: structured-text-header-level
-#
-# Description:
-#     Set the default starting HTML header level for structured text
-#     documents. The default is 3, which implies that top-level headers
-#     will be created with an <H3> tag.
-#
-# Default: 3
-#
-# Example:
-#
-#    structured-text-header-level 1
-
 
 # Directive: rest-input-encoding
 #
@@ -672,23 +676,6 @@ instancehome $INSTANCE
 #
 #    max-listen-sockets 500
 
-
-# Directives: port-base
-#
-# Description:
-#     Offset applied to the port numbers used for ZServer
-#     configurations.  For example, if the http-server port is 8080 and
-#     the port-base is 1000, the HTTP server will listen on port 9080.
-#     This makes it easy to change the complete set of ports used by a
-#     Zope server process
-#
-# Default:
-#
-#     0
-#
-# Example:
-#
-#     port-base 1000
 
 
 # Directives: servers
