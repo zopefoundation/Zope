@@ -292,6 +292,15 @@ setup(
                 ['DateTime/tests', ['DateTime/tests/julian_testdata.txt.gz']]],
     )
 
+# DBTab
+setup(
+    name='DBTab',
+    author=AUTHOR,
+
+    packages=['DBTab'],
+    data_files=[['DBTab', ['DBTab/CHANGES.txt']]],
+    )
+
 # DocumentTemplate
 setup(
     name='DocumentTemplate',
@@ -917,7 +926,9 @@ setup(
     author=AUTHOR,
 
     packages=['Products.TemporaryFolder', 'Products.TemporaryFolder.tests'],
-    data_files=[['Products/TemporaryFolder/dtml',
+    data_files=[['Products/TemporaryFolder',
+                    ['Products/TemporaryFolder/*.xml']],
+                ['Products/TemporaryFolder/dtml',
                     ['Products/TemporaryFolder/dtml/*']],
                 ['Products/TemporaryFolder/help',
                     ['Products/TemporaryFolder/help/*']],
@@ -987,6 +998,17 @@ setup(
                     ['Products/ZGadflyDA/gadfly/COPYRIGHT',
                      'Products/ZGadflyDA/gadfly/sql.mar',
                      'Products/ZGadflyDA/gadfly/*.html']]],
+    )
+
+# ZODBMountPoint product
+setup(
+    name='ZODBMountPoint',
+    author=AUTHOR,
+
+    packages=['Products.ZODBMountPoint', 'Products.ZODBMountPoint.tests'],
+    data_files=[['Products/ZODBMountPoint/www',
+                 ['Products/ZODBMountPoint/www/*']],
+                ],
     )
 
 # ZReST product
