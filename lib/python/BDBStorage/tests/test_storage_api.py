@@ -15,13 +15,11 @@
 # Unit tests for basic storage functionality
 
 import unittest
-# Import this here and now so that import failures properly cause the test
-# suite to ignore these tests.
-import bsddb3
-
 from ZODB import POSException
 
-import BerkeleyTestBase
+import BDBStorage
+from BDBStorage.tests import BerkeleyTestBase
+
 from ZODB.tests.BasicStorage import BasicStorage
 from ZODB.tests.RevisionStorage import RevisionStorage
 from ZODB.tests.VersionStorage import VersionStorage
@@ -79,9 +77,10 @@ class FullRecoveryTest(BerkeleyTestBase.FullTestBase,
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(FullTest, 'check'))
-    suite.addTest(unittest.makeSuite(FullRecoveryTest, 'check'))
-    suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
+    if BDBStorage.is_available:
+        suite.addTest(unittest.makeSuite(FullTest, 'check'))
+        suite.addTest(unittest.makeSuite(FullRecoveryTest, 'check'))
+        suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
     return suite
 
 

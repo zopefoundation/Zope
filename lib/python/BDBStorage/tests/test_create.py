@@ -18,9 +18,12 @@ import os
 import time
 import unittest
 
-from BDBStorage.BerkeleyBase import BerkeleyConfig
+import BDBStorage
+if BDBStorage.is_available:
+    from BDBStorage.BerkeleyBase import BerkeleyConfig
+    from BDBStorage.BDBFullStorage import BDBFullStorage
+
 from BDBStorage.tests import BerkeleyTestBase
-from BDBStorage.BDBFullStorage import BDBFullStorage
 
 
 
@@ -106,11 +109,12 @@ class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
-    suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
-    suite.addTest(unittest.makeSuite(FullOpenExistingTest, 'check'))
-    suite.addTest(unittest.makeSuite(FullOpenCloseTest, 'check'))
-    suite.addTest(unittest.makeSuite(OpenRecoveryTest, 'check'))
+    if BDBStorage.is_available:
+        suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
+        suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
+        suite.addTest(unittest.makeSuite(FullOpenExistingTest, 'check'))
+        suite.addTest(unittest.makeSuite(FullOpenCloseTest, 'check'))
+        suite.addTest(unittest.makeSuite(OpenRecoveryTest, 'check'))
     return suite
 
 

@@ -15,16 +15,11 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.62 $'.split()[-2:][0]
+__version__ = '$Revision: 1.63 $'.split()[-2:][0]
 
 import time
 import cPickle as pickle
 from struct import pack, unpack
-
-# This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
-# http://pybsddb.sourceforge.net.  It is compatible with release 3.4 of
-# PyBSDDB3.  The only recommended version of BerkeleyDB is 4.0.14.
-from bsddb3 import db
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -32,11 +27,8 @@ from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
-# BerkeleyBase.BerkeleyBase class provides some common functionality for both
-# the Full and Minimal implementations.  It in turn inherits from
-# ZODB.BaseStorage.BaseStorage which itself provides some common storage
-# functionality.
-from BerkeleyBase import BerkeleyBase, PackStop, _WorkThread
+from BDBStorage import db
+from BDBStorage.BerkeleyBase import BerkeleyBase, PackStop, _WorkThread
 
 ABORT = 'A'
 COMMIT = 'C'

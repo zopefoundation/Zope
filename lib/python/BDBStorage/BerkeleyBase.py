@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.37 $'.split()[-2:][0]
+__version__ = '$Revision: 1.38 $'.split()[-2:][0]
 
 import os
 import time
@@ -25,7 +25,7 @@ from types import StringType
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net
-from bsddb3 import db
+from BDBStorage import db
 
 # BaseStorage provides primitives for lock acquisition and release, and a host
 # of other methods, some of which are overridden here, some of which are not.
@@ -242,13 +242,15 @@ class BerkeleyBase(BaseStorage):
     def _make_autopacker(self, event):
         raise NotImplementedError
 
-    def _setupDB(self, name, flags=0, dbtype=db.DB_BTREE, reclen=None):
+    def _setupDB(self, name, flags=0, dbtype=None, reclen=None):
         """Open an individual database with the given flags.
 
         flags are passed directly to the underlying DB.set_flags() call.
         Optional dbtype specifies the type of BerkeleyDB access method to
         use.  Optional reclen if not None gives the record length.
         """
+        if dbtype is None:
+            dbtype = db.DB_BTREE
         d = db.DB(self._env)
         if flags:
             d.set_flags(flags)

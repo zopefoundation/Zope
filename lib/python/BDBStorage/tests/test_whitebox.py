@@ -19,10 +19,18 @@ import unittest
 from ZODB.utils import U64
 from ZODB.tests.MinPO import MinPO
 from ZODB.tests.StorageTestBase import zodb_unpickle
-from BDBStorage.BDBMinimalStorage import BDBMinimalStorage
-from BDBStorage.BDBFullStorage import BDBFullStorage
-from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
+
+import BDBStorage
+if BDBStorage.is_available:
+    from BDBStorage.BDBMinimalStorage import BDBMinimalStorage
+    from BDBStorage.BDBFullStorage import BDBFullStorage
+else:
+    # Sigh
+    class FakeBaseClass: pass
+    BDBFullStorage = BDBMinimalStorage = FakeBaseClass
+
 from BDBStorage.tests.ZODBTestBase import ZODBTestBase
+from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
 
 from Persistence import Persistent
 
@@ -218,9 +226,10 @@ class WhiteboxHighLevelFull(ZODBTestBase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(WhiteboxLowLevelMinimal, 'check'))
-    suite.addTest(unittest.makeSuite(WhiteboxHighLevelMinimal, 'check'))
-    suite.addTest(unittest.makeSuite(WhiteboxHighLevelFull, 'check'))
+    if BDBStorage.is_available:
+        suite.addTest(unittest.makeSuite(WhiteboxLowLevelMinimal, 'check'))
+        suite.addTest(unittest.makeSuite(WhiteboxHighLevelMinimal, 'check'))
+        suite.addTest(unittest.makeSuite(WhiteboxHighLevelFull, 'check'))
     return suite
 
 

@@ -18,11 +18,9 @@
 
 import time
 import unittest
-# Import this here and now so that import failures properly cause the test
-# suite to ignore these tests.
-import bsddb3
 
-from ZODBTestBase import ZODBTestBase
+import BDBStorage
+from BDBStorage.tests.ZODBTestBase import ZODBTestBase
 from Persistence import PersistentMapping
 
 
@@ -81,8 +79,9 @@ class FullCommitAndRead(ZODBTestBase, CommitAndRead):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MinimalCommitAndRead, 'check'))
-    suite.addTest(unittest.makeSuite(FullCommitAndRead, 'check'))
+    if BDBStorage.is_available:
+        suite.addTest(unittest.makeSuite(MinimalCommitAndRead, 'check'))
+        suite.addTest(unittest.makeSuite(FullCommitAndRead, 'check'))
     return suite
 
 

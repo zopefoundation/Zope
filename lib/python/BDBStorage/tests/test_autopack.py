@@ -21,9 +21,16 @@ from ZODB.referencesf import referencesf
 from ZODB.tests.MinPO import MinPO
 from Persistence import Persistent
 
-from BDBStorage.BDBFullStorage import BDBFullStorage
-from BDBStorage.BDBMinimalStorage import BDBMinimalStorage
-from BDBStorage.BerkeleyBase import BerkeleyConfig
+import BDBStorage
+if BDBStorage.is_available:
+    from BDBStorage.BDBFullStorage import BDBFullStorage
+    from BDBStorage.BDBMinimalStorage import BDBMinimalStorage
+    from BDBStorage.BerkeleyBase import BerkeleyConfig
+else:
+    # Sigh
+    class FakeBaseClass: pass
+    BDBFullStorage = BDBMinimalStorage = FakeBaseClass
+
 from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase
 
 ZERO = '\0'*8
@@ -254,9 +261,10 @@ class TestMinimalPack(TestAutopackBase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestAutopack, 'check'))
-    suite.addTest(unittest.makeSuite(TestAutomaticClassicPack, 'check'))
-    suite.addTest(unittest.makeSuite(TestMinimalPack, 'check'))
+    if BDBStorage.is_available:
+        suite.addTest(unittest.makeSuite(TestAutopack, 'check'))
+        suite.addTest(unittest.makeSuite(TestAutomaticClassicPack, 'check'))
+        suite.addTest(unittest.makeSuite(TestMinimalPack, 'check'))
     return suite
 
 

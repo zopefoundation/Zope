@@ -16,7 +16,8 @@
 
 import unittest
 
-from ZODBTestBase import ZODBTestBase
+import BDBStorage
+from BDBStorage.tests.ZODBTestBase import ZODBTestBase
 from Persistence import PersistentMapping
         
 
@@ -46,8 +47,9 @@ class MinimalNewInsertsTest(ZODBTestBase, InsertMixin):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MinimalNewInsertsTest, 'check'))
-    suite.addTest(unittest.makeSuite(FullNewInsertsTest, 'check'))
+    if BDBStorage.is_available:
+        suite.addTest(unittest.makeSuite(MinimalNewInsertsTest, 'check'))
+        suite.addTest(unittest.makeSuite(FullNewInsertsTest, 'check'))
     return suite
 
 

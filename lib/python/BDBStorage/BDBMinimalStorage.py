@@ -15,21 +15,14 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.23 $'[-2:][0]
-
-# This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
-# http://pybsddb.sourceforge.net.  It is compatible with release 3.4 of
-# PyBSDDB3.
-from bsddb3 import db
+__version__ = '$Revision: 1.24 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
-# BerkeleyBase class provides some common functionality for BerkeleyDB-based
-# storages.  It in turn inherits from BaseStorage which itself provides some
-# common storage functionality.
+from BDBStorage import db
 from BerkeleyBase import BerkeleyBase, PackStop, _WorkThread
 
 ABORT = 'A'
