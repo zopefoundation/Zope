@@ -38,4 +38,3 @@ Notes
   * Don't forget to check the Zope web site and mailing list.
 
   * Read the source and have fun!
-
