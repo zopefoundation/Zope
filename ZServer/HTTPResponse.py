@@ -298,7 +298,8 @@ class ChannelPipe:
             '%s %s' % (self._request.reply_code, self._bytes))
         self._channel.push(LoggingProducer(self._request, self._bytes), 0)
         self._channel.push(CallbackProducer(self._channel.done), 0)
-        self._channel.push(CallbackProducer(lambda t=('E', id(self._request)): apply(DebugLogger.log, t)), 0)
+        self._channel.push(CallbackProducer(
+            lambda t=('E', id(self._request)): apply(DebugLogger.log, t)), 0)
         if self._shutdown:
             try: r=self._shutdown[0]
             except: r=0
