@@ -169,6 +169,17 @@ Zope Changes
 
         - Database browsing didn't work for ZGadflyDA database adapters.
 
+        - Transaction mete data were not captured correctly by
+          ZPublisher, which made the undo log look odd wrt the user
+          who performed the transaction.
+
+        - Permissions for version operations were not et correctly. This
+          made it hard to delegate work to be done in versions and to
+          separate version participation from version finalization.
+          To fix this, it was necessary to split the "Join/Leave" view
+          into separate "Join/Leave" and "Save/Discard" views.
+
+        - No remark could be entered when discarding versions.
         
 
       Note:
