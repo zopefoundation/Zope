@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.33 1998/01/09 21:35:03 brian Exp $"""
+$Id: Folder.py,v 1.34 1998/01/12 21:31:58 jim Exp $"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -67,7 +67,7 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	     ImageHandler,FolderHandler,UserFolderHandler,
 	     SimpleItem.Item,CopyContainer):
     """ """
-    __roles__=['Manager']
+    __roles__=['Manager', 'Shared']
 
     meta_type='Folder'
     id       ='folder'
