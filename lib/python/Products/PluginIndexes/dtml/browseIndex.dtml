@@ -6,7 +6,13 @@
 <table border="1" align="center" width="100%" class="form-help">
   <dtml-in items>
     <tr>
-      <td>&dtml-sequence-key; </td>
+      <td>
+        <dtml-if "meta_type in ('DateIndex',)">
+          <dtml-var "DateTime(_['sequence-key'])">
+        <dtml-else>
+          &dtml-sequence-key; 
+        </dtml-if>
+      </td>
       <td>   
         <ul>
           <dtml-let v="_['sequence-item']">
