@@ -121,11 +121,29 @@
 
     Attributes
 
-      sort -- Define the sort order for sequence items.  If an item in
-      the sequence does not define 
+      sort -- Define the sort order for sequence items.  Parameter to the
+      attribute is either a sort option, or list of sort options separated
+      by comma.  Every sort option consists of variable name, optional
+      comparison function name (default is cmp) and optional sort order
+      (default is asc).
+          Examples: sort="date" or sort="date,time" or
+      sort="title/locale,date/cmp/desc". If you want to specify sort order,
+      you cannot omit the function; use cmp for standard comparison.
+          Few predefined comparison functions available: standard cmp,
+      nocase (ignore string case), strcoll (alias "locale"),
+      strcoll_nocase (alias "locale_nocase"). Locale functions are
+      available only if module locale is already imported (you started Zope
+      with -L locale).
+
+      sort_expr -- The "sort" attribute accepts only static list of
+      sort options. This calculated parameter allows you to calculate the
+      list of sort options on the fly.
 
       reverse -- Reverse the sequence (may be combined with sort).  Note
       that this can cause a huge memory use in lazy activation instances. 
+
+      reverse_expr -- This calculated parameter allows you to calculate the
+      need of reversing on the fly.
 
       Within an 'in' block, variables are substituted from the
       elements of the iteration.  The elements may be either
@@ -186,7 +204,7 @@
     Batch sequence insertion
 
       When displaying a large number of objects, it is sometimes
-      desireable to display just a sub-sequence of the data.
+      desirable to display just a sub-sequence of the data.
       An 'in' command may have optional parameters,
       as in::
 
@@ -240,14 +258,14 @@
                  <!--#/in-->
 
              If the original URL is: 'foo/bar?x=1&y=2', then the
-             rendered text (after row data are displated) will be::
+             rendered text (after row data are displayed) will be::
 
                       <a href="foo/bar?x=1&y=2&batch_start=20">
                       (Next 20 results)
                       </a>
 
              If the original URL is: 'foo/bar?batch_start=10&x=1&y=2',
-             then the rendered text (after row data are displated)
+             then the rendered text (after row data are displayed)
              will be::
 
                       <a href="foo/bar?x=1&y=2&batch_start=30">
@@ -353,16 +371,16 @@
         mean -- The mean of numeric values values.
 
         variance -- The variance of numeric values computed with a
-          degrees of freedom qeual to the count - 1.
+          degrees of freedom equal to the count - 1.
 
         variance-n -- The variance of numeric values computed with a
-          degrees of freedom qeual to the count.
+          degrees of freedom equal to the count.
 
         standard-deviation -- The standard deviation of numeric values
-          computed with a degrees of freedom qeual to the count - 1.
+          computed with a degrees of freedom equal to the count - 1.
 
         standard-deviation-n -- The standard deviation of numeric
-          values computed with a degrees of freedom qeual to the count.
+          values computed with a degrees of freedom equal to the count.
 
       Missing values are either 'None' or the attribute 'Value'
       of the module 'Missing', if present.
@@ -382,12 +400,12 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.46 2001/03/08 18:35:39 brian Exp $'
-__version__='$Revision: 1.46 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.47 2001/04/12 14:53:53 andreas Exp $'
+__version__='$Revision: 1.47 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
-from string import find, atoi, join, split
+from string import find, atoi, join, split, lower
 import ts_regex
 from DT_InSV import sequence_variables, opt
 TupleType=type(())
@@ -499,9 +517,9 @@ class InClass:
 
         if self.sort_expr is not None:
             self.sort=self.sort_expr.eval(md)
-            sequence=self.sort_sequence(sequence)
+            sequence=self.sort_sequence(sequence, md)
         elif self.sort is not None:
-            sequence=self.sort_sequence(sequence)
+            sequence=self.sort_sequence(sequence, md)
 
         if self.reverse_expr is not None and self.reverse_expr.eval(md):
             sequence=self.reverse_sequence(sequence)
@@ -663,9 +681,9 @@ class InClass:
 
         if self.sort_expr is not None:
             self.sort=self.sort_expr.eval(md)
-            sequence=self.sort_sequence(sequence)
+            sequence=self.sort_sequence(sequence, md)
         elif self.sort is not None:
-            sequence=self.sort_sequence(sequence)
+            sequence=self.sort_sequence(sequence, md)
 
         if self.reverse_expr is not None and self.reverse_expr.eval(md):
             sequence=self.reverse_sequence(sequence)
@@ -722,17 +740,35 @@ class InClass:
 
         return result
 
-    def sort_sequence(self, sequence):
+    def sort_sequence(self, sequence, md):
 
         # Modified with multiple sort fields by Ross Lazarus
         # April 7 2000 rossl@med.usyd.edu.au
-        # eg <dtml in "foo" sort=akey,anotherkey>
+        # eg <dtml-in "foo" sort="akey,anotherkey">
         
+        # Modified with advanced sort functions by
+        # Oleg Broytmann <phd@phd.pp.ru> 30 Mar 2001
+        # eg <dtml-in "foo" sort="akey/nocase,anotherkey/cmp/desc">
+
         sort=self.sort
-        sortfields = split(sort,',')   # multi sort = key1,key2 
+        need_sortfunc = find(sort, '/') >= 0
+
+        sortfields = split(sort, ',')   # multi sort = key1,key2 
         multsort = len(sortfields) > 1 # flag: is multiple sort
+
+        if need_sortfunc:
+            # prepare the list of functions and sort order multipliers
+            sf_list = make_sortfunctions(sortfields, md)
+
+            # clean the mess a bit
+            if multsort: # More than one sort key.
+                sortfields = map(lambda x: x[0], sf_list)
+            else:
+                sort = sf_list[0][0]
+
         mapping=self.mapping
         isort=not sort
+
         s=[]
         for client in sequence:
             k = None
@@ -766,7 +802,11 @@ class InClass:
 
             s.append((k,client))
 
-        s.sort()
+        if need_sortfunc:
+            by = SortBy(multsort, sf_list)
+            s.sort(by)
+        else:
+            s.sort()
 
         sequence=[]
         for k, client in s:
@@ -791,3 +831,95 @@ def int_param(params,md,name,default=0, st=type('')):
             v=md[v]
             if type(v) is st: v=atoi(v)
     return v
+
+
+# phd: Advanced sort support
+
+def nocase(str1, str2):
+    return cmp(lower(str1), lower(str2))
+
+import sys
+if sys.modules.has_key("locale"): # only if locale is already imported
+    from locale import strcoll
+
+    def strcoll_nocase(str1, str2):
+        return strcoll(lower(str1), lower(str2))
+
+
+def make_sortfunctions(sortfields, md):
+    """Accepts a list of sort fields; splits every field, finds comparison
+    function. Returns a list of 3-tuples (field, cmp_function, asc_multplier)"""
+
+    sf_list = []
+    for field in sortfields:
+        f = split(field, '/')
+        l = len(f)
+
+        if l == 1:
+            f.append("cmp")
+            f.append("asc")
+        elif l == 2:
+            f.append("asc")
+        elif l == 3:
+            pass
+        else:
+            raise SyntaxError, "sort option must contains no more than 2 slashes"
+
+        f_name = f[1]
+
+        # predefined function?
+        if f_name == "cmp":
+            func = cmp # builtin
+        elif f_name == "nocase":
+            func = nocase
+        elif f_name in ("locale", "strcoll"):
+            func = strcoll
+        elif f_name in ("locale_nocase", "strcoll_nocase"):
+            func = strcoll_nocase
+        else: # no - look it up in the namespace
+            func = md.getitem(f_name, 0)
+
+        sort_order = lower(f[2])
+
+        if sort_order == "asc":
+            multiplier = +1
+        elif sort_order == "desc":
+            multiplier = -1
+        else:
+            raise SyntaxError, "sort oder must be either ASC or DESC"
+
+        sf_list.append((f[0], func, multiplier))
+
+    return sf_list
+
+
+class SortBy:
+    def __init__(self, multsort, sf_list):
+        self.multsort = multsort
+        self.sf_list = sf_list
+
+    def __call__(self, o1, o2):
+        multsort = self.multsort
+        if multsort:
+            o1 = o1[0] # if multsort - take the first element (key list)
+            o2 = o2[0]
+
+        sf_list = self.sf_list
+        l = len(sf_list)
+
+        # assert that o1 and o2 are tuples of apropriate length
+        assert len(o1) == l + 1 - multsort, "%s, %d" % (o1, l + multsort)
+        assert len(o2) == l + 1 - multsort, "%s, %d" % (o2, l + multsort)
+
+        # now run through the list of functions in sf_list and
+        # compare every object in o1 and o2
+        for i in range(l):
+            # if multsort - we already extracted the key list
+            # if not multsort - i is 0, and the 0th element is the key
+            c1, c2 = o1[i], o2[i]
+            func, multiplier = sf_list[i][1:3]
+            n = func(c1, c2)
+            if n: return n*multiplier
+
+        # all functions returned 0 - identical sequences
+        return 0
