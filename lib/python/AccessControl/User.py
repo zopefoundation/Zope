@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -96,6 +96,7 @@ from base64 import decodestring
 from ImageFile import ImageFile
 from Role import RoleManager
 from string import split, join
+from PermissionRole import _what_not_even_god_should_do
 
 ListType=type([])
 
@@ -255,9 +256,15 @@ class User(BasicUser, Persistent):
         return self.domains
 
 
+class Super(User):
+    """Super user
+    """
+    def allowed(self,parent,roles=None):
+        return roles is not _what_not_even_god_should_do
 
+    hasRole=allowed
 
-    
+    def has_role(self, roles): return 1
 
 _remote_user_mode=0
 try:
@@ -267,24 +274,13 @@ try:
     _remote_user_mode=not data[1]
     try:    ds=split(data[2], ' ')
     except: ds=[]
-    super=User(data[0],data[1],('manage',), ds)
+    super=Super(data[0],data[1],('manage',), ds)
     del data
 except:
     raise 'InstallError', 'No access file found - see INSTALL.txt'
 
 
-
-
-super.allowed=lambda parent, roles=None: 1
-super.has_role=lambda roles=None: 1
-super.hasRole=super.allowed
-
 nobody=User('Anonymous User','',('Anonymous',), [])
-
-
-
-
-
 
 
 class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
@@ -355,6 +351,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     _nobody=nobody
             
     def validate(self,request,auth='',roles=None):
+
+        if roles is _what_not_even_god_should_do:
+            request.response.notFoundError()
+        
         parents=request.get('PARENTS', [])
         if not parents:
             parent=self.aq_parent
