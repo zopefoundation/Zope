@@ -7,16 +7,16 @@ Building and installing Zope from source
 
 Important notes
 
-   ZOPE 2.0 REQUIRES PYTHON 1.5.2!
+   ZOPE 2.4 REQUIRES PYTHON 2.1!
 
-   See CHANGES.txt for important notes on Zope 2.0.
+   See CHANGES.txt for important notes on Zope 2.4.
 
 Quick Start
 
   If you are impatient, the following commands should get you up and
   running with Zope 2 using ZServer and ZODB 3 on Unix::
 
-    python w_pcgi.py  # Note, this must be Python 1.5.2
+    python w_pcgi.py  # Note, this must be Python 2.1
     ./start
 
   The first command builds and adjusts Zope.  Take note of the user

@@ -27,7 +27,7 @@ Using the Medusa Monitor
      file) must be plain text, not encrypted.
 
   To use the monitor, start it from the shell prompt like so (as if
-  from the Zope root; must be python 1.5.2 or later):
+  from the Zope root):
 
   python ZServer/medusa/monitor_client.py localhost 8099
 

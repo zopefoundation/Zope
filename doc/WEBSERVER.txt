@@ -49,7 +49,7 @@ Using Zope in multi-threaded mode with ZServer
   'z2.py' startup script.  From the top level Zope directory, you
   can::
 
-    bash% python1.5.2 z2.py -p
+    bash% python2.1 z2.py -p
 
   Note, you must have gone through the directions in 'INSTALL.txt' for
   this to work.
@@ -60,7 +60,7 @@ Using Zope in multi-threaded mode with ZServer
   is not named 'Zope.cgi' and is not in the same directory as 'z2.py',
   then you can specify the file name after the '-p', like::
 
-    bash% python.1.5.2 z2.py -p /path/to/PCGI/resource/file
+    bash% python2.1 z2.py -p /path/to/PCGI/resource/file
 
   Now the Zope long running process is started up, and the PCGI
   component is loaded and ready to receive CGI requests from your
