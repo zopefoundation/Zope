@@ -85,8 +85,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.11 1999/06/21 21:29:53 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: DT_InSV.py,v 1.12 1999/08/18 20:48:27 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 from string import lower, rfind
 from math import sqrt
@@ -206,9 +206,9 @@ class sequence_variables:
         if query_string:
             query_string='&%s&' % query_string                  
             re=self.start_name_re
-            l=re.search(query_string)
-            if l >= 0:
-                v=re.group(0)
+            l=re.search_group(query_string, (0,))
+            if l:
+                v=l[1]
                 query_string=(query_string[:l]+
                               query_string[l+len(v)-1:])
             query_string='?'+query_string[1:]
