@@ -83,10 +83,6 @@
 # 
 ##############################################################################
 
-"""
-File
-"""
-
 class File:
     """
     A File is a Zope object that contains file content.  A File object

@@ -83,10 +83,6 @@
 # 
 ##############################################################################
 
-"""
-Authenticated User
-"""
-
 class AuthenticatedUser:
     """
     This interface needs to be supported by objects that
@@ -97,9 +93,9 @@ class AuthenticatedUser:
     def getUserName():
         """
 
-        Return the username of a user
+        Return the name of a user
 
-        Permission - Allways available
+        Permission - Always available
         
         """
 
@@ -109,7 +105,7 @@ class AuthenticatedUser:
         Return a value that is true if the user has the given roles on
         the given object and return false otherwise.
 
-        Permission - Allways available
+        Permission - Always available
         
         """
 
@@ -119,7 +115,7 @@ class AuthenticatedUser:
         Returns a list of the roles the user has on the given object
         (in the current context?)
 
-        Permission - Allways available
+        Permission - Always available
 
         """
 

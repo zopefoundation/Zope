@@ -83,10 +83,6 @@
 # 
 ##############################################################################
 
-"""
-DTMLMethod
-"""
-
 class DTMLMethod:
     """
     A DTML Method is a Zope object that contains and executes DTML

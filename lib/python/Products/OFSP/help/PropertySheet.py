@@ -83,17 +83,12 @@
 # 
 ##############################################################################
 
-"""
-PropertySheet
-"""
-
-
 class PropertySheet:
     """"
 
     A PropertySheet is an abstraction for organizing and working
     with a set of related properties. Conceptually it acts like a
-    container for a set of related properties and metadata describing 
+    container for a set of related properties and meta-data describing 
     those properties. A PropertySheet may or may not provide a web 
     interface for managing its properties.
 
@@ -105,7 +100,7 @@ class PropertySheet:
         Return a namespace string usable as an xml namespace
         for this property set. This may be an empty string if 
         there is no default namespace for a given property sheet
-        (esp. property sheets added in ZClass definitions).
+        (especially property sheets added in ZClass definitions).
 
         """
 
@@ -168,7 +163,7 @@ class PropertySheet:
     def propertyInfo(self):
         """
 
-        Returns a mapping containing property metadata.
+        Returns a mapping containing property meta-data.
 
         """
 

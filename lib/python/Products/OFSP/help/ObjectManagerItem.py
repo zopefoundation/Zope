@@ -83,10 +83,6 @@
 # 
 ##############################################################################
 
-"""
-ObjectManagerItem
-"""
-
 class ObjectManagerItem:
     """
     A Zope object that can be contained within an Object Manager.
@@ -170,7 +166,7 @@ class ObjectManagerItem:
         virtual hosts are being used, then the path returned is a
         logical, rather than a physical path.
         
-        Permission --Allways available
+        Permission --Always available
         """
 
     def getPhysicalRoot(self):

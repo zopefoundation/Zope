@@ -83,31 +83,24 @@
 # 
 ##############################################################################
 
-"""
-PropertySheets
-"""
 
 class PropertySheets:
     """
 
     A PropertySheet is an abstraction for organizing and working with
     a set of related properties. Conceptually it acts like a container
-    for a set of related properties and metadata describing those
+    for a set of related properties and meta-data describing those
     properties. PropertySheet objects are accessed through a
     PropertySheets object that acts as a collection of PropertySheet
     instances.
 
     Objects that support property sheets (objects that support the
     PropertyManager interface or ZClass objects) have a
-    'propertysheets'
-
-    attribute (a PropertySheets instance) that is the collection of
-    PropertySheet objects. The PropertySheets object exposes an
-    interface much like a Python mapping, so that individual
-    PropertySheet objects
-
-    may be accessed via dictionary-style key indexing.
-
+    'propertysheets' attribute (a PropertySheets instance) that is the
+    collection of PropertySheet objects. The PropertySheets object
+    exposes an interface much like a Python mapping, so that
+    individual PropertySheet objects may be accessed via
+    dictionary-style key indexing.
 
     """
     
