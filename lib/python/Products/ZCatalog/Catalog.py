@@ -89,6 +89,7 @@ import BTree, OIBTree, IOBTree, IIBTree
 IIBucket=IIBTree.Bucket
 from intSet import intSet
 from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex, Query
+from SearchIndex.Lexicon import Lexicon
 import regex, pdb
 from string import lower
 import Record
@@ -124,7 +125,8 @@ class Catalog(Persistent, Acquisition.Implicit):
     (references in the metadata) that satisfy a search query.
 
     This class is not Zope specific, and can be used in any python
-    program to build catalogs of objects.
+    program to build catalogs of objects.  Note that it does require
+    the objects to be Persistent, and thus must be used with ZODB3.
     """
 
     _v_brains = NoBrainer
@@ -149,22 +151,30 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.uids = OIBTree.BTree()     # mapping of uid to rid
         self.paths = IOBTree.BTree()    # mapping of rid to uid
 
+        # indexes can share a lexicon or have a private copy.  Here,
+        # we instantiate a lexicon to be shared by all text indexes.
+        # This may change.
+        self.lexicon = Lexicon()
+
         if brains is not None:
             self._v_brains = brains
             
         self.useBrains(self._v_brains)
 
     def __getitem__(self, index, ttype=type(())):
-        """ Returns instances of self._v_brains, or whatever is passed 
+        """
+        Returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
         """
         if type(index) is ttype:
+            # then it contains a score...
             normalized_score, score, key = index
             r=self._v_result_class(self.data[key]).__of__(self.aq_parent)
             r.data_record_id_ = key
             r.data_record_score_ = score
             r.data_record_normalized_score_ = normalized_score
         else:
+            # otherwise no score, set all scores to 1
             r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
             r.data_record_id_ = index
             r.data_record_score_ = 1
@@ -172,11 +182,12 @@ class Catalog(Persistent, Acquisition.Implicit):
         return r
 
     def __setstate__(self, state):
+        """ initialize your brains.  This method is called when the
+        catalog is first activated (from the persistent storage) """
         Persistent.__setstate__(self, state)
         self.useBrains(self._v_brains)
 
     def useBrains(self, brains):
-        
         """ Sets up the Catalog to return an object (ala ZTables) that
         is created on the fly from the tuple stored in the self.data
         Btree.
@@ -190,6 +201,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         scopy={}
         scopy = self.schema.copy()
 
+        # it is useful for our brains to know these things
         scopy['data_record_id_']=len(self.schema.keys())
         scopy['data_record_score_']=len(self.schema.keys())+1
         scopy['data_record_normalized_score_']=len(self.schema.keys())+2
@@ -200,7 +212,9 @@ class Catalog(Persistent, Acquisition.Implicit):
         self._v_result_class=mybrains
 
     def addColumn(self, name, default_value=None):
-        """ adds a row to the meta data schema """
+        """
+        adds a row to the meta data schema
+        """
         
         schema = self.schema
         names = list(self.names)
@@ -226,12 +240,15 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.names = tuple(names)
         self.schema = schema
 
+        # new column? update the brain
         self.useBrains(self._v_brains)
             
         self.__changed__(1)    #why?
             
     def delColumn(self, name):
-        """ deletes a row from the meta data schema """
+        """
+        deletes a row from the meta data schema
+        """
         names = list(self.names)
         _index = names.index(name)
 
@@ -249,6 +266,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.schema = schema
         self.names = tuple(names)
 
+        # update the brain
         self.useBrains(self._v_brains)
 
         # remove the column value from each record
@@ -258,15 +276,25 @@ class Catalog(Persistent, Acquisition.Implicit):
             self.data[key] = tuple(rec)
 
     def addIndex(self, name, type):
-        """ adds an index """
+        """
+        adds an index
+
+        Currently supported are 'FieldIndexes', 'TextIndexs' and
+        'KeywordIndexes'.
+        """
+
         if self.indexes.has_key(name):
             raise 'Index Exists', 'The index specified allready exists'
+
+        # this is currently a succesion of hacks.  Indexes should be
+        # pluggable and managable
 
         indexes = self.indexes
         if type == 'FieldIndex':
             indexes[name] = UnIndex.UnIndex(name)
         elif type == 'TextIndex':
-            indexes[name] = UnTextIndex.UnTextIndex(name)
+            indexes[name] = UnTextIndex.UnTextIndex(name, None, None,
+                                                    self.lexicon)
         elif type == 'KeywordIndex':
             indexes[name] = UnKeywordIndex.UnKeywordIndex(name)
 
@@ -299,7 +327,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         if self.uids.has_key(uid):
             i = self.uids[uid]
         elif data:
-            i = data.keys()[-1] + 1  # find the next available rid
+            i = data.keys()[-1] + 1  # find the next available unique id
         else:
             i = 0                       
 
@@ -340,10 +368,6 @@ class Catalog(Persistent, Acquisition.Implicit):
                 except KeyError:
                     pass  #fugedaboudit
 
-        # I think if your data gets out of sync due to crashes or
-        # ZClass problems, some items might not be here.  The try's
-        # catch any inconsistencies and lets 'Update Catalog' sanify
-        # the situation
         del self.data[rid]
         del self.uids[uid]
         del self.paths[rid]
@@ -364,7 +388,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
     def hasuid(self, uid):
         """ return the rid if catalog contains an object with uid """
-        if uid in self.uids.keys():
+        if self.uids.has_key(uid):
             return self.uids[uid]
         else:
             return None
@@ -392,15 +416,22 @@ class Catalog(Persistent, Acquisition.Implicit):
         r.data_record_id_ = record[0]
         return r.__of__(self)
 
-## Searching engine
+
+## Searching engine.  You don't really have to worry about what goes
+## on below here...
 
     def _indexedSearch(self, args, sort_index, append, used,
                        IIBType=type(IIBucket()), intSType=type(intSet())):
+        """
+        Iterate through the indexes, applying the query to each one.
+        Do some magic to join result sets.  Be intelligent about
+        handling intSets and IIBuckets.
+        """
 
 ##        import pdb
 ##        pdb.set_trace()
 
-        ## I use this so much I'm just leaving it commented out
+        ## I use this so much I'm just leaving it commented out -michel
 
         rs=None
         data=self.data
@@ -418,6 +449,10 @@ class Catalog(Persistent, Acquisition.Implicit):
                         if rs is None:
                             rs = r
                         else:
+                            # you can't intersect an IIBucket into an
+                            # intSet, but you can go the other way
+                            # around.  Make sure we're facing the
+                            # right direction...
                             if type(rs) is intSType and type(r) is IIBType:
                                 rs=r.intersection(rs)
                             else:
@@ -434,6 +469,9 @@ class Catalog(Persistent, Acquisition.Implicit):
                     append((k,LazyMap(self.__getitem__, intset)))
         elif rs:
             if type(rs) is IIBType:
+                # then there is score information.  Build a new result 
+                # set, sort it by score, reverse it, compute the
+                # normalized score, and Lazify it.
                 rset = []
                 for key, score in rs.items():
                     rset.append((score, key))
@@ -446,8 +484,13 @@ class Catalog(Persistent, Acquisition.Implicit):
                 append(LazyMap(self.__getitem__, rs))
                     
             elif sort_index is None and type(rs) is intSType:
+                # no scores?  Just Lazify.
                 append(LazyMap(self.__getitem__, rs))
             else:
+                # sort.  If there are scores, then this block is not
+                # reached, therefor 'sort-on' does not happen in the
+                # context of text index query.  This should probably
+                # sort by relevance first, then the 'sort-on' attribute.
                 for k, intset in sort_index._index.items():
                     intset=intset.intersection(rs)
                     if intset: 
@@ -462,12 +505,10 @@ class Catalog(Persistent, Acquisition.Implicit):
                           type(''): Query.String,
                           }, **kw):
 
-        #################################################################
         # Get search arguments:
         if REQUEST is None and not kw:
             try: REQUEST=self.REQUEST
             except: pass
-
         if kw:
             if REQUEST:
                 m=KWMultiMapping()
@@ -476,15 +517,12 @@ class Catalog(Persistent, Acquisition.Implicit):
                 kw=m
         elif REQUEST: kw=REQUEST
 
-
-        #################################################################
         # Make sure batch size is set
         if REQUEST and not REQUEST.has_key('batch_size'):
             try: batch_size=self.default_batch_size
             except: batch_size=20
             REQUEST['batch_size']=batch_size
 
-        #################################################################
         # Compute "sort_index", which is a sort index, or none:
         if kw.has_key('sort-on'):
             sort_index=kw['sort-on']
@@ -497,13 +535,11 @@ class Catalog(Persistent, Acquisition.Implicit):
         if sort_index is not None and sort_index in self.indexes.keys():
             sort_index=self.indexes[sort_index]
 
-        #################################################################
         # Perform searches with indexes and sort_index
         r=[]
         used=self._indexedSearch(kw, sort_index, r.append, used)
         if not r: return r
 
-        #################################################################
         # Sort/merge sub-results
         if len(r)==1:
             if sort_index is None: r=r[0]

@@ -8,11 +8,21 @@
 <p> This list defines what indexes the Catalog will contain.  When
 objects get cataloged, the values of any attributes they may have
 which match an index in this list will get indexed.  Indexes come in
-two flavors, TextIndexes and FieldIndexes.  TextIndexes break text up
-into individual words, and are often refered to as 'full text
-indexes'.  Field indexes treat the value of an objects attribute
-atomically, and can be used, for example, to track only a certain
-subset of object values, such as 'meta_type'.</p>
+three flavors, Text Indexes, Field Indexes and Keyword Indexes.</p>
+
+<p><b>Text Indexes</b> break text up into individual words, and are
+often refered to as <b>full-text indexes</b>.  Text indexes sort results by
+<b>score</b> meaning they return 'hits' in order from the most
+relevant to the lest relevant.</p>
+
+<p><b>Field Indexes</b> treat the value of an objects attribute atomically,
+and can be used, for example, to track only a certain subset of object
+values, such as 'meta_type'.</p>
+
+<p><b>Keyword Indexes</b> index a sequence of objects that act as
+'keywords' for an object.  A Keyword Index will return any objects
+that have one or more keywords specified in a search query.</p>
+
 
 <form action="<!--#var URL1-->">
 

@@ -18,35 +18,38 @@
       <b>threshold</b> below.</p>
 
     <p> If you are using ZCatalog and ZSQL Methods in the same
-    transaction, you <b>must</b> disable subtransactions, they are not
-    compatible with ZSQL Methods.</p>
+      transaction, you <b>must</b> disable subtransactions, they are not
+      compatible with ZSQL Methods.</p>
 
-    <h3>Subtransactions are <font color="red">
+    <h3>Subtransactions are 
       <dtml-if threshold>
-	<b>Enabled</b>
+	<font color="green"><b>Enabled</b></font>
       <dtml-else>
-	<b>Disabled</b>
-      </dtml-if></h3><br></font>
+	<font color="red"><b>Disabled</b></font>
+      </dtml-if></h3>
 
     <form action="." method=POST>
       <dtml-if threshold>
-	<input type=submit name="manage_subbingToggle:method" value="Disable">
+	<input type=submit name="manage_subbingToggle:method"
+	value="Disable"> Subtransactions
       <dtml-else>
-	<input type=submit name="manage_subbingToggle:method" value="Enable">
+	<input type=submit name="manage_subbingToggle:method"
+	value="Enable"> Subtransactions
       </dtml-if>
     </form>
 
     <form action="manage_edit" method=POST>
     <dtml-if threshold>
-    <p>The Subtransaction threshold is the number of words the catalog
-      will index before it commits a subtransaction.  If this number is low,
-      the Catalog will take much to index but consume much less memory.  If
-      this number is higher, the Catalog will index quickly but consume much
-      more memory.</p> 
 
+    <p>The Subtransaction threshold is the number of words the catalog
+      will index before it commits a subtransaction.  If this number
+      is low, the Catalog will take longer to index but consume less
+      memory.  If this number is higher, the Catalog will index
+      quickly but consume much more memory.</p>
 
       Subtransaction threshold: <input name="threshold:int" value="<!--#var
-	threshold html_quote-->"><br> <input type=submit value=" Change ">
+      threshold html_quote-->"><br> <input type=submit value=" Change ">
+
     </dtml-if>
     </form>
 

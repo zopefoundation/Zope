@@ -1,5 +1,8 @@
 ZCatalog
 
+  Notes for Zope 2.0
+
+    Catalog now comes with the Zope core, there is no need to install it.
 
   This is the ZCatalog product for the Z Object Publishing 
   Environment.
