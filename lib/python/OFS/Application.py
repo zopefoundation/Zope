@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.83 1998/12/30 01:43:22 amos Exp $'''
-__version__='$Revision: 1.83 $'[11:-2]
+$Id: Application.py,v 1.84 1999/01/21 22:48:18 jim Exp $'''
+__version__='$Revision: 1.84 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -351,7 +351,7 @@ def open_bobobase():
 
     return Bobobase
 
-def import_products():
+def import_products(_st=type('')):
     # Try to import each product, checking for and catching errors.
     path_join=os.path.join
     product_dir=path_join(SOFTWARE_HOME,'Products')
@@ -363,6 +363,8 @@ def import_products():
     product_names.sort()
     global_dict=globals()
     silly=('__doc__',)
+    modules=sys.modules
+    have_module=modules.has_key
 
     for product_name in product_names:
         package_dir=path_join(product_dir, product_name)
@@ -376,13 +378,14 @@ def import_products():
             product=__import__(pname, global_dict, global_dict, silly)
             if hasattr(product, '__module_aliases__'):
                 for k, v in product.__module_aliases__:
-                    if not sys.modules.has_key(k):
-                        sys.modules[k]=v
+                    if not have_module(k):
+                        if type(v) is _st and have_module(v): v=modules[v]
+                        modules[k]=v
         except:
             f=StringIO()
             traceback.print_exc(100,f)
             f=f.getvalue()
-            try: sys.modules[pname].__import_error__=f
+            try: modules[pname].__import_error__=f
             except: pass
 
 def install_products(app):
