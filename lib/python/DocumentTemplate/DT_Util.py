@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.9 1997/10/29 16:58:30 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.10 1997/10/29 20:43:24 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -214,11 +214,11 @@ def parse_params(text,
 try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
-TemplateDict.pop.__roles__=()
-TemplateDict.push.__roles__=()
-
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.10  1997/10/29 20:43:24  jim
+# *** empty log message ***
+#
 # Revision 1.9  1997/10/29 16:58:30  jim
 # Modified to explicitly make push and pop private.
 #
