@@ -1,3 +1,10 @@
+2001-04-10  Evan Simpson <evan@digicool.com>
+
+        * Version 1.1.0
+        * Bug fixes
+        * Tell TAL not to parse replacement structural text
+        * Change tests to match TAL's omitted attributes
+
 2001-03-30  Evan Simpson <evan@digicool.com>
 
         * Version 1.0.0
