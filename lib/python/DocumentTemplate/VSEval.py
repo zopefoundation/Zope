@@ -84,10 +84,10 @@
 ##############################################################################
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.21 1999/03/10 00:15:08 klm Exp $'
-__version__='$Revision: 1.21 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.22 1999/08/03 20:09:02 jim Exp $'
+__version__='$Revision: 1.22 $'[11:-2]
 
-from string import translate
+from string import translate, strip
 import string
 gparse=None
 
@@ -149,6 +149,8 @@ class Eval:
         """
         global gparse
         if gparse is None: import gparse
+
+        expr=strip(expr)
         
         self.__name__=expr
         expr=translate(expr,nltosp)
