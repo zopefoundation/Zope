@@ -130,7 +130,7 @@ static PyObject *
 next_word(Splitter *self, char **startpos, char **endpos)
 {
   char wbuf[MAX_WORD];
-  char *p, *end, *here, *b;
+  char *end, *here, *b;
   int i = 0, c;
   PyObject *pyword, *res;
 
@@ -143,7 +143,7 @@ next_word(Splitter *self, char **startpos, char **endpos)
       if ((i > 0) && (*here == '-'))
         {
 	  here++;
-	  while (isspace(here) && (here < end)) here++;
+	  while (isspace(*here) && (here < end)) here++;
 	  continue;
 	}
 
@@ -396,7 +396,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.7 1998/02/11 01:20:00 jim Exp $\n"
+"$Id: Splitter.c,v 1.8 1998/02/12 20:57:28 jim Exp $\n"
 ;
 
 
@@ -404,7 +404,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
@@ -416,7 +416,7 @@ initSplitter()
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
-#include "dcprotect.h"
+  #include "dcprotect.h"
 
   if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter");
 }
