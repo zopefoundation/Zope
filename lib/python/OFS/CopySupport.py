@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -237,6 +237,8 @@ class CopyContainer(ExtensionClass.Base):
                       message=sys.exc_info()[1],
                       action ='manage_main')
         ob=self._getOb(id)
+        if ob.wl_isLocked():
+            raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % ob.getId()
         if not ob.cb_isMoveable():
             raise CopyError, eNotSupported % id
         self._verifyObjectPaste(ob)
