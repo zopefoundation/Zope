@@ -163,14 +163,14 @@ class ZCatalog(Folder, Persistent, Implicit):
          'action': 'manage_catalogSchema', 
          'target':'manage_main',
          'help':('ZCatalog','ZCatalog_MetaData-Table.stx')},
-        {'label': 'Status',             # TAB: Status
-         'action': 'manage_catalogStatus', 
-         'target':'manage_main',
-         'help':('ZCatalog','ZCatalog_Status.stx')},
         {'label': 'Find Objects',       # TAB: Find Objects
          'action': 'manage_catalogFind', 
          'target':'manage_main',
          'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.stx')},
+        {'label': 'Advanced',           # TAB: Advanced
+         'action': 'manage_catalogAdvanced', 
+         'target':'manage_main',
+         'help':('ZCatalog','ZCatalog_Advanced.stx')},
         {'label': 'Undo',               # TAB: Undo
          'action': 'manage_UndoForm',
          'help': ('OFSP','Undo.stx')},
@@ -190,7 +190,7 @@ class ZCatalog(Folder, Persistent, Implicit):
           
           'manage_catalogView', 'manage_catalogFind',
           'manage_catalogSchema', 'manage_catalogIndexes',
-          'manage_catalogStatus',
+          'manage_catalogAdvanced',
           
           'manage_catalogReindex', 'manage_catalogFoundItems',
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
@@ -211,7 +211,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_catalogFind = DTMLFile('dtml/catalogFind',globals())
     manage_catalogSchema = DTMLFile('dtml/catalogSchema', globals())
     manage_catalogIndexes = DTMLFile('dtml/catalogIndexes', globals())
-    manage_catalogStatus = DTMLFile('dtml/catalogStatus', globals())
+    manage_catalogAdvanced = DTMLFile('dtml/catalogAdvanced', globals())
 
 
     threshold=10000
@@ -271,7 +271,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         else:
             self.threshold = 10000
         
-        RESPONSE.redirect(URL1 + '/manage_catalogStatus?manage_tabs_message=Catalog%20Changed')      
+        RESPONSE.redirect(URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')      
 
 
     def manage_catalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
@@ -445,7 +445,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def _searchable_arguments(self):
         r = {}
         n={'optional':1}
-        for name in self._catalog.schema.keys():
+        for name in self._catalog.indexes.keys():
             r[name]=n
         return r
 

@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.2 2000/05/11 18:54:16 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.3 2001/01/15 16:29:23 petrilli Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 class Lazy:
@@ -107,6 +107,34 @@ class Lazy:
                 self._len=l
                 return l
 
+    def __add__(self, other):
+        try:
+            for base in other.__class__.__bases__:
+                if base.__name__ == 'Lazy':
+                    break
+            else:
+                raise TypeError
+        except:
+            raise TypeError, "Can not concatenate objects. Both must be lazy sequences."
+
+        if self.__class__.__name__ == 'LazyCat':
+            if hasattr(self, '_seq'):
+                seq = self._seq
+            else:
+                seq = [self._data]
+        else:
+            seq = [self]
+
+        if other.__class__.__name__ == 'LazyCat':
+            if hasattr(other, '_seq'):
+                seq = seq + other._seq
+            else:
+                seq.append(other._data)
+        else:
+            seq.append(other)
+
+        return LazyCat(seq)
+    
     def __getslice__(self,i1,i2):
         r=[]
         for i in range(i1,i2):

@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 from Globals import Persistent
@@ -153,6 +153,17 @@ class UnIndex(Persistent, Implicit):
 
     def __len__(self):
         return len(self._unindex)
+
+    def histogram(self):
+        """Return a mapping which provides a histogram of the number of
+        elements found at each point in the index."""
+
+        histogram = {}
+        for (key, value) in self._index.items():
+            entry = len(value)
+            histogram[entry] = histogram.get(entry, 0) + 1
+
+        return histogram
 
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId

@@ -595,7 +595,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Perform searches with indexes and sort_index
         r=[]
         used=self._indexedSearch(kw, sort_index, r.append, used)
-        if not r: return r
+        if not r: return LazyCat(r)
 
         # Sort/merge sub-results
         if len(r)==1:

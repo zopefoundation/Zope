@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 from Globals import Persistent
@@ -200,10 +200,72 @@ class UnTextIndex(Persistent, Implicit):
         self._unindex = IOBTree()
 
 
+    def histogram(self):
+        """Return a mapping which provides a histogram of the number of
+        elements found at each point in the index."""
+
+        histogram = {}
+        for (key, value) in self._index.items():
+            entry = len(value)
+            histogram[entry] = histogram.get(entry, 0) + 1
+
+        return histogram
+
+        
+    def insertForwardIndexEntry(self, entry, documentId, score=1):
+        """Uses the information provided to update the indexes.
+
+        The basic logic for choice of data structure is based on
+        the number of entries as follows:
+
+            1      tuple
+            2-4    dictionary
+            5+     bucket.
+        """
+        
+        indexRow = self._index.get(entry, None)
+
+        if indexRow is not None:
+            if type(indexRow) is TupleType:
+                # Tuples are only used for rows which have only
+                # a single entry.  Since we now need more, we'll
+                # promote it to a mapping object (dictionary).
+                indexRow = { indexRow[0]: indexRow[1] }
+                indexRow[documentId] = score
+
+                self._index[entry] = indexRow
+            elif type(indexRow) is DictType:
+                if len(indexRow) > 4:
+                    # We have a mapping (dictionary), but it has
+                    # grown too large, so we'll convert it to a
+                    # bucket.
+                    newRow = IIBucket()
+                    for (k, v) in indexRow.items():
+                        newRow[k] = v
+                    indexRow = newRow
+                    indexRow[documentId] = score
+                    self._index[entry] = indexRow
+                else:
+                    indexRow[documentId] = score
+            else:
+                # We've got a IIBucket already.
+                indexRow[documentId] = score
+        else:
+            # We don't have any information at this point, so we'll
+            # put our first entry in, and use a tuple to save space
+            self._index[entry] = (documentId, score)
+        return 1
+
+    def insertReverseIndexEntry(self, entry, documentId):
+        """Insert the correct entry into the reverse indexes for future
+        unindexing."""
+        newEntry = self._unindex.get(documentId, [])
+        newEntry.append(entry)
+        self._unindex[documentId] = newEntry
+        
     def index_object(self, documentId, obj, threshold=None):
         
         """ Index an object:
-
         'documentId' is the integer id of the document
         
         'obj' is the objects to be indexed
@@ -244,7 +306,7 @@ class UnTextIndex(Persistent, Implicit):
         index = self._index
         unindex = self._unindex
         lexicon = self.getLexicon(self._lexicon)
-        unindex[documentId] = []        # XXX this should be more intellegent
+        unindex[documentId] = []        # XXX
         wordCount = 0
 
         for word, score in wordList.items():
@@ -256,39 +318,10 @@ class UnTextIndex(Persistent, Implicit):
                     self._p_jar.cacheFullSweep(1)
                     
             wordId = lexicon.set(word)
-            
-            indexRow = index.get(wordId)
-            if indexRow is not None:
-                indexRow = index[wordId] # Duplicate?
-                if type(indexRow) is TupleType:
-                    indexRow = {indexRow[0]:indexRow[1]}
-                    indexRow[documentId] = score
-
-                    index[wordId] = indexRow
-                    unindex[documentId].append(wordId)
-                    
-                elif type(indexRow) is DictType:
-                    if len(indexRow) > 4:
-                        b = IIBucket()
-                        for k, v in indexRow.items():
-                            b[k] = v
-                        indexRow = b
-
-                    indexRow[documentId] = score
-
-                    index[wordId] = indexRow
-                    unindex[documentId].append(wordId)
-                    
-                else:
-                    indexRow[documentId] = score
-                    unindex[documentId].append(wordId)
-            else:
-                index[wordId] = documentId, score
-                unindex[documentId].append(wordId)
+            self.insertForwardIndexEntry(wordId, documentId, score)
+            self.insertReverseIndexEntry(wordId, documentId)
             wordCount = wordCount + 1
 
-        unindex[documentId] = tuple(unindex[documentId])
-        
         ## return the number of words you indexed
         return wordCount
 

@@ -5,32 +5,26 @@ ZCatalog - Cataloged Objects: Manage catalog entries
         This view allows you to manage catalog entries.
         
         The catalog holds records which refer to Zope objects. If the
-        catalog currently contains records they will be listed in this view.
+        catalog currently contains records they will be listed in this
+        view.
         
     Controls
 
-        'Update Catalog' -- Clicked, it will update the meta data for all of the objects in the
-        Catalog.
-        **Note:** The Catalog is not being updated after each transaction.
+        '[List of objects]' -- Each lines describes one object. The
+        checkbox in the front of the line, allows you to checkmark the
+        object for deletion ('Delete') or to update the objects
+        ('Update'). Next the object type is listed, followed by the
+        object path and the object title. Clicking on the path and
+        title of the object, you can examine individual catalog
+        records by clicking on the record name links.
         
-        'Clear Catalog' -- Clicked, all objects are removed from the Catalog.
-
-        'Size' -- Indicates the amount of objects in the Catalog.
+        'Next/Previos XX entries' -- Allows you to see more of the
+        cataloged objects. These two links will only appear if you
+        have enough objects in the Catalog.
         
-        '[List of objects]' -- Each lines describes one object. The checkbox in the front of the
-        line, allows you to checkmark the object for deletion 
-        ('Delete') or to update the objects ('Update'). Next
-        the object type is listed, followed by the object path and the 
-        object title. Clicking on the path and title of the object, you 
-        can examine individual catalog records by clicking on the record 
-        name links. 
+        'Update' -- Clicked, Zope updates its indexes and metadata for
+        the object.
         
-        'Next/Previos XX entries' -- Allows you to see more of the cataloged objects. These teo links
-        will only appear if you have enough objects in the Catalog.
-        
-        'Update' -- Clicked, Zope greps the newest content for each checked object 
-        and updates the meta data (the cataloged attributes of the object)
-        in the Catalog.
-        
-        'Remove' -- Clicked, it removes all the selected objects from the Catalog.
-        **Note:** No objects are deleted from the database.
+        'Remove' -- Clicked, it removes all the selected objects from
+        the Catalog.  **Note:** No objects are deleted from the
+        database.

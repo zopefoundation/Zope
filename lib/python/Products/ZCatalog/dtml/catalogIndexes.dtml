@@ -28,17 +28,34 @@ that have one or more keywords specified in a search query.
 </p>
 
 <form action="<dtml-var URL1>" method="post">
-<table cellspacing="0" cellpadding="2" border="0">
 <dtml-in index_objects sort=id>
-  <tr>
-    <td align="left" valign="top">
+  <dtml-if name="sequence-start">
+    <table width="100%" cellspacing="0" cellpadding="2" border="0">
+      <tr class="list-header">
+        <td width="1%" align="right"  valign="top">&nbsp;</td>
+        <td width="64%" align="left" valign="top">
+          <div class="list-item">Index Name</div></td>
+        <td width="20%" align="right" valign="top">
+          <div class="list-item">Index Type</div></td>
+        <td width="15%" align="right" valign="top">
+          <div class="list-item">Objects Indexed</div></td>
+      </tr>
+  </dtml-if>
+  <dtml-if name="sequence-odd"><tr class="row-normal">
+  <dtml-else><tr class="row-hilite"></dtml-if>
+    <td align="right" valign="top">
     <input type="checkbox" name="names:list" value="<dtml-var 
      id html_quote>" />
     </td>
-    <td align="left" valign="top">
-    <div class="form-text">
-    <dtml-var id>  (<em><dtml-var meta_type></em>)
-    </div>
+    <td width="60%" align="left" valign="top">
+      <div class="list-item">
+      <a href="">&dtml-id;</a></div></td>
+    <td width="20%" align="right" valign="top">
+      <div class="list-item">&dtml-meta_type;</div></td>
+    <td width="15%" align="right" valign="top">
+      <div class="list-item">
+      <dtml-var expr="_.len(_['sequence-item'])" thousands_commas>
+      </div>
     </td>
   </tr>
 </dtml-in>
