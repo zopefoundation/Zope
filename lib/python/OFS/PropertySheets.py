@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -96,6 +96,7 @@ from App.Common import rfc1123_date
 from webdav.common import urlbase
 from ExtensionClass import Base
 from Globals import Persistent
+from Traversable import Traversable
 
 class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
@@ -145,7 +146,7 @@ class View(App.Management.Tabs, Base):
         except: return ''
 
 
-class PropertySheet(Persistent, Implicit):
+class PropertySheet(Traversable, Persistent, Implicit):
     """A PropertySheet is a container for a set of related properties and
        metadata describing those properties. PropertySheets may or may not
        provide a web interface for managing its properties."""
