@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -289,7 +289,8 @@ class _cache:
            'bst':'GMT+1', 'cdt':'GMT+2', 'mest':'GMT+2', 'sst':'GMT+2',
            'fst':'GMT+2', 'wadt':'GMT+8', 'eadt':'GMT+11', 'nzdt':'GMT+13',
            'wet':'GMT', 'wat':'GMT-1', 'at':'GMT-2', 'ast':'GMT-4',
-           'nt':'GMT-11', 'idlw':'GMT-12', 'cet':'GMT+1', 'met':'GMT+1',
+           'nt':'GMT-11', 'idlw':'GMT-12', 'cet':'GMT+1', 'cest':'GMT+2',
+           'met':'GMT+1',
            'mewt':'GMT+1', 'swt':'GMT+1', 'fwt':'GMT+1', 'eet':'GMT+2',
            'bt':'GMT+3', 'zp4':'GMT+4', 'zp5':'GMT+5', 'zp6':'GMT+6',
            'wast':'GMT+7', 'cct':'GMT+8', 'jst':'GMT+9', 'east':'GMT+10',
