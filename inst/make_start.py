@@ -27,6 +27,7 @@ def sh(home, user, group):
         print 'Creating start script, start'
         open(start,'w').write(
             "#! /bin/sh\n"
+            "umask 077\n"
             "reldir=`dirname $0`\n"
             "%s=`cd $reldir; pwd`\n"
             "export %s\n"
