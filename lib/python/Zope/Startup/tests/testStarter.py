@@ -14,6 +14,7 @@
 """ Tests of the ZopeStarter class """
 
 import cStringIO
+import errno
 import logging
 import os
 import sys
@@ -22,10 +23,9 @@ import unittest
 
 import ZConfig
 from ZConfig.components.logger.tests import test_logger
+from ZConfig.components.logger.loghandler import NullHandler
 
 import Zope.Startup
-from Zope.Startup import handlers
-from Zope.Startup import ZopeStarter, UnixZopeStarter
 
 from App.config import getConfiguration, setConfiguration
 
@@ -33,7 +33,7 @@ TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
 def getSchema():
-    startup = os.path.dirname(os.path.realpath(Zope.Startup.__file__))
+    startup = os.path.dirname(Zope.Startup.__file__)
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
 
@@ -50,8 +50,11 @@ for name in (None, 'trace', 'access'):
 
 class ZopeStarterTestCase(test_logger.LoggingTestBase):
 
+    schema = None
+
     def setUp(self):
-        self.schema = getSchema()
+        if self.schema is None:
+            ZopeStarterTestCase.schema = getSchema()
         test_logger.LoggingTestBase.setUp(self)
 
     def tearDown(self):
@@ -65,6 +68,11 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         for name in (None, 'access', 'trace'):
             logger = logging.getLogger(name)
             logger.__dict__.update(logger_states[name])
+
+    def get_starter(self, conf):
+        starter = Zope.Startup.get_starter()
+        starter.setConfiguration(conf)
+        return starter
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
@@ -98,7 +106,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
                     'The specified locale "en_GB" is not supported'):
                     return
                 raise
-            starter = ZopeStarter(conf)
+            starter = self.get_starter(conf)
             starter.setupLocale()
             self.assertEqual(locale.getlocale(), ['en_GB', 'ISO8859-1'])
         finally:
@@ -122,12 +130,12 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
               level blather
              </logfile>
            </eventlog>""")
-        starter = UnixZopeStarter(conf)
+        starter = self.get_starter(conf)
         starter.setupInitialLogging()
 
         # startup handler should take on the level of the event log handler
         # with the lowest level
-        logger = logging.getLogger()
+        logger = starter.event_logger
         self.assertEqual(starter.startup_handler.level, 15) # 15 is BLATHER
         self.assert_(starter.startup_handler in logger.handlers)
         self.assertEqual(logger.level, 15)
@@ -147,7 +155,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
               level info
              </logfile>
            </eventlog>""")
-        starter = UnixZopeStarter(conf)
+        starter = self.get_starter(conf)
         starter.setupInitialLogging()
         # XXX need to check that log messages get written to
         # sys.stderr, not that the stream identity for the startup
@@ -158,7 +166,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
            zserver-threads 10""")
-        starter = ZopeStarter(conf)
+        starter = self.get_starter(conf)
         starter.setupZServerThreads()
         from ZServer.PubCore import _n
         self.assertEqual(_n, 10)
@@ -172,7 +180,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             <ftp-server>
                address 18093
             </ftp-server>""")
-        starter = ZopeStarter(conf)
+        starter = self.get_starter(conf)
         # do the job the 'handler' would have done (call prepare)
         for server in conf.servers:
             server.prepare('', None, 'Zope', {}, None)
@@ -202,7 +210,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         ##        # conflict
         ##        address 18092
         ##     </ftp-server>""")
-        ## starter = ZopeStarter(conf)
+        ## starter = self.get_starter(conf)
         ## # do the job the 'handler' would have done (call prepare)
         ## for server in conf.servers:
         ##     server.prepare('', None, 'Zope', {}, None)
@@ -219,26 +227,32 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         _old_getuid = os.getuid
         def _return0():
             return 0
+        def make_starter(conf):
+            # remove the debug handler, since we don't want junk on
+            # stderr for the tests
+            starter = self.get_starter(conf)
+            starter.event_logger.removeHandler(starter.debug_handler)
+            return starter
         try:
             os.getuid = _return0
             # no effective user
             conf = self.load_config_text("""
                 instancehome <<INSTANCE_HOME>>""")
-            starter = ZopeStarter(conf)
+            starter = make_starter(conf)
             self.assertRaises(ZConfig.ConfigurationError,
                               starter.dropPrivileges)
             # cant find user in passwd database
             conf = self.load_config_text("""
                 instancehome <<INSTANCE_HOME>>
                 effective-user n0sucHuS3r""")
-            starter = ZopeStarter(conf)
+            starter = make_starter(conf)
             self.assertRaises(ZConfig.ConfigurationError,
                               starter.dropPrivileges)
             # can't specify '0' as effective user
             conf = self.load_config_text("""
                 instancehome <<INSTANCE_HOME>>
                 effective-user 0""")
-            starter = ZopeStarter(conf)
+            starter = make_starter(conf)
             self.assertRaises(ZConfig.ConfigurationError,
                               starter.dropPrivileges)
             # setuid to test runner's uid XXX will this work cross-platform?
@@ -246,7 +260,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             conf = self.load_config_text("""
                 instancehome <<INSTANCE_HOME>>
                 effective-user %s""" % runnerid)
-            starter = ZopeStarter(conf)
+            starter = make_starter(conf)
             finished = starter.dropPrivileges()
             self.failUnless(finished)
         finally:
@@ -279,7 +293,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
            </logger>
            """)
         try:
-            starter = UnixZopeStarter(conf)
+            starter = self.get_starter(conf)
             starter.setupInitialLogging()
             starter.info('hello')
             starter.setupFinalLogging()
@@ -313,7 +327,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         f.write(' hello')
         f.close()
         try:
-            starter = ZopeStarter(conf)
+            starter = self.get_starter(conf)
             starter.makeLockFile()
             f = open(name, 'rb')
             f.seek(1)   # skip over the locked byte
@@ -335,7 +349,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         f.write('hello')
         f.close()
         try:
-            starter = ZopeStarter(conf)
+            starter = self.get_starter(conf)
             starter.makePidFile()
             self.failIf(open(name).read().find('hello') > -1)
         finally:
@@ -348,9 +362,11 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             os.mkdir(TEMPNAME)
             os.mkdir(TEMPPRODUCTS)
         except OSError, why:
-            if why == 17:
+            if why == errno.EEXIST:
                 # already exists
                 pass
+        old_argv = sys.argv
+        sys.argv = [sys.argv[0]]
         try:
             fname = os.path.join(TEMPNAME, 'zope.conf')
             from Zope import configure
@@ -362,6 +378,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             new_config = getConfiguration()
             self.failUnlessEqual(new_config.zserver_threads, 100)
         finally:
+            sys.argv = old_argv
             try:
                 os.unlink(fname)
             except:

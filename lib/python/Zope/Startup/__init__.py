@@ -22,67 +22,99 @@ import socket
 
 import ZConfig
 
+from ZConfig.components.logger import loghandler
+
+
 logger = logging.getLogger("Zope")
 started = False
 
-def start_zope(cfg):
+def get_starter():
+    check_python_version()
+    if sys.platform[:3].lower() == "win":
+        return WindowsZopeStarter()
+    else:
+        return UnixZopeStarter()
+
+def start_zope(cfg, debug_handler):
     """The function called by run.py which starts a Zope appserver."""
     global started
     if started:
-        # dont allow any code to call start_zope twice.
+        # Don't allow any code to call start_zope() twice.
         return
 
-    check_python_version()
-    if sys.platform[:3].lower() == "win":
-        starter = WindowsZopeStarter(cfg)
-    else:
-        starter = UnixZopeStarter(cfg)
-    starter.setupLocale()
-    # we log events to the root logger, which is backed by a
-    # "StartupHandler" log handler.  The "StartupHandler" outputs to
-    # stderr but also buffers log messages.  When the "real" loggers
-    # are set up, we flush accumulated messages in StartupHandler's
-    # buffers to the real logger.
-    starter.setupInitialLogging()
-    starter.setupSecurityOptions()
-    # Start ZServer servers before we drop privileges so we can bind to
-    # "low" ports:
-    starter.setupZServerThreads()
-    starter.setupServers()
-    # drop privileges after setting up servers
-    starter.dropPrivileges()
-    starter.makeLockFile()
-    starter.makePidFile()
-    starter.startZope()
-    starter.registerSignals()
-    # emit a "ready" message in order to prevent the kinds of emails
-    # to the Zope maillist in which people claim that Zope has "frozen"
-    # after it has emitted ZServer messages.
-    logger.info('Ready to handle requests')
-    starter.setupFinalLogging()
+    starter = get_starter()
+    starter.setConfiguration(cfg)
+    starter.prepare()
 
     started = True
-
-    # the mainloop.
     try:
-        import ZServer
-        import Lifetime
-        Lifetime.loop()
-        sys.exit(ZServer.exit_code)
+        starter.run()
     finally:
-        starter.unlinkLockFile()
-        starter.unlinkPidFile()
         started = False
+
 
 class ZopeStarter:
     """This is a class which starts a Zope server.
 
     Making it a class makes it easier to test.
     """
-    def __init__(self, cfg):
-        self.cfg = cfg
+    def __init__(self):
         self.event_logger = logging.getLogger()
-        self.debug_handler = None
+        # set up our initial logging environment (log everything to stderr
+        # if we're not in debug mode).
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)s %(name)s %(message)s",
+            "%Y-%m-%d %H:%M:%S")
+        self.debug_handler = loghandler.StreamHandler()
+        self.debug_handler.setFormatter(formatter)
+        self.debug_handler.setLevel(logging.WARN)
+
+        self.startup_handler = loghandler.StartupHandler()
+
+        self.event_logger.addHandler(self.debug_handler)
+        self.event_logger.addHandler(self.startup_handler)
+
+    def setConfiguration(self, cfg):
+        self.cfg = cfg
+
+    def prepare(self):
+        # we log events to the root logger, which is backed by a
+        # "StartupHandler" log handler.  The "StartupHandler" outputs to
+        # stderr but also buffers log messages.  When the "real" loggers
+        # are set up, we flush accumulated messages in StartupHandler's
+        # buffers to the real logger.
+        self.setupInitialLogging()
+        self.setupLocale()
+        self.setupSecurityOptions()
+        # Start ZServer servers before we drop privileges so we can bind to
+        # "low" ports:
+        self.setupZServerThreads()
+        self.setupServers()
+        # drop privileges after setting up servers
+        self.dropPrivileges()
+        self.makeLockFile()
+        self.makePidFile()
+        self.startZope()
+        self.registerSignals()
+        # emit a "ready" message in order to prevent the kinds of emails
+        # to the Zope maillist in which people claim that Zope has "frozen"
+        # after it has emitted ZServer messages.
+        logger.info('Ready to handle requests')
+        self.setupFinalLogging()
+
+    def run(self):
+        # the mainloop.
+        try:
+            import ZServer
+            import Lifetime
+            Lifetime.loop()
+            sys.exit(ZServer.exit_code)
+        finally:
+            self.shutdown()
+
+    def shutdown(self):
+        self.unlinkLockFile()
+        self.unlinkPidFile()
 
     # XXX does anyone actually use these three?
 
@@ -171,6 +203,8 @@ class ZopeStarter:
         return level
 
     def setupConfiguredLoggers(self):
+        # Must happen after ZopeStarter.setupInitialLogging()
+        self.event_logger.removeHandler(self.startup_handler)
         if self.cfg.zserver_read_only_mode:
             # no log files written in read only mode
             return
@@ -182,19 +216,20 @@ class ZopeStarter:
         if self.cfg.trace is not None:
             self.cfg.trace()
 
-    def setupDebugLogging(self):
-        from ZConfig.components.logger import loghandler
+        # flush buffered startup messages to event logger
         if self.cfg.debug_mode:
-            formatter = logging.Formatter(
-                "%(asctime)s %(levelname)s %(name)s %(message)s",
-                "%Y-%m-%d %H:%M:%S")
-            self.debug_handler = loghandler.StreamHandler()
-            self.debug_handler.setFormatter(formatter)
+            self.event_logger.removeHandler(self.debug_handler)
+            self.startup_handler.flushBufferTo(self.event_logger)
+            self.event_logger.addHandler(self.debug_handler)
+        else:
+            self.startup_handler.flushBufferTo(self.event_logger)
+
+    def setupInitialLogging(self):
+        if self.cfg.debug_mode:
             self.debug_handler.setLevel(self.getLoggingLevel())
-            root = self.event_logger
-            root.addHandler(self.debug_handler)
-            root.error("the lowest handler level is: %r",
-                       self.debug_handler.level)
+        else:
+            self.event_logger.removeHandler(self.debug_handler)
+            self.debug_handler = None
 
     def startZope(self):
         # Import Zope
@@ -260,7 +295,7 @@ class WindowsZopeStarter(ZopeStarter):
         pass
 
     def setupInitialLogging(self):
-        self.setupDebugLogging()
+        ZopeStarter.setupInitialLogging(self)
         self.setupConfiguredLoggers()
 
     def setupFinalLogging(self):
@@ -276,36 +311,17 @@ class UnixZopeStarter(ZopeStarter):
                                      self.cfg.trace])
 
     def setupInitialLogging(self):
-        self.setupDebugLogging()
-        # set up our initial logging environment (log everything to stderr
-        # if we're not in debug mode).
-        from ZConfig.components.logger.loghandler import StartupHandler
-
+        ZopeStarter.setupInitialLogging(self)
         level = self.getLoggingLevel()
 
-        formatter = logging.Formatter(
-            fmt='------\n%(asctime)s %(levelname)s %(name)s %(message)s',
-            datefmt='%Y-%m-%dT%H:%M:%S')
-        self.startup_handler = StartupHandler()
         self.startup_handler.setLevel(level)
-        self.startup_handler.setFormatter(formatter)
 
-        # set up our event logger temporarily with a startup handler only
-        self.event_logger.addHandler(self.startup_handler)
         # set the initial logging level (this will be changed by the
         # zconfig settings later)
         self.event_logger.setLevel(level)
 
     def setupFinalLogging(self):
-        if self.startup_handler in self.event_logger.handlers:
-            self.event_logger.removeHandler(self.startup_handler)
         self.setupConfiguredLoggers()
-        # flush buffered startup messages to event logger
-        if self.debug_handler is not None:
-            self.event_logger.removeHandler(self.debug_handler)
-        self.startup_handler.flushBufferTo(self.event_logger)
-        if self.debug_handler is not None:
-            self.event_logger.addHandler(self.debug_handler)
 
 
 def check_python_version():
