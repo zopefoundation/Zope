@@ -240,7 +240,7 @@ class unresolving_logger:
 		self.logger = logger
 
 	def log (self, ip, message):
-		self.logger.log ('%s:%s' % (ip, message))
+		self.logger.log ('%s%s' % (ip, message))
 
 
 def strip_eol (line):
