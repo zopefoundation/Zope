@@ -221,9 +221,9 @@ class DTMLTopic(HelpTopic):
     def __init__(self, id, title, file, permissions=None, categories=None):
         self.id=id
         self.title=title
-        if string.rfind(file, '.dtml') == len(file) -5:
-            file=file[:-5]
-        self.index_html=HTMLFile(file,'')
+        file,ext=os.path.splitext(file)
+        prefix,file=os.path.split(file)
+        self.index_html=HTMLFile(file,prefix)
         if permissions is not None:
             self.permissions=permissions
         if categories is not None:
@@ -231,7 +231,7 @@ class DTMLTopic(HelpTopic):
         
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
-        return '%s %s' % (self.title, self.obj.read())
+        return '%s %s' % (self.title, self.index_html.read())
 
         
 class TextTopic(HelpTopic):
