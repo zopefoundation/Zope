@@ -11,11 +11,11 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.25 1997/12/12 21:53:05 brian Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: Application.py,v 1.26 1997/12/17 16:45:26 jim Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 
-import Globals,Folder,os,regex
+import Globals,Folder,os,regex,sys
 from string import lower, find
 from DateTime import DateTime
 from AccessControl.User import UserFolder
@@ -134,17 +134,15 @@ class Application(Folder.Folder):
 def open_bobobase():
     # Open the application database
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
+
+    product_dir=os.path.join(SOFTWARE_HOME,'Products')
+    sys.path.append(product_dir)
     
     try: app=Bobobase['Application']
     except KeyError:
 	app=Application()
 	app._init()
 	Bobobase['Application']=app
-	get_transaction().commit()
-    
-    if not Bobobase.has_key('products'):
-	import initial_products
-	initial_products.install(Bobobase)
 	get_transaction().commit()
 
     if not Bobobase.has_key('roles'):
@@ -157,23 +155,25 @@ def open_bobobase():
         cpl._init()
 	app._setObject('Control_Panel', cpl)
 	get_transaction().commit()
-
-
-    products=Bobobase['products']
     
-    install_products(products)
+    install_products()
 
     return Bobobase
 
-def install_products(products):
+def install_products():
     # Install a list of products into the basic folder class, so
     # that all folders know about top-level objects, aka products
+
+    path_join=os.path.join
+    product_dir=path_join(SOFTWARE_HOME,'Products')
+    isdir=os.path.isdir
 
     app       =Globals.Bobobase['Application']
     meta_types=list(Folder.Folder.dynamic_meta_types)
     role_names=list(app.__defined_roles__)
 
-    for product_name in products:
+    for product_name in os.listdir(product_dir):
+	if not isdir(path_join(product_dir, product_name)): continue
 	product=__import__(product_name)
 	for meta_type in product.meta_types:
 	    if product_name=='OFS': meta_types.insert(0,meta_type)
@@ -232,26 +232,12 @@ def install_products(products):
     if app.__defined_roles__ != role_names:
 	app.__defined_roles__=tuple(role_names)
 
-#    if Globals.Bobobase['roles'] != role_names:
-#	Globals.Bobobase['roles'] = role_names
-
-
-
-############################################################################## 
-# Test functions:
-#
-
-def main():
-    # The "main" program for this module
-    import sys
-    print sys.argv[0]+" is a pure module and doesn't do anything by itself."
-
-
-if __name__ == "__main__": main()
-
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.26  1997/12/17 16:45:26  jim
+# initial_products is dead!
+#
 # Revision 1.25  1997/12/12 21:53:05  brian
 # ui support
 #
