@@ -159,6 +159,14 @@ class EmptyTagError(NestingError):
         msg = 'Close tag </%s> should be removed' % tag
         HTMLParseError.__init__(self, msg, position)
 
+class OpenTagError(NestingError):
+    """Exception raised when a tag is not allowed in another tag."""
+
+    def __init__(self, tagstack, tag, position=(None, None)):
+        self.tag = tag
+        msg = 'Tag <%s> is not allowed in <%s>' % (tag, tagstack[-1])
+        HTMLParseError.__init__(self, msg, position)
+
 class HTMLTALParser(HTMLParser):
 
     # External API
@@ -239,12 +247,16 @@ class HTMLTALParser(HTMLParser):
                 elif t in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
         elif tag in PARA_LEVEL_HTML_TAGS + BLOCK_LEVEL_HTML_TAGS:
-            for i in range(len(self.tagstack)):
-                if self.tagstack[i] in BLOCK_LEVEL_HTML_TAGS:
-                    close_to = -1
-                elif self.tagstack[i] in PARA_LEVEL_HTML_TAGS:
-                    if close_to == -1:
-                        close_to = i
+            i = len(self.tagstack) - 1
+            while i >= 0:
+                closetag = self.tagstack[i]
+                if closetag in BLOCK_LEVEL_HTML_TAGS:
+                    break
+                if closetag in PARA_LEVEL_HTML_TAGS:
+                    if closetag != "p":
+                        raise OpenTagError(self.tagstack, tag, self.getpos())
+                    close_to = i
+                i = i - 1
         if close_to >= 0:
             while len(self.tagstack) > close_to:
                 self.implied_endtag(self.tagstack[-1], 1)
