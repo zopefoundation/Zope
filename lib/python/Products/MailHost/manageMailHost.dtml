@@ -1,10 +1,10 @@
 <HTML>
 <HEAD>
-<TITLE>Manage a MailForm</TITLE>
+<TITLE>Manage a MailHost</TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF">
-<H1>Manage a MailForm</H1>
+<H1>Manage a MailHost</H1>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_makeChanges" METHOD="POST">
 <TABLE CELLSPACING="2">
 <!--#var smallRolesWidget-->
@@ -36,30 +36,6 @@
   <TD ALIGN="LEFT"><B>SMTP Port</B></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<!--#var smtpPort-->">
-  </TD>
-</TR>
-<TR VALIGN="TOP">
-  <TD BGCOLOR="#555555" COLSPAN=2>&nbsp;</TD>
-</TR>
-<TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Mail template: </B></TD>
-  <TD ALIGN="LEFT">
-    <!--#var mailTemplate-->
-    <A HREF="<!--#var URL2-->/<!--#var mailTemplate-->/manage">[manage]</A>
-  </TD>
-</TR>
-<TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Error template: </B></TD>
-  <TD ALIGN="LEFT">
-    <!--#var errorTemplate-->
-    <A HREF="<!--#var URL2-->/<!--#var errorTemplate-->/manage">[manage]</A>
-  </TD>
-</TR>
-<TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Sent Mail template: </B></TD>
-  <TD ALIGN="LEFT">
-    <!--#var sentMailTemplate-->
-    <A HREF="<!--#var URL2-->/<!--#var sentMailTemplate-->/manage">[manage]</A>
   </TD>
 </TR>
 <TR VALIGN="TOP">

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3.0//EN">
 <HTML>
 <HEAD>
-<TITLE>MailForm: <!--#var title--></TITLE>
+<TITLE>MailHost: <!--#var title--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
 <TABLE>
@@ -12,7 +12,8 @@
 	<TD BGCOLOR="#CCCCCC">
 	<B>Title: </B><FONT COLOR="#CC0000"><!--#var title--></FONT><BR>
 	<B>Mail Host: </B><FONT COLOR="#CC0000"><!--#var smtpHost--></FONT><BR>
-	<B>Mail Port: </B><FONT COLOR="#CC0000"><!--#var smtpPort--></FONT>
+	<B>Mail Port: </B><FONT COLOR="#CC0000"><!--#var smtpPort--></FONT><BR>
+	<B>Messages sent: </B><FONT COLOR="#CC0000"><!--#var sentMessages--></FONT>
 	</TD>
 </TR>
 </TABLE>
