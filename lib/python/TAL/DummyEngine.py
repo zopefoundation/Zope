@@ -22,7 +22,9 @@ import driver
 
 from TALDefs import NAME_RE, TALESError, ErrorInfo
 
-Default = []
+class Default:
+    pass
+Default = Default()
 
 name_match = re.compile(r"(?s)(%s):(.*)\Z" % NAME_RE).match
 

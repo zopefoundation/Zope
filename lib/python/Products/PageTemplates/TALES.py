@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -40,8 +40,6 @@ class CompilerError(Exception):
 
 class Default:
     '''Retain Default'''
-    def __nonzero__(self):
-        return 0
 Default = Default()
 
 _marker = []
