@@ -16,7 +16,7 @@
 $Id$
 """
 
-import sys
+import os, sys
 import unittest
 import ZODB.tests.util
 import transaction
@@ -40,6 +40,11 @@ def tearDown(test):
     test.globs['some_database'].close()
     del sys.modules['ZClasses.example']
 
+def tearDown27(test):
+    test.globs['db'].close()
+    indexname = os.path.join(os.path.dirname(__file__), '27.fs.index')
+    os.remove(indexname)
+
 def test_suite():
     return unittest.TestSuite((
 
@@ -50,6 +55,9 @@ def test_suite():
         
         doctest.DocFileSuite("_pmc.txt", setUp=setUp, tearDown=tearDown),
         doctest.DocFileSuite("ZClass.txt", setUp=setUp, tearDown=tearDown),
+        doctest.DocFileSuite("27.txt", tearDown=tearDown27,
+                             globs=dict(__file__=__file__),
+                             ),
         ))
 
 if __name__ == '__main__':
