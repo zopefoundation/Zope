@@ -100,7 +100,7 @@ The Job of this module is to:
 from BoboPOS import SimpleDB, TJar, SingleThreadedTransaction
 
 import sys, os, string, Globals, OFS.Application
-Globals.BobobaseName = '%s/Data.bbb' % Globals.data_dir
+Globals.BobobaseName = os.path.join(Globals.data_dir, 'Data.bbb')
 Globals.DatabaseVersion='2'
 
 # Setup support for broken objects:
