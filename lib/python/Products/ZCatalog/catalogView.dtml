@@ -48,7 +48,7 @@ can also remove or update individual catalog records.
       </TD>
       <td valign="top"><dtml-var meta_type></td>
       <td valign="top" align="left">
-        <a href="/<dtml-var "getpath(data_record_id_)">/manage_workspace"><dtml-var "getpath(data_record_id_)">
+        <a href="<dtml-var "getpath(data_record_id_)">/manage_workspace"><dtml-var "getpath(data_record_id_)">
         <dtml-if title> (<dtml-var title>)</dtml-if></a>
       </td> 
     </tr>
