@@ -10,20 +10,20 @@
 <FORM ACTION="manage_edit" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
+  <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
   <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
+  <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->">
   </TD>
 </TR>
-<tr>	<th>Function name</th>
-	<td><input name="function" size="30"
+<tr>	<th ALIGN="LEFT">Function name</th>
+	<td ALIGN="LEFT"><input name="function" size="30"
              value="<!--#var function-->"></td></tr>
-<tr>	<th>Python module file (without suffix)</th>
-	<td><input name="module" size="30"
+<tr>	<th ALIGN="LEFT">Python module file (without suffix)</th>
+	<td ALIGN="LEFT"><input name="module" size="30"
              value="<!--#var module-->"></td></tr>
 <TR>
 <TR>

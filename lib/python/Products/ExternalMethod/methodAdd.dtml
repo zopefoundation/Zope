@@ -9,17 +9,17 @@
 <FORM ACTION="manage_addExternalMethod" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TD>
+  <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+  <TH ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TH>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
+  <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
 </TR>
-<tr>	<th>Function name</th>
-	<td><input name="function" size="30"></td></tr>
-<tr>	<th>Python module file</th>
-	<td><input name="module" size="30"></td></tr>
+<tr>	<th ALIGN="LEFT">Function name</th>
+	<td ALIGN="LEFT"><input name="function" size="30"></td></tr>
+<tr>	<th ALIGN="LEFT">Python module file</th>
+	<td ALIGN="LEFT"><input name="module" size="30"></td></tr>
 <TR>
 <TD></TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE="Add"></TD>
