@@ -113,10 +113,6 @@ def initialize(context):
 
         exec(s)
 
-    context.registerHelp()
-    context.registerHelpTitle('Indexes (Pluggable)')
-
-    context.registerClass(ZS.ZopeSplitter,permission="Splitter",constructors=(ZS.ZopeSplitter.a,ZS.ZopeSplitter.b))
 
 
 for idx in _indexes:
