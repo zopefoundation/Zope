@@ -56,6 +56,9 @@ Zope changes
      
         - SiteAccess 2.0 has been added, to enable virtual hosting.
 
+        - The StandardCacheManagers product has been added as a primary
+          product, making it easier to get started with caching.
+
       Bugs Fixed
 
         - A misspelled function name which prevented the addition of
