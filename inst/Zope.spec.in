@@ -4,10 +4,10 @@
 %define minorversion <<ZOPE_MINOR_VERSION>>
 %define release <<VERSION_RELEASE_TAG>>
 %define version %{majorversion}.%{minorversion}
-%define package_name %{name}-%{version}-%{release}
-%define buildroot %{_tmppath}/%{package_name}-buildroot
-%define target_dir /opt/%{name}-%{majorversion}
-%define inst_target_dir /var/opt/zope
+%define packagename %{name}-%{version}-%{release}
+%define buildroot %{_tmppath}/%{packagename}-root
+%define targetdir /opt/%{name}-%{majorversion}
+%define instancedir /var/zope
 %define python /usr/bin/python2.2
 %define zopeuser zope
 
@@ -15,7 +15,7 @@ Summary: Zope, the open source web application server
 Name: %{name}
 Version: %{version}
 Release: %{release}
-Source0: %{package_name}.tar.gz
+Source0: %{packagename}.tgz
 License: Zope Public License (ZPL)
 Group: Applications/Internet
 BuildRoot: %{buildroot}
@@ -23,8 +23,13 @@ Prefix: %{_prefix}
 Vendor: Zope Corporation and Contributors <zope@zope.org>
 Url: http://www.zope.org
 
-Requires: python2 >= 2.2.2, /usr/sbin/useradd
-BuildRequires: python2 >= 2.2.2
+# The autorequire script sticks "/usr/local/bin/python"
+# into the required list due to script shebangs in Zope.  Turn off auto
+# requires/provides for this reason and roll our own Requires/Provides lists
+AutoReqProv: no 
+Requires: python2 >= 2.2.3, /usr/sbin/useradd, ld-linux.so.2, libc.so.6, /bin/sh, /usr/bin/env, /sbin/chkconfig
+Provides: Acquisition.so, BTree.so, cAccessControl.so, cDocumentTemplate.so, ComputedAttribute.so, coptimizations.so, cPersistence.so, cPickleCache.so, dcpyexpat.so, ExtensionClass.so, _fsBTree.so, _helper.so, _IIBTree.so, IIBTree.so, initgroups.so, intSet.so, _IOBTree.so, IOBTree.so, ISO_8859_1_Splitter.so, MethodObject.so, Missing.so, MultiMapping.so, _OIBTree.so, OIBTree.so, okascore.so, _OOBTree.so, Record.so, Splitter.so, stopper.so, ThreadLock.so, TimeStamp.so, UnicodeSplitter.so, winlock.so, ZopeSplitter.so
+BuildRequires: python2 >= 2.2.3
 
 %description
 Zope is an application server framework that enables developers to quickly
@@ -32,51 +37,179 @@ build web applications such as intranets, portals, and content management
 systems.
 
 %prep
-rm -rf $RPM_BUILD_DIR/%{package_name}
-tar xvzf $RPM_SOURCE_DIR/%{package_name}.tar.gz
+rm -rf $RPM_BUILD_DIR/%{packagename}
+tar xvzf $RPM_SOURCE_DIR/%{packagename}.tgz
 
 %build
-cd %{package_name}
-./configure --prefix="%{buildroot}%{target_dir}" --optimize \
-   --with-python=/usr/bin/python2.2
+cd %{packagename}
+mkdir build
+cd build
+../configure \
+   --with-python=%{python} \
+   --prefix="%{buildroot}%{targetdir}" \
+   --no-compile
 make build
 
 %install
-cd %{package_name}
+cd %{packagename}/build
 make install
-# XXX - need to figure out a way to byte-compile after install instead
-# of during install
-find %{buildroot}%{target_dir} | sed -e 's@^%{buildroot}@@' > INSTALLED_FILES
 
 %post
-/usr/sbin/useradd -M -r -s /bin/bash -d /var/opt/zope -c "Zope server user"\
-   %{zopeuser} > /dev/null 2>&1
-mkdir -p %{inst_target_dir}
-chown %{zopeuser}.%{zopeuser} %{inst_target_dir}
-chmod 755 %{inst_target_dir}
+# byte-compile installed Python files
+pushd "%{targetdir}" > /dev/null 2>&1
+%{python} "%{targetdir}/lib/python/Zope/Startup/compilezpy.py" > /dev/null 2>&1
+popd > /dev/null 2>&1
 
-# blank inituser below causes an inituser file to not be written
-su - %{zopeuser} -c \
-  "%{python} %{target_dir}/inst/mkzopeinstance --user= %{inst_target_dir} > /dev/null 2>&1"
+# add a Zope user if one doesn't already exist
+user=`cut -f1 -d: /etc/passwd|grep "^%{zopeuser}$"`
+if [ -z "$user" ]; then
+    /usr/sbin/useradd -M -r -s /sbin/nologin -d /var/zope -c \
+       "Zope service user" %{zopeuser}
+fi
 
-# inform the user he will need to write an inituser file
-echo Note that before being able to log in to Zope via a web browser, you\'ll
-echo need to define a Zope \"initial user\" by running:
-echo
-echo     cd %{inst_target_dir}
-echo     %{inst_target_dir}/bin/zopectl write_inituser <username> <password>
+# make the instance directory and change its ownership/mode if it doesn't
+# already exist
+if [ ! -f "%{instancedir}" ]; then
+   mkdir -p %{instancedir}
+   chown %{zopeuser}.%{zopeuser} %{instancedir}
+   chmod 755 %{instancedir}
+
+   # 10 digit random default admin password
+   passwd=`head -c4 /dev/urandom | od -tu4 -N4 | sed -ne '1s/.* //p'`
+   su - %{zopeuser} -s /bin/sh -c \
+     "%{python} %{targetdir}/bin/mkzopeinstance.py --user=admin:$passwd \
+         --dir=%{instancedir}"
+
+   # inform the user of the default username/password combo
+   echo
+   echo A Zope instance has been installed in \"%{instancedir}\" with a
+   echo default administrative username/password combination.  The
+   echo administrative username is \"admin\" and the password is \"$passwd\". 
+   echo Please remember this so you are able to log in for the first time.
+   echo
+
+else
+
+  echo
+  echo An instance home directory could not be created at \"%{instancedir}\"
+  echo because a directory or file by that name already existed.   You will
+  echo need to create a new Zope instance manually by invoking the
+  echo \"mkzopeinstance.py\" script within "%{targetdir}/bin".
+  echo
+
+fi
+
+if [ ! -f "/etc/rc.d/init.d/zope" ]; then
+   cat >> /etc/rc.d/init.d/zope << EOF
+#!/bin/sh
+# RedHat startup script for a Zope instance using zopectl
+# by Chris McDonough (chrism@zope.com)
+#
+# :AUTO_UNINSTALL_MARKER: (do not remove)
+#
+# chkconfig: 2345 80 20
+# description: Zope, the web application server
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+instancedir="%{instancedir}"
+zopectl="\$instancedir/bin/zopectl"
+name="zope"
+
+[ -f \$zopectl ] || exit 1
+
+RETVAL=0
+
+start() {
+    echo -n "Starting \$name: " 
+    "\$zopectl" start
+    RETVAL=\$?
+    echo
+    return \$RETVAL
+}
+
+stop() {
+    echo -n "Stopping \$name: " 
+    "\$zopectl" stop
+    RETVAL=\$?
+    echo
+    return \$RETVAL
+}
+
+case "\$1" in
+	start)
+	    start
+	    ;;
+	
+	stop)
+	    stop
+	    ;;
+	
+	restart)
+	    stop
+	    start
+	    ;;
+	
+	*)
+	    echo "Usage: \$0 {start|stop|restart}"
+	    exit 1
+
+esac
+
+exit \$REVAL
+EOF
+   chmod 755 /etc/rc.d/init.d/zope
+   /sbin/chkconfig --add zope
+fi
+
+%preun
+if [ -f "/etc/rc.d/init.d/zope"]; then
+   /etc/rc.d/init.d/zope stop > /dev/null 2>&1
+fi
+find "%{targetdir}" -name "*.py[co]"|xargs rm -f
 
 %postun
-echo Note that the Zope instance files in "%{inst_target_dir}" were not \
-uninstalled, nor was the '%{zopeuser}' user removed from the system.
+# uninstall the rc file if we installed it
+installedrc=`grep ":AUTO_UNINSTALL_MARKER:" /etc/rc.d/init.d/zope` \
+   > /dev/null 2>&1
+if [ ! -z "$installedrc" ]; then
+  /sbin/chkconfig --del zope
+  rm -f /etc/rc.d/init.d/zope
+fi
+
+echo
+echo Note that the Zope instance files in \"%{instancedir}\" were not 
+echo uninstalled, nor was the \"%{zopeuser}\" user removed from the system.
+echo
 
 %clean
 rm -rf %{buildroot}
 
-%files -f %{package_name}/INSTALLED_FILES
+%files
 %defattr(-,root,root)
+%dir %{targetdir}
+%{targetdir}/bin
+%{targetdir}/doc
+%{targetdir}/import
+%{targetdir}/lib
+%{targetdir}/skel
+%{targetdir}/utilities
 
 %changelog
-* Fri Oct 11 2002 chrism <chrism@james.zope.com>
+* Tue Jul 22 2003 Chris McDonough <chrism@zope.com> 
+- Update for Zope 2.7b1+
+- run ./configure from build subdirectory instead of in Zope source root
+- (reluctantly) install an instance home with a default username/password
+-  byte-compile files in postinstall instead of during install
+- explicitly name directories in "files" section rather than writing
+  a manifest from the build
+- dont use auto Requires/Provides support
+- install an rc script
+
+* Fri Oct 11 2002 Chris McDonough <chrism@zope.com>
 - Initial release
+
+
+
 
