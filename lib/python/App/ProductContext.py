@@ -191,11 +191,21 @@ class ProductContext:
         ############################################################
 
         for method in legacy:
-            if type(method) is tt: name, method = method
-            else: name=method.__name__
+            if type(method) is tt:
+                name, method = method
+                aliased = 1
+            else:
+                name=method.__name__
+                aliased = 0
             if not OM.__dict__.has_key(name):
                 setattr(OM, name, method)
                 setattr(OM, name+'__roles__', pr)
+                if aliased:
+                    # Set the unaliased method name and its roles
+                    # to avoid security holes.  XXX: All "legacy"
+                    # methods need to be eliminated.
+                    setattr(OM, method.__name__, method)
+                    setattr(OM, method.__name__+'__roles__', pr)
 
         if type(initial) is tt: name, initial = initial
         else: name=initial.__name__
