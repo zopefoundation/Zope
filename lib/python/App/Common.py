@@ -13,9 +13,11 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
-import sys, os, time
+import os
+import sys
+import time
 
 # Legacy API for this module; 3rd party code may use this.
 from os.path import realpath
@@ -60,10 +62,10 @@ def rfc1123_date(ts=None):
                                                     year,
                                                     hh, mm, ss)
 
-def absattr(attr, c=callable):
+def absattr(attr, callable=callable):
     # Return the absolute value of an attribute,
     # calling the attr if it is callable.
-    if c(attr):
+    if callable(attr):
         return attr()
     return attr
 
