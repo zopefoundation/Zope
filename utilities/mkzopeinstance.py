@@ -120,7 +120,8 @@ def main():
         }
 
     copyzopeskel.copyskel(skelsrc, skeltarget, None, None, **kw)
-    write_inituser(inituser, user, password)
+    if user and password:
+        write_inituser(inituser, user, password)
 
 def usage(stream, msg=None):
     if msg:
