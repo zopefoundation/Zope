@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.71 1999/03/22 17:34:08 jim Exp $"""
+$Id: Folder.py,v 1.72 1999/03/24 18:44:29 jim Exp $"""
 
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -132,8 +132,6 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
     other Principia objects.
     """
     meta_type='Folder'
-    id       ='folder'
-    title    ='Folder object'
     icon     ='p_/folder'
 
     _properties=({'id':'title', 'type': 'string'},)
