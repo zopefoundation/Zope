@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1180,8 +1180,9 @@ class DateTime:
         return self._second
 
     def strftime(self, format):
-        return strftime(format, gmtime(self.timeTime()))
-
+        return strftime(format, (self._year, self._month, self._day,
+                                 self._hour, self._minute, self._nearsec,
+                                 0, 0, 0))
 
     # General formats from previous DateTime
     def Date(self):
