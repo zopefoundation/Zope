@@ -14,12 +14,10 @@
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
-$Id: SortEx.py,v 1.6 2002/09/24 22:06:27 jeremy Exp $
+$Id: SortEx.py,v 1.7 2002/10/19 06:46:35 andreasjung Exp $
 """
 
-
-TupleType=type(())
-
+from types import TupleType
 
 def sort(sequence, sort=(), _=None, mapping=0):
     """
@@ -108,7 +106,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                 try:
                     if mapping: k = v[sort]
                     else: k = getattr(v, sort)
-                except AttributeError, KeyError: k = None
+                except (AttributeError, KeyError): k = None
                 if not basic_type(type(k)):
                     try: k = k()
                     except: pass
