@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -160,6 +160,7 @@ class PropPatch:
 
     def parse(self, data, dav='DAV:'):
         root=XmlParser().parse(data)
+        vals=self.values
         e=root.elements('propertyupdate', ns=dav)[0]
         for ob in e.elements():
             if ob.name()=='set' and ob.namespace()==dav:
@@ -174,12 +175,12 @@ class PropPatch:
                         md[attr.name()]=attr.value()
                     md={'attrs':attrs, 'nsid': val.__nskey__}
                     item=(val.name(), val.namespace(), val.strval(), md)
-                    self.values.append(item)
+                    vals.append(item)
             if ob.name()=='remove' and ob.namespace()==dav:
                 prop=ob.elements('prop', ns=dav)[0]
                 for val in prop.elements():
                     item=(val.name(), val.namespace())
-                    self.values.append(item)
+                    vals.append(item)
 
     def apply(self, obj):
         url=urlfix(self.request['URL'], 'PROPPATCH')
