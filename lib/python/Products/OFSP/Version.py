@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Version.py,v 1.6 1997/12/12 21:49:44 brian Exp $'''
+$Id: Version.py,v 1.7 1997/12/18 13:36:57 jim Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -48,12 +48,12 @@ class Session(Persistence.Persistent,
     meta_type='Session'
     icon='OFS/session.gif'
 
-    manage_options=({'icon':'', 'label':'Properties',
+    manage_options=({'icon':'', 'label':'Join/Leave',
 		     'action':'manage_main', 'target':'manage_main',
-	            },
-		    {'icon':'', 'label':'Join/Leave',
-		     'action':'index_html', 'target':'manage_main',
 		    },
+		    {'icon':'', 'label':'Properties',
+		     'action':'manage_propertiesForm', 'target':'manage_main',
+	            },
 		    {'icon':'', 'label':'Security',
 		     'action':'manage_rolesForm', 'target':'manage_main',
 		    },
@@ -70,8 +70,8 @@ class Session(Persistence.Persistent,
 	if l >= 0: cookie=cookie[:l]
 	self.cookie="%s/%s" % (cookie, id)
 
-    manage=manage_main=Globals.HTMLFile('OFS/sessionEdit')
-    index_html=Globals.HTMLFile('OFS/session')
+    manage_propertiesForm=Globals.HTMLFile('OFS/sessionEdit')
+    index_html=manage=manage_main=Globals.HTMLFile('OFS/session')
 
     def title_and_id(self):
 	r=Session.inheritedAttribute('title_and_id')(self)
@@ -123,7 +123,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 
@@ -131,6 +131,10 @@ __version__='$Revision: 1.6 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.7  1997/12/18 13:36:57  jim
+# Rearranged management options to make the join/leave screen the
+# default.
+#
 # Revision 1.6  1997/12/12 21:49:44  brian
 # ui update
 #
