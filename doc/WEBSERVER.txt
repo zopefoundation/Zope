@@ -55,9 +55,9 @@ Using Zope in multi-threaded mode with ZServer
   server.  You can do this by adding a section to the etc/zope.conf
   file like this::
 
-    <pcgi-server>
+    <persistent-cgi>
       address /path/to/PCGI/resource/file
-    </pcgi-server>
+    </persistent-cgi>
 
   Note, you must have gone through the directions in 'INSTALL.txt' for
   this to work.
@@ -142,20 +142,20 @@ Using Zope in multi-threaded mode with ZServer
   write to the socket.  For illustrative purposes, I will use
   '/tmp/zope.soc'.
 
-  This can be configured by adding a fcgi-server section in your
+  This can be configured by adding a fast-cgi section in your
   etc/zope.conf file.  The section should look like this for a TCP
   port::
 
-    <fcgi-server>
+    <fast-cgi>
       address localhost:8889
-    </fcgi-server>
+    </fast-cgi>
 
   To use a Unix domain socket instead, specify the path of the socket
   file instead of a [hostname:]port::
 
-    <fcgi-server>
+    <fast-cgi>
       address /tmp/zope.soc
-    </fcgi-server>
+    </fast-cgi>
 
   You can start Zope at this point by running the 'runzope' script::
 
