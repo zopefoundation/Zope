@@ -442,7 +442,7 @@ class _JUnitTextTestResult(TestResult):
         TestResult.addError(self,test,error)
         self.stream.write('E')
         self.stream.flush()
-        if err[0] is KeyboardInterrupt:
+        if error[0] is KeyboardInterrupt:
             self.shouldStop = 1
  
     def addFailure(self, test, error):
