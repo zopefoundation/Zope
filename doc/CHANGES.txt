@@ -19,6 +19,10 @@ Zope Changes
       - requestprofiler: added new --daysago option and added
         support for reading gzipped detailed logfiles
 
+      - DateTime: new functions JulianDay() and week()
+        to perform calculation of the week number based on the
+        Julian calendar.
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff
