@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.131 2001/03/29 14:24:20 evan Exp $"""
+$Id: ObjectManager.py,v 1.132 2001/04/03 15:25:14 brian Exp $"""
 
-__version__='$Revision: 1.131 $'[11:-2]
+__version__='$Revision: 1.132 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -514,9 +514,10 @@ class ObjectManager(
             f=StringIO()
             if toxml: XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
             else:     ob._p_jar.exportFile(ob._p_oid, f)
-            RESPONSE.setHeader('Content-type','application/data')
-            RESPONSE.setHeader('Content-Disposition',
-                'inline;filename=%s.%s' % (id, suffix))
+            if RESPONSE is not None:
+                RESPONSE.setHeader('Content-type','application/data')
+                RESPONSE.setHeader('Content-Disposition',
+                                   'inline;filename=%s.%s' % (id, suffix))
             return f.getvalue()
 
         f = os.path.join(CLIENT_HOME, '%s.%s' % (id, suffix))
@@ -537,7 +538,7 @@ class ObjectManager(
         """Import an object from a file"""
         dirname, file=os.path.split(file)
         if dirname:
-            raise 'Bad Request', 'Invalid file name %s' % file
+            raise BadRequestException, 'Invalid file name %s' % file
 
         instance_home = INSTANCE_HOME
         software_home = os.path.join(SOFTWARE_HOME, '..%s..' % os.sep)
@@ -549,7 +550,7 @@ class ObjectManager(
             if os.path.exists(filepath):
                 break
         else:
-            raise 'Bad Request', 'File does not exist: %s' % file
+            raise BadRequestException, 'File does not exist: %s' % file
         # locate a valid connection
         connection=self._p_jar
         obj=self
