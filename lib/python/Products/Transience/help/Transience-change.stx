@@ -17,7 +17,9 @@ TransientObjectContainer - Manage
 
        The Zope id of the Transient Object Container.
 
-     - *Title* 
+     - **Title**
+
+       *Optional*
 
        The title of the object.
 
@@ -30,7 +32,11 @@ TransientObjectContainer - Manage
        If you change the timeout value, all objects in the transient
        container will be flushed.
 
-     - *Script to call when objects are added*
+       If the timeout value is "0", objects will not time out.
+
+     - **Script to call when objects are added**
+
+       *Optional*
 
        The physical path of of a Zope script which will receive notifications
        when objects are added to the Transient Object Container.
@@ -39,7 +45,9 @@ TransientObjectContainer - Manage
 
        For more information, see "Add and Delete Scripts" below.
 
-     - *Script to call when objects are deleted*
+     - **Script to call when objects are deleted**
+
+       *Optional*
 
        The physical path of a Zope script which will receive notifications
        when objects are deleted from the Transient Object Container, either

@@ -8,8 +8,10 @@
 
 <FORM ACTION="constructTransientObjectContainer" METHOD="POST">
 <TABLE CELLSPACING="2">
+
 <tr>
 <div class="form-help">
+<td colspan="2">
 <p>
 Transient Object Containers are used to store transient data.
 Transient data will persist, but only for a user-specified period of time,
@@ -32,6 +34,7 @@ the Zope physical path to the method to be invoked to receive the notification
 (e.g. '/folder/add_notifier').
 </p>
 </div>
+</td>
 </tr>
 
 <TR>
@@ -48,7 +51,7 @@ the Zope physical path to the method to be invoked to receive the notification
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      <em>Title</em>
+      Title (optional)
     </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -61,6 +64,9 @@ the Zope physical path to the method to be invoked to receive the notification
     <div class="form-label">
       Data object timeout in minutes
    </div>
+    <div class="form-help">
+      ("0" means no expiration)
+    </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="timeout_mins:int" SIZE="10" value="20">
@@ -70,8 +76,11 @@ the Zope physical path to the method to be invoked to receive the notification
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      <em>Script to call upon object add</em>
+      Script to call upon object add (optional)
    </div>
+    <div class="form-help">
+      (e.g. "/somefolder/addScript")
+    </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="addNotification" SIZE="40">
@@ -81,8 +90,11 @@ the Zope physical path to the method to be invoked to receive the notification
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      <em>Script to call upon object delete</em>
+      Script to call upon object delete (optional)
    </div>
+    <div class="form-help">
+      (e.g. "/somefolder/delScript")
+    </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="delNotification" SIZE="40">

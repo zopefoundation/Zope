@@ -8,7 +8,7 @@ TransientObjectContainer - Add
 
   Common Usages
 
-     A Transient Object Container is used by Session Data Mangers to store
+     A Transient Object Container is used by Session Data Managers to store
      session data.
 
   To create a Transient Object Container, specify the following:
@@ -17,7 +17,9 @@ TransientObjectContainer - Add
 
        The Zope id of the Transient Object Container.
 
-     - *Title* 
+     - **Title** 
+
+       *Optional*
 
        The title of the object.
 
@@ -26,8 +28,11 @@ TransientObjectContainer - Add
        The minimum number of minutes that objects in the container will
        persist for.  Objects in the container are passively deleted, so
        they may not be deleted exactly after this number of minutes elapses.
+       A setting of "0" indicates that objects should not expire.
 
-     - *Script to call when objects are added*
+     - **Script to call when objects are added**
+
+       *Optional*
 
        The physical path of of a Zope script which will receive notifications
        when objects are added to the Transient Object Container.
@@ -36,7 +41,9 @@ TransientObjectContainer - Add
 
        For more information, see "Add and Delete Scripts" below.
 
-     - *Script to call when objects are deleted*
+     - **Script to call when objects are deleted**
+
+       *Optional*
 
        The physical path of a Zope script which will receive notifications
        when objects are deleted from the Transient Object Container, either

@@ -45,6 +45,9 @@ Transient data will persist, but only for a user-specified period of time
     <div class="form-label">
      Data object timeout value in minutes
     </div>
+    <div class="form-help">
+      ("0" means no expiration)
+    </div>
   </td>
   <td align="left" valign="top">
     <input type="text" name="timeout_mins:int" size=10
@@ -57,6 +60,9 @@ Transient data will persist, but only for a user-specified period of time
     <div class="form-label">
       Script to call when objects are added
     </div>
+    <div class="form-help">
+      (e.g. "/somefolder/addScript")
+    </div>
   </td>
   <td align="left" valign="top">
      <input type="text" name="addNotification"
@@ -68,6 +74,9 @@ Transient data will persist, but only for a user-specified period of time
   <td align="left" valign="top">
     <div class="form-label">
       Script to call when objects are deleted
+    </div>
+    <div class="form-help">
+      (e.g. "/somefolder/delScript")
     </div>
   </td>
   <td align="left" valign="top">

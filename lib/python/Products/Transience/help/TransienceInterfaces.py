@@ -79,7 +79,7 @@ Transient Objects
 
 """
 
-class TransientObjectContainer(Interface.Base):
+class TransientObjectContainer:
     """
     TransientObjectContainers hold transient objects, most often,
     session data.
@@ -202,7 +202,7 @@ class TransientObjectContainer(Interface.Base):
         """
 
 
-class TransientObject(Interface.Base):
+class TransientObject:
     """
     A transient object is a temporary object contained in a transient
     object container.
