@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.12 2002/01/02 15:56:04 andreasjung Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: BaseResponse.py,v 1.13 2002/06/22 14:02:41 tseaver Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import  types, sys
 from types import StringType, InstanceType
@@ -33,17 +33,19 @@ class BaseResponse:
         
     def __init__(self, stdout, stderr,
                  body='', headers=None, status=None, cookies=None):
-        self.stdout=stdout
-        self.stderr=stderr
-        self.body=body
-        if headers is None: headers={}
-        self.headers=headers
-        self.status=status
-        if cookies is None: cookies={}
-        self.cookies=cookies
+        self.stdout = stdout
+        self.stderr = stderr
+        self.body = body
+        if headers is None:
+            headers={}
+        self.headers = headers
+        self.status = status
+        if cookies is None:
+            cookies={}
+        self.cookies = cookies
     
     def setStatus(self, status, reason=None):
-        self.status=status
+        self.status = status
 
     def setHeader(self, name, value):
         self.headers[name]=value
@@ -55,7 +57,7 @@ class BaseResponse:
         self.stdout.write(str(self))
 
     def setBody(self, body):
-        self.body=body
+        self.body = body
 
     def getStatus(self):
         'Returns the current HTTP status code as an integer. '
@@ -70,10 +72,11 @@ class BaseResponse:
         "value". This overwrites any previously set value for the
         cookie in the Response object.
         '''
-        cookies=self.cookies
+        cookies = self.cookies
         if cookies.has_key(name):
-            cookie=cookies[name]
-        else: cookie=cookies[name]={}
+            cookie = cookies[name]
+        else:
+            cookie = cookies[name] = {}
         for k, v in kw.items():
             cookie[k]=v
         cookie['value']=value
@@ -104,7 +107,8 @@ class BaseResponse:
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, `self.body`)
 
-    def flush(self): pass
+    def flush(self):
+        pass
 
     def write(self,data):
         """\
@@ -121,7 +125,7 @@ class BaseResponse:
         after beginning stream-oriented output. 
 
         """
-        self.body=self.body+data
+        self.body = self.body+data
 
     def exception(self, fatal=0, info=None):
         """Handle an exception.
