@@ -17,18 +17,13 @@
 # Lots of comments are at the bottom of this file.  Read them to
 # understand what's going on.
 
-import math
-
-from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IIBTree, IIBucket
+from BTrees.IIBTree import IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
 from Products.ZCTextIndex.BaseIndex import BaseIndex, \
                                            inverse_doc_frequency, \
                                            scaled_int
-from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
-                                        mass_weightedUnion
 
 import ZODB
 
