@@ -58,6 +58,8 @@ class TestRunner:
             sys.path.append(path)       # let module find things in its dir
             try:
                 module=imp.load_module(name, file, pathname, desc)
+            except KeyboardInterrupt:
+                raise
             except:
                 (tb_t, tb_v, tb_tb) = sys.exc_info()
                 self.report("Module %s failed to load\n%s: %s" % (pathname,
@@ -146,6 +148,8 @@ class TestRunner:
                     os.chdir(dirname)
                 try:
                     suite = self.getSuiteFromFile(name)
+                except KeyboardInterrupt:
+                    raise
                 except:
                     self.report('No test suite found in file:\n%s\n' % pathname)
                     if self.verbosity > 1:
@@ -186,7 +190,10 @@ class TestRunner:
                 sys.stderr.write( '*** Changing directory to: %s\n' % dirname )
             os.chdir(dirname)
         self.report('Running: %s' % filename)
-        try:    suite=self.getSuiteFromFile(name)
+        try:
+            suite=self.getSuiteFromFile(name)
+        except KeyboardInterrupt:
+            raise
         except:
             traceback.print_exc()
             suite=None
