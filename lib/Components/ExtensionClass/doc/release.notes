@@ -1,0 +1,154 @@
+Release Notes
+
+  1.2
+
+    This release provides some important bug fixes, some new features,
+    and a new copyright.
+
+    New functionality:
+              
+      - One or more mapping objects can be passed to the MultiMapping
+        constructor.
+
+      - MultiMapping objects implement the has_key and get methods as
+        defined for Python 1.5 dictionaries.
+        
+    Bugs fixed:
+
+      - When support was added for passing acquisition wrappers to
+        methods of data-less C mix-in classes, C-based __call_method__
+        hooks were broken.  The most notable example of this was the
+        breaking of the Synchronized class.
+
+      - Calling C-base-class special methods from overriding methods,
+        as in::
+
+          class LowerMultiMapping(MultiMapping):
+
+	    def __getitem__(self, key):
+	      return MultiMapping.__getitem__(self, lower(key))
+
+        caused infinite loops.
+
+      - A typo in the Acquisition probably caused __delitem__
+        calls on wrapped mapping objects to fail.
+
+  1.1
+
+     New functionality:
+
+      - Changed the way that methods in pure mix-in classes are
+        constructed.  Now methods are wrapped in such a way that
+        tricky wrapper objects (like Acquisition wrappers) can
+        bind them to wrapped objects.
+
+      - An "is subclass" test is provided via the macros
+        'ExtensionClassSubclass_Check', and
+        'ExtensionClassSubclassInstance_Check', which are
+        documented in 'ExtensionClass.h'.
+
+      - Methods and Acquisition wrappers use free list to improve
+        allocation and deallocation performance.
+
+      - Bound methods have attributes who's values are stored in
+        their instances.
+
+      - Added '__module__' attribute to ExtensionClasses to be
+        consistent with Python 1.5 classes and to work correctly
+        with 1.5 pickling.
+
+      - Added the '__basic__' new class method to allow
+        ExtensionClass instances to be unpickled without calling
+        their constructors.
+
+      - Acquired acquiring objects can nor acquire from the object
+        they were accessed in, in addition to the object they were
+        acquired from.
+
+      - Added new 'Acquisition' variable, 'Acquired', to support
+        "Controlled Acquisition'.
+
+      - Added a new 'aq_acquire' method for objects that subclass
+        'Acquisition.Implicit' or 'Acquisition.Explicit'. This
+        supports explicit acquisition and provides an option
+        filter function to support "Filtered Acquisiition".
+
+	The 'acquire' method available in earlier releases is still
+        available, but is deprecated.
+                      
+     Bugs fixed:
+
+      - There were some incorrect C-level error return values.
+
+      - A bug in handling method chains caused "C inheritence"
+        to fail.  This only affected extension types that
+        inherited from extension types using method chains, *not*
+        extension subclasses defined in Python inheriting from
+        extension base classes defined in C.
+
+      - Expressions like 'not foo' or statements like::
+
+         if foo:
+           ...
+
+        often failed for non-collection types because of an
+        incorrect attempt to take the 'len' of an object.
+
+      - Comparisons of objects with different classes didn't work
+        correctly. 
+
+      - Instances provided access to their class '__bases__'
+        attribute. 
+
+  1.0.2
+
+     Bugs fixed:
+
+      - Fixed bug in handling subclasses of Sequence objects.
+
+      - Fixed comparison bug in Missing objects.
+
+  1.0.1 
+
+    Added functionality to and fixed bug in Missing module
+
+    - Fixed horible reference-counting bug
+
+    - Changed so that 'Missing.Value.spam(a1,a2,whatever)'
+      returns 'Missing.Value' for any method name (except
+      '__reduce__') and any arguments.
+
+    - Changed so that missing values are picklable.  Note that
+      the special global, Missing.Value, is pickled in a
+      slightly more efficient manner than other missing values.
+
+  1.0 
+
+     First non-beta release
+
+     This release is the result of a major rewrite and "hardening"
+     effort to increase performance and reliability.  This version
+     is being used in several Digital Creations products, so if
+     parts are broken, we probably don't use them. :-)
+
+     This release also contains several new features and example
+     modules, including:
+
+       - Acquisition,
+
+       - Custom method calls,
+
+       - Class initialization protocol,
+
+       - A class method that makes it possible to explicitly call
+         Python base-class methods.
+
+       - A sample application of custom method calls that provides
+         Java-like synchronized classes that prevent more than one
+         thread from accessing an object's methods at one time.
+
+     Note that there is one known incompatibility with previous
+     releases.  In previouse releases, the method used to support
+     context wrapping was named '__bind_to_object__'.  The name of
+     this method was changed to '__of__' in this release and I do
+     not expect this name to change in the future.
