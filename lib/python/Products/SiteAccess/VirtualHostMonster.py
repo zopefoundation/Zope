@@ -7,6 +7,7 @@ from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, aq_inner, aq_parent
 from ZPublisher import BeforeTraverse
+from zExceptions import BadRequest
 import os
 
 from AccessRule import _swallow
@@ -98,7 +99,6 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def addToContainer(self, container):
         container._setObject(self.id, self)
-        self.manage_afterAdd(self, container)
 
     def manage_addToContainer(self, container, nextURL=''):
         self.addToContainer(container)
@@ -113,6 +113,10 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def manage_afterAdd(self, item, container):
         if item is self:
+            if BeforeTraverse.queryBeforeTraverse(container,
+                                                  self.meta_type):
+                raise BadRequest, ('This container already has a %s' %
+                                   self.meta_type)
             id = self.id
             if callable(id): id = id()
 
@@ -127,6 +131,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         '''Traversing at home'''
         vh_used = 0
         stack = request['TraversalRequestNameStack']
+        path = None
         while 1:
             if stack and stack[-1] == 'VirtualHostBase':
                 vh_used = 1
@@ -138,6 +143,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     request.setServerURL(protocol, host, port)
                 else:
                     request.setServerURL(protocol, host)
+                path = list(stack)
 
             # Find and convert VirtualHostRoot directive
             # If it is followed by one or more path elements that each
@@ -153,12 +159,15 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         for jj in range(vh, ii):
                             pp.insert(1, stack[jj][4:])
                         stack[vh:ii + 1] = ['/'.join(pp), self.id]
+                        ii = vh + 1
                     elif ii > 0 and stack[ii - 1][:1] == '/':
                         pp = stack[ii - 1].split('/')
                         stack[ii] = self.id
                     else:
                         stack[ii] = self.id
                         stack.insert(ii, '/')
+                        ii += 1
+                    path = stack[:ii]
                     # If the directive is on top of the stack, go ahead
                     # and process it right away.
                     if at_end:
@@ -169,6 +178,18 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     vh = ii
 
             if vh_used or not self.have_map:
+                if path is not None:
+                    path.reverse()
+                    vh_part = ''
+                    if path and path[0].startswith('/'):
+                        vh_part = path.pop(0)[1:]
+                    if vh_part:
+                        request['VIRTUAL_URL_PARTS'] = vup = (
+                            request['SERVER_URL'], vh_part, '/'.join(path))
+                    else:
+                        request['VIRTUAL_URL_PARTS'] = vup = (
+                            request['SERVER_URL'], '/'.join(path))
+                    request['VIRTUAL_URL'] = '/'.join(vup)
                 return
             vh_used = 1 # Only retry once.
             # Try to apply the host map if one exists, and if no

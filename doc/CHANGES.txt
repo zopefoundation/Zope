@@ -24,6 +24,15 @@ Zope Changes
 
     Features added
 
+     - When a VHM is activated, it adds the mapping
+       'VIRTUAL_URL_PARTS': (SERVER_URL, BASEPATH1, virtual_url_path)
+       to the request's 'other' dictionary.  If BASEPATH1 is empty, it
+       is omitted from the tuple.  The joined parts are also added
+       under the key 'VIRTUAL_URL'.  Since the parts are evaluated
+       before traversal continues, they will not reflect modifications
+       to the path during traversal or by the addition of a default
+       method such as 'index_html'.
+
      - Extension Classes, a key Zope foundation, have been totally
        rewritten based on Python new-style classes.  
 
@@ -81,6 +90,8 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+
+     - Only one VirtualHostMonster is allowed per container.
 
      - Collector #1133: TreeTag choked on Ids of type long.
 
