@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.117 1999/01/06 14:37:03 jim Exp $"""
-__version__='$Revision: 1.117 $'[11:-2]
+$Id: Publish.py,v 1.118 1999/01/06 18:18:59 jim Exp $"""
+__version__='$Revision: 1.118 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -787,8 +787,11 @@ def parse_cookie(text,
             value=parmre.group(3)
             l=len(parmre.group(1))
         else:
-            if not text or not strip(text): return result
-            raise "InvalidParameter", text
+            # this may be an invalid cookie.
+            # We'll simply bail without raising an error
+            # if the cookie is invalid.
+            return result
+            
     finally: release()
 
     if not already_have(name): result[name]=value
