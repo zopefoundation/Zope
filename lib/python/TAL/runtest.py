@@ -62,6 +62,7 @@ def main():
             f = open(outfile)
         except IOError:
             expected = None
+            print "(missing file %s)" % outfile,
         else:
             expected = f.readlines()
             f.close()
@@ -74,7 +75,8 @@ def main():
             print "OK"
         else:
             print "not OK"
-            showdiff(expected, actual)
+            if expected is not None:
+                showdiff(expected, actual)
 
 def readlines(f):
     L = []
