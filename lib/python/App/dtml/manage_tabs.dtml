@@ -168,7 +168,7 @@
 
 <dtml-if manage_tabs_message>
 <div class="system-msg">
-<dtml-var manage_tabs_message> 
+<dtml-var manage_tabs_message newline_to_br> 
 (<dtml-var ZopeTime fmt="%Y-%m-%d %H:%M">)
 </div>
 </dtml-if>
