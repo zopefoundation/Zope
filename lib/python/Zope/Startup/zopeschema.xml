@@ -668,7 +668,7 @@
 
   <section type="logger" name="trace">
      <description>
-      Describes the logging performed to capture the 'trace log,
+      Describes the logging performed to capture the 'trace' log,
       which typically captures detailed per-request data useful for
       Zope debugging.
     </description>
