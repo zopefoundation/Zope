@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.34 1999/05/24 13:47:02 jim Exp $
+  $Id: ExtensionClass.c,v 1.35 1999/06/10 20:04:40 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.34 1999/05/24 13:47:02 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.35 1999/06/10 20:04:40 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1583,7 +1583,7 @@ CCL_dealloc(PyExtensionClass *self)
       
       Py_DECREF(self->bases);
     }
-  Py_XDECREF(self->ob_type);
+  if (((PyExtensionClass*)self->ob_type) != self) Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
   
@@ -2948,6 +2948,7 @@ static void
 subclass_dealloc(PyObject *self)
 {
   PyObject *m, *t, *v, *tb;
+  int base_dealloced;
 
 #ifdef TRACE_DEALLOC
   fprintf(stderr,"Deallocating a %s\n", self->ob_type->tp_name);
@@ -2979,10 +2980,22 @@ subclass_dealloc(PyObject *self)
     }
   
   if (HasInstDict(self)) Py_XDECREF(INSTANCE_DICT(self));
-  Py_DECREF(self->ob_type);
 
-  UNLESS(dealloc_base(self,(PyExtensionClass*)self->ob_type))
-    PyMem_DEL(self);
+  /* See if there was a dealloc handler in a (C) base class.
+     If there was, then it deallocates the object and we
+     get a true value back. 
+
+     Note that if there *is* a base class dealloc, then
+     *it* should decref the class.
+  */
+  base_dealloced=dealloc_base(self,(PyExtensionClass*)self->ob_type);
+
+  /* We only */
+  UNLESS(base_dealloced) 
+    {
+      Py_DECREF(self->ob_type);
+      PyMem_DEL(self);
+    }
 
   PyErr_Restore(t,v,tb);
 }
@@ -3403,7 +3416,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.34 $";
+  char *rev="$Revision: 1.35 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
