@@ -1,6 +1,6 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.42 1998/11/20 18:16:36 jim Exp $'''
+$Id: Response.py,v 1.43 1998/12/02 16:58:54 jim Exp $'''
 #
 # Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.42 1998/11/20 18:16:36 jim Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -488,7 +488,7 @@ class Response:
 
         b=v
         if fatal:
-            if t is SystemExit and v==0:
+            if t is SystemExit and v.code==0:
                 tb=self.setBody(
                     (str(t),
                     'This application has exited normally.<p>'

@@ -110,7 +110,7 @@ class PCGIPublisher:
             try:
                 f = open(self.errorLogFile, 'a+')
                 f.write("%s  %s\n" % (timeStamp, errmsg))
-                if sys.exc_type != 'SystemExit':
+                if sys.exc_type != SystemExit:
                     trace=StringIO.StringIO()
                     traceback.print_exception(sys.exc_type,
                                               sys.exc_value,
