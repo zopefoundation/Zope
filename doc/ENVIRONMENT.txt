@@ -1,0 +1,193 @@
+Usage of environment variables:
+
+
+Zope installation
+
+    INSTANCE_HOME
+
+        If an INSTANCE_HOME is defined and has a 'lib/python' sub
+        directory, it will be added to the front of the Python path.
+        INSTANCE_HOME is usually used to separate the Zope core
+        installation from application code and third-party
+        modules/products.
+
+        See also: SOFTWARE_HOME
+
+
+    SOFTWARE_HOME 
+        
+        The SOFTWARE_HOME usually keeps the directory name of the 
+        Zope core installation.
+
+        Order of product initialization:
+            
+            All Products are initialized in ascending alphabetical order by
+            product name, regardless of whether an INSTANCE_HOME exists.
+            If two products with the same name exist in both SOFTWARE_HOME
+            and INSTANCE_HOME, the order in which they appear in
+            Application.Products.__path__ determines whether they are
+            loaded first or second.
+
+        See also: INSTANCE_HOME
+
+
+Profiling
+
+    PROFILE_PUBLISHER
+
+        If set, Zope is forced profile every request of the ZPublisher.
+        The profiling information is written to the value of the
+        PROFILE_PUBLISHER.
+
+
+SiteAccess
+
+    SUPPRESS_ACCESSRULE
+
+        If set, all SiteRoots are suppressed (used by SiteAccess products).
+
+
+    SUPPRESS_SITEROOT
+
+        If set, all site access rules are suppressed (used by SiteAccess
+        products).
+
+
+
+ZEO
+
+    CLIENT_HOME
+
+        CLIENT_HOME allows ZEO clients to easily keep distinct pid and log
+        files. This is currently an *experimental* feature. 
+ 
+
+    ZEO_CLIENT
+        
+        If you want a persistent client cache which retains cache contents
+        across ClientStorage restarts, you need to define the environment
+        variable, ZEO_CLIENT, to a unique name for the client.  This is
+        needed so that unique cache name files can be computed.  Otherwise,
+        the client cache is stored in temporary files which are removed
+        when the ClientStorage shuts down.
+
+        
+
+Debugging and Logging
+
+    STUPID_LOG_FORMAT
+        
+        Set this variable if you like to customize the output format of
+        Zope stupid logger.
+        
+
+    STUPID_LOG_FILE="path"
+
+        The stupid file logger writes Zope logging information to a file.
+        It is not very smart about it - it just dumps it to a file and the
+        format is not very configurable - hence the name.
+
+        See also: LOGGING.txt
+
+
+    STUPID_LOG_SEVERITY
+
+        If set, Zope logs only messages whose severity is level
+        is higher than the specified one.
+
+
+
+    ZSYSLOG="/dev/log"
+
+        Setting this environment variable will cause Zope to try and write
+        to the named UNIX domain socket (usually '/dev/log').  This will
+        only work on UNIX.
+
+        See also: LOGGING.txt
+
+
+    ZSYSLOG_FACILITY="facilityname"
+
+        Setting this environment variable will cause Zope to use the syslog
+        logger with the given facility. This environment variable is
+        optional and  overrides the default facility "user". This will only
+        work on UNIX.
+
+        See also: LOGGING.txt
+
+
+    ZSYSLOG_SERVER="machine.name:port"
+
+        Setting this environment variable tells Zope to connect a UDP
+        socket to machine.name (which can be a name or IP address) and
+        'port' which must be an integer.  The default syslogd port is '514'
+        but Zope does not pick a sane default, you must specify a port.
+        This may change, so check back here in future Zope releases.
+
+        See also: LOGGING.txt
+
+
+    Z_DEBUG_MODE      "yes"
+    BOBO_DEBUG_MODE   "yes"  (obsolete)
+     
+        Run Zope in debug mode if set. Same as -D options (z2.py)
+
+
+Security issues
+
+    NO_SECURITY
+
+       Unknown. Used by TAL
+
+
+    ZOPE_SECURITY_POLICY
+
+        If this variable is set to "PYTHON", Zope will use the traditional
+        Python based AccessControl implementation. By default and for
+        performance reasons Zope will use the cAccessControl module (Zope
+        2.5+)
+
+
+    DISALLOW_LOCAL_PRODUCTS
+
+        unknown
+
+
+ZODB related
+
+    ZOPE_DATABASE_QUOTA
+
+        If this variable is set, it should be set to an integer number of
+        bytes.  Additions to the database are not allowed if the database
+        size exceeds the quota. 
+
+
+    ZOPE_READ_ONLY
+
+        If this variable is set, then the database is opened in read only
+        mode.  If this variable is set to a string parsable by
+        DateTime.DateTime, then the database is opened read-only as of the
+        time given.  Note that changes made by another process after the
+        database has been opened are not visible.
+
+
+Esoteric 
+
+    Z_MAX_STACK_SIZE
+
+        This variable allows you to customize the size of the Zope stack
+        used by the SecurityManager (default 100).
+
+
+    Z_REALM       "your realm"
+    BOBO_REALM    "your realm" (obsolete)
+
+        Realm to be used when send HTTP authentication requests to a web
+        client.
+
+
+    FORCE_PRODUCT_RELOAD
+
+        unknown (Shane's Refresh product ???)
+
+
