@@ -49,7 +49,8 @@ Using Zope with an existing web server
       can simultaneously support multiple protocols, including PCGI,
       HTTP, and FTP.  If Zope is started by root (on Unix) with z2.py,
       then the Server will run as nobody, otherwise it will run as
-      whatever user ran z2.py.
+      whatever user ran z2.py. You can configure ZServer to run as a
+      specific userid using the '-u' switch.
 
   Zope authentication with existing web servers.
 
@@ -146,7 +147,9 @@ Using Zope with an existing web server
       * As mentioned above, Apache does not pass authorization information
       to CGI scripts by default. See above for information on how to deal
       with this situation.
-  
+ 
+      * An Apache module to support PCGI (mod_pcgi) is under development.
+ 
     Netscape Servers
   
       * Like Apache, Netscape does not pass HTTP Authorization information to
@@ -167,4 +170,6 @@ Using Zope with an existing web server
       * IIS kindly throws out PATH_INFO when writing to its logs, so if
       you want to log which Zope objects are actually being
       accessed, you will need to investigate an ISAPI filter
+
+      * An ISAPI module to support PCGI is under development.
 
