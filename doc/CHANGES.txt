@@ -71,11 +71,9 @@ Zope Changes
 
   Releases
 
-    Zope 2.0 final
+    Zope 2.0 beta 5
 
       Bugs fixed
-
-
 
     Zope 2.0 beta 5
 
@@ -88,6 +86,16 @@ Zope Changes
 	  that there were bad references for objects created in
 	  ncommitted versions.
 
+        - A memory leak due to errors in managing request data.
+
+        - Zope sites became unresponsive (a.k.a. "Hung") due to an
+	  error in managing ZODB 3 database connections.
+
+        - Only the top-level folder's standard_error_message was used.
+
+        - There were thread-safety and resouce consumption problems
+          in the implementation of thread-safe regex objects.
+         
 	- Fixed bug where ZCatalog's not in the root folder did not
 	  recognize the proper URL of objects using the 'Find'
 	  machinery.  This caused all the objects to mysteriously
