@@ -277,8 +277,8 @@ class Catalog(Persistent, Acquisition.Implicit):
     def catalogObject(self, object, uid, threshold=None):
         """ 
 
-	Adds an object to the Catalog by iteratively applying it
-	all indexes.
+        Adds an object to the Catalog by iteratively applying it
+        all indexes.
 
         'object' is the object to be cataloged
 
@@ -316,8 +316,8 @@ class Catalog(Persistent, Acquisition.Implicit):
     def uncatalogObject(self, uid):
         """ 
 
-	Uncatalog and object from the Catalog.  and 'uid' is a unique
-	Catalog identifier
+        Uncatalog and object from the Catalog.  and 'uid' is a unique
+        Catalog identifier
 
         Note, the uid must be the same as when the object was
         cataloged, otherwise it will not get removed from the catalog
