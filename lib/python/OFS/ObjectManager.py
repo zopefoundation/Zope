@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.103 2000/08/07 18:31:21 shane Exp $"""
+$Id: ObjectManager.py,v 1.104 2000/08/07 18:45:56 shane Exp $"""
 
-__version__='$Revision: 1.103 $'[11:-2]
+__version__='$Revision: 1.104 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -226,7 +226,6 @@ class ObjectManager(
             if obj is not None:
                 # An object by the given id exists either in this
                 # ObjectManager or in the acquisition path.
-                print obj, dir(obj)
                 flag = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
                 if flag == UNIQUE:
                     raise 'Bad Request', \
