@@ -69,3 +69,101 @@ try:
 except:
     pass
 
+
+
+
+FooInterface = Interface.new('FooInterface')
+
+print Interface.interface_as_stx(FooInterface)
+
+BarInterface = Interface.new('BarInterface', [FooInterface])
+
+print Interface.interface_as_stx(BarInterface)
+
+BobInterface = Interface.new('BobInterface')
+BazInterface = Interface.new('BazInterface', [BobInterface, BarInterface])
+
+print Interface.interface_as_stx(BazInterface)
+
+ints = [BazInterface, BobInterface, BarInterface, FooInterface]
+
+for int in ints:
+    for int2 in ints:
+        if int.extends(int2):
+            print "%s DOES extend %s" % (int.__name__, int2.__name__)
+        else:
+            print "%s DOES NOT extend %s" % (int.__name__, int2.__name__)
+
+print "\n"
+
+# methods and pretty printing
+
+class AnAbstractBaseClass:
+    """ This is an Abstract Base Class """
+
+    foobar = "fuzzed over beyond all recognition"
+
+    def aMethod(self, foo, bar, bingo):
+        """ This is aMethod """
+        pass
+
+    def anotherMethod(self, foo=6, bar="where you get sloshed", bingo=(1,3,)):
+        """ This is anotherMethod """
+        pass
+
+    def wammy(self, zip, *argues):
+        """ yadda yadda """
+        pass
+
+    def useless(self, **keywords):
+        """ useless code is fun! """
+        pass
+
+AnABCInterface = Interface.impliedInterface(AnAbstractBaseClass)
+
+print Interface.interface_as_stx(AnABCInterface)
+
+class AConcreteClass:
+    """ A concrete class """
+
+    __implements__ = AnABCInterface,
+
+    def aMethod(self, foo, bar, bingo):
+        """ This is aMethod """
+        return "barf!"
+
+    def anotherMethod(self, foo=6, bar="where you get sloshed", bingo=(1,3,)):
+        """ This is anotherMethod """
+        return "barf!"
+
+    def wammy(self, zip, *argues):
+        """ yadda yadda """
+        return "barf!"
+
+    def useless(self, **keywords):
+        """ useless code is fun! """
+        return "barf!"
+
+concrete_instance = AConcreteClass()
+
+class Blah:
+    pass
+
+blah_instance = Blah()
+
+if AnABCInterface.implementedBy(concrete_instance):
+    print "%s is an instance that implements %s" % (concrete_instance, AnABCInterface.__name__)
+
+if AnABCInterface.implementedByInstancesOf(AConcreteClass):
+    print "%s is a class that implements %s" % (AConcreteClass, AnABCInterface.__name__)
+
+if not AnABCInterface.implementedBy(blah_instance):
+    print "%s is NOT an instance that implements %s" % (blah_instance, AnABCInterface.__name__)
+
+if not AnABCInterface.implementedByInstancesOf(Blah):
+    print "%s is NOT a class that implements %s" % (Blah, AnABCInterface.__name__)
+
+
+
+
+
