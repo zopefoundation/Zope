@@ -32,7 +32,7 @@ def main():
     # below assumes this script is in the BASE_DIR/inst directory
     global PREFIX
     BASE_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
-    BUILD_BASE=os.getcwd()
+    BUILD_BASE=os.path.join(os.getcwd(), 'build-base')
     PYTHON=sys.executable
     MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
@@ -83,7 +83,7 @@ def main():
         }
     for k,v in idata.items():
         MAKEFILE = MAKEFILE.replace(k, v)
-    f = open(os.path.join(BUILD_BASE, 'makefile'), 'w')
+    f = open(os.path.join(os.getcwd(), 'makefile'), 'w')
     f.write(MAKEFILE)
     print "  - Makefile written."
     print
