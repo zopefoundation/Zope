@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -253,6 +253,7 @@ class PythonScript(Script, Historical, Cacheable):
 
     def _newfun(self, code):
         g = {'__debug__': __debug__,
+             '__name__': self.id,
              '__builtins__': safe_builtins,
              '_getattr_': guarded_getattr,
              '_getitem_': guarded_getitem,
