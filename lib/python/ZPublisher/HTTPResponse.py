@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.65 2002/06/22 15:34:39 tseaver Exp $'''
-__version__ = '$Revision: 1.65 $'[11:-2]
+$Id: HTTPResponse.py,v 1.66 2002/06/22 15:49:59 andreasjung Exp $'''
+__version__ = '$Revision: 1.66 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -424,7 +424,7 @@ class HTTPResponse(BaseResponse):
 
     def setBase(self,base):
         'Set the base URL for the returned document.'
-        if base[-1:] != '/':
+        if not base.endswith('/'):
             base = base+'/'
         self.base = base
 
@@ -787,16 +787,6 @@ class HTTPResponse(BaseResponse):
         if not headers.has_key('content-length') and \
                 not headers.has_key('transfer-encoding'):
             self.setHeader('content-length',len(body))
-
-        # ugh - str(content-length) could be a Python long, which will
-        # produce a trailing 'L' :( This can go away when we move to
-        # Python 2.0...
-        content_length= headers.get('content-length', None)
-        if type(content_length) is LongType:
-            str_rep = str(content_length)
-            if str_rep[-1:] == 'L':
-                str_rep = str_rep[:-1]
-                self.setHeader('content-length', str_rep)
 
         headersl = []
         append = headersl.append
