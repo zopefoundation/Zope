@@ -71,8 +71,6 @@ class file_logger:
         pass
         
     def log (self, message):
-        print 'msg',message
-
         if message[-1] not in ('\r', '\n'):
             self.write (message + '\n')
         else:
