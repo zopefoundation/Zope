@@ -69,17 +69,28 @@ class EventCollectorExtra(EventCollector):
         EventCollector.handle_starttag(self, tag, attrs)
         self.append(("starttag_text", self.get_starttag_text()))
 
-class HTMLParserTestCase(unittest.TestCase):
+
+class TestCaseBase(unittest.TestCase):
+
+    # Constant pieces of source and events
+    prologue = ""
+    epilogue = ""
+    initial_events = []
+    final_events = []
 
     def _run_check(self, source, events, collector=EventCollector):
         parser = collector()
+        parser.feed(self.prologue)
         if isinstance(source, type([])):
             for s in source:
                 parser.feed(s)
         else:
             parser.feed(source)
+        parser.feed(self.epilogue)
         parser.close()
-        self.assert_(parser.get_events() == events, parser.get_events())
+        self.assert_(parser.get_events() ==
+                     self.initial_events + events + self.final_events,
+                     parser.get_events())
 
     def _run_check_extra(self, source, events):
         self._run_check(source, events, EventCollectorExtra)
@@ -90,6 +101,9 @@ class HTMLParserTestCase(unittest.TestCase):
             parser.feed(source)
             parser.close()
         self.assertRaises(HTMLParser.HTMLParseError, parse)
+
+
+class HTMLParserTestCase(TestCaseBase):
 
     def check_processing_instruction_only(self):
         self._run_check("<?processing instruction>", [
