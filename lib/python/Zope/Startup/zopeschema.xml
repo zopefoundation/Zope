@@ -22,7 +22,15 @@
   <sectiontype name="cgi-environment"
                datatype=".cgi_environment"
                keytype="identifier">
-    <key name="+" attribute="environ"/>
+    <description>
+     A section which allows you to define simple key-value pairs which
+     will extend the CGI environment variables exposed by ZServer.
+    </description>
+    <key name="+" attribute="environ">
+      <description>
+        Use any key/value pair, e.g. 'HTTPS_PORT 443'
+      </description>
+    </key>
   </sectiontype>
 
   <sectiontype name="zoperunner">
@@ -246,7 +254,13 @@
     <metadefault>unset</metadefault>
   </key>
 
-  <key name="zserver-threads" datatype="integer" default="4"/>
+  <key name="zserver-threads" datatype="integer" default="4">
+     <description>
+     Specify the number of threads that Zope's ZServer web server will use
+     to service requests. The default is 4.
+    </description>
+    <metadefault>4 threads</metadefault>
+  </key>
 
   <key name="python-check-interval" datatype="integer" default="500">
     <description>
@@ -345,11 +359,11 @@
        default="on" handler="automatically_quote_dtml_request_data">
      <description>
      Set this directive to 'off' in order to disable the autoquoting of
-     implicitly retrieved REQUEST data by DTML code which contains a '&gt;'
-     when used in &gt;dtml-var&lt; construction. When this directive is 'on',
+     implicitly retrieved REQUEST data by DTML code which contains a '&lt;'
+     when used in &lt;dtml-var&gt; construction. When this directive is 'on',
      all data implicitly retrieved from the REQUEST in DTML (as opposed to
-     addressing REQUEST.somevarname directly) that contains a '&gt;' will be
-     HTML-quoted when interpolated via a &gt;dtml-var&lt; or &amp;dtml-
+     addressing REQUEST.somevarname directly) that contains a '&lt;' will be
+     HTML-quoted when interpolated via a &lt;dtml-var&gt; or &amp;dtml-
      construct. This mitigates the possibility that DTML programmers will
      leave their sites open to a "client-side trojan" attack.
      </description>
@@ -369,37 +383,121 @@
   </key>
 
   <key name="skip-authentication-checking" datatype="boolean"
-       default="off" handler="skip_authentication_checking"/>
+       default="off" handler="skip_authentication_checking">
+     <description>
+     Set this directive to 'on' to cause Zope to prevent Zope from
+     attempting to authenticate users during normal operation.
+     Potentially dangerous from a security perspective.  Only works if
+     security-policy-implementation is set to 'C'.
+     </description>
+     <metadefault>off</metadefault>
+  </key>
 
   <key name="skip-ownership-checking" datatype="boolean"
-       default="off" handler="skip_ownership_checking"/>
+       default="off" handler="skip_ownership_checking">
+     <description>
+     Set this directive to 'on' to cause Zope to ignore ownership checking
+     when attempting to execute "through the web" code. By default, this
+     directive is off in order to prevent 'trojan horse' security problems
+     whereby a user with less privilege can cause a user with more
+     privilege to execute code which the less privileged user has written.
+     </description>
+     <metadefault>off</metadefault>
+  </key>
 
   <key name="maximum-number-of-session-objects" datatype="integer"
-       default="1000" handler="maximum_number_of_session_objects"/>
+       default="1000" handler="maximum_number_of_session_objects">
+     <description>
+     An integer value representing the number of items to use as a
+     "maximum number of subobjects" value of the
+     '/temp_folder/session_data' transient object container within
+     Zope's object database.
+     </description>
+     <metadefault>1000</metadefault>
+  </key>
 
   <key name="session-add-notify-script-path"
-       handler="session_add_notify_script_path"/>
+       handler="session_add_notify_script_path">
+     <description>
+     An optional full Zope path name of a callable object to be set as the
+     "script to call on object addition" of the session_data transient
+     object container created in the '/temp_folder' folder at startup.
+     </description>
+     <metadefault>unset</metadefault>
+  </key>
 
   <key name="session-delete-notify-script-path"
-       handler="session_add_notify_script_path"/>
+       handler="session_add_notify_script_path">
+     <description>
+     An optional full Zope path name of a callable object to be set as the
+     "script to call on object deletion" of the sessioN_data transient
+     object container created in the /temp_folder folder at startup.
+     </description>
+     <metadefault>unset</metadefault>
+  </key>
 
   <key name="session-timeout-minutes" datatype="integer"
-       default="20" handler="session_timeout_minutes"/>
+       default="20" handler="session_timeout_minutes">
+     <description>
+     An integer value representing the number of minutes to be used as the
+     "data object timeout" of the '/temp_folder/session_data' transient
+     object container in Zope's object database.
+     </description>
+     <metadefault>20</metadefault>
+  </key>
 
   <key name="suppress-all-access-rules" datatype="boolean"
-       default="off" handler="suppress_all_access_rules"/>
+       default="off" handler="suppress_all_access_rules">
+     <description>
+     If this directive is set to on, no access rules in your Zope site
+     will be executed. This is useful if you "lock yourself out" of a
+     particular part of your site by setting an improper access rule.
+     </description>
+     <metadefault>off</metadefault>
+  </key>
+
 
   <key name="suppress-all-site-roots" datatype="boolean"
-       default="off" handler="suppress_all_site_roots"/>
+       default="off" handler="suppress_all_site_roots">
+     <description>
+     If this directive is set to on, no site roots in your Zope site will
+     be effective. This is useful if you "lock yourself out" of a
+     particular part of your site by setting an improper site root.
+     </description>
+     <metadefault>off</metadefault>
+  </key>
+
 
   <key name="database-quota-size" datatype="byte-size"
-       handler="database_quota_size"/>
+       handler="database_quota_size">
+     <description>
+     Set this directive to an integer in bytes in order to place a hard
+     limit on the size which the default FileStorage-backed Zope database
+     can grow. Additions to the database will not be permitted once this
+     filesize is exceeded.
+     </description>
+     <metadefault>unset</metadefault>
+  </key>
 
   <key name="read-only-database" datatype="boolean"
-       handler="read_only_database"/>
+       handler="read_only_database">
+     <description>
+     If this directive is set to "on", the main Zope
+     FileStorage-backed ZODB database will be opened in read-only
+     mode.
+     </description>
+     <metadefault>off</metadefault>
+  </key>
 
-  <key name="zeo-client-name"
-       handler="zeo_client_name"/>
+  <key name="zeo-client-name" handler="zeo_client_name">
+    <description>
+     Provide a string value to uniquely identify the local cache files
+     created if this Zope is a ZEO client. Setting this directive implies
+     setting 'enable-product-installation' to 'off' if
+     'enable-product-installation' is left unset.
+     </description>
+     <metadefault>unset</metadefault>
+  </key>
 
   <section type="eventlog" name="*" attribute="eventlog">
     <description>
@@ -407,9 +505,22 @@
     </description>
   </section>
 
-  <section type="logger" name="access"/>
+  <section type="logger" name="access">
+     <description>
+      Describes the logging performed to capture the 'access' log,
+      which typically captures per-request data in common or combined
+      log format.
+    </description>
+  </section>
 
-  <section type="logger" name="trace"/>
+
+  <section type="logger" name="trace">
+     <description>
+      Describes the logging performed to capture the 'trace log,
+      which typically captures detailed per-request data useful for
+      Zope debugging.
+    </description>
+  </section>
 
   <multisection type="ZServer.server" name="*" attribute="servers"/>
   <key name="port-base" datatype="integer" default="0">
