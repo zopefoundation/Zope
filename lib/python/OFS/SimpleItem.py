@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.107 2003/11/18 13:17:03 tseaver Exp $'''
-__version__='$Revision: 1.107 $'[11:-2]
+$Id: SimpleItem.py,v 1.108 2003/11/28 16:45:42 jim Exp $'''
+__version__='$Revision: 1.108 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -35,6 +35,7 @@ from zExceptions.ExceptionFormatter import format_exception
 from zExceptions import Redirect
 import time
 from zLOG import LOG, BLATHER
+from AccessControl.ZopeSecurityPolicy import getRoles
 
 import marshal
 import ZDOM
@@ -238,25 +239,32 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         from AccessControl.User import nobody
         mode=0100000
 
-        # check read permissions
-        if (hasattr(aq_base(self),'manage_FTPget') and
-            hasattr(self.manage_FTPget, '__roles__')):
+        if (hasattr(aq_base(self),'manage_FTPget')):
             try:
-                if getSecurityManager().validateValue(self.manage_FTPget):
+                if getSecurityManager().validate(
+                    None, self, 'manage_FTPget', self.manage_FTPget):
                     mode=mode | 0440
-            except: pass
-            if nobody.allowed(self.manage_FTPget,
-                              self.manage_FTPget.__roles__):
+            except Unauthorized:
+                pass
+            
+            if nobody.allowed(
+                self.manage_FTPget,
+                getRoles(self, 'manage_FTPget', self.manage_FTPget, ()),
+                ):
                 mode=mode | 0004
 
         # check write permissions
-        if hasattr(aq_base(self),'PUT') and hasattr(self.PUT, '__roles__'):
+        if hasattr(aq_base(self),'PUT'):
             try:
-                if getSecurityManager().validateValue(self.PUT):
+                if getSecurityManager().validate(None, self, 'PUT', self.PUT):
                     mode=mode | 0220
-            except: pass
+            except Unauthorized:
+                pass
 
-            if nobody.allowed(self.PUT, self.PUT.__roles__):
+            if nobody.allowed(
+                self.PUT,
+                getRoles(self, 'PUT', self.PUT, ()),
+                ):
                 mode=mode | 0002
 
         # get size
