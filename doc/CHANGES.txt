@@ -62,6 +62,15 @@ Zope Changes
 
   Releases
 
+    Zope 2.1.0
+    
+      Features Added
+      
+        - Added preliminary support for FastCGI to ZServer. This
+          allows Zope to communicate with web servers that support
+          FastCGI. Use z2.py's -F switch to configure FastCGI support
+          in ZServer. See WEBSERVER.txt for more information.
+
     Zope 2.1.0 beta 2
 
       Features Added
