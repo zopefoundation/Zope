@@ -238,6 +238,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         if schema.has_key(name):
             raise 'Column Exists', 'The column exists'
+
+        if name[0] == '_':
+            raise 'Invalid Meta-Data Name',
+                  'Cannot cache fields beginning with "_"'
         
         if not schema.has_key(name):
             if schema.values():
@@ -300,6 +304,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         if self.indexes.has_key(name):
             raise 'Index Exists', 'The index specified already exists'
+
+        if name[0] == '_':
+            raise 'Invalid Index Name', 'Cannot index fields beginning with "_"'
 
         # this is currently a succesion of hacks.  Indexes should be
         # pluggable and managable
