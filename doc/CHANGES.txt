@@ -34,6 +34,10 @@ Zope Changes
 
         - A new 'utilities' directory is included in the distribution.
 
+        - A new flag attribute, 'only', of the DTML 'with' tag
+          prunes the DTML namespace to only the namespace created
+	  with the with tag.
+
       Bugs Fixed
 
         - Construction, upload, and edit methods did not consistently
