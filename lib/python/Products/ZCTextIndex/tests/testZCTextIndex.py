@@ -1,7 +1,9 @@
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.tests \
      import testIndex, testQueryEngine, testQueryParser
-from Products.ZCTextIndex.Index import scaled_int, SCALE_FACTOR, Index
+from Products.ZCTextIndex.Index import scaled_int, SCALE_FACTOR
+from Products.ZCTextIndex.Index      import Index as CosineIndex
+from Products.ZCTextIndex.OkapiIndex import Index as OkapiIndex
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser
@@ -36,7 +38,7 @@ class IndexTests(testIndex.CosineIndexTest):
         extra.lexicon_id = 'lexicon'
         caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
                                StopWordRemover()))
-        self.zc_index = ZCTextIndex('name', extra, caller, Index)
+        self.zc_index = ZCTextIndex('name', extra, caller, CosineIndex)
         self.index = self.zc_index.index
         self.lexicon = self.zc_index.lexicon
 
@@ -125,8 +127,11 @@ class IndexTests(testIndex.CosineIndexTest):
                 self.assert_(0 <= score <= SCALE_FACTOR)
                 eq(d[doc], score)
 
-class QueryTests(testQueryEngine.TestQueryEngine,
-                 testQueryParser.TestQueryParser):
+# Subclasses of QueryTestsBase must set a class variable IndexFactory to
+# the kind of index to be constructed.
+
+class QueryTestsBase(testQueryEngine.TestQueryEngine,
+                     testQueryParser.TestQueryParser):
 
     # The FauxIndex in testQueryEngine contains four documents.
     # docid 1: foo, bar, ham
@@ -142,7 +147,7 @@ class QueryTests(testQueryEngine.TestQueryEngine,
         extra.lexicon_id = 'lexicon'
         caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
                                StopWordRemover()))
-        self.zc_index = ZCTextIndex('name', extra, caller)
+        self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
         self.p = self.parser = QueryParser()
         self.index = self.zc_index.index
         self.add_docs()
@@ -162,10 +167,15 @@ class QueryTests(testQueryEngine.TestQueryEngine,
             d[k] = v
         self.assertEqual(d.keys(), dict.keys())
 
+class CosineQueryTests(QueryTestsBase):
+    IndexFactory = CosineIndex
+
+class OkapiQueryTests(QueryTestsBase):
+    IndexFactory = OkapiIndex
 
 def test_suite():
     s = unittest.TestSuite()
-    for klass in IndexTests, QueryTests:
+    for klass in IndexTests, CosineQueryTests, OkapiQueryTests:
         s.addTest(unittest.makeSuite(klass))
     return s
 
