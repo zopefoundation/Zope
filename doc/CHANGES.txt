@@ -1,5 +1,30 @@
 Principia Changes
 
+  Principia 1.5.0
+
+    Features Added
+
+      - Stop-gap export/import
+
+        Eventually, there will be an interface for exporting and
+        importing objects.  This has to be done carefully for security
+        reasons.
+
+        As a stop-gap measure, Folders now have the methods:
+
+        manage_exportHack -- Export the folder, or one of it's items
+
+           If an id is specified, then a sub-object is exported,
+           otherwise the folder is exported.  The object is exported
+           to the file: 'var/export.bbe' in the Principia installation
+           directory. 
+
+        manage_importHack -- Export an object into a folder
+
+           An object is imported into the folder from the file:
+	   'var/export.bbe' in the Principia installation
+           directory. 
+
   Principia 1.4.0
   
     Bugs Fixed
