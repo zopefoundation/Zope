@@ -487,15 +487,25 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # it, compute the normalized score, and Lazify it.
                 rset = rs.byValue(0) # sort it by score
                 max = float(rset[0][0])
-                rs = []
                 
-                # XXX Ugh, this is really not as lazy as it could be
-                # XXX This should be changed to a lazily computed 
-                # XXX attribute since it is not always needed
-                for score, key in rset:
-                    # compute normalized scores
-                    rs.append((int(100. * score / max), score, key))
-                append(LazyMap(self.__getitem__, rs))
+                # Here we define our getter function inline so that
+                # we can conveniently store the max value as a default arg
+                # and make the normalized score computation lazy
+                def getScoredResult(item, max=max, self=self):
+                    """
+                    Returns instances of self._v_brains, or whatever is passed 
+                    into self.useBrains.
+                    """
+                    score, key = item
+                    r=self._v_result_class(self.data[key])\
+                          .__of__(self.aq_parent)
+                    r.data_record_id_ = key
+                    r.data_record_score_ = score
+                    r.data_record_normalized_score_ = int(100. * score / max)
+                    return r
+                
+                # Lazify the results
+                append(LazyMap(getScoredResult, rset))
                     
             elif sort_index is None and not hasattr(rs, 'values'):
                 # no scores?  Just Lazify.
