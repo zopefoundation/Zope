@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.14 1997/07/02 20:17:15 jim Exp $
+  $Id: ExtensionClass.c,v 1.15 1997/09/26 14:35:11 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.14 1997/07/02 20:17:15 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.15 1997/09/26 14:35:11 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2490,6 +2490,25 @@ subclass_subscript(PyObject *self, PyObject *key)
 	  Py_DECREF(m);
 	  return t->tp_as_mapping->mp_subscript(self,key);
 	}
+      else if(t->tp_as_sequence && t->tp_as_sequence->sq_item)
+	{
+	  int i, l;
+
+	  Py_DECREF(m);
+	  
+	  UNLESS(PyInt_Check(key))
+	    {
+	      PyErr_SetString(PyExc_TypeError, "sequence subscript not int");
+	      return NULL;
+	    }
+	  i=PyInt_AsLong(key);
+	  if(i < 0)
+	    {
+	      if((l=PyObject_Length(self)) < 0) return NULL;
+	      i+=l;
+	    }
+	  return t->tp_as_sequence->sq_item(self,i);
+	}
     }
   if(UnboundEMethod_Check(m))
     ASSIGN(m,PyObject_CallFunction(m,"OO",self,key));
@@ -2526,6 +2545,25 @@ subclass_ass_subscript(PyObject *self, PyObject *index, PyObject *v)
 	{
 	  Py_DECREF(m);
 	  return t->tp_as_mapping->mp_ass_subscript(self,index,v);
+	}
+      else if(t->tp_as_sequence && t->tp_as_sequence->sq_ass_item)
+	{
+	  int i, l;
+
+	  Py_DECREF(m);
+	  
+	  UNLESS(PyInt_Check(index))
+	    {
+	      PyErr_SetString(PyExc_TypeError, "sequence subscript not int");
+	      return NULL;
+	    }
+	  i=PyInt_AsLong(index);
+	  if(i < 0)
+	    {
+	      if((l=PyObject_Length(self)) < 0) return NULL;
+	      i+=l;
+	    }
+	  return t->tp_as_sequence->sq_ass_item(self,i,v);
 	}
     }
   if(! v)
@@ -3005,7 +3043,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.14 $";
+  char *rev="$Revision: 1.15 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3044,6 +3082,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.15  1997/09/26 14:35:11  jim
+  Fixed awful bug in handling of sequence subclasses.
+
   Revision 1.14  1997/07/02 20:17:15  jim
   Added stupid parens and other changes to make 'gcc -Wall -pedantic'
   and Barry happy.  Got rid of some extra variable declarations.
