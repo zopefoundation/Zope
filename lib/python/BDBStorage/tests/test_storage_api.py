@@ -211,17 +211,20 @@ class StorageAPI(test_create.BaseFramework):
         assert len(versions) == 1
         assert 'one' in versions or 'two' in versions or 'three' in versions
 
-    def checkAbortVersion(self):
+    def _setup_version(self, version='test-version'):
         # Store some revisions in the non-version
         oid = self._storage.new_oid()
         revid = self._dostore(oid, data=49)
         revid = self._dostore(oid, revid=revid, data=50)
         nvrevid = revid = self._dostore(oid, revid=revid, data=51)
         # Now do some stores in a version
-        version = 'test-version'
         revid = self._dostore(oid, revid=revid, data=52, version=version)
         revid = self._dostore(oid, revid=revid, data=53, version=version)
         revid = self._dostore(oid, revid=revid, data=54, version=version)
+        return oid, version
+
+    def checkAbortVersion(self):
+        oid, version = self._setup_version()
         # Now abort the version -- must be done in a transaction
         self._storage.tpc_begin(self._transaction)
         oids = self._storage.abortVersion(version, self._transaction)
@@ -230,8 +233,126 @@ class StorageAPI(test_create.BaseFramework):
         assert len(oids) == 1
         assert oids[0] == oid
         data, revid = self._storage.load(oid, '')
-        assert nvrevid == revid
         assert pickle.loads(data) == 51
+
+    def checkAbortVersionErrors(self):
+        oid, version = self._setup_version()
+        # Now abort a bogus version
+        self._storage.tpc_begin(self._transaction)
+        self.assertRaises(KeyError,
+                          self._storage.abortVersion,
+                          'bogus', self._transaction)
+        # And try to abort the empty version
+        self.assertRaises(KeyError,
+                          self._storage.abortVersion,
+                          '', self._transaction)
+        # But now we really try to abort the version
+        oids = self._storage.abortVersion(version, self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        assert len(oids) == 1
+        assert oids[0] == oid
+        data, revid = self._storage.load(oid, '')
+        assert pickle.loads(data) == 51
+
+    def checkModifyAfterAbortVersion(self):
+        oid, version = self._setup_version()
+        # Now abort the version
+        self._storage.tpc_begin(self._transaction)
+        oids = self._storage.abortVersion(version, self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        # Load the object's current state (which gets us the revid)
+        data, revid = self._storage.load(oid, '')
+        # And modify it a few times
+        revid = self._dostore(oid, revid=revid, data=52)
+        revid = self._dostore(oid, revid=revid, data=53)
+        revid = self._dostore(oid, revid=revid, data=54)
+        data, newrevid = self._storage.load(oid, '')
+        assert newrevid == revid
+        assert pickle.loads(data) == 54
+
+    def checkCommitToNonVersion(self):
+        oid, version = self._setup_version()
+        data, revid = self._storage.load(oid, version)
+        assert pickle.loads(data) == 54
+        data, revid = self._storage.load(oid, '')
+        assert pickle.loads(data) == 51
+        # Try committing this version to the empty version
+        self._storage.tpc_begin(self._transaction)
+        oids = self._storage.commitVersion(version, '', self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        data, revid = self._storage.load(oid, '')
+        assert pickle.loads(data) == 54
+
+    def checkCommitToOtherVersion(self):
+        oid1, version1 = self._setup_version('one')
+        data, revid1 = self._storage.load(oid1, version1)
+        assert pickle.loads(data) == 54
+        oid2, version2 = self._setup_version('two')
+        data, revid2 = self._storage.load(oid2, version2)
+        assert pickle.loads(data) == 54
+        # Let's make sure we can't get object1 in version2
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid1, version2)
+        # Okay, now let's commit object1 to version2
+        self._storage.tpc_begin(self._transaction)
+        oids = self._storage.commitVersion(version1, version2,
+                                           self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        assert len(oids) == 1
+        assert oids[0] == oid1
+        data, revid = self._storage.load(oid1, version2)
+        assert pickle.loads(data) == 54
+        data, revid = self._storage.load(oid2, version2)
+        assert pickle.loads(data) == 54
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid1, version1)
+
+    def checkAbortOneVersionCommitTheOther(self):
+        oid1, version1 = self._setup_version('one')
+        data, revid1 = self._storage.load(oid1, version1)
+        assert pickle.loads(data) == 54
+        oid2, version2 = self._setup_version('two')
+        data, revid2 = self._storage.load(oid2, version2)
+        assert pickle.loads(data) == 54
+        # Let's make sure we can't get object1 in version2
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid1, version2)
+        # First, let's abort version1
+        self._storage.tpc_begin(self._transaction)
+        oids = self._storage.abortVersion(version1, self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        assert len(oids) == 1
+        assert oids[0] == oid1
+        data, revid = self._storage.load(oid1, '')
+        assert pickle.loads(data) == 51
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid1, version1)
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid1, version2)
+        data, revid = self._storage.load(oid2, '')
+        assert pickle.loads(data) == 51
+        data, revid = self._storage.load(oid2, version2)
+        assert pickle.loads(data) == 54
+        # Okay, now let's commit version2 back to the trunk
+        self._storage.tpc_begin(self._transaction)
+        oids = self._storage.commitVersion(version2, '', self._transaction)
+        self._storage.tpc_vote(self._transaction)
+        self._storage.tpc_finish(self._transaction)
+        assert len(oids) == 1
+        assert oids[0] == oid2
+        # These objects should not be found in version 2
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid1, version2)
+        self.assertRaises(POSException.VersionError,
+                          self._storage.load, oid2, version2)
+        # But the trunk should be up to date now
+        data, revid = self._storage.load(oid2, '')
+        assert pickle.loads(data) == 54
 
 
 
@@ -274,6 +395,11 @@ def suite():
     # Skipping: MinimalStorageAPI.checkVersionEmpty()
     # Skipping: MinimalStorageAPI.checkVersions()
     # Skipping: MinimalStorageAPI.checkAbortVersion()
+    # Skipping: MinimalStorageAPI.checkAbortVersionErrors()
+    # Skipping: MinimalStorageAPI.checkModifyAfterAbortVersion()
+    # Skipping: MinimalStorageAPI.checkCommitToNonVersion()
+    # Skipping: MinimalStorageAPI.checkCommitToOtherVersion()
+    # Skipping: MinimalStorageAPI.checkAbortOneVersionCommitTheOther()
     # Full storage tests
     suite.addTest(FullStorageAPI('checkBasics'))
     suite.addTest(FullStorageAPI('checkNonVersionStore'))
@@ -288,6 +414,11 @@ def suite():
     suite.addTest(FullStorageAPI('checkVersionEmpty'))
     suite.addTest(FullStorageAPI('checkVersions'))
     suite.addTest(FullStorageAPI('checkAbortVersion'))
+    suite.addTest(FullStorageAPI('checkAbortVersionErrors'))
+    suite.addTest(FullStorageAPI('checkModifyAfterAbortVersion'))
+    suite.addTest(FullStorageAPI('checkCommitToNonVersion'))
+    suite.addTest(FullStorageAPI('checkCommitToOtherVersion'))
+    suite.addTest(FullStorageAPI('checkAbortOneVersionCommitTheOther'))
     return suite
 
 
