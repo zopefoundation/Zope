@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -153,7 +153,8 @@ class PropertyManager:
                              'manage_delProperties',
                              'manage_changeProperties',)),
     """
-    manage_propertiesForm=HTMLFile('properties', globals())
+    manage_propertiesForm=HTMLFile('properties', globals(),
+                                   property_extensible_schema__=1)
 
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
