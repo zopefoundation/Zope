@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.48 2000/05/11 18:54:15 jim Exp $"
-__version__ = "$Revision: 1.48 $"[11:-2]
+$Id: MailHost.py,v 1.49 2000/05/11 19:20:20 jim Exp $"""
+__version__ = "$Revision: 1.49 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
