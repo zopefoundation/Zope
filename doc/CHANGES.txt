@@ -200,8 +200,11 @@ Zope Changes
 
       Bugs fixed
 
-        Got rid of some DOS line-endings in xmlrpclib.py that caused
-        install-time module compilation to fail.
+        - Got rid of some DOS line-endings in xmlrpclib.py that caused
+          install-time module compilation to fail.
+
+        - Fixed a NameError (missing TupleType) definition in
+          the export/import (copy/paste) machinery.
 
     Zope 2.0 alpha 3
 
