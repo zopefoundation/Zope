@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.19 2002/08/14 21:29:07 mj Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.20 2002/08/21 19:31:59 shane Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -89,7 +89,11 @@ if _use_python_impl:
                     return 0
 
             containerbase = aq_base(container)
-            accessedbase=getattr(accessed, 'aq_base', container)
+            accessedbase = aq_base(accessed)
+            if accessedbase is accessed:
+                # accessed is not a wrapper, so assume that the
+                # value could not have been acquired.
+                accessedbase = container
 
             ############################################################
             # If roles weren't passed in, we'll try to get them from the object
@@ -111,13 +115,13 @@ if _use_python_impl:
 
                 roles=getattr(container, '__roles__', _noroles)
                 if roles is _noroles:
-                    aq=getattr(container, 'aq_acquire', None)
-                    if aq is None:
+                    if containerbase is container:
+                        # Container is not wrapped.
                         roles=_noroles
                         if containerbase is not accessedbase: return 0
                     else:
                         # Try to acquire roles
-                        try: roles=aq('__roles__')
+                        try: roles = container.aq_acquire('__roles__')
                         except AttributeError:
                             roles=_noroles
                             if containerbase is not accessedbase: return 0
