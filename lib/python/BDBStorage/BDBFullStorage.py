@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.52 $'.split()[-2:][0]
+__version__ = '$Revision: 1.53 $'.split()[-2:][0]
 
 import sys
 import time
@@ -280,14 +280,28 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             else:
                 self._withtxn(self._docommit, tid)
         # Initialize our cache of the next available version id.
-        record = self._versions.cursor().last()
-        if record:
+        c = self._versions.cursor()
+        try:
+            rec = c.last()
+        finally:
+            c.close()
+        if rec:
             # Convert to a Python long integer.  Note that cursor.last()
             # returns key/value, and we want the key (which for the
             # versions table is the vid).
-            self.__nextvid = U64(record[0])
+            self.__nextvid = U64(rec[0])
         else:
             self.__nextvid = 0L
+        # Initialize the last transaction
+        c = self._txnoids.cursor()
+        try:
+            rec = c.last()
+        finally:
+            c.close()
+        if rec:
+            self.__ltid = rec[0]
+        else:
+            self.__ltid = ZERO
 
     def close(self):
         # We must stop the autopacker first before closing any tables.  BAW:
@@ -483,6 +497,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     def _finish(self, tid, u, d, e):
         self._pending[self._serial] = COMMIT
         self._withtxn(self._docommit, self._serial)
+        self.__ltid = tid
 
     #
     # Storing an object revision in a transaction
@@ -1053,6 +1068,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             return ZERO
         else:
             assert False, 'too many packtimes'
+
+    def lastTransaction(self):
+        """Return transaction id for last committed transaction"""
+        return self.__ltid
 
     #
     # Transactional undo
