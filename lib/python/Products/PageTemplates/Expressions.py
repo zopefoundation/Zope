@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -115,7 +115,7 @@ class SubPathExpr:
     def __init__(self, path):
         self._path = path = path.strip().split('/')
         self._base = base = path.pop(0)
-        if not _valid_name(base):
+        if base and not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % base
         # Parse path
         self._dp = dp = []
@@ -140,7 +140,7 @@ class SubPathExpr:
                     # of path names.
                     path[i:i+1] = list(val)
         __traceback_info__ = base = self._base
-        if base == 'CONTEXTS':
+        if base == 'CONTEXTS' or not base:
             ob = econtext.contexts
         else:
             ob = vars[base]

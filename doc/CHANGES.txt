@@ -33,6 +33,9 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Collector #1095: Allow TAL paths starting with '/varname' as a
+       preferred spelling for 'CONTEXTS/varname'.
+
      - Collector #391: Cut and paste now requires delete permissions.
 
      - Collector #331: Referenses to URL in manage_tabs was changed
