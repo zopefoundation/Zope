@@ -10,6 +10,11 @@ Zope Changes
 
      - Show known medusa servers in Control_Panel.
 
+     - New startup and installation regime (./configure; make; make install
+       instances use a config file, daemon is now a separate process).  See
+       http://dev.zope.org/Wikis/DevSite/Proposals/InstallationAndConfiguration
+       for more information.
+
      - New module: App.config.  New API for getting a configuration
        object.  This should be the preferred way for all code in Zope
        to get configured values for many settings.  For settings made
