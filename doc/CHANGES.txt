@@ -46,6 +46,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1510: Allow encoding of application/xhtml+xml pages
+        according to the charset specified in the Content-Type header
+        (thanks to Jacek Konieczny for the patch).
+
       - Collector #1599: made sqltest work with unicode strings (thanks
         to Peter Sabaini for the patch).
 
