@@ -429,7 +429,7 @@ class TALInterpreter:
     def do_rawtextBeginScope(self, (s, col, position, closeprev, dict)):
         self._stream_write(s)
         self.col = col
-        self.position = position
+        self.do_setPosition(position)
         if closeprev:
             engine = self.engine
             engine.endScope()
@@ -441,7 +441,7 @@ class TALInterpreter:
     def do_rawtextBeginScope_tal(self, (s, col, position, closeprev, dict)):
         self._stream_write(s)
         self.col = col
-        self.position = position
+        self.do_setPosition(position)
         engine = self.engine
         if closeprev:
             engine.endScope()
