@@ -254,10 +254,6 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         cmd=davcmds.PropFind(REQUEST)
         result=cmd.apply(self)
-        RESPONSE.setStatus(207)
-        RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
-        RESPONSE.setBody(result)
-        return RESPONSE
         # work around MSIE DAV bug for creation and modified date
         if (REQUEST.get_header('User-Agent') ==
             'Microsoft Data Access Internet Publishing Provider DAV 1.1'):
@@ -265,6 +261,10 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                                     '<n:getlastmodified xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.rfc1123">')
             result = result.replace('<n:creationdate xmlns:n="DAV:">',
                                     '<n:creationdate xmlns:n="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.tz">')
+        RESPONSE.setStatus(207)
+        RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+        RESPONSE.setBody(result)
+        return RESPONSE
 
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
