@@ -159,13 +159,8 @@ class ZCatalog(Folder, Persistent, Implicit):
          'help':('ZCatalog','ZCatalog_Indexes.stx')},
         {'label': 'Status', 'action': 'manage_catalogStatus', 
          'target':'manage_main',
-<<<<<<< ZCatalog.py
          'help':('ZCatalog','ZCatalog_Status.stx')},
-        )+Folder.manage_options
-=======
-         'help':('ZCatalog','ZCatalog_Status.dtml')},
         )
->>>>>>> 1.60
 
     __ac_permissions__=(
 
