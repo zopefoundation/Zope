@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.10 2002/08/14 21:28:08 mj Exp $'
-__version__='$Revision: 1.10 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.11 2003/01/27 22:55:27 gvanrossum Exp $'
+__version__='$Revision: 1.11 $'[11:-2]
 
 import os, sys, unittest
 
@@ -59,10 +59,8 @@ class SecurityTests (DTMLTests):
         self.failUnlessRaises(Unauthorized, html, myinst=myclass())
 
     def testSecurityInSyntax(self):
-        '''
-        Ensures syntax errors are thrown for an expr with restricted
-        syntax.
-        '''
+        # Ensures syntax errors are thrown for an expr with restricted
+        # syntax.
         expr = '<dtml-var expr="(lambda x, _read=(lambda ob:ob): x.y)(c)">'
         try:
             # This would be a security hole.

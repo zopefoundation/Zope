@@ -16,8 +16,8 @@ To be removed together with the API in due time.
 
 """
 
-__rcs_id__='$Id: testDeprecatedAPI.py,v 1.4 2002/08/14 21:28:08 mj Exp $'
-__version__='$Revision: 1.4 $'[11:-2]
+__rcs_id__='$Id: testDeprecatedAPI.py,v 1.5 2003/01/27 22:55:27 gvanrossum Exp $'
+__version__='$Revision: 1.5 $'[11:-2]
 
 import ZODB # Sigh. Persistent needs to be set, so we import ZODB.
 from AccessControl import User
@@ -30,7 +30,7 @@ class DeprecatedAPI(unittest.TestCase):
             module='AccessControl')
 
     def testDeprecatedHasRole(self):
-        """hasRole has been deprecated, we expect a warning."""
+        # hasRole has been deprecated, we expect a warning.
         try:
             self.userObject.hasRole(None)
         except DeprecationWarning:
@@ -39,7 +39,7 @@ class DeprecatedAPI(unittest.TestCase):
             self.fail('Expected DeprecationWarning, none given')
 
     def testAllowed(self):
-        """hasRole is an alias for allowed, which should be unaffected."""
+        # hasRole is an alias for allowed, which should be unaffected.
         try:
             self.userObject.allowed(None)
         except DeprecationWarning:

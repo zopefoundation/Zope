@@ -21,7 +21,7 @@ class ClassSecurityInfoTests(unittest.TestCase):
 
 
     def testSetPermissionDefault(self):
-        """Test setting default roles for permissions."""
+        # Test setting default roles for permissions.
 
         # Setup a test class with default role -> permission decls.
         class Test(Folder):
