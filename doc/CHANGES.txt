@@ -142,6 +142,8 @@ Zope Changes
       - Collector #1: UNIX security fixes: make starting Zope as 'root'
         secure, stop using 'nobody', warn of insecure umasks
 
+      - Collector #303: Properties of type 'long' got truncated 
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
