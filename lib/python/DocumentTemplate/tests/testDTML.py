@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.3 2001/04/28 07:05:44 chrism Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.4 2001/04/28 22:36:45 chrism Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os
 import unittest
@@ -106,6 +106,14 @@ def read_file(name):
 
 from DocumentTemplate import HTML, String
 from ExtensionClass import Base
+class D:
+    def __init__(self, **kw):
+        for k, v in kw.items(): self.__dict__[k]=v
+
+    def __repr__(self): return "D(%s)" % `self.__dict__`
+
+def d(**kw): return kw
+
 
 class DTMLTests (unittest.TestCase):
 
@@ -446,6 +454,87 @@ foo bar
         assert str(res) == 'success!', `res`
 
 
+    def checkBasicHTMLIn(self):
+        data=(
+            d(name='jim', age=39),
+            d(name='kak', age=29),
+            d(name='will', age=8),
+            d(name='andrew', age=5),
+            d(name='chessie',age=2),
+            )
+
+        html="""
+<!--#in data mapping-->
+   <!--#var name-->, <!--#var age-->
+<!--#/in-->
+"""
+        expected = """
+   jim, 39
+   kak, 29
+   will, 8
+   andrew, 5
+   chessie, 2
+"""
+        result = HTML(html)(data=data)
+        assert result == expected, result
+
+    def checkBasicHTMLIn2(self):
+        xxx=(D(name=1), D(name=2), D(name=3))
+        html = """
+<!--#in xxx-->
+   <!--#var name  -->
+<!--#/in-->
+"""
+        expected = """
+   1
+   2
+   3
+"""
+        result = HTML(html)(xxx=xxx)
+        assert result == expected, result
+
+    def checkHTMLInElse(self):
+        xxx=(D(name=1), D(name=2), D(name=3))
+        html="""
+<!--#in data mapping-->
+<!--#var name-->, <!--#var age-->
+<!--#else-->
+<!--#in xxx-->
+<!--#var name -->
+<!--#/in-->
+<!--#/in-->
+"""
+        expected = """
+1
+2
+3
+"""
+        result = HTML(html)(xxx=xxx, data={})
+        assert result == expected, result
+        
+    def checkBasicStringIn(self):
+        data=(
+            d(name='jim', age=39),
+            d(name='kak', age=29),
+            d(name='will', age=8),
+            d(name='andrew', age=5),
+            d(name='chessie',age=2),
+            )
+        s="""
+%(in data mapping)[
+   %(name)s, %(age)s
+%(in)]
+"""
+        expected = """
+   jim, 39
+   kak, 29
+   will, 8
+   andrew, 5
+   chessie, 2
+"""
+        result = String(s)(data=data)
+        assert expected == result, result
+        
 def test_suite():
     return unittest.makeSuite(DTMLTests, 'check')
 
