@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.20 1997/11/27 00:10:50 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.21 1998/01/12 16:48:40 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -285,7 +285,7 @@ def parse_params(text,
 	return apply(parse_params,(text[l:],result),parms)
     else:
 	if not text or not strip(text): return result
-	raise InvalidParameter, text
+	raise ParseError, ('invalid parameter: "%s"' % text, tag)
     
     if not parms.has_key(name):
 	raise ParseError, (
@@ -302,6 +302,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.21  1998/01/12 16:48:40  jim
+# Fixed error reporting bug.
+#
 # Revision 1.20  1997/11/27 00:10:50  jim
 # Hacked my way out of using new module.
 #
