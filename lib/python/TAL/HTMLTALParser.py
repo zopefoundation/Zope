@@ -1,3 +1,6 @@
+import string
+
+from TALGenerator import TALGenerator
 from nsgmllib import SGMLParser
 
 BOOLEAN_HTML_ATTRS = [
@@ -36,7 +39,9 @@ BLOCK_LEVEL_HTML_TAGS = [
     "noframe", "ul", "ol", "li", "dl", "dt", "dd", "div",
     ]
 
-from TALGenerator import TALGenerator
+TIGHTEN_IMPLICIT_CLOSE_TAGS = (PARA_LEVEL_HTML_TAGS
+                               + CLOSING_BLOCK_LEVEL_HTML_TAGS)
+
 
 class HTMLTALParser(SGMLParser):
 
@@ -88,7 +93,6 @@ class HTMLTALParser(SGMLParser):
     def finish_starttag(self, tag, attrs):
         self.scan_xmlns(attrs)
         if tag in EMPTY_HTML_TAGS:
-            print "<%s>" % tag
             self.pop_xmlns()
         elif tag in CLOSING_BLOCK_LEVEL_HTML_TAGS:
             close_to = -1
@@ -108,8 +112,8 @@ class HTMLTALParser(SGMLParser):
                 elif self.tagstack[i] in PARA_LEVEL_HTML_TAGS:
                     if close_to == -1:
                         close_to = i
-            self.tagstack.append(tag)
             self._close_to_level(close_to)
+            self.tagstack.append(tag)
         else:
             self.tagstack.append(tag)
         self.gen.emitStartTag(tag, attrs)
@@ -119,16 +123,33 @@ class HTMLTALParser(SGMLParser):
             closing = self.tagstack[close_to:]
             closing.reverse()
             for t in closing:
-                self.finish_endtag(t)
+                self.finish_endtag(t, implied=1)
 
-    def finish_endtag(self, tag):
-        if tag not in EMPTY_HTML_TAGS:
-            assert tag in self.tagstack
-            while self.tagstack[-1] != tag:
-                self.finish_endtag(self.tagstack[-1])
-            self.tagstack.pop()
-            self.pop_xmlns()
-        self.gen.emitEndTag(tag)
+    def finish_endtag(self, tag, implied=0):
+        if tag in EMPTY_HTML_TAGS:
+            return
+        assert tag in self.tagstack
+        while self.tagstack[-1] != tag:
+            self.finish_endtag(self.tagstack[-1], implied=1)
+        self.tagstack.pop()
+        self.pop_xmlns()
+        if implied \
+           and tag in TIGHTEN_IMPLICIT_CLOSE_TAGS \
+           and self.gen.program \
+           and self.gen.program[-1][0] == "rawtext":
+            # Pick out trailing whitespace from the last instruction,
+            # if it was a "rawtext" instruction, and insert the close
+            # tag before the whitespace.
+            data = self.gen.program.pop()[1]
+            prefix = string.rstrip(data)
+            white = data[len(prefix):]
+            if data:
+                self.gen.emitRawText(prefix)
+            self.gen.emitEndTag(tag)
+            if white:
+                self.gen.emitRawText(white)
+        else:
+            self.gen.emitEndTag(tag)
 
     def handle_charref(self, name):
         self.gen.emitRawText("&#%s;" % name)
