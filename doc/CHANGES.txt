@@ -10,8 +10,8 @@ Zope Changes
 
       - The zLOG package is now backed by Vinay Sajip's "PEP 282" logger
         which has been included in lib/python/logging.  As a result,
-	the ZLogger package was removed (as its only real duty was to
-	handle syslog-based logging).
+    the ZLogger package was removed (as its only real duty was to
+    handle syslog-based logging).
 
       - Zope's shutdown process is now more careful and clean. It
         avoids sending half-complete responses to clients, particularly
@@ -44,6 +44,10 @@ Zope Changes
         the Zope profiling support
 
     Bugs Fixed
+
+      - Collector #699: MailHosts created in 2.5 breaks in 2.6.
+
+      - Collector #694: dtml-sendmail mailto specification replaces "To:" header. 
 
       - Collector #651: WebDAV Lock Manager was broken.
 
