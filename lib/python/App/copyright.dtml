@@ -195,6 +195,9 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
 </LI>
     <LI>Michael Hauser came up with the name "Zope".
 </LI>
+    <LI>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
+        XML-RPC</a>
+</LI>
     <LI>All the other Zopistas far and wide that stuck with us during
     the Bobo/Principia days and politely push us to make the best damn
     app server on this or any other planet.
