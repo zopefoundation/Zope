@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.168 2001/11/20 21:58:07 chrism Exp $'''
-__version__='$Revision: 1.168 $'[11:-2]
+$Id: Application.py,v 1.169 2001/11/21 22:49:31 chrism Exp $'''
+__version__='$Revision: 1.169 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -439,6 +439,19 @@ def initialize(app):
         from Products.Transience.Transience import TransientObjectContainer
         addnotify = env_has('ZSESSION_ADD_NOTIFY', None)
         delnotify = env_has('ZSESSION_DEL_NOTIFY', None)
+        default_limit = 1000
+        limit = env_has('ZSESSION_OBJECT_LIMIT', default_limit)
+        try:
+            limit=int(limit)
+            if limit != default_limit:
+                LOG('Zope Default Object Creation', INFO,
+                    ('using ZSESSION_OBJECT_LIMIT-specified max objects '
+                     'value of %s' % limit))
+        except ValueError:
+            LOG('Zope Default Object Creation', WARNING,
+                ('Noninteger value %s specified for ZSESSION_OBJECT_LIMIT, '
+                 'defaulting to %s' % (limit, default_limit)))
+            limit = default_limit
         if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
             LOG('Zope Default Object Creation', WARNING,
                 ('failed to use nonexistent "%s" script as '
@@ -458,7 +471,7 @@ def initialize(app):
 
         toc = TransientObjectContainer('session_data',
               'Session Data Container', addNotification = addnotify,
-              delNotification = delnotify)
+              delNotification = delnotify, limit=limit)
         timeout_spec = env_has('ZSESSION_TIMEOUT_MINS', '')
         if timeout_spec:
             try:
@@ -473,7 +486,8 @@ def initialize(app):
                      'value of %s' % timeout_spec))
                 toc = TransientObjectContainer('session_data',
                       'Session Data Container', timeout_mins = timeout_spec,
-                      addNotification=addnotify, delNotification = delnotify)
+                      addNotification=addnotify, delNotification = delnotify,
+                      limit=limit)
         tf._setObject('session_data', toc)
         tf_reserved = getattr(tf, '_reserved_names', ())
         if 'session_data' not in tf_reserved:
