@@ -8,6 +8,10 @@ System requirements when building from source
 
    bash or another Bourne shell variant
    Python 2.3.5 or later installed somewhere in the system PATH
+   (Note: Python 2.4 is officially *not* supported because there has not
+   been a security audit for Python 2.4 and Zope 2 so far. If you use
+   Python 2.4 with Zope then you use it at your own risk from the security
+   perspective).
    GNU make
    A C compiler (gcc recommended)
 
@@ -37,7 +41,7 @@ Building Zope
 
     Older versions of Zope were typically run directly from the
     'source' directory itself.  This is useful for development
-    purposes.  You can reobtain that behavior by performing the
+    purposes.  You can regain that behavior by performing the
     following sequence of commands within a Zope source directory:
 
       ./configure
