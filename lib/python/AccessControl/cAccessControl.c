@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.9 2001/07/11 20:49:13 shane Exp $
+  $Id: cAccessControl.c,v 1.10 2001/10/04 19:40:26 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1165,6 +1165,9 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
 */
 
 static void ZopeSecurityPolicy_dealloc(ZopeSecurityPolicy *self) {
+
+	Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
+
 	PyMem_DEL(self);  
 }
 
@@ -1314,6 +1317,8 @@ static void PermissionRole_dealloc(PermissionRole *self) {
 	Py_XDECREF(self->_p);
 
 	Py_XDECREF(self->__roles__);
+
+	Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
 
 	PyMem_DEL(self);  
 }
@@ -1679,6 +1684,8 @@ static void imPermissionRole_dealloc(imPermissionRole *self) {
 	Py_XDECREF(self->_v);
 	self->_v = NULL;
 
+	Py_DECREF(self->ob_type);	/* Extensionclass init incref'd */
+
 	PyMem_DEL(self);  
 }
 
@@ -1774,7 +1781,7 @@ static PyObject *permissionName(PyObject *name) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.9 $";
+	char *rev = "$Revision: 1.10 $";
 
 	if (!ExtensionClassImported) return;
 
