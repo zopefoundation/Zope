@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -122,7 +122,13 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
             text = f.read()
         finally:
             f.close()
-        self.pt_edit(text, sniff_type(text))
+        t = sniff_type(text)
+        if t != "text/xml" and "\r" in text:
+            # For HTML, we really want the file read in text mode:
+            f = open(self.filename)
+            text = f.read()
+            f.close()
+        self.pt_edit(text, t)
         self._cook()
         if self._v_errors:
             LOG('PageTemplateFile', ERROR, 'Error in template',
@@ -134,6 +140,10 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         """Return expanded document source."""
 
         if RESPONSE is not None:
+            # Since _cook_check() can cause self.content_type to change,
+            # we have to make sure we call it before setting the
+            # Content-Type header.
+            self._cook_check()
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
