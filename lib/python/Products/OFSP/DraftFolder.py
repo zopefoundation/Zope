@@ -14,15 +14,15 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.5 1997/12/18 16:45:40 jeffrey Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: DraftFolder.py,v 1.6 1997/12/19 17:06:20 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
-import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
+import time, OFS.SimpleItem, AccessControl.Role
+import Persistence, Acquisition, Globals
 import AccessControl.User, Session
 from string import rfind
 from App.Management import Management
 from Globals import HTMLFile
-from ImageFile import ImageFile
 
 addForm=HTMLFile('draftFolderAdd', globals())
 
@@ -49,14 +49,13 @@ def hack(self):
 
 class DraftFolder(Persistence.Persistent,
 		  AccessControl.Role.RoleManager,
-		  SimpleItem.Item,
+		  OFS.SimpleItem.Item,
 		  Acquisition.Implicit,
 		  Management,
 		  ):
 
     meta_type='Draft Folder'
     icon='DraftFolderIcon'
-    DraftFolderIcon=ImageFile('www/DraftFolder.gif', globals())
     isPrincipiaFolderish=1
 
     manage_options=(
@@ -212,6 +211,9 @@ class Supervisor(AccessControl.User.UserFolder, Session.Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.6  1997/12/19 17:06:20  jim
+# moved Sessions and Daft folders here.
+#
 # Revision 1.5  1997/12/18 16:45:40  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #

@@ -12,11 +12,11 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.8 1997/12/18 16:42:02 jeffrey Exp $'''
+$Id: Session.py,v 1.9 1997/12/19 17:06:20 jim Exp $'''
 
-import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
+import time, OFS.SimpleItem, AccessControl.Role
+import Persistence, Acquisition, Globals
 from string import rfind
-from ImageFile import ImageFile
 
 _addForm=Globals.HTMLFile('sessionAdd', globals())
 def addForm(realself, self, REQUEST, **ignored):
@@ -40,15 +40,14 @@ def add(self, id, title, acl_type='A',acl_roles=[], REQUEST=None):
 
 class Session(Persistence.Persistent,
 	      AccessControl.Role.RoleManager,
-	      SimpleItem.Item,
+	      OFS.SimpleItem.Item,
 	      Acquisition.Implicit):
 
     '''Model sessions as drop-in objects
     '''
 
     meta_type='Session'
-    icon='SessionIcon'
-    SessionIcon=ImageFile('www/session.gif', globals())
+    icon='session'
 
     manage_options=({'icon':'', 'label':'Join/Leave',
 		     'action':'manage_main', 'target':'manage_main',
@@ -125,7 +124,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 
@@ -133,6 +132,9 @@ __version__='$Revision: 1.8 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.9  1997/12/19 17:06:20  jim
+# moved Sessions and Daft folders here.
+#
 # Revision 1.8  1997/12/18 16:42:02  jeffrey
 # *** empty log message ***
 #

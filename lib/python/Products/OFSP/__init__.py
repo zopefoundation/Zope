@@ -8,12 +8,13 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.1 1997/12/18 17:05:54 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1997/12/19 17:06:22 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Session, DraftFolder
+from ImageFile import ImageFile
 
-__.meta_types=(
+meta_types=(
     {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
     {'name':'Session', 'action':'manage_addSessionForm'},
     {'name':'File', 'action':'manage_addFileForm'},
@@ -21,20 +22,30 @@ __.meta_types=(
     {'name':'Folder', 'action':'manage_addFolderForm'},
     {'name':'Document', 'action':'manage_addDocumentForm'},
     )
-__.methods={
+
+methods={
     'manage_addSessionForm': Session.addForm,
     'manage_addSession': Session.add,
     'manage_addDraftFolderForm': DraftFolder.addForm,
     'manage_addDraftFolder': DraftFolder.add,
     }
 
-
-
-
+misc_={
+    'image': ImageFile('images/Image_icon.gif', globals()),
+    'file': ImageFile('images/File_icon.gif', globals()),
+    'doc': ImageFile('images/Document_icon.gif', globals()),
+    'draft': ImageFile('images/DraftFolder.gif', globals()),
+    'sup': ImageFile('images/DraftFolderControl.gif', globals()),
+    'session': ImageFile('images/session.gif', globals()),
+    'folder': ImageFile('images/folder.gif', globals()),
+    }
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.2  1997/12/19 17:06:22  jim
+# moved Sessions and Daft folders here.
+#
 # Revision 1.1  1997/12/18 17:05:54  jim
 # *** empty log message ***
 #
