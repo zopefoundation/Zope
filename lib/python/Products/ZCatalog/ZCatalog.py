@@ -252,7 +252,10 @@ class ZCatalog(Folder, Persistent, Implicit):
         elapse = time.time()
         c_elapse = time.clock()
 
-        self.refreshCatalog(clear=1)
+        pgthreshold = self._getProgressThreshold()
+        handler = (pgthreshold > 0) and ZLogHandler(pgthreshold) or None
+        self.refreshCatalog(clear=1, pghandler=handler)
+        print handler
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
@@ -265,7 +268,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                          'Total CPU time: %s' % (`elapse`, `c_elapse`)))
 
 
-    def refreshCatalog(self, clear=0):
+    def refreshCatalog(self, clear=0, pghandler=None):
         """ re-index everything we can find """
 
         cat = self._catalog
@@ -274,26 +277,27 @@ class ZCatalog(Folder, Persistent, Implicit):
             paths = tuple(paths)
             cat.clear()
 
-        LOG('ZCatalog', BLATHER, 'Starting recataloging of ZCatalog at %s' % 
-             self.absolute_url(1))
         num_objects = len(paths)
+        if pghandler:
+            pghandler.init('Refreshing catalog: %s' % self.absolute_url(1), num_objects)
+
         for i in xrange(num_objects):
+            if pghandler: pghandler.report(i)
+
             p = paths[i]
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, self.REQUEST)
             if obj is not None:
                 try:
-                    LOG('ZCatalog', BLATHER, 'Recataloging object %s (%d/%d)' %
-                         (p, i, num_objects))
                     self.catalog_object(obj, p)
                 except ConflictError:
                     raise
                 except:
-                    LOG('ZCatalog', ERROR, 'Recataloging object at %s failed' % p,
-                              error=sys.exc_info())
+                    LOG.error('Recataloging object at %s failed' % p,
+                              exc_info=sys.exc_info())
 
-        LOG('ZCatalog', BLATHER, 'Recataloging of ZCatalog at %s terminated' % self.absolute_url(1))
+        if pghandler: pghandler.finish()
 
     def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
         """ clears the whole enchilada """
