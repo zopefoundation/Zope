@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.41 1998/04/27 16:11:11 jim Exp $'''
-__version__='$Revision: 1.41 $'[11:-2]
+$Id: DA.py,v 1.42 1998/04/27 18:31:32 jim Exp $'''
+__version__='$Revision: 1.42 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -27,6 +27,7 @@ from time import time
 from zlib import compress, decompress
 md5new=md5.new
 import ExtensionClass
+import DocumentTemplate.DT_Util
 
 class SQL(DocumentTemplate.HTML):
     commands={}
@@ -264,7 +265,7 @@ class DA(
 
 	argdata=self._argdata(REQUEST)
 	argdata['sql_delimiter']='\0'
-	argdata['sql_adapter__']=DB__
+	argdata['sql_quote']=DB__.sql_quote__
 	query=apply(self.template, (p,), argdata)
 
 	if src__: return query
@@ -300,9 +301,9 @@ class DA(
 	    else: p=None
 
 	    argdata['sql_delimiter']='\0'
-	    argdata['sql_adapter__']=DB__
-
+	    argdata['sql_quote']=DB__.sql_quote__
 	    query=apply(self.template,(p,),argdata)
+
 	    if self.cache_time_:
 		result=self._cached_result(DB__, query, 1)
 	    else:
@@ -427,6 +428,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.42  1998/04/27 18:31:32  jim
+# Changed the way quoting was exported.
+#
 # Revision 1.41  1998/04/27 16:11:11  jim
 # Stuff DA into template dict so that sqlvar and sqltest can use it.
 #
