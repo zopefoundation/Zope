@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.52 1998/08/14 20:54:44 brian Exp $"""
+$Id: Folder.py,v 1.53 1998/08/26 18:33:44 brian Exp $"""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -88,7 +88,7 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
           'manage_acquiredForm','manage_acquiredPermissions',
           'manage_permissionForm','manage_roleForm'
           )),
-	('Delete objects',     ('manage_delObjects','manage_cutObject')),
+	('Delete objects',     ('manage_delObjects',)),
 	('Manage properties',
          ('manage_addProperty', 'manage_editProperties',
           'manage_delProperties', 'manage_changeProperties',)),
@@ -200,3 +200,10 @@ def subclass(c,super):
     return 0
 
 
+############################################################################## 
+#
+# $Log: Folder.py,v $
+# Revision 1.53  1998/08/26 18:33:44  brian
+# Updated permissions in Folder folder for the copy/paste methods and added
+# cvs log to Folder.py
+#

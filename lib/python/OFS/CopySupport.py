@@ -1,5 +1,5 @@
 __doc__="""Copy interface"""
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, Globals, Moniker, tempfile
 from marshal import loads, dumps
@@ -297,7 +297,7 @@ def _get_id(ob, id):
     try: ob=ob.aq_base
     except: pass
     n=0
-    if id[8:]=='copy_of_':
+    if (len(id) > 8) and (id[8:]=='copy_of_'):
         n=1
     while (hasattr(ob, id)):
         id='copy%s_of_%s' % (n and n+1 or '', id)
@@ -382,6 +382,10 @@ eNotSupported=fMessageDialog(
 ############################################################################## 
 #
 # $Log: CopySupport.py,v $
+# Revision 1.20  1998/08/26 18:33:44  brian
+# Updated permissions in Folder folder for the copy/paste methods and added
+# cvs log to Folder.py
+#
 # Revision 1.19  1998/08/14 20:54:44  brian
 # Readded Find support that got overwritten somehow
 #
