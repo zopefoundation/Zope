@@ -90,7 +90,10 @@ import re
 import string
 
 from TALDefs import NAME_RE, macroIndexer
-from TALCompiler import TALCompiler
+from TALCompiler import TALCompiler, TALError
+
+class TALESError(TALError):
+    pass
 
 class DummyEngine:
 
@@ -139,8 +142,7 @@ class DummyEngine:
                 return self.globals[expr]
         if type == "python":
             return eval(expr, self.globals, self.locals)
-        print "Unrecognized expression:", `expression`
-        return None
+        raise TALESError("unrecognized expression: " + `expression`)
 
     def evaluateValue(self, expr):
         return self.evaluate(expr)
@@ -171,16 +173,14 @@ class DummyEngine:
             # External macro
             macroDict = macroIndexer(doc)
             if not macroDict.has_key(localName):
-                print "Macro", macroName, "not found"
-                return
+                raise TALESError("macro not found: " + `macroName`)
             macroNode = macroDict[localName]
             macro, dummy = TALCompiler(macroNode)()
         return macro
 
     def findMacroDocument(self, macroName):
         if not macroName:
-            print "Empty macro name:", macroName
-            return None, None
+            raise TALESError("empty macro name")
         i = string.rfind(macroName, '/')
         if i < 0:
             # No slash -- must be a locally defined macro
