@@ -19,6 +19,15 @@ Zope changes
           The new module provides consistent symbolic constants for 
           the standard Zope permissions.
 
+        - Cache manager support added.  This allows site administrators
+          to ease the burden on their site in a very configurable
+          way.  It also provides an API for developers to follow when
+          experimenting with caching strategies.
+
+      Bugs Fixed
+
+        - A misspelled function name which prevented the addition of
+          properties was corrected.
 
     Zope 2.3.0 alpha 1
     
