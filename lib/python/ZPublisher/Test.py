@@ -65,7 +65,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.6 1997/02/14 17:28:55 jim Exp $
+$Id: Test.py,v 1.7 1997/04/09 21:08:04 jim Exp $
 '''
 #     Copyright 
 #
@@ -119,12 +119,12 @@ $Id: Test.py,v 1.6 1997/02/14 17:28:55 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 #! /usr/local/bin/python
 
-import sys,traceback
+import sys,traceback, profile
 repeat_count=100
 
 def main():
@@ -174,6 +174,21 @@ def time(function,*args,**kwargs):
     return float(milli())/len(repeat_range)
 
 
+
+def run(statement, *args):
+    import sys, profile, time
+
+    prof = profile.Profile(time.time)
+    try:
+	prof = prof.run(statement)
+    except SystemExit:
+	pass
+    if args:
+	prof.dump_stats(args[0])
+    else:
+	return prof.print_stats()
+
+
 def publish(script,path_info,u=None,p=None,d=None,t=None):
 
     import sys, os, getopt, string
@@ -217,13 +232,15 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
 
     if profile:
 	import __main__
-	from profile import run
 	__main__.publish_module=publish_module
 	__main__.file=file
 	__main__.env=env
 	print profile
-	if profile: run('publish_module(file, environ=env)',profile)
-	else:       run('publish_module(file, environ=env)')
+	publish_module(file, environ=env, stdout=open('/dev/null','w'))
+	c=("for i in range(10): "
+	   "publish_module(file, environ=env, stdout=open('/dev/null','w'))")
+	if profile: run(c,profile)
+	else: run(c)
     elif debug:
 	import cgi_module_publisher
 	from cgi_module_publisher import ModulePublisher
@@ -280,6 +297,12 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.7  1997/04/09 21:08:04  jim
+# Improved profiling behavior:
+#
+#   - Do 10 trials, with a preceeding trial to warm things up,
+#   - Use time.time for timing rather than os.times.
+#
 # Revision 1.6  1997/02/14 17:28:55  jim
 # Added -r option to specify repeat count fot -t.
 #
