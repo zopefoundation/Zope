@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.29 1999/07/11 13:49:08 jim Exp $
+  $Id: Acquisition.c,v 1.30 1999/07/28 17:59:46 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -381,11 +381,12 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 			    oname,filter,extra,orig,1,1);
 	  if (r) goto acquired;
 	  PyErr_Fetch(&r,&v,&tb);
-	  if (r != PyExc_AttributeError || PyObject_Compare(v,oname) != 0)
+	  if (r && (r != PyExc_AttributeError || PyObject_Compare(v,oname) != 0))
 	    {
 	      PyErr_Restore(r,v,tb);
 	      return NULL;
 	    }
+	  Py_XDECREF(r); Py_XDECREF(v); Py_XDECREF(tb);
 	  r=NULL;
 	}
       else if ((r=PyObject_GetAttr(self->obj,oname)))
@@ -412,6 +413,16 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 	      }
 	  else return r;
 	}
+      else {
+	PyErr_Fetch(&r,&v,&tb);
+	if (r != PyExc_AttributeError || PyObject_Compare(v,oname) != 0)
+	  {
+	    PyErr_Restore(r,v,tb);
+	    return NULL;
+	  }
+	Py_XDECREF(r); Py_XDECREF(v); Py_XDECREF(tb);
+	r=NULL;
+      }
       PyErr_Clear();
     }
 
@@ -480,7 +491,7 @@ handle_Acquired(Wrapper *self, PyObject *oname, PyObject *r)
 static PyObject *
 Wrapper_getattro_(Wrapper *self, PyObject *oname, int sob, int sco)
 {
-  PyObject *r;
+  PyObject *r, *v, *tb;
   char *name;
 
   name=PyString_AsString(oname);
@@ -506,7 +517,18 @@ Wrapper_getattro_(Wrapper *self, PyObject *oname, int sob, int sco)
 	ASSIGN(r,__of__(r,OBJECT(self)));
       return r;
     }
-  if (self->obj) PyErr_Clear();
+  if (self->obj) 
+    if (sob) {
+      PyErr_Fetch(&r,&v,&tb);
+      if (r != PyExc_AttributeError || PyObject_Compare(v,oname) != 0)
+	{
+	  PyErr_Restore(r,v,tb);
+	  return NULL;
+	}
+      Py_XDECREF(r); Py_XDECREF(v); Py_XDECREF(tb);
+      r=NULL;
+    }
+  else PyErr_Clear();
 
   if ((*name != '_')
      && self->container && sco)
@@ -548,7 +570,7 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 static PyObject *
 Xaq_getattro(Wrapper *self, PyObject *oname)
 {
-  PyObject *r;
+  PyObject *r, *v, *tb;
   char *name;
 
   name=PyString_AsString(oname);
@@ -588,7 +610,16 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
       else if (has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
       return r;
     }
-  if (self->obj) PyErr_Clear();
+  if (self->obj) {
+    PyErr_Fetch(&r,&v,&tb);
+    if (r != PyExc_AttributeError || PyObject_Compare(v,oname) != 0)
+      {
+	PyErr_Restore(r,v,tb);
+	return NULL;
+      }
+    Py_XDECREF(r); Py_XDECREF(v); Py_XDECREF(tb);
+    r=NULL;
+  }
 
   PyErr_SetObject(PyExc_AttributeError,oname);
   return NULL;
@@ -961,7 +992,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.29 $";
+  char *rev="$Revision: 1.30 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -980,7 +1011,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.29 1999/07/11 13:49:08 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.30 1999/07/28 17:59:46 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
