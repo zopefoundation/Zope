@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.48 $'[11:-2]
+__version__ = '$Revision: 1.49 $'[11:-2]
 
 
 import string, re
@@ -700,13 +700,16 @@ def parse2(q, default_operator,
     return q
 
 
-def parens(s, parens_re=re.compile(r'(\|)').search):
+def parens(s, parens_re=re.compile('[\(\)]').search):
 
     index = open_index = paren_count = 0
 
     while 1:
-        index = parens_re(s, index)
-        if index is None : break
+
+        mo = parens_re(s, index)
+        if mo is None : break
+
+        index = mo.start(0)
     
         if s[index] == '(':
             paren_count = paren_count + 1
@@ -723,7 +726,6 @@ def parens(s, parens_re=re.compile(r'(\|)').search):
         return None
     else:
         raise QueryError, "Mismatched parentheses"      
-
 
 
 def quotes(s, ws=(string.whitespace,)):
