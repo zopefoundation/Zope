@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -97,7 +97,7 @@ from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
-from cStringIO import StringIO
+from StringIO import StringIO
 from AccessControl import getSecurityManager
 import zLOG
 
