@@ -404,12 +404,13 @@ def initializeProduct(productp, name, home, app):
     
     try:
         f=CompressedInputFile(open(home+'/product.dat','rb'),name+' shshsh')
-        meta=cPickle.Unpickler(f).load()
-        product=app._p_jar.importFile(f)
-        product._objects=meta['_objects']
     except:
         f=fver and (" (%s)" % fver)
         product=Product(name, 'Installed product %s%s' % (name,f))
+    else:
+        meta=cPickle.Unpickler(f).load()
+        product=app._p_jar.importFile(f)
+        product._objects=meta['_objects']
 
     if old is not None:
         app._manage_remove_product_meta_type(product)
