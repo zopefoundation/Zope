@@ -84,8 +84,8 @@
 ##############################################################################
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.23 1999/10/28 18:02:41 brian Exp $'
-__version__='$Revision: 1.23 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.24 2001/03/30 16:40:52 jeremy Exp $'
+__version__='$Revision: 1.24 $'[11:-2]
 
 from string import translate, strip
 import string
@@ -181,7 +181,6 @@ class Eval:
         l=len(code)
         LOAD_NAME=101   
         HAVE_ARGUMENT=90        
-        def HAS_ARG(op): ((op) >= HAVE_ARGUMENT)
         while(i < l):
             c=ord(code[i])
             if c==LOAD_NAME:
