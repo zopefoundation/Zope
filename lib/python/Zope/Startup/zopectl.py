@@ -221,6 +221,52 @@ class ZopeCmd(ZDCmd):
     def help_adduser(self):
         print "adduser <name> <password> -- add a Zope management user"
 
+    def do_test(self, arg):
+        args = filter(None, arg.split(' '))
+
+        if not args:
+            print "usage: test [args]+"
+            return
+
+        # test.py lives in $ZOPE_HOME!
+        zope_home = os.getenv('ZOPE_HOME')
+
+        if zope_home is None:
+            software_home = os.getenv('SOFTWARE_HOME')
+            zope_home = os.path.abspath('%s/../..' % software_home)
+
+        if not os.path.isdir(zope_home):
+            print "Can't find test.py -- set ZOPE_HOME before running!"
+            return
+
+        script = os.path.join(zope_home, 'test.py')
+        assert os.path.exists(script)
+
+        # Supply our config file by default.
+        if '--config-file' not in args and '-C' not in args:
+            args.insert(0, self.options.configfile)
+            args.insert(0, '--config-file')
+
+        # Default to dots.
+        if '-v' not in args and '-q' not in args:
+            args.insert(0, '-v')
+
+        # If --libdir is not supplied, use $INSTANCE_HOME/Products
+        # (rather than $INSTANCE_HOME/lib/python)
+        if '--libdir' not in args:
+            args.insert(0, 'Products')
+            args.insert(0, '--libdir')
+
+        args.insert(0, script)
+
+        cmdline = ' '.join([self.options.python] + args)
+        print 'Running tests via: %s' % cmdline
+        os.system(cmdline)
+
+    def help_test(self):
+        print "test [args]+ -- run unit / functional tests."
+        print "                See $ZOPE_HOME/test.py for syntax."
+
 
 def main(args=None):
     # This is exactly like zdctl.main(), but uses ZopeCtlOptions and
