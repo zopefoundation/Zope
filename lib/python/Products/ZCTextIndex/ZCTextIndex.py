@@ -124,7 +124,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             lexicon = getattr(aq_parent(aq_inner(self)), self.lexicon_id)
             if not ILexicon.isImplementedBy(lexicon):
                 raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
-                                % lexicon.getId())
+                                % repr(lexicon))
             self._v_lexicon = lexicon
             return lexicon
 
