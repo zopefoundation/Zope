@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.2 2002/04/03 20:43:55 shane Exp $
+$Id: SiteErrorLog.py,v 1.3 2002/04/04 16:25:43 shane Exp $
 """
 
 import os
@@ -31,6 +31,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zExceptions.ExceptionFormatter import format_exception
 from zLOG import LOG, ERROR
 
+# Permission names
 use_error_logging = 'Log Site Errors'
 log_to_event_log = 'Log to the Event Log'
 
@@ -204,6 +205,18 @@ class SiteErrorLog (SimpleItem):
                 return entry.copy()
         return None
 
+    security.declareProtected(use_error_logging, 'getLogEntryAsText')
+    def getLogEntryAsText(self, id, RESPONSE=None):
+        """Returns the specified log entry.
+
+        Makes a copy to prevent changes.  Returns None if not found.
+        """
+        entry = self.getLogEntryById(id)
+        if entry is None:
+            return 'Log entry not found or expired'
+        if RESPONSE is not None:
+            RESPONSE.setHeader('Content-Type', 'text/plain')
+        return entry['tb_text']
 
 
 Globals.InitializeClass(SiteErrorLog)

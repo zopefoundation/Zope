@@ -34,25 +34,16 @@ The specified log entry was not found.  It may have expired.
  </tr>
 </table>
 
-<div tal:condition="python: entry['tb_html'] and
-                    not request.get('show_entry_as_text')">
-<div tal:content="structure entry/tb_html">
-Traceback
+<div tal:condition="entry/tb_html" tal:content="structure entry/tb_html">
+Traceback (HTML)
 </div>
-<p tal:condition="entry/tb_text"><a href="" tal:attributes="href
-   string:showEntry?id=${entry/id}&show_entry_as_text=1">Display
-   traceback as text</a></p>
-</div>
-
-<div tal:condition="python: not entry['tb_html'] or
-                    request.get('show_entry_as_text')">
-<pre tal:content="entry/tb_text">
-Traceback
+<pre tal:condition="not:entry/tb_html" tal:content="entry/tb_text">
+Traceback (text)
 </pre>
-<p tal:condition="entry/tb_html"><a href="" tal:attributes="href
-   string:showEntry?id=${entry/id}">Display
-   traceback as HTML</a></p>
-</div>
+
+<p tal:condition="entry/tb_text"><a href="" tal:attributes="href
+   string:getLogEntryAsText?id=${entry/id}">Display
+   traceback as text</a></p>
 
 <div tal:condition="entry/req_html">
 <h3>REQUEST</h3>
