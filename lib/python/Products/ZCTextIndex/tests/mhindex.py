@@ -231,6 +231,7 @@ class Indexer:
             pass
         text = ""
         top = 0
+        results = []
         while 1:
             try:
                 line = raw_input("Query: ")
@@ -238,6 +239,9 @@ class Indexer:
                 print "\nBye."
                 break
             line = line.strip()
+            if line.startswith("/"):
+                self.specialcommand(line, results, top - nbest)
+                continue
             if line:
                 text = line
                 top = 0
@@ -251,7 +255,6 @@ class Indexer:
             except:
                 reportexc()
                 text = ""
-                top = 0
                 continue
             if len(results) <= top:
                 if not n:
@@ -259,12 +262,37 @@ class Indexer:
                 else:
                     print "No more hits for %r." % text
                 text = ""
-                top = 0
                 continue
             print "[Results %d-%d from %d" % (top+1, min(n, top+nbest), n),
             print "for query %s]" % repr(text)
             self.formatresults(text, results, maxlines, top, top+nbest)
             top += nbest
+
+    def specialcommand(self, line, results, first):
+        assert line.startswith("/")
+        line = line[1:]
+        if not line:
+            n = first
+        else:
+            try:
+                n = int(line) - 1
+            except:
+                print "Huh?"
+                return
+        if n < 0 or n >= len(results):
+            print "Out of range"
+            return
+        docid, score = results[n]
+        path = self.docpaths[docid]
+        i = path.rfind("/")
+        assert i > 0
+        folder = path[:i]
+        n = path[i+1:]
+        cmd = "show +%s %s" % (folder, n)
+        if os.getenv("DISPLAY"):
+            os.system("xterm -e %s &" % cmd)
+        else:
+            os.system(cmd)
 
     def query(self, text, nbest=NBEST, maxlines=MAXLINES):
         results, n = self.timequery(text, nbest)
