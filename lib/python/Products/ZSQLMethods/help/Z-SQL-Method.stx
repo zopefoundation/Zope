@@ -1,23 +1,16 @@
-Z SQL Method Object: Communicate via SQL with any RDB database
-  
-	Description
-	
-  		Z SQL Methods allows you to access data in SQL databases.
-	  
-  		Z SQL Methods define and call SQL statements on databases which are
-  		defined by database connection objects. To create a new Z SQL Method 
-  		you will need to setup a database connection first. 
-  		Every Z SQL Method is directly linked to a database connection.
-  		
-  		**Note:** You will not be able to make a new Z SQL Method without
-  		having a DB connection that can be seen from your location (read 
-  		Acquisition).
-  		
-  		*Important:* Even though you may be able to write 
-  		database-specific SQL statements, you should be aware that by 
-  		switching the databases, your SQL statement inside the Z SQL Method 
-  		may break, and cause a Zope exception.
-  		For example, PostGreSQL supports regular expression in 'SQL 
-  		WHERE' clauses. While a ZSQL statement containing a regular 
-  		expression search may work fine in PostGres, it will break when 
-  		connecting this SQL statement to another database.
+Z SQL Method Object: Query relational databases with SQL
+
+  Description
+
+    Z SQL Methods allows you to access data in SQL databases.
+
+    Z SQL Methods define and call SQL statements on databases which
+    are defined by database adapter objects. To create a new Z SQL
+    Method you will need to setup a database adapter first.  Every Z
+    SQL Method is directly linked to a database connection through a
+    database adapter.
+
+    **Note:** You must associate a Z SQL method with a database
+    adapter.  If Zope cannot find a database adapter from your
+    location, you will not be able to create a Z SQL Method.
+

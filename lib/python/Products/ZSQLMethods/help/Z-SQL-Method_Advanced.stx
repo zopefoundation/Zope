@@ -2,8 +2,8 @@ Z SQL Method - Advanced: Manage advanced settings
   
     Description
 
-        This view allows you to manage the advanced settings such as 
-        caching and plugable brains of a SQL method.
+        Manage the advanced settings such as caching and plugable
+        brains of a SQL method.
         
     Controls
 
@@ -11,54 +11,26 @@ Z SQL Method - Advanced: Manage advanced settings
         
         'Title' -- Allows you to specify the title of the sql method.
         
-        'Maximum number of rows retrieved' -- Allows
-        you to specify an upper limit for the number of rows a sql
-        method can retrieve. Setting this option correctly (based on
-        your specific environment) can increase the speed of your site
-        significantly.
+        'Maximum number of rows retrieved' -- Specify an upper limit
+        for the number of rows a sql method can retrieve. Setting this
+        option correctly (based on your specific environment) can
+        increase the execution time of the method.
         
-        'Maximum number of results in the cache' -- Allows you to set the 
-        size of the sql method cache. Why is the  method cache useful? Let's 
-        say you have a query that returns all day long the same result (since 
-        the DB is only updated at night) then it would be very expensive to 
-        execute this query every  single time. Instead, Zope saves the query
-        result in the method and now everyone can access it faster.
-        Another example would be, if you call the same SQL method twice
-        in one DTML Method or DTML Document, you would not want to execute the 
-        query twice, but use the cache the second time.
+        'Maximum number of results in the cache' -- Set the size of
+        the sql method cache.
         
-        'Maximum time (seconds) to cache results' -- Allows you to specify how 
-        fresh the sql method cache must be, so  that the method cache is used 
-        as result, instead of querying the  database again. The method cache 
-        is disabled by default and by setting this time to a number greater 
-        than zero you enable SQL Method caching.
+        'Maximum time (seconds) to cache results' -- The time in
+        seconds that results are cached.  Setting to zero disables
+        caching.
         
-        Usually a query returns a list of rows that were
-        returned. This data could be considered "dumb", since it
-        does not  know anything about it surroundings or where it
-        came from. But  Zope allows you to transform this "dumb"
-        (flat) data into  objects. You ask, how?
-        Well, usually custom objects are implemented using classes, 
-        which consist basically of properties and methods. Now, lets
-        say that each column in a particular DB table corresponds to
-        one property of a class. All what we need to do now is to
-        define the methods that go with these properties. Note that
-        we know the properties' names from the column title.
-        So you can write a class in Python that contains only methods
-        and the Zope will fill in the attributes from using the 
-        query results. For each returned row, there will be one 
-        instance of the specified class, so that your result is 
-        a list of class instances (read objects). These Python
-        classes are called "Plugable Brains" by the Zope 
-        community.
-        In the next two fields you will specify the location and 
-        the name of the class, so Zope will be able to use it.
+	Rows returned from this method can be turned into 'Result
+	objects' that are instances of a class you can specify below.
         
         'Class name' -- Allows you to specify the name of the Python class. 
         
-        'Class file' -- Allows you to specify the name of the Python module that 
-        the class is defined in. The class file should reside in 
-        the Zope 'Extensions' directory.
+        'Class file' -- Allows you to specify the name of the Python
+        module that the class is defined in. The class file should
+        reside in the Zope 'Extensions' directory.
 
 
 

@@ -83,6 +83,11 @@
 # 
 ##############################################################################
 
+def manage_addDTMLMethod(self, id, title):
+    """
+    Add a DTML Method to the current ObjectManager
+    """
+
 class DTMLMethod:
     """
     A DTML Method is a Zope object that contains and executes DTML
@@ -191,4 +196,4 @@ class DTMLMethod:
         
         """
         
-        
+    __constructor__ = manage_addDTMLMethod
