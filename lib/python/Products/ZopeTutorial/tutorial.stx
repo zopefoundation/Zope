@@ -22,8 +22,7 @@ Welcome to the Zope Tutorial
   object you created in the Zope management screen, and viewing
   its "README" document.
   
-  <dtml-unless tutorialExamplesURL>
-  <dtml-call "REQUEST.set('hide_'+'next', 1)">
+  <dtml-unless expr="checkInstallation(REQUEST)">
   
   Install Tutorial Examples  
   

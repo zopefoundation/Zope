@@ -106,6 +106,28 @@ class TutorialTopic(TextTopic):
         self.obj=HTML(pre_pat.sub(clean_pre, text))
         
     index_html=DTMLFile('dtml/lessonView', globals())
+
+    def checkInstallation(self, REQUEST):
+        """
+        Returns false if the tutorial examples are not correctly
+        installed. Also sets the 'hide_next' variable in the request
+        if the examples are not installed.
+        """
+        ok=0
+        if REQUEST.has_key('tutorialExamplesURL'):
+            url=REQUEST['tutorialExamplesURL']
+            base=REQUEST['BASE1']
+            if string.index(url, base) == 0:
+                url=url[len(base):]
+                try:
+                    self.getPhysicalRoot().unrestrictedTraverse(url)
+                    ok=1
+                except:
+                    pass
+
+        if not ok:
+            REQUEST.set('hide_next', 1)
+        return ok
             
     def lessonURL(self, id, REQUEST):
         """
@@ -121,7 +143,8 @@ class TutorialTopic(TextTopic):
         Navigate management frame to a given lesson's screen.
         """
         url=self.lessonURL(id, REQUEST)
-        if not url:
+        if not url or not self.checkInstallation(REQUEST):
+            REQUEST.set('hide_next', 0)
             return """\
 <p class="warning">
 Zope cannot find the tutorial examples.
