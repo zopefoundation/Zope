@@ -29,6 +29,10 @@ Zope Changes
           tuples. Each tuple has a (dotted) module name and a module.
 
       Bugs Fixed
+ 
+        - Development on ZopeHTTPServer has been frozen in anticipation
+          of the switch to Medusa. Therefor ZopeHTTPServer still does
+          support PUT. Sorry.
 
         - ZPublisher.Client used the obsolete rand module.
 
