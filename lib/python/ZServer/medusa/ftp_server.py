@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: ftp_server.py,v 1.15 2001/04/25 19:07:31 andreas Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.16 2001/04/27 18:26:51 andreas Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -23,7 +23,6 @@ import asyncore
 import asynchat
 
 import os
-import regsub
 import socket
 import stat
 import string
