@@ -1,0 +1,9 @@
+
+from Thiebaut Champenier
+
+  "python wo_pcgi.py" doesn't build the extensions correctly due to
+  linking problems.  To fix it, I just SymLinked ld_so_aix, makexp_aix
+  and python.exp (found in <python-build>/Modules/) into each of the
+  dirs in <Zope-build>/python/lib that contain .c files... and it
+  worked just great. But I'm sure it's not the best solution
+
