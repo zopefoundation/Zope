@@ -9,7 +9,7 @@
  You may also choose to upload an existing html file from your
  local computer by clicking the <I>Browse</I> button.
 
-<FORM ACTION="manage_addDTMLMethod" METHOD="POST"
+<FORM ACTION="addDTMLMethod" METHOD="POST"
       ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>

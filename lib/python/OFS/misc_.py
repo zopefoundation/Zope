@@ -97,11 +97,9 @@ class p_:
     image =ImageFile('www/Image_icon.gif', globals())
     file  =ImageFile('www/File_icon.gif', globals())
     dtmldoc=doc=ImageFile('www/dtmldoc.gif', globals())
-    dtmlmethod =ImageFile('www/dtmlmethod.gif', globals())
     
     broken=ImageFile('www/broken.gif', globals())
 
-    UserFolder=ImageFile('AccessControl/www/UserFolder_icon.gif')
     User_icon =ImageFile('AccessControl/www/User_icon.gif')
 
     locked=ImageFile('www/modified.gif', globals())
@@ -122,3 +120,17 @@ class p_:
     PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
 
     ZopeButton=ImageFile('App/www/zope_button.gif')
+    Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
+
+
+class Misc_:
+    "Miscellaneous product information"
+
+    __roles__=None
+
+    def __init__(self, name, dict):
+        self._d=dict
+        self.__name__=name
+
+    def __str__(self): return self.__name__
+    def __getitem__(self, name): return self._d[name]

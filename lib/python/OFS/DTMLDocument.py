@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -192,7 +192,7 @@ This is the <!--#var id--> Document.
 
 addForm=HTMLFile('documentAdd', globals())
 
-def add(self, id, title='', file='', REQUEST=None, submit=None):
+def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If
     'file' is empty, default document text is used.
     """

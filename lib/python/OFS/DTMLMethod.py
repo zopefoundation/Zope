@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -101,7 +101,6 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     """DTML Method objects are DocumentTemplate.HTML objects that act
        as methods of their containers."""
     meta_type='DTML Method'
-    icon     ='p_/dtmlmethod'
     _proxy_roles=()
     index_html=None # Prevent accidental acquisition
 
@@ -359,7 +358,7 @@ the <!--#var title_and_id--> Folder.</P>
 
 addForm=HTMLFile('methodAdd', globals())
 
-def add(self, id, title='', file='', REQUEST=None, submit=None):
+def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If
     'file' is empty, default document text is used.
     """
@@ -369,7 +368,8 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     ob.title=title
     id=self._setObject(id, ob)
     if REQUEST is not None:
-        u=REQUEST['URL1']
+        if hasattr(self, 'DestinationURL'): u=self.DestinationURL()
+        else: u=REQUEST['URL1']
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''

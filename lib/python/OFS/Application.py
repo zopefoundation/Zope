@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.96 1999/03/26 19:50:37 brian Exp $'''
-__version__='$Revision: 1.96 $'[11:-2]
+$Id: Application.py,v 1.97 1999/03/30 18:09:33 jim Exp $'''
+__version__='$Revision: 1.97 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -101,6 +101,9 @@ from Globals import Persistent
 from FindSupport import FindSupport
 from urllib import quote
 from cStringIO import StringIO
+from AccessControl.PermissionRole import PermissionRole
+from App.ProductContext import ProductContext
+from misc_ import Misc_
 
 
 _standard_error_msg='''\
@@ -417,30 +420,40 @@ def install_products(app):
         product=__import__("Products.%s" % product_name,
                            global_dict, global_dict, silly)
 
+        # Set up dynamic project information.
+        productObject=App.Product.initializeProduct(
+            product, product_name, package_dir, app)
+
+        pgetattr(product, 'initialize', lambda context: None)(
+            ProductContext(productObject, app, product))
+
         permissions={}
         new_permissions={}
-        for permission, names in pgetattr(product, '__ac_permissions__', ()):
+        for p in pgetattr(product, '__ac_permissions__', ()):
+            permission, names, default = (tuple(p)+('Manager',))[:3]
             if names:
-                for name in names: permissions[name]=permission
+                for name in names:
+                    permissions[name]=permission
+                        
             elif not folder_permissions.has_key(permission):
                 new_permissions[permission]=()
 
         for meta_type in pgetattr(product, 'meta_types', ()):
             if product_name=='OFSP': meta_types.insert(0,meta_type)
             else: meta_types.append(meta_type)
-            name=meta_type['name']
+
 
         for name,method in pgetattr(product, 'methods', {}).items():
             if not hasattr(Folder, name):
                 setattr(Folder, name, method)
-                if name[-9:]=='__roles__': continue # Just setting roles
-                if (permissions.has_key(name) and
-                    not folder_permissions.has_key(permissions[name])):
-                    permission=permissions[name]
-                    if new_permissions.has_key(permission):
-                        new_permissions[permission].append(name)
-                    else:
-                        new_permissions[permission]=[name]
+                if name[-9:]!='__roles__': # not Just setting roles
+                    if (permissions.has_key(name) and
+                        not folder_permissions.has_key(permissions[name])):
+                        permission=permissions[name]
+                        if new_permissions.has_key(permission):
+                            new_permissions[permission].append(name)
+                        else:
+                            new_permissions[permission]=[name]
         
         if new_permissions:
             new_permissions=new_permissions.items()
@@ -453,9 +466,6 @@ def install_products(app):
         misc_=pgetattr(product, 'misc_', {})
         if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
         Application.misc_.__dict__[product_name]=misc_
-
-        # Set up dynamic project information.
-        App.Product.initializeProduct(product, product_name, package_dir, app)
 
         get_transaction().note('Installed product '+product_name)
         get_transaction().commit()
@@ -474,15 +484,3 @@ def pgetattr(product, name, default=install_products, __init__=0):
     if default is not install_products: return default
 
     raise AttributeError, name
-
-class Misc_:
-    "Miscellaneous product information"
-
-    __roles__=None
-
-    def __init__(self, name, dict):
-        self._d=dict
-        self.__name__=name
-
-    def __str__(self): return self.__name__
-    def __getitem__(self, name): return self._d[name]

@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -113,7 +113,6 @@ class File(Persistent,Implicit,PropertyManager,
     """A File object is a content object for arbitrary files."""
     
     meta_type='File'
-    icon='p_/file'
     precondition=''
 
     manage_editForm  =HTMLFile('fileEdit',globals(),Kind='File',kind='file')
@@ -297,7 +296,6 @@ class Image(File):
     that renders an HTML 'IMG' tag.
     """
     meta_type='Image'
-    icon='p_/image'
     height=0
     width=0
 

@@ -9,7 +9,7 @@ You may create a new DTML Document using the form below.
 You may also choose to upload an existing html file from your
 local computer by clicking the <I>Browse</I> button.
 
-<FORM ACTION="manage_addDTMLDocument" METHOD="POST"
+<FORM ACTION="addDTMLDocument" METHOD="POST"
       ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>

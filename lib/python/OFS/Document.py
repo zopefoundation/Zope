@@ -84,9 +84,9 @@
 ##############################################################################
 """Deprecated - use DTMLMethod"""
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import DTMLMethod
 
 Document=DTMLMethod.DTMLMethod
-manage_addDocument=DTMLMethod.add
+manage_addDocument=DTMLMethod.addDTMLMethod

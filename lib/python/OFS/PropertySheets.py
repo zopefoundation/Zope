@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -134,6 +134,8 @@ class PropertySheet(Persistent, Implicit):
 
     _properties=()
     _extensible=1
+    icon='p_/Properties_icon'
+    
     def property_extensible_schema__(self): return self._extensible
 
     def __init__(self, id, md=None):
