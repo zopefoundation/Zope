@@ -82,6 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+__version__='$Revision: 1.6 $'[11:-2]
+
 from Publish import publish_module
 
 def test(*args, **kw):
