@@ -654,7 +654,8 @@
 
   <section type="eventlog" name="*" attribute="eventlog">
     <description>
-      Describes the logging performed by zLOG.LOG() calls.
+      Describes what level of log output is desired and where it
+      should be written.
     </description>
   </section>
 
