@@ -18,8 +18,8 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <dtml-if icon>
   <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
-  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;" ALT="[&dtml-meta_type;]" BORDER="0">
-  </A>
+  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;" ALT="[&dtml-meta_type;]" 
+  BORDER="0"></A>
   </dtml-if icon>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
