@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
@@ -251,7 +251,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
                     if ((self.func_code.co_argcount-
                          len(self.func_defaults or ()) - 1 == len(args))
                         and self.func_code.co_varnames[0]=='self'):
-                        return apply(f,(self.aq_parent,)+args,kw)
+                        return apply(f,(self.aq_parent.this(),)+args,kw)
                     
                     raise TypeError, v, tb
                 finally: tb=None
