@@ -195,7 +195,7 @@ class zope_ftp_channel(ftp_channel):
                     self.type_map[self.current_mode]
                     )
                 )
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 Could not list directory.')
@@ -223,7 +223,7 @@ class zope_ftp_channel(ftp_channel):
                 # longer anonymous
                 if self.anonymous and not self.userid=='anonymous':
                     self.anonymous=None
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 No such directory.')
@@ -264,7 +264,7 @@ class zope_ftp_channel(ftp_channel):
                                 mtime[4],
                                 mtime[5]
                                 ))
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 Error getting file modification time.')
@@ -282,8 +282,10 @@ class zope_ftp_channel(ftp_channel):
         status=response.getStatus()
         if status==200:
             self.respond('213 %d'% response._marshalledBody()[stat.ST_SIZE])
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
+        elif status == 404:
+            self.respond('550 No such file or directory.')
         else:
             self.respond('550 Error getting file size.')
 
@@ -317,7 +319,7 @@ class zope_ftp_channel(ftp_channel):
                         self.type_map[self.current_mode],
                         file
                         ))
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 Error opening file.')
@@ -353,17 +355,13 @@ class zope_ftp_channel(ftp_channel):
 
     def stor_completion(self,response):
         status=response.getStatus()
-        message = response.getMessage()
 
-        if status in (200,201,204,302):
-            self.client_dc.channel.respond('226 ' + (
-                message or 'Transfer complete.'))
-        elif status==401:
-            self.client_dc.channel.respond('426 ' + (
-                message or 'Unauthorized.'))
+        if status in (200, 201, 204, 302):
+            self.client_dc.channel.respond('226 Transfer complete.')
+        elif status in (401, 403):
+            self.client_dc.channel.respond('553 Permission denied on server.')
         else:
-            self.client_dc.channel.respond('426 ' + (
-                message or 'Error creating file.'))
+            self.client_dc.channel.respond('426 Error creating file.')
         self.client_dc.close()
 
     def cmd_rnfr (self, line):
@@ -404,7 +402,7 @@ class zope_ftp_channel(ftp_channel):
         status=response.getStatus()
         if status==200 and response.body.find('Not Deletable')==-1:
             self.respond('250 DELE command successful.')
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 Error deleting file.')
@@ -424,7 +422,7 @@ class zope_ftp_channel(ftp_channel):
         status=response.getStatus()
         if status==200:
             self.respond('257 MKD command successful.')
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 Error creating directory.')
@@ -446,7 +444,7 @@ class zope_ftp_channel(ftp_channel):
         status=response.getStatus()
         if status==200 and response.body.find('Not Deletable')==-1:
             self.respond('250 RMD command successful.')
-        elif status==401:
+        elif status in (401, 403):
             self.respond('530 Unauthorized.')
         else:
             self.respond('550 Error removing directory.')
