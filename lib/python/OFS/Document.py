@@ -1,13 +1,13 @@
 """Document object"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
-from string import join,split,strip,rfind,atoi
+from string import join,split,strip,rfind,atoi,lower
 from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
 from Acquisition import Explicit
-import regex, Globals
+import regex, Globals, sys
 
 
 class Document(HTML, Explicit, RoleManager, Item_w__name__):
@@ -71,7 +71,34 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 	""" """
 	kw['document_id']   =self.id
         kw['document_title']=self.title
-	r=apply(HTML.__call__, (self, client, REQUEST), kw)
+	try: r=apply(HTML.__call__, (self, client, REQUEST), kw)
+	except:
+	    if self.id()=='standard_error_message':
+		raise sys.exc_type, sys.exc_value, sys.exc_traceback
+	    error_type=sys.exc_type
+	    error_value=sys.exc_value
+	    if lower(error_type) in ('redirect',):
+		raise error_type, error_value, sys.exc_traceback
+	    if regex.search('[a-zA-Z]>', error_value) > 0:
+		error_message=error_value
+	    else:
+		error_message=''
+	    tb=sys.exc_traceback
+	    error_tb=pretty_tb(error_type, error_value, tb)
+	    if client is not None: c=client
+	    else: c=self.aq_parent
+	    try:
+		s=getattr(c, 'standard_error_message')
+		v=HTML.__call__(s, c, REQUEST, error_type=error_type,
+				error_value=error_value,
+				error_tb=error_tb,
+				error_message=error_message)
+	    except:
+		v='Sorry, an error occured'
+	    sys.exc_traceback=tb
+	    tb=None
+	    raise error_type, v, sys.exc_traceback
+	    
 	if RESPONSE is None: return r
 	return decapitate(r, RESPONSE)
 
@@ -269,4 +296,38 @@ def decapitate(html, RESPONSE=None,
 	RESPONSE.setHeader(k,v)
 
     return html
+
+def format_exception(etype,value,tb,limit=None):
+    import traceback
+    result=['Traceback (innermost last):']
+    if limit is None:
+	    if hasattr(sys, 'tracebacklimit'):
+		    limit = sys.tracebacklimit
+    n = 0
+    while tb is not None and (limit is None or n < limit):
+	    f = tb.tb_frame
+	    lineno = tb.tb_lineno
+	    co = f.f_code
+	    filename = co.co_filename
+	    name = co.co_name
+	    locals=f.f_locals
+	    result.append('  File %s, line %d, in %s'
+			  % (filename,lineno,name))
+	    try: result.append('    (Object: %s)' %
+			       locals[co.co_varnames[0]].__name__)
+	    except: pass
+	    try: result.append('    (Info: %s)' %
+			       str(locals['__traceback_info__']))
+	    except: pass
+	    tb = tb.tb_next
+	    n = n+1
+    result.append(join(traceback.format_exception_only(etype, value),
+		       ' '))
+#    sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
+    return result
+
+def pretty_tb(t,v,tb):
+    tb=format_exception(t,v,tb,200)
+    tb=join(tb,'\n')
+    return tb
 

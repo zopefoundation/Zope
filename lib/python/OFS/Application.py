@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.55 1998/03/09 19:37:09 jim Exp $'''
-__version__='$Revision: 1.55 $'[11:-2]
+$Id: Application.py,v 1.56 1998/03/23 15:01:22 jeffrey Exp $'''
+__version__='$Revision: 1.56 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -24,6 +24,11 @@ from App.ApplicationManager import ApplicationManager
 from Persistence import Persistent
 from ImageFile import ImageFile
 
+_standard_error_msg='''\
+<!--#var standard_html_header-->
+<H2>Error: <!--#var error_type-->, <!--#var error_value--></H2>
+<!-- <!--#var error_tb--> -->
+<!--#var standard_html_footer-->'''
 
 class Application(Folder.Folder):
     title    ='Principia'
@@ -74,6 +79,7 @@ class Application(Folder.Folder):
 
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
+		     #'standard_error_message',
 		     'acl_users',
 		     'Control_Panel')
 
@@ -94,6 +100,9 @@ class Application(Folder.Folder):
         self.manage_addDocument('standard_html_footer',
 				'Standard Html Footer',
 				'</BODY></HTML>')
+	self.manage_addDocument('standard_error_message',
+				'Standard Error Message',
+				_standard_error_msg)
 
 
     def id(self):
@@ -177,6 +186,11 @@ def open_bobobase():
 	cpl=ApplicationManager()
         cpl._init()
 	app._setObject('Control_Panel', cpl)
+	get_transaction().commit()
+    if not hasattr(app, 'standard_error_message'):
+	app.manage_addDocument('standard_error_message',
+			       'Standard Error Message',
+			       _standard_error_msg)
 	get_transaction().commit()
 
     return Bobobase
@@ -364,6 +378,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.56  1998/03/23 15:01:22  jeffrey
+# Added custom error message support
+#
 # Revision 1.55  1998/03/09 19:37:09  jim
 # Check for true need_license before doing license check.
 #
