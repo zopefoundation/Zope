@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.17 1997/04/17 18:02:46 chris Exp $
+  $Id: cStringIO.c,v 1.18 1997/05/07 16:26:47 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -51,65 +51,10 @@
     If you have questions regarding this software,
     contact:
    
-      Jim Fulton, jim@digicool.com
+      info@digicool.com
       Digital Creations L.C.  
    
       (540) 371-6909
-
-
-  $Log: cStringIO.c,v $
-  Revision 1.17  1997/04/17 18:02:46  chris
-  getvalue() now returns entire string, not just the string up to current position
-
-  Revision 1.16  1997/02/17 22:17:43  jim
-  *** empty log message ***
-
-  Revision 1.14  1997/01/24 19:56:24  chris
-  undid last change
-
-  Revision 1.13  1997/01/24 19:45:20  chris
-  extra byte in buffer no longer included in buf_size
-
-  Revision 1.12  1997/01/24 19:38:28  chris
-  *** empty log message ***
-
-  Revision 1.11  1997/01/23 20:45:01  jim
-  ANSIfied it.
-  Changed way C API was exported.
-
-  Revision 1.10  1997/01/02 15:19:55  chris
-  checked in to be sure repository is up to date.
-
-  Revision 1.9  1996/12/27 21:40:29  jim
-  Took out some lamosities in interface, like returning self from
-  write.
-
-  Revision 1.8  1996/12/23 15:52:49  jim
-  Added ifdef to check for CObject before using it.
-
-  Revision 1.7  1996/12/23 15:22:35  jim
-  Finished implementation, adding full compatibility with StringIO, and
-  then some.
-
-  We still need to take out some cStringIO oddities.
-
-  Revision 1.6  1996/10/15 18:42:07  jim
-  Added lots of casts to make warnings go away.
-
-  Revision 1.5  1996/10/11 21:03:42  jim
-  *** empty log message ***
-
-  Revision 1.4  1996/10/11 21:02:15  jim
-  *** empty log message ***
-
-  Revision 1.3  1996/10/07 20:51:38  chris
-  *** empty log message ***
-
-  Revision 1.2  1996/07/18 13:08:34  jfulton
-  *** empty log message ***
-
-  Revision 1.1  1996/07/15 17:06:33  jfulton
-  Initial version.
 
 
 */
@@ -340,7 +285,14 @@ O_write(Oobject *self, PyObject *args) {
 
 static PyObject *
 O_getval(Oobject *self, PyObject *args) {
-  return PyString_FromStringAndSize(self->buf, self->string_size);
+  PyObject *use_pos;
+  int s;
+
+  use_pos=Py_None;
+  UNLESS(PyArg_ParseTuple(args,"|O",&use_pos)) return NULL;
+  if(PyObject_IsTrue(use_pos)) s=self->pos;
+  else                         s=self->string_size;
+  return PyString_FromStringAndSize(self->buf, s);
 }
 
 static PyObject *
@@ -431,7 +383,12 @@ static struct PyMethodDef O_methods[] = {
   {"reset",      (PyCFunction)O_reset,        0,      O_reset__doc__},
   {"seek",       (PyCFunction)O_seek,         1,      O_seek__doc__},
   {"tell",       (PyCFunction)O_tell,         0,      O_tell__doc__},
-  {"getvalue",   (PyCFunction)O_getval,       0,      "getvalue() -- Get the string value"},
+  {"getvalue",   (PyCFunction)O_getval,       1,
+   "getvalue([use_pos]) -- Get the string value."
+   "\n"
+   "If use_pos is specified and is a true value, then the string returned\n"
+   "will include only the text up to the current file position.\n"
+  },
   {"truncate",   (PyCFunction)O_truncate,     0,      O_truncate__doc__},
   {"isatty",     (PyCFunction)O_isatty,       0,      O_isatty__doc__},
   {"close",      (PyCFunction)O_close,        0,      O_close__doc__},
@@ -660,3 +617,67 @@ initcStringIO() {
   if (PyErr_Occurred()) Py_FatalError("can't initialize module cStringIO");
 }
 
+
+/******************************************************************************
+
+  $Log: cStringIO.c,v $
+  Revision 1.18  1997/05/07 16:26:47  jim
+  getvalue() can nor be given an argument.  If this argument is true,
+  then getvalue returns the text upto the current position.  Otherwise
+  it returns all of the text.  The default value of the argument is
+  false.
+
+  Revision 1.17  1997/04/17 18:02:46  chris
+  getvalue() now returns entire string, not just the string up to current position
+
+  Revision 1.16  1997/02/17 22:17:43  jim
+  *** empty log message ***
+
+  Revision 1.14  1997/01/24 19:56:24  chris
+  undid last change
+
+  Revision 1.13  1997/01/24 19:45:20  chris
+  extra byte in buffer no longer included in buf_size
+
+  Revision 1.12  1997/01/24 19:38:28  chris
+  *** empty log message ***
+
+  Revision 1.11  1997/01/23 20:45:01  jim
+  ANSIfied it.
+  Changed way C API was exported.
+
+  Revision 1.10  1997/01/02 15:19:55  chris
+  checked in to be sure repository is up to date.
+
+  Revision 1.9  1996/12/27 21:40:29  jim
+  Took out some lamosities in interface, like returning self from
+  write.
+
+  Revision 1.8  1996/12/23 15:52:49  jim
+  Added ifdef to check for CObject before using it.
+
+  Revision 1.7  1996/12/23 15:22:35  jim
+  Finished implementation, adding full compatibility with StringIO, and
+  then some.
+
+  We still need to take out some cStringIO oddities.
+
+  Revision 1.6  1996/10/15 18:42:07  jim
+  Added lots of casts to make warnings go away.
+
+  Revision 1.5  1996/10/11 21:03:42  jim
+  *** empty log message ***
+
+  Revision 1.4  1996/10/11 21:02:15  jim
+  *** empty log message ***
+
+  Revision 1.3  1996/10/07 20:51:38  chris
+  *** empty log message ***
+
+  Revision 1.2  1996/07/18 13:08:34  jfulton
+  *** empty log message ***
+
+  Revision 1.1  1996/07/15 17:06:33  jfulton
+  Initial version.
+
+ ******************************************************************************/
