@@ -909,6 +909,7 @@ save_dict(ARG(Picklerobject *, self), ARG(PyObject *, args))
     return NULL;
 
   i = 0;
+  
   while (PyDict_Next(args, &i, &key, &value))
   {
     if ((safe_key = safe(key)) == -1)  
