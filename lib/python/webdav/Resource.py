@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -136,8 +136,19 @@ class Resource:
         self.dav__init(REQUEST, RESPONSE)
         if hasattr(self, 'content_type'):
             RESPONSE.setHeader('Content-Type', absattr(self.content_type))
-        if hasattr(self, 'getSize'):
-            RESPONSE.setHeader('Content-Length', absattr(self.getSize))
+        else:
+            url=urlfix(REQUEST['URL'], 'HEAD')
+            name=filter(None, string.split(url, '/'))[-1]
+            ct, ce=mimetypes.guess_type(name)
+            # Could try harder here...
+            ct=ct or 'application/octet-stream'
+            ct=string.lower(ct)
+            RESPONSE.setHeader('Content-Type', ct)
+        if hasattr(aq_base(self), 'get_size'):
+            RESPONSE.setHeader('Content-Length', absattr(self.get_size))
+        if hasattr(self, '_p_mtime'):
+            mtime=rfc1123_date(self._p_mtime)
+            RESPONSE.setHeader('Last-Modified', mtime)
         RESPONSE.setStatus(200)
         return RESPONSE
 
