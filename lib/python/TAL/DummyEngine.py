@@ -158,7 +158,6 @@ class DummyEngine:
             try:
                 return eval(expr, self.globals, self.locals)
             except:
-                t, v, tb = info = sys.exc_info()
                 raise TALESError("evaluation error in %s" % `expr`,
                                  info=sys.exc_info())
         raise TALESError("unrecognized expression: " + `expression`)
