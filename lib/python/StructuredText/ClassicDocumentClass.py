@@ -207,11 +207,10 @@ class StructuredTextRow(ST.StructuredTextDocument):
         """
         row is a list of tuples, where each tuple is
         the raw text for a cell/column and the span
-        of that cell/column". 
+        of that cell/column. 
         EX 
         [('this is column one',1), ('this is column two',1)]
         """
-        
         apply(ST.StructuredTextDocument.__init__,(self,[]),kw)
         self._columns = []
         for column in row:            
@@ -584,7 +583,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile('\s*\*([ \n%s0-9]+)\*(?!\*|-)' % lettpunc).search
+        expr = re.compile('\s*\*([ \n%s0-9.:/;,\'\"\?\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
         ):
 
         r=expr(s)
@@ -632,7 +631,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile("\s+\_([0-9%s ]+)\_" % lettpunc).search):
+                      expr=re.compile("\_([%s0-9\s\.,\?\/]+)\_" % letters).search):
         
         result = expr(s)
         if result:
@@ -644,7 +643,7 @@ class DocumentClass:
     
     def doc_strong(self, 
                    s,
-        expr = re.compile('\s*\*\*([ \n%s0-9]+)\*\*' % lettpunc).search
+        expr = re.compile('\s*\*\*([ \n%s0-9.:/;\-,!\?\'\"]+)\*\*' % letters).search
         ):
 
         r=expr(s)
@@ -655,10 +654,11 @@ class DocumentClass:
            return None
     
     def doc_href(
-        
         self, s,
         expr1 = re.compile("(\"[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)([,]*\s*)" % letters).search,
-        expr2 = re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)(\s*)' % letters).search):
+        expr2 = re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)(\s*)' % letters).search,
+        punctuation = re.compile("[\,\.\?\!\;]+").match
+        ):
         
         r=expr1(s) or expr2(s)
 
@@ -669,16 +669,36 @@ class DocumentClass:
             start,e = r.span(1)
             name    = s[start:e]
             name    = replace(name,'"','',2)
+            #start   = start + 1
             st,end   = r.span(3)
-            
-            if s[end-1:end] in punctuations: end-=1
+            if punctuation(s[end-1:end]):
+                end = end -1
             link    = s[st:end]
-           
+            #end     = end - 1                        
+            
             # name is the href title, link is the target
             # of the href
             return (StructuredTextLink(name, href=link),
                     start, end)
             
-
+            #return (StructuredTextLink(s[start:end], href=s[start:end]),
+            #        start, end)
         else:
             return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
