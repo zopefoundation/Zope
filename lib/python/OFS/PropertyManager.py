@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -288,9 +288,16 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         """Return a list of (id,property) tuples """
         return map(lambda i,s=self: (i['id'],getattr(s,i['id'])), 
                                     self._properties)
-    def propertyMap(self):
+    def _propertyMap(self):
         """Return a tuple of mappings, giving meta-data for properties """
         return self._properties
+
+    def propertyMap(self):
+        """
+        Return a tuple of mappings, giving meta-data for properties.
+        Return copies of the real definitions for security.
+        """
+        return map(lambda dict: dict.copy(), self._propertyMap())
 
     def propertyLabel(self, id):
         """Return a label for the given property id
@@ -322,7 +329,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         get turned off will be ignored.  Use manage_changeProperties()
         instead for most situations.
         """
-        for prop in self.propertyMap():
+        for prop in self._propertyMap():
             name=prop['id']
             if 'w' in prop.get('mode', 'wd'):
                 value=REQUEST.get(name, '')

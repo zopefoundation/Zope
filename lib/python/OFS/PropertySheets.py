@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -213,7 +213,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def hasProperty(self, id):
         # Return a true value if a property exists with the given id.
-        for prop in self.propertyMap():
+        for prop in self._propertyMap():
             if id==prop['id']:
                 return 1
         return 0
@@ -312,36 +312,37 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def propertyIds(self):
         # Return a list of property ids.
-        return map(lambda i: i['id'], self.propertyMap())
+        return map(lambda i: i['id'], self._propertyMap())
 
     def propertyValues(self):
         # Return a list of property values.
         return map(lambda i, s=self: s.getProperty(i['id']),
-                   self.propertyMap())
+                   self._propertyMap())
 
     def propertyItems(self):
         # Return a list of (id, property) tuples.
         return map(lambda i, s=self: (i['id'], s.getProperty(i['id'])), 
-                   self.propertyMap())
+                   self._propertyMap())
 
     def propertyInfo(self, id):
         # Return a mapping containing property meta-data
-        for p in self.propertyMap():
+        for p in self._propertyMap():
             if p['id']==id: return p
         raise ValueError, 'The property %s does not exist.' % id
 
-    def propertyMap(self):
+    def _propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
         # Some ZClass instances dont seem to have an _properties, so
         # we have to fake it...
         return self.p_self()._properties
 
-
-
+    def propertyMap(self):
+        # Returns a secure copy of the property definitions.
+        return map(lambda dict: dict.copy(), self._propertyMap())
 
     def _propdict(self):
         dict={}
-        for p in self.propertyMap():
+        for p in self._propertyMap():
             dict[p['id']]=p
         return dict
 
@@ -360,7 +361,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # DAV helper method - return one or more propstat elements
         # indicating property names and values for all properties.
         result=[]
-        for item in self.propertyMap():
+        for item in self._propertyMap():
             name, type=item['id'], item.get('type','string')
             value=self.getProperty(name)
             if type=='tokens':
@@ -453,7 +454,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
-        for prop in self.propertyMap():
+        for prop in self._propertyMap():
             name=prop['id']
             if 'w' in prop.get('mode', 'wd'):
                 value=REQUEST.get(name, '')
@@ -551,8 +552,11 @@ class DAVProperties(Virtual, PropertySheet, View):
     def _delProperty(self, id):
         raise ValueError, '%s cannot be deleted.' % id
 
-    def propertyMap(self):
+    def _propertyMap(self):
         return self.pm
+    
+    def propertyMap(self):
+        return map(lambda dict: dict.copy(), self._propertyMap())
     
     def dav__creationdate(self):
         return iso8601_date(43200.0)
@@ -759,19 +763,19 @@ class FixedSchema(PropertySheet):
         FixedSchema.inheritedAttribute('__init__')(self, id, md)
         self._base=base
 
-    def propertyMap(self):
+    def _propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
-        r=[]
-        for d in self._base.propertyMap():
-            mode=d.get('mode', 'wd')
+        r = []
+        for d in self._base._propertyMap():
+            d = d.copy()
+            mode = d.get('mode', 'wd')
             if 'd' in mode:
-                dd={}
-                dd.update(d)
-                d=dd
                 d['mode']=filter(lambda c: c != 'd', mode)
             r.append(d)
             
         return tuple(r)
+
+    propertyMap = _propertyMap
 
     def property_extensible_schema__(self):
         return 0

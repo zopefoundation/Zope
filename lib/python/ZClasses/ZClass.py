@@ -407,6 +407,7 @@ class ZClass( Base
 
         return '*'+id
 
+    changeClassId__roles__ = ()  # Private
     def changeClassId(self, newid=None):
         if not dbVersionEquals('3'):
             return
@@ -572,6 +573,7 @@ class ZClass( Base
         r.sort()
         return r
 
+    getClassAttr__roles__ = ()  # Private
     def getClassAttr(self, name, default=_marker, inherit=0):
         if default is _marker:
             if inherit: return getattr(self._zclass_, name)
@@ -581,6 +583,7 @@ class ZClass( Base
             else: return self._zclass_.__dict__[name]
         except: return default
 
+    setClassAttr__roles__ = ()  # Private
     def setClassAttr(self, name, value):
         c=self._zclass_
         setattr(c, name, value)
@@ -588,6 +591,7 @@ class ZClass( Base
             get_transaction().register(c)
             c._p_changed=1
 
+    delClassAttr__roles__ = ()  # Private
     def delClassAttr(self, name):
         c=self._zclass_
         delattr(c, name)
