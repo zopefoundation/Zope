@@ -655,7 +655,7 @@ setup(
     name='ZEO',
     author=AUTHOR,
 
-    packages=['ZEO', 'ZEO.tests', 'ZEO.zrpc'],
+    packages=['ZEO', 'ZEO.auth', 'ZEO.tests', 'ZEO.zrpc'],
     data_files=[['ZEO', ['ZEO/*.txt', 'ZEO/*.xml']]],
     )
 
