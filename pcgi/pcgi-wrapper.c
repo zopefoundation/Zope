@@ -55,7 +55,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char spewbuf[1024];    /* yes, it's a global, but only for debugging */
 #endif
 
-static char _id_[]="$Id: pcgi-wrapper.c,v 1.6 1999/10/28 17:34:56 brian Exp $";
+static char _id_[]="$Id: pcgi-wrapper.c,v 1.7 2000/01/31 15:29:37 brian Exp $";
 
 /* Globals, OR: "I'll know I'll hate myself in the morning" */
 extern char **environ;
@@ -69,11 +69,11 @@ int g_lock = 0;
 int main(int argc, char *argv[])
 {   pcgiResource resource;
     pcgiResource *r=&resource;
-    long l       =0;
-    char t[10]   ={0};
-    char *estatus=NULL;
-    char *emsg   =NULL;
-    char *p      =NULL;
+    long l          =0;
+    char t[HDRLEN+1]={0};
+    char *estatus   =NULL;
+    char *emsg      =NULL;
+    char *p         =NULL;
     char **env;
 
 #ifdef CREOSOTE
