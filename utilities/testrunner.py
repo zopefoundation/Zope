@@ -87,6 +87,8 @@ class TestRunner:
     def runPath(self, pathname):
         """Run all tests found in the directory named by pathname
            and all subdirectories."""
+        if not os.path.isabs(pathname):
+            pathname = os.path.join(self.basepath, pathname)
         names=os.listdir(pathname)
         for name in names:
             fname, ext=os.path.splitext(name)
