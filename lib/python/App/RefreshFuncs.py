@@ -84,7 +84,7 @@
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id: RefreshFuncs.py,v 1.1 2001/05/17 18:35:08 shane Exp $
+$Id: RefreshFuncs.py,v 1.2 2001/08/06 15:04:52 shane Exp $
 '''
 
 import os, sys
@@ -182,55 +182,6 @@ def setDependentProducts(jar, productid, dep_ids):
         products[productid] = product = PersistentMapping()
     product['dependent_products'] = tuple(map(str, dep_ids))
 
-# Functions for sorting modules by dependency.
-
-def listRequiredModulesByClass(klass, rval):
-    if hasattr(klass, '__module__'):
-        rval[klass.__module__] = 1 # klass.__module__ is a string.
-    if hasattr(klass, '__bases__'):
-        for b in klass.__bases__:
-            listRequiredModulesByClass(b, rval)
-
-def listRequiredModules(module):
-    rval = {}
-
-    if hasattr(module, '__dict__'):
-        for key, value in module.__dict__.items():
-            t = type(value)
-            if t in ClassTypes:
-                listRequiredModulesByClass(value, rval)
-            elif t is ModuleType and hasattr(value, '__name__'):
-                rval[value.__name__] = 1
-            elif t is FuncType and value.func_globals.has_key('__name__'):
-                rval[value.func_globals['__name__']] = 1
-    return rval
-
-def sortModulesByDependency(modlist):
-    unchosen = {}
-    for name, module in modlist:
-        unchosen[name] = (module, listRequiredModules(module))
-    chose = 1
-    rval = []
-    while chose:
-        chose = 0
-        for name, (module, req) in unchosen.items():
-            all_satisfied = 1
-            for n in unchosen.keys():
-                if name == n:
-                    continue  # Skip self.
-                if req.has_key(n):
-                    # There is still a dependency.  Can't
-                    # include this module in the list yet.
-                    all_satisfied = 0
-                    break
-            if all_satisfied:
-                chose = 1
-                rval.append((name, module))
-                del unchosen[name]
-    # There might be some modules left over that are interdependent.
-    for name, (module, req) in unchosen.items():
-        rval.append((name, module))
-    return rval
 
 # Functions for performing refresh.
 
@@ -250,7 +201,7 @@ def listRefreshableModules(productid):
     for name, module in sys.modules.items():
         if module and (name == prefix or name[:lpdot] == prefixdot):
             reload_var = getReloadVar(module)
-            if callable(reload_var) or reload_var:
+            if reload_var:
                 rval.append((name, module))
     return rval
 
@@ -276,33 +227,27 @@ def performRefresh(jar, productid):
     setupModTimes(productid)  # Refresh again only if changed again.
 
     modlist = listRefreshableModules(productid)
-    modlist = sortModulesByDependency(modlist)
+    former_modules = {}
+    try:
+        # Remove modules from sys.modules but keep a handle
+        # on the old modules in case there's a problem.
+        for name, module in modlist:
+            m = sys.modules.get(name, None)
+            if m is not None:
+                former_modules[name] = m
+                del sys.modules[name]
 
-    for name, module in modlist:
-        # Remove the __import_error__ attribute.
-        try: del module.__import_error__
-        except: pass
-        # Ask the module how it should be reloaded.
-        reload_var = getReloadVar(module)
-        if callable(reload_var):
-            try:
-                reload_var()
-            except:
-                logBadRefresh(productid)
-                return 0
-        else:
-            try:
-                reload(module)
-            except:
-                logBadRefresh(productid)
-                return 0
-
-    # Reinitialize and reinstall the product.
-    from OFS import Application
-    Application.reimport_product(productid)
-    app = jar.root()['Application']
-    Application.reinstall_product(app, productid)
-    return 1
+        # Reimport and reinstall the product.
+        from OFS import Application
+        Application.reimport_product(productid)
+        app = jar.root()['Application']
+        Application.reinstall_product(app, productid)
+        return 1
+    except:
+        # Couldn't refresh.  Reinstate removed modules.
+        for name, module in former_modules.items():
+            sys.modules[name] = module
+        raise
 
 def performSafeRefresh(jar, productid):
     try:
@@ -316,6 +261,7 @@ def performSafeRefresh(jar, productid):
         return 1
 
 def performFullRefresh(jar, productid):
+    # Refresh dependent products also.
     if performSafeRefresh(jar, productid):
         dep_ids = getDependentProducts(jar, productid)
         for dep_id in dep_ids:
@@ -412,6 +358,9 @@ def checkModTimes(productid):
 # Functions for performing auto-refresh.
 
 def checkAutoRefresh(jar):
+    '''
+    Returns the IDs of products that need to be auto-refreshed.
+    '''
     # Note: this function is NOT allowed to change the database!
     global next_auto_refresh_check
     now = time()
