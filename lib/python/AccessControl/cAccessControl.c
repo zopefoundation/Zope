@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.29 2004/02/18 17:55:43 jeremy Exp $
+  $Id: cAccessControl.c,v 1.30 2004/02/18 18:55:04 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -199,22 +199,6 @@ callfunction6(PyObject *function,
   r = PyObject_CallObject(function, t);
   Py_DECREF(t);
   return r;
-}
-  
-
-static int 
-unpacktuple1(PyObject *args, char *name, int min, PyObject **a0)
-{ 
-  int l;
-  l=PyTuple_Size(args);
-  if (l < 0) return -1;
-  if (l < min) 
-    {
-      PyErr_Format(PyExc_TypeError, "expected %d arguments, got %d", min, l);
-      return -1;
-    }
-  if (l > 0) *a0=PyTuple_GET_ITEM(args, 0);
-  return 0;
 }
 
 static int 
@@ -1899,8 +1883,6 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
                     goto end;
                   result = PySequence_Concat(r, list_roles);
                   Py_DECREF(list_roles);
-		  if (result == NULL)
-		      goto end;
                 }
               goto end;
             }
@@ -1927,6 +1909,7 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
                 {
                   Py_DECREF(roles);
                   result = _what_not_even_god_should_do;
+                  Py_INCREF(result);
                   goto end;
                 }
             }
@@ -2313,7 +2296,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.29 2004/02/18 17:55:43 jeremy Exp $\n");
+		"$Id: cAccessControl.c,v 1.30 2004/02/18 18:55:04 jim Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
