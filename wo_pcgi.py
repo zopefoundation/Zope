@@ -18,12 +18,10 @@ import build_extensions
 print
 print '-'*78
 
-
 os.chdir(home)
 data_dir=os.path.join(home, 'var')
-sbin_dir=os.path.join(home, 'sbin')
 db_path=os.path.join(data_dir, 'Data.bbb')
-dd_path=os.path.join(sbin_dir, 'Data.bbb.in')
+dd_path=os.path.join(data_dir, 'Data.bbb.in')
 if not os.path.exists(data_dir):
     print 'creating data directory'
     os.mkdir('var')
@@ -31,7 +29,13 @@ if not os.path.exists(data_dir):
 if not os.path.exists(db_path):
     print 'creating default database'
     os.system('cp %s %s' % (dd_path, db_path))
-    
+
+ac_path=os.path.join(home, 'access')
+if not os.path.exists(ac_path):
+    print 'creating default access file'
+    acfile=open(ac_path, 'w')
+    acfile.write('superuser:123\n')
+    acfile.close()
 
 print
 print '-'*78
