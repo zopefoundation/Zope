@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -97,6 +97,9 @@ from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
 
+try: import thread
+except: get_ident=lambda: 0
+else: get_ident=thread.get_ident
 
 class Fake:
     def locked_in_version(self): return 0
@@ -224,14 +227,10 @@ class ApplicationManager(Folder,CacheManager):
         s='%d sec' % s
         return '%s %s %s %s' % (d, h, m, s)
 
+    def thread_get_ident(self): return get_ident()
+
     def db_name(self):
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS 2
-            return Globals.BobobaseName
-        else:
-            # ZODB 3
-            return db.getName()
+        return self._p_jar.db().getName()
 
     def db_size(self):
         if Globals.DatabaseVersion=='2':
@@ -301,7 +300,10 @@ class ApplicationManager(Folder,CacheManager):
                               'delta': n[0],
                               'pc': n[1][1],
                               'rc': n[1][0]}, rd)
-        
+
+
+    def dbconnections(self):
+        return Globals.DB.connectionDebugInfo()
 
 
     if hasattr(sys, 'ZMANAGED'):
@@ -327,35 +329,12 @@ class ApplicationManager(Folder,CacheManager):
 
         t=time.time()-days*86400
 
-        try: db=self._p_jar.db()
-        except: pass
-        else:
-            t=db.pack(t)
-            if REQUEST is not None:
-                REQUEST['RESPONSE'].redirect(
-                    REQUEST['URL1']+'/manage_workspace')
-            return t
-            
-
-        # BoboPOS2:
-        if self._p_jar.db is not Globals.Bobobase._jar.db:
-            raise 'Version Error', (
-                '''You may not pack the application database while
-                working in a <em>version</em>''')
-        if Globals.Bobobase.has_key('_pack_time'):
-            since=Globals.Bobobase['_pack_time']
-            if t <= since:
-                if REQUEST: return self.manage_main(self, REQUEST)
-                return
-
-        # This is a little cheesy.  We really should record the pack
-        # time first, but we may need to pack to have space to
-        # record the information.
-        Globals.Bobobase._jar.db.pack(t,0)
-        Globals.Bobobase['_pack_time']=t
-        get_transaction().note('')
-        get_transaction().commit()
-        if REQUEST: return self.manage_main(self, REQUEST)
+        db=self._p_jar.db()
+        t=db.pack(t)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(
+                REQUEST['URL1']+'/manage_workspace')
+        return t
 
     def revert_points(self): return ()
 
