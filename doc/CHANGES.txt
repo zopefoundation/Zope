@@ -57,6 +57,8 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #937: UnicodeError exception available within PythonScripts
+
      - Collector #902: recursive Scripts were broken due to shared globals.
 
      - Product initialization would only consult a file named "version.txt"
