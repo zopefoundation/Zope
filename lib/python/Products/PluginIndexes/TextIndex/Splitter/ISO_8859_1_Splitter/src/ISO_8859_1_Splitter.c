@@ -574,7 +574,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ISO_8859_1_Splitter.c,v 1.7 2002/01/21 19:28:55 andreasjung Exp $\n"
+    "$Id: ISO_8859_1_Splitter.c,v 1.8 2002/01/22 15:59:59 andreasjung Exp $\n"
     ;
 
 
@@ -583,22 +583,19 @@ void
 initISO_8859_1_Splitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.7 $";
+    char *rev="$Revision: 1.8 $";
 
     /* Create the module and add the functions */
     initSplitterTrtabs();
-    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 1");
     m = Py_InitModule4("ISO_8859_1_Splitter", Splitter_module_methods,
                        Splitter_module_documentation,
                        (PyObject*)NULL,PYTHON_API_VERSION);
-    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 2");
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
-    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 3");
+
     PyDict_SetItemString(d, "__version__",
                          PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 4");
-
+    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter");
 }
 
