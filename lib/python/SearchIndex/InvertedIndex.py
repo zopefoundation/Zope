@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.37 1997/04/23 17:17:34 chris Exp $'''
+$Id: InvertedIndex.py,v 1.38 1997/04/23 18:13:50 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.37 1997/04/23 17:17:34 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.38  1997/04/23 18:13:50  jim
+# Began allowing multi-word synonyms.
+#
 # Revision 1.37  1997/04/23 17:17:34  chris
 # added a setitem on the _index_object in Index.addentry
 # to be sure changes are registered when not saving persistent
@@ -208,7 +211,7 @@ $Id: InvertedIndex.py,v 1.37 1997/04/23 17:17:34 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 import regex, string, copy
@@ -529,6 +532,28 @@ class Index:
         self._index_object = index_dictionary
   
   
+    def subindex(self, src, d, pos):
+        '''\
+        index(src, srckey)
+  
+        Update the index by indexing the words in src to the key, srckey
+  
+        The source object, src, will be converted to a string and the
+        words in the string will be used as indexes to retrieve the objects 
+        key, srckey.  For simple objects, the srckey may be the object itself,
+        or it may be a key into some other data structure, such as a table.
+        '''
+        src = WordSequence(src, self.synstop)  
+
+        for s in src:
+	    if s[0]: '"':
+		self.subindex(s[1:-1],d,pos)
+	    else:
+		try:
+		    d[s].append(pos)
+		except KeyError:
+		    d[s] = [ pos ]
+  
     def index(self, src, srckey):
         '''\
         index(src, srckey)
@@ -547,10 +572,13 @@ class Index:
         for s in src:
             i = i + 1
 
-            try:
-                d[s].append(i)
-            except KeyError:
-                d[s] = [ i ]
+	    if s[0]: '"':
+		self.subindex(s[1:-1],d,i)
+	    else:
+		try:
+		    d[s].append(i)
+		except KeyError:
+		    d[s] = [ i ]
 
         if (i < 1):
             return
@@ -712,3 +740,4 @@ class Index:
             text = text[:start] + before + text[start:end] + after + text[end:]
     
 	return text
+
