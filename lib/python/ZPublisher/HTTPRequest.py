@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -636,8 +636,8 @@ class HTTPRequest(BaseRequest):
 
     def __getitem__(self,key,
                     default=_marker, # Any special internal marker will do
-                    URLmatch=regex.compile('URL[0-9]$').match,
-                    BASEmatch=regex.compile('BASE[0-9]$').match,
+                    URLmatch=regex.compile('URL[0-9]+$').match,
+                    BASEmatch=regex.compile('BASE[0-9]+$').match,
                     ):
         """Get a variable value
 
@@ -653,7 +653,7 @@ class HTTPRequest(BaseRequest):
             return other[key]
 
         if key[:1]=='U' and URLmatch(key) >= 0:
-            n=ord(key[3])-ord('0')
+            n=atoi(key[3:])
             URL=other['URL']
             for i in range(0,n):
                 l=rfind(URL,'/')
@@ -673,9 +673,10 @@ class HTTPRequest(BaseRequest):
 
         if key[:1]=='B':
             if BASEmatch(key) >= 0:
-                n=ord(key[4])-ord('0')
+                n=atoi(key[4:])
                 if n:
-                    if self.environ.get('SCRIPT_NAME',''): n=n-1
+                    n=n-1
+                    
                     if len(self.steps) < n:
                         raise KeyError, key
 
@@ -708,6 +709,11 @@ class HTTPRequest(BaseRequest):
 
     __getattr__=get=__getitem__
 
+    def has_key(self, key):
+        try: self[key]
+        except: return 0
+        else: return 1
+
     def keys(self):
         keys = {}
         keys.update(self.common)
@@ -716,30 +722,25 @@ class HTTPRequest(BaseRequest):
             if (isCGI_NAME(key) or key[:5] == 'HTTP_') and \
                (not hide_key(key)):
                     keys[key] = 1
-        keys.update(self.other)
-        lasturl = ""
-        for n in "0123456789":
-            key = "URL%s"%n
-            try:
-                if lasturl != self[key]:
-                    keys[key] = 1
-                    lasturl = self[key]
-                else:
-                    break
-            except KeyError:
-                pass
-        for n in "0123456789":
-            key = "BASE%s"%n
-            try:
-                if lasturl != self[key]:
-                    keys[key] = 1
-                    lasturl = self[key]
-                else:
-                    break
-            except KeyError:
-                pass
 
-        return keys.keys()
+        n=0
+        while 1:
+            n=n+1
+            key = "URL%s" % n
+            if not self.has_key(key): break
+
+        n=0
+        while 1:
+            n=n+1
+            key = "BASE%s" % n
+            if not self.has_key(key): break
+
+        keys.update(self.other)
+
+        keys=keys.keys()
+        keys.sort()
+
+        return keys
 
     def __str__(self):
         result="<h3>form</h3><table>"
