@@ -101,7 +101,7 @@ class CatalogAware:
     meta_type='CatalogAware'
     default_catalog='Catalog'
 
-    manage_editCatalogerForm=DTMLFile('editCatalogerForm', globals())
+    manage_editCatalogerForm=HTMLFile('dtml/editCatalogerForm', globals())
 
     def manage_editCataloger(self, default, REQUEST=None):
         """ """

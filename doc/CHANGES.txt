@@ -11,6 +11,9 @@ Zope changes
         - Added a deprecated alias to UnrestrictedUser, Super, for use
           by user folder products that depend on the old class name.
 
+        - Fixed path for management interface files used for
+          CatalogPathAwareness and Aqueduct.
+
     Zope 2.3.0 alpha 2
 
       Features Added
