@@ -26,15 +26,15 @@
     Synopsis
 
       If the variable 'sequence' exists as a sequence, a simple case
-      of the 'in' tag is used as follows:
+      of the 'in' tag is used as follows::
 
-        '<!--#in sequence-->some markup<!--#/in-->'
+         <!--#in sequence-->some markup<!--#/in-->
 
-      A more complete case is used as follows:
+      A more complete case is used as follows::
 
-        '<!--#in sequence sort=age-->'
-	'  <!--#var sequence-number-->) <!--#var age-->'
-	'<!--#/in-->'
+        <!--#in sequence sort=age-->
+	  <!--#var sequence-number-->) <!--#var age-->
+	<!--#/in-->
 
     Attributes
 
@@ -45,31 +45,41 @@
       elements of the iteration.  The elements may be either
       instance or mapping objects.  In addition, the variables:
 
-         sequence-item -- The element.
+         'sequence-item' -- The element.
 
-         sequence-index -- The index, starting from 0, of the
+	 'sequence-var-nnn' -- The value of a specific named attribute
+	   of the item, where 'nnn' is the name.  For example, to get
+	   an items 'title' attribute, use 'sequence-var-title'.  This
+	   construct is most useful in an 'if' tag to test whether an
+	   attribute is present, because the attribute lookup will be
+	   extended to the full document template namespace.
+
+	 'sequence-key' -- The key associated with the element in an
+	   items list. See below.
+
+         'sequence-index' -- The index, starting from 0, of the
            element within the sequence.
 
-         sequence-number -- The index, starting from 1, of the
+         'sequence-number' -- The index, starting from 1, of the
            element within the sequence.
 
-         sequence-letter -- The index, starting from 'a', of the
+         'sequence-letter' -- The index, starting from 'a', of the
            element within the sequence.
 
-         sequence-Letter -- The index, starting from 'A', of the
+         'sequence-Letter' -- The index, starting from 'A', of the
            element within the sequence.
 
-         sequence-roman -- The index, starting from 'i', of the
+         'sequence-roman' -- The index, starting from 'i', of the
            element within the sequence.
 
-         sequence-Roman -- The index, starting from 'I', of the
+         'sequence-Roman' -- The index, starting from 'I', of the
            element within the sequence.
 
-         sequence-start -- A variable that is true if the element
+         'sequence-start' -- A variable that is true if the element
            being displayed is the first of the displayed elements,
            and false otherwise.
 
-         sequence-end -- A variable that is true if the element
+         'sequence-end' -- A variable that is true if the element
            being displayed is the last of the displayed elements,
            and false otherwise.
 
@@ -101,45 +111,81 @@
 
       Up to five parameters may be set:
 
-          start   -- The number of the first element to be shown,
-                     where elements are numbered from 1.
+          'start'   -- The number of the first element to be shown,
+                       where elements are numbered from 1.
 
-          end     -- The number of the last element to be shown,
-                     where elements are numbered from 1.
+          'end'     -- The number of the last element to be shown,
+                       where elements are numbered from 1.
 
-          size    -- The desired number of elements to be shown at
-                     once.
+          'size'    -- The desired number of elements to be shown at
+                       once.
 
-          orphan  -- The desired minimum number of objects to be
-                     displayed.  The default value for this
-                     parameter is 3.
+          'orphan'  -- The desired minimum number of objects to be
+                       displayed.  The default value for this
+                       parameter is 3.
 
-          overlap -- The desired overlap between batches. The
-                     default is no overlap.     
+          'overlap' -- The desired overlap between batches. The
+                       default is no overlap.     
 
       Typically, only 'start' and 'size' will be specified.
 
       When batch insertion is used, several additional variables are
       defined for use within the sequence insertion text:
 
-          sequence-step-size -- The batch size used.
+          'sequence-query' -- The original query string given in a get
+             request with the form variable named in the 'start'
+             attribute removed.  This is extremely useful when
+             building URLs to fetch another batch.
 
-          previous-sequence -- This variable will be true when the
+	     To see how this is used, consider the following example::
+
+		 <!--#in search_results size=20 start=batch_start-->
+
+                    ... display rows
+
+                    <!--#if sequence-end--> <!--#if next-sequence-->
+                      <a href="<!--#var URL-->/<!--#var sequence-query
+                          -->&batch_start=<!--#var
+                          next-sequence-start-number-->">
+                      (Next <!--#var next-sequence-size--> results)
+                      </a>
+                    <!--#/if--> <!--#/if-->
+
+		 <!--#/in-->
+
+	     If the original URL is: 'foo/bar?x=1&y=2', then the
+	     rendered text (after row data are displated) will be::
+
+                      <a href="foo/bar?x=1&y=2&batch_start=20">
+                      (Next 20 results)
+                      </a>
+
+	     If the original URL is: 'foo/bar?batch_start=10&x=1&y=2',
+	     then the rendered text (after row data are displated)
+	     will be::
+
+                      <a href="foo/bar?x=1&y=2&batch_start=30">
+                      (Next 20 results)
+                      </a>
+
+          'sequence-step-size' -- The batch size used.
+
+          'previous-sequence' -- This variable will be true when the
              first element is displayed and when the first element
              displayed is not the first element in the sequence.
 
-          previous-sequence-start-index -- The index, starting from
+          'previous-sequence-start-index' -- The index, starting from
              0, of the start of the batch previous to the current
              batch.
 
-          previous-sequence-end-index -- The index, starting from
+          'previous-sequence-end-index' -- The index, starting from
              0, of the end of the batch previous to the current
              batch.
 
-          previous-sequence-size -- The size of the batch previous to
+          'previous-sequence-size' -- The size of the batch previous to
              the current batch.
 
-          previous-batches -- A sequence of mapping objects
+          'previous-batches' -- A sequence of mapping objects
              containing information about all of the batches prior
              to the batch being displayed.
 
@@ -154,22 +200,22 @@
 
                 batch-end-index -- The size of the batch.
 
-          next-sequence -- This variable will be true when the last
+          'next-sequence' -- This variable will be true when the last
              element is displayed and when the last element
              displayed is not the last element in the sequence.
 
-          next-sequence-start-index -- The index, starting from
+          'next-sequence-start-index' -- The index, starting from
              0, of the start of the batch after the current
              batch.
 
-          next-sequence-end-index -- The index, starting from
+          'next-sequence-end-index' -- The index, starting from
              0, of the end of the batch after the current
              batch.
 
-          next-sequence-size -- The size of the batch after
+          'next-sequence-size' -- The size of the batch after
              the current batch.
 
-          next-batches -- A sequence of mapping objects
+          'next-batches' -- A sequence of mapping objects
              containing information about all of the batches after
              the batch being displayed.
 
@@ -230,7 +276,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.13 1997/12/15 17:34:40 jeffrey Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.14 1998/01/12 16:48:12 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -284,7 +330,7 @@ __rcs_id__='$Id: DT_In.py,v 1.13 1997/12/15 17:34:40 jeffrey Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -795,6 +841,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.14  1998/01/12 16:48:12  jim
+# Updated documentation.
+#
 # Revision 1.13  1997/12/15 17:34:40  jeffrey
 # added sequence-index-[is-]even and odd variables for testing in
 # sequences
