@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -87,7 +87,7 @@ class UserFolder(Implicit, Persistent, Item):
     manage     =SafeDtml('App/manage')
     manage_menu=SafeDtml('App/menu')
     manage_main=SafeDtml('AccessControl/UserFolder_manage_main')
-    manage_help=SafeDtml('AccessControl/UserFolder_manage_help')
+
     _editForm  =SafeDtml('AccessControl/UserFolder_manage_editForm')
     index_html =manage_main
 
@@ -228,6 +228,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.12  1997/09/17 14:59:42  brian
+# *** empty log message ***
+#
 # Revision 1.11  1997/09/15 15:00:24  brian
 # Added SimpleItem support
 #
