@@ -1,0 +1,76 @@
+========================
+ The Docutils Publisher
+========================
+
+:Author: David Goodger
+:Contact: goodger@python.org
+:Date: $Date: 2004/10/29 19:08:16 $
+:Revision: $Revision: 1.1.4.1 $
+:Copyright: This document has been placed in the public domain.
+
+.. contents::
+
+
+Publisher Convenience Functions
+===============================
+
+Each of these functions set up a ``docutils.core.Publisher`` object,
+then call its ``publish`` method.  ``docutils.core.Publisher.publish``
+handles everything else.  There are five convenience functions in the
+``docutils.core`` module:
+
+* ``publish_cmdline``: for command-line front-end tools, like
+  ``rst2html.py``.  There are several examples in the ``tools/``
+  directory.  A detailed analysis of one such tool is in `Inside A
+  Docutils Command-Line Front-End Tool`_
+
+* ``publish_file``: for programmatic use with file-like I/O.  In
+  addition to writing the encoded output to a file, also returns the
+  encoded output as a string.
+
+* ``publish_string``: for programmatic use with string I/O.  Returns
+  the encoded output as a string.
+
+* ``publish_parts``: for programmatic use with string input; returns a
+  dictionary of document parts.  Dictionary keys are the names of
+  parts, and values are Unicode strings; encoding is up to the client.
+  Useful when only portions of the processed document are desired.
+  Currently only implemented for the HTML Writer.
+
+  There are examples in the ``docutils/examples.py`` module.
+
+* ``publish_programmatically``: for custom programmatic use.  This
+  function implements common code and is used by ``publish_file``,
+  ``publish_string``, and ``publish_parts``.  It returns a 2-tuple:
+  the encoded string output and the Publisher object.
+
+.. _Inside A Docutils Command-Line Front-End Tool: ./cmdline-tool.html
+
+
+Configuration
+-------------
+
+To pass application-specific setting defaults to the Publisher
+convenience functions, use the ``settings_overrides`` parameter.  Pass
+a dictionary of setting names & values, like this::
+
+    overrides = {'input_encoding': 'ascii',
+                 'output_encoding': 'latin-1'}
+    output = publish_string(..., settings_overrides=overrides)
+
+Settings from command-line options override configuration file
+settings, and they override application defaults.  For details, see
+`Docutils Runtime Settings`_.  See `Docutils Configuration Files`_ for
+details about individual settings.
+
+.. _Docutils Runtime Settings: ./runtime-settings.html
+.. _Docutils Configuration Files: ../user/tools.html
+
+
+Encodings
+---------
+
+The default output encoding of Docutils is UTF-8.  If you have any
+non-ASCII in your text, you may have to do a bit more setup.  Docutils
+may introduce some non-ASCII text if you use symbol-footnotes or
+section numbering.

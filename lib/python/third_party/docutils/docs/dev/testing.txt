@@ -1,0 +1,139 @@
+===================
+ Docutils_ Testing
+===================
+
+:Author: Felix Wiemann
+:Revision: $Revision: 1.1.4.1 $
+:Date: $Date: 2004/10/29 19:08:16 $
+:Copyright: This document has been placed in the public domain.
+
+.. _Docutils: http://docutils.sourceforge.net/
+
+.. contents::
+
+This document describes how the tests are organized and how to add new
+tests or modify existing tests.
+
+
+Unit Tests
+==========
+
+Unit tests test single functions or modules (i.e. whitebox testing).
+
+XXX Some details to be written.
+
+Setting Up For Testing
+----------------------
+
+Recent versions of Python's ``unittest.py`` module have an annoying
+new "feature", where newlines in test failure output are displayed as
+``\n`` (two characters) instead of as actual newlines.  This means
+that test failure output is unreadable and unuseable.  Earlier
+versions didn't have this feature, and the output could easily be
+copied and pasted into test data modules.  Revision `1.7.2.1 of
+unittest.py`__ works well.  Download it, place it in the ``test/``
+directory, and enjoy much better output.
+
+__ http://cvs.sf.net/viewcvs.py/*checkout*/python/python/dist/src/Lib/unittest.py?rev=1.7.2.1
+
+
+.. _functional::
+
+Functional Tests
+================
+
+The directory ``test/functional/`` contains data for functional tests.
+
+Performing functional testing means testing the Docutils system as a
+whole (i.e. blackbox testing).
+
+Directory Structure
+-------------------
+
++ ``functional/`` The main data directory.
+
+  + ``input/`` The input files.
+
+    - ``some_test.txt``, for example.
+
+  + ``output/`` The actual output.
+
+    - ``some_test.html``, for example.
+
+  + ``expected/`` The expected output.
+
+    - ``some_test.html``, for example.
+
+  + ``tests/`` The config files for processing the input files.
+
+    - ``some_test.py``, for example.
+
+    - ``_default.py``, the `default configuration file`_.
+
+The Testing Process
+-------------------
+
+When running ``test_functional.py``, all config files in
+``functional/some_test.py`` are processed.
+
+An example of what this means:
+
+Provided ``functional/tests/some_test.py`` reads like this::
+
+    # Source and destination file names.
+    test_source = "some_test.txt"
+    test_destination = "some_test.html"
+
+    # Keyword parameters passed to publish_file.
+    reader_name = "standalone"
+    parser_name = "rst"
+    writer_name = "html"
+    settings_overrides['output-encoding'] = 'utf-8'
+
+The two variables ``test_source`` and ``test_destination`` contain the
+input file name (relative to ``functional/input/``) and the output
+file name (relative to ``functional/output/`` and
+``functional/expected/``).  Note that the file names can be chosen
+arbitrarily.  However, the file names in ``functional/output/`` *must*
+match the file names in ``functional/expected/``.
+
+All other variables are passed as keyword arguments to
+``docutils.core.publish_file``, so you can set reader, parser,
+writer and anything else you want to configure.
+
+Note that ``settings_overrides`` is already initialized as an empty
+dictionary *before* the execution of the config file.  This is done in
+order to allow subsequent assignments to ``settings_overrides`` in the
+`default configuration file`_ and in the actual configuration file.
+
+Creating New Tests
+------------------
+
+In order to create a new test, put the input test file into
+``functional/input/``.  Then create a config file in
+``functional/tests/`` which sets at least input and output file names,
+reader, parser and writer.
+
+Now run ``test_functional.py``.  The test will fail, of course,
+because you do not have an expected output yet.
+
+However, an output file will be generated in ``functional/output/``.
+Check this output file for validity and correctness.  Then copy the
+file to ``functional/expected/``.
+
+If you run ``test_functional.py`` later and the actual output doesn't
+match the expected output anymore, the test will fail.
+
+If this is the case and you made an intentional change, check the
+actual output for validity and correctness and copy it to
+``functional/expected/``, overwriting the old expected output.
+
+.. _default configuration file:
+
+The Default Configuration File
+------------------------------
+
+The file ``functional/tests/_default.py`` contains default settings.
+It is executed just before the actual configuration files, which has
+the same effect as if the contents of ``_default.py`` were prepended
+to every configuration file.

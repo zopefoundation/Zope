@@ -1,0 +1,130 @@
+=============================
+ Docutils_ Release Procedure
+=============================
+:Author: David Goodger; open to all Docutils developers
+:Contact: goodger@python.org
+:Date: $Date: 2004/10/29 19:08:16 $
+:Revision: $Revision: 1.1.4.1 $
+:Copyright: This document has been placed in the public domain.
+
+.. _Docutils: http://docutils.sourceforge.net/
+
+
+1. Edit the version number in the following files:
+
+   * docutils:
+
+     - setup.py
+     - HISTORY.txt
+     - docutils/__init__.py
+
+   * web: index.txt
+
+2. Run the test suite: ``cd test ; alltests.py``.
+
+3. Isolate from outside influence:
+
+   (a) Remove the old installation from site-packages (including
+       roman.py, and optparse.py, textwrap.py for pre-2.3
+       installations).
+
+   (b) Clear/unset the PYTHONPATH environment variable.
+
+4. Create the release tarball:
+
+   (a) Create a new empty directory and ``cd`` into it.
+
+   (b) Get a clean snapshot of the CVS files::
+
+           cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/docutils \
+               export -rHEAD docutils
+
+   (c) Use Distutils to create the release tarball::
+
+           cd docutils
+           python setup.py sdist
+
+5. Expand and install the release tarball **in isolation** (as per
+   step 3 above):
+
+   (a) Expand the tarball in a new location, not over any existing
+       files.
+
+   (b) Install from expanded directory::
+
+           cd docutils-X.Y
+           python setup.py install
+
+       The "install" command may require root permissions.
+
+6. Run the test suite from the expanded archive directory: ``cd test ;
+   alltests.py``.
+
+7. Run ``cd tools ; buildhtml.py ..`` to confirm that there are no
+   unexpected issues with the docs.
+
+8. Upload the release tarball::
+
+       $ ftp upload.sourceforge.net
+       Connected to osdn.dl.sourceforge.net.
+       ...
+       Name (upload.sourceforge.net:david): anonymous
+       331 Anonymous login ok, send your complete e-mail address as password.
+       Password:
+       ...
+       230 Anonymous access granted, restrictions apply.
+       ftp> bin
+       200 Type set to I.
+       ftp> cd /incoming
+       250 CWD command successful.
+       ftp> put filename
+
+9. Log in to the SourceForge web interface.
+
+10. Access the file release system on SourceForge (Admin interface).
+    Fill in the fields:
+
+        :Package ID:      docutils
+        :Release Name:    <use release number only, e.g. 0.3>
+        :Release Date:    <today's date>
+        :Status:          Active
+        :File Name:       <select the file just uploaded>
+        :File Type:       Source .gz
+        :Processor Type:  Platform-Independent
+        :Release Notes:   <insert README.txt file here>
+        :Change Log:      <insert summary from announcement>
+
+        Also check the "Preserve my pre-formatted text" box.
+
+11. Wait up to 30 minutes for the file to become available on
+    SourceForge.
+
+12. Download the release tarball and verify its integrity by walking
+    through an installation, as outlined above (steps 5, 6, & 7).
+
+13. Add a SourceForge News item, with title "Docutils 0.x released"
+    and containing the release tarball's download URL.
+
+14. Send announcement email to:
+
+    * docutils-develop@lists.sourceforge.net
+    * docutils-users@lists.sourceforge.net
+    * doc-sig@python.org
+    * python-list@python.org
+    * python-announce@python.org
+
+15. Register
+
+    (a) with PyPI (Fill in details.  ``python setup.py register``?
+        How to log in?)
+    (b) with Vaults of Parnassus
+    (c) with FreshMeat?
+
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:

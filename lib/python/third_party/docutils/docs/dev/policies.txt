@@ -1,0 +1,437 @@
+===========================
+ Docutils Project Policies
+===========================
+
+:Author: David Goodger; open to all Docutils developers
+:Contact: goodger@python.org
+:Date: $Date: 2004/10/29 19:08:16 $
+:Revision: $Revision: 1.1.4.1 $
+:Copyright: This document has been placed in the public domain.
+
+.. contents::
+
+A few quotes sum up the policies of the Docutils project.  The IETF's
+classic credo (by MIT professor Dave Clark) is an ideal we can aspire
+to:
+
+    We reject: kings, presidents, and voting.  We believe in: rough
+    consensus and running code.
+
+As architect, chief cook and bottle-washer, I currently function as
+BDFN (Benevolent Dictator For Now), but I would happily abdicate the
+throne given a suitable candidate.  Any takers?
+
+Eric S. Raymond, anthropologist of the hacker subculture, writes in
+his essay `The Magic Cauldron`_:
+
+    The number of contributors [to] projects is strongly and inversely
+    correlated with the number of hoops each project makes a user go
+    through to contribute.
+
+    .. _The Magic Cauldron:
+       http://www.tuxedo.org/~esr/writings/magic-cauldron/
+
+Therefore, we will endeavour to keep the barrier to entry as low as
+possible.  The policies below should not be thought of as barriers,
+but merely as a codification of experience to date.  These are "best
+practices", not absolutes; exceptions are expected, tolerated, and
+used as a source of improvement.
+
+As for control issues, Emmett Plant (CEO of the Xiph.org Foundation,
+originators of Ogg Vorbis) put it well when he said:
+
+    Open source dictates that you lose a certain amount of control
+    over your codebase, and that's okay with us.
+
+
+Python Coding Conventions
+=========================
+
+These are the conventions I use in my own code.  Contributed code will
+not be refused merely because it does not strictly adhere to these
+conditions; as long as it's internally consistent, clean, and correct,
+it probably will be accepted.  But don't be surprised if the
+"offending" code gets fiddled over time to conform to these
+conventions.
+
+The Docutils project shall follow the generic coding conventions as
+specified in the `Style Guide for Python Code`_ and `Docstring
+Conventions`_ PEPs, with the following clarifications (from most to
+least important):
+
+* 4 spaces per indentation level.  No tabs.
+
+* Use only ASCII, no 8-bit strings.  See `Docutils
+  Internationalization`_.
+
+* No one-liner compound statements (i.e., no ``if x: return``: use two
+  lines & indentation), except for degenerate class or method
+  definitions (i.e., ``class X: pass`` is O.K.).
+
+* Lines should be no more than 78 characters long.
+
+* Use "StudlyCaps" for class names (except for element classes in
+  docutils.nodes).
+
+* Use "lowercase" or "lowercase_with_underscores" for function,
+  method, and variable names.  For short names, maximum two words,
+  joined lowercase may be used (e.g. "tagname").  For long names with
+  three or more words, or where it's hard to parse the split between
+  two words, use lowercase_with_underscores (e.g.,
+  "note_explicit_target", "explicit_target").  If in doubt, use
+  underscores.
+
+* Use 'single quotes' for string literals, and """triple double
+  quotes""" for docstrings.
+
+.. _Style Guide for Python Code:
+   http://www.python.org/peps/pep-0008.html
+.. _Docstring Conventions: http://www.python.org/peps/pep-0257.html
+.. _Docutils Internationalization: ../howto/i18n.html#python-code
+
+
+Copyrights and Licensing
+========================
+
+The majority of the Docutils project code and documentation has been
+placed in the public domain.  Unless clearly and explicitly indicated
+otherwise, any patches (modifications to existing files) submitted to
+the project for inclusion (via CVS, SourceForge trackers, mailing
+lists, or private email) are assumed to be in the public domain as
+well.
+
+Any new files contributed to the project should clearly state their
+intentions regarding copyright, in one of the following ways:
+
+* Public domain (preferred): include the statement "This
+  module/document has been placed in the public domain."
+
+* Copyright & open source license: include a copyright notice, along
+  with either an embedded license statement, a reference to an
+  accompanying license file, or a license URL.
+
+One of the goals of the Docutils project, once complete, is to be
+incorporated into the Python standard library.  At that time copyright
+of the Docutils code will be assumed by or transferred to the Python
+Software Foundation (PSF), and will be released under Python's
+license.  If the copyright/license option is chosen for new files, the
+license should be compatible with Python's current license, and the
+author(s) of the files should be willing to assign copyright to the
+PSF.
+
+
+CVS Check-ins
+=============
+
+Instructions for CVS access can be found at
+http://sourceforge.net/cvs/?group_id=38414.  Anyone can access the CVS
+repository anonymously.  Only project developers can make changes.
+See `Setting Up For Docutils Development`_ below for more info.
+
+Unless you really *really* know what you're doing, please limit your
+CVS commands to ``cvs checkout``, ``cvs commit/checkin``, and ``cvs
+add``.  Do **NOT** use ``cvs import`` unless you're absolutely sure
+you know what you're doing.  Even then, grab a copy of the `nightly
+CVS tarball`_, set it up on your own machine, and experiment *there*
+first.
+
+The `main source tree`_ ("docutils" CVS module) should always be kept
+in a stable state (usable and as problem-free as possible).  The
+Docutils project shall follow the `Python Check-in Policies`_ (as
+applicable), with particular emphasis as follows:
+
+* Before checking in any changes, run the entire Docutils test suite
+  to be sure that you haven't broken anything.  From a shell::
+
+      cd docutils/test
+      ./alltests.py
+
+  Docutils currently supports Python 2.1 [1]_ or later, with some
+  things only working (and being tested) on 2.3.  Therefore, you
+  should actually have Pythons 2.1 [1]_, 2.2 and 2.3 installed and
+  always run the tests on all of them.  (A good way to do that is to
+  always run the test suite through a short script that runs
+  ``alltests.py`` under each version of Python.)  If you can't afford
+  intalling 3 Python versions, the edge cases (2.1 and 2.3) should
+  cover most of it.
+
+  .. [1] Python 2.1 may be used providing the compiler package is
+     installed.  The compiler package can be found in the Tools/
+     directory of Python 2.1's source distribution.
+
+  Good resources covering the differences between Python versions:
+
+  * `What's New in Python 2.2`__
+  * `What's New in Python 2.3`__
+  * `What's New in Python 2.4`__
+  * `PEP 290 - Code Migration and Modernization`__
+
+  __ http://www.python.org/doc/2.2.3/whatsnew/whatsnew22.html
+  __ http://www.python.org/doc/2.3.4/whatsnew/whatsnew23.html
+  __ http://www.python.org/dev/doc/devel/whatsnew/whatsnew24.html
+  __ http://www.python.org/peps/pep-0290.html
+
+  Note that there are currently some known issues with development
+  versions of Python 2.4-to-be (see the thread about `Python 2.4
+  compatibility`_ for details).  There is no need to pass the test
+  suite under it, unless you wish to tackle these issues...
+
+  .. _Python 2.4 compatibility:
+     http://thread.gmane.org/gmane.text.docutils.devel/2071
+    
+* When adding new functionality (or fixing bugs), be sure to add test
+  cases to the test suite.  Practise test-first programming; it's fun,
+  it's addictive, and it works!
+
+* The `sandbox CVS directory`_ is the place to put new, incomplete or
+  experimental code.  See `Additions to Docutils`_ and `The Sandbox`_
+  below.
+
+* For bugs or omissions that have an obvious fix and can't possibly
+  mess up anything else, go right ahead and check it in directly.
+
+* For larger changes, use your best judgement.  If you're unsure of
+  the impact, or feel that you require advice or approval, patches or
+  `the sandbox`_ are the way to go.
+
+Docutils will pursue an open and trusting policy for as long as
+possible, and deal with any aberrations if (and hopefully not when)
+they happen.  I'd rather see a torrent of loose contributions than
+just a trickle of perfect-as-they-stand changes.  The occasional
+mistake is easy to fix.  That's what CVS is for.
+
+.. _main source tree:
+   http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/docutils/docutils/
+.. _Python Check-in Policies: http://www.python.org/dev/tools.html
+.. _sandbox CVS directory:
+   http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/docutils/sandbox/
+.. _nightly CVS tarball:
+   http://cvs.sourceforge.net/cvstarballs/docutils-cvsroot.tar.bz2
+
+
+Additions to Docutils
+---------------------
+
+Additions to the project, such as new components, should be developed
+in the `sandbox CVS directory`_ until they're in `good shape`_,
+usable_, documented_, and `reasonably complete`_.  Adding to the `main
+source tree`_ or to a `parallel project`_ implies a commitment to the
+Docutils user community.
+
+* Why the sandbox?
+
+  Developers should be able to try out new components while they're
+  being developed for addition to main source tree.  See `The
+  Sandbox`_ below.
+
+* _`Good shape` means that the component code is clean, readable, and
+  free of junk code (unused legacy code; by analogy with "junk DNA").
+
+* _`Usable` means that the code does what it claims to do.  An "XYZ
+  Writer" should produce reasonable XYZ.
+
+* _`Documented`: The more the better.  The modules/files must be at
+  least minimally documented internally.  `Docutils Front-End Tools`_
+  should have a new section for any front-end tool that is added.
+  `Docutils Configuration Files`_ should be modified with any
+  settings/options defined.
+
+* _`Reasonably complete` means that the code must handle all input.
+  Here "handle" means that no input can cause the code to fail (cause
+  an exception, or silently and incorrectly produce nothing).
+  "Reasonably complete" does not mean "finished" (no work left to be
+  done).  For example, a writer must handle every standard element
+  from the Docutils document model; for unimplemented elements, it
+  must *at the very least* warn that "Output for element X is not yet
+  implemented in writer Y".
+
+If you really want to check code into the main source tree, you can,
+but you'll have to be prepared to work on it intensively and complete
+it quickly.  People will start to use it and they will expect it to
+work!  If there are any issues with your code, or if you only have
+time for gradual development, you should put it in the sandbox first.
+It's easy to move code over to the main source tree once it's closer
+to completion.
+
+.. _Docutils Front-End Tools: ../user/tools.html
+.. _Docutils Configuration Files: ../user/config.html
+
+
+CVS Startup File
+----------------
+
+In your ~/.cvsrc file, make sure you have a line like this::
+
+    update -dP
+
+This ensures that new directories are created and empty directories
+are pruned (removed) from your working copy.  In addition, these lines
+are useful::
+
+    cvs -q -z3
+    diff -u
+
+``cvs -q`` suppresses many non-essential messages.  ``-z3`` compresses
+data between client and server.  ``diff -u`` creates "unified diffs";
+specify ``diff -c`` if you prefer context diffs.
+
+
+Setting Up For Docutils Development
+-----------------------------------
+
+When making changes to the code, good developers always test their
+changes.  That means running the code to check that it produces the
+expected results, and running the test suite too.  The modified
+Docutils code has to be accessible to Python for the tests to have any
+meaning.  There are two ways to keep the Docutils code accessible:
+
+* Update your ``PYTHONPATH`` environment variable so that Python picks
+  up your local working copy of the code.  This is the recommended
+  method.
+
+  For the bash shell and Docutils checked out from CVS in
+  ``~/projects/docutils/``, add this to your ``~/.profile``::
+
+      PYTHONPATH=$HOME/projects/docutils/docutils
+      PYTHONPATH=$PYTHONPATH:$HOME/projects/docutils/docutils/extras
+      export PYTHONPATH
+
+  The first line points to the directory containing the ``docutils``
+  package.  The second line adds the directory containing the
+  third-party modules Docutils depends on.  The third line exports
+  this environment variable.  You may also wish to add the ``tools``
+  directory to your ``PATH``::
+
+      PATH=$PATH:$HOME/projects/docutils/docutils/tools
+
+* Before you run anything, every time you make a change, reinstall
+  Docutils::
+
+      python setup.py install
+
+  .. CAUTION::
+
+     This method is **not** recommended for day-to-day development;
+     it's too easy to forget.  Confusion inevitably ensues.
+
+     If you install Docutils this way, Python will always pick up the
+     last-installed copy of the code.  If you ever forget to reinstall
+     the "docutils" package, Python won't see your latest changes.
+
+
+Mailing Lists
+=============
+
+Developers should subscribe to the mailing lists:
+
+* The `Python Documentation Special Interest Group (Doc-SIG) mailing
+  list`__ for high-level discussions on syntax, strategy, and design
+  (email to Doc-SIG@python.org).
+* Docutils-develop__, for implementation discussions
+  (email to docutils-develop@lists.sourceforge.net).
+* Docutils-checkins__, to monitor CVS checkin messages (automatically
+  generated; normally read-only).
+* Docutils-users__, to monitor and help out with usage issues and bug
+  reports.
+
+__ http://mail.python.org/mailman/listinfo/doc-sig
+__ http://lists.sourceforge.net/lists/listinfo/docutils-develop
+__ http://lists.sourceforge.net/lists/listinfo/docutils-checkins
+__ http://lists.sourceforge.net/lists/listinfo/docutils-users
+
+
+The Sandbox
+===========
+
+The `sandbox CVS directory`_ is a place to play around, to try out and
+share ideas.  It's a part of the CVS repository but it isn't
+distributed as part of Docutils releases.  Feel free to check in code
+to the CVS sandbox; that way people can try it out but you won't have
+to worry about it working 100% error-free, as is the goal of the `main
+source tree`_.  Each developer who wants to play in the sandbox should
+create either a project-specific subdirectory or personal subdirectory
+(suggested name: SourceForge ID, nickname, or given name + family
+initial).  It's OK to make a mess!  But please, play nice.
+
+Please update the `sandbox README`_ file with links and a brief
+description of your work.
+
+In order to minimize the work necessary for others to install and try
+out new, experimental components, the following sandbox directory
+structure is recommended::
+
+    sandbox/
+        project_name/ # For a project where you invite contributions.
+                      # Structure as in userid/component_name below.
+        userid/       # For personal space.
+            component_name/ # A verbose name is best.
+                README.txt  # Please explain requirements,
+                            # purpose/goals, and usage.
+                docs/
+                    ...
+                component.py    # The component is a single module.
+                            # *OR* (but *not* both)
+                component/  # The component is a package.
+                    __init__.py  # Contains the Reader/Writer class.
+                    other1.py    # Other modules and data files used
+                    data.txt     # by this component.
+                    ...
+                test/       # Test suite.
+                    ...
+                tools/      # For front ends etc.
+                    ...
+                setup.py    # Use Distutils to install the component
+                            # code and tools/ files into the right
+                            # places in Docutils.
+
+Some sandbox projects are destined to become Docutils components once
+completed.  Others, such as add-ons to Docutils or applications of
+Docutils, graduate to become `parallel projects`_.
+
+.. _sandbox README: http://docutils.sf.net/sandbox/README.html
+
+
+.. _parallel project:
+
+Parallel Projects
+=================
+
+Parallel projects contain useful code that is not central to the
+functioning of Docutils.  Examples are specialized add-ons or
+plug-ins, and applications of Docutils.  They use Docutils, but
+Docutils does not require their presence to function.
+
+An official parallel project will have its own CVS directory beside
+(or parallel to) the main Docutils CVS directory.  It can have its own
+web page in the docutils.sourceforge.net domain, its own file releases
+and downloadable CVS snapshots, and even a mailing list if that proves
+useful. However, an official parallel project has implications: it is
+expected to be maintained and continue to work with changes to the
+core Docutils.
+
+A parallel project requires a project leader, who must commit to
+coordinate and maintain the implementation:
+
+* Answer questions from users and developers.
+* Review suggestions, bug reports, and patches.
+* Monitor changes and ensure the quality of the code and
+  documentation.
+* Coordinate with Docutils to ensure interoperability.
+* Put together official project releases.
+
+Of course, related projects may be created independently of Docutils.
+The advantage of a parallel project is that the SourceForge
+environment and the developer and user communities are already
+established.  Core Docutils developers are available for consultation
+and may contribute to the parallel project.  It's easier to keep the
+projects in sync when there are changes made to the core Docutils
+code.
+
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:

@@ -1,0 +1,1818 @@
+======================
+ Docutils_ To Do List
+======================
+
+:Author: David Goodger (with input from many); open to all Docutils
+         developers
+:Contact: goodger@python.org
+:Date: $Date: 2004/10/29 19:08:16 $
+:Revision: $Revision: 1.1.4.1 $
+:Copyright: This document has been placed in the public domain.
+
+.. _Docutils: http://docutils.sourceforge.net/
+
+.. contents::
+
+
+Priority items are marked with "@" symbols.  The more @s, the higher
+the priority.  Items in question form (containing "?") are ideas which
+require more thought and debate; they are potential to-do's.
+
+Many of these items are awaiting champions.  If you see something
+you'd like to tackle, please do!  If there's something you'd like to
+see done but are unable to implement it yourself, `please consider
+contributing`__ in other ways.
+
+__ http://docutils.sf.net/#please-contribute
+
+
+Priorities
+==========
+
+* Always high priority: `FIX BUGS!`__
+
+  __ ../../BUGS.html
+
+* Include substitution files for character entities, produced by the
+  tools/unicode2rstsubs.py.  As static data, these files could go
+  inside the docutils package somewhere.
+
+* A Python Source Reader component (Python auto-documentation) will be
+  added.  See the document `"Plan for Enthought API Documentation
+  Tool"`__ for details.  If you'd like to help, let me know!
+
+  __ enthought-plan.html
+
+* `Nested inline markup`_.
+
+
+General
+=======
+
+* Refactor
+
+  - Rename methods & variables according to the `Python coding
+    conventions <policies.html#python-coding-conventions>`_.
+
+  - The name-to-id conversion and hyperlink resolution code needs to be
+    checked for correctness and refactored.  I'm afraid it's a bit of
+    a spaghetti mess now.
+
+* Language modules: in accented languages it may be useful to have
+  both accented and unaccented entries in the ``bibliographic_fields``
+  mapping for versatility.
+
+* Add a "--strict-language" option & setting: no English fallback for
+  language-dependent features.
+
+* Add internationalization to _`footer boilerplate text` (resulting
+  from "--generator", "--source-link", and "--date" etc.), allowing
+  translations.
+
+* Need a Unicode to HTML entities codec for HTML writer?  No, the
+  "xmlcharrefreplace" output error handler is sufficient.
+  Make it the default for HTML & XML writers?
+
+* Add validation?  See http://pytrex.sourceforge.net, RELAX NG, pyRXP.
+
+* Ask Python-dev for opinions (GvR for a pronouncement) on special
+  variables (__author__, __version__, etc.): convenience vs. namespace
+  pollution.  Ask opinions on whether or not Docutils should recognize
+  & use them.
+
+* In ``docutils.readers.get_reader_class`` (& ``parsers`` &
+  ``writers`` too), should we be importing "standalone" or
+  "docutils.readers.standalone"?  (This would avoid importing
+  top-level modules if the module name is not in docutils/readers.
+  Potential nastiness.)
+
+* @@@ Perhaps store a _`name-to-id mapping file`?  This could be
+  stored permanently, read by subsequent processing runs, and updated
+  with new entries.  ("Persistent ID mapping"?)
+
+* Perhaps the ``Component.supports`` method should deal with
+  individual features ("meta" etc.) instead of formats ("html" etc.)?
+
+* Add _`object numbering and object references` (tables & figures).
+  These would be the equivalent of DocBook's "formal" elements.
+
+  We may need _`persistent sequences`, such as chapter numbers.  See
+  `OpenOffice.org XML`_ "fields".  Should the sequences be automatic
+  or manual (user-specifyable)?
+
+  We need to name the objects:
+
+  - "name" option for the "figure" directive? ::
+
+        .. figure:: image.png
+           :name: image's name
+
+    Same for the "table" directive::
+
+        .. table:: optional title here
+           :name: table's name
+
+           =====  =====
+             x    not x
+           =====  =====
+           True   False
+           False  True
+           =====  =====
+
+    This would also allow other options to be set, like border
+    styles.  The same technique could be used for other objects.
+
+    A preliminary "table" directive has been implemented, supporting
+    table titles.  Perhaps the name should derive from the title.
+
+  - The object could also be done this way::
+
+        .. _figure name:
+
+        .. figure:: image.png
+
+    This may be a more general solution, equally applicable to tables.
+    However, explicit naming using an option seems simpler to users.
+
+  We'll also need syntax for object references.  See `OpenOffice.org
+  XML`_ "reference fields":
+
+  - Parameterized substitutions?  For example::
+
+        See |figure (figure name)| on |page (figure name)|.
+
+        .. |figure (name)| figure-ref:: (name)
+        .. |page (name)| page-ref:: (name)
+
+    The result would be::
+
+        See figure 3.11 on page 157.
+
+    But this would require substitution directives to be processed at
+    reference-time, not at definition-time as they are now.  Or,
+    perhaps the directives could just leave ``pending`` elements
+    behind, and the transforms do the work?  How to pass the data
+    through?  Too complicated.
+
+  - An interpreted text approach is simpler and better::
+
+        See :figure:`figure name` on :page:`figure name`.
+
+    The "figure" and "page" roles could generate appropriate
+    boilerplate text.  The position of the role (prefix or suffix)
+    could also be utilized.
+
+    See `Interpreted Text`_ below.
+
+  .. _OpenOffice.org XML: http://xml.openoffice.org/
+
+* Think about _`large documents` made up of multiple subdocument
+  files.  Issues: continuity (`persistent sequences`_ above),
+  cross-references (`name-to-id mapping file`_ above and `targets in
+  other documents`_ below).
+
+  When writing a book, the author probably wants to split it up into
+  files, perhaps one per chapter (but perhaps even more detailed).
+  However, we'd like to be able to have references from one chapter to
+  another, and have continuous numbering (pages and chapters, as
+  applicable).  Of course, none of this is implemented yet.  There has
+  been some thought put into some aspects; see `the "include"
+  directive`__ and the `Reference Merging`_ transform below.
+
+  When I was working with SGML in Japan, we had a system where there
+  was a top-level coordinating file, book.sgml, which contained the
+  top-level structure of a book: the <book> element, containing the
+  book <title> and empty component elements (<preface>, <chapter>,
+  <appendix>, etc.), each with filename attributes pointing to the
+  actual source for the component.  Something like this::
+
+      <book id="bk01">
+      <title>Title of the Book</title>
+      <preface inrefid="pr01"></preface>
+      <chapter inrefid="ch01"></chapter>
+      <chapter inrefid="ch02"></chapter>
+      <chapter inrefid="ch03"></chapter>
+      <appendix inrefid="ap01"></appendix>
+      </book>
+
+  (The "inrefid" attribute stood for "insertion reference ID".)
+
+  The processing system would process each component separately, but
+  it would recognize and use the book file to coordinate chapter and
+  page numbering, and keep a persistent ID to (title, page number)
+  mapping database for cross-references.  Docutils could use a similar
+  system for large-scale, multipart documents.
+
+  __ ../ref/rst/directives.html#including-an-external-document-fragment
+
+  Aahz's idea:
+
+      First the ToC::
+
+          .. ToC-list::
+              Introduction.txt
+              Objects.txt
+              Data.txt
+              Control.txt
+
+      Then a sample use::
+
+          .. include:: ToC.txt
+
+          As I said earlier in chapter :chapter:`Objects.txt`, the
+          reference count gets increased every time a binding is made.
+
+      Which produces::
+
+          As I said earlier in chapter 2, the
+          reference count gets increased every time a binding is made.
+
+      The ToC in this form doesn't even need to be references to actual
+      reST documents; I'm simply doing it that way for a minimum of
+      future-proofing, in case I do want to add the ability to pick up
+      references within external chapters.
+
+  Perhaps, instead of ToC (which would overload the "contents"
+  directive concept already in use), we could use "manifest".  A
+  "manifest" directive might associate local reference names with
+  files::
+
+      .. manifest::
+         intro: Introduction.txt
+         objects: Objects.txt
+         data: Data.txt
+         control: Control.txt
+
+  Then the sample becomes::
+
+      .. include:: manifest.txt
+
+      As I said earlier in chapter :chapter:`objects`, the
+      reference count gets increased every time a binding is made.
+
+* Add testing for Docutils' front end tools?
+
+* Changes to sandbox/davidg/infrastructure/docutils-update?
+
+  - Modify the script to only update the snapshots if files have
+    actually changed in CVS (saving some SourceForge server cycles).
+
+  - Make passing the test suite a prerequisite to snapshot update,
+    but only if the process is completely automatic.
+
+  - Rewrite in Python?
+
+* Publisher: "Ordinary setup" shouldn't requre specific ordering; at
+  the very least, there ought to be error checking higher up in the
+  call chain.  [Aahz]
+
+  ``Publisher.get_settings`` requires that all components be set up
+  before it's called.  Perhaps the I/O *objects* shouldn't be set, but
+  I/O *classes*.  Then options are set up (``.set_options``), and
+  ``Publisher.set_io`` (or equivalent code) is called with source &
+  destination paths, creating the I/O objects.
+
+  Perhaps I/O objects shouldn't be instantiated until required.  For
+  split output, the Writer may be called multiple times, once for each
+  doctree, and each doctree should have a separate Output object (with
+  a different path).  Is the "Builder" pattern applicable here?
+
+* Perhaps I/O objects should become full-fledged components (i.e.
+  subclasses of ``docutils.Component``, as are Readers, Parsers, and
+  Writers now), and thus have associated option/setting specs and
+  transforms.
+
+* Multiple file I/O suggestion from Michael Hudson: use a file-like
+  object or something you can iterate over to get file-like objects.
+
+* Add an "--input-language" option & setting?  Specify a different
+  language module for input (bibliographic fields, directives) than
+  for output.  The "--language" option would set both input & output
+  languages.
+
+* Auto-generate reference tables for language-dependent features?
+  Could be generated from the source modules.  A special command-line
+  option could be added to Docutils front ends to do this.  (Idea from
+  Engelbert Gruber.)
+
+* Change the "class" attribute of elements (set with
+  Element.set_class) to a list?
+
+* Enable feedback of some kind from internal decisions, such as
+  reporting the successful input encoding.  Modify runtime settings?
+  System message?  Simple stderr output?
+
+* Rationalize Writer settings (HTML/LaTeX/PEP) -- share settings.
+
+* The "docutils.conf" included with Docutils should become complete,
+  with examples of every setting (many/most commented out).  It's
+  currently sparse, requiring doc lookups.
+
+* Merge docs/user/latex.txt info into tools.txt and config.txt.
+
+* Add an "--include file" command-line option (config setting too?),
+  equivalent to ".. include:: file" as the first line of the doc text?
+  Especially useful for character entity sets, text transform specs,
+  boilerplate, etc.
+
+* Parameterize the Reporter object or class?  See the `2004-02-18
+  "rest checking and source path"`_ thread.
+
+  .. _2004-02-18 "rest checking and source path":
+     http://thread.gmane.org/gmane.text.docutils.user/1112
+
+* Add a "disable_transforms" setting?  And a dummy Writer subclass
+  that does nothing when its .write() method is called?  Would allow
+  for easy syntax checking.  See the `2004-02-18 "rest checking and
+  source path"`_ thread.
+
+* Add a generic meta-stylesheet mechanism?  An external file could
+  associate style names ("class" attributes) with specific elements.
+  Could be generalized to arbitrary output attributes; useful for HTML
+  & XMLs.  Aahz implemented something like this in
+  sandbox/aahz/Effective/EffMap.py.
+
+* William Dode suggested that table cells be assigned "class"
+  attributes by columns, so that stylesheets can affect text
+  alignment.  Unfortunately, there doesn't seem to be a way (in HTML
+  at least) to leverage the "colspec" elements (HTML "col" tags) by
+  adding classes to them.  The resulting HTML is very verbose::
+
+      <td class="col1">111</td>
+      <td class="col2">222</td>
+      ...
+
+  At the very least, it should be an option.  People who don't use it
+  shouldn't be penalized by increases in their HTML file sizes.
+
+  Table rows could also be assigned classes (like odd/even).  That
+  would be easier to implement.
+
+  How should it be implemented?
+
+  * There could be writer options (column classes & row classes) with
+    standard values.
+
+  * The table directive could grow some options.  Something like
+    ":cell-classes: col1 col2 col3" (either must match the number of
+    columns, or repeat to fill?)  and ":row-classes: odd even" (repeat
+    to fill; body rows only, or header rows too?).
+
+  Probably per-table directive options are best.  The "class" values
+  could be used by any writer, and applying such classes to all tables
+  in a document with writer options is too broad.
+
+* Make the csv-table directive work with Python 2.1/2.2.  (See the
+  discussion_ on the mailing list.)
+
+  .. _discussion: http://thread.gmane.org/gmane.text.docutils.user/1319
+
+* The docutils.nodes.Element APIs could use some simplification.  For
+  example, ``node[x]`` is ambiguous (different results if x is a
+  string or an integer).  Replace with ``node[int]`` and
+  ``node.attributes[string]``?
+
+* Add file-specific settings support to config files, like::
+
+      [file index.txt]
+      compact-lists: no
+
+  Is this even possible?  Should the criterion be the name of the
+  input file or the output file?
+
+* The "validator" support added to OptionParser is very similar to
+  "traits_" in SciPy_.  Perhaps something could be done with them?
+  (Had I known about traits when I was implementing docutils.frontend,
+  I may have used them instead of rolling my own.)
+
+  .. _traits: http://old.scipy.org/site_content/traits
+  .. _SciPy: http://www.scipy.org/
+
+
+Documentation
+=============
+
+User Docs
+---------
+
+What else is needed?
+
+
+Developer Docs
+--------------
+
+* Complete `Docutils Runtime Settings <../api/runtime-settings.html>`_.
+
+* @@@ Improve the internal module documentation (docstrings in the
+  code).  Specific deficiencies listed below.
+
+  - docutils.parsers.rst.states.State.build_table: data structure
+    required (including StringList).
+
+  - docutils.parsers.rst.states: more complete documentation of parser
+    internals.
+
+* docs/ref/doctree.txt: DTD element structural relationships,
+  semantics, and attributes.  In progress; element descriptions to be
+  completed.
+
+* Document the ``pending`` elements, how they're generated and what
+  they do.
+
+* Document the transforms (perhaps in docstrings?): how they're used,
+  what they do, dependencies & order considerations.
+
+* Document the HTML classes used by html4css1.py.
+
+* Write an overview of the Docutils architecture, as an introduction
+  for developers.  What connects to what, why, and how.  Either update
+  PEP 258 (see PEPs_ below) or as a separate doc.
+
+* Give information about unit tests.  Maybe as a howto?
+
+* Document the docutils.nodes APIs.
+
+* Complete the docs/api/publisher.txt docs.
+
+
+How-Tos
+-------
+
+* Creating Docutils Writers
+
+* Creating Docutils Readers
+
+* Creating Docutils Transforms
+
+* Creating Docutils Parsers
+
+* Using Docutils as a Library
+
+
+PEPs
+----
+
+* Complete PEP 258 Docutils Design Specification.
+
+  - Fill in the blanks in API details.
+
+  - Specify the nodes.py internal data structure implementation?
+
+        [Tibs:] Eventually we need to have direct documentation in
+        there on how it all hangs together - the DTD is not enough
+        (indeed, is it still meant to be correct?  [Yes, it is.
+        --DG]).
+
+* Rework PEP 257, separating style from spec from tools, wrt Docutils?
+  See Doc-SIG from 2001-06-19/20.
+
+
+Python Source Reader
+====================
+
+General:
+
+* Analyze Tony Ibbs' PySource code.
+
+* Analyze Doug Hellmann's HappyDoc project.
+
+* Investigate how POD handles literate programming.
+
+* Take the best ideas and integrate them into Docutils.
+
+Miscellaneous ideas:
+
+* If we can detect that a comment block begins with ``##``, a la
+  JavaDoc, it might be useful to indicate interspersed section headers
+  & explanatory text in a module.  For example::
+
+      """Module docstring."""
+
+      ##
+      # Constants
+      # =========
+
+      a = 1
+      b = 2
+
+      ##
+      # Exception Classes
+      # =================
+
+      class MyException(Exception): pass
+
+      # etc.
+
+* Should standalone strings also become (module/class) docstrings?
+  Under what conditions?  We want to prevent arbitrary strings from
+  becomming docstrings of prior attribute assignments etc.  Assume
+  that there must be no blank lines between attributes and attribute
+  docstrings?  (Use lineno of NEWLINE token.)
+
+  Triple-quotes are sometimes used for multi-line comments (such as
+  commenting out blocks of code).  How to reconcile?
+
+* HappyDoc's idea of using comment blocks when there's no docstring
+  may be useful to get around the conflict between `additional
+  docstrings`_ and ``from __future__ import`` for module docstrings.
+  A module could begin like this::
+
+      #!/usr/bin/env python
+      # :Author: Me
+      # :Copyright: whatever
+
+      """This is the public module docstring (``__doc__``)."""
+
+      # More docs, in comments.
+      # All comments at the beginning of a module could be
+      # accumulated as docstrings.
+      # We can't have another docstring here, because of the
+      # ``__future__`` statement.
+
+      from __future__ import division
+
+  Using the JavaDoc convention of a doc-comment block beginning with
+  ``##`` is useful though.  It allows doc-comments and implementation
+  comments.
+
+  .. _additional docstrings:
+     ../peps/pep-0258.html#additional-docstrings
+
+* HappyDoc uses an initial comment block to set "parser configuration
+  values".  Do the same thing for Docutils, to set runtime settings on
+  a per-module basis?  I.e.::
+
+      # Docutils:setting=value
+
+  Could be used to turn on/off function parameter comment recognition
+  & other marginal features.  Could be used as a general mechanism to
+  augment config files and command-line options (but which takes
+  precedence?).
+
+* Multi-file output should be divisible at arbitrary level.
+
+* Support all forms of ``import`` statements:
+
+  - ``import module``: listed as "module"
+  - ``import module as alias``: "alias (module)"
+  - ``from module import identifier``: "identifier (from module)"
+  - ``from module import identifier as alias``: "alias (identifier
+    from module)"
+  - ``from module import *``: "all identifiers (``*``) from module"
+
+* Have links to colorized Python source files from API docs?  And
+  vice-versa: backlinks from the colorized source files to the API
+  docs!
+
+* In summaries, use the first *sentence* of a docstring if the first
+  line is not followed by a blank line.
+
+
+reStructuredText Parser
+=======================
+
+Also see the `... Or Not To Do?`__ list.
+
+__ rst/alternatives.html#or-not-to-do
+
+* The parser doesn't know anything about double-width characters such
+  as Chinese hanza & Japanese kanji/kana.  Also, it's dependent on
+  whitespace and punctuation as markup delimiters, which may not be
+  applicable in these languages.
+
+  Python 2.4 introduces the iswide() and width() string methods, so
+  this problem will be resolved later, when Python 2.4 is being used
+  more widely.
+
+* Clean up the code; refactor as required.
+
+* Add motivation sections for constructs in spec.
+
+* Document title should grow an implicit target.
+
+* Allow very long titles (on two or more lines)?
+
+* And for the sake of completeness, should definition list terms be
+  allowed to be very long (two or more lines) also?
+
+* Support generic hyperlink references to _`targets in other
+  documents`?  Not in an HTML-centric way, though (it's trivial to say
+  ``http://www.example.com/doc#name``, and useless in non-HTML
+  contexts).  XLink/XPointer?  ``.. baseref::``?  See Doc-SIG
+  2001-08-10.
+
+* .. _adaptable file extensions:
+
+  In target URLs, it would be useful to not explicitly specify the
+  file extension.  If we're generating HTML, then ".html" is
+  appropriate; if PDF, then ".pdf"; etc.  How about using ".*" to
+  indicate "choose the most appropriate filename extension?  For
+  example::
+
+      .. _Another Document: another.*
+
+  Should the choice be from among existing files only?  Documents
+  only, or objects (images, etc.) also?  (How to differentiate?
+  Element context [within "image"]?)
+
+  This may not be just a parser issue though; it may need framework
+  support.
+
+  Mailing list thread: `Images in both HTML and LaTeX`__
+
+  __ http://thread.gmane.org/gmane.text.docutils.user/1239
+
+* Implement the header row separator modification to table.el.  (Wrote
+  to Takaaki Ota & the table.el mailing list on 2001-08-12, suggesting
+  support for "=====" header rows.  On 2001-08-17 he replied, saying
+  he'd put it on his to-do list, but "don't hold your breath".)
+
+* Tony says inline markup rule 7 could do with a *little* more
+  exposition in the spec, to make clear what is going on for people
+  with head colds.
+
+* @@ Fix the parser's indentation handling to conform with the
+  stricter definition in the spec.  (Explicit markup blocks should be
+  strict or forgiving?)
+
+* @@ Tighten up the spec for indentation of "constructs using complex
+  markers": field lists and option lists?  Bodies may begin on the
+  same line as the marker or on a subsequent line (with blank lines
+  optional).  Require that for bodies beginning on the same line as
+  the marker, all lines be in strict alignment.  Currently, this is
+  acceptable::
+
+      :Field-name-of-medium-length: Field body beginning on the same
+          line as the field name.
+
+  This proposal would make the above example illegal, instead
+  requiring strict alignment.  A field body may either begin on the
+  same line::
+
+      :Field-name-of-medium-length: Field body beginning on the same
+                                    line as the field name.
+
+  Or it may begin on a subsequent line::
+
+      :Field-name-of-medium-length:
+          Field body beginning on a line subsequent to that of the
+          field name.
+
+  This would be especially relevant in degenerate cases like this::
+
+      :Number-of-African-swallows-requried-to-carry-a-coconut:
+          It would be very difficult to align the field body with
+          the left edge of the first line if it began on the same
+          line as the field name.
+
+* Allow for variant styles by interpreting _`indented lists` as if
+  they weren't indented?  For example, currently the list below will
+  be parsed as a list within a block quote::
+
+      paragraph
+
+        * list item 1
+        * list item 2
+
+  But a lot of people seem to write that way, and HTML browsers make
+  it look as if that's the way it should be.  The parser could check
+  the contents of block quotes, and if they contain only a single
+  list, remove the block quote wrapper.  There would be two problems:
+
+  1. What if we actually *do* want a list inside a block quote?
+
+  2. What if such a list comes immediately after an indented
+     construct, such as a literal block?
+
+  Both could be solved using empty comments (problem 2 already exists
+  for a block quote after a literal block).  But that's a hack.
+
+  Perhaps a runtime setting, allowing or disabling this convenience,
+  would be appropriate.  But that raises issues too:
+
+      User A, who writes lists indented (and their config file is set
+      up to allow it), sends a file to user B, who doesn't (and their
+      config file disables indented lists).  The result of processing
+      by the two users will be different.
+
+  It may seem minor, but it adds ambiguity to the parser, which is
+  bad.
+
+  See the `Doc-SIG discussion starting 2001-04-18`__ with Ed Loper's
+  "Structuring: a summary; and an attempt at EBNF", item 4 (and
+  follow-ups, here__ and here__).  Also `docutils-users,
+  2003-02-17`__ and `beginning 2003-08-04`__.
+
+  __ http://mail.python.org/pipermail/doc-sig/2001-April/001776.html
+  __ http://mail.python.org/pipermail/doc-sig/2001-April/001789.html
+  __ http://mail.python.org/pipermail/doc-sig/2001-April/001793.html
+  __ http://sourceforge.net/mailarchive/message.php?msg_id=3838913
+  __ http://sf.net/mailarchive/forum.php?thread_id=2957175&forum_id=11444
+
+* Make the parser modular.  Allow syntax constructs to be added or
+  disabled at run-time.  Or is subclassing enough?
+
+* Continue to report (info, level 1) enumerated lists whose start
+  value is not ordinal-1?
+
+* Generalize the "doctest block" construct (which is overly
+  Python-centric) to other interactive sessions?  "Doctest block"
+  could be renamed to "I/O block" or "interactive block", and each of
+  these could also be recognized as such by the parser:
+
+  - Shell sessions::
+
+        $ cat example1.txt
+        A block beginning with a "$ " prompt is interpreted as a shell
+        session interactive block.  As with Doctest blocks, the
+        interactive block ends with the first blank line, and wouldn't
+        have to be indented.
+
+  - Root shell sessions::
+
+        # cat example2.txt
+        A block beginning with a "# " prompt is interpreted as a root
+        shell session (the user is or has to be logged in as root)
+        interactive block.  Again, the block ends with a blank line.
+
+  Other standard (and unambiguous) interactive session prompts could
+  easily be added (such as "> " for WinDOS).
+
+  Tony Ibbs spoke out against this idea (2002-06-14 Doc-SIG thread
+  "docutils feedback").
+
+* Should the "doctest" element go away, and the construct simply be a
+  front-end to generic literal blocks?
+
+* Add support for pragma (syntax-altering) directives.
+
+  Some pragma directives could be local-scope unless explicitly
+  specified as global/pragma using ":global:" options.
+
+* Remove leading numbers from section titles for implicit link names?
+  A section titled "3. Conclusion" could then be referred to by
+  "``Conclusion_``" (i.e., without the "3.").
+
+* `Syntax for line blocks`__ (currently a directive)?
+
+  __ rst/alternatives.html#syntax-for-line-blocks
+
+* Implement auto-enumerated lists?  See `Auto-Enumerated Lists`__.
+
+  __ rst/alternatives.html#auto-enumerated-lists
+
+* Support whitespace in angle-bracketed standalone URLs according to
+  Appendix E ("Recommendations for Delimiting URI in Context") of `RFC
+  2396`_.
+
+  .. _RFC 2396: http://www.rfc-editor.org/rfc/rfc2396.txt
+
+* Use the vertical spacing of the source text to determine the
+  corresponding vertical spacing of the output?
+
+* [From Mark Nodine]  For cells in simple tables that comprise a
+  single line, the justification can be inferred according to the
+  following rules:
+
+  1. If the text begins at the leftmost column of the cell,
+     then left justification, ELSE
+  2. If the text begins at the rightmost column of the cell,
+     then right justification, ELSE
+  3. Center justification.
+
+  The onus is on the author to make the text unambiguous by adding
+  blank columns as necessary.  There should be a parser setting to
+  turn off justification-recognition (normally on would be fine).
+
+  Decimal justification?
+
+* Make enumerated list parsing more strict, so that this would parse
+  as a paragraph with an info message::
+
+      1. line one
+      3. line two
+
+* Generalize the "target-notes" directive into a command-line option
+  somehow?  See docutils-develop 2003-02-13.
+
+* Include the _`character entity substitution definition files`
+  `temporarily stored here <http://docutils.sf.net/tmp/charents/>`__,
+  perhaps in a ``docutils/parsers/rst/includes/`` directory.  See
+  `misc.include`_ below.
+
+* Should ^L (or something else in reST) be defined to mean
+  force/suggest page breaks in whatever output we have?
+
+  A "break" or "page-break" directive would be easy to add.  A new
+  doctree element would be required though (perhaps "break").  The
+  final behavior would be up to the Writer.  The directive argument
+  could be one of page/column/recto/verso for added flexibility.
+
+  Currently ^L (Python's "\f") characters are treated as whitespace.
+  They're converted to single spaces, actually, as are vertical tabs
+  (^K, Python's "\v").  It would be possible to recognize form feeds
+  as markup, but it requires some thought and discussion first.  Are
+  there any downsides?  Many editing environments do not allow the
+  insertion of control characters.  Will it cause any harm?  It would
+  be useful as a shorthand for the directive.
+
+  It's common practice to use ^L before Emacs "Local Variables"
+  lists::
+
+      ^L
+      ..
+         Local Variables:
+         mode: indented-text
+         indent-tabs-mode: nil
+         sentence-end-double-space: t
+         fill-column: 70
+         End:
+
+  These are already present in many PEPs and Docutils project
+  documents.  From the Emacs manual (info):
+
+      A "local variables list" goes near the end of the file, in the
+      last page.  (It is often best to put it on a page by itself.)
+
+  It would be unfortunate if this construct caused a final blank page
+  to be generated (for those Writers that recognize the page breaks).
+  We'll have to add a transform that looks for a "break" plus zero or
+  more comments at the end of a document, and removes them.
+
+* Could the "break" concept above be extended to inline forms?
+  E.g. "^L" in the middle of a sentence could cause a line break.
+  Only recognize it at the end of a line (i.e., "\f\n")?
+
+  Or is formfeed inappropriate?  Perhaps vertical tab ("\v"), but even
+  that's a stretch.  Can't use carriage returns, since they're
+  commonly used for line endings.
+
+* Allow a "::"-only paragraph (first line, actually) to introduce a
+  literal block without a blank line?  (Idea from Paul Moore.) ::
+
+      ::
+          This is a literal block
+
+  Is indentation enough to make the separation between a paragraph
+  which contains just a ``::`` and the literal text unambiguous?
+  There's one problem with this concession.  What if one wants a
+  definition list item which defines the term "::"?  We'd have to
+  escape it.  Currenty, "\::" doesn't work (although it should;
+  **bug**), and ":\:" is misinterpreted as a field name (name "\";
+  also a **bug**).  Assuming these bugs are squashed, I suppose it's a
+  useful special case.  It would only be reasonable to apply it to
+  "::"-only paragraphs though.  I think the blank line is visually
+  necessary if there's text before the "::"::
+
+      The text in this paragraph needs separation
+      from the literal block following::
+          This doesn't look right.
+
+  Another idea.  Would it be worthwhile to allow literal blocks to
+  begin without a newline after the "::"?  Example::
+
+      ::  while True:
+              print 'hello world'
+
+  Perhaps.  Perhaps not.
+
+* Add new syntax for _`nested inline markup`?  Or extend the parser to
+  parse nested inline markup somehow?  See the `collected notes
+  <rst/alternatives.html#nested-inline-markup>`__.
+
+* Drop the backticks from embedded URIs with omitted reference text?
+  Should the angle brackets be kept in the output or not? ::
+
+      <file_name>_
+
+  Probably not worth the trouble.
+
+* Add ``^superscript^`` inline markup?  The only common non-markup
+  uses of "^" I can think of are as short hand for "superscript"
+  itself and for describing control characters ("^C to cancel").  The
+  former supports the proposed syntax, and it could be argued that the
+  latter ought to be literal text anyhow (e.g. "``^C`` to cancel").
+
+* Add _`math markup`.  We should try for a general solution, that's
+  applicable to any output format.  Using a standard, such as MathML_,
+  would be best.  TeX (or itex_) would be acceptable as a *front-end*
+  to MathML.  See `the culmination of a relevant discussion
+  <http://article.gmane.org/gmane.text.docutils.user/118>`__.
+
+  Both a directive and an interpreted text role will be necessary (for
+  each markup).  Directive example::
+
+      .. itex::
+         \alpha_t(i) = P(O_1, O_2, \dots O_t, q_t = S_i \lambda)
+
+  The same thing inline::
+
+      The equation in question is :itex:`\alpha_t(i) = P(O_1, O_2,
+      \dots O_t, q_t = S_i \lambda)`.
+
+  .. _MathML: http://www.w3.org/TR/MathML2/
+  .. _itex: http://pear.math.pitt.edu/mathzilla/itex2mmlItex.html
+
+* How about a syntax for alternative hyperlink behavior, such as "open
+  in a new window" (as in HTML's ``<a target="_blank">``)?  Double
+  angle brackets might work for inline targets::
+
+      The `reference docs <<url>>`__ may be handy.
+
+  But what about explicit targets?
+
+  The MoinMoin wiki uses a caret ("^") at the beginning of the URL
+  ("^" is not a legal URI character).  That could work for both inline
+  and explicit targets::
+
+      The `reference docs <^url>`__ may be handy.
+
+      .. _name: ^url
+
+* Allow _`transitions` between sections?  A transition immediately
+  preceding a section title could be interpreted as a sibling of that
+  section.  The context would obviate the need for a special
+  directive.  The document model would have to accommodate the
+  change::
+
+      <!ENTITY % structure.model
+        " ( ( (%body.elements; | topic | sidebar)+,
+              (transition, (%body.elements; | topic | sidebar)+ )*,
+              (transition?, (%section.elements;))* )
+          | (transition?, (%section.elements;))+ ) ">
+
+* Add an option to allow arbitrary URI schemes (not just those in
+  urischemes.py)?  This would make text like "signal:noise" into a
+  URI.
+
+* Add an option to add URI schemes at runtime.
+
+* _`Segmented lists`::
+
+      : segment : segment : segment
+      : segment : segment : very long
+        segment
+      : segment : segment : segment
+
+  The initial colon (":") can be thought of as a type of bullet
+
+  We could even have segment titles::
+
+      :: title  : title   : title
+      : segment : segment : segment
+      : segment : segment : segment
+
+  This would correspond well to DocBook's SegmentedList.  Output could
+  be tabular or "name: value" pairs, as described in DocBook's docs.
+
+* Allow backslash-escaped colons in field names::
+
+      :Case Study\: Event Handling: This chapter will be dropped.
+
+* _`footnote spaces`:
+
+  When using superscripted footnote references, the space looks ugly.
+  We could automatically activate --trim-footnote-reference-space when
+  --footnote-references=superscript (or --use-latex-footnotes for the
+  LaTeX writer) is supplied.
+
+  There should be also an option to deactivate the space-trimming,
+  e.g. --leave-footnote-reference-space.  The implementation logic is
+  a bit tricky: --leave-footnote-reference-space can't just be
+  "settings.trim_footnote_reference_space = False", because of the
+  automatic activation, unless the order of options is significant.
+  If the order is significant, the automatic activation has to take
+  place in the option-handling code.  But config files are handled
+  after the fact, so order can't be relied upon there.  So they have
+  to be two independent settings.
+
+* Enable _`tables inside XML comments`, where "--" ends comments.  I
+  see three implementation possibilities:
+
+  1. Make the table syntax characters into "table" directive options.
+     This is the most flexible but most difficult, and we probably
+     don't need that much flexibility.
+
+  2. Substitute "~" for "-" with a specialized directive option
+     (e.g. ":tildes:").
+
+  3. Make the standard table syntax recognize "~" as well as "-", even
+     without a directive option.  Individual tables would have to be
+     internally consistent.
+
+  Directive options are preferable to configuration settings, because
+  tables are document-specific.  A pragma directive would be another
+  approach, to set the syntax once for a whole document.
+
+
+Directives
+----------
+
+Directives below are often referred to as "module.directive", the
+directive function.  The "module." is not part of the directive name
+when used in a document.
+
+* Allow directives to be added at run-time?
+
+* Use the language module for directive option names?
+
+* Add "substitution_only" and "substitution_ok" function attributes,
+  and automate context checking?
+
+* Change directive functions to directive classes?  Superclass'
+  ``__init__()`` could handle all the bookkeeping.
+
+* Implement options on existing directives:
+
+  - Add a "name" option to directives, to set an author-supplied
+    identifier?
+
+  - All directives that produce titled elements should grow implicit
+    reference names based on the titles.
+
+  - _`images.image`: "border"?
+
+    _`Units of measure`?  (See `docutils-users, 2003-03-02
+    <http://article.gmane.org/gmane.text.docutils.user/154>`__, and
+    `docutils-develop, 2004-04-29
+    <http://article.gmane.org/gmane.text.docutils.devel/1439>`_.)
+
+  - _`images.figure`: "title" and "number", to indicate a formal
+    figure?
+
+  - _`parts.sectnum`: "local"?, "start", "refnum"
+
+    A "local" option could enable numbering for sections from a
+    certain point down, and sections in the rest of the document are
+    not numbered.  For example, a reference section of a manual might
+    be numbered, but not the rest.  OTOH, an all-or-nothing approach
+    would probably be enough.
+
+    The "start" option will specify the sequence set to use at the
+    same time as the starting value, for the first part of the section
+    number (i.e., section, not subsection).  For example::
+
+        .. sectnum: :start: 1
+
+        .. sectnum: :start: A
+
+        .. sectnum: :start: 5
+
+        .. sectnum: :start: I
+
+    The first one is the default: start at 1, numbered.  The second
+    one specifies letters, and start at "A".  The third specifies
+    numbers, start at 5.  The last example could signal Roman
+    numerals, although I don't know if they'd be applicable here.
+    Enumerated lists already do all this; perhaps that code could be
+    reused.
+
+    Here comes the tricky part.  The "sectnum" directive should be
+    usable multiple times in a single document.  For example, in a
+    long document with "chapter" and "appendix" sections, there could
+    be a second "sectnum" before the first appendix, changing the
+    sequence used (from 1,2,3... to A,B,C...).  This is where the
+    "local" concept comes in.  This part of the implementation can be
+    left for later.
+
+    A "refnum" option (better name?) would insert reference names
+    (targets) consisting of the reference number.  Then a URL could be
+    of the form ``http://host/document.html#2.5`` (or "2-5"?).  Allow
+    internal references by number?  Allow name-based *and*
+    number-based ids at the same time, or only one or the other (which
+    would the table of contents use)?  Usage issue: altering the
+    section structure of a document could render hyperlinks invalid.
+
+  - _`parts.contents`: Add a "suppress" or "prune" option?  It would
+    suppress contents display for sections in a branch from that point
+    down.  Or a new directive, like "prune-contents"?
+
+    Add an option to include topics in the TOC?  Another for sidebars?
+    See docutils-develop 2003-01-29.
+
+  - _`misc.include`:
+
+    - @@@ Allow whitespace in paths (just not at line boundaries).
+
+    - "encoding" option?  Take default from runtime settings.  Use
+      Input component to read it in?
+
+    - Option to select a range of lines?
+
+    - Option to label lines?
+
+    - Default directory for "built-in includes", using the C syntax
+      ``#include <name>``?
+
+          Use C-preprocessor semantics for locating include files?
+          E.g., ``.. include:: file.txt`` will read another file into
+          the current one, relative to the current file's directory,
+          and ``.. include:: <standard>`` will read a standard include
+          file from ``docutils/include/``.  (Should "quotes" be
+          required around non-standard include files?)
+
+          -- http://sf.net/mailarchive/message.php?msg_id=1938401
+
+      I now think that ``docutils/parsers/rst/include/`` is a better
+      place for these files, since they're reStructuredText-specific.
+
+      Keeping standard data files together with the package code makes
+      sense to me.  It seems much less complex to implement than a
+      separate system data directory, such as ``/usr/share/docutils``.
+      Any reason a system data directory should be used?  How does
+      Distutils handle data files?
+
+      How about an environment variable, say RSTINCLUDEPATH or
+      RSTPATH?  This could be combined with a setting/option to allow
+      user-defined include directories.
+
+      For a specific application, see the discussion of `character
+      entity substitution definition files`_ above.
+
+      Instead of C-include "<syntax>", perhaps a new "include-sys"
+      directive?
+
+  - _`misc.raw`: "encoding" option?
+
+  - _`misc.class`: @@@ Allow multiple classes (whitespace-separated)
+    to be declared.
+
+* Implement directives.  Each of the list items below begins with an
+  identifier of the form, "module_name.directive_function_name".  The
+  directive name itself could be the same as the
+  directive_function_name, or it could differ.
+
+  - _`html.imagemap` (Useful outside of HTML?  If not, replace with
+    image only in non-HTML writers?)
+
+  - _`parts.endnotes` (or "footnotes"): See `Footnote & Citation Gathering`_.
+
+  - _`parts.citations`: See `Footnote & Citation Gathering`_.
+
+  - _`misc.exec`: Execute Python code & insert the results.  Perhaps
+    dangerous?  Call it "python" to allow for other languages?
+
+  - _`misc.system`?: Execute an ``os.system()`` call, and insert the
+    results (possibly as a literal block).  Definitely dangerous!  How
+    to make it safe?  Perhaps such processing  should be left outside
+    of the document, in the user's production system (a makefile or a
+    script or whatever).  Or, the directive could be disabled by
+    default and only enabled with an explicit command-line option or
+    config file setting.  Even then, an interactive prompt may be
+    useful, such as:
+
+        The file.txt document you are processing contains a "system"
+        directive requesting that the ``sudo rm -rf /`` command be
+        executed.  Allow it to execute?  (y/N)
+
+  - _`misc.eval`: Evaluate an expression & insert the text.  At parse
+    time or at substitution time?  Dangerous?  Perhaps limit to canned
+    macros; see text.date_ below.
+
+  - _`misc.encoding`: Specify the character encoding of the input
+    data.  But there are problems:
+
+    - When it sees the directive, the parser will already have read
+      the input data, and encoding determination will already have
+      been done.
+
+    - If a file with an "encoding" directive is edited and saved with
+      a different encoding, the directive may cause data corruption.
+
+  - _`misc.language`: Specify the language of a document.  There is a
+    problem similar to the first problem listed for misc.encoding_,
+    although to a lesser degree.
+
+  - _`misc.settings`: Set any Docutils runtime setting from within a
+    document?
+
+  - _`misc.charents`: Equivalent to::
+
+        .. include:: {includepath}/charents.txt
+
+  - .. _conditional directives:
+
+    Docutils already has the ability to say "use this content for
+    Writer X" (via the "raw" directive), but it doesn't have the
+    ability to say "use this content for any Writer other than X".  It
+    wouldn't be difficult to add this ability though.
+
+    My first idea would be to add a set of conditional directives.
+    Let's call them "writer-is" and "writer-is-not" for discussion
+    purposes (don't worry about implemention details).  We might
+    have::
+
+         .. writer-is:: text-only
+
+            ::
+
+                +----------+
+                |   SNMP   |
+                +----------+
+                |   UDP    |
+                +----------+
+                |    IP    |
+                +----------+
+                | Ethernet |
+                +----------+
+
+         .. writer-is:: pdf
+
+            .. figure:: protocol_stack.eps
+
+         .. writer-is-not:: text-only pdf
+
+            .. figure:: protocol_stack.png
+
+    This could be an interface to the Filter transform
+    (docutils.transforms.components.Filter).
+
+    The ideas in `adaptable file extensions`_ above may also be
+    applicable here.
+
+    Here's an example of a directive that could produce multiple
+    outputs (*both* raw troff pass-through *and* a GIF, for example)
+    and allow the Writer to select. ::
+
+        .. eqn::
+
+           .EQ
+           delim %%
+           .EN
+           %sum from i=o to inf c sup i~=~lim from {m -> inf}
+           sum from i=0 to m sup i%
+           .EQ
+           delim off
+           .EN
+
+  - _`body.qa` (directive a.k.a. "faq", "questions"): Questions &
+    Answers.  Implement as a generic two-column marked list?  As a
+    standalone (non-directive) construct?  (Is the markup ambiguous?)
+    Add support to parts.contents.
+
+    New elements would be required.  Perhaps::
+
+        <!ELEMENT question_list (question_list_item+)>
+        <!ATTLIST question_list
+            numbering  (none | local | global)
+                                #IMPLIED
+            start     NUMBER    #IMPLIED>
+        <!ELEMENT question_list_item (question, answer*)>
+        <!ELEMENT question %text.model;>
+        <!ELEMENT answer (%body.elements;)+>
+
+    Originally I thought of implementing a Q&A list with special
+    syntax::
+
+        Q: What am I?
+
+        A: You are a question-and-answer
+           list.
+
+        Q: What are you?
+
+        A: I am the omniscient "we".
+
+    Where each "Q" and "A" could also be numbered (e.g., "Q1").
+    However, a simple enumerated or bulleted list will do just fine
+    for syntax.  A directive could treat the list specially; e.g. the
+    first paragraph could be treated as a question, the remainder as
+    the answer (multiple answers could be represented by nested
+    lists).  Without special syntax, this directive becomes low
+    priority.
+
+  - _`body.example`: Examples; suggested by Simon Hefti.  Semantics as
+    per Docbook's "example"; admonition-style, numbered, reference,
+    with a caption/title.
+
+  - _`body.index`: Index targets.
+
+    Were I writing a book with an index, I guess I'd need two
+    different kinds of index targets: inline/implicit and
+    out-of-line/explicit.  For example::
+
+        In this `paragraph`:index:, several words are being
+        `marked`:index: inline as implicit `index`:index:
+        entries.
+
+        .. index:: markup
+        .. index:: syntax
+
+        The explicit index directives above would refer to
+        this paragraph.  It might also make sense to allow multiple
+        entries in an ``index`` directive:
+
+        .. index::
+            markup
+            syntax
+
+    The words "paragraph", "marked", and "index" would become index
+    entries pointing at the words in the first paragraph.  The index
+    entry words appear verbatim in the text.  (Don't worry about the
+    ugly ":index:" part; if indexing is the only/main application of
+    interpreted text in your documents, it can be implicit and
+    omitted.)  The two directives provide manual indexing, where the
+    index entry words ("markup" and "syntax") do not appear in the
+    main text.  We could combine the two directives into one::
+
+        .. index:: markup; syntax
+
+    Semicolons instead of commas because commas could *be* part of the
+    index target, like::
+
+        .. index:: van Rossum, Guido
+
+    Another reason for index directives is because other inline markup
+    wouldn't be possible within inline index targets.
+
+    Sometimes index entries have multiple levels.  Given::
+
+        .. index:: statement syntax: expression statements
+
+    In a hypothetical index, combined with other entries, it might
+    look like this::
+
+        statement syntax
+            expression statements ..... 56
+            assignment ................ 57
+            simple statements ......... 58
+            compound statements ....... 60
+
+    Inline multi-level index targets could be done too.  Perhaps
+    something like::
+
+        When dealing with `expression statements <statement syntax:>`,
+        we must remember ...
+
+    The opposite sense could also be possible::
+
+        When dealing with `index entries <:multi-level>`, there are
+        many permutations to consider.
+
+    Also "see / see also" index entries.
+
+    Given::
+
+        Here's a paragraph.
+
+        .. index:: paragraph
+
+    (The "index" directive above actually targets the *preceding*
+    object.)  The directive should produce something like this XML::
+
+        <paragraph>
+        <index_entry text="paragraph"/>
+        Here's a paragraph.
+        </paragraph>
+
+    This kind of content model would also allow true inline
+    index-entries::
+
+        Here's a `paragraph`:index:.
+
+    If the "index" role were the default for the application, it could be
+    dropped::
+
+        Here's a `paragraph`.
+
+    Both of these would result in this XML::
+
+        <paragraph>
+        Here's a <index_entry>paragraph</index_entry>.
+        </paragraph>
+
+  - _`body.literal`: Literal block, possibly "formal" (see `object
+    numbering and object references`_ above).  Possible options:
+
+	- "highlight" a range of lines
+
+	- "number" or "line-numbers"
+
+    - "styled" could indicate that the directive should check for
+      style comments at the end of lines to indicate styling or
+      markup.
+
+      Specific derivatives (i.e., a "python-interactive" directive)
+      could interpret style based on cues, like the ">>> " prompt and
+      "input()"/"raw_input()" calls.
+
+	See docutils-users 2003-03-03.
+
+  - _`body.sidebar`: Add to the already implemented directive.  Allow
+    internal section structure, with adornment styles independent of
+    the main document.
+
+  - _`body.list-table`: See `List-Driven Tables
+    <rst/alternatives.html#list-driven-tables>`_.
+
+  - _`colorize.python`: Colorize Python code.  Fine for HTML output,
+    but what about other formats?  Revert to a literal block?  Do we
+    need some kind of "alternate" mechanism?  Perhaps use a "pending"
+    transform, which could switch its output based on the "format" in
+    use.  Use a factory function "transformFF()" which returns either
+    "HTMLTransform()" instance or "GenericTransform" instance?
+
+    If we take a Python-to-HTML pretty-printer and make it output a
+    Docutils internal doctree (as per nodes.py) instead of HTML, then
+    each output format's stylesheet (or equivalent) mechanism could
+    take care of the rest.  The pretty-printer code could turn this
+    doctree fragment::
+
+         <literal_block xml:space="preserve">
+         print 'This is Python code.'
+         for i in range(10):
+             print i
+         </literal_block>
+
+    into something like this ("</>" is end-tag shorthand)::
+
+         <literal_block xml:space="preserve" class="python">
+         <keyword>print</> <string>'This is Python code.'</>
+         <keyword>for</> <identifier>i</> <keyword
+         >in</> <expression>range(10)</>:
+             <keyword>print</> <expression>i</>
+         </literal_block>
+
+    But I'm leaning toward adding a single new general-purpose
+    element, "phrase", equivalent to HTML's <span>.  Here's the
+    example rewritten using the generic "phrase"::
+
+        <literal_block xml:space="preserve" class="python">
+        <phrase class="keyword">print</> <phrase
+         class="string">'This is Python code.'</>
+        <phrase class="keyword">for</> <phrase
+         class="identifier">i</> <phrase class="keyword">in</> <phrase
+         class="expression">range(10)</>:
+            <phrase class="keyword">print</> <phrase
+             class="expression">i</>
+        </literal_block>
+
+    It's more verbose but more easily extensible and more appropriate
+    for the case at hand.  It allows us to edit style sheets to add
+    support for new formats, not the Docutils code itself.
+
+    Perhaps a single directive with a format parameter would be
+    better::
+
+        .. colorize:: python
+
+           print 'This is Python code.'
+           for i in range(10):
+               print i
+
+    But directives can have synonyms for convenience.  "format::
+    python" was suggested, but "format" seems too generic.
+
+  - _`text.date`: Datestamp.  For substitutions.  The directive could
+    be followed by a formatting string, using strftime codes.  Default
+    is "%Y-%m-%d" (ISO 8601 date), but time fields can also be used.
+
+    - Combined with the "include" directive, implement canned macros?
+      E.g.::
+
+          .. include:: <macros>
+
+          Today's date is |date|.
+
+      Where "macros" contains ``.. |date| date::``, among others.
+
+  - _`text.time`: Timestamp.  For substitutions.  Shortcut for
+    ``.. date:: %H:%M``.  Date fields can also be used.
+
+  - _`pysource.usage`: Extract a usage message from the program,
+    either by running it at the command line with a ``--help`` option
+    or through an exposed API.  [Suggestion for Optik.]
+
+
+Interpreted Text
+----------------
+
+Interpreted text is entirely a reStructuredText markup construct, a
+way to get around built-in limitations of the medium.  Some roles are
+intended to introduce new doctree elements, such as "title-reference".
+Others are merely convenience features, like "RFC".
+
+All supported interpreted text roles must already be known to the
+Parser when they are encountered in a document.  Whether pre-defined
+in core/client code, or in the document, doesn't matter; the roles
+just need to have already been declared.  Adding a new role often
+involves adding a new element to the DTD and may require extensive
+support, therefore such additions should be well thought-out.  There
+should be a limited number of roles.
+
+The only place where no limit is placed on variation is at the start,
+at the Reader/Parser interface.  Transforms are inserted by the Reader
+into the Transformer's queue, where non-standard elements are
+converted.  Once past the Transformer, no variation from the standard
+Docutils doctree is possible.
+
+An example is the Python Source Reader, which will use interpreted
+text extensively.  The default role will be "Python identifier", which
+will be further interpreted by namespace context into <class>,
+<method>, <module>, <attribute>, etc. elements (see pysource.dtd),
+which will be transformed into standard hyperlink references, which
+will be processed by the various Writers.  No Writer will need to have
+any knowledge of the Python-Reader origin of these elements.
+
+* Alan Jaffray suggested (and I agree) that it would be sensible to:
+
+  - have a directive and/or command-line option to specify a default
+    role for interpreted text
+  - allow the reST processor to take an argument for the default role
+    (this will be subsumed by the above via the runtime settings
+    mechanism)
+  - issue a warning when processing documents with no default role
+    which contain interpreted text with no explicitly specified role
+    (there will always be a default role, so this won't happen)
+
+* Add explicit interpreted text roles for the rest of the implicit
+  inline markup constructs: named-reference, anonymous-reference,
+  footnote-reference, citation-reference, substitution-reference,
+  target, uri-reference (& synonyms).
+
+* Add directives for each role as well?  This would allow indirect
+  nested markup::
+
+      This text contains |nested inline markup|.
+
+      .. |nested inline markup| emphasis::
+
+         nested ``inline`` markup
+
+* Implement roles:
+
+  - "acronym" and "abbreviation": Associate the full text with a short
+    form.  Jason Diamond's description:
+
+        I want to translate ```reST`:acronym:`` into ``<acronym
+        title='reStructuredText'>reST</acronym>``.  The value of the
+        title attribute has to be defined out-of-band since you can't
+        parameterize interpreted text.  Right now I have them in a
+        separate file but I'm experimenting with creating a directive
+        that will use some form of reST syntax to let you define them.
+
+    Should Docutils complain about undefined acronyms or
+    abbreviations?
+
+    What to do if there are multiple definitions?  How to
+    differentiate between CSS (Content Scrambling System) and CSS
+    (Cascading Style Sheets) in a single document?  David Priest
+    responds,
+
+        The short answer is: you don't.  Anyone who did such a thing
+        would be writing very poor documentation indeed.  (Though I
+        note that `somewhere else in the docs`__, there's mention of
+        allowing replacement text to be associated with the
+        abbreviation.  That takes care of the duplicate
+        acronyms/abbreviations problem, though a writer would be
+        foolish to ever need it.)
+
+        __ `inline parameter syntax`_
+
+    How to define the full text?  Possibilities:
+
+    1. With a directive and a definition list? ::
+
+           .. acronyms::
+
+              reST
+                  reStructuredText
+              DPS
+                  Docstring Processing System
+
+       Would this list remain in the document as a glossary, or would
+       it simply build an internal lookup table?  A "glossary"
+       directive could be used to make the intention clear.
+       Acronyms/abbreviations and glossaries could work together.
+
+       Then again, a glossary could be formed by gathering individual
+       definitions from around the document.
+
+    2. Some kind of `inline parameter syntax`_? ::
+
+           `reST <reStructuredText>`:acronym: is `WYSIWYG <what you
+           see is what you get>`:acronym: plaintext markup.
+
+       .. _inline parameter syntax:
+          rst/alternatives.html#parameterized-interpreted-text
+
+    3. A combination of 1 & 2?
+
+       The multiple definitions issue could be handled by establishing
+       rules of priority.  For example, directive-based lookup tables
+       have highest priority, followed by the first inline definition.
+       Multiple definitions in directive-based lookup tables would
+       trigger warnings, similar to the rules of `implicit hyperlink
+       targets`__.
+
+       __ ../ref/rst/restructuredtext.html#implicit-hyperlink-targets
+
+  - "annotation": The equivalent of the HTML "title" attribute.  This
+    is secondary information that may "pop up" when the pointer hovers
+    over the main text.  A corresponding directive would be required
+    to associate annotations with the original text (by name, or
+    positionally as in anonymous targets?).
+
+  - "figure", "table", "listing", "chapter", "page", etc: See `object
+    numbering and object references`_ above.
+
+  - "term"?: Unfamiliar or specialized terminology.
+
+  - "glossary-term": This would establish a link to a glossary.  It
+    would require an associated "glossary-entry" directive, whose
+    contents could be a definition list::
+
+        .. glossary-entry::
+
+           term1
+               definition1
+           term2
+               definition2
+
+    This would allow entries to be defined anywhere in the document,
+    and collected (via a "glossary" directive perhaps) at one point.
+
+
+Unimplemented Transforms
+========================
+
+* _`Footnote & Citation Gathering`
+
+  Collect and move footnotes & citations to the end of a document.
+  (Separate transforms.)
+
+* _`Hyperlink Target Gathering`
+
+  It probably comes in two phases, because in a Python context we need
+  to *resolve* them on a per-docstring basis [do we? --DG], but if the
+  user is trying to do the callout form of presentation, they would
+  then want to group them all at the end of the document.
+
+* _`Reference Merging`
+
+  When merging two or more subdocuments (such as docstrings),
+  conflicting references may need to be resolved.  There may be:
+
+  * duplicate reference and/or substitution names that need to be made
+    unique; and/or
+  * duplicate footnote numbers that need to be renumbered.
+
+  Should this be done before or after reference-resolving transforms
+  are applied?  What about references from within one subdocument to
+  inside another?
+
+* _`Document Splitting`
+
+  If the processed document is written to multiple files (possibly in
+  a directory tree), it will need to be split up.  Internal references
+  will have to be adjusted.
+
+  (HTML only?  Initially, yes.  Eventually, anything should be
+  splittable.)
+
+  Idea: insert a "destination" attribute into the root element of each
+  split-out document, containing the path/filename.  The Output object
+  or Writer will recognize this attribute and split out the files
+  accordingly.  Must allow for common headers & footers, prev/next,
+  breadcrumbs, etc.
+
+* _`Navigation`
+
+  If a document is split up, each segment will need navigation links:
+  parent, children (small TOC), previous (preorder), next (preorder).
+  Part of `Document Splitting`_?
+
+* _`List of System Messages`
+
+  The ``system_message`` elements are inserted into the document tree,
+  adjacent to the problems themselves where possible.  Some (those
+  generated post-parse) are kept until later, in
+  ``document.messages``, and added as a special final section,
+  "Docutils System Messages".
+
+  Docutils could be made to generate hyperlinks to all known
+  system_messages and add them to the document, perhaps to the end of
+  the "Docutils System Messages" section.
+
+  Fred L. Drake, Jr. wrote:
+
+      I'd like to propose that both parse- and transformation-time
+      messages are included in the "Docutils System Messages" section.
+      If there are no objections, I can make the change.
+
+  The advantage of the current way of doing things is that parse-time
+  system messages don't require a transform; they're already in the
+  document.  This is valuable for testing (unit tests,
+  tools/quicktest.py).  So if we do decide to make a change, I think
+  the insertion of parse-time system messages ought to remain as-is
+  and the Messages transform ought to move all parse-time system
+  messages (remove from their originally inserted positions, insert in
+  System Messages section).
+
+* _`Index Generation`
+
+
+HTML Writer
+===========
+
+* Construct a _`templating system`, as in ht2html/yaptu, using
+  directives and substitutions for dynamic stuff?  Or a specialized
+  writer to generate .ht & links.h files for ht2html?
+
+  This is an overly generic, ambitious, and unnecessary idea.  The two
+  systems, ht2html & yaptu, represent different approaches to
+  templating.  Ht2html stiches bits of HTML together to make unified
+  web pages.  Yaptu is for generic programmable text replacement.
+  Templating should simply be left to other systems.  Users can choose
+  a templating system to apply to their reStructuredText documents as
+  best serves their interests.
+
+* Add more support for <link> elements, especially for navigation
+  bars.
+
+* Make the admonitions more distinctive and varied.
+
+* Make the "class" attributes optional?  Implies no stylesheet?
+
+* Base list compaction on the spacing of source list?  Would require
+  parser support.  (Idea: fantasai, 16 Dec 2002, doc-sig.)
+
+* Add a tool tip ("title" attribute?) to footnote back-links
+  identifying them as such.  Text in Docutils language module.
+
+* Add an option to restrict the document title to <head><title> only,
+  and not include it in the document body.  Subtitle?
+
+* Insert a comment at the top of HTML files that describes how to deal
+  with the broken servers w.r.t. encodings?  Perhaps something like
+  this:
+
+      <!--
+      If your browser is showing gibberish, the server may be broken.
+      Try manually setting the character coding to "UTF-8".  In
+      Mozilla/Firefox, do ...  In Internet Explorer, do ...
+      For details, see <URL>.
+      -->
+
+
+Front-End Tools
+===============
+
+* What about if we don't know which Reader and/or Writer we are
+  going to use?  If the Reader/Writer is specified on the
+  command-line?  (Will this ever happen?)
+
+  Perhaps have different types of front ends:
+
+  a) _`Fully qualified`: Reader and Writer are hard-coded into the
+     front end (e.g. ``pep2html [options]``, ``pysource2pdf
+     [options]``).
+
+  b) _`Partially qualified`: Reader is hard-coded, and the Writer is
+     specified a sub-command (e.g. ``pep2 html [options]``,
+     ``pysource2 pdf [options]``).  The Writer is known before option
+     processing happens, allowing the OptionParser to be built
+     dynamically.  Alternatively, the Writer could be hard-coded and
+     the Reader specified as a sub-command (e.g. ``htmlfrom pep
+     [options]``).
+
+  c) _`Unqualified`: Reader and Writer are specified as subcommands
+     (e.g. ``publish pep html [options]``, ``publish pysource pdf
+     [options]``).  A single front end would be sufficient, but
+     probably only useful for testing purposes.
+
+  d) _`Dynamic`: Reader and/or Writer are specified by options, with
+     defaults if unspecified (e.g. ``publish --writer pdf
+     [options]``).  Is this possible?  The option parser would have
+     to be told about new options it needs to handle, on the fly.
+     Component-specific options would have to be specified *after*
+     the component-specifying option.
+
+  Allow common options before subcommands, as in CVS?  Or group all
+  options together?  In the case of the `fully qualified`_
+  front ends, all the options will have to be grouped together
+  anyway, so there's no advantage (we can't use it to avoid
+  conflicts) to splitting common and component-specific options
+  apart.
+
+* Parameterize help text & defaults somehow?  Perhaps a callback?  Or
+  initialize ``settings_spec`` in ``__init__`` or ``init_options``?
+
+* Disable common options that don't apply?
+
+* Implement the "sectnum" directive as a command-line option also?
+
+* @@@ Come up with better names for the most-used tools, and install
+  them as scripts.
+
+* Create a single dynamic_ or unqualified_ front end that can be
+  installed?
+
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
