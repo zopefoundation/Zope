@@ -87,8 +87,8 @@
 
 def manage_addExternalMethod(self, id, title, module, function):
     """
-
-    Add an external method to an ObjectManager.
+    Add an external method to an
+    'ObjectManager'.
   
     In addition to the standard object-creation arguments,
     'id' and title, the following arguments are defined:
@@ -114,8 +114,8 @@ def manage_addExternalMethod(self, id, title, module, function):
 
 class ExternalMethod:
     """
-
-    Web-callable functions that encapsulate external python functions.
+    Web-callable functions that encapsulate external
+    Python functions.
 
     The function is defined in an external file.  This file is treated
     like a module, but is not a module.  It is not imported directly,
@@ -135,7 +135,8 @@ class ExternalMethod:
 
     def manage_edit(self, title, module, function, REQUEST=None):
         """
-        Change the external method
+        Change the
+        External Method.
 
         See the description of manage_addExternalMethod for a
         description of the arguments 'module' and 'function'.
@@ -150,8 +151,8 @@ class ExternalMethod:
     def __call__(self, *args, **kw):
 
         """
-
-        Call an ExternalMethod
+        Call the
+        External Method.
 
         Calling an External Method is roughly equivalent to calling
         the original actual function from Python.  Positional and
