@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.140 $'[11:-2]
+__version__='$Revision: 1.141 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -992,6 +992,10 @@ host_match=ts_regex.compile('[-A-Za-z0-9\.\*]*').match #TS
 def domainSpecMatch(spec, request):
     host=''
     addr=''
+
+    # Fast exit for the match-all case
+    if len(spec) == 1 and spec[0] == '*':
+        return 1
 
     if request.has_key('REMOTE_HOST'):
         host=request['REMOTE_HOST']
