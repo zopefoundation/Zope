@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -231,6 +231,8 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
 		    title  ='Success!',
 		    message='Your changes have been saved',
 		    action ='manage_main')
+
+    def PrincipiaSearchSource(self): return self.read()
 
 default_html="""<!--#var standard_html_header-->
 <H2><!--#var title_or_id--> <!--#var document_title--></H2>
