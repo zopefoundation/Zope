@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -200,6 +200,13 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return 0
         return 1
 
+    def hasProperty(self, id):
+        """Return true if object has a property 'id'"""
+        for p in self._properties:
+            if id==p['id']:
+                return 1
+        return 0
+
     def getProperty(self, id, d=None):
         """Get the property 'id', returning the optional second 
            argument or None if no such property is found."""
@@ -261,13 +268,6 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 value=type_converters[proptype](value)
         self._setPropValue(id, value)
 
-    def hasProperty(self, id):
-        """Return true if object has a property 'id'"""
-        for p in self._properties:
-            if id==p['id']:
-                return 1
-        return 0
-
     def _delProperty(self, id):
         if not self.hasProperty(id):
             raise ValueError, 'The property %s does not exist' % id
@@ -321,11 +321,11 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         get turned off will be ignored.  Use manage_changeProperties()
         instead for most situations.
         """
-        for prop in self._properties:
+        for prop in self.propertyMap():
             name=prop['id']
             if 'w' in prop.get('mode', 'wd'):
                 value=REQUEST.get(name, '')
-                self._setPropValue(name, value)
+                self._updateProperty(name, value)
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
@@ -339,19 +339,16 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         """
         if REQUEST is None:
             props={}
-        else:
-            props=REQUEST
-
+        else: props=REQUEST
         if kw:
             for name, value in kw.items():
                 props[name]=value
-
         propdict=self.propdict()
         for name, value in props.items():
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
                     raise 'BadRequest', '%s cannot be changed' % name
-                self._setPropValue(name, value)
+                self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
                 title  ='Success!',

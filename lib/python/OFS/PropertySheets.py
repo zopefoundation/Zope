@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -217,12 +217,6 @@ class PropertySheet(Traversable, Persistent, Implicit):
             return getattr(self.v_self(), id)
         return default
 
-    def _wrapperCheck(self, object):
-        # Raise an error if an object is wrapped.
-        if hasattr(object, 'aq_base'):
-            raise ValueError, 'Invalid property value: wrapped object'
-        return
-
     def getPropertyType(self, id):
         """Get the type of property 'id', returning None if no
            such property exists"""
@@ -232,6 +226,12 @@ class PropertySheet(Traversable, Persistent, Implicit):
             if md['id']==id:
                 return md.get('type', 'string')
         return None
+
+    def _wrapperCheck(self, object):
+        # Raise an error if an object is wrapped.
+        if hasattr(object, 'aq_base'):
+            raise ValueError, 'Invalid property value: wrapped object'
+        return
 
     def _setProperty(self, id, value, type='string', meta=None):
         # Set a new property with the given id, value and optional type.
@@ -443,11 +443,24 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if REQUEST is not None:
             return self.manage(self, REQUEST)
 
+    def manage_editProperties(self, REQUEST):
+        """Edit object properties via the web."""
+        for prop in self.propertyMap():
+            name=prop['id']
+            if 'w' in prop.get('mode', 'wd'):
+                value=REQUEST.get(name, '')
+                self._updateProperty(name, value)
+        return MessageDialog(
+               title  ='Success!',
+               message='Your changes have been saved',
+               action ='manage')
+
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties by passing either a mapping
            object of name:value pairs {'foo':6} or passing name=value
            parameters."""
-        if REQUEST is None: props={}
+        if REQUEST is None:
+            props={}
         else: props=REQUEST
         if kw:
             for name, value in kw.items():
@@ -455,24 +468,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
         propdict=self._propdict()
         for name, value in props.items():
             if self.hasProperty(name):
+                if not 'w' in propdict[name].get('mode', 'wd'):
+                    raise 'BadRequest', '%s cannot be changed' % name
                 self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
                 title  ='Success!',
                 message='Your changes have been saved.',
                 action ='manage')
-
-    def manage_editProperties(self, REQUEST):
-        """Edit object properties via the web."""
-        for prop in self.propertyMap():
-            name=prop['id']
-            if REQUEST.has_key(name):
-                value=REQUEST.get(name)
-                self._updateProperty(name, value)
-        return MessageDialog(
-               title  ='Success!',
-               message='Your changes have been saved',
-               action ='manage')
 
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
@@ -644,7 +647,6 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         return r
         
     def get(self, name, default=None):
-#        pdb.set_trace()
         for propset in self.__propsets__():
             if propset.id==name or propset.xml_namespace()==name:
                 return propset.__of__(self)
