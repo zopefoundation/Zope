@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.120 $'[11:-2]
+__version__='$Revision: 1.121 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -449,10 +449,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         if roles is _what_not_even_god_should_do:
             request.response.notFoundError()
         
-        parents=request.get('PARENTS', [])
-        if not parents:
-            parent=self.aq_parent
-        else: parent=parents[0]
+        published = request.get('PUBLISHED', None)
+        if published is None:
+            published = self
 
         # If no authorization, only a user with a domain spec and no
         # passwd or nobody can match. We cache reverse DNS before
@@ -478,11 +477,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 domains=ob.getDomains()
                 if domains:
                     if ob.authenticate('', request):
-                        if ob.allowed(parent, roles):
+                        if ob.allowed(published, roles):
                             ob=ob.__of__(self)
                             return ob
             nobody=self._nobody
-            if self._isTop() and nobody.allowed(parent, roles):
+            if self._isTop() and nobody.allowed(published, roles):
                 ob=nobody.__of__(self)
                 return ob
             return None
@@ -506,7 +505,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # If the user was not found and we are the top level user
             # database and the Anonymous user is allowed to access the
             # requested object, return the Anonymous user.
-            if self._isTop() and self._nobody.allowed(parent, roles):
+            if self._isTop() and self._nobody.allowed(published, roles):
                 user=self._nobody.__of__(self)
                 return user
 
@@ -521,7 +520,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # If no user was authenticated and we are the top level user
             # database and the Anonymous user is allowed to access the
             # requested object, return the Anonymous user.
-            if self._isTop() and self._nobody.allowed(parent, roles):
+            if self._isTop() and self._nobody.allowed(published, roles):
                 user=self._nobody.__of__(self)
                 return user
 
@@ -534,7 +533,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         user=user.__of__(self)
 
         # Try to authorize user
-        if user.allowed(parent, roles):
+        if user.allowed(published, roles):
             return user
 
         return None
@@ -543,7 +542,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     if _remote_user_mode:
         
         def validate(self,request,auth='',roles=None):
-            parent=request['PARENTS'][0]
+            published = request['PUBLISHED']
             e=request.environ
             if e.has_key('REMOTE_USER'):
                 name=e['REMOTE_USER']
@@ -552,11 +551,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                     domains=ob.getDomains()
                     if domains:
                         if ob.authenticate('', request):
-                            if ob.allowed(parent, roles):
+                            if ob.allowed(published, roles):
                                 ob=ob.__of__(self)
                                 return ob
                 nobody=self._nobody
-                if self._isTop() and nobody.allowed(parent, roles):
+                if self._isTop() and nobody.allowed(published, roles):
                     ob=nobody.__of__(self)
                     return ob
                 return None
@@ -576,7 +575,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             user=user.__of__(self)
 
             # Try to authorize user
-            if user.allowed(parent, roles):
+            if user.allowed(published, roles):
                 return user
             return None
 

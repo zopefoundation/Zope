@@ -39,6 +39,10 @@ Zope changes
 
         - Corrected local role computation (Hotfix 2000-12-15)
 
+        - Added a variable called PUBLISHED to REQUEST.  From now on,
+          this variable should be used instead of PARENTS for user
+          validation.
+
     Zope 2.3.0 alpha 1
     
       Features Added
