@@ -8,6 +8,16 @@ Zope changes
     
       Features Added
 
+        - Python Scripts are now part of the Zope core. Big whopping 
+          kudos to Evan Simpson for all of the work he has put into 
+          this! Having Python Scripts in the core will allow people 
+          to much more easily separate logic and presentation (and 
+          get that logic out of DTML!) More information and prototype 
+          documentation for Python Scripts can be found in the 
+          dev.zope.org project:
+
+          http://dev.zope.org/Wikis/DevSite/Projects/PythonMethods
+
         - Added the __replaceable__ property support to ObjectManager.
             This is currently documented only in the Wiki.
 
@@ -30,10 +40,14 @@ Zope changes
 
         - Changed the Zope installation procedure so it is only
           necessary to create one user account and that user is
-          stored in the ZODB.
+          stored in the ZODB. The user created at startup now is 
+          simply a normal intial "Manager", not the "superuser". 
+          It is no longer necessary to login, create an initial 
+          manager, logout and log back in! Woohoo!
 
         - Implemented the "emergency user" concept, which is the new
-          name for what was called the superuser.
+          name for what was called the superuser. The emergency user 
+          doesnt even exist now until you explicitly create it.
         
         - Added new "WebDAV source view" HTTP handler, enabled by new
           '-W' (note uppercase) switch to z2.py.  This handler is *not*
@@ -51,12 +65,30 @@ Zope changes
           are made. For more information, see the docstring of the actual
           testrunner.py module.
 
+        - The Interface scarecrow package has been checked in - more work
+          will likely be done on it before it goes into wide use. See 
+          Michel's "Zope Interfaces" project on dev.zope.org for details:
+
+          http://www.zope.org/Wikis/Interfaces/FrontPage
+
+        - PyUnit has been checked into the core. Along with the testrunner,
+          this provides enough infrastructure for us to incrementally begin 
+          accumulating (and running!) test suites for various parts of the 
+          Zope core.
+
+        - The new security assertion support has been checked in. For 
+          more information and an updated version of the "Zope security 
+          for developers" guide see the project on dev.zope.org:
+
+          http://dev.zope.org/Wikis/DevSite/Projects/DeclarativeSecurity
+
+
       Bugs Fixed
 
         - (Collector #1650)Where the underlying object does not define
           its own '__cmp__()', comparisons of acquisition-wrapped
           objects fall back to comparing the identities *of the
-          wrappers* .  Fixed to unrwap the object (both, if needed)
+          wrappers* .  Fixed to unwrap the object (both, if needed)
           before comparing identities.
 
         - (Collector #1687 Products which register base classes
@@ -88,3 +120,4 @@ Zope changes
 
         - Caused PropertyManager to restrict id's the same way
           ObjectManager does.
+
