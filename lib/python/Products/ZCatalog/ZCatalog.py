@@ -289,7 +289,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 obj = self.resolve_url(p, self.REQUEST)
             if obj is not None:
                 try:
-                    self.catalog_object(obj, p)
+                    self.catalog_object(obj, p, pghandler=pghandler)
                 except ConflictError:
                     raise
                 except:
@@ -491,7 +491,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 # index via the UI
                 try:
                     self.catalog_object(obj, p, idxs=name,
-                                        update_metadata=0)
+                                        update_metadata=0, pghandler=pghandler)
                 except TypeError:
                     # Fall back to Zope 2.6.2 interface. This is necessary for
                     # products like CMF 1.4.2 and earlier that subclass from
@@ -501,7 +501,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     warn('catalog_object interface of %s not up to date'
                          % self.__class__.__name__,
                          DeprecationWarning)
-                    self.catalog_object(obj, p, idxs=name)
+                    self.catalog_object(obj, p, idxs=name, pghandler=pghandler)
 
         if pghandler:
             pghandler.finish()
@@ -530,7 +530,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         return Splitter.availableSplitters
 
 
-    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1):
+    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1, pghandler=None):
         """ wrapper around catalog """
 
         if uid is None:
@@ -572,6 +572,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                 get_transaction().commit(1)
                 self._p_jar.cacheGC()
                 self._v_total = 0
+                if pghandler:
+                    pghandler.info('commiting subtransaction')
 
     def uncatalog_object(self, uid):
         """Wrapper around catalog """

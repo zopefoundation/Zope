@@ -32,6 +32,9 @@ class IProgressHandler(Interface):
             'max' -- maximum number of objects to be processed (int)
         """ 
 
+    def info(text):
+        """ Log some 'text'"""
+
     def finish():
         """ Called up termination """
 
@@ -60,6 +63,9 @@ class StdoutHandler:
         self._start = time.time()
         self.fp = sys.stdout
         self.output('Process started (%d objects to go)' % self._max)
+
+    def info(self, text):
+        self.output(text)
 
     def finish(self):
         self.output('Process terminated. Duration: %0.2f seconds' % \
