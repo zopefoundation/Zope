@@ -50,6 +50,7 @@ def start_zope(cfg):
     # set up our initial logging environment (log everything to stderr
     # if we're not in debug mode).
     import zLOG
+    import logging
 
     # don't initialize the event logger from the environment
     zLOG._call_initialize = 0
@@ -76,6 +77,9 @@ def start_zope(cfg):
     # set up our event logger temporarily with a startup handler
     event_logger = zLOG.EventLogger.EventLogger.logger
     event_logger.addHandler(startup_handler)
+    # set the initial logging level to INFO (this will be changed by the
+    # zconfig settings later)
+    event_logger.level = logging.INFO
 
     # set a locale if one has been specified in the config
     if cfg.locale:
@@ -104,7 +108,7 @@ def start_zope(cfg):
                                              % (server.servertype(),e[1]))
     cfg.servers = servers
 
-    # do stuff that only applies to posix platforms (setuid, daemonizing)
+    # do stuff that only applies to posix platforms (setuid mainly)
     if os.name == 'posix':
         do_posix_stuff(cfg)
 
@@ -112,9 +116,18 @@ def start_zope(cfg):
     import Zope
     Zope.startup()
 
+    # this is a bit of a white lie, since we haven't actually successfully
+    # started yet, but we're pretty close and we want this output to
+    # go to the startup logger in order to prevent the kinds of email messages 
+    # to the Zope maillist in which people claim that Zope has "frozen"
+    # after it has emitted ZServer messages ;-)
+    zLOG.LOG('Zope', zLOG.INFO, 'Ready to handle requests')
+
     if not cfg.zserver_read_only_mode:
-        # lock_file is used for the benefit of zctl, so it can tell whether
-        # Zope is already running before attempting to fire it off again.
+        # lock_file is used for the benefit of zctl-like systems, so they
+        # can tell whether Zope is already running before attempting to fire
+        # it off again.
+        #
         # We aren't concerned about locking the file to protect against
         # other Zope instances running from our CLIENT_HOME, we just
         # try to lock the file to signal that zctl should not try to
@@ -132,6 +145,17 @@ def start_zope(cfg):
         except IOError:
             pass
 
+        # write the pid into the pidfile if possible
+        pid_filename = cfg.pid_filename
+        try:
+            if os.path.exists(pid_filename):
+                os.unlink(pid_filename)
+            f = open(pid_filename, 'w')
+            f.write(str(os.getpid()))
+            f.close()
+        except IOError:
+            pass
+        
         # Now that we've successfully setuid'd, we can log to
         # somewhere other than stderr.  Activate the configured logs:
         if cfg.access is not None:
@@ -145,8 +169,6 @@ def start_zope(cfg):
             logger = cfg.eventlog()
             startup_handler.flushBufferTo(logger)
 
-    zLOG.LOG('Zope', zLOG.INFO, 'Ready to handle requests')
-
     # Start Medusa, Ye Hass!
     try:
         import Lifetime
@@ -155,7 +177,7 @@ def start_zope(cfg):
     finally:
         if not cfg.zserver_read_only_mode:
             try:
-                os.unlink(cfg.pid_filename)
+                os.unlink(pid_filename)
             except OSError:
                 pass
             try:
