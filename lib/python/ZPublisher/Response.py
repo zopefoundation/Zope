@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.17 1997/09/15 19:20:56 brian Exp $'''
+$Id: Response.py,v 1.18 1997/10/22 14:48:26 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.17 1997/09/15 19:20:56 brian Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.18  1997/10/22 14:48:26  jim
+# Added simple repr method top support printing requests.
+#
 # Revision 1.17  1997/09/15 19:20:56  brian
 # NS Server apparently chokes on multi-line headers, so bci exception info
 # no longer uses ml.
@@ -130,7 +133,7 @@ $Id: Response.py,v 1.17 1997/09/15 19:20:56 brian Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -611,6 +614,10 @@ class Response:
 	headersl[len(headersl):]=['',body]
 
 	return string.joinfields(headersl,'\n')
+
+    def __repr__(self):
+	return 'CGIResponse(%s)' % `self.body`
+	
 
     def flush(self): pass
 
