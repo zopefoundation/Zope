@@ -37,7 +37,14 @@ How To Play
 
 The script driver.py takes an XML file with TAL markup as argument and
 writes the expanded version to standard output.  The filename argument
-defaults to test/test1.xml.
+defaults to test/test1.xml.  The script can use three different TAL
+implementations, from slowest to fastest:
+
+  -p: parsed (directly from XML to intermediate code which generates XML)
+  -c: compiled (from XML to DOM to intermediate code which generates XML)
+  -v: visiting (from XML to DOM, then from DOM to DOM, which is printed)
+
+Parsed mode is currently the default.
 
 Regression test
 ---------------
@@ -56,6 +63,11 @@ DOMVisitor.py		base class to create DOM visitor classes
 CopyingDOMVisitor.py	class to copy DOM trees
 TALVisitor.py		class to copy DOM trees with TAL expansion
 DummyEngine.py		simple-minded TALES execution engine
+TALCompiler.py		class to compile DOM trees to intermediate code
+TALInterpreter.py	class to interpret intermediate code
+TALGenerator.py		class to generate intermediate code
+XMLParser.py		base class to parse XML, avoiding DOM
+TALParser.py		class to parse TAL into intermediate code
 driver.py		script to demonstrate TAL expansion
 timer.py		script to time various processing phases
 setpath.py		hack to set sys.path and import ZODB
@@ -76,11 +88,6 @@ TO DO
 Here are some things that should be done.
 
 - Provide a dummy implementation of evaluateStructure()?
-
-- Check for attempt to replace the documentElement.  (Exception: when
-  replacing with a single element?  Should it be the same tag?)
-
-- Speed up findMacro()?
 
 It's unclear on what to do about these items:
 
