@@ -168,7 +168,7 @@ def http(request_string, handle_errors=True):
     header_output.setResponseHeaders(response.headers)
 
     # Restore previous security manager, which may have been changed
-    # by calling the publish method above
+    # by calling the publish method above.
     setSecurityManager(old_sm)
 
     # Sync connection
@@ -185,6 +185,9 @@ def FunctionalDocFileSuite(*paths, **kw):
     globs['user_auth'] = base64.encodestring('%s:%s' % (user_name, user_password))
 
     test_class = kw.get('test_class', FunctionalTestCase)
+
+    # Must call here or it may guess the package wrongly
+    kw['package'] = doctest._normalize_module(kw.get('package'))
 
     # If the passed-in test_class doesn't subclass Functional,
     # we mix it in for you, but we will issue a warning.
@@ -219,7 +222,8 @@ def ZopeDocFileSuite(*paths, **kw):
     if 'test_class' in kw:
         del kw['test_class']
 
-    kw['package'] = doctest._normalize_module(kw.get('package'), depth=3)
+    # Must call here or it may guess the package wrongly
+    kw['package'] = doctest._normalize_module(kw.get('package'))
 
     kwsetUp = kw.get('setUp')
     def setUp(test):
