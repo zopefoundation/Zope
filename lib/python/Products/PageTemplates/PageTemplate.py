@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys
 
@@ -131,7 +131,7 @@ class PageTemplate(Base):
     def write(self, text):
         assert type(text) is type('')
         if text[:len(self._error_start)] == self._error_start:
-            errend = find(text, '-->')
+            errend = text.find('-->')
             if errend >= 0:
                 text = text[errend + 4:]
         if self._text != text:
