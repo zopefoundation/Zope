@@ -121,7 +121,7 @@ def index(rt, mboxfile, db):
 
     get_transaction().commit()
 
-    if PACK_INTERVAL:
+    if PACK_INTERVAL and i % PACK_INTERVAL != 0:
         if VERBOSE >= 2:
             print "packing one last time..."
         p0 = time.clock()
@@ -150,7 +150,7 @@ def query(rt, query_str):
         if VERBOSE:
             msg = docs[docid]
             # print 3 lines of context
-            CONTEXT = 5
+            CONTEXT = 5000
             ctx = msg.text.split("\n", CONTEXT)
             del ctx[-1]
             print "-" * 60
