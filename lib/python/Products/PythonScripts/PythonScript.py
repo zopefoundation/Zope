@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -117,7 +117,7 @@ class PythonScript(Script, Historical, Cacheable):
     security.declareProtected('View management screens',
       'ZPythonScriptHTML_editForm', 'manage_main', 'read',
       'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
-      'document_src', 'params', 'body')
+      'document_src', 'params', 'body', 'get_filepath')
 
     ZPythonScriptHTML_editForm = DTMLFile('www/pyScriptEdit', globals())
     manage = manage_main = ZPythonScriptHTML_editForm
@@ -330,7 +330,6 @@ class PythonScript(Script, Historical, Cacheable):
         if item is self:
             self._filepath = self.get_filepath()
 
-    get_filepath=None # Public
     def get_filepath(self):
         return self.meta_type + ':' + '/'.join(self.getPhysicalPath())
 
