@@ -85,13 +85,13 @@
 """
 Transient Object Container class.
 
-$Id: Transience.py,v 1.21 2001/11/21 22:46:36 chrism Exp $
+$Id: Transience.py,v 1.22 2001/11/26 15:29:26 chrism Exp $
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import Globals
-from Globals import HTMLFile, MessageDialog
+from Globals import HTMLFile
 from TransienceInterfaces import ItemWithId,\
      StringKeyedHomogeneousItemContainer, TransientItemContainer
 from TransientObject import TransientObject
@@ -99,12 +99,11 @@ from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
-import AccessControl.SpecialUsers 
 from AccessControl.User import nobody
 from BTrees import OOBTree
 from BTrees.Length import Length
 from zLOG import LOG, WARNING, BLATHER
-import os, os.path, math, time, sys, random
+import os, math, time, sys, random
 
 DEBUG = os.environ.get('Z_TOC_DEBUG', '')
 
@@ -408,12 +407,11 @@ class TransientObjectContainer(SimpleItem):
         try: self.__len__.set(0)
         except AttributeError: self.__len__ = self.getLen = Length()
 
-    def _getCurrentBucket(self, get_dump=0):
+    def _getCurrentBucket(self):
         # no timeout always returns last bucket
         if not self._timeout_secs:
+            DEBUG and DLOG('no timeout, returning first bucket')
             b, dump_after = self._ring._data[0]
-            if DEBUG:
-                DLOG('no timeout, returning first bucket')
             return b
         index = self._ring._index
         now = int(time.time())
@@ -425,9 +423,8 @@ class TransientObjectContainer(SimpleItem):
         while 1:
             l = b, dump_after = self._ring._data[-1]
             if now > dump_after:
-                if DEBUG:
-                    DLOG('now is %s' % now)
-                    DLOG('dump_after for %s was %s, dumping'%(b, dump_after))
+                DEBUG and DLOG('dumping... now is %s' % now)
+                DEBUG and DLOG('dump_after for %s was %s'%(b, dump_after))
                 self._ring.turn()
                 # mutate elements in-place in the ring
                 new_dump_after = now + i
@@ -437,11 +434,8 @@ class TransientObjectContainer(SimpleItem):
             else:
                 break
         if to_clean: self._clean(to_clean, index)
-        if get_dump:
-            return self._ring._data[0], dump_after, now
-        else:
-            b, dump_after = self._ring._data[0]
-            return b
+        b, dump_after = self._ring._data[0]
+        return b
 
     def _clean(self, bucket_set, index):
         # Build a reverse index.  Eventually, I'll keep this in another
@@ -473,20 +467,6 @@ class TransientObjectContainer(SimpleItem):
             
         # finalize em
         self.notifyDestruct(trans_obs)
-
-    def _show(self):
-        """ debug method """
-        b,dump,now = self._getCurrentBucket(1)
-        ringdumps = map(lambda x: `x[1]`[-4], self._ring)
-        t = (
-            "now: "+`now`[-4:],
-            "dump_after: "+`dump`[-4:],
-            "ring_dumps: "+`ringdumps`,
-            "ring: " + `self._ring`
-             )
-
-        for x in t:
-            print x
 
     security.declareProtected(MGMT_SCREEN_PERM, 'nudge')
     def nudge(self):

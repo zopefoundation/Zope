@@ -384,7 +384,7 @@ class TestTransientObjectContainer(TestCase):
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout)
         assert len(self.t.keys()) == 100, len(self.t.keys())
         fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 0, len(self.t.keys())
@@ -394,9 +394,9 @@ class TestTransientObjectContainer(TestCase):
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout)
         assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxtime.sleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout)
         assert len(self.t.keys()) == 100, len(self.t.keys())
         fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 0, len(self.t.keys())

@@ -85,13 +85,13 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.1 2001/11/21 22:46:36 chrism Exp $
+$Id: TransientObject.py,v 1.2 2001/11/26 15:29:27 chrism Exp $
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Persistence import Persistent
-from Acquisition import Implicit, aq_base
+from Acquisition import Implicit
 import time, random, sys
 from TransienceInterfaces import ItemWithId, Transient, DictionaryLike,\
      TTWDictionary, ImmutablyValuedMappingOfPickleableObjects
