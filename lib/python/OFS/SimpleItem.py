@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.86 2001/02/05 21:48:31 chrism Exp $'''
-__version__='$Revision: 1.86 $'[11:-2]
+$Id: SimpleItem.py,v 1.87 2001/04/03 15:13:42 brian Exp $'''
+__version__='$Revision: 1.87 $'[11:-2]
 
 import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -103,6 +103,8 @@ from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 from AccessControl import getSecurityManager
 from Traversable import Traversable
+from Acquisition import aq_base
+import time
 
 import marshal
 import ZDOM
@@ -286,7 +288,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         mode=0100000
         
         # check read permissions
-        if (hasattr(self.aq_base,'manage_FTPget') and 
+        if (hasattr(aq_base(self),'manage_FTPget') and 
             hasattr(self.manage_FTPget, '__roles__')):
             try:
                 if getSecurityManager().validateValue(self.manage_FTPget):
@@ -297,7 +299,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 mode=mode | 0004
                 
         # check write permissions
-        if hasattr(self.aq_base,'PUT') and hasattr(self.PUT, '__roles__'):
+        if hasattr(aq_base(self),'PUT') and hasattr(self.PUT, '__roles__'):
             try:
                 if getSecurityManager().validateValue(self.PUT):
                     mode=mode | 0220
@@ -314,13 +316,17 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         else:
             size=0
         # get modification time
-        mtime=self.bobobase_modification_time().timeTime()
+        if hasattr(aq_base(self), 'bobobase_modification_time'):
+            mtime=self.bobobase_modification_time().timeTime()
+        else:
+            mtime=time.time()
         # get owner and group
         owner=group='Zope'
-        for user, roles in self.get_local_roles():
-            if 'Owner' in roles:
-                owner=user
-                break
+        if hasattr(aq_base(self), 'get_local_roles'):
+            for user, roles in self.get_local_roles():
+                if 'Owner' in roles:
+                    owner=user
+                    break
         return marshal.dumps((mode,0,0,1,owner,group,size,mtime,mtime,mtime))
 
     def manage_FTPlist(self,REQUEST):
