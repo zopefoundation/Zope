@@ -163,7 +163,7 @@ class TALGenerator:
             if len(item) > 2:
                 return 0
             if item[1] is None:
-                new.append(" %s" % item[0])
+                new.append(" " + item[0])
             else:
                 new.append(" %s=%s" % (item[0], quote(item[1])))
         new.append(end)
