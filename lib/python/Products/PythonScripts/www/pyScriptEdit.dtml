@@ -1,55 +1,118 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html lang="en">
-<head>
-<title>Edit <dtml-var title_or_id></title>
-</head>
-<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+<dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<form action="&dtml-URL1;" method="POST">
+<form action="&dtml-URL1;" method="post">
 <input type="hidden" name=":default_method" value="ZPythonScriptHTML_changePrefs">
-<table cellspacing="2">
-<tr>
-  <th align="left" valign="top"><em>Title</em></th>
-  <td align="left" valign="top">
-    <input type="text" name="title" size="50" value="&dtml-title;">
-  </td>
-</tr>
-
-<tr>	<th align="left"><em>Parameter&nbsp;list</em></th>
-	<td align="left"><input name="params" size="30" value="&dtml-params;">
-</td></tr>
-
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" 
+     value="<dtml-var title html_quote>" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Parameter List
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="params" size="40" 
+     value="<dtml-var params html_quote>" />
+    </td>
+  </tr>
 <dtml-with getBindingAssignments>
 <dtml-if getAssignedNamesInOrder>
-<tr>	<th align="left"><em>Bound&nbsp;names</em></th>
-	<td align="left">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Bound Names
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
 <dtml-in getAssignedNamesInOrder>
 <dtml-var sequence-item html_quote><dtml-unless sequence-end>, </dtml-unless>
 </dtml-in>
-</td></tr>
+    </div>
+    </td>
+  </tr>
 </dtml-if>
 </dtml-with>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Last Modified
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var bobobase_modification_time fmt="%Y-%m-%d %I:%M %p">
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top" colspan="2">
+  <div style="width: 100%;">
+  <textarea name="body:text" wrap="off" style="width: 100%;"
+   cols=<dtml-var dtpref_cols html_quote missing="50">
+   rows=<dtml-var dtpref_rows html_quote missing="20">><dtml-var 
+   body></textarea>
+  </div>
+    </td>
+  </tr>
+
 <tr>
-  <th align="left" valign="top"><em>Last&nbsp;modified</em></th>
-  <td align="left" valign="top"><dtml-var bobobase_modification_time></td>
+  <td align="left" valign="top" colspan="2">
+  <div class="form-element">
+  <input class="form-element" type="submit" 
+   name="ZPythonScriptHTML_editAction:method" value="Save Changes">
+  &nbsp;&nbsp;
+  <input class="form-element" type="submit" name="height" value="Taller">
+  <input class="form-element" type="submit" name="height" value="Shorter">
+  <input class="form-element" type="submit" name="width" value="Wider">
+  <input class="form-element" type="submit" name="width" value="Narrower">
+  </div>
+  </td>
 </tr>
 </table>
-
-<!-- style="width: 2em" -->
-
-<b>Text area </b>
-    <input name="height" type="submit" value="Taller">
-    <input name="height" type="submit" value="Shorter">
-    <input name="width" type="submit" value="Wider">
-    <input name="width" type="submit" value="Narrower">
-<br>
-<textarea name="body:text" wrap="off" style="width: 100%"
-        cols=<dtml-var dtpref_cols html_quote missing="50">
-        rows=<dtml-var dtpref_rows html_quote missing="20">
->&dtml-body;</textarea><br>
-<input name="ZPythonScriptHTML_editAction:method" type="submit"
- value="Save Changes">
 </form>
-</body>
-</html>
+
+<p class="form-help">
+You may upload the source for &dtml-title_and_id; using the form below.  
+Choose an existing file from your local computer by clicking <em>browse</em> 
+The contents of the file should be a valid script with an optional 
+&quot;##data&quot; block at the start. You may click the following link 
+to <a href="document_src">view or download</a> the current source.
+</p>
+
+<form action="ZPythonScriptHTML_upload" method="post" 
+ enctype="multipart/form-data">
+<table cellpadding="2" cellspacing="0" border="0">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  File &nbsp;
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="file" name="file" size="25" value="">
+  </td>
+</tr>
+<tr>
+  <td></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" value="Upload File">
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

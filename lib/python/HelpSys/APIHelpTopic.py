@@ -126,7 +126,7 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         if not self.title:
             self.title=self.apis[0].name
 
-    index_html=HTMLFile('APIHelpView', globals())
+    index_html=HTMLFile('dtml/APIHelpView', globals())
 
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
@@ -190,7 +190,7 @@ class APIDoc(Persistent):
             text="%s %s %s" % (text, method.name, method.doc)
         return text
         
-    view=HTMLFile('APIView', globals())
+    view=HTMLFile('dtml/APIView', globals())
     
     
 class AttributeDoc(Persistent):
@@ -202,7 +202,7 @@ class AttributeDoc(Persistent):
         self.name=name
         self.value=value
 
-    view=HTMLFile('attributeView', globals())
+    view=HTMLFile('dtml/attributeView', globals())
 
 
 class MethodDoc(Persistent):
@@ -249,7 +249,7 @@ class MethodDoc(Persistent):
         if func.func_code.co_flags & CO_VARKEYWORDS:
             self.kwargs=names[ix]
 
-    view=HTMLFile('methodView', globals())
+    view=HTMLFile('dtml/methodView', globals())
 
 
 def trim_doc_string(text):

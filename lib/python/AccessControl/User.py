@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.122 $'[11:-2]
+__version__='$Revision: 1.123 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -587,10 +587,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def __len__(self):
         return 1
 
-    _mainUser=HTMLFile('mainUser', globals())
-    _add_User=HTMLFile('addUser', globals(),
+    _mainUser=HTMLFile('dtml/mainUser', globals())
+    _add_User=HTMLFile('dtml/addUser', globals(),
                        remote_user_mode__=_remote_user_mode)
-    _editUser=HTMLFile('editUser', globals(),
+    _editUser=HTMLFile('dtml/editUser', globals(),
                        remote_user_mode__=_remote_user_mode)
     manage=manage_main=_mainUser
 

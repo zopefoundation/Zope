@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.11 2000/04/11 16:37:34 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: __init__.py,v 1.12 2001/01/08 22:47:03 brian Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Globals, os
 
@@ -126,7 +126,7 @@ def manage_addZGadflyConnectionForm(self, REQUEST, *args, **kw):
     " "
     DA=getDA()
     return DA.addConnectionForm(
-        self,REQUEST,
+        self, self, REQUEST,
         database_type=database_type,
         data_sources=DA.data_sources)
     
@@ -148,6 +148,7 @@ __ac_permissions__=(
      ('manage_addZGadflyConnectionForm',
       'manage_addZGadflyConnection')),
     )
+
 
 # j=os.path.join
 # d=j(j(INSTANCE_HOME,'var'),'gadfly')

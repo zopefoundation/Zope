@@ -1,33 +1,52 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html lang="en">
-<head>
-<title>Add Python Script</title>
-</head>
-<body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+<dtml-var manage_page_header>
 
-<h2>Add Python Script</h2>
-
-<P>
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Python Script',
+	   )">
+<p class="form-help">
 Python Scripts allow you to add functionality to Zope by writing
 scripts in the Python programming language
 that are exposed as callable Zope objects.  You may choose to upload
 the script from a local file by typing the file name or using the
-<i>Browse</i> button.
-</P>
+<em>browse</em> button.
+</p>
 
-<form action="&dtml-URL1;" method="POST" enctype="multipart/form-data">
-<input type="hidden" name="manage_addPythonScript:default_method" value="">
-<p>
-<strong>ID:</strong> <input type="text" name="id" size="20">
-</p>
-<p>
-<strong>File:</strong> <input type="file" name="file" size="25">
-</p>
-<p>
-<input type="submit" value="Add" name="addedit">
-<input type="submit" value="Add and Edit" name="addedit">
-<input type="submit" value="Cancel" name="manage_workspace:method">
-</p>
+<form action="manage_addPythonScript" method="post" 
+ enctype="multipart/form-data">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    File
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="file" name="file" size="25" value="" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add and Edit " />
+    </div>
+    </td>
+  </tr>
+</table>
 </form>
-</body>
-</html>
+
+<dtml-var manage_page_footer>

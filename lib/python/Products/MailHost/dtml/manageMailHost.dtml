@@ -1,0 +1,64 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<form action="manage_makeChanges" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var id>
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" 
+     value="<dtml-var title html_quote>"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    SMTP Host
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="smtp_host" size="40"
+     value="<dtml-var smtp_host html_quote>"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    SMTP Port
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="smtp_port:int" size="4"
+     value="<dtml-var smtp_port html_quote>"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value="Save Changes" /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -107,7 +107,7 @@ class Fake:
 
 class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Database management"""
-    manage=manage_main=HTMLFile('dbMain', globals())
+    manage=manage_main=HTMLFile('dtml/dbMain', globals())
     id        ='DatabaseManagement'
     name=title='Database Management'
     meta_type ='Database Management'
@@ -128,7 +128,7 @@ Globals.default__class_init__(DatabaseManager)
 
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Version management"""
-    manage=manage_main=HTMLFile('versionManager', globals())
+    manage=manage_main=HTMLFile('dtml/versionManager', globals())
     id        ='Versions'
     name=title='Version Management'
     meta_type ='Version Management'
@@ -152,7 +152,7 @@ _v_rst=None
 
 class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Debug and profiling information"""
-    manage=manage_main=HTMLFile('debug', globals())
+    manage=manage_main=HTMLFile('dtml/debug', globals())
     id        ='DebugInfo'
     name=title='Debug Information'
     meta_type = name
@@ -166,7 +166,7 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
            )
         )
 
-    manage_debug=HTMLFile('debug', globals())
+    manage_debug=HTMLFile('dtml/debug', globals())
     
     def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
         # return class reference info
@@ -230,7 +230,7 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
     # Profiling support
 
-    manage_profile=HTMLFile('profile', globals())
+    manage_profile=HTMLFile('dtml/profile', globals())
 
     def manage_profile_stats(self, sort='time', limit=200):
         """Return profile data if available"""
@@ -259,8 +259,8 @@ class ApplicationManager(Folder,CacheManager):
     Versions= VersionManager()
     DebugInfo=DebugManager()
 
-    manage=manage_main=HTMLFile('cpContents', globals())
-    manage_undoForm=HTMLFile('undo', globals())
+    manage=manage_main=HTMLFile('dtml/cpContents', globals())
+    manage_undoForm=HTMLFile('dtml/undo', globals())
 
     def version_txt(self):
         if not hasattr(self, '_v_version_txt'):

@@ -1,0 +1,102 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if searchResults>
+
+<p class="form-help"> 
+Updating the catalog will update all catalog records and remove 
+invalid records. Clearing the catalog will remove all entries.  
+You can also remove or update individual catalog records.
+</p>
+
+<form action="<dtml-var URL1>">
+<div class="form-element">
+<input class="form-element" type="submit" 
+ name="manage_catalogReindex:method" value=" Update Catalog ">
+<input class="form-element" type="submit" 
+ name="manage_catalogClear:method" value=" Clear Catalog ">
+</form>
+
+<p class="form-text">
+<dtml-var id> contains <dtml-var 
+ searchResults fmt=collection-length thousands_commas> record(s).
+</p>
+
+  <dtml-in searchResults previous size=20 start=query_start >
+    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+      [Previous <dtml-var previous-sequence-size> entries]
+    </a>
+  </dtml-in>
+  <dtml-in searchResults next size=20 start=query_start >
+    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+      [Next <dtml-var next-sequence-size> entries]
+    </a>
+  </dtml-in>
+
+<form action="<dtml-var URL1>">
+<input type="hidden" name="individual" value="1">
+
+<div class="form-element">
+<input class="form-element" type="submit" value=" Remove " 
+ name="manage_uncatalogObject:method">
+<input class="form-element" type="submit" value=" Update " 
+ name="manage_catalogObject:method">
+</div>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<dtml-in searchResults size=20 start=query_start >
+  <tr>
+    <td align="left" valign="top">
+    <input type="checkbox" NAME="urls:list" VALUE="<dtml-var 
+     "getpath(data_record_id_)" html_quote>">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var meta_type>
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <a href="<dtml-var
+     "getpath(data_record_id_)" url_quote>/manage_workspace"><dtml-var 
+     "getpath(data_record_id_)"><dtml-if title> (<dtml-var 
+     title>)</dtml-if></a>
+    </div>
+    </td>
+  </tr>
+</dtml-in>
+</table>
+
+<div class="form-element">
+<input class="form-element" type="submit" value=" Remove " 
+ name="manage_uncatalogObject:method">
+<input class="form-element" type="submit" value=" Update " 
+ name="manage_catalogObject:method">
+</div>
+</form>
+
+  <dtml-in searchResults previous size=20 start=query_start >
+    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+      [Previous <dtml-var previous-sequence-size> entries]
+    </a>
+  </dtml-in>
+
+  <dtml-in searchResults next size=20 start=query_start >
+    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+      [Next <dtml-var next-sequence-size> entries]
+    </a>
+  </dtml-in>
+
+<dtml-else>
+<p class="form-text">
+There are no objects in the Catalog.
+</p>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+
+
+
+
+
+

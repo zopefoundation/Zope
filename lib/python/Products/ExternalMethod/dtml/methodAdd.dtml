@@ -1,0 +1,72 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add External Method',
+           help_product='ExternalMethod',
+           help_topic='External-Method_Add.stx'
+	   )">
+
+<p class="form-help">
+External Methods allow you to add functionality to Zope by writing Python
+functions which are exposed as callable Zope objects. The <em>module name</em> 
+should give the name of the Python module without the &quot;.py&quot; 
+file extension. The <em>function name</em> should name a callable object 
+found in the module.
+</p>
+
+<form action="manage_addExternalMethod" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Module Name
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="module" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Function Name
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="function" size="40" />
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value=" Add " /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

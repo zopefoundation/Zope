@@ -85,8 +85,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.14 2000/11/13 17:05:28 brian Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: SQL.py,v 1.15 2001/01/08 22:47:05 brian Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import HTMLFile
@@ -118,7 +118,7 @@ def SQLConnectionIDs(self):
     ids.sort()
     return ids
 
-manage_addZSQLMethodForm=HTMLFile('add', globals())
+manage_addZSQLMethodForm=HTMLFile('dtml/add', globals())
 def manage_addZSQLMethod(self, id, title,
                                 connection_id, arguments, template,
                                 REQUEST=None, submit=None):
@@ -190,5 +190,5 @@ class SQL(Shared.DC.ZRDB.DA.DA):
     """
     meta_type='Z SQL Method'
                 
-    manage_main=HTMLFile('edit', globals())
+    manage_main=HTMLFile('dtml/edit', globals())
 

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.22 2000/06/16 19:45:05 srichter Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: Undo.py,v 1.23 2001/01/08 22:46:56 brian Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -96,7 +96,8 @@ class UndoSupport(ExtensionClass.Base):
 
     __ac_permissions__=(
         ('Undo changes', (
-            'manage_undo_transactions', 'undoable_transactions',
+            'manage_undo_transactions',
+            'undoable_transactions',
             'manage_UndoForm',
             )),
         )
@@ -107,9 +108,12 @@ class UndoSupport(ExtensionClass.Base):
         )
 
     manage_UndoForm=Globals.HTMLFile(
-        'undo', globals(),
+        'dtml/undo',
+        globals(),
         PrincipiaUndoBatchSize=20,
-        first_transaction=0, last_transaction=20)
+        first_transaction=0,
+        last_transaction=20
+        )
 
     def get_request_var_or_attr(self, name, default):
         if hasattr(self, 'REQUEST'):

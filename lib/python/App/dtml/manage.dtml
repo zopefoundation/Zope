@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title>Zope on <dtml-var SERVER_NAME></title>
+<script language="javascript">
+<!--
+function update_menu() {   
+  window.manage_menu.location.href=window.manage_menu.location.href;
+}
+//-->
+</script>
+</head>
+<dtml-if "_.string.find(REQUEST.get('HTTP_USER_AGENT', ''), 'MSIE') > -1">
+<frameset rows="34, *">
+<dtml-else>
+<frameset rows="40, *">
+</dtml-if>
+  <frame src="<dtml-var URL1>/manage_top_frame" name="manage_top_frame"
+   marginwidth="0" marginheight="0" scrolling="no"/>
+  <frameset cols="175,*">
+    <frame src="<dtml-var URL1>/manage_menu" name="manage_menu"
+     marginwidth="2" marginheight="2" scrolling="auto"/>
+    <frame src="<dtml-var URL1>/manage_workspace" name="manage_main"
+     marginwidth="2" marginheight="2" scrolling="auto"/>
+  </frameset>
+</frameset>
+<noframes>
+Management interfaces require the use of a <B>frames-capable</B> web browser.
+</noframes>
+</html>
+

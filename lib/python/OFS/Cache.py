@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.3 2000/12/13 16:20:15 shane Exp $"""
+$Id: Cache.py,v 1.4 2001/01/08 22:46:58 brian Exp $"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import time, sys
 from string import join
@@ -176,7 +176,7 @@ class Cacheable:
           ), ('Manager',)),
         )
 
-    ZCacheable_manage = HTMLFile('cacheable', globals())
+    ZCacheable_manage = HTMLFile('dtml/cacheable', globals())
 
     _v_ZCacheable_cache = None
     _v_ZCacheable_manager_timestamp = 0
@@ -547,7 +547,7 @@ class CacheManager:
                 global manager_timestamp
                 manager_timestamp = time.time()
 
-    ZCacheManager_associate = HTMLFile('cmassoc', globals())
+    ZCacheManager_associate = HTMLFile('dtml/cmassoc', globals())
 
     def ZCacheManager_locate(self, require_assoc, subfolders,
                              meta_types=[], REQUEST=None):

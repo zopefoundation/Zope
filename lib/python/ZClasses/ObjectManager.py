@@ -91,7 +91,7 @@ class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
                       OFS.PropertySheets.View):
     """Provide management view for selecting sub-objects.
     """
-    manage=Globals.HTMLFile('subobjects', globals())
+    manage=Globals.HTMLFile('dtml/subobjects', globals())
     
     def possible_meta_types(self):
         return self.aq_acquire('_product_meta_types')+Products.meta_types

@@ -1,30 +1,49 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html lang="en">
-<head>
-<title>Try <dtml-var title_or_id></title>
-</head>
-<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+<dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<h2>Try <dtml-var title_or_id></h2>
+<p class="form-help">
+Enter variable values to pass to the script in the form below and 
+click <em>run script</em> to view the result of the call.
+</p>
 
-<form action="&dtml-URL1;/ZScriptHTML_tryAction" method="POST">
-<table cellspacing="2">
-<tr><th>Variable</th><th>Value</th></tr>
+<form action="&dtml-URL1;/ZScriptHTML_tryAction" method="post">
+<table cellpadding="2" cellspacing="0" border="0">
+<tr class="list-header">
+  <td align="left" valign="top">
+  <div class="form-label">
+  Parameter
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Value
+  </div>
+  </td>
+</tr>
+
 <dtml-in ZScriptHTML_tryParams>
 <tr>
   <td align="left" valign="top">
-    <input name="argvars.name:records" type="text" value="&dtml-sequence-item;">
+  <input name="argvars.name:records" type="text" 
+     value="&dtml-sequence-item;">
   </td>
   <td align="left" valign="top">
-    <input name="argvars.value:records" type="text">
+  <input name="argvars.value:records" type="text" value="">
   </td>
 </tr>
 <dtml-else>
   <dtml-raise type="Redirect">&dtml-URL1;</dtml-raise>
 </dtml-in>
+
+<tr>
+  <td align="left" valign="top" colspan="2">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" 
+   value="Run Script" /> 
+  </div>
+  </td>
+</tr>
 </table>
-<input name="submit" type="submit" value="Go"><br>
 </form>
-</body>
-</html>
+
+<dtml-var manage_page_footer>

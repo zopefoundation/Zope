@@ -142,8 +142,9 @@ class ZClassMethodsSheet(
 
     ######################################################################
 
-    manage_addPropertyInterfaceForm=Globals.HTMLFile('addPropertyInterface',
-                                                     globals())
+    manage_addPropertyInterfaceForm=Globals.HTMLFile(
+        'dtml/addPropertyInterface',
+        globals())
 
 
     # This is to trigger alternate access management for methods:

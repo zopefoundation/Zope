@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -444,7 +444,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     # Web interface
     
-    manage=HTMLFile('properties', globals())
+    manage=HTMLFile('dtml/properties', globals())
     def manage_propertiesForm(self, URL1):
         " "
         raise 'Redirect', URL1+'/manage'
@@ -695,7 +695,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
 
     # Management interface:
 
-    manage=Globals.HTMLFile('propertysheets', globals())
+    manage=Globals.HTMLFile('dtml/propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance

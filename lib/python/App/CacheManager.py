@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.18 2000/05/23 15:38:43 brian Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: CacheManager.py,v 1.19 2001/01/08 22:46:56 brian Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Globals, time, sys
 
@@ -98,8 +98,8 @@ class CacheManager:
     _vcache_age=60
     _vcache_size=400
 
-    manage_cacheParameters=Globals.HTMLFile('cacheParameters', globals())
-    manage_cacheGC=Globals.HTMLFile('cacheGC', globals())
+    manage_cacheParameters=Globals.HTMLFile('dtml/cacheParameters', globals())
+    manage_cacheGC=Globals.HTMLFile('dtml/cacheGC', globals())
 
     def cache_length(self):
         try: db=self._p_jar.db()

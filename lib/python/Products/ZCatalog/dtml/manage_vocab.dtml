@@ -1,0 +1,72 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if words>
+
+<p class="form-text">
+<dtml-var id> contains <em><dtml-var 
+ words fmt=collection-length thousands_commas></em>
+ word(s).
+</p>
+
+  <dtml-in words previous size=20 start=query_start >
+    <div class="list-nav">
+    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+      [Previous <dtml-var previous-sequence-size> entries]
+    </a>
+    </div>
+  </dtml-in>
+  <dtml-in words next size=20 start=query_start >
+    <div class="list-nav">
+    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+      [Next <dtml-var next-sequence-size> entries]
+    </a>
+    </div>
+  </dtml-in>
+
+  <table>
+    <dtml-in words size=20 start=query_start >
+    <tr valign=top>
+      <td valign="top" align="left">
+      <div class="form-text">
+        <dtml-var sequence-item> (<dtml-var sequence-key>)
+      </div>
+      </td> 
+    </tr>
+    </dtml-in>
+  </table>
+
+  <dtml-in words previous size=20 start=query_start >
+    <div class="list-nav">
+    <a href="<dtml-var URL>?query_start=<dtml-var previous-sequence-start-number>">
+      [Previous <dtml-var previous-sequence-size> entries]
+    </a>
+    </div>
+  </dtml-in>
+
+  <dtml-in words next size=20 start=query_start >
+    <div class="list-nav">
+    <a href="<dtml-var URL>?query_start=<dtml-var next-sequence-start-number>">
+      [Next <dtml-var next-sequence-size> entries]
+    </a>
+    </div>
+  </dtml-in>
+
+<dtml-else>
+
+<p class="form-text">
+There are no words in the Vocabulary.
+</p>
+
+</dtml-if>
+
+<dtml-var manage_page_footer>
+
+
+
+
+
+
+
+
+

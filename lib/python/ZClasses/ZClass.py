@@ -162,7 +162,8 @@ class PersistentClass(Base):
     def __class_init__(self): pass
 
 manage_addZClassForm=Globals.HTMLFile(
-    'addZClass', globals(), default_class_='OFS.SimpleItem Item',
+    'dtml/addZClass', globals(),
+    default_class_='OFS.SimpleItem Item',
     CreateAFactory=1,
     zope_object=1)
 

@@ -96,7 +96,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
 
     _getZClass=Acquisition.Acquired
 
-    manage=Globals.HTMLFile('itemProp', globals())
+    manage=Globals.HTMLFile('dtml/itemProp', globals())
     def manage_edit(self, meta_type='', icon='', file='',
                     class_id=None, title=None,
                     selected=(),
@@ -151,7 +151,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
     def data(self):
         return self.getClassAttr('manage_options',(),1)
 
-    manage=Globals.HTMLFile('views', globals())
+    manage=Globals.HTMLFile('dtml/views', globals())
     def manage_edit(self, actions=[], helps=[], REQUEST=None):
         "Change view actions"
         options=self.data()
@@ -258,7 +258,7 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
                              OFS.PropertySheets.View):
     "Manage class permissions"
         
-    manage=Globals.HTMLFile('classPermissions', globals())
+    manage=Globals.HTMLFile('dtml/classPermissions', globals())
 
     def possible_permissions(self):
         r=map(

@@ -106,6 +106,9 @@ class p_:
     rtab=ImageFile('App/www/rtab.gif')
     ltab=ImageFile('App/www/ltab.gif')
     sp  =ImageFile('App/www/sp.gif')
+    r_arrow_gif=ImageFile('www/r_arrow.gif', globals())
+    l_arrow_gif=ImageFile('www/l_arrow.gif', globals())
+
     ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
     ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
     DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
@@ -121,6 +124,7 @@ class p_:
 
     ZopeButton=ImageFile('App/www/zope_button.jpg')
     ZButton=ImageFile('App/www/z_button.jpg')
+    zopelogo_jpg=ImageFile('www/zopelogo.jpg', globals())
 
     Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
     Methods_icon=ImageFile('ZClasses/methods.gif')

@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.121 $'[11:-2]
+__version__='$Revision: 1.122 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -102,7 +102,7 @@ from Cache import Cacheable
 
 StringType=type('')
 
-manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
+manage_addFileForm=HTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file='',title='',precondition='', content_type='',
                    REQUEST=None):
     """Add a new File object.
@@ -141,16 +141,16 @@ class File(Persistent, Implicit, PropertyManager,
     precondition=''
     size=None
 
-    manage_editForm  =HTMLFile('fileEdit',globals(),Kind='File',kind='file')
-    manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='File',kind='file')
+    manage_editForm  =HTMLFile('dtml/fileEdit',globals(),
+                               Kind='File',kind='file')
+
     manage=manage_main=manage_editForm
-        
+    manage_uploadForm=manage_editForm
+    
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
          'help':('OFSP','File_Edit.stx')},
-        {'label':'Upload', 'action':'manage_uploadForm',
-         'help':('OFSP','File_Upload.stx')},
         ) 
         + PropertyManager.manage_options +
         (
@@ -165,7 +165,7 @@ class File(Persistent, Implicit, PropertyManager,
 
     __ac_permissions__=(
         ('View management screens',
-         ('manage', 'manage_main', 'manage_uploadForm',)),
+         ('manage', 'manage_main',)),
         ('Change Images and Files',
          ('manage_edit','manage_upload','PUT')),
         ('View',
@@ -273,8 +273,8 @@ class File(Persistent, Implicit, PropertyManager,
         elif self.precondition: del self.precondition
         self.ZCacheable_invalidate()
         if REQUEST:
-            message="Your changes have been saved"
-            return self.manage_main(self, REQUEST, manage_tabs_message=message)
+            message="Saved changes."
+            return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
     def manage_upload(self,file='',REQUEST=None):
         """
@@ -287,10 +287,9 @@ class File(Persistent, Implicit, PropertyManager,
                                             'application/octet-stream')
         self.update_data(data, content_type, size)
 
-        if REQUEST: return MessageDialog(
-            title  ='Success!',
-            message='Your changes have been saved',
-            action ='manage_main')
+        if REQUEST:
+            message="Saved changes."
+            return self.manage_main(self,REQUEST,manage_tabs_message=message)
         
     def _get_content_type(self, file, body, id, content_type=None):
         headers=getattr(file, 'headers', None)
@@ -410,7 +409,8 @@ class File(Persistent, Implicit, PropertyManager,
     manage_FTPget=index_html
 
 
-manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
+manage_addImageForm=HTMLFile('dtml/imageAdd',globals(),
+                             Kind='Image',kind='image')
 def manage_addImage(self, id, file, title='', precondition='', content_type='',
                     REQUEST=None):
     """
@@ -456,7 +456,7 @@ class Image(File):
 
     __ac_permissions__=(
         ('View management screens',
-         ('manage', 'manage_main', 'manage_uploadForm',)),
+         ('manage', 'manage_main',)),
         ('Change Images and Files',
          ('manage_edit','manage_upload','PUT')),
         ('View',
@@ -478,8 +478,6 @@ class Image(File):
         (
         {'label':'Edit', 'action':'manage_main',
          'help':('OFSP','Image_Edit.stx')},
-        {'label':'Upload', 'action':'manage_uploadForm',
-         'help':('OFSP','File_Upload.stx')},
         ) 
         + PropertyManager.manage_options +
         (
@@ -491,12 +489,13 @@ class Image(File):
         + Cacheable.manage_options
         )
 
-    manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
-    view_image_or_file =HTMLFile('imageView',globals())
-    manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='Image',
-                               kind='image')
-    manage=manage_main=manage_editForm
+    manage_editForm  =HTMLFile('dtml/imageEdit',globals(),
+                               Kind='Image',kind='image')
+    view_image_or_file =HTMLFile('dtml/imageView',globals())
 
+    manage=manage_main=manage_editForm
+    manage_uploadForm=manage_editForm
+    
     # private
     update_data__roles__=()
     def update_data(self, data, content_type=None, size=None):
@@ -656,3 +655,12 @@ class Pdata(Persistent, Implicit):
             next=self.next
         
         return string.join(r,'')
+
+
+
+
+
+
+
+
+

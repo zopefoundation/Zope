@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.93 2000/12/20 16:42:37 brian Exp $'''
-__version__='$Revision: 1.93 $'[11:-2]
+$Id: DA.py,v 1.94 2001/01/08 22:47:06 brian Exp $'''
+__version__='$Revision: 1.94 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -178,7 +178,7 @@ class DA(
         self.id=str(id)
         self.manage_edit(title, connection_id, arguments, template)
     
-    manage_advancedForm=HTMLFile('advanced', globals())
+    manage_advancedForm=HTMLFile('dtml/advanced', globals())
 
     test_url___roles__=None
     def test_url_(self):

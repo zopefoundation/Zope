@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -98,12 +98,16 @@ from AccessControl import getSecurityManager
 class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
 
-    manage_findFrame=HTMLFile('findFrame', globals())
-    manage_findForm=HTMLFile('findForm', globals(), management_view='Find')
-    manage_findAdv=HTMLFile('findAdv', globals(), management_view='Find',
+#findframe is deprecated
+    manage_findFrame=HTMLFile('dtml/findFrame', globals())
+    manage_findForm=HTMLFile('dtml/findForm', globals(),
+                             management_view='Find')
+    manage_findAdv=HTMLFile('dtml/findAdv', globals(),
+                            management_view='Find',
                             help_topic='Find_Advanced.stx',
                             help_product='OFSP')
-    manage_findResult=HTMLFile('findResult', globals())
+    manage_findResult=HTMLFile('dtml/findResult', globals(),
+                               management_view='Find')
 
     __ac_permissions__=(
         ('View management screens',
@@ -112,7 +116,7 @@ class FindSupport(ExtensionClass.Base):
         )
     
     manage_options=(
-        {'label':'Find', 'action':'manage_findFrame', 'target':'manage_main',
+        {'label':'Find', 'action':'manage_findForm', 'target':'manage_main',
          'help':('OFSP','Find.stx')},         
         )
 

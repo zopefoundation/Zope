@@ -109,7 +109,7 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
         raise AttributeError, name
 
-    manage=manage_main=Globals.HTMLFile('brokenEdit',globals())
+    manage=manage_main=Globals.HTMLFile('dtml/brokenEdit',globals())
     manage_workspace=manage
     
 

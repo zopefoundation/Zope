@@ -100,7 +100,8 @@ def manage_subclassableClassNames(self):
 class ZClassOwner(ExtensionClass.Base):
 
     manage_addZClassForm=Globals.HTMLFile(
-        'addZClass', globals(), default_class_='OFS.SimpleItem Item',
+        'dtml/addZClass', globals(),
+        default_class_='OFS.SimpleItem Item',
         CreateAFactory=1,
         zope_object=1)
 

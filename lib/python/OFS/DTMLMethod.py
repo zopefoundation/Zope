@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -125,8 +125,9 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         (
             {'label':'Edit', 'action':'manage_main',
              'help':('OFSP','DTML-DocumentOrMethod_Edit.stx')},
-            {'label':'Upload', 'action':'manage_uploadForm',
-             'help':('OFSP','DTML-DocumentOrMethod_Upload.stx')},
+            #upload is deprecated
+            #{'label':'Upload', 'action':'manage_uploadForm',
+            # 'help':('OFSP','DTML-DocumentOrMethod_Upload.stx')},
             {'label':'View', 'action':'',
              'help':('OFSP','DTML-DocumentOrMethod_View.stx')},
             {'label':'Proxy', 'action':'manage_proxyForm',
@@ -142,7 +143,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     ('View management screens',
      ('document_src', 'PrincipiaSearchSource')),
     ('Change DTML Methods',
-     ('manage_editForm', 'manage', 'manage_main', 'manage_uploadForm',
+     ('manage_editForm', 'manage', 'manage_main',
       'manage_edit', 'manage_upload', 'PUT',
       'manage_historyCopy',
       'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
@@ -228,7 +229,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
                 kw[key] = val
             self.ZCacheable_set(result, keywords=kw)
 
-    ZCacheable_configHTML = HTMLFile('cacheNamespaceKeys', globals())
+    ZCacheable_configHTML = HTMLFile('dtml/cacheNamespaceKeys', globals())
 
     def getCacheNamespaceKeys(self):
         '''
@@ -259,10 +260,13 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     def validate(self, inst, parent, name, value, md):
         return getSecurityManager().validate(inst, parent, name, value)
 
-    manage_editForm=HTMLFile('documentEdit', globals())
-    manage_uploadForm=HTMLFile('documentUpload', globals())
+    manage_editForm=HTMLFile('dtml/documentEdit', globals())
+
+    # deprecated!
+    manage_uploadForm=manage_editForm
+
     manage=manage_main=manage_editDocument=manage_editForm
-    manage_proxyForm=HTMLFile('documentProxy', globals())
+    manage_proxyForm=HTMLFile('dtml/documentProxy', globals())
 
     _size_changes={
         'Bigger': (5,5),
@@ -306,7 +310,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         self.munge(data)
         self.ZCacheable_invalidate()
         if REQUEST:
-            message="Content changed."
+            message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
     def manage_upload(self,file='', REQUEST=None):
@@ -315,10 +319,9 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         if type(file) is not type(''): file=file.read()
         self.munge(file)
         self.ZCacheable_invalidate()
-        if REQUEST: return MessageDialog(
-                    title  ='Success!',
-                    message='Your changes have been saved',
-                    action ='manage_main')
+        if REQUEST:
+            message="Saved changes."
+            return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
 
 
@@ -347,10 +350,9 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         self._validateProxy(REQUEST)
         self._proxy_roles=tuple(roles)
         self.ZCacheable_invalidate()
-        if REQUEST: return MessageDialog(
-                    title  ='Success!',
-                    message='Your changes have been saved',
-                    action ='manage_main')
+        if REQUEST:
+            message="Saved changes."
+            return self.manage_proxyForm(self,REQUEST,manage_tabs_message=message)
 
     def PrincipiaSearchSource(self):
         "Support for searching - the document's contents are searched."
@@ -423,7 +425,7 @@ in the <dtml-var title_and_id> Folder.
 </p>
 <dtml-var standard_html_footer>"""
 
-addForm=HTMLFile('methodAdd', globals())
+addForm=HTMLFile('dtml/methodAdd', globals())
 
 def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If

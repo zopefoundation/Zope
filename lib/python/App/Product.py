@@ -134,7 +134,7 @@ class ProductFolder(Folder):
 
     def _product(self, name): return getattr(self, name)
 
-    manage_addProductForm=Globals.HTMLFile('addProduct',globals())
+    manage_addProductForm=Globals.HTMLFile('dtml/addProduct',globals())
     def manage_addProduct(self, id, title, REQUEST=None):
         ' '
         i=Product(id, title)
@@ -190,7 +190,8 @@ class Product(Folder, PermissionManager):
         )
         )
 
-    manage_distributionView=Globals.HTMLFile('distributionView',globals())
+    manage_distributionView=Globals.HTMLFile(
+        'dtml/distributionView',globals())
 
     _properties=Folder._properties+(
         {'id':'version', 'type': 'string'},
@@ -198,7 +199,8 @@ class Product(Folder, PermissionManager):
 
     _reserved_names=('Help',)
 
-    manage_addPrincipiaFactoryForm=Globals.HTMLFile('addFactory',globals())
+    manage_addPrincipiaFactoryForm=Globals.HTMLFile(
+        'dtml/addFactory',globals())
     def manage_addPrincipiaFactory(
         self, id, title, object_type, initial, permission=None, REQUEST=None):
         ' '
@@ -314,8 +316,8 @@ class Product(Folder, PermissionManager):
 
     Distributions=Distributions()
 
-    manage_traceback=Globals.HTMLFile('traceback',globals())
-    manage_readme=Globals.HTMLFile('readme',globals())
+    manage_traceback=Globals.HTMLFile('dtml/traceback',globals())
+    manage_readme=Globals.HTMLFile('dtml/readme',globals())
     def manage_get_product_readme__(self):
         try:
             return open(os.path.join(self.home, 'README.txt')).read()

@@ -105,7 +105,7 @@ class TutorialTopic(TextTopic):
         text=str(StructuredText.HTML(text))
         self.obj=HTML(pre_pat.sub(clean_pre, text))
         
-    index_html=HTMLFile('lessonView', globals())
+    index_html=HTMLFile('dtml/lessonView', globals())
             
     def lessonURL(self, id, REQUEST):
         """
@@ -158,10 +158,10 @@ onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
                 names[0], names[1], names[2])
         return '<a href="%s">API Documentation</a>' % url
 
-    tutorialNavigation=HTMLFile('tutorialNav', globals())
+    tutorialNavigation=HTMLFile('dtml/tutorialNav', globals())
 
 
-addTutorialForm=HTMLFile('tutorialAdd', globals())
+addTutorialForm=HTMLFile('dtml/tutorialAdd', globals())
 
 def addTutorial(self, id, REQUEST=None, RESPONSE=None):
     """

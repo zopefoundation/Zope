@@ -1,0 +1,321 @@
+/* Zope management interface stylesheet */
+
+<dtml-if "1">
+
+b, strong {
+  font-weight: bold;
+}
+
+h1 {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 24pt; 
+  font-weight: bold; 
+}
+
+h2 {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 18pt; 
+  font-weight: bold; 
+}
+
+h3 {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 14pt; 
+  font-weight: bold; 
+}
+
+a:hover {  
+  font-family: Verdana, Helvetica, sans-serif; 
+  text-decoration: underline;
+  color: #333333; 
+}
+
+a:link {
+  font-family: Verdana, Helvetica, sans-serif; 
+  text-decoration: none;
+  color: #000099;
+}
+
+a {
+  font-family: Verdana, Helvetica, sans-serif; 
+  text-decoration: none;
+  color: #000099;
+}
+
+p {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+/*
+td {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  color: #333333;
+}
+*/
+
+th {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-size: 10pt; 
+  color: #333333;
+}
+
+code {
+  font-family: monospace; 
+  font-size: 10pt;
+  color: #000000;
+}
+
+
+
+
+
+.instructions {
+  font-size: 8pt;
+  color: #333333;
+  margin-top:  2;
+  margin-left: 2;
+}
+
+.form-help {
+  font-size: 10pt;
+  color: #333333;
+}
+
+.location-bar {
+  background-color: #efefef;
+  border: none;
+}
+
+.list-header {
+  background-color: #c0c0c0;
+  border: none;
+}
+
+.list-item {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+}
+
+.list-nav {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  font-weight: bold;
+}
+
+
+
+
+.row-normal {
+  background-color: #ffffff;
+  border: none;
+
+}
+
+.row-hilite {
+  background-color: #efefef;
+  border: none;
+}
+
+.section-bar {
+  background-color: #c0c0c0;
+  border: none;
+}
+
+.system-msg {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  background-color: #ffffff;
+  border:  1px solid #000000;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  padding: 4px;
+  width: 100%;
+  color: #660033;
+}
+
+
+/* Form element styles */
+
+.form-title {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-size: 12pt; 
+  color: #000000;
+}
+
+.form-label {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-size: 10pt; 
+  color: #333333;
+}
+
+.form-optional {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-weight: bold;
+  font-style: italic;
+  font-size: 10pt; 
+  color: #333333;
+}
+
+.form-element {
+  font-family: Verdana, Helvetica, aans-serif;
+  font-size: 10pt;
+  color: #000000;
+}
+
+.form-text {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+.form-mono {
+  font-family: monospace;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+
+.std-text {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333333;
+}
+
+.tab-small {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 8pt; 
+  color: #333333;
+}
+
+
+
+
+
+
+.small-st {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 10px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.small-un {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 10px;
+  text-decoration: underline;
+}
+
+.small-em {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.small-tx {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 10px;
+}
+
+.normal-st {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.normal-un {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+.normal-em {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.normal-tx {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 12px;
+}
+
+.large-st {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.large-un {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.large-em {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 15px;
+  font-style: italic;
+}
+
+.large-tx {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 15px;
+}
+
+
+.infobox {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 12px;
+  margin-left: 0;
+  text-align: center;
+  background: #efefef;
+  background-image: url(/misc_/OFSP/Folder_icon.gif);
+  border-top:     2px solid #ffff99;
+  border-left:    2px solid #ffff99;
+  border-right:   2px solid #cc9933;
+  border-bottom:  2px solid #cc9933;
+}
+
+
+.listctl {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 10px;
+  line-height: 11px;
+  background: #efefef;
+  border-top:     2px solid #003366;
+  border-left:    2px solid #003366;
+  border-right:   2px solid #003366;
+  border-bottom:  2px solid #003366;
+}
+
+.listitem {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: left;
+  align: left;
+  margin-left: 0;
+/*
+  margin-top: 2;
+  margin-left: 2;
+  margin-right: 2;
+  margin-bottom: 2;
+*/
+}
+
+.menu-bar {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 12px;
+}
+
+</dtml-if>

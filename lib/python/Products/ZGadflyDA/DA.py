@@ -85,8 +85,8 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.11 2000/05/16 19:34:44 brian Exp $''' % database_type
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: DA.py,v 1.12 2001/01/08 22:47:03 brian Exp $''' % database_type
+__version__='$Revision: 1.12 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -98,7 +98,7 @@ _connections_lock=ThreadLock.allocate_lock()
 
 data_sources=manage_DataSources
 
-addConnectionForm=Globals.HTMLFile('connectionAdd',globals())
+addConnectionForm=Globals.HTMLFile('dtml/connectionAdd',globals())
 def manage_addZGadflyConnection(
     self, id, title, connection, check=None, REQUEST=None):
     """Add a DB connection to a folder"""
@@ -117,7 +117,7 @@ class Connection(DABase.Connection):
     meta_type=title='Z %s Database Connection' % database_type
     icon='misc_/Z%sDA/conn' % database_type
 
-    manage_properties=Globals.HTMLFile('connectionEdit', globals(),
+    manage_properties=Globals.HTMLFile('dtml/connectionEdit', globals(),
                                        data_sources=data_sources)
 
     def connected(self):

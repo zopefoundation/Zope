@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.91 2000/07/26 15:43:13 brian Exp $"""
+$Id: Folder.py,v 1.92 2001/01/08 22:46:58 brian Exp $"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -98,7 +98,7 @@ from Globals import HTMLFile
 from AccessControl import getSecurityManager
 
 
-manage_addFolderForm=HTMLFile('folderAdd', globals())
+manage_addFolderForm=HTMLFile('dtml/folderAdd', globals())
 
 def manage_addFolder(self, id, title='',
                      createPublic=0,
@@ -161,7 +161,6 @@ class Folder(
          'help':('OFSP','Folder_View.stx')},
         )+
         PropertyManager.PropertyManager.manage_options+
-        (ObjectManager.ObjectManager.manage_options[1],)+
         AccessControl.Role.RoleManager.manage_options+
         SimpleItem.Item.manage_options+
         FindSupport.FindSupport.manage_options

@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -167,9 +167,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
          'help':('OFSP','Properties.stx')},         
         )
     
-    manage_propertiesForm=HTMLFile('properties', globals(),
+    manage_propertiesForm=HTMLFile('dtml/properties', globals(),
                                    property_extensible_schema__=1)
-    manage_propertyTypeForm=HTMLFile('propertyType', globals())
+    manage_propertyTypeForm=HTMLFile('dtml/propertyType', globals())
 
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
@@ -331,10 +331,10 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             if 'w' in prop.get('mode', 'wd'):
                 value=REQUEST.get(name, '')
                 self._updateProperty(name, value)
-        return MessageDialog(
-               title  ='Success!',
-               message='Your changes have been saved',
-               action ='manage_propertiesForm')
+        if REQUEST:
+            message="Saved changes."
+            return self.manage_propertiesForm(self,REQUEST,
+                                              manage_tabs_message=message)
 
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties.
@@ -354,11 +354,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 if not 'w' in propdict[name].get('mode', 'wd'):
                     raise 'BadRequest', '%s cannot be changed' % name
                 self._updateProperty(name, value)
-        if REQUEST is not None:
-            return MessageDialog(
-                title  ='Success!',
-                message='Your changes have been saved',
-                action ='manage_propertiesForm')
+        if REQUEST:
+            message="Saved changes."
+            return self.manage_propertiesForm(self,REQUEST,manage_tabs_message=message)
 
     # Note - this is experimental, pending some community input.
     

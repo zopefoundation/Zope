@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.35 2000/12/13 20:11:20 brian Exp $"""
+$Id: Management.py,v 1.36 2001/01/08 22:46:56 brian Exp $"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -99,7 +99,7 @@ class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
 
     manage_tabs__roles__=('Anonymous',)
-    manage_tabs     =HTMLFile('manage_tabs', globals())
+    manage_tabs=HTMLFile('dtml/manage_tabs', globals())
     
 
     manage_options  =()
@@ -195,16 +195,50 @@ class Tabs(ExtensionClass.Base):
 
 Globals.default__class_init__(Tabs)
 
-class Navigation(ExtensionClass.Base):
-    """Basic (very) navigation UI support"""
 
-    manage          =HTMLFile('manage', globals())
-    manage_menu     =HTMLFile('menu', globals())
-    manage_copyright=HTMLFile('copyright', globals())
-    manage_copyright__roles__=None
+class Navigation(ExtensionClass.Base):
+    """Basic navigation UI support"""
 
     __ac_permissions__=(
-        ('View management screens', ('manage', 'manage_menu',)),
+        ('View management screens',
+         ('manage', 'manage_menu', 'manage_top_frame',
+          'manage_page_header',
+          'manage_page_footer',
+          )),
         )
+
+    manage            =HTMLFile('dtml/manage', globals())
+    manage_menu       =HTMLFile('dtml/menu', globals())
+
+    manage_top_frame  =HTMLFile('dtml/manage_top_frame', globals())
+    manage_page_header=HTMLFile('dtml/manage_page_header', globals())
+    manage_page_footer=HTMLFile('dtml/manage_page_footer', globals())
+
+    manage_form_title__roles__=None
+    manage_form_title =HTMLFile('dtml/manage_form_title', globals(),
+                                form_title='Add Form',
+                                help_product=None,
+                                help_topic=None)
+
+    manage_copyright__roles__=None
+    manage_copyright=HTMLFile('dtml/copyright', globals())
+
+    
+    manage_logout__roles__=None
+    def manage_logout(self):
+        """Logout current user"""
+        return """<html>
+<head><title>Not implmented</title></head>
+<body>
+Sorry, this is not yet implemented.
+</body>
+</html>"""
+
+
+setattr(Navigation, 'manage_page_style.css',
+        HTMLFile('dtml/manage_page_style.css', globals())
+        )
+setattr(Navigation, 'manage_page_style.css__roles__', None)
+
 
 Globals.default__class_init__(Navigation)

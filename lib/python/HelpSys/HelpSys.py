@@ -109,7 +109,8 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     __ac_permissions__=(
         ('View',
          ('__call__', 'searchResults', 'HelpButton', '',
-          'index_html', 'menu', 'search', 'results', 'main', )),
+          'index_html', 'menu', 'search', 'results', 'main',
+          'helpLink')),
         ('Access contents information', ('helpValues',)),
         )
 
@@ -145,15 +146,15 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
         
     searchResults=__call__
     
-    index_html=HTMLFile('frame', globals())
-    menu=HTMLFile('menu', globals())
-    search=HTMLFile('search', globals())
-    results=HTMLFile('results', globals())
+    index_html=HTMLFile('dtml/frame', globals())
+    menu=HTMLFile('dtml/menu', globals())
+    search=HTMLFile('dtml/search', globals())
+    results=HTMLFile('dtml/results', globals())
     main=HTML("""<html></html>""")
-    standard_html_header=HTMLFile('menu_header', globals())
-    standard_html_footer=HTMLFile('menu_footer', globals())
+    standard_html_header=HTMLFile('dtml/menu_header', globals())
+    standard_html_footer=HTMLFile('dtml/menu_footer', globals())
 
-    button=HTMLFile('button', globals())
+    button=HTMLFile('dtml/button', globals())
 
     def HelpButton(self, topic, product):
         """
@@ -161,7 +162,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
         """
         return self.button(self, self.REQUEST, product=product, topic=topic)
 
-    helpURL=HTMLFile('helpURL',globals())
+    helpURL=HTMLFile('dtml/helpURL',globals())
 
     def helpLink(self, product='OFSP', topic='ObjectManager_Contents.stx'):
         # Generate an <a href...> tag linking to a help topic. This
@@ -173,9 +174,16 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
             topic
             )
         help_url='%s?help_url=%s' % (self.absolute_url(), help_url)
-        html='<a href="" onClick="return window.parent.openHelpWindow(' \
-             '\'%s\');">Help!</a>' % (help_url)
-        return html
+
+        script='window.open(\'%s\',\'zope_help\',\'width=600,' \
+                'height=500,menubar=yes,toolbar=yes,scrollbars=yes,' \
+                'resizable=yes\').focus(); return false;' % help_url
+
+        h_link='<a href="" onClick="%s" onMouseOver="window.status=' \
+               '\'Open online help\'; return true;" onMouseOut="' \
+               'window.status=\'\'; return true;">Help!</a>' % script
+
+        return h_link
 
     def tpValues(self):
         """
@@ -284,7 +292,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         c.addColumn('url')
         c.addColumn('id')
 
-    addTopicForm=HTMLFile('addTopic', globals())
+    addTopicForm=HTMLFile('dtml/addTopic', globals())
 
     def addTopic(self, id, title, REQUEST=None):
         "Add a Help Topic"
@@ -343,8 +351,8 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         """
         return apply(self.catalog.__call__, args, kw)
 
-    standard_html_header=HTMLFile('topic_header', globals())
-    standard_html_footer=HTMLFile('topic_footer', globals())
+    standard_html_header=HTMLFile('dtml/topic_header', globals())
+    standard_html_footer=HTMLFile('dtml/topic_footer', globals())
 
 
 Globals.default__class_init__(ProductHelp)

@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
@@ -96,8 +96,9 @@ import AccessControl.Role, sys, os, stat, traceback
 from OFS.SimpleItem import pretty_tb
 from App.Extensions import getObject, getPath, FuncCode
 from Globals import DevelopmentMode
+from App.Management import Navigation
 
-manage_addExternalMethodForm=HTMLFile('methodAdd', globals())
+manage_addExternalMethodForm=HTMLFile('dtml/methodAdd', globals())
 
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder
@@ -132,7 +133,7 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     return self.manage_main(self,REQUEST)
 
 class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
-                     AccessControl.Role.RoleManager):
+                     AccessControl.Role.RoleManager, Navigation):
     """Web-callable functions that encapsulate external python functions.
 
     The function is defined in an external file.  This file is treated
@@ -155,7 +156,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
     ZopeTime=Acquisition.Acquired
     HelpSys=Acquisition.Acquired
-    
+
     manage_options=(
         (
         {'label':'Properties', 'action':'manage_main',
@@ -177,7 +178,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         self.id=id
         self.manage_edit(title, module, function)
 
-    manage_main=HTMLFile('methodEdit', globals())
+    manage_main=HTMLFile('dtml/methodEdit', globals())
     def manage_edit(self, title, module, function, REQUEST=None):
         """Change the external method
 
@@ -199,11 +200,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         self._module=module
         self._function=function
         self.getFunction(1,1)
-        if REQUEST: return MessageDialog(
-            title  ='Changed %s' % self.id,
-            message='%s has been updated' % self.id,
-            action =REQUEST['URL1']+'/manage_main',
-            target ='manage_main')
+        if REQUEST:
+            message="External Method Uploaded."
+            return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
     def getFunction(self, check=0, reload=0):
 

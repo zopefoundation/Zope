@@ -104,7 +104,7 @@ import IOBTree
 from AccessControl import getSecurityManager
 
 
-manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
+manage_addZCatalogForm=HTMLFile('dtml/addZCatalog',globals())
 
 def manage_addZCatalog(self, id, title, vocab_id=None, REQUEST=None):
     """Add a ZCatalog object
@@ -206,12 +206,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         )
 
 
-    manage_catalogAddRowForm = HTMLFile('catalogAddRowForm', globals())
-    manage_catalogView = HTMLFile('catalogView',globals())
-    manage_catalogFind = HTMLFile('catalogFind',globals())
-    manage_catalogSchema = HTMLFile('catalogSchema', globals())
-    manage_catalogIndexes = HTMLFile('catalogIndexes', globals())
-    manage_catalogStatus = HTMLFile('catalogStatus', globals())
+    manage_catalogAddRowForm = HTMLFile('dtml/catalogAddRowForm', globals())
+    manage_catalogView = HTMLFile('dtml/catalogView',globals())
+    manage_catalogFind = HTMLFile('dtml/catalogFind',globals())
+    manage_catalogSchema = HTMLFile('dtml/catalogSchema', globals())
+    manage_catalogIndexes = HTMLFile('dtml/catalogIndexes', globals())
+    manage_catalogStatus = HTMLFile('dtml/catalogStatus', globals())
 
 
     threshold=10000

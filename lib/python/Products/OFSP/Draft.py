@@ -88,7 +88,7 @@ from Acquisition import Implicit
 from OFS import SimpleItem
 from string import rfind
 
-manage_addPrincipiaDraftForm=Globals.HTMLFile('draftAdd',globals())
+manage_addPrincipiaDraftForm=Globals.HTMLFile('dtml/draftAdd',globals())
 def manage_addPrincipiaDraft(self, id, baseid, PATH_INFO, REQUEST=None):
     "Add a draft object"
     self._setObject(id, Draft(id, baseid, PATH_INFO))
@@ -176,7 +176,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             # ZODB 3
             return not db.versionEmpty(self._version)
 
-    manage_approve__draft__=Globals.HTMLFile('draftApprove', globals())
+    manage_approve__draft__=Globals.HTMLFile('dtml/draftApprove', globals())
 
     def manage_Save__draft__(self, remark, REQUEST=None):
         """Make version changes permanent"""

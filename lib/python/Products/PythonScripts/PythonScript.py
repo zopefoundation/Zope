@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -110,7 +110,7 @@ manage_addPythonScriptForm=HTMLFile('pyScriptAdd', _www)
 
 _marker = []  # Create a new marker object
 
-def manage_addPythonScript(self, id, REQUEST=None):
+def manage_addPythonScript(self, id, REQUEST=None, submit=None):
     """Add a Python script to a folder.
     """
     id = str(id)
@@ -122,11 +122,8 @@ def manage_addPythonScript(self, id, REQUEST=None):
             self._getOb(id).write(file)
         try: u = self.DestinationURL()
         except: u = REQUEST['URL1']
-        if REQUEST['addedit'] == 'Add':
-            goto = '%s/manage_workspace' % u
-        else:
-            goto = '%s/%s/manage_main' % (u, quote(id))
-        REQUEST.RESPONSE.redirect(goto)
+        if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
+        REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 
 
@@ -144,9 +141,8 @@ class PythonScript(Script, Historical, Cacheable):
 
     manage_options = (
         {'label':'Edit', 'action':'ZPythonScriptHTML_editForm'},
-        {'label':'Upload', 'action':'ZPythonScriptHTML_uploadForm'},
         ) + Bindings.manage_options + (
-        {'label':'Try It', 'action':'ZScriptHTML_tryForm'},
+        {'label':'Test', 'action':'ZScriptHTML_tryForm'},
         {'label':'Proxy', 'action':'manage_proxyForm'},
         ) + Historical.manage_options + SimpleItem.manage_options + \
         Cacheable.manage_options
@@ -173,13 +169,12 @@ class PythonScript(Script, Historical, Cacheable):
     manage = manage_main = ZPythonScriptHTML_editForm
     manage_proxyForm = HTMLFile('pyScriptProxy', _www)
     ZScriptHTML_tryForm = HTMLFile('scriptTry', _www)
-    ZPythonScriptHTML_uploadForm = HTMLFile('pyScriptUpload', _www)
 
     def ZPythonScriptHTML_editAction(self, REQUEST, title, params, body):
         """Change the script's main parameters."""
         self.ZPythonScript_setTitle(title)
         self.ZPythonScript_edit(params, body)
-        message = "Content changed."
+        message = "Saved changes."
         if getattr(self, '_v_warnings', None):
             message = ("<strong>Warning:</strong> <i>%s</i>" 
                        % join(self._v_warnings, '<br>'))
@@ -204,7 +199,7 @@ class PythonScript(Script, Historical, Cacheable):
         """Replace the body of the script with the text in file."""
         if type(file) is not type(''): file = file.read()
         self.write(file)
-        message = 'Content changed.'
+        message = 'Saved changes.'
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
                                                manage_tabs_message=message)
 

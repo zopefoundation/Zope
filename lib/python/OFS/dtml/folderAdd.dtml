@@ -1,0 +1,84 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Folder',
+           help_product='OFSP',
+           help_topic='Folder_Add.stx'
+	   )">
+<p class="form-help">
+A Folder contains other objects. Use Folders to organize your
+web objects in to logical groups. The <em>create public interface</em> 
+option creates an index document inside the Folder to give the
+Folder a default HTML representation. The <em>create user folder</em>
+option creates a User Folder inside the Folder to hold authorization
+information for the Folder.
+</p>
+
+<FORM ACTION="manage_addFolder" METHOD="POST">
+
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Id
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="id" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-optional">
+    Title
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="title" size="40" />
+    </td>
+  </tr>
+<dtml-if 
+ "_.SecurityCheckPermission('Add Documents, Images, and Files',this())">
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <input type="checkbox" name="createPublic:int" value="1" 
+     id="cbCreatePublic"> 
+     <label for="cbCreatePublic">Create public interface</label>
+    </div>
+    </td>
+  </tr>
+</dtml-if>
+
+<dtml-if 
+ "_.SecurityCheckPermission('Add User Folders',this())">
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <input type="checkbox" name="createUserF:int" value="1" 
+     id="cbCreateUserF"> 
+     <label for="cbCreateUserF">Create user folder</label>
+    </div>
+    </td>
+  </tr>
+</dtml-if>
+
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+    <div class="form-element">
+    <input class="form-element" type="submit" name="submit" 
+     value="Add" /> 
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

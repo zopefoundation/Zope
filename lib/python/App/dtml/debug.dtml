@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title><dtml-if title><dtml-var title></dtml-if></title>
+<link rel="stylesheet" type="text/css" href="<dtml-var BASEPATH1>/manage_page_style.css">
+<dtml-if debug_auto_reload>
+<meta HTTP-EQUIV="Refresh"
+  CONTENT="&dtml-debug_auto_reload;; URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
+</dtml-if>
+
+<style type="text/css">
+<!-- 
+.header {
+font-weight: bold;
+font-size: 10pt;
+}
+
+.cell {
+font-size: 10pt;
+}
+
+-->
+
+</style>
+
+
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
+<font face="verdana, helvetica, sans-serif" size="2" color="#333333">
+
+<dtml-var manage_tabs>
+
+<dtml-if update_snapshot>
+<dtml-call rcsnapshot>
+</dtml-if>
+
+<h3>Debug Information</h3>
+<form action="&dtml-URL;" method="GET">
+<p>
+<ul>
+<li>Zope version: <dtml-var version_txt>
+<li>Python version: <dtml-var sys_version>
+<li>System Platform: <dtml-var sys_platform>
+<li>Process ID: <dtml-var process_id> (<dtml-var thread_get_ident>)
+<li>Running for: <dtml-var process_time>
+<li>Top Refcounts:<br><select name="foo" size="5"><dtml-in
+    "refcount(100)"><option><dtml-var 
+    sequence-item>: <dtml-var sequence-key></option></dtml-in
+    ></select><br><br>
+
+<table border="1">
+<dtml-in rcdeltas mapping>
+<dtml-if sequence-start>
+<tr>
+<th class="header" align="left" valign="top">
+Class
+</th>
+<th class="header" align="left" valign="top">
+<dtml-var rcdate fmt="fCommon" null="">
+</th>
+<th class="header" align="left" valign="top">
+<dtml-var ZopeTime fmt="fCommon">
+</th>
+<th class="header" align="left" valign="top">
+Delta
+</th>
+</tr>
+</dtml-if>
+<tr>
+<td class="cell" align="left" valign="top">
+<dtml-var name>
+</td>
+<td class="cell" align="left" valign="top">
+<dtml-var pc> 
+</td>
+<td class="cell" align="left" valign="top">
+<dtml-var rc>
+</td>
+<td class="cell" align="left" valign="top">
++<dtml-var delta>
+</td>
+</tr>
+</dtml-in>
+</table>
+
+<p><a href="<dtml-var URL>?update_snapshot=1">Update Snapshot</a> | 
+<dtml-if debug_auto_reload>
+  <a href="<dtml-var URL>">Stop auto refresh</a>
+<dtml-else>
+  <a href="<dtml-var URL>">Refresh</a> |
+  Auto refresh interval (seconds):
+  <input type="text" name="debug_auto_reload" size="3" value="10">
+  <input type="submit" value="Start auto refresh">
+</dtml-if>
+</p>
+
+<li>Connections:
+<table border="1">
+<tr><th>opened</th><th>info</th><th>version</th></tr>
+<dtml-in dbconnections mapping>
+  <tr><td>&dtml-opened;</td><td>&dtml-info;</td><td>&dtml-version;</td></tr>
+</dtml-in></table>
+
+</ul>
+</p>
+
+</form>
+
+<dtml-var manage_page_footer>

@@ -1,9 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<HTML lang="en"><HEAD><TITLE><dtml-var id> README</TITLE></HEAD>
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<dtml-var manage_tabs>
-
-<dtml-var manage_get_product_readme__ fmt=structured-text>
-
-</BODY>
-</HTML>

@@ -1,0 +1,256 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<dtml-if Principia-Version>
+<p>
+<em>You are currently working in version <dtml-var Principia-Version></em>
+</p>
+</dtml-if Principia-Version>
+
+<form action="<dtml-var URL1>" method="post">
+<dtml-if propertyMap>
+<p class="form-help">
+Properties allow you to assign simple values to Zope objects. To change 
+property values, edit the values and click &quot;Save Changes&quot;. 
+</p>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td align="left" valign="top" width="16">
+  &nbsp;
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Value
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Type
+  </div>
+  </td>
+</tr>
+
+<dtml-in propertyMap mapping>
+<tr>
+  <td align="left" valign="top" width="16">
+  <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
+  <input type="checkbox" name="ids:list" value="<dtml-var id html_quote>" 
+   id="cb-<dtml-var id>">
+  <dtml-else>
+  </dtml-if>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-label">
+  <label for="cb-<dtml-var id>"><dtml-var "propertyLabel(id)"></label>
+  </div>
+  </td>
+  <td align="left" valign="top">
+
+  <dtml-if "'w' in _['sequence-item'].get('mode', 'awd')">
+  <dtml-if "type == 'int'">
+  <input type="text" name="<dtml-var id>:<dtml-var 
+   type>" size="35" value="<dtml-if "hasProperty(id)"><dtml-var 
+   "'%s' % getProperty(id)" html_quote></dtml-if>">
+  <dtml-elif "type == 'long'">
+  <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
+   value="<dtml-if "hasProperty(id)"><dtml-var 
+   "('%s' % getProperty(id))[:-1]" html_quote></dtml-if>">
+  <dtml-elif "type in ('float', 'date')">
+  <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
+   value="<dtml-var "getProperty(id)" html_quote>">
+  <dtml-elif "type=='string'">
+  <input type="text" name="<dtml-var id>:string" size="35"
+   value="<dtml-var "getProperty(id)" html_quote>">
+  <dtml-elif "type=='boolean'">
+  <input type="checkbox" name="<dtml-var id>:boolean" size="35"
+   <dtml-if "getProperty(id)">CHECKED</dtml-if>>
+  <dtml-elif "type=='tokens'">
+  <input type="text" name="<dtml-var id>:tokens" size="35"
+   value="<dtml-in "getProperty(id)"><dtml-var sequence-item html_quote> </dtml-in>">
+  <dtml-elif "type=='text'">
+  <textarea name="<dtml-var id>:text" rows="6" cols="35"><dtml-var 
+   "getProperty(id)" html_quote></textarea>
+  <dtml-elif "type=='lines'">
+  <textarea name="<dtml-var id>:lines" rows="6" cols="35"><dtml-in
+  "getProperty(id)"><dtml-var sequence-item html_quote><dtml-if
+   sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
+
+  <dtml-elif "type=='selection'">
+
+    <dtml-if "hasProperty(select_variable)">
+    <div class="form-element">
+    <select name="<dtml-var id>">
+      <dtml-in "getProperty(select_variable)">
+         <option
+          <dtml-if "_['sequence-item']==getProperty(id)">SELECTED</dtml-if>
+          ><dtml-var sequence-item html_quote></option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-elif "_.has_key(select_variable)">
+    <div class="form-element">
+    <select name="<dtml-var id>">
+      <dtml-in "_[select_variable]">
+         <option
+          <dtml-if "_['sequence-item']==getProperty(id)">SELECTED</dtml-if>
+          ><dtml-var sequence-item html_quote></option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-else>
+    <div class="form-text">
+       No value for <dtml-var select_variable>.
+    </div>
+    </dtml-if>
+
+  <dtml-elif "type=='multiple selection'">
+
+    <dtml-if "hasProperty(select_variable)">
+    <div class="form-element">
+    <select name="<dtml-var id>:list" multiple
+      size="<dtml-var "_.min(7, _.len(getProperty(select_variable)))">">
+      <dtml-in "getProperty(select_variable)">
+         <option<dtml-if 
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"
+         > SELECTED</dtml-if
+         >><dtml-var sequence-item html_quote></option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-elif "_.has_key(select_variable)">
+    <div class="form-element">
+    <select name="<dtml-var id>:list" multiple
+      size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
+      <dtml-in "_[select_variable]">
+         <option<dtml-if 
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"
+         > SELECTED</dtml-if
+         >><dtml-var sequence-item html_quote></option>
+      </dtml-in>
+    </select>
+    </div>
+    <dtml-else>
+    <div class="form-text">
+    No value for <dtml-var select_variable>.
+    </div>
+    </dtml-if>
+  <dtml-else>
+  <em>Unknown property type</em>
+  </dtml-if>
+  <dtml-else>
+  <table border="1">
+  <tr><td><dtml-var "getProperty(id)" html_quote></td></tr>
+  </table>
+  </dtml-if>
+  </td>
+  <td align="left" valign="top">
+  <div class="list-item">
+  &dtml-type;
+  </div>
+  </td>
+</tr>
+</dtml-in>
+<tr>
+  <td colspan="2">&nbsp;</td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <input name="manage_editProperties:method" type="submit" 
+   class="form-element" value="Save Changes" />
+<dtml-if property_extensible_schema__>
+  <input name="manage_delProperties:method" type="submit" 
+   class="form-element" value="Delete" />
+  </div>
+  </td>
+  <td>
+  <dtml-comment>
+  This needs some community review before exposing it officially.
+  <input type="submit" name="manage_propertyTypeForm:method" value="Change Names/Types">
+  </dtml-comment>
+  </td>
+<dtml-else>
+  <td>&nbsp;</td>
+</dtml-if>
+  </td>
+</tr>
+</table>
+
+<dtml-else>
+<p class="form-help">
+Properties allow you to assign simple values to Zope objects. There are 
+currently no properties defined for this item. <dtml-if 
+property_extensible_schema__>To add a property, enter a name, type 
+and value and click the &quot;Add&quot; button.
+</dtml-if>
+</p>
+
+</dtml-if>
+</form>
+
+<dtml-if property_extensible_schema__>
+<a name="addpropform">
+<form action="<dtml-var URL1>/manage_addProperty" method="post">
+
+<p class="form-help">
+To add a new property, enter a name, type and value for the new 
+property and click the &quot;Add&quot; button. 
+</p>
+
+<table>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Name
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <input type="text" name="id" size="30" value=""/>
+  </td>
+  <td align="left" valign="top" class="form-label">
+  Type
+  </td>
+  <td align="left" valign="top">
+  <div class="form-element">
+    <select name="type">
+      <option>boolean</option>
+      <option>date</option>
+      <option>float</option>
+      <option>int</option>
+      <option>lines</option>
+      <option>long</option>
+      <option selected>string</option>
+      <option>text</option>
+      <option>tokens</option>
+      <option>selection</option>
+      <option>multiple selection</option>
+    </select>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  Value
+  </div>
+  </td>
+  <td colspan=2 align="left" valign="top">
+  <input type="text" name="value" size="30" />
+  </td>
+  <td align="right" valign="top">
+  <div class="form-element">
+  <input class="form-element" type="submit" name="submit" value=" Add " />
+  </div>
+  </td>
+</tr>
+</table>
+</form>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+
+

@@ -1,0 +1,68 @@
+<dtml-var manage_page_header>
+
+<style type="text/css">
+<!--
+
+td {
+  font-family: Verdana, Helvetica, sans-serif; 
+  font-size: 10pt; 
+  color: #333333;
+}
+
+-->
+</style>
+
+<table width="100%" cellspacing="0" border="0">
+<tr bgcolor="#000000">
+  <td valign="top" nowrap>
+  <dtml-if icon>
+  <a href="manage_workspace" target="manage_main"><img 
+   src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
+   title="Click to open this item" alt="&dtml-meta_type;" /></a> 
+  </dtml-if>
+  <strong>
+  <a href="manage_workspace" target="manage_main">
+  <font color="#ffffff">
+  <dtml-if expr="URLPATH1==BASEPATH1">
+  Root Folder
+  <dtml-else>
+  <dtml-var id>
+  </dtml-if>
+  </font>
+  </a>
+  </strong>
+  </td>
+</tr>
+</table>
+<dtml-tree sort=id nowrap=1>
+<dtml-if icon>
+<a href="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" 
+ target="manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
+ title="Click to open this item" alt="&dtml-meta_type;" /></a> 
+</dtml-if>
+<a href="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" 
+ target="manage_main">&dtml-id;</a>
+</dtml-tree>
+<table cellspacing="0">
+<tr>
+  <td width="16"></td>
+  <td valign="top" nowrap>
+  <strong>
+  <a href="manage_copyright" target="manage_main">
+  &copy; Digital Creations
+  </a>
+  </strong>
+  </td>
+</tr>
+<tr>
+  <td width="16"></td>
+  <td valign="top" nowrap>
+  <strong>
+  <a href="manage_menu">Refresh</a>
+  </strong>
+  </td>
+</tr>
+</table>
+
+<dtml-var manage_page_footer>
+

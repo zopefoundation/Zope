@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -116,7 +116,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
 
     __ac_permissions__=(
         ('Change DTML Documents',
-         ('manage_editForm', 'manage', 'manage_main', 'manage_uploadForm',
+         ('manage_editForm', 'manage', 'manage_main',
           'manage_edit', 'manage_upload', 'PUT',
           'manage_historyCopy',
           'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
@@ -150,10 +150,9 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         self._validateProxy(REQUEST)
         if type(file) is not type(''): file=file.read()
         self.munge(file)
-        if REQUEST: return MessageDialog(
-                    title  ='Success!',
-                    message='Your changes have been saved',
-                    action ='manage_main')
+        if REQUEST:
+            message="Content uploaded."
+            return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
@@ -201,7 +200,7 @@ This is the <dtml-var id> Document.
 </p>
 <dtml-var standard_html_footer>"""
 
-addForm=HTMLFile('documentAdd', globals())
+addForm=HTMLFile('dtml/documentAdd', globals())
 
 def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If

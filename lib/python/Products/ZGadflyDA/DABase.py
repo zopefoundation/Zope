@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.9 1999/11/03 18:56:33 sroberts Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: DABase.py,v 1.10 2001/01/08 22:47:03 brian Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from db import manage_DataSources
 import Shared.DC.ZRDB.Connection, sys
@@ -101,8 +101,8 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
         # {'label': 'Design', 'action':'manage_tables'},
         )
 
-    manage_tables=HTMLFile('tables',globals())
-    manage_browse=HTMLFile('browse',globals())
+    manage_tables=HTMLFile('dtml/tables',globals())
+    manage_browse=HTMLFile('dtml/browse',globals())
 
     info=None
         
@@ -162,8 +162,8 @@ class Browser(Base):
 class TableBrowser(Browser, Acquisition.Implicit):
     icon='what'
     Description=check=''
-    info=HTMLFile('table_info',globals())
-    menu=HTMLFile('table_menu',globals())
+    info=HTMLFile('dtml/table_info',globals())
+    menu=HTMLFile('dtml/table_menu',globals())
 
     def tpValues(self):
         r=[]
@@ -182,7 +182,7 @@ class TableBrowser(Browser, Acquisition.Implicit):
     def Name(self): return self._d['TABLE_NAME']
     def Type(self): return self._d['TABLE_TYPE']
 
-    manage_designInput=HTMLFile('designInput',globals())
+    manage_designInput=HTMLFile('dtml/designInput',globals())
     def manage_buildInput(self, id, source, default, REQUEST=None):
         "Create a database method for an input form"
         args=[]

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -186,7 +186,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return result
 
-    manage_roleForm=HTMLFile('roleEdit', globals(), management_view='Security',
+    manage_roleForm=HTMLFile('dtml/roleEdit', globals(),
+                             management_view='Security',
                              help_topic='Security_Manage-Role.stx',
                              help_product='OFSP')
 
@@ -200,7 +201,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(self,REQUEST)
 
-    manage_acquiredForm=HTMLFile('acquiredEdit', globals(), management_view='Security',
+    manage_acquiredForm=HTMLFile('dtml/acquiredEdit', globals(),
+                                 management_view='Security',
                                  help_topic='Security_Manage-Acquisition.stx',
                                  help_product='OFSP')
 
@@ -217,7 +219,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(self,REQUEST)
         
-    manage_permissionForm=HTMLFile('permissionEdit', globals(), management_view='Security',
+    manage_permissionForm=HTMLFile('dtml/permissionEdit', globals(),
+                                   management_view='Security',
                                    help_topic='Security_Manage-Permission.stx',
                                    help_product='OFSP')
     
@@ -245,8 +248,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     
     def manage_access(
         trueself, self, REQUEST,
-        _normal_manage_access=HTMLFile('access', globals()),
-        _method_manage_access=HTMLFile('methodAccess', globals()),
+        _normal_manage_access=HTMLFile('dtml/access', globals()),
+        _method_manage_access=HTMLFile('dtml/methodAccess', globals()),
         **kw):
         "Return an interface for making permissions settings"
         if hasattr(self, '_isBeingUsedAsAMethod') and \
@@ -330,11 +333,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     
     __ac_local_roles__=None
 
-    manage_listLocalRoles=HTMLFile('listLocalRoles', globals(), management_view='Security',
+    manage_listLocalRoles=HTMLFile('dtml/listLocalRoles', globals(),
+                                   management_view='Security',
                                    help_topic='Security_Local-Roles.stx',
                                    help_product='OFSP')
 
-    manage_editLocalRoles=HTMLFile('editLocalRoles', globals(), management_view='Security',
+    manage_editLocalRoles=HTMLFile('dtml/editLocalRoles', globals(),
+                                   management_view='Security',
                                    help_topic='Security_User-Local-Roles.stx',
                                    help_product='OFSP')
 
