@@ -9,7 +9,7 @@
  Select an image from your local computer by clicking the <I>Browse</I> 
  button. The image file you select will be uploaded to the application.
 
-<FORM ACTION="<!--#var PARENT_URL-->/manage_add_Image" METHOD="POST"
+<FORM ACTION="<!--#var PARENT_URL-->/manage_addImage" METHOD="POST"
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
