@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -199,7 +199,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             p=Permission(name,value,self)
             p.setRole(role_to_manage, name in permissions)
 
-        if REQUEST is not None: return self.manage_access(self,REQUEST)
+        if REQUEST is not None: return self.manage_access(REQUEST)
 
     manage_acquiredForm=DTMLFile('dtml/acquiredEdit', globals(),
                                  management_view='Security',
@@ -217,7 +217,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             if name in permissions: p.setRoles(list(roles))
             else:                   p.setRoles(tuple(roles))
 
-        if REQUEST is not None: return self.manage_access(self,REQUEST)
+        if REQUEST is not None: return self.manage_access(REQUEST)
         
     manage_permissionForm=DTMLFile('dtml/permissionEdit', globals(),
                                    management_view='Security',
@@ -239,7 +239,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 if acquire: roles=list(roles)
                 else: roles=tuple(roles)
                 p.setRoles(roles)
-                if REQUEST is not None: return self.manage_access(self,REQUEST)
+                if REQUEST is not None: return self.manage_access(REQUEST)
                 return
 
         raise 'Invalid Permission', (
@@ -486,7 +486,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             roles=reqattr(REQUEST, 'roles')
             return self._delRoles(roles, REQUEST)
 
-        return self.manage_access(self,REQUEST)
+        return self.manage_access(REQUEST)
 
     def _addRole(self, role, REQUEST=None):
         if not role:
@@ -503,7 +503,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         data.append(role)
         self.__ac_roles__=tuple(data)
         if REQUEST is not None:
-            return self.manage_access(self, REQUEST)
+            return self.manage_access(REQUEST)
 
 
     def _delRoles(self, roles, REQUEST):
@@ -518,7 +518,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             except: pass
         self.__ac_roles__=tuple(data)
         if REQUEST is not None:
-            return self.manage_access(self, REQUEST)
+            return self.manage_access(REQUEST)
 
 
     def _has_user_defined_role(self, role):
