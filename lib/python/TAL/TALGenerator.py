@@ -263,6 +263,18 @@ class TALGenerator:
         else:
             self.emit("endTag", name)
 
+    def emitOptTag(self, name, optTag, isend):
+        program = self.popProgram() #block
+        start = self.popProgram() #start tag
+        if (isend or not program) and self.xml:
+            # Minimize empty element
+            start[-1] = ("startEndTag",) + start[-1][1:]
+            isend = 1
+        cexpr = optTag[0]
+        if cexpr:
+            cexpr = self.compileExpression(optTag[0])
+        self.emit("optTag", name, cexpr, optTag[1], isend, start, program)
+        
     def emitRawText(self, text):
         self.emit("rawtext", text)
 
@@ -434,6 +446,8 @@ class TALGenerator:
         replace = taldict.get("replace")
         attrsubst = taldict.get("attributes")
         onError = taldict.get("on-error")
+        omitTag = taldict.get("omit-tag")
+        TALtag = taldict.get("tal tag")
         if len(metaldict) > 1 and (defineMacro or useMacro):
             raise METALError("define-macro and use-macro cannot be used "
                              "together or with define-slot or fill-slot",
@@ -492,6 +506,10 @@ class TALGenerator:
         if replace:
             todo["replace"] = replace
             self.pushProgram()
+        optTag = omitTag is not None or TALtag
+        if optTag:
+            todo["optional tag"] = omitTag, TALtag
+            self.pushProgram()
         if attrsubst:
             repldict = parseAttributeReplacements(attrsubst)
             for key, value in repldict.items():
@@ -502,6 +520,8 @@ class TALGenerator:
             todo["repldict"] = repldict
             repldict = {}
         self.emitStartTag(name, self.replaceAttrs(attrlist, repldict), isend)
+        if optTag:
+            self.pushProgram()
         if content:
             self.pushProgram()
         if todo and position != (None, None):
@@ -531,6 +551,7 @@ class TALGenerator:
         define = todo.get("define")
         repldict = todo.get("repldict", {})
         scope = todo.get("scope")
+        optTag = todo.get("optional tag")
 
         if implied > 0:
             if defineMacro or useMacro or defineSlot or fillSlot:
@@ -544,7 +565,9 @@ class TALGenerator:
 
         if content:
             self.emitSubstitution(content, {}, position)
-        if not isend:
+        if optTag:
+            self.emitOptTag(name, optTag, isend)
+        elif not isend:
             self.emitEndTag(name)
         if replace:
             self.emitSubstitution(replace, repldict, position)

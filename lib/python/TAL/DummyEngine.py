@@ -104,7 +104,7 @@ class DummyEngine:
         if macros is None:
             macros = {}
         self.macros = macros
-        dict = {'nothing': None}
+        dict = {'nothing': None, 'default': Default}
         self.locals = self.globals = dict
         self.stack = [dict]
 
@@ -170,7 +170,7 @@ class DummyEngine:
 
     def evaluateText(self, expr):
         text = self.evaluate(expr)
-        if text is not None:
+        if text is not None and text is not Default:
             text = str(text)
         return text
 

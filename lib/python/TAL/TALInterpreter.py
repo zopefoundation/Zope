@@ -416,6 +416,35 @@ class TALInterpreter:
         return ok, name, value
     bytecode_handlers["<attrAction>"] = attrAction
 
+    def no_tag(self, start, program):
+        state = self.saveState()
+        self.stream = stream = StringIO()
+        self._stream_write = stream.write
+        self.interpret(start)
+        self.restoreOutputState(state)
+        self.interpret(program)
+
+    def do_optTag(self, (name, cexpr, tag_ns, isend, start, program),
+                  omit=0):
+        if tag_ns and not self.showtal:
+            return self.no_tag(start, program)
+            
+        self.interpret(start)
+        if not isend:
+            self.interpret(program)
+            s = '</%s>' % name
+            self._stream_write(s)
+            self.col = self.col + len(s)
+
+    def do_optTag_tal(self, stuff):
+        cexpr = stuff[1]
+        if cexpr is not None and (cexpr == '' or
+                                  self.engine.evaluateBoolean(cexpr)):
+            self.no_tag(stuff[-2], stuff[-1])
+        else:
+            self.do_optTag(stuff)
+    bytecode_handlers["optTag"] = do_optTag
+
     def dumpMacroStack(self, prefix, suffix, value):
         sys.stderr.write("+---- %s%s = %s\n" % (prefix, suffix, value))
         for i in range(len(self.macroStack)):
@@ -649,6 +678,7 @@ class TALInterpreter:
     bytecode_handlers_tal["loop"] = do_loop_tal
     bytecode_handlers_tal["onError"] = do_onError_tal
     bytecode_handlers_tal["<attrAction>"] = attrAction_tal
+    bytecode_handlers_tal["optTag"] = do_optTag_tal
 
 
 def test():

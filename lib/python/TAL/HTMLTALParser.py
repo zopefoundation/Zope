@@ -192,9 +192,9 @@ class HTMLTALParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         self.close_para_tags(tag)
-        self.tagstack.append(tag)
         self.scan_xmlns(attrs)
-        attrlist, taldict, metaldict = self.extract_attrs(attrs)
+        tag, attrlist, taldict, metaldict = self.process_ns(tag, attrs)
+        self.tagstack.append(tag)
         self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
                                   self.getpos())
         if tag in EMPTY_HTML_TAGS:
@@ -203,7 +203,7 @@ class HTMLTALParser(HTMLParser):
     def handle_startendtag(self, tag, attrs):
         self.close_para_tags(tag)
         self.scan_xmlns(attrs)
-        attrlist, taldict, metaldict = self.extract_attrs(attrs)
+        tag, attrlist, taldict, metaldict = self.process_ns(tag, attrs)
         if taldict.get("content"):
             self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
                                       self.getpos())
@@ -304,29 +304,43 @@ class HTMLTALParser(HTMLParser):
     def pop_xmlns(self):
         self.nsdict = self.nsstack.pop()
 
-    def extract_attrs(self, attrs):
+    def fixname(self, name):
+        if ':' in name:
+            prefix, suffix = string.split(name, ':', 1)
+            if prefix == 'xmlns':
+                nsuri = self.nsdict.get(suffix)
+                if nsuri in (ZOPE_TAL_NS, ZOPE_METAL_NS):
+                    return name, name, prefix
+            else:
+                nsuri = self.nsdict.get(prefix)
+                if nsuri == ZOPE_TAL_NS:
+                    return name, suffix, 'tal'
+                elif nsuri == ZOPE_METAL_NS:
+                    return name, suffix,  'metal'
+        return name, name, 0
+
+    def process_ns(self, name, attrs):
         attrlist = []
         taldict = {}
         metaldict = {}
+        name, namebase, namens = self.fixname(name)
         for item in attrs:
             key, value = item
-            if ':' in key:
-                prefix, suffix = string.split(key, ':', 1)
-                nsuri = self.nsdict.get(prefix)
-                if nsuri == ZOPE_METAL_NS:
-                    if metaldict.has_key(suffix):
-                        raise METALError("duplicate METAL attribute " +
-                                         `suffix`, self.getpos())
-                    item = (key, value, "metal")
-                    metaldict[suffix] = value
-                elif nsuri == ZOPE_TAL_NS:
-                    if taldict.has_key(suffix):
-                        raise TALError("duplicate TAL attribute " +
-                                       `suffix`, self.getpos())
-                    item = (key, value, "tal")
-                    taldict[suffix] = value
-                elif (prefix == "xmlns" and
-                      value in (ZOPE_METAL_NS, ZOPE_TAL_NS)):
-                    item = (key, value, "xmlns")
+            key, keybase, keyns = self.fixname(key)
+            ns = keyns or namens # default to tag namespace
+            if ns and ns != 'unknown':
+                item = (key, value, ns)
+            if ns == 'tal':
+                if taldict.has_key(keybase):
+                    raise TALError("duplicate TAL attribute " +
+                                   `keybase`, self.getpos())
+                taldict[keybase] = value
+            elif ns == 'metal':
+                if metaldict.has_key(keybase):
+                    raise METALError("duplicate METAL attribute " +
+                                     `keybase`, self.getpos())
+                metaldict[keybase] = value
             attrlist.append(item)
-        return attrlist, taldict, metaldict
+        if namens in ('metal', 'tal'):
+            taldict['tal tag'] = namens
+        return name, attrlist, taldict, metaldict

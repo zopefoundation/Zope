@@ -116,7 +116,6 @@ class TALParser(XMLParser):
         self.nsDict = self.nsStack.pop()
 
     def StartElementHandler(self, name, attrs):
-        name = self.fixname(name)
         if self.ordered_attributes:
             # attrs is a list of alternating names and values
             attrlist = []
@@ -128,28 +127,29 @@ class TALParser(XMLParser):
             # attrs is a dict of {name: value}
             attrlist = attrs.items()
             attrlist.sort() # For definiteness
-        attrlist, taldict, metaldict = self.extractattrs(attrlist)
+        name, attrlist, taldict, metaldict = self.process_ns(name, attrlist)
         attrlist = self.xmlnsattrs() + attrlist
         self.gen.emitStartElement(name, attrlist, taldict, metaldict)
 
-    def extractattrs(self, attrlist):
-        talprefix = ZOPE_TAL_NS + " "
-        ntal = len(talprefix)
-        metalprefix = ZOPE_METAL_NS + " "
-        nmetal = len(metalprefix)
+    def process_ns(self, name, attrlist):
         taldict = {}
         metaldict = {}
         fixedattrlist = []
+        name, namebase, namens = self.fixname(name)
         for key, value in attrlist:
-            item = self.fixname(key), value
-            if key[:nmetal] == metalprefix:
-                metaldict[key[nmetal:]] = value
+            key, keybase, keyns = self.fixname(key)
+            ns = keyns or namens # default to tag namespace
+            item = key, value
+            if ns == 'metal':
+                metaldict[keybase] = value
                 item = item + ("metal",)
-            elif key[:ntal] == talprefix:
-                taldict[key[ntal:]] = value
+            elif ns == 'tal':
+                taldict[keybase] = value
                 item = item + ("tal",)
             fixedattrlist.append(item)
-        return fixedattrlist, taldict, metaldict
+        if namens in ('metal', 'tal'):
+            taldict['tal tag'] = namens
+        return name, fixedattrlist, taldict, metaldict
 
     def xmlnsattrs(self):
         newlist = []
@@ -170,12 +170,19 @@ class TALParser(XMLParser):
         if ' ' in name:
             uri, name = string.split(name, ' ')
             prefix = self.nsDict[uri]
+            prefixed = name
             if prefix:
-                name = "%s:%s" % (prefix, name)
-        return name
+                prefixed = "%s:%s" % (prefix, name)
+            ns = 'x'
+            if uri == ZOPE_TAL_NS:
+                ns = 'tal'
+            elif uri == ZOPE_METAL_NS:
+                ns = 'metal'
+            return (prefixed, name, ns)
+        return (name, name, None)
 
     def EndElementHandler(self, name):
-        name = self.fixname(name)
+        name = self.fixname(name)[0]
         self.gen.emitEndElement(name)
 
     def DefaultHandler(self, text):

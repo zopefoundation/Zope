@@ -113,6 +113,8 @@ KNOWN_TAL_ATTRIBUTES = [
     "repeat",
     "attributes",
     "on-error",
+    "omit-tag",
+    "tal tag",
     ]
 
 class TALError(Exception):
