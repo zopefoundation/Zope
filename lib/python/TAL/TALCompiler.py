@@ -216,9 +216,11 @@ class TALCompiler(DOMVisitor):
 
     def compileElement(self, node):
         defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
-        if defines:
+        repeat = node.getAttributeNS(ZOPE_TAL_NS, "repeat")
+        if defines or repeat:
             self.emit("beginScope")
-            self.emitDefines(defines)
+            if defines:
+                self.emitDefines(defines)
             self.conditionalElement(node)
             self.emit("endScope")
         else:
