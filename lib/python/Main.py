@@ -32,9 +32,5 @@ SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
 
 bobo_application=app=Bobobase['Application']
 
-if os.environ.has_key('PRINCIPIA_HIDE_TRACEBACKS'):
-    __bobo_hide_tracebacks__=os.environ['PRINCIPIA_HIDE_TRACEBACKS']
+if os.environ.has_key('BOBO_DEBUG_MODE'):
     Globals.DevelopmentMode=1
-
-if os.environ.has_key('PRINCIPIA_REALM'):
-    __bobo_realm__=os.environ['PRINCIPIA_REALM']
