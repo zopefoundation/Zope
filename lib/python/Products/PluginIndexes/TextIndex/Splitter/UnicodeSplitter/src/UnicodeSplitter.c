@@ -9,20 +9,20 @@ typedef struct
     PyObject *synstop;
 }
 Splitter;
+static
+PyUnicodeObject *prepareString(PyUnicodeObject *o);
 
 static PyObject * checkSynword(Splitter *self,PyObject *word)
 {
     PyObject *value;
     PyObject *res;
 
-    if (PyList_Check(self->list)) {
-
-        value = PyObject_GetItem(self->synstop,word);
+    if (self->synstop) {
+        value = PyDict_GetItem(self->synstop,word);
         if (value) {
-
             res = value;
         } else res = word;
-    } else res = word;
+    } res = word;
 
     return res;
 }
@@ -169,15 +169,24 @@ static PyTypeObject SplitterType = {
 };
 
 
-void splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
+static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
 {
 
     PyObject *word,*synword;
-    Py_UNICODE *s = doc->str;
+    PyUnicodeObject * doc1;
+    Py_UNICODE *s;
+
     int len = doc->length;
     int inside_word=0;
     int i=0;
     int start=0;
+
+    if (! (doc1 = prepareString(doc))) {
+
+        return 0;
+    }
+
+    s=doc1->str;
 
     self->list = PyList_New(0);
 
@@ -200,14 +209,29 @@ void splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
                 inside_word = 0;
 
                 word = PySequence_GetSlice((PyObject *)doc,start,i);
+                if (word==NULL) {
+                    Py_DECREF(doc1);
+                    return 0;
+                }
+
                 // Stem word
-                if (PyUnicode_GET_SIZE(word)>MAX_WORD)
-                    word = PySequence_GetSlice(word,0,MAX_WORD);
+                if (PyUnicode_GET_SIZE(word)>MAX_WORD) {
+                    PyObject *tmpword=word;
+                    tmpword = PySequence_GetSlice(word,0,MAX_WORD);
+                    if (tmpword==NULL) {
+                        Py_DECREF(doc1);
+                        return 0;
+                    }
+
+                    Py_DECREF(word);
+
+                    word = tmpword;
+                }
 
                 synword = checkSynword(self,word);
                 if (synword != Py_None) {
                     PyList_Append(self->list,synword);
-                } else Py_DECREF(synword);
+                }
 
                 Py_DECREF(word);
 
@@ -225,10 +249,20 @@ void splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
 
     if (inside_word) {
         word = PySequence_GetSlice((PyObject *)doc,start,i);
+        if (word==NULL) {
+            Py_DECREF(doc1);
+            return 0;
+        }
 
         // Stem word
-        if (PyUnicode_GET_SIZE(word)>MAX_WORD)
+        if (PyUnicode_GET_SIZE(word)>MAX_WORD) {
             word = PySequence_GetSlice(word,0,MAX_WORD);
+            if (word==NULL) {
+                Py_DECREF(doc1);
+                return 0;
+            }
+
+        }
 
         synword = checkSynword(self,word);
         if (synword != Py_None) {
@@ -243,6 +277,8 @@ void splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
     fflush(stdout);
 #endif
 
+    Py_DECREF(doc1);
+    return 1;
 }
 
 
@@ -306,22 +342,32 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
 
     } else if( PyUnicode_Check(doc)) {
         unicodedoc = doc;
+        Py_INCREF(unicodedoc);
+
     } else {
         PyErr_SetString(PyExc_TypeError, "first argument is neither string nor unicode.");
         return NULL;
     }
+
+
 
     if (synstop) {
         self->synstop = synstop;
         Py_INCREF(synstop);
     } else  self->synstop=NULL;
 
-    splitUnicodeString(self,prepareString((PyUnicodeObject *) unicodedoc));
+    if (! (splitUnicodeString(self,(PyUnicodeObject *)unicodedoc))) {
+        goto err;
+    }
 
+
+    Py_DECREF(unicodedoc);
     return (PyObject*)self;
 
 err:
     Py_DECREF(self);
+    Py_DECREF(unicodedoc);
+
     return NULL;
 }
 
@@ -338,7 +384,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.5 2001/10/17 15:49:04 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.6 2001/10/17 19:11:09 andreasjung Exp $\n"
     ;
 
 
@@ -346,7 +392,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.5 $";
+    char *rev="$Revision: 1.6 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
