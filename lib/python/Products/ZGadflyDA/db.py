@@ -83,13 +83,13 @@
 # 
 ##############################################################################
 
-'''$Id: db.py,v 1.7 1999/04/29 19:21:32 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+'''$Id: db.py,v 1.8 1999/05/25 13:28:55 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import os
 from string import strip, split
 from gadfly import gadfly
-import Globals
+import Globals, Shared.DC.ZRDB.TM
 from DateTime import DateTime
 
 data_dir=os.path.join(Globals.data_dir,'gadfly')
@@ -122,7 +122,7 @@ def manage_DataSources():
                os.listdir(data_dir))
         )
 
-class DB:
+class DB(Shared.DC.ZRDB.TM.TM):
 
     database_error=gadfly.error
     opened=''
@@ -203,39 +203,4 @@ class DB:
                 'null': null_ok,
                 })
         return items, result
-
-    class _p_jar:
-        # This is place holder for new transaction machinery 2pc
-        # I don't think this is needed.
-        def __init__(self, db=None): self.db=db
-        def begin_commit(self, *args): pass
-        def finish_commit(self, *args): pass
-
-    _p_jar=_p_jar(_p_jar())
-
-    _p_oid=_p_changed=_registered=None
-    def _register(self):
-        if not self._registered:
-            try:
-                get_transaction().register(Surrogate(self))
-                self._registered=1
-            except: pass
-
-    def tpc_begin(self, *ignored): pass
-
-    def tpc_commit(self, *ignored):
-        self.db.commit()
-        self._registered=0
-
-    def tpc_abort(self, *ignored):
-        self.db.rollback()
-        self.db.checkpoint()
-        self._registered=0
-
-class Surrogate:
-
-    def __init__(self, db):
-        self._p_jar=db
-        self.__inform_commit__=db.tpc_commit
-        self.__inform_abort__=db.tpc_abort
     
