@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -396,11 +396,14 @@ class UnIndex(Persistent, Implicit):
         else:               set_func = intersection
 
         # Range parameter
-        if record.get('range',None):
+        range_parm = record.get('range',None)
+        if range_parm:
             opr = "range"
             opr_args = []
-            if range.find("min")>-1:  opr_args.append("min")
-            if range.find("max")>-1:  opr_args.append("max")
+            if range_parm.find("min")>-1:
+                opr_args.append("min")
+            if range_parm.find("max")>-1:
+                opr_args.append("max")
 
 
         if record.get('usage',None):

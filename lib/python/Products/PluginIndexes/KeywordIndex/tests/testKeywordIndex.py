@@ -255,5 +255,22 @@ class TestCase( unittest.TestCase ):
         assert len(result) == 1
         assert result[0] == 8
 
+    def testIntersectionWithRange(self):
+        """Test an 'and' search, ensuring that 'range' doesn't mess it up."""
+        self._populateIndex()
+
+        record = { 'foo' : { 'query'  : [ 'e', 'f' ]
+                           , 'operator' : 'and'
+                           }
+                 }
+        self._checkApply( record, self._values[6:7] )
+
+        #
+        #   Make sure that 'and' tests with incompatible paramters
+        #   don't return empty sets.
+        #
+        record[ 'foo' ][ 'range' ] = 'min:max'
+        self._checkApply( record, self._values[6:7] )
+
 def test_suite():
     return unittest.makeSuite( TestCase )

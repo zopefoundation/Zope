@@ -226,9 +226,11 @@ class TestCase( unittest.TestCase ):
         for i in range(100):
             index.index_object(i, Dummy(i%10))
 
-        r=index._apply_index({
-            'foo_usage': 'range:min:max',
-            'foo': [-99, 3]})
+        record = { 'foo' : { 'query'  : [-99, 3]
+                           , 'range'  : 'min:max'
+                           }
+                 }
+        r=index._apply_index( record )
 
         assert tuple(r[1])==('foo',), r[1]
         r=list(r[0].keys())
@@ -240,6 +242,16 @@ class TestCase( unittest.TestCase ):
             ]
         
         assert r==expect, r 
+
+        #
+        #   Make sure that range tests with incompatible paramters
+        #   don't return empty sets.
+        #
+        record[ 'foo' ][ 'operator' ] = 'and'
+        r2, ignore = index._apply_index( record )
+        r2 = list( r2.keys() )
+
+        assert r2 == r
 
 def test_suite():
     return unittest.makeSuite( TestCase )
