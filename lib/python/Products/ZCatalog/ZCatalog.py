@@ -181,6 +181,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
 
     threshold=1000
+    _v_total=0
+
 
     def __init__(self,id,title=''):
         self.id=id
@@ -207,7 +209,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
-        self.threshold = thresholdb
+        self.threshold = threshold
 
 	RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
 
@@ -312,8 +314,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     
     def catalog_object(self, obj, uid):
         """ wrapper around catalog """
-        if not hasattr(self, '_v_total'):
-            self._v_total = 0
         self._v_total = (self._v_total +
                          self._catalog.catalogObject(obj, uid, self.threshold))
         
