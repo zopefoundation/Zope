@@ -1,4 +1,5 @@
 #include "Python.h"
+#include <ctype.h>
 
 #define ASSIGN(V,E) {PyObject *__e; __e=(E); Py_XDECREF(V); (V)=__e;}
 #define UNLESS(E) if(!(E))
@@ -395,7 +396,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.6 1997/12/10 20:55:11 jim Exp $\n"
+"$Id: Splitter.c,v 1.7 1998/02/11 01:20:00 jim Exp $\n"
 ;
 
 
@@ -403,7 +404,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
+  char *rev="$Revision: 1.7 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
