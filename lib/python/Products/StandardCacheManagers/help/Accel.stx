@@ -1,7 +1,7 @@
   Accelerated HTTP Cache Managers
 
     For background information, see the
-    <a href="../../../OFSP/Help/Caching.stx">description of cache management</a>.
+    <a href="../../OFSP/Help/Caching.stx">description of cache management</a>.
 
     The HTTP protocol provides for headers that can indicate to
     downstream proxy caches, browser caches, and dedicated caches that

@@ -118,7 +118,8 @@ Zope Changes
       - Collector #266: Retried requests losing track of http request
         headers, causing Connection:Close requests to stall
 
->>>>>>> 1.440
+      - Collector #17: Fixed broken links in StandardCacheManagers help
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

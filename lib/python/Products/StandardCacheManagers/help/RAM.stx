@@ -1,7 +1,7 @@
   RAM Cache Managers
 
     For background information, see the
-    <a href="../../../OFSP/Help/Caching.stx">description of cache management</a>.
+    <a href="../../OFSP/Help/Caching.stx">description of cache management</a>.
 
     The RAM cache manager allows you to cache the result of calling DTML
     methods, Python scripts, and SQL methods in memory.  It allows you
