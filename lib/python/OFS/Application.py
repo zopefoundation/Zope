@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.92 1999/03/22 18:13:42 michel Exp $'''
-__version__='$Revision: 1.92 $'[11:-2]
+$Id: Application.py,v 1.93 1999/03/24 20:26:29 jim Exp $'''
+__version__='$Revision: 1.93 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -239,14 +239,9 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
             'Standard Error Message',
             _standard_error_msg)
 
-
-
-
     def id(self):
         try:    return self.REQUEST['SCRIPT_NAME'][1:]
         except: return self.title
-
-    def folderClass(self): return Folder.Folder
 
     def __class_init__(self): Globals.default__class_init__(self)
 
