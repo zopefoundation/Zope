@@ -324,13 +324,8 @@ class TALGenerator:
         replace = taldict.get("replace")
         repeat = taldict.get("repeat")
         attrsubst = taldict.get("attributes")
-        n = 0
-        if defineMacro: n = n+1
-        if useMacro: n = n+1
-        if fillSlot: n = n+1
-        if defineSlot: n = n+1
-        if n > 1:
-            raise METALError("only one METAL attribute per element",
+        if len(metaldict) > 1:
+            raise METALError("at most one METAL attribute per element",
                              position)
         n = 0
         if content: n = n+1
