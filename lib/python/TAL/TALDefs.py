@@ -93,6 +93,28 @@ ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
 
 NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
 
+KNOWN_METAL_ATTRIBUTES = [
+    "define-macro",
+    "use-macro",
+    "define-slot",
+    "fill-slot",
+    ]
+
+KNOWN_TAL_ATTRIBUTES = [
+    "define",
+    "condition",
+    "insert",
+    "replace",
+    "repeat",
+    "attributes",
+    ]
+
+class TALError(Exception):
+    pass
+
+class METALError(TALError):
+    pass
+
 import re
 _attr_re = re.compile(r"\s*([^\s]+)\s*(.*)")
 _subst_re = re.compile(r"\s*(?:(text|structure)\s+)?(.*)")
