@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.54 1999/04/05 13:14:01 jim Exp $''' 
-__version__='$Revision: 1.54 $'[11:-2]
+'''$Id: DT_Util.py,v 1.55 1999/04/20 04:02:23 amos Exp $''' 
+__version__='$Revision: 1.55 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -173,6 +173,24 @@ def careful_getslice(md, seq, *indexes):
 
     return v
 
+def careful_range(md, iFirst, *args):
+    # limited range function from Martijn Pieters
+    RANGELIMIT = 1000
+    if not len(args):
+        iStart, iEnd, iStep = 0, iFirst, 1
+    elif len(args) == 1:
+        iStart, iEnd, iStep = iFirst, args[0], 1
+    elif len(args) == 2:
+        iStart, iEnd, iStep = iFirst, args[0], args[1]
+    else:
+        raise AttributeError, 'range() requires 1-3 int arguments'
+    if iStep == 0: raise ValueError, 'zero step for range()'
+    iLen = int((iEnd - iStart) / iStep)
+    if iLen < 0: iLen = 0
+    if iLen >= RANGELIMIT: raise ValueError, 'range() too large'
+    return range(iStart, iEnd, iStep)
+
+
 import string, math, whrandom
 
 try:
@@ -213,6 +231,7 @@ def obsolete_attr(self, inst, name, md):
 d['attr']=obsolete_attr
 d['getattr']=careful_getattr
 d['hasattr']=careful_hasattr
+d['range']=careful_range
 
 class namespace_: pass
 
