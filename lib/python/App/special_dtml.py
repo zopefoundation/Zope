@@ -88,7 +88,7 @@ import DocumentTemplate, Common, Persistence, MethodObject, Globals, os
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
     "Persistent HTML Document Templates"
 
-class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
+class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     "Persistent HTML Document Templates read from files"
 
     class func_code: pass
@@ -105,7 +105,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
         args=(self, os.path.join(_prefix, name + '.dtml'))
         if not kw.has_key('__name__'):
             kw['__name__']=os.path.split(name)[-1]
-        apply(HTMLFile.inheritedAttribute('__init__'),args,kw)
+        apply(ClassicHTMLFile.inheritedAttribute('__init__'),args,kw)
 
     def _cook_check(self):
         if Globals.DevelopmentMode:
@@ -138,7 +138,7 @@ from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
 from AccessControl import getSecurityManager
 
-class DTMLFile(Bindings, Explicit, HTMLFile):
+class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
     
     func_code = None
@@ -235,4 +235,5 @@ class DTMLFile(Bindings, Explicit, HTMLFile):
     from Shared.DC.Scripts.Signature import _setFuncSignature
 
 
+HTMLFile = ClassicHTMLFile
 
