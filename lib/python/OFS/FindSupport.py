@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 import sys, os, time, Globals, ExtensionClass
@@ -114,7 +114,7 @@ class FindSupport(ExtensionClass.Base):
                 and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  ob.PrincipiaSearchSource().find(obj_searchterm) >= 0
+                  ob.PrincipiaSearchSource().find(str(obj_searchterm)) >= 0
                   ))
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
