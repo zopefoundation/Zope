@@ -555,6 +555,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             else:
                 try:
                     for k, intset in sort_index.items():
+                        if hasattr(intset, 'keys'): intset=intset.keys() 
                         append((k,LazyMap(self.__getitem__, intset)))
                 except AttributeError:
                     raise ValueError, (
