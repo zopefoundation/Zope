@@ -4,7 +4,7 @@
   
     <h2>Add <!--#var default_title--></h2>
     
-    <form action="manage_addAqueduct<!--#var database_type-->Connection"
+    <form action="manage_addZ<!--#var database_type-->Connection"
       method="POST">
       <table cellspacing="2">
 	<tr>
