@@ -74,6 +74,8 @@ class TestInitialization( unittest.TestCase ):
         App.config.setConfiguration(original_config)
         os.rmdir(TEMPPRODUCTS)
         os.rmdir(TEMPNAME)
+        import Products
+        Products.__path__ = [d for d in Products.__path__ if d != TEMPPRODUCTS]
 
     def configure(self, text):
         # We have to create a directory of our own since the existence
