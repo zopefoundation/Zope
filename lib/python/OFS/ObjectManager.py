@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.10 1997/09/18 22:48:45 brian Exp $"""
+$Id: ObjectManager.py,v 1.11 1997/09/25 14:30:39 brian Exp $"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -14,6 +14,7 @@ from Acquisition import Acquirer
 from string import find,join,lower
 from urllib import quote
 from DocumentTemplate import html_quote
+from cgi_module_publisher import type_converters
 
 class ObjectManager(Acquirer,Management,Persistent):
     """Generic object manager
@@ -295,6 +296,8 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def manage_addProperty(self,id,value,type,REQUEST):
 	"""Add a new property (www)"""
+	try:    value=type_converters[type](value)
+	except: pass
 	self._setProperty(id,value,type)
 	return self.manage_propertiesForm(self,REQUEST)
 
@@ -332,9 +335,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 		% (n,t,html_quote(v)))
 
     def _booleanInput(self,n,t,v):
-	if v: v="CHECKET"
+	if v: v="CHECKED"
 	else: v=''
-        return ('<INPUT TYPE= "CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
+        return ('<INPUT TYPE="CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
 		% (n,t,v))
 
     def _selectInput(self,n,t,v):
@@ -367,7 +370,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	'regexs':	_stringInput,
 	'Regexs':	_stringInput,
 	'tokens':	_stringInput,	
-	'boolean':	_booleanInput,	
+#	'boolean':	_booleanInput,	
 	}
 
     propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
@@ -391,6 +394,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.11  1997/09/25 14:30:39  brian
+# Fixed property typing error
+#
 # Revision 1.10  1997/09/18 22:48:45  brian
 # Deletable object filters added
 #
