@@ -89,3 +89,6 @@ It's unclear on what to do about these items:
 
 - The DOMVisitor class assumes that only Document and Element nodes
   have children.
+
+- Empty TAL/METAL attributes (e.g. z:replace="") are currently
+  ignored; is this a good idea?
