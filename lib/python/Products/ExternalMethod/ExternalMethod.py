@@ -5,7 +5,7 @@ This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
 
-from Acquisition import Implicit
+from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog
 import OFS.SimpleItem, os
 from string import split, join
@@ -22,7 +22,7 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
 
-class ExternalMethod(OFS.SimpleItem.Item, Persistent,
+class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 		     AccessControl.Role.RoleManager):
     """An external method is a web-callable function that encapsulates
     an external function."""
@@ -95,11 +95,21 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 	return f
 
     __call____roles__='Manager', 'Shared'
-    def __call__(self, *args):
+    def __call__(self, *args, **kw):
 	try: f=self._v_f
 	except: f=self.getFunction()
 
-	return apply(f,args)
+	__traceback_info__=args, kw, self.func_defaults
+
+	try: return apply(f,args,kw)
+	except TypeError, v:
+	    if (not args and 
+		self.func_code.co_argcount-len(self.func_defaults or ()) == 1
+		and self.func_code.co_varnames[0]=='self'):
+	        args=self.aq_parent,
+		return apply(f,args,kw)
+	    raise TypeError, v
+		
 
     def function(self): return self._function
     def module(self): return self._module
