@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.62 1999/07/23 13:58:27 cathi Exp $'''
-__version__='$Revision: 1.62 $'[11:-2]
+$Id: SimpleItem.py,v 1.63 1999/10/12 17:40:20 amos Exp $'''
+__version__='$Revision: 1.63 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -271,7 +271,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
             if nobody.allowed(self.PUT, self.PUT.__roles__):
                 mode=mode | 0002
         # get size
-        if hasattr(self,'manage_FTPget'):
+        if hasattr(self, 'get_size'):
+            size=self.get_size()
+        elif hasattr(self,'manage_FTPget'):
             size=len(self.manage_FTPget())
         else:
             size=0
@@ -279,8 +281,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         mtime=self.bobobase_modification_time().timeTime()
         # get owner and group
         owner=group='Zope'
-        for r in self.get_local_roles():
-            user,roles=r
+        for user, roles in self.get_local_roles():
             if 'Owner' in roles:
                 owner=user
                 break

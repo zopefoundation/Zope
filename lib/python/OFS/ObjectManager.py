@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.80 1999/07/22 19:19:22 jim Exp $"""
+$Id: ObjectManager.py,v 1.81 1999/10/12 17:40:20 amos Exp $"""
 
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -526,8 +526,7 @@ class ObjectManager(
         mtime=self.bobobase_modification_time().timeTime()
         # get owner and group
         owner=group='Zope'
-        for r in self.get_local_roles():
-            user,roles=r
+        for user, roles in self.get_local_roles():
             if 'Owner' in roles:
                 owner=user
                 break
