@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.2 1997/12/19 22:18:16 jeffrey Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1997/12/22 15:18:13 jeffrey Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import ExternalMethod
 from ImageFile import ImageFile
@@ -23,13 +23,16 @@ methods={
     'manage_addExternalMethod':     ExternalMethod.add,
     }
 
-misc_={'function_icon': ImageFile('function.gif', globals())
+misc_={'function_icon': ImageFile('function.gif', globals())}
 
 
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.3  1997/12/22 15:18:13  jeffrey
+# typo fix
+#
 # Revision 1.2  1997/12/19 22:18:16  jeffrey
 # fixes for icons
 #
@@ -38,5 +41,4 @@ misc_={'function_icon': ImageFile('function.gif', globals())
 #
 # Revision 1.1  1997/07/25 18:14:28  jim
 # initial
-#
 #
