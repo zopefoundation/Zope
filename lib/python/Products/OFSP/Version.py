@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -246,7 +246,12 @@ class Version(Persistent,Implicit,RoleManager,Item):
         else:
             # ZODB 3
             return not db.versionEmpty(self.cookie)
+
+    # Prevent copy/move/rename of versions. It's better that way, really.
     
+    def _canCopy(self, op=0):
+        return 0
+
     def manage_afterClone(self, item):
         self.cookie=''
 
