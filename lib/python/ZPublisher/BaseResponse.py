@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.13 2002/06/22 14:02:41 tseaver Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: BaseResponse.py,v 1.14 2002/06/22 14:04:56 tseaver Exp $'''
+__version__ = '$Revision: 1.14 $'[11:-2]
 
 import  types, sys
 from types import StringType, InstanceType
@@ -24,12 +24,12 @@ class BaseResponse:
 
     What should be here?
     """
-    debug_mode=None
-    _auth=None
-    _error_format='text/plain'
+    debug_mode = None
+    _auth = None
+    _error_format = 'text/plain'
     
     # Allow (reluctantly) access to unprotected attributes
-    __allow_access_to_unprotected_subobjects__=1
+    __allow_access_to_unprotected_subobjects__ = 1
         
     def __init__(self, stdout, stderr,
                  body='', headers=None, status=None, cookies=None):
@@ -37,20 +37,20 @@ class BaseResponse:
         self.stderr = stderr
         self.body = body
         if headers is None:
-            headers={}
+            headers = {}
         self.headers = headers
         self.status = status
         if cookies is None:
-            cookies={}
+            cookies = {}
         self.cookies = cookies
     
     def setStatus(self, status, reason=None):
         self.status = status
 
     def setHeader(self, name, value):
-        self.headers[name]=value
+        self.headers[name] = value
 
-    __setitem__=setHeader
+    __setitem__ = setHeader
 
     def outputBody(self):
         """Output the response body"""
@@ -78,8 +78,8 @@ class BaseResponse:
         else:
             cookie = cookies[name] = {}
         for k, v in kw.items():
-            cookie[k]=v
-        cookie['value']=value
+            cookie[k] = v
+        cookie['value'] = value
 
     def appendBody(self, body):
         self.setBody(self.getBody() + body)
