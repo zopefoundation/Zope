@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.42 2000/09/27 15:30:48 shane Exp $
+  $Id: Acquisition.c,v 1.43 2000/09/29 15:44:53 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -996,8 +996,8 @@ static PyNumberMethods Wrapper_as_number = {
 /* -------------------------------------------------------- */
 
 
-static char *acquire_args[] = {"object", "name", "filter", "extra", "explict",
-			       "default", "containment"};
+static char *acquire_args[] = {"object", "name", "filter", "extra", "explicit",
+			       "default", "containment", NULL};
 
 static PyObject *
 Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
@@ -1401,7 +1401,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.42 $";
+  char *rev="$Revision: 1.43 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1420,7 +1420,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.42 2000/09/27 15:30:48 shane Exp $\n",
+	   "$Id: Acquisition.c,v 1.43 2000/09/29 15:44:53 shane Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
