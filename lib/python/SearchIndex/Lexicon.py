@@ -97,8 +97,10 @@ mapping.
 from Splitter import Splitter
 from Persistence import Persistent
 from Acquisition import Implicit
-import OIBTree
+import OIBTree, BTree
 OIBTree=OIBTree.BTree
+OOBTree=BTree.BTree
+import re
 
 
 class Lexicon(Persistent, Implicit):
@@ -111,8 +113,10 @@ class Lexicon(Persistent, Implicit):
 
     """
 
-    def __init__(self):
+    def __init__(self, globbish=None):
         self._lexicon = OIBTree()
+        if globbish:
+            self._ngrams = OOBTree()
         self.counter = 0
 
     def __getitem__(self, key):
@@ -130,12 +134,32 @@ class Lexicon(Persistent, Implicit):
             self.counter = self.counter + 1
             return self.counter
 
+    def __len__(self):
+        return len(self._lexicon)
+
 
     def Splitter(self, astring, words):
         """ wrap the splitter """
         return Splitter(astring, words)
         
 
+    def grep(self, query):
+        """
+        regular expression search through the lexicon
+        he he.
+        """
+        expr = re.compile(query)
+        hits = []
+        for x in self._lexicon.keys():
+            if expr.search(x):
+                hits.append(x)
+        return hits
+
+    def ngramatize(self, word, word_id):
+        """ returns a dictionary of {ngram : word_id} pairs:
+        """
+        ngrams = []
+        for x in word:
 
 AndNot    = 'andnot'
 And       = 'and'
@@ -268,8 +292,10 @@ def get_operands(q, i, index, ListType=type([]), StringType=type('')):
 
     return (left, right)
 
-def evaluate(q, index,ListType=type([])):
+def evaluate(q, index, ListType=type([])):
     '''Evaluate a parsed query'''
+    import pdb
+    pdb.set_trace()
 
     if (len(q) == 1):
         if (type(q[0]) is ListType):
