@@ -21,6 +21,8 @@ Zope changes
 
         - Fixed a NameError in HTTPRequest.
 
+        - Made manage_page_style.css correctly available to all.
+
     Zope 2.3.0 alpha 2
 
       Features Added
