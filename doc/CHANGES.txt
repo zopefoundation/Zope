@@ -73,6 +73,10 @@ Zope Changes
 
     Zope 2.0 beta 4
     
+      Features Removed
+
+        - Draft objects are no longer supported.
+
       Features added
 
 
@@ -86,6 +90,43 @@ Zope Changes
           potential conflict on systems that have an existing
           installation of the Python win32 extensions.
 
+        - Some of the management views, including the
+          security/permission mapping views were not visible for
+          ExternalMethods. 
+
+        - New SQL methods could bot be created.
+
+        - New mailhost objects could not be created.
+
+        - New Draft objects could be created.
+
+        - Draft objects could not be deleted.
+
+        - ZClasses could not be added as methods.
+ 
+        - Disk full errors could leave the object system
+          in an inconsistent state.  The handling of this error 
+	  was made more robust.  Also, when serious errors like this
+	  occur late in the transaction commit process, the
+          transaction system switches to read-only mode.
+
+          The File-storage recovery process needs to change to make
+	  disk full errors detectable earlier in the two-phase commit
+	  process so that the system can recover without switching to
+	  read-only mode.  This change, which is expected in 2.1 will
+	  also provide better write performance.
+
+	- Errors during commit of sub-transactions were not handled
+	  correctly, leading to inconsistent object data.
+
+        - Packing not not mark all transactions performed before the
+          pack time as "packed". Undoing these transactions lead to a
+          broken database.
+
+        - On win9x systems, random data seems to be added to the end
+	  of the file on system crashes, causing apparent file
+	  corruption.  Code has been added to check for this case and
+	  recover by truncating the file with a log message.
 
     Zope 2.0 beta 3
     
