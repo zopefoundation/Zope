@@ -63,6 +63,8 @@ Zope Changes
 
     Bugs fixed
 
+      - OFS.Traversable still used a string 'NotFound' exception.
+
       - ZPublisher would fail to recognize a XML-RPC request if the
         content-type header included a 'charset' parameter.
 
