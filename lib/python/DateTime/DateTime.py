@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -1637,6 +1637,26 @@ class DateTime:
 
         return year,month,day,hour,minute,seconds,'GMT%+03d%02d' % (hour_off,min_off)
 
+    def JulianDay(self):
+        """
+        Return the Julian day according to
+        http://www.tondering.dk/claus/cal/node3.html#sec-calcjd
+        """
+        a = (14 - self._month)/12 #integer division, discard remainder
+        y = self._year + 4800 - a
+        m = self._month + (12*a) - 3
+        return self._day + (153*m+2)/5 + 365*y + y/4 - y/100 + y/400 - 32045
+
+    def week(self):
+        """
+        Return the week number according to ISO
+        see http://www.tondering.dk/claus/cal/node6.html#SECTION00670000000000000000
+        """
+        J = self.JulianDay()
+        d4 = (J + 31741 - (J % 7)) % 146097 % 36524 % 1461
+        L = d4/1460
+        d1 = (( d4 - L) % 365) + L
+        return d1/7 + 1
 
 
 class strftimeFormatter:
