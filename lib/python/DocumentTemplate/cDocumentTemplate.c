@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.8 1997/11/19 15:42:47 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.9 1997/12/18 17:48:46 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -529,7 +529,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
@@ -552,7 +552,8 @@ initcDocumentTemplate()
 
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  
+
+#include "dcprotect.h"  
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module cDocumentTemplate");
 }
@@ -561,6 +562,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.9  1997/12/18 17:48:46  jim
+  added dcprotect
+
   Revision 1.8  1997/11/19 15:42:47  jim
   added _ prefix to push and pop methods to make them private
 
