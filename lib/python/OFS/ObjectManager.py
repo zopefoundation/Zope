@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.101 2000/06/27 15:47:50 brian Exp $"""
+$Id: ObjectManager.py,v 1.102 2000/08/04 13:59:33 jim Exp $"""
 
-__version__='$Revision: 1.101 $'[11:-2]
+__version__='$Revision: 1.102 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -101,6 +101,11 @@ import App.Common
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
 import sys
+
+import XMLExportImport
+customImporters={
+    XMLExportImport.magic: XMLExportImport.importXML,
+    }
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
 
@@ -466,8 +471,10 @@ class ObjectManager(
             return f.getvalue()
 
         f=Globals.data_dir+'/%s.%s' % (id, suffix)
-        if toxml: ob._p_jar.exportXML(ob._p_oid, f)
-        else:     ob._p_jar.exportFile(ob._p_oid, f)
+        if toxml:
+            XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
+        else:
+            ob._p_jar.exportFile(ob._p_oid, f)
 
         if RESPONSE is not None:
             return MessageDialog(
@@ -492,7 +499,8 @@ class ObjectManager(
         while connection is None:
             obj=obj.aq_parent
             connection=obj._p_jar
-        ob=connection.importFile(file)
+        ob=connection.importFile(
+            file, customImporters=customImporters)
         if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()
