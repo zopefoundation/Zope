@@ -365,6 +365,11 @@ Zope authentication with existing web servers
         restriction is that the value must match a user defined in
         Apache's user database.
 
+        N.B.:  removing the password in the access file also enables
+               access to the monitor for any user connecting through
+               the localhost interface -- DISABLE THE MONITOR if using
+               this option on any box which allows untrusted logins.
+
         Shut down Zope by doing::
 
           kill `cat var/Main.pid`
