@@ -31,25 +31,38 @@ import AccessControl.User
 import ZPublisher
 import ExtensionClass
 from zLOG import LOG, WARNING, INFO, BLATHER, log_time
-
+from Zope import Startup
 
 def startup():
+    config = Startup.getConfiguration()
+
     global ZODB, app
 
-    Globals.BobobaseName = os.path.join(Globals.data_dir, 'Data.fs')
     Globals.DatabaseVersion='3'
 
     # Import products
     OFS.Application.import_products()
 
-    # Open the database
+    # Set up a root database from zconfig data
+    zconfig_db = None
+    set_root = 0
+
+    for mount_points, dbfactory in config.databases:
+        # only use root for now
+        if '/' in mount_points:
+            if set_root:
+                raise ConfigurationError, (
+                    "Cannot specify more than one 'root' / database"
+                    )
+            zconfig_db = dbfactory()
+            Globals.BobobaseName = zconfig_db.getName()
+            set_root = 1
+
     try:
-        # Try to use custom storage
+        # Root db/storage in custom_zodb overrides zconfig_db
         m=imp.find_module('custom_zodb',[INSTANCE_HOME])
     except:
-        import ZODB.FileStorage
-        storage = ZODB.FileStorage.FileStorage(Globals.BobobaseName)
-        DB = ZODB.DB(storage)
+        DB = zconfig_db
     else:
         m=imp.load_module('Zope.custom_zodb', m[0], m[1], m[2])
         if hasattr(m,'DB'):
@@ -60,6 +73,9 @@ def startup():
 
         Globals.BobobaseName = DB.getName()
         sys.modules['Zope.custom_zodb']=m
+
+    if DB is None:
+        raise Startup.ConfigurationError, "Must specify a root ('/') database"
 
     if DB.getActivityMonitor() is None:
         from ZODB.ActivityMonitor import ActivityMonitor
