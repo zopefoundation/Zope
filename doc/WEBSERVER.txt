@@ -45,8 +45,11 @@ Using Zope in multi-threaded mode with ZServer
 
  PCGI
 
-  To install PCGI, please get the PCGI support package from XXX, and
-  read the pcgi/README.txt file from that package.
+  PCGI is somewhat deprecated, but still supported.
+
+  To install PCGI, please get the PCGI support package from the Zope
+  2.6 tarball (it no longer ships with Zope 2.7), and read the
+  pcgi/README file from that package.
 
   To run ZServer with PCGI, you must configure Zope with a PCGI
   server.  You can do this by adding a section to the etc/zope.conf
