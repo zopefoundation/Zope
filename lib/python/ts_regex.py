@@ -125,11 +125,11 @@ class compile:
     def __init__(self, *args):
         self._r=r=apply(regex.compile,args)
         self._init(r)
+
+    def _init(self, r):
         lock=allocate_lock()
         self.__a=lock.acquire
         self.__r=lock.release
-
-    def _init(self, r):
         self.translate=r.translate
         self.givenpat=r.givenpat
         self.realpat=r.realpat
