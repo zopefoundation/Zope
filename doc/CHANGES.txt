@@ -42,6 +42,8 @@ Zope Changes
           to see.  Used in combination with carefully selected roles, 
           this change provides an adaptable management interface.
 
+        - Instance homes can now have local Products directories.
+
     Zope 1.11.0 pr1
       
       Lots has changed in this release. The major news is ZClasses and WebDAV.
