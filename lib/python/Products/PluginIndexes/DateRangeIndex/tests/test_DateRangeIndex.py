@@ -117,7 +117,7 @@ class DRI_Tests( unittest.TestCase ):
 
     def _badlong(self):
         work = DateRangeIndex ('work', 'start', 'stop' )
-        bad = Dummy( 'bad', sys.maxint + 1, sys.maxint + 1 )
+        bad = Dummy( 'bad', long(sys.maxint) + 1, long(sys.maxint) + 1 )
         work.index_object( 0, bad )
 
 def test_suite():
