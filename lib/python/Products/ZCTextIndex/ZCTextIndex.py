@@ -94,7 +94,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         else:
             self._index_factory = index_factory
 
-        self.index = self._index_factory(self.getLexicon())
+        self.index = self._index_factory(aq_base(self.getLexicon()))
 
     ## Private Methods ##
 
