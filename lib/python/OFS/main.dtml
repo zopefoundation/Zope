@@ -5,7 +5,7 @@
 <tr>
   <td align=left  width="90%"><H2><!--#var title_or_id--></H2></td>
   <td align=right width="10%">
-  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/Help_icon.jpg" BORDER=0>
+  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/Help_icon.gif" BORDER=0>
   </td>
 </tr>
 </table>
