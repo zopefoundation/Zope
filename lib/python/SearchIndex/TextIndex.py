@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.1 1997/09/11 22:19:09 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: TextIndex.py,v 1.2 1997/09/12 14:25:40 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Globals import Persistent
 from Trie import Trie
@@ -139,6 +139,7 @@ from InvertedIndex import ResultList
 import operator
 getitem=operator.__getitem__
 from WordSequence import WordSequence
+from string import strip
 
 class TextIndex(Persistent):
 
@@ -261,15 +262,21 @@ class TextIndex(Persistent):
 	except: return None
 
 	if type(keys) is not ListType: keys=[keys]
-	r=intSet()
+	r=None
 	for key in keys:
+	    key=strip(key)
+	    if not key: continue
+	    rr=intSet()
 	    try:
 		for i in query(key,self).keys():
-		    r.insert(i)
+		    rr.insert(i)
 	    except KeyError: pass
+	    if r is None: r=rr
+	    else:
+		# Note that we *and*/*narrow* multiple search terms.
+		r=r.intersection(rr) 
 
-	
-	return r, (id,)
+	if r is not None: return r, (id,)
 	
     
 
@@ -277,6 +284,9 @@ class TextIndex(Persistent):
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.2  1997/09/12 14:25:40  jim
+# Added logic to allow "blank" inputs.
+#
 # Revision 1.1  1997/09/11 22:19:09  jim
 # *** empty log message ***
 #
