@@ -115,6 +115,18 @@ Zope Changes
         - When renaming objects, the old id is provided as the 
           default value for the new id.
 
+        - Allow non-sliceable keys in PersistentMappings (Collector #1064).
+
+        - Use smtplib in implementing MailHost/sendmail (Collector #1005).
+
+        - Allow call to get() w/o explicit default in PersistentMapping
+          (Collector #1182).
+
+        - Allow rename of multiple items (Collector #1065).
+
+        - Allow expr syntax in <dtml-mime/boundary> for type, disposition,
+          encode, name, filename; add skip_expr (Collector #892).
+
       Bugs Fixed
 
         - Fixed problem with extra PermissionMapping objects being in
@@ -167,7 +179,21 @@ Zope Changes
           screens while in development mode was broken - it was reparsing 
           system dtml files on every request.
 
+        - Correct DateTime docstring to remove spurious 'negative offset'
+          language (Collector #1074).
 
+        - Clean up pointer cast to suppress compiler warning in zlib.c
+          (Collector #1190).
+
+        - Guarantee null-terminated buffer in Record_init() so
+          Record_compare() doesn't UMR (Collector #1012).
+
+        - Clean up use of PData for large images (Collector #1061).
+
+        - Fix overflow exception in statistics of <dtml-in> (Collector #1089).
+
+        - Check for invalid characters in whole id, not just first character
+          (Collector #1131).
 
     Zope 2.1.6
 
