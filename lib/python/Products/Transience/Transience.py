@@ -33,11 +33,11 @@ from AccessControl.User import nobody
 from BTrees.OOBTree import OOBTree, OOBucket, OOSet
 from BTrees.IOBTree import IOBTree
 from BTrees.Length import Length
-from zLOG import LOG, WARNING, BLATHER
 import os.path
 import os
 import math, sys, random
 import time
+import logging
 from types import InstanceType
 from TransientObject import TransientObject
 import thread
@@ -48,6 +48,7 @@ from cgi import escape
 _marker = []
 
 DEBUG = os.environ.get('Z_TOC_DEBUG', '')
+LOG = getLogger('Zope.Transience')
 
 class MaxTransientObjectsExceeded(Exception): pass
 
@@ -69,7 +70,7 @@ def TLOG(*args):
     sargs.append(str(time.time()))
     for arg in args:
         sargs.append(str(arg))
-    LOG('Transience', BLATHER, ' '.join(sargs))
+    LOG.debug(' '.join(sargs))
 
 def constructTransientObjectContainer(self, id, title='', timeout_mins=20,
     addNotification=None, delNotification=None, limit=0, REQUEST=None):
@@ -266,11 +267,9 @@ class TransientObjectContainer(SimpleItem):
             except (KeyError, AttributeError):
                 path = self.getPhysicalPath()
                 err = 'No such method %s in %s %s'
-                LOG('Transience',
-                    WARNING,
-                    err % (callback, '/'.join(path), name),
-                    error=sys.exc_info()
-                    )
+                LOG.warn(err % (callback, '/'.join(path), name),
+                        exc_info=sys.exc_info()
+                        )
                 return
         else:
             method = callback
@@ -286,22 +285,19 @@ class TransientObjectContainer(SimpleItem):
                     except:
                         # dont raise, just log
                         path = self.getPhysicalPath()
-                        LOG('Transience',
-                            WARNING,
+                        LOG.warn( 
                             '%s failed when calling %s in %s' % (name,callback,
                                                             '/'.join(path)),
-                            error=sys.exc_info()
+                            exc_info=sys.exc_info()
                             )
                 finally:
                     setSecurityManager(sm)
             else:
                 err = '%s in %s attempted to call non-callable %s'
                 path = self.getPhysicalPath()
-                LOG('Transience',
-                    WARNING,
-                    err % (name, '/'.join(path), callback),
-                    error=sys.exc_info()
-                    )
+                LOG.warn(err % (name, '/'.join(path), callback),
+                        exc_info=sys.exc_info()
+                        )
 
     security.declareProtected(MANAGE_CONTAINER_PERM,
         'manage_changeTransientObjectContainer')

@@ -26,12 +26,13 @@ from TransienceInterfaces import ItemWithId, Transient, DictionaryLike,\
      TransientItemContainer
 from AccessControl import ClassSecurityInfo
 import Globals
-from zLOG import LOG, BLATHER, INFO
 import sys
+import logging
 
 _notfound = []
 
 WRITEGRANULARITY=30 # Timing granularity for access write clustering, seconds
+LOG = logging.getLogger('Zope.Transience')
 
 class TransientObject(Persistent, Implicit):
     """ Dictionary-like object that supports additional methods
@@ -192,7 +193,7 @@ class TransientObject(Persistent, Implicit):
         return 1
 
     def _p_resolveConflict(self, saved, state1, state2):
-        LOG('Transience', BLATHER, 'Resolving conflict in TransientObject')
+        LOG.debug('Resolving conflict in TransientObject')
         try:
             states = [saved, state1, state2]
 
@@ -200,7 +201,7 @@ class TransientObject(Persistent, Implicit):
             # because it's a terminal state.
             for state in states:
                 if state.has_key('_invalid'):
-                    LOG('Transience', BLATHER, 'a state was invalid')
+                    LOG.debug('a state was invalid')
                     return state
             # The only other times we can clearly resolve the conflict is if
             # the token, the id, or the creation time don't differ between
@@ -210,7 +211,7 @@ class TransientObject(Persistent, Implicit):
             attrs = ['token', 'id', '_created']
             for attr in attrs:
                 if not (saved.get(attr)==state1.get(attr)==state2.get(attr)):
-                    LOG('Transience', BLATHER, 'cant resolve conflict')
+                    LOG.debug('cant resolve conflict')
                     return None
 
             # Now we need to do real work.
@@ -227,7 +228,7 @@ class TransientObject(Persistent, Implicit):
             # possible.
             states.sort(lastmodified_sort)
             if states[0].get('_last_modified'):
-                LOG('Transience', BLATHER, 'returning last mod state')
+                LOG.debug('returning last mod state')
                 return states[0]
 
             # If we can't determine which object to return on the basis
@@ -236,13 +237,11 @@ class TransientObject(Persistent, Implicit):
             # our parent).  This will return an essentially arbitrary state if
             # all last_accessed values are equal.
             states.sort(lastaccessed_sort)
-            LOG('Transience', BLATHER, 'returning last_accessed state')
+            LOG.debug('returning last_accessed state')
             return states[0]
         except:
-            LOG('Transience', INFO,
-                'Conflict resolution error in TransientObject', '',
-                sys.exc_info()
-                )
+            LOG.info('Conflict resolution error in TransientObject',
+                      exc_info=sys.exc_info())
 
     getName = getId # this is for SQLSession compatibility
 
