@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -38,6 +38,14 @@ class User(Implicit, Persistent):
 	    self._password=password
 	    self._roles   =roles
 
+    def hasRole(self,roles=None):
+	if roles is None:
+	    return 1
+	for role in roles:
+	    if role in self._roles:
+		return 1
+	return 0
+
     def __len__(self):
 	return 1
 
@@ -61,6 +69,9 @@ class SuperUser:
 	    self._name    ='superuser'
 	    self._password='123'
 	    self._roles   =('manage',)
+
+    def hasRole(self,roles=None):
+	return 1
 
     def __len__(self):
 	return 1
@@ -234,6 +245,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.14  1997/10/23 17:35:45  brian
+# Added hasRole method to User objects
+#
 # Revision 1.13  1997/09/19 17:52:04  brian
 # Changed UFs so that only the top UF validates god.
 #
