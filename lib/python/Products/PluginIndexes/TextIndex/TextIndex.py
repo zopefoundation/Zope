@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.10 $'[11:-2]
+__version__ = '$Revision: 1.11 $'[11:-2]
 
 
 import string, re
@@ -204,18 +204,13 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         if self._lexicon is None:
             ## if no lexicon is provided, create a default one
             try:
-                self._lexicon = self.aq_parent.aq_parent[self.vocabulary_id].getLexicon()
+                self._lexicon = self.aq_parent.getattr(self.vocabulary_id).getLexicon()
             except:                
                 self._lexicon = Lexicon()
                 self.vocabulary_id = '__intern__'
 
         return self._lexicon
 
-
-        if self._lexicon:
-            return self._lexicon
-        else:
-            return self.aq_parent.aq_parent[self.vocabulary_id].getLexicon()
 
 
     def __nonzero__(self):
