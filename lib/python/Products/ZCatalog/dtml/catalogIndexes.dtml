@@ -42,7 +42,7 @@ that have one or more keywords specified in a search query.
   <dtml-if name="sequence-odd"><tr class="row-normal">
   <dtml-else><tr class="row-hilite"></dtml-if>
     <td align="right" valign="top">
-    <input type="checkbox" name="names:list" value="<dtml-var 
+    <input type="checkbox" name="ids:list" value="<dtml-var 
      id html_quote>" />
     </td>
     <td width="60%" align="left" valign="top">
@@ -61,7 +61,7 @@ that have one or more keywords specified in a search query.
     </td>
     <td align="left" valign="top">
     <div class="form-element">
-    <input class="form-element" type="submit" name="manage_delIndexes:method" 
+    <input class="form-element" type="submit" name="manage_delIndex:method" 
      value="Delete" /> 
     </div>
     </td>

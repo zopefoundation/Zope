@@ -198,9 +198,13 @@ class ZCatalog(Folder, Persistent, Implicit):
           'manage_catalogAdvanced', 'manage_objectInformation',
           
           'manage_catalogReindex', 'manage_catalogFoundItems',
-          'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
-          'manage_addIndex', 'manage_delIndexes', 'manage_main',
-          'availableSplitters'], 
+          'manage_catalogClear', 'manage_addColumn', 'manage_delColumn',
+          'manage_addIndex', 'manage_delIndex', 'manage_clearIndex',
+          'manage_reindexIndex', 'manage_main', 'availableSplitters',
+          
+          # these two are deprecated:
+          'manage_delColumns', 'manage_deleteIndex'
+          ], 
          ['Manager']),
 
         ('Search ZCatalog',
@@ -294,10 +298,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         
         RESPONSE.redirect(URL1 + '/manage_catalogAdvanced?manage_tabs_message=Catalog%20Changed')      
 
-
     def manage_catalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
-        """ index all Zope objects that 'urls' point to """
+        """ index Zope object(s) that 'urls' point to """
         if urls:
+            if isinstance(urls, types.StringType):
+                urls=(urls,)
+                
             for url in urls:
                 obj = self.resolve_path(url)
                 if not obj:
@@ -309,9 +315,12 @@ class ZCatalog(Folder, Persistent, Implicit):
 
 
     def manage_uncatalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
-        """ removes Zope object 'urls' from catalog """
+        """ removes Zope object(s) 'urls' from catalog """
 
         if urls:
+            if isinstance(urls, types.StringType):
+                urls=(urls,)
+
             for url in urls:
                 self.uncatalog_object(url)
 
@@ -406,13 +415,32 @@ class ZCatalog(Folder, Persistent, Implicit):
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Added')
 
+
     def manage_delColumns(self, names, REQUEST=None, RESPONSE=None, URL1=None):
-        """ del a column """
+        """ Deprecated method. Use manage_delColumn instead. """
+        # log a deprecation warning
+        import warnings
+        warnings.warn("The manage_delColumns method of ZCatalog is deprecated"\
+        "since Zope 2.4.2.\n"\
+        "This method is only kept for backwards compatibility for a while\n"\
+        "and will go away in a future release.\n"\
+        "\n"\
+        "Please use instead the manage_delColumn method.\n"\
+        ,DeprecationWarning)
+        self.manage_delColumn(names, REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL1)
+
+
+    def manage_delColumn(self, names, REQUEST=None, RESPONSE=None, URL1=None):
+        """ delete a column or some columns """
+        if isinstance(names, types.StringType):
+            names = (names,)
+            
         for name in names:
             self.delColumn(name)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
+
 
     def manage_addIndex(self, name, type, extra=None,REQUEST=None, RESPONSE=None, URL1=None):
         """ add an index """
@@ -424,11 +452,29 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_deleteIndex(self, ids=None, REQUEST=None, RESPONSE=None,
         URL1=None):
-        """ del an index """
+        """ Deprecated method. Use manage_delIndex instead. """
+        # log a deprecation warning
+        import warnings
+        warnings.warn("The manage_deleteIndex method of ZCatalog is deprecated"\
+        "since Zope 2.4.2.\n"\
+        "This method is only kept for backwards compatibility for a while\n"\
+        "and will go away in a future release.\n"\
+        "\n"\
+        "Please use instead the manage_delIndex method.\n"\
+        ,DeprecationWarning)
+        self.manage_delIndex(ids=ids, REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL1)
+
+
+    def manage_delIndex(self, ids=None, REQUEST=None, RESPONSE=None,
+        URL1=None):
+        """ delete an index or some indexes """
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
                 action = "./manage_main",)
+
+        if isinstance(ids, types.StringType):
+            ids = (ids,)
 
         for name in ids:
             self.delIndex(name)
@@ -436,13 +482,17 @@ class ZCatalog(Folder, Persistent, Implicit):
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Deleted')
 
+
     def manage_clearIndex(self, ids=None, REQUEST=None, RESPONSE=None,
         URL1=None):
-        """ del an index """
+        """ clear an index or some indexes """
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
                 action = "./manage_main",)
+
+        if isinstance(ids, types.StringType):
+            ids = (ids,)
 
         for name in ids:
             self.clearIndex(name)
@@ -462,15 +512,19 @@ class ZCatalog(Folder, Persistent, Implicit):
             if obj is not None:
                 self.catalog_object(obj, p, idxs=[name])             
 
+
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None, URL1=None):
-        """ Reindex indexes from a ZCatalog"""
+        """ Reindex indexe(s) from a ZCatalog"""
         if not ids:
             return MessageDialog(title='No items specified',
                 message='No items were specified!',
                 action = "./manage_main",)
+                
+        if isinstance(ids, types.StringType):
+            ids = (ids,)
 
-        for id in ids:
-            self.reindexIndex(id, REQUEST)
+        for name in ids:
+            self.reindexIndex(name, REQUEST)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Reindexing%20Performed')

@@ -184,11 +184,8 @@ function toggleSelect() {
 
     <td>
       <div class="list-item">
-      <dtml-try>
-      <dtml-var numObjects missing="not available">
-      <dtml-except>n/a
-      </dtml-try>
-    </div>
+        <dtml-var numObjects missing="n/a">
+      </div>
     </td>
 
     <td>
@@ -209,7 +206,7 @@ function toggleSelect() {
   <td align="left" valign="top">
   <div class="form-element">
 
-  <input class="form-element" type="submit" name="manage_deleteIndex:method"  value="Remove index">
+  <input class="form-element" type="submit" name="manage_delIndex:method"  value="Remove index">
   <input class="form-element" type="submit" name="manage_reindexIndex:method" value="Reindex">
   <input class="form-element" type="submit" name="manage_clearIndex:method"   value="Clear index">
 

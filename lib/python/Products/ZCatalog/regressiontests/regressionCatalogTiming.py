@@ -44,7 +44,7 @@ class TestTimeIndex(TestCase):
         self.app.catalogtest._setObject('catalog', zcatalog)
         c = self.app.catalogtest.catalog
         for x in ('title', 'to', 'from', 'date', 'raw'):
-            try: c.manage_delIndexes([x])
+            try: c.manage_delIndex([x])
             except: pass
         c.manage_addIndex('title', 'TextIndex')
         c.manage_addIndex('to', 'TextIndex')
