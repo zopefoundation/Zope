@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -105,7 +105,7 @@ class MacroCollection(Base):
     def __of__(self, parent):
         return parent._v_macros
 
-class PageTemplate:
+class PageTemplate(Base):
     "Page Templates using TAL, TALES, and METAL"
      
     content_type = 'text/html'

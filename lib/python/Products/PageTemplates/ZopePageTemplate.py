@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -267,7 +267,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                 result = self.pt_render(extra_context=bound_names)
             except TALESError, err:
                 if err.type == 'Unauthorized':
-                    raise err.type, err.value
+                    raise err.type, err.value, err.traceback
                 raise
             if keyset is not None:
                 # Store the result in the cache.

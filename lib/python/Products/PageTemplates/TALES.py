@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -294,6 +294,8 @@ class Context:
         try:
             v = expression(self)
             if isinstance(v, Exception):
+                if hasattr(v, 'traceback'):
+                    raise v, None, v.traceback
                 raise v
         except self._nocatch:
             raise
