@@ -11,11 +11,11 @@ static char cPickle_module_documentation[] =
 static PyObject *ErrorObject;
 
 #ifdef __cplusplus
-#define ARG(T,N) T N
-#define ARGDECL(T,N)
+#define ARG(T, N) T N
+#define ARGDECL(T, N)
 #else
-#define ARG(T,N) N
-#define ARGDECL(T,N) T N;
+#define ARG(T, N) N
+#define ARGDECL(T, N) T N;
 #endif
 
 #define UNLESS(E) if (!(E))
@@ -58,6 +58,9 @@ static char MARKv = MARK;
 
 
 PyTypeObject *BuiltinFunctionType;
+
+/* atol function from string module */
+static PyObject *atol_func;
 
 /* the pickle module */
 static PyObject *pickle_module;
@@ -258,7 +261,6 @@ readline_cStringIO(ARG(Unpicklerobject *, self), ARG(char **, s))
 {
   int n;
   char *ptr, *str;
-  
 
   if ((n = (*PycStringIO_creadline)((PyObject *)self->file, &ptr)) == -1)
   {
@@ -273,10 +275,10 @@ readline_cStringIO(ARG(Unpicklerobject *, self), ARG(char **, s))
 
   memcpy(str, ptr, n);
 
-  str[((str[n - 1] == '\n') ? n - 1 : n)] = 0;
+  str[((str[n - 1] == '\n') ? --n : n)] = 0;
 
   *s = str;
-  return n - 1;
+  return n;
 }
 
 
@@ -335,13 +337,19 @@ readline_other(ARG(Unpicklerobject *, self), ARG(char **, s))
 
   size = PyString_Size(str);
 
-  UNLESS(c_str = (char *)malloc(size * sizeof(char)))
+  UNLESS(c_str = (char *)malloc((size + 1) * sizeof(char)))
   {
     PyErr_SetString(PyExc_MemoryError, "out of memory");
     return -1;
   }
 
   memcpy(c_str, PyString_AsString(str), size);
+
+  if (size > 0)
+  {
+    c_str[((c_str[size - 1] == '\n') ? --size : size)] = 0;
+  }
+
   *s = c_str;
 
   Py_DECREF(str);
@@ -349,7 +357,57 @@ readline_other(ARG(Unpicklerobject *, self), ARG(char **, s))
   return size;
 }
 
-  
+
+static int
+put(ARG(Picklerobject *, self), ARG(PyObject *, ob))
+    ARGDECL(Picklerobject *, self)
+    ARGDECL(PyObject *, ob)
+{
+  char c_str[30];
+  int p, len;
+  PyObject *py_ob_id = 0, *memo_len = 0;
+
+  if ((p = PyDict_Size(self->memo)) == -1)
+    return -1;
+
+  if (!self->bin || (p >= 256))
+  {
+    c_str[0] = PUT;
+    sprintf(c_str + 1, "%d\n", PyDict_Size(self->memo));
+    len = strlen(c_str);
+  }
+  else
+  {
+    c_str[0] = BINPUT;
+    c_str[1] = p;
+    len = 2;
+  }
+
+  if ((*self->write_func)(self, c_str, len) == -1)
+    return -1;
+
+  UNLESS(py_ob_id = PyInt_FromLong((long)ob))
+    return -1;
+
+  UNLESS(memo_len = PyInt_FromLong(p))
+    goto err;
+
+  if (PyDict_SetItem(self->memo, py_ob_id, memo_len) == -1)
+    goto err;
+
+  Py_DECREF(py_ob_id);
+  Py_DECREF(memo_len);
+
+  return 1;
+
+err:
+  Py_XDECREF(py_ob_id);
+  Py_XDECREF(memo_len);
+
+  return -1;
+}
+
+
 static int
 safe(ARG(PyObject *, ob))
     ARGDECL(PyObject *, ob)
@@ -393,10 +451,12 @@ static PyObject *
 whichmodule(ARG(PyObject *, class))
     ARGDECL(PyObject *, class)
 {
-  int has_key, len, i;
-  PyObject *module = 0, *modules_dict = 0, *modules_dict_items = 0,
-           *class_name = 0, *class_name_attr = 0, *name = 0, *element = 0;
+  int has_key, i, j;
+  PyObject *module = 0, *modules_dict = 0, *class_name = 0, *class_name_attr = 0, 
+      *name = 0;
   char *name_str, *class_name_str;
+
+  static PyObject *__main__str;
 
   if ((has_key = PyMapping_HasKey(class_map, class)) == -1)
     return NULL;
@@ -409,34 +469,20 @@ whichmodule(ARG(PyObject *, class))
   UNLESS(modules_dict = PySys_GetObject("modules"))
     return NULL;
 
-  UNLESS(modules_dict_items = PyDict_Items(modules_dict))
-    goto err;
-
-  if ((len = PyList_Size(modules_dict_items)) == -1)
-    goto err;
-
   UNLESS(class_name = ((PyClassObject *)class)->cl_name)
   {
     PyErr_SetString(PicklingError, "class has no name");
-    goto err;
+    return NULL;
   }
 
   UNLESS(class_name_str = PyString_AsString(class_name))
-    goto err;
+    return NULL;
 
-  for (i = 0; i < len; i++)
+  i = 0;
+  while (j = PyDict_Next(modules_dict, &i, &name, &module))
   {
-    UNLESS(element = PyList_GET_ITEM((PyListObject *)modules_dict_items, i))
-      goto err;
-
-    UNLESS(name = PyTuple_GET_ITEM((PyTupleObject *)element, 0))
-      goto err;      
-
-    UNLESS(module = PyTuple_GET_ITEM((PyTupleObject *)element, 1))
-      goto err;      
-
     UNLESS(name_str = PyString_AsString(name))
-      goto err;
+      return NULL;
 
     if (!strcmp(name_str, "__main__"))
       continue;
@@ -458,25 +504,22 @@ whichmodule(ARG(PyObject *, class))
     break;
   }
     
-  if (i >= len)
+  if (!j) /* previous while exited normally */
   {
-    name = PyString_FromString("__main__");
+    UNLESS(__main__str)
+      UNLESS(__main__str = PyString_FromString("__main__"))
+        return NULL;
+
+    name = __main__str;
   }
-  else 
+  else    /* previous while exited via break */
   {
     Py_INCREF(name);
   }
   
   PyDict_SetItem(class_map, class, name);
 
-  Py_DECREF(modules_dict_items);
-
   return name;
-
-err:
-  Py_XDECREF(modules_dict_items);
-
-  return NULL;
 }
 
 
@@ -559,15 +602,39 @@ save_long(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Picklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  char c_str[25];
-  long l;
+  char *c_str;
+  int size;
+  PyObject *repr = 0;
 
-  l = PyLong_AsLong(args);
-  c_str[0] = LONG;
-  sprintf(c_str + 1, "%ld\n", l);
-
-  if ((*self->write_func)(self, c_str, strlen(c_str)) == -1)
+  UNLESS(repr = PyObject_Repr(args))
     return NULL;
+
+  if ((size = PyString_Size(repr)) == -1)
+  {
+    Py_DECREF(repr);
+    return NULL;
+  }
+
+  UNLESS(c_str = (char *)malloc((size + 2) * sizeof(char)))
+  {
+    Py_DECREF(repr);
+    PyErr_SetString(PyExc_MemoryError, "out of memory");
+    return NULL;
+  }
+
+  c_str[0] = LONG;
+  memcpy(c_str + 1, PyString_AS_STRING((PyStringObject *)repr), size);
+  c_str[size + 1] = '\n';
+
+  Py_DECREF(repr);
+
+  if ((*self->write_func)(self, c_str, size + 2) == -1)
+  {
+    free(c_str);
+    return NULL;
+  }
+
+  free(c_str);
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -597,40 +664,42 @@ save_string(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Picklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *py_string_id = 0, *memo_len = 0, *repr = 0;
-  char *repr_str, *c_str;
-  int size, len, p;
+  char *c_str;
+  int size, len;
 
   if (!self->bin)
   {
-    repr = PyObject_Repr(args);
+    PyObject *repr;
+    char *repr_str;
+
+    UNLESS(repr = PyObject_Repr(args))
+      return NULL;
+
     repr_str = PyString_AS_STRING((PyStringObject *)repr);
     size = PyString_Size(repr);
 
-    UNLESS(c_str = (char *)malloc((size + 30) * sizeof(char)))
+    UNLESS(c_str = (char *)malloc((size + 2) * sizeof(char)))
     {
       PyErr_SetString(PyExc_MemoryError, "out of memory");
-      goto err;
+      return NULL;
     }
    
     c_str[0] = STRING;
-    sprintf(c_str + 1, "%s\n%c%d\n", repr_str, PUT, PyDict_Size(self->memo));
+    memcpy(c_str + 1, repr_str, size);
+    c_str[size + 1] = '\n';
 
-    if ((*self->write_func)(self, c_str, strlen(c_str)) == -1)
-    {
-      free(c_str);
-      return NULL;
-    }
+    len = size + 2;
+
     Py_XDECREF(repr);
   }
   else
   {
     size = PyString_Size(args);
 
-    UNLESS(c_str = (char *)malloc((size + 45) * sizeof(char)))
+    UNLESS(c_str = (char *)malloc((size + 30) * sizeof(char)))
     {
       PyErr_SetString(PyExc_MemoryError, "out of memory");
-      goto err;
+      return NULL;
     }
 
     if (size < 256)
@@ -649,75 +718,43 @@ save_string(ARG(Picklerobject *, self), ARG(PyObject *, args))
     memcpy(c_str + len, PyString_AS_STRING((PyStringObject *)args), size);
 
     len += size;
+  }
 
-    if ((p = PyDict_Size(self->memo)) < 256)
-    {
-      c_str[len++] = BINPUT;
-      c_str[len++] = p;
-    }
-    else
-    {
-      c_str[len] = PUT;
-      sprintf(c_str + len + 1, "%d\n", PyDict_Size(self->memo));
-      len += strlen(c_str + len);
-    }
-
-    if ((*self->write_func)(self, c_str, len) == -1)
-    {
-      free(c_str);
-      return NULL;
-    }
+  if ((*self->write_func)(self, c_str, len) == -1)
+  {
+    free(c_str);
+    return NULL;
   }
 
   free(c_str);
 
-  if(args->ob_refcnt > 1)
+  if (args->ob_refcnt > 1)
+  {
+    if (put(self, args) == -1)
     {
-      long string_id;
-
-      string_id = (long)args;  
-
-      UNLESS(py_string_id = PyInt_FromLong(0 /*string_id*/))  
-	goto err;
-
-      UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-	goto err;
-
-      if (PyDict_SetItem(self->memo, py_string_id, memo_len) == -1)  
-	goto err;
-
-      Py_DECREF(memo_len);
-      Py_DECREF(py_string_id);
+      return NULL;
     }
+  }
   
   Py_INCREF(Py_None);
   return Py_None;
-
-err:
-  Py_XDECREF(memo_len);
-  Py_XDECREF(py_string_id);
-  Py_XDECREF(repr);
-
-  return NULL;
 }
 
-  
+
 static PyObject *
 save_tuple(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Picklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *py_tuple_id = 0, *element = 0, *junk = 0, *value = 0, *memo_len = 0;
-  int len, i, c_str_len, dict_size;
-  long tuple_id, c_value;
-  char c_str[30];
+  PyObject *element = 0, *junk = 0, *py_tuple_id = 0;
+  int len, i, dict_size;
+
+  static char tuple = TUPLE;
 
   if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
 
-  tuple_id = (long)args;
-
-  UNLESS(py_tuple_id = PyInt_FromLong(tuple_id))  return NULL;
+  UNLESS(py_tuple_id = PyInt_FromLong((long)args))  return NULL;
 
   if ((len = PyTuple_Size(args)) == -1)  
     goto err;
@@ -731,15 +768,20 @@ save_tuple(ARG(Picklerobject *, self), ARG(PyObject *, args))
 
     UNLESS(junk = save(self, element))
       goto err;
-
     Py_DECREF(junk);
 
     if (((PyDict_Size(self->memo) - dict_size) > 1)  && 
         PyMapping_HasKey(self->memo, py_tuple_id))
     {
-      for (c_str_len = 0; c_str_len < i; c_str_len++)
+      char c_str[30];
+      long c_value;
+      int c_str_len;
+      PyObject *value;
+      static char pop = POP;
+
+      while (i-- >= 0)
       {
-        if ((*self->write_func)(self, POP, 1) == -1)
+        if ((*self->write_func)(self, &pop, 1) == -1)
           goto err;
       }
 
@@ -770,42 +812,25 @@ save_tuple(ARG(Picklerobject *, self), ARG(PyObject *, args))
 
   if (i >= len)
   {
-    if (self->bin && (PyDict_Size(self->memo) < 256))
+    if ((*self->write_func)(self, &tuple, 1) == -1)
+      goto err;
+    
+    if (args->ob_refcnt > 1)
     {
-      c_str[0] = TUPLE;
-      c_str[1] = BINPUT;
-      c_str[2] = PyDict_Size(self->memo);
-      c_str_len = 3;
+      if (put(self, args) == -1)
+      {
+        goto err;
+      }
     }
-    else
-    {
-      c_str[0] = TUPLE;
-      c_str[1] = PUT;
-      sprintf(c_str + 2, "%d\n", PyDict_Size(self->memo));
-      c_str_len = strlen(c_str);
-    }
-
-    if ((*self->write_func)(self, c_str, c_str_len) == -1)
-      goto err;
-
-    UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-      goto err;
-
-    if (PyDict_SetItem(self->memo, py_tuple_id, memo_len) == -1)  
-      goto err;
   }
-
+ 
   Py_DECREF(py_tuple_id);
-  Py_XDECREF(value);
-  Py_XDECREF(memo_len);
 
   Py_INCREF(Py_None);
   return Py_None;
 
 err:
   Py_XDECREF(py_tuple_id);
-  Py_XDECREF(value);
-  Py_XDECREF(memo_len);
 
   return NULL;
 }
@@ -816,11 +841,9 @@ save_list(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Picklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *element = 0, *py_list_id = 0, *junk = 0, *memo_len = 0;
-  int len, i, safe_val, c_str_len;  
-  long list_id;
-  char c_str[30];
-  static char append[] = { APPEND };
+  PyObject *element = 0, *junk = 0;
+  int len, i, safe_val;
+  static char append = APPEND, list = LIST;
 
   if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
@@ -831,72 +854,44 @@ save_list(ARG(Picklerobject *, self), ARG(PyObject *, args))
   for (i = 0; i < len; i++)
   {
     UNLESS(element = PyList_GET_ITEM((PyListObject *)args, i))  
-      goto err;
+      return NULL;
 
     if ((safe_val = safe(element)) == -1)  
-      goto err;
+      return NULL;
     UNLESS(safe_val)
       break;
 
     UNLESS(junk = save(self, element))  
-      goto err;
+      return NULL;
     Py_DECREF(junk);
   }
 
-  list_id = (long)args;
-
-  c_str[0] = LIST;
-  c_str_len = 1;
-
-  if (self->bin && (PyDict_Size(self->memo) < 256))
+  if (args->ob_refcnt > 1)
   {
-    c_str[1] = BINPUT;
-    c_str[2] = PyDict_Size(self->memo);
-    c_str_len += 2;
+    if (put(self, args) == -1)
+    {
+      return NULL;
+    }
   }
-  else
-  {
-    c_str[1] = PUT;
-    sprintf(c_str + 2, "%d\n", PyDict_Size(self->memo));
-    c_str_len += strlen(c_str + 1);
-  }
-    
-  if ((*self->write_func)(self, c_str, c_str_len) == -1)
-    goto err;
 
-  UNLESS(py_list_id = PyInt_FromLong(list_id))  
-    goto err;
-
-  UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-    goto err;
-
-  if (PyDict_SetItem(self->memo, py_list_id, memo_len) == -1)  
-    goto err;
+  if ((*self->write_func)(self, &list, 1) == -1)
+    return NULL;
 
   for (; i < len; i++)
   {
     UNLESS(element = PyList_GET_ITEM((PyListObject *)args, i))  
-      goto err;
+      return NULL;
 
     UNLESS(junk = save(self, element))  
-      goto err;
+      return NULL;
     Py_DECREF(junk);
 
-    if ((*self->write_func)(self, append, 1) == -1)
+    if ((*self->write_func)(self, &append, 1) == -1)
       return NULL;
   }
 
-  Py_DECREF(py_list_id);
-  Py_DECREF(memo_len);
-
   Py_INCREF(Py_None);
   return Py_None;
-
-err:
-  Py_XDECREF(py_list_id);
-  Py_XDECREF(memo_len);
-
-  return NULL;
 }
 
 
@@ -905,120 +900,65 @@ save_dict(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Picklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *items = 0, *element = 0, *key = 0, *value = 0, *junk = 0,
-           *py_dict_id = 0, *memo_len = 0;
-  int len, i, safe_key, safe_value, c_str_len;
-  long dict_id;
-  char c_str[30];
-  static char setitem[] = { SETITEM };
+  PyObject *key = 0, *value = 0, *junk = 0;
+  int i, safe_key, safe_value;
+
+  static char setitem = SETITEM, dict = DICT;
 
   if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
 
-  UNLESS(items = PyDict_Items(args))  
-    goto err;
-
-  if ((len = PyList_Size(items)) == -1)
-    goto err;
-
-  for (i = 0; i < len; i++)
+  i = 0;
+  while (PyDict_Next(args, &i, &key, &value))
   {
-    UNLESS(element = PyList_GET_ITEM((PyListObject *)items, i))  
-      goto err;
- 
-    UNLESS(key = PyTuple_GET_ITEM((PyTupleObject *)element, 0))  
-      goto err;
-
-    UNLESS(value = PyTuple_GET_ITEM((PyTupleObject *)element, 1))  
-      goto err;
-
     if ((safe_key = safe(key)) == -1)  
-      goto err;
+      return NULL;
 
     UNLESS(safe_key)  
       break;
    
     if ((safe_value = safe(value)) == -1)  
-      goto err;
+      return NULL;
    
     UNLESS(safe_value)  
       break;
 
     UNLESS(junk = save(self, key))
-      goto err;
+      return NULL;
     Py_DECREF(junk);
 
     UNLESS(junk = save(self, value))
-      goto err;
+      return NULL;
     Py_DECREF(junk);
   }
 
-  dict_id = (long)args;
-
-  c_str[0] = DICT;
-  c_str_len = 1;
-
-  if (self->bin && (PyDict_Size(self->memo) < 256))
-  {
-    c_str[1] = BINPUT; 
-    c_str[2] = PyDict_Size(self->memo);
-    c_str_len += 2;
-  }
-  else
-  {
-    c_str[1] = PUT;
-    sprintf(c_str + 2, "%d\n", PyDict_Size(self->memo));
-    c_str_len += strlen(c_str + 1);
-  }
-
-  if ((*self->write_func)(self, c_str, c_str_len) == -1)
+  if ((*self->write_func)(self, &dict, 1) == -1)
     return NULL;
 
-  UNLESS(py_dict_id = PyInt_FromLong(dict_id))
-    goto err;
-
-  UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-    goto err;
-
-  if (PyDict_SetItem(self->memo, py_dict_id, memo_len) == -1)
-    goto err;
-
-  for (; i < len; i++)
+  if (args->ob_refcnt > 1)
   {
-    UNLESS(element = PyList_GET_ITEM((PyListObject *)items, i))
-      goto err;
+    if (put(self, args) == -1)
+    {
+      return NULL;
+    }
+  }
 
-    UNLESS(key = PyTuple_GET_ITEM((PyTupleObject *)element, 0))
-      goto err;
-
-    UNLESS(value = PyTuple_GET_ITEM((PyTupleObject *)element, 1))
-      goto err;
-
+  while (PyDict_Next(args, &i, &key, &value))
+  {
     UNLESS(junk = save(self, key))
-      goto err;
+      return NULL;
     Py_DECREF(junk);
 
     UNLESS(junk = save(self, value))
-      goto err;
+      return NULL;
     Py_DECREF(junk);
 
-    if ((*self->write_func)(self, setitem, 1) == -1)
-      goto err;
+    if ((*self->write_func)(self, &setitem, 1) == -1)
+      return NULL;
   }
-
-  Py_DECREF(items);
-  Py_DECREF(py_dict_id);
-  Py_DECREF(memo_len);
 
   Py_INCREF(Py_None);
   return Py_None;
-
-err:
-  Py_XDECREF(items);
-  Py_XDECREF(py_dict_id);
-  Py_XDECREF(memo_len);
-
-  return NULL;
 }
 
 
@@ -1028,12 +968,10 @@ save_inst(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(PyObject *, args)
 {
   PyObject *class = 0, *module = 0, *name = 0, *py_inst_id = 0, *init_args = 0,
-           *junk = 0, *state = 0, *py_str = 0, *memo_len = 0, *getinitargs_func = 0,
-           *getstate_func = 0;
+           *junk = 0, *state = 0, *getinitargs_func = 0, *getstate_func = 0;
   char *module_str, *name_str, *c_str;
-  long inst_id;
-  int len, p;
-  static char build[] = { BUILD };
+  int len, p, module_size, name_size, size;
+  static char build = BUILD;
 
   if ((*self->write_func)(self, &MARKv, 1) == -1)
     return NULL;
@@ -1090,8 +1028,6 @@ save_inst(ARG(Picklerobject *, self), ARG(PyObject *, args))
     PyErr_Clear();
   }
 
-  inst_id = (long)args;
-
   if (!self->bin)
   {
     UNLESS(module = whichmodule(class))
@@ -1104,72 +1040,40 @@ save_inst(ARG(Picklerobject *, self), ARG(PyObject *, args))
     }
 
     module_str = PyString_AS_STRING((PyStringObject *)module);
+    module_size = PyString_Size(module);
     name_str   = PyString_AS_STRING((PyStringObject *)name);
+    name_size = PyString_Size(name);
 
-    UNLESS(c_str = (char *)malloc((strlen(module_str) + 
-        strlen(name_str) + 35) * sizeof(char)))
+    size = name_size + module_size + 3;
+
+    UNLESS(c_str = (char *)malloc(size * sizeof(char)))
     {
       PyErr_SetString(PyExc_MemoryError, "out of memory");
       return NULL;
     }
 
     c_str[0] = INST;
-    sprintf(c_str + 1, "%s\n%s\n%c%d\n", module_str, name_str, PUT, PyDict_Size(self->memo));
+    memcpy(c_str + 1, module_str, module_size);
+    c_str[module_size + 1] = '\n';
+    memcpy(c_str + module_size + 2, name_str, name_size);
+    c_str[module_size + name_size + 2] = '\n';
 
-    if ((*self->write_func)(self, c_str, strlen(c_str)) == -1)
+    if ((*self->write_func)(self, c_str, size) == -1)
     {
       free(c_str);
       goto err;
-    }
+                                                                                                                                                                      }
+
+    free(c_str);
   }
-  else
+
+  if (args->ob_refcnt > 1)
   {
-    if ((p = PyDict_Size(self->memo)) < 256)
-    {    
-      UNLESS(c_str = (char *)malloc(3 * sizeof(char)))
-      {
-        PyErr_SetString(PyExc_MemoryError, "out of memory");
-        goto err;
-      }
-
-      c_str[0] = OBJ;
-      c_str[1] = BINPUT;
-      c_str[2] = p;
-
-      len = 3;           
-    }
-    else
+    if (put(self, args) == -1)
     {
-      UNLESS(c_str = (char *)malloc(25))
-      {
-        PyErr_SetString(PyExc_MemoryError, "out of memory");
-        goto err;
-      }
-
-      c_str[0] = OBJ;
-      c_str[1] = PUT;
-      sprintf(c_str + 2, "%d", p);
-      len = strlen(c_str);
-    }
-
-    if ((*self->write_func)(self, c_str, len) == -1)
-    {
-      free(c_str);
       goto err;
     }
   }
-
-
-  free(c_str);
-
-  UNLESS(py_inst_id = PyInt_FromLong(inst_id))
-    goto err;
-
-  UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-    goto err;
-
-  if (PyDict_SetItem(self->memo, py_inst_id, memo_len) == -1)
-    goto err;
 
   if (getstate_func = PyObject_GetAttrString(args, "__getstate__"))
   {
@@ -1194,11 +1098,9 @@ save_inst(ARG(Picklerobject *, self), ARG(PyObject *, args))
   Py_XDECREF(getinitargs_func);
   Py_XDECREF(getstate_func);
   Py_XDECREF(module);
-  Py_XDECREF(py_inst_id);
   Py_XDECREF(state);
-  Py_XDECREF(memo_len);
 
-  if ((*self->write_func)(self, build, 1) == -1)
+  if ((*self->write_func)(self, &build, 1) == -1)
     return NULL;
 
   Py_INCREF(Py_None);
@@ -1208,9 +1110,7 @@ err:
   Py_XDECREF(getinitargs_func);
   Py_XDECREF(getstate_func);
   Py_XDECREF(module);
-  Py_XDECREF(py_inst_id);
   Py_XDECREF(state);
-  Py_XDECREF(memo_len);
 
   return NULL;
 }
@@ -1221,10 +1121,9 @@ save_class(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Picklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *module = 0, *name = 0, *py_class_id, *memo_len = 0;
+  PyObject *module = 0, *name = 0;
   char *name_str, *module_str, *c_str;
-  long class_id;
-  int len;
+  int module_size, name_size, size;
 
   UNLESS(module = whichmodule(args))
     return NULL;
@@ -1235,35 +1134,26 @@ save_class(ARG(Picklerobject *, self), ARG(PyObject *, args))
     goto err;
   }
 
-  class_id = (long)args;
-
   module_str = PyString_AS_STRING((PyStringObject *)module);
+  module_size = PyString_Size(module);
   name_str   = PyString_AS_STRING((PyStringObject *)name);
+  name_size = PyString_Size(name);
 
-  UNLESS(c_str = (char *)malloc((strlen(module_str) + 
-      strlen(name_str) + 35) * sizeof(char)))
+  size = name_size + module_size + 3;
+
+  UNLESS(c_str = (char *)malloc(size * sizeof(char)))
   {
     PyErr_SetString(PyExc_MemoryError, "out of memory");
     return NULL;
   }
 
   c_str[0] = CLASS;
-  sprintf(c_str + 1, "%s\n%s\n", module_str, name_str);
-  len = strlen(c_str);
+  memcpy(c_str + 1, module_str, module_size);
+  c_str[module_size + 1] = '\n';
+  memcpy(c_str + module_size + 2, name_str, name_size);
+  c_str[module_size + name_size + 2] = '\n';
 
-  if (self->bin && (PyDict_Size(self->memo) < 256))
-  {
-    c_str[len++] = BINPUT;
-    c_str[len++] = PyDict_Size(self->memo);
-  }
-  else
-  {
-    c_str[len] = PUT;
-    sprintf(c_str + len + 1, "%d\n", PyDict_Size(self->memo));
-    len += strlen(c_str + len);
-  }
-
-  if ((*self->write_func)(self, c_str, len) == -1)
+  if ((*self->write_func)(self, c_str, size) == -1)
   {
     free(c_str);
     goto err;
@@ -1271,27 +1161,21 @@ save_class(ARG(Picklerobject *, self), ARG(PyObject *, args))
  
   free(c_str);
 
-  UNLESS(py_class_id = PyInt_FromLong(class_id))  
-    goto err;
+  if (args->ob_refcnt > 1)
+  {
+    if (put(self, args) == -1)
+    {
+      goto err;
+    }
+  }
 
-  UNLESS(memo_len = PyInt_FromLong(PyDict_Size(self->memo)))
-    goto err;
-
-  if (PyDict_SetItem(self->memo, py_class_id, memo_len) == -1)  
-    goto err;
-
-  Py_DECREF(py_class_id);
   Py_DECREF(module);
-  Py_DECREF(memo_len);
 
   Py_INCREF(Py_None);
   return Py_None;
 
 err:
   Py_XDECREF(module);
-  Py_XDECREF(name);
-  Py_XDECREF(memo_len);
-  Py_XDECREF(py_class_id);
 
   return NULL;
 }
@@ -1507,14 +1391,14 @@ Pickler_dump(ARG(Picklerobject *, self), ARG(PyObject *, args))
     ARGDECL(PyObject *, args)
 {
   PyObject *junk;
-  static char stop[] = { STOP };
+  static char stop = STOP;
 
   UNLESS(PyArg_Parse(args, "O", &args))  return NULL;
 
   UNLESS(junk = save(self, args))  return NULL;
   Py_DECREF(junk);
 
-  if ((*self->write_func)(self, stop, 1) == -1)
+  if ((*self->write_func)(self, &stop, 1) == -1)
     return NULL;
 
   Py_INCREF(Py_None);
@@ -1568,42 +1452,44 @@ newPicklerobject(ARG(PyObject *, file), ARG(int, bin))
     ARGDECL(int, bin)
 {
   Picklerobject *self;
-  PyObject *memo = 0, *write = 0, *arg = 0;
-  char *mark;
-
-  UNLESS(write = PyObject_GetAttrString(file, "write"))  return NULL;
+  PyObject *memo = 0, *arg = 0;
 
   UNLESS(memo = PyDict_New())  goto err;
 
   UNLESS(arg = PyTuple_New(1))  goto err;
 
   UNLESS(self = PyObject_NEW(Picklerobject, &Picklertype))  
-  {
-    free(mark);
     goto err;
-  }
 
   if (PyFile_Check(file))
   {
     self->fp = PyFile_AsFile(file);
     self->write_func = write_file;
+    self->write = NULL;
   }
   else if (PycStringIO_OutputCheck(file))
   {
     self->fp = NULL;
     self->write_func = write_cStringIO;
+    self->write = NULL;
   }
   else
   {
+    PyObject *write; 
+
     self->fp = NULL;
     self->write_func = write_other;
+
+    UNLESS(write = PyObject_GetAttrString(file, "write"))
+      goto err;
+
+    self->write = write;
   }
 
   Py_INCREF(file);
 
   self->file  = file;
   self->bin   = bin;
-  self->write = write;
   self->memo  = memo;
   self->arg   = arg;
   self->pers_func = NULL;
@@ -1611,8 +1497,8 @@ newPicklerobject(ARG(PyObject *, file), ARG(int, bin))
   return self;
 
 err:
+  Py_XDECREF((PyObject *)self);
   Py_XDECREF(memo);
-  Py_XDECREF(write);
   Py_XDECREF(arg);
   return NULL;
 }
@@ -2091,38 +1977,50 @@ load_long(ARG(Unpicklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Unpicklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *py_long = 0;
-  char *s, *endptr;
+  PyObject *py_str = 0, *l = 0;
+  char *s;
   int len;
-  long l;
+
+  static PyObject *arg;
 
   if ((len = (*self->readline_func)(self, &s)) == -1)
     return NULL;
 
-  errno = 0;
-  l = strtol(s, &endptr, 0);
-
-  if (errno || (strlen(endptr) && 
-      !((strlen(endptr) == 1) && ((endptr[0] == 'l') || (endptr[0] == 'L')))))
+  UNLESS(py_str = PyString_FromStringAndSize(s, len))
   {
     free(s);
-    PyErr_SetString(PyExc_ValueError, "could not convert string to long");
-    goto err;
+    return NULL;
   }
 
   free(s);
 
-  UNLESS(py_long = PyLong_FromLong(l))
+  UNLESS(arg)
+  {
+    UNLESS(arg = Py_BuildValue("(Oi)", py_str, 0))
+      return NULL;
+  }
+  else
+  {
+    if (PyTuple_SetItem(arg, 0, py_str) == -1)
+      goto err;
+    Py_INCREF(py_str);
+  }
+
+  UNLESS(l = PyObject_CallObject(atol_func, arg))
+    goto err;
+  
+  if (PyList_Append(self->stack, l) == -1)
     goto err;
 
-  if (PyList_Append(self->stack, py_long) == -1)
-    goto err;
+  Py_DECREF(py_str);
+  Py_DECREF(l);
 
   Py_INCREF(Py_None);
   return Py_None;
 
 err:
-  Py_XDECREF(py_long);
+  Py_XDECREF(l);
+  Py_XDECREF(py_str);
 
   return NULL;
 }
@@ -2954,7 +2852,7 @@ load_setitem(ARG(Unpicklerobject *, self), ARG(PyObject *, args))
     ARGDECL(Unpicklerobject *, self)
     ARGDECL(PyObject *, args)
 {
-  PyObject *value, *key, *dict;
+  PyObject *value = 0, *key = 0, *dict = 0;
   int len;
 
   if ((len = PyList_Size(self->stack)) == -1)  
@@ -2962,21 +2860,32 @@ load_setitem(ARG(Unpicklerobject *, self), ARG(PyObject *, args))
 
   UNLESS(value = PyList_GetItem(self->stack, len - 1))
     return NULL;
+  Py_INCREF(value);
 
   UNLESS(key = PyList_GetItem(self->stack, len - 2))  
-    return NULL;
+    goto err;
+  Py_INCREF(key);
 
   if (DEL_LIST_SLICE(self->stack, len - 2, len) == -1)  
-    return NULL;
+    goto err;
 
   UNLESS(dict = PyList_GetItem(self->stack, len - 3))  
-    return NULL;
+    goto err;
 
   if (PyObject_SetItem(dict, key, value) == -1)  
-    return NULL;
+    goto err;
 
+  Py_DECREF(value);
+  Py_DECREF(key);
+  
   Py_INCREF(Py_None);
   return Py_None;
+
+err:
+  Py_XDECREF(value);
+  Py_XDECREF(key);
+
+  return NULL;
 }
 
 
@@ -3741,7 +3650,7 @@ replace_pickle(ARG(PyObject *, pickle), ARG(PyObject *, cPickle))
 static int
 init_stuff()
 {
-  PyObject *builtins, *apply_func;
+  PyObject *builtins, *apply_func, *string;
 
   UNLESS(pickle_module = PyImport_ImportModule("pickle"))
     return NULL;
@@ -3757,6 +3666,14 @@ init_stuff()
   Py_DECREF(apply_func);
 
   Py_DECREF(builtins);
+
+  UNLESS(string = PyImport_ImportModule("string"))
+    return NULL;
+
+  UNLESS(atol_func = PyObject_GetAttrString(string, "atol"))
+    return NULL;
+
+  Py_DECREF(string);
 
   UNLESS(empty_list = PyList_New(0))
     return NULL;
