@@ -5,6 +5,19 @@ Zope Changes
   file HISTORY.txt.
 
 
+  Zope 2.5 Alpha 2
+
+    Features Added
+
+      - Unicode support for ZCatalog: 
+
+        - added new UnicodeSplitter
+
+        - ZCatalog now allows unicode strings as attributes
+          of objects to be indexed using a TextIndex
+          (see lib/python/ZCatalog/README.txt)
+     
+
   Zope 2.5 Alpha 1
 
     Features Added
