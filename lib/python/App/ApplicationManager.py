@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -10,7 +10,7 @@ from OFS import SimpleItem
 
 class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     """System management"""
-    __roles__=['Manager,',]
+    __roles__=['Manager']
 
     manage=manage_main=HTMLFile('appMain', globals())
     manage_packForm=HTMLFile('pack', globals())
