@@ -45,6 +45,9 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
+        
+      - Collector #631: Image URLs in StructuredText containing port
+        numbers were not rendered correctly
 
       - Collector #1498: Don't choke on malformed cookies. Cookies of
         the form "foo=bar; hmm; baz=gee" will give an empty value for

@@ -210,6 +210,13 @@ class BasicTests(unittest.TestCase):
         '<code>"literal":http://www.zope.org/.</code>')
 
 
+    def testImgLink(self):
+        self._test('"foo":img:http://www.zope.org/bar.gif',
+                   '<p><img src="http://www.zope.org/bar.gif" alt="foo" />')
+
+        self._test('"foo":img:http://www.zope.org:8080/bar.gif',
+                   '<p><img src="http://www.zope.org:8080/bar.gif" alt="foo" />')
+
     def XXXtestUnicodeContent(self):
         # This fails because ST uses the default locale to get "letters"
         # whereas it should use \w+ and re.U if the string is Unicode.
