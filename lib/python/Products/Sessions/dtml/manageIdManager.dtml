@@ -6,22 +6,16 @@
 	)">
 
 <FORM ACTION="manage_changeBrowserIdManager" METHOD="POST">
-<TABLE CELLSPACING="2">
-<tr>
-  <td>&nbsp;<td>
-</tr>
-<tr class="form-help">
-  <td colspan=2>
+
+<p class="form-help">
   Zope Browser Id Manager objects allow Zope to differentiate between site
   visitors by "tagging" each of their browsers with a unique identifier. This
   is useful if you need to tell visitors apart from one another even if they do
   not "log in" to your site.  Browser Id Managers are generally used
   by interacting with the Zope sessioning machinery.
-  </td>
-</tr>
-<tr>
-  <td>&nbsp;<td>
-</tr>
+</p>
+
+<TABLE CELLSPACING="2" border="0">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
@@ -44,7 +38,7 @@
 </TR>
 
 <dtml-let loc=getBrowserIdLocation>
-<tr>
+<tr valign="top">
 <td>
 <div align=left class="form-label">Look for Browser Id Name in</th>
 </td>

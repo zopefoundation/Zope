@@ -6,21 +6,18 @@
 	)">
 
 
-<form action="manage_changeSDM" method="post">
-<table cellspacing="2">
-
-<tr><td>&nbsp;</td></tr>
-<tr>
-<td class="form-help" colspan=2>
+<p class="form-help" colspan=2>
   A Session Data Manager object is responsible for maintaining a 
   relationship between session data objects and Zope browser ids.
   It is part of the Zope sessioning machinery.  Programmers may
   interact with a session data manager in order to obtain
   information about session data, but will more often use the
   REQUEST.SESSION object to do sessioning-related tasks.
-</td>
-</tr>
-<tr><td>&nbsp;</td></tr>
+</p>
+
+
+<form action="manage_changeSDM" method="post">
+<table cellspacing="2">
 
 <tr>
   <td align="left" valign="top">
@@ -38,7 +35,7 @@
     Transient Object Container Path
     </div>
     <div class="form-help">
-    e.g. '/temp_folder/transient_container'
+    e.g. '/temp_folder/session_data'
     </div>
   </td>
   <td align="left" valign="top">
