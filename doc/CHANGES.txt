@@ -117,7 +117,8 @@ Zope Changes
        "import" new schema components to allow 3rd-party components
        (such as storages, databases, or logging handlers) to be used.
 
-     - The testrunner.py script has been replaced with test.py.
+     - The testrunner.py script has been replaced with test.py which
+       is now installed into the 'bin' folder.
 
     Bugs fixed
 
