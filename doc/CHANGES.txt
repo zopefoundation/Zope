@@ -54,6 +54,8 @@ Zope changes
           features on the result sets, like getObject and
           getPath. These are very important.
      
+        - SiteAccess 2.0 has been added, to enable virtual hosting.
+
       Bugs Fixed
 
         - A misspelled function name which prevented the addition of
