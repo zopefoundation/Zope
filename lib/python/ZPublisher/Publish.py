@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.96 1998/09/08 20:57:18 jim Exp $"""
+$Id: Publish.py,v 1.97 1998/09/09 18:05:05 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.96 $'[11:-2]
+__version__='$Revision: 1.97 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *

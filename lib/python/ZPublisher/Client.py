@@ -5,7 +5,7 @@ exec python $0 ${1+"$@"}
 #"
 ############################################################################## 
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1997-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP

@@ -5,7 +5,7 @@ exec python $0 ${1+"$@"}
 
 #" Waaaa
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.19 1998/09/03 16:59:11 jim Exp $
+$Id: Test.py,v 1.20 1998/09/09 18:04:19 jim Exp $
 '''
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys,traceback, profile, os
 repeat_count=100
