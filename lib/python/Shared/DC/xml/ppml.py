@@ -275,7 +275,7 @@ class Value(Wrapper): pass
 class Dictionary(Collection):
     def __init__(self): self._d=[]
     def __len__(self): return len(self._d)
-    def __setitem__(self, k, v): self._d.append(k,v)
+    def __setitem__(self, k, v): self._d.append((k,v))
     def value(self, indent):
         return string.join(
             map(lambda i, ind=' '*indent, indent=indent+4:

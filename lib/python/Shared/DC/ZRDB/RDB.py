@@ -85,8 +85,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.24 1999/12/06 15:31:36 jim Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: RDB.py,v 1.25 2000/07/12 17:45:52 brian Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -194,7 +194,7 @@ class DatabaseResults:
             items.append(d)
             dd[name]=d
             
-            parsers.append(i,parser)
+            parsers.append((i,parser))
             i=i+1
 
         # Create a record class to hold the records.
