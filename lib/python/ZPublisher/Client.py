@@ -56,7 +56,7 @@
 #
 ############################################################################## 
 __doc__="""Bobo call interface"""
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys,regex,socket,mimetools
 from httplib import HTTP, replyprog
@@ -89,11 +89,18 @@ def marshal_regex(n,r):
 	raise ValueError, 'regular expression used unsupported translation'
     return "%s:%s=%s" % (n,t,quote(r.givenpat))
 
-def marshal_list(n,l):
-    return join(map(lambda v, n=n: "%s:list=%s" % (n,quote(v)),l),'&')
+def marshal_list(n,l,tname='list', lt=type([]), tt=type(())):
+    r=[]
+    for v in l:
+	t=type(v)
+	if t is lt or t is tt:
+	    raise TypeError, 'Invalid recursion in data to be marshaled.'
+	r.append(marshal_whatever("%s:%s" % (n,tname) ,v))
+    
+    return join(r,'&')
 
 def marshal_tuple(n,l):
-    return join(map(lambda v, n=n: "%s:tuple=%s" % (n,quote(v)),l),'&')
+    return marshal_list(n,l,'tuple')
     
 type2marshal={
     type(1.0): 			marshal_float,
@@ -104,13 +111,14 @@ type2marshal={
     type(()): 			marshal_tuple,
     }
 
+def marshal_whatever(k,v):
+    try: q=type2marshal[type(v)](k,v)
+    except KeyError: q='%s=%s' % (k,quote(str(v)))
+    return q
 
 def querify(items):
     query=[]
-    for k,v in items:
-        try: q=type2marshal[type(v)](k,v)
-        except KeyError: q='%s=%s' % (k,quote(v))
-        query.append(q)
+    for k,v in items: query.append(marshal_whatever(k,v))
 
     return query and join(query,'&') or ''
 
@@ -581,6 +589,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.15  1997/09/12 19:21:37  jim
+# Made querify handle lists of types values.
+#
 # Revision 1.14  1997/09/11 22:30:36  jim
 # Added querify utility method.
 #
