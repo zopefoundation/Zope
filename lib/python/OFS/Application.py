@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.137 2001/01/18 21:45:03 shane Exp $'''
-__version__='$Revision: 1.137 $'[11:-2]
+$Id: Application.py,v 1.138 2001/01/19 20:12:21 brian Exp $'''
+__version__='$Revision: 1.138 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -294,35 +294,26 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def getPhysicalRoot(self): return self
 
-    checkGlobalRegistry__roles__=()
-    def checkGlobalRegistry(self, rebuild=1):
-        """Check the global (product) registry for problems, which can
-        be caused by disk-based products being deleted and other things
-        that Zope cannot know about. If rebuild is true, the global
-        registry will be rebuilt automatically if a problem is found.
-
-        The return value will be true if a problem was found (and fixed,
-        if rebuild is true). Returns 0 if no problems found."""
-        jar=self._p_jar
-        zg =jar.root()['ZGlobals']
-
-        result=0
-        try:    keys=list(zg.keys())
-        except: result=1
-
-        if (not rebuild) or (not result):
-            return result
-        
-        # A problem was found, so try to rebuild the registry. Note
-        # that callers should not catch exceptions from this method
+    fixupZClassDependencies__roles__=()
+    def fixupZClassDependencies(self, rebuild=0):
+        # Note that callers should not catch exceptions from this method
         # to ensure that the transaction gets aborted if the registry
-        # cannot be rebuilt for some reason.
-        LOG('Zope', WARNING, 'Rebuilding global product registry...')
-        import BTree
-        jar.root()['ZGlobals']=BTree.BTree()
+        # cannot be rebuilt for some reason. Returns true if any ZClasses
+        # were registered as a result of the call or the registry was
+        # rebuilt.
+        jar=self._p_jar
+        result=0
+
+        if rebuild:
+            import BTree
+            jar.root()['ZGlobals']=BTree.BTree()
+            result=1
+
+        zglobals =jar.root()['ZGlobals']
+        reg_has_key=zglobals.has_key
+
         products=self.Control_Panel.Products
         for product in products.objectValues():
-            LOG('Zope', INFO, 'Searching in product: %s' % product.id)
             items=list(product.objectItems())
             finished=[]
             idx=0
@@ -334,9 +325,16 @@ class Application(Globals.ApplicationDefaultPermissions,
                     continue
                 finished.append(base)
                 try:
-                    # Try to re-register ZClasses.
+                    # Try to re-register ZClasses if they need it.
                     if hasattr(ob, '_register') and hasattr(ob, '_zclass_'):
-                        ob._register()
+                        class_id=getattr(ob._zclass_, '__module__', None)
+                        if class_id and not reg_has_key(class_id):
+                            ob._register()
+                            result=1
+                            if not rebuild:
+                                LOG('Zope', INFO,
+                                    'Registered ZClass: %s' % ob.id
+                                    )
                     # Include subobjects.
                     if hasattr(ob, 'objectItems'):
                         m = list(ob.objectItems())
@@ -352,8 +350,18 @@ class Application(Globals.ApplicationDefaultPermissions,
                     LOG('Zope', WARNING,
                         'Broken objects exist in product %s.' % product.id)
                 idx = idx + 1
-        LOG('Zope', INFO, 'Successfully rebuilt global product registry')
-        return 1
+
+        return result
+
+    checkGlobalRegistry__roles__=()
+    def checkGlobalRegistry(self):
+        """Check the global (zclass) registry for problems, which can
+        be caused by things like disk-based products being deleted.
+        Return true if a problem is found"""
+        try:    keys=list(self._p_jar.root()['ZGlobals'].keys())
+        except: return 1
+        return 0
+
 
 
 class Expired(Globals.Persistent):
@@ -434,20 +442,53 @@ def initialize(app):
 
     install_products(app)
 
-    # Check the global product registry for problems. Note that if the
-    # check finds problems but fails to successfully rebuild the global
+    # Check for dangling pointers (broken zclass dependencies) in the
+    # global class registry. If found, rebuild the registry. Note that
+    # if the check finds problems but fails to successfully rebuild the 
     # registry we abort the transaction so that we don't leave it in an
     # indeterminate state.
+    did_fixups=0
+    bad_things=0
     try:
         if app.checkGlobalRegistry():
+            app.fixupZClassDependencies(rebuild=1)
+            did_fixups=1
+            LOG('Zope', INFO,
+                'A broken ZClass dependency was found in the global ' \
+                'class registry. This is probably due to a product ' \
+                'being uninstalled. The registry has successfully ' \
+                'been rebuilt.')
             get_transaction().note('Rebuilt global product registry')
             get_transaction().commit()
     except:
-         LOG('Zope', ERROR,
-             'A problem was found in the global product registry but '
-             'the attempt to rebuild the registry failed.',
-             error=sys.exc_info())
-         get_transaction().abort()
+        bad_things=1
+        LOG('Zope', ERROR,
+            'A problem was found in the global product registry but '
+            'the attempt to rebuild the registry failed.',
+            error=sys.exc_info())
+        get_transaction().abort()
+
+    # Now we need to see if any (disk-based) products were installed
+    # during intialization. If so (and the registry has no errors),
+    # there may still be zclasses dependent on a base class in the
+    # newly installed product that were previously broken and need to
+    # be fixed up. If any really Bad Things happened (dangling pointers
+    # were found in the registry but it couldn't be rebuilt), we don't
+    # try to do anything to avoid making the problem worse.
+    if (not did_fixups) and (not bad_things):
+
+        # App.Product.initializeProduct will set this if a disk-based
+        # product was added or updated and we are not a ZEO client.
+        if getattr(Globals, '__disk_product_installed__', 0):
+            try:
+                if app.fixupZClassDependencies():
+                    get_transaction().commit()
+            except:
+                LOG('Zope', ERROR,
+                    'Attempt to fixup ZClass dependencies after detecting ' \
+                    'an updated disk-based product failed.',
+                    error=sys.exc_info())
+                get_transaction().abort()
 
 
 def import_products(_st=type('')):
