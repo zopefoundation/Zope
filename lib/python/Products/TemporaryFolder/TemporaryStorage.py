@@ -17,12 +17,12 @@ MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
 non-cyclic garbage and it does rudimentary conflict resolution.  This is a
 ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.8 2002/01/18 04:23:45 jeremy Exp $
+$Id: TemporaryStorage.py,v 1.9 2002/06/30 18:23:15 chrism Exp $
 """
 
-__version__ ='$Revision: 1.8 $'[11:-2]
+__version__ ='$Revision: 1.9 $'[11:-2]
 
-from zLOG import LOG
+from zLOG import LOG, BLATHER
 from ZODB.referencesf import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
@@ -117,8 +117,11 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
         if version:
-            raise POSException.Unsupported, (
-                "TemporaryStorage is incompatible with versions"
+            # we allow a version to be in use although we don't
+            # support versions in the storage.
+            LOG('TemporaryStorage', BLATHER,
+                ('versions in use with TemporaryStorage although Temporary'
+                 'Storage doesnt support versions'),
                 )
         self._lock_acquire()
         try:
