@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.143 2001/04/07 16:37:07 jim Exp $'''
-__version__='$Revision: 1.143 $'[11:-2]
+$Id: Application.py,v 1.144 2001/05/17 18:35:09 shane Exp $'''
+__version__='$Revision: 1.144 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -495,16 +495,8 @@ def initialize(app):
                 get_transaction().abort()
 
 
-def import_products(_st=type('')):
+def import_products():
     # Try to import each product, checking for and catching errors.
-    path_join=os.path.join
-    isdir=os.path.isdir
-    exists=os.path.exists
-    DictType=type({})
-    global_dict=globals()
-    silly=('__doc__',)
-    modules=sys.modules
-    have_module=modules.has_key
     done={}
 
     for product_dir in Products.__path__:
@@ -516,12 +508,26 @@ def import_products(_st=type('')):
 
             if done.has_key(product_name): continue
             done[product_name]=1
+            import_product(product_dir, product_name)
 
+
+def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
+    path_join=os.path.join
+    isdir=os.path.isdir
+    exists=os.path.exists
+    _st=type('')
+    global_dict=globals()
+    silly=('__doc__',)
+    modules=sys.modules
+    have_module=modules.has_key
+
+    if 1:  # Preserve indentation for diff :-)
+        try:
             package_dir=path_join(product_dir, product_name)
-            if not isdir(package_dir): continue
+            if not isdir(package_dir): return
             if not exists(path_join(package_dir, '__init__.py')):
                 if not exists(path_join(package_dir, '__init__.pyc')):
-                    continue
+                    return
 
             pname="Products.%s" % product_name
             try:
@@ -532,35 +538,27 @@ def import_products(_st=type('')):
                             if type(v) is _st and have_module(v): v=modules[v]
                             modules[k]=v
             except:
-                LOG('Zope',ERROR,'Couldn\'t import %s' % pname,
-                    error=sys.exc_info())
+                exc = sys.exc_info()
+                if log_exc:
+                    LOG('Zope', ERROR, 'Could not import %s' % pname,
+                        error=exc)
                 f=StringIO()
                 traceback.print_exc(100,f)
                 f=f.getvalue()
                 try: modules[pname].__import_error__=f
                 except: pass
+                if raise_exc:
+                    raise exc[0], exc[1], exc[2]
+        finally:
+            exc = None
 
 
 def install_products(app):
     # Install a list of products into the basic folder class, so
     # that all folders know about top-level objects, aka products
 
-    path_join=os.path.join
-    isdir=os.path.isdir
-    exists=os.path.exists
-    DictType=type({})
-
-    from Folder import Folder
-    folder_permissions={}
-    for p in Folder.__ac_permissions__:
-        permission, names = p[:2]
-        folder_permissions[permission]=names
-
+    folder_permissions = get_folder_permissions()
     meta_types=[]
-
-    global_dict=globals()
-    silly=('__doc__',)
-
     done={}
 
     get_transaction().note('Prior to product installs')
@@ -579,13 +577,38 @@ def install_products(app):
             if done.has_key(product_name):
                 continue
             done[product_name]=1
+            install_product(app, product_dir, product_name, meta_types,
+                            folder_permissions)
 
+    Products.meta_types=Products.meta_types+tuple(meta_types)
+    Globals.default__class_init__(Folder.Folder)
+
+
+def get_folder_permissions():
+    folder_permissions={}
+    for p in Folder.Folder.__ac_permissions__:
+        permission, names = p[:2]
+        folder_permissions[permission]=names
+    return folder_permissions
+
+
+def install_product(app, product_dir, product_name, meta_types,
+                    folder_permissions, raise_exc=0, log_exc=1):
+
+    path_join=os.path.join
+    isdir=os.path.isdir
+    exists=os.path.exists
+    DictType=type({})
+    global_dict=globals()
+    silly=('__doc__',)
+
+    if 1:  # Preserve indentation for diff :-)
             package_dir=path_join(product_dir, product_name)
             __traceback_info__=product_name
-            if not isdir(package_dir): continue
+            if not isdir(package_dir): return
             if not exists(path_join(package_dir, '__init__.py')):
                 if not exists(path_join(package_dir, '__init__.pyc')):
-                    continue
+                    return
             try:
                 product=__import__("Products.%s" % product_name,
                                    global_dict, global_dict, silly)
@@ -605,7 +628,7 @@ def install_products(app):
                 # should be associated with that product. Products are
                 # expected to implement a method named 'initialize' in
                 # their __init__.py that takes the ProductContext as an
-                # argument. 
+                # argument.
                 productObject=App.Product.initializeProduct(
                     product, product_name, package_dir, app)
                 context=ProductContext(productObject, app, product)
@@ -616,7 +639,7 @@ def install_products(app):
                 # build up enough information to do initialization manually.
                 initmethod=pgetattr(product, 'initialize', None)
                 if initmethod is not None:
-                    initmethod(context)                    
+                    initmethod(context)
 
                 # Support old-style product metadata. Older products may
                 # define attributes to name their permissions, meta_types,
@@ -661,8 +684,8 @@ def install_products(app):
                     for permission, names in new_permissions:
                         folder_permissions[permission]=names
                     new_permissions.sort()
-                    Folder.__dict__['__ac_permissions__']=tuple(
-                        list(Folder.__ac_permissions__)+new_permissions)
+                    Folder.Folder.__dict__['__ac_permissions__']=tuple(
+                        list(Folder.Folder.__ac_permissions__)+new_permissions)
 
                 if (os.environ.get('ZEO_CLIENT') and
                     not os.environ.get('FORCE_PRODUCT_LOAD')):
@@ -674,13 +697,58 @@ def install_products(app):
                     get_transaction().commit()
 
             except:
-                LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
-                    error=sys.exc_info())
+                if log_exc:
+                    LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
+                        error=sys.exc_info())
                 get_transaction().abort()
+                if raise_exc:
+                    raise
+
+
+def reinstall_product(app, product_name):
+    folder_permissions = get_folder_permissions()
+    meta_types=[]
+
+    get_transaction().note('Prior to product reinstall')
+    get_transaction().commit()
+
+    for product_dir in Products.__path__:
+        product_names=os.listdir(product_dir)
+        product_names.sort()
+        if product_name in product_names:
+            removeProductMetaTypes(product_name)
+            install_product(app, product_dir, product_name, meta_types,
+                            folder_permissions, raise_exc=1, log_exc=0)
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
+    Globals.default__class_init__(Folder.Folder)
 
-    Globals.default__class_init__(Folder)
+
+def reimport_product(product_name):
+    for product_dir in Products.__path__:
+        product_names=os.listdir(product_dir)
+        product_names.sort()
+        if product_name in product_names:
+            import_product(product_dir, product_name,
+                           raise_exc=1, log_exc=0)
+            break
+
+
+def removeProductMetaTypes(pid):
+    '''
+    Unregisters the meta types registered by a product.
+    '''
+    meta_types = Products.meta_types
+    new_mts = []
+    changed = 0
+    for meta_type in meta_types:
+        if meta_type.get('product', None) == pid:
+            # Remove this meta type.
+            changed = 1
+        else:
+            new_mts.append(meta_type)
+    if changed:
+        Products.meta_types = tuple(new_mts)
 
 
 def pgetattr(product, name, default=install_products, __init__=0):

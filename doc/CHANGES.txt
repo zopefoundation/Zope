@@ -57,6 +57,10 @@ Zope changes
         - DTML-In and DTML-Tree now have optional "prefix" attributes
           that can be used to make friendlier tag variable names.
 
+        - Added product reloading capability, formerly provided by
+          the "Refresh" product.  This enables developers to see the
+          effect of changes to their products without restarting Zope.
+
     Zope 2.3.0 beta 3
 
       Features Added

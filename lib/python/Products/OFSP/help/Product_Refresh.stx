@@ -1,0 +1,62 @@
+Product - Refresh: Reload a filesystem-based Python product.
+  
+  Description
+
+    This view allows you to reload filesystem-based product code
+    without restarting Zope.  This function is useful during
+    development of products.
+
+    To enable your product to be refreshed, it is required that you
+    put a file called 'refresh.txt' in your product directory.
+    It can optionally contain a warning for others who might use
+    the refresh function.
+
+    (Producting refreshing is not perfect.  Some products, especially
+    "hotfix" style products which patch Zope, should not be refreshed.
+    That's why 'refresh.txt' is required.  Most products are safe to
+    refresh, however.)
+
+    There are two modes of operation.  You can visit your product's
+    'Refresh' tab and manually push the refresh button.  Or you can
+    turn on "auto-refresh" mode, which causes Zope to periodically
+    scan the modification time of the Python files that make up your
+    product and execute a refresh operation in the background.
+
+    **NOTE**: Don't enable auto-refresh for too many products at once.
+    Scanning file modification times can take a lot of time per
+    request.
+
+    You can also select dependent refreshable products.  If you have
+    a product that subclasses from a product you're working on,
+    you'll want to enable refresh for both products and add the
+    product that subclasses as a dependent of the product you're
+    modifying.  This enables subclasses to be updated.
+
+  Controls
+
+    'Refresh this product' -- The manual refresh button.
+
+    'Auto refresh mode' -- Check the checkbox to enable auto-refresh.
+
+    'Dependent auto-refreshable products' -- A list of other products
+    which are auto-refreshable.
+
+  How it works
+
+    To execute a refresh, Zope looks in the sys.modules dictionary
+    for modules with names that start with the prefix for your product.
+    It tries to scan for dependencies between the modules that make
+    up your product then uses Python's reload() function for each
+    module in order.  Then it sets a flag that will cause ZODB to dump
+    its cache on the next connection so that changes to persistent
+    classes will take effect.
+
+    To implement auto-refresh, Zope stores a PersistentMapping called
+    RefreshData on the database root object (below the Application
+    object).  The contents of the PersistentMapping are examined at the
+    moment a database connection is opened by ZApplication.  The
+    PersistentMapping contains a list of which products have auto-refresh
+    enabled.  For each product with auto-refresh enabled, Zope compares
+    the file mod times with the last recorded times and executes a
+    refresh if there are any changes.
+

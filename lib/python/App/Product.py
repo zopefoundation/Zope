@@ -116,6 +116,7 @@ from Factory import Factory
 from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
 from HelpSys.HelpSys import ProductHelp
+import RefreshFuncs
 
 
 class ProductFolder(Folder):
@@ -341,6 +342,129 @@ class Product(Folder, PermissionManager):
             self._setObject('Help', ProductHelp('Help', self.id))
         return self.Help
 
+    #
+    # Product refresh
+    #
+
+    _refresh_dtml = Globals.DTMLFile('dtml/refresh', globals())
+
+    def _readRefreshTxt(self, pid=None):
+        refresh_txt = None
+        if pid is None:
+            pid = self.id
+        for productDir in Products.__path__:
+            found = 0
+            for name in ('refresh.txt', 'REFRESH.txt', 'REFRESH.TXT'):
+                p = os.path.join(productDir, pid, name)
+                if os.path.exists(p):
+                    found = 1
+                    break
+            if found:
+                try:
+                    file = open(p)
+                    text = file.read()
+                    file.close()
+                    refresh_txt = text
+                    break
+                except:
+                    # Not found here.
+                    pass
+        return refresh_txt
+
+    def manage_refresh(self, REQUEST, manage_tabs_message=None):
+        '''
+        Displays the refresh management screen.
+        '''
+        error_type = error_value = error_tb = None
+        exc = RefreshFuncs.getLastRefreshException(self.id)
+        if exc is not None:
+            error_type, error_value, error_tb = exc
+            exc = None
+
+        refresh_txt = self._readRefreshTxt()
+
+        # Read the persistent refresh information.
+        auto = RefreshFuncs.isAutoRefreshEnabled(self._p_jar, self.id)
+        deps = RefreshFuncs.getDependentProducts(self._p_jar, self.id)
+
+        # List all product modules.
+        mods = RefreshFuncs.listRefreshableModules(self.id)
+        loaded_modules = []
+        prefix = 'Products.%s' % self.id
+        prefixdot = prefix + '.'
+        lpdot = len(prefixdot)
+        for name, module in mods:
+            if name == prefix or name[:lpdot] == prefixdot:
+                name = name[lpdot:]
+                if not name:
+                    name = '__init__'
+            loaded_modules.append(name)
+
+        all_auto = RefreshFuncs.listAutoRefreshableProducts(self._p_jar)
+        for pid in all_auto:
+            # Ignore products that don't have a refresh.txt.
+            if self._readRefreshTxt(pid) is None:
+                all_auto.remove(pid)
+        auto_other = filter(lambda productId, myId=self.id:
+                            productId != myId, all_auto)
+
+        # Return rendered DTML.
+        return self._refresh_dtml(REQUEST,
+                                  id=self.id,
+                                  refresh_txt=refresh_txt,
+                                  error_type=error_type,
+                                  error_value=error_value,
+                                  error_tb=error_tb,
+                                  devel_mode=Globals.DevelopmentMode,
+                                  auto_refresh_enabled=auto,
+                                  auto_refresh_other=auto_other,
+                                  dependent_products=deps,
+                                  loaded_modules=loaded_modules,
+                                  manage_tabs_message=manage_tabs_message,
+                                  management_view='Refresh')
+
+    def manage_performRefresh(self, REQUEST=None):
+        '''
+        Attempts to perform a refresh operation.
+        '''
+        if self._readRefreshTxt() is None:
+            raise 'Unauthorized', 'refresh.txt not found'
+        message = None
+        if RefreshFuncs.performFullRefresh(self._p_jar, self.id):
+            from ZODB import Connection
+            Connection.updateCodeTimestamp() # Clears cache in next connection.
+            message = 'Product refreshed.'
+        else:
+            message = 'An exception occurred.'
+        if REQUEST is not None:
+            return self.manage_refresh(REQUEST, manage_tabs_message=message)
+
+    def manage_enableAutoRefresh(self, enable=0, REQUEST=None):
+        '''
+        Changes the auto refresh flag for this product.
+        '''
+        if self._readRefreshTxt() is None:
+            raise 'Unauthorized', 'refresh.txt not created'
+        RefreshFuncs.enableAutoRefresh(self._p_jar, self.id, enable)
+        if enable:
+            message = 'Enabled auto refresh.'
+        else:
+            message = 'Disabled auto refresh.'
+        if REQUEST is not None:
+            return self.manage_refresh(REQUEST, manage_tabs_message=message)
+
+    def manage_selectDependentProducts(self, selections=(), REQUEST=None):
+        '''
+        Selects which products to refresh simultaneously.
+        '''
+        if self._readRefreshTxt() is None:
+            raise 'Unauthorized', 'refresh.txt not created'
+        RefreshFuncs.setDependentProducts(self._p_jar, self.id, selections)
+        if REQUEST is not None:
+            return self.manage_refresh(REQUEST)
+
+
+
 class CompressedOutputFile:
     def __init__(self, rot):
         self._c=zlib.compressobj()
@@ -476,6 +600,17 @@ def initializeProduct(productp, name, home, app):
                 {'label':'README', 'action':'manage_readme'},
                 )
             break
+
+    # Ensure this product has a refresh tab.
+    found = 0
+    for option in product.manage_options:
+        if option.get('label') == 'Refresh':
+            found = 1
+            break
+    if not found:
+        product.manage_options = product.manage_options + (
+            {'label':'Refresh', 'action':'manage_refresh',
+             'help': ('OFSP','Product_Refresh.stx')},)
 
     if (os.environ.get('ZEO_CLIENT') and
         not os.environ.get('FORCE_PRODUCT_LOAD')):

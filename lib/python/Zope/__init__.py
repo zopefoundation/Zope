@@ -142,12 +142,17 @@ app=bobo_application=ZODB.ZApplication.ZApplicationWrapper(
 # Initialize products:
 c=app()
 OFS.Application.initialize(c)
+
+if Globals.DevelopmentMode:
+    # Set up auto-refresh.
+    from App.RefreshFuncs import setupAutoRefresh
+    setupAutoRefresh(c._p_jar)
+
 c._p_jar.close()
 del c
 
 # "Log off" as system user
 AccessControl.SecurityManagement.noSecurityManager()
-
 
 # This is sneaky, but we don't want to play with Main:
 sys.modules['Main']=sys.modules['Zope']
