@@ -10,8 +10,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.4 1998/01/07 16:27:15 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Connection.py,v 1.5 1998/01/16 19:12:54 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
 from DateTime import DateTime
@@ -55,7 +55,9 @@ class Connection(
 
     def __setstate__(self, state):
 	Persistence.Persistent.__setstate__(self, state)
-	if self.connection_string: self.connect(self.connection_string)
+	if self.connection_string:
+	    try: self.connect(self.connection_string)
+	    except: pass
 
     def title_and_id(self):
 	s=Connection.inheritedAttribute('title_and_id')(self)
@@ -132,6 +134,10 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.5  1998/01/16 19:12:54  jim
+# Changed so failure to connect to the database does not prevent
+# activation.
+#
 # Revision 1.4  1998/01/07 16:27:15  jim
 # Brought up to date with latest Principia models.
 #
