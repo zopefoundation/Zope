@@ -15,6 +15,13 @@ categories:
   BEFORE RELEASE OF ZOPE 2.7A
 --------------------------------
 
+Make 'runzope -h' work and give better error messages when a configuration
+fails to make the grade.
+
+  Currently runzope -h just emits a traceback, and the message printed by
+  run.py says to run 'run.py -h' which can't work because things that
+  it needs to import aren't on the PYTHONPATH.
+
 Config file needs better inline docs
 
   The Zope ZConfig config file has some inline docs.  They need to be
