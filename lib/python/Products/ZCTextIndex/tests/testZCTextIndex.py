@@ -317,7 +317,7 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
         for variant in "one xyz", "xyz two three", "abc def":
             self.zc_index.index_object(len(docs), Indexable(variant))
             try:
-                self._checkRelativeScores()
+                self._checkAbsoluteScores()
             except AssertionError:
                 pass
             else:
