@@ -85,18 +85,18 @@
 # 
 ##############################################################################
 
-# $Id: regressionSecurity.py,v 1.2 2001/10/18 14:30:51 andreasjung Exp $
+# $Id: regressionSecurity.py,v 1.3 2001/10/18 15:44:47 shane Exp $
 
 import os, sys, unittest
 
-import Zope
+import ZODB
+import SecurityBase
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
 from AccessControl import ClassSecurityInfo,getSecurityManager
 from AccessControl.User import nobody
 import Globals
 
-import SecurityBase
 
 # let's define some permissions first
 
@@ -220,7 +220,7 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
     def setUp(self):
         """ my setup """
 
-        self.root = Zope.app()
+        self.root = SecurityBase.app
         acl = self.root.acl_users
 
         for user in USERS:
@@ -230,8 +230,6 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
         for user in USERS:
             acl._addUser(user.username,user.password,user.password,
                             user.roles, [])
-
-        get_transaction().commit()
 
         # try to remove old crap
 
@@ -254,8 +252,6 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
         self.root.test.f1._setObject('anonobj',anonobj)
         self.root.test.f2._setObject('f3',f3)
         self.root.test.f2.f3._setObject('obj3',obj)
-        
-        get_transaction().commit()
 
 
     def testNobody(self):
@@ -272,10 +268,10 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
     def testPermissionAccess(self):
         """ check permission based access """
 
-        self._checkRoles('test.f2.f3.obj3.public_func',     ())    
-        self._checkRoles('test.f2.f3.obj3.protected_func',  ('Manager','Owner'))    
-        self._checkRoles('test.f2.f3.obj3.manage_func',     ('Manager',))    
-        self._checkRoles('test.f2.f3.obj3.private_func',    ())    
+        self._checkRoles('test.f2.f3.obj3.public_func',     None)
+        self._checkRoles('test.f2.f3.obj3.protected_func',  ('Manager','Owner'))
+        self._checkRoles('test.f2.f3.obj3.manage_func',     ('Manager',))
+        self._checkRoles('test.f2.f3.obj3.private_func',    ())
 
 
     def testZPublisherAccess(self):

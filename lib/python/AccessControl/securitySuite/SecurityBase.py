@@ -84,13 +84,34 @@
 ##############################################################################
 
 
-import re, unittest, cStringIO
+import sys, re, unittest, cStringIO
 import ZPublisher, ResultObject
+import OFS.Application
+import AccessControl.SecurityManagement
+
+
+# Set up a publishable, non-ZODB Zope application.
+app = OFS.Application.Application()
+def index_html():
+    " "
+    return "This is index_html."
+app.index_html = index_html  # Will index_html ever go away? ;-)
+class BoboApplication:
+    # OFS.Application has a __bobo_traverse__ that ZPublisher thinks
+    # it should use to find the "real" root of the application.
+    # This class gets around that.
+    def __bobo_traverse__(self, request, name=None):
+        return app
+
+# ZPublisher will look for these vars.
+bobo_application = BoboApplication()
+zpublisher_validated_hook=AccessControl.SecurityManagement.newSecurityManager
+__bobo_before__=AccessControl.SecurityManagement.noSecurityManager
 
 
 class SecurityBase(unittest.TestCase) :
     """ Base class for all security tests 
-    $Id: SecurityBase.py,v 1.4 2001/10/18 14:30:51 andreasjung Exp $
+    $Id: SecurityBase.py,v 1.5 2001/10/18 15:44:47 shane Exp $
     """
 
     status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
@@ -163,16 +184,20 @@ class SecurityBase(unittest.TestCase) :
         s = "self.root.%s.__roles__" % hier
         roles = eval(s)
 
-        if roles==None or len(roles)==0: 
-            roles=()
-        
-        roles = list(roles)
-        roles.sort()
-
-        expected_roles = list(expected_roles)
-        expected_roles.sort()
-
-        if roles != expected_roles: 
+        same = 0
+        if roles is None or expected_roles is None:
+            if (roles is None or tuple(roles) == ('Anonymous',)) and (
+                expected_roles is None or
+                tuple(expected_roles) == ('Anonymous',)):
+                same = 1
+        else:
+            got = {}
+            for r in roles: got[r] = 1
+            expected = {}
+            for r in expected_roles: expected[r] = 1
+            if got == expected:  # Dict compare does the Right Thing.
+                same = 1
+        if not same:
             raise AssertionError, self._roles_debug(hier,roles,expected_roles)
     
     def _checkRequest(self,*args,**kw):
@@ -204,8 +229,8 @@ class SecurityBase(unittest.TestCase) :
     def _roles_debug(self,hier,got_roles,expected_roles):
 
         s = 'Object: %s' % hier
-        s+= ', has roles: %s ' % got_roles        
-        s+= ', expected roles: %s' % expected_roles
+        s+= ', has roles: %s' % `got_roles`
+        s+= ', expected roles: %s' % `expected_roles`
 
         return s
 
@@ -224,7 +249,15 @@ class SecurityBase(unittest.TestCase) :
 
         io =cStringIO.StringIO()
         kw['fp']=io
-        ZPublisher.Zope(*args,**kw)
+        # Publish this module.
+        testargs = (__name__,) + args
+        real_stdout = sys.stdout
+        garbage_out = cStringIO.StringIO()
+        sys.stdout = garbage_out  # Silence, ZPublisher!
+        try:
+            ZPublisher.test(*testargs,**kw)
+        finally:
+            sys.stdout = real_stdout
         outp = io.getvalue()
         mo = self.status_regex.search(outp)
 
