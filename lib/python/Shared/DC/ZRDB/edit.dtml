@@ -1,12 +1,24 @@
-<html><head><title>Edit <!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></title></head><body>
-
-<body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
-<FONT SIZE="+2" COLOR="#77003B">
-Edit <!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></FONT>
+<HTML>
+<HEAD>
+<TITLE>
+Edit 
+<!--#if title-->
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
+</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>
+Edit 
+<!--#if title-->
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
+</H2>
+<P>
 
 <form action="<!--#var URL2-->/<!--#var id-->/manage_edit"
  method="<!--#var web__form__method-->">

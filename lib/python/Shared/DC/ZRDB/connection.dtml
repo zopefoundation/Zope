@@ -1,14 +1,17 @@
-<html> <head>
-<title>DA Database Connection Information</title>
-</head>
-
-<body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
-<FONT SIZE="+2" COLOR="#77003B">
+<HTML>
+<HEAD>
+<TITLE>DA Database Connection Information</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>
 <!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--><br>
-Database Connection Information
-</FONT>
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
+<BR>
+Database Connection Information</H2>
+<P>
 
 <!--#var bad_connection_string-->
 

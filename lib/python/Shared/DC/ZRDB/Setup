@@ -1,6 +1,9 @@
+*shared*
 
 # install DA.py
+# install dbi_db.py
 # install connection.dtml
 # install daAdd.dtml
 # install edit.dtml
 # install main.dtml
+# install www www/%(package)s

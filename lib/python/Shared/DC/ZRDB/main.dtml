@@ -1,15 +1,22 @@
 <HTML>
 <HEAD>
-<TITLE><!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></TITLE>
+<TITLE>
+<!--#if title-->
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
+</TITLE>
 </HEAD>
-<BODY>
-<FONT SIZE="+2" COLOR="#77003B"><!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></FONT>
-<BR>
-
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>
+<!--#if title-->
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
+</H2>
+<P>
 <!--#var bad_connection_string-->
 
 <!--#if parentObject-->

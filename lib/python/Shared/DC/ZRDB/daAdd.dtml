@@ -1,9 +1,10 @@
-<html><head><title>New Database Adapter</title></head>
-
-<body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
-<FONT SIZE="+2" COLOR="#77003B">
-New Aqueduct Database Adapter
-</FONT>
+<HTML>
+<HEAD>
+<TITLE>New Database Adapter</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>New Database Adapter</H2>
+<P>
 
 <form action="<!--#var PARENT_URL-->/manage_addDA" method="post">
 
