@@ -86,8 +86,8 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.8 1999/03/10 00:14:56 klm Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Extensions.py,v 1.9 1999/04/01 15:57:13 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
@@ -176,7 +176,7 @@ def getObject(module, name, reload=0, modules={}):
     p=getPath('Extensions', p, suffixes=('','py','pyp'))
     if p is None:
         raise "Module Error", (
-            "The specified module, <em>%s</em>, couldn't be found.")
+            "The specified module, <em>%s</em>, couldn't be found." % module)
 
     __traceback_info__=p, module
 
