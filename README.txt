@@ -21,7 +21,9 @@ Introduction
   platforms because they love to compile everything from source.
 
   If you just want to use Zope easily and aren't a programmer
-  the binary release will probably suit you better.
+  the binary release will probably suit you better.  All are
+  available at http://www.zope.org/Download
+
 
 License
 
