@@ -328,7 +328,7 @@ class TestGuardedDictListTypes(unittest.TestCase):
         x = [3,2,1]
         self.assertEquals(l(x), [3,2,1])
         if sys.version_info >= (2, 4):
-            self.assertEquals(l.sorted(x), [1,2,3])
+            self.assertEquals(sorted(x), [1,2,3])
 
 class TestRestrictedPythonApply(GuardTestCase):
 
