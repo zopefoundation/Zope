@@ -195,8 +195,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.28 1999/03/10 00:15:08 klm Exp $'
-__version__='$Revision: 1.28 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.29 1999/06/21 18:24:11 jim Exp $'
+__version__='$Revision: 1.29 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -207,6 +207,7 @@ class Var:
     expr=None
 
     def __init__(self, args, fmt='s'):
+        if args[:4]=='var ': args=args[4:]
         args = parse_params(args, name='', lower=1, upper=1, expr='',
                             capitalize=1, spacify=1, null='', fmt='s',
                             size=0, etc='...', thousands_commas=1,
