@@ -158,10 +158,15 @@ class ZopeDatabase(ZODBDatabase):
 
     container_class = 'OFS.Folder.Folder'
 
+    def createDB(self):
+        return ZODBDatabase.open(self)
+
     def open(self):
-        DB = ZODBDatabase.open(self)
-        # set the connection class
-        DB.klass = self.config.connection_class
+        DB = self.createDB()
+        if self.config.connection_class:
+            # set the connection class
+            DB.klass = self.config.connection_class
+            print DB, DB.klass
         if self.config.class_factory is not None:
             DB.setClassFactory(self.config.class_factory)
         from ZODB.ActivityMonitor import ActivityMonitor
