@@ -1,6 +1,5 @@
 # Framework for running Unit tests
 
-import sys
 import unittest
 
 MODULES = ('commitlog', 'create', 'virgin', 'zodb_simple', 'storage_api')
