@@ -7,7 +7,7 @@ Building and installing Zope from source
 
 Important notes
 
-   Starting with Zope 2.7, Zope *REQUIRES* Python 2.2.1 or later.
+   Starting with Zope 2.7, Zope *REQUIRES* Python 2.2.2 or later.
    This is done to ease code sharing with Zope 3.
 
    See CHANGES.txt for important notes on this version of Zope.
@@ -18,7 +18,7 @@ Quick Start
   If you are impatient, the following commands should get you up and
   running with Zope 2 using ZServer and ZODB 3 on Unix::
 
-    python w_pcgi.py  # Note, this must be Python 2.2.1 or later
+    python w_pcgi.py  # Note, this must be Python 2.2.2 or later
     ./start
 
   The first command builds and adjusts Zope.  Take note of the user
@@ -47,17 +47,17 @@ Quick Start
   screen which is divided into two frames. On the left you can navigate
   between Zope object and on the right you can edit them by selecting
   different management functions with the tabs at the top of the frame.
-  
+
   If you haven't used Zope before, you should head to the Zope web site
   and read some documentation. The Zope Manager's Guide is a good place
   to start. You can access the Zope site at:
-  
+
     'http://www.zope.org/'
-  
+
   Have fun!
 
 Building Zope
-  
+
   There are some python scripts in the top-level directory that should
   help you get started. You must run these scripts from the top-level
   directory.
@@ -72,8 +72,8 @@ Building Zope
     python w_pcgi.py
 
   Notes
-  
-    * You should be using Python 2.2.1 or later to run the build scripts.
+
+    * You should be using Python 2.2.2 or later to run the build scripts.
 
     * The python you run Zope with *must* have threads compiled in,
       which is the case for a vanilla build.  Warning: Zope will not
@@ -112,9 +112,9 @@ Running Zope
         allows you to use FTP-enabled publishing systems with Zope.
 
       o PCGI -- PCGI is a lightweight protocol for forwarding
-	requests from other web servers, like Apache or Netscape, to
-	Zope. This makes it possible to use web server features like
-	connection encryption or logging with Zope.
+        requests from other web servers, like Apache or Netscape, to
+        Zope. This makes it possible to use web server features like
+        connection encryption or logging with Zope.
 
       o monitor -- ZServer has the capability to allow you to access
         the Python interpreter directly over a network channel.  If
@@ -134,5 +134,3 @@ Running Zope
 
   If you wish to enable Zope logging you must specify options on the
   command line.  See LOGGING.txt in the doc directory.
-
-
