@@ -54,6 +54,11 @@ class OkapiIndex(BaseIndex):
     def index_doc(self, docid, text):
         count = BaseIndex.index_doc(self, docid, text)
         self._totaldoclen += count
+        return count
+
+    def _reindex_doc(self, docid, text):
+        self._totaldoclen -= self._docweight[docid]
+        return BaseIndex._reindex_doc(self, docid, text)
 
     def unindex_doc(self, docid):
         self._totaldoclen -= self._docweight[docid]

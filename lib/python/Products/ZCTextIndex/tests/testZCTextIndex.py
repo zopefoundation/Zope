@@ -142,18 +142,29 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
     def testRanking(self):
         self.words = ["cold", "days", "eat", "hot", "lot", "nine", "old",
                       "pease", "porridge", "pot"]
+        self.docs = ["Pease porridge hot, pease porridge cold,",
+                     "Pease porridge in the pot,",
+                     "Nine days old.",
+                     "In the pot cold, in the pot hot,",
+                     "Pease porridge, pease porridge,",
+                     "Eat the lot."]
         self._ranking_index()
         self._ranking_tf()
         self._ranking_idf()
         self._ranking_queries()
 
+        # A digression to exercise re-indexing.  This should leave
+        # things exactly as they were.
+        docs = self.docs
+        for variant in ("hot cold porridge python", "pease hot pithy ",
+                        docs[-1]):
+            self.zc_index.index_object(len(docs), Indexable(variant))
+        self._ranking_tf()
+        self._ranking_idf()
+        self._ranking_queries()
+
     def _ranking_index(self):
-        docs = ["Pease porridge hot, pease porridge cold,",
-                "Pease porridge in the pot,",
-                "Nine days old.",
-                "In the pot cold, in the pot hot,",
-                "Pease porridge, pease porridge,",
-                "Eat the lot."]
+        docs = self.docs
         for i in range(len(docs)):
             self.zc_index.index_object(i + 1, Indexable(docs[i]))
 
@@ -220,6 +231,12 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
                 "one two three"]
         for i in range(len(docs)):
             self.zc_index.index_object(i + 1, Indexable(docs[i]))
+
+        # A brief digression to exercise re-indexing.  This should leave
+        # things exactly as they were.
+        for variant in "one xyz", "xyz two three", "abc def", docs[-1]:
+            self.zc_index.index_object(len(docs), Indexable(variant))
+
         self.assertEqual(self.index._totaldoclen, 6)
         # So the mean doc length is 2.  We use that later.
 

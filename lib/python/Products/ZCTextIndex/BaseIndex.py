@@ -19,6 +19,7 @@ import math
 
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IIBTree, IIBucket, IITreeSet
+from BTrees.IIBTree import intersection, difference
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
@@ -91,8 +92,7 @@ class BaseIndex(Persistent):
     # A subclass may wish to extend or override this.
     def index_doc(self, docid, text):
         if self._docwords.has_key(docid):
-            # XXX Do something smarter than this.
-            self.unindex_doc(docid)
+            return self._reindex_doc(docid, text)
         wids = self._lexicon.sourceToWordIds(text)
         wid2weight, docweight = self._get_frequencies(wids)
         for wid, weight in wid2weight.items():
@@ -100,6 +100,45 @@ class BaseIndex(Persistent):
         self._docweight[docid] = docweight
         self._docwords[docid] = WidCode.encode(wids)
         return len(wids)
+
+    # A subclass may wish to extend or override this.  This is for adjusting
+    # to a new version of a doc that already exists.  The goal is to be
+    # faster than simply unindexing the old version in its entirety and then
+    # adding the new version in its entirety.
+    def _reindex_doc(self, docid, text):
+        # Touch as few docid->w(docid, score) maps in ._wordinfo as possible.
+        old_wids = self.get_words(docid)
+        old_wid2w, old_docw = self._get_frequencies(old_wids)
+
+        new_wids = self._lexicon.sourceToWordIds(text)
+        new_wid2w, new_docw = self._get_frequencies(new_wids)
+
+        old_widset = IITreeSet(old_wid2w.keys())
+        new_widset = IITreeSet(new_wid2w.keys())
+
+        in_both_widset = intersection(old_widset, new_widset)
+        only_old_widset = difference(old_widset, in_both_widset)
+        only_new_widset = difference(new_widset, in_both_widset)
+        del old_widset, new_widset
+
+        for wid in only_old_widset.keys():
+            self._del_wordinfo(wid, docid)
+
+        for wid in only_new_widset.keys():
+            self._add_wordinfo(wid, new_wid2w[wid], docid)
+
+        for wid in in_both_widset.keys():
+            # For the Okapi indexer, the "if" will trigger only for words
+            # whose counts have changed.  For the cosine indexer, the "if"
+            # may trigger for every wid, since W(d) probably changed and
+            # W(d) is divided into every score.
+            newscore = new_wid2w[wid]
+            if old_wid2w[wid] != newscore:
+                self._add_wordinfo(wid, newscore, docid)
+
+        self._docweight[docid] = new_docw
+        self._docwords[docid] = WidCode.encode(new_wids)
+        return len(new_wids)
 
     # Subclass must override.
     def _get_frequencies(self, wids):
