@@ -39,10 +39,20 @@ in: Loops over sequences
     skip_unauthorized -- Don't raise an exception if an unauthorized
     item is encountered.
 
-    orphan=int -- The desired minimum batch size.
+    orphan=int -- The desired minimum batch size. This controls how
+    sequences are split into batches. If a batch smaller than the
+    orphan size would occur, then no split is performed, and a batch
+    larger than the batch size results.
+
+      For example, if the sequence size is 12, the batch size is 10
+      the orphan size is 3, then the result is one batch with all 12
+      items since splitting the items into two batches would result in
+      a batch smaller than the orphan size.
+
+      The default value is 3.
 
     overlap=int -- The number of items to overlap between batches. The
-    default value is 3.
+    default is no overlap.
 
     previous -- Iterates once if there is a previous batch. Sets batch
     variables for previous sequence. 
