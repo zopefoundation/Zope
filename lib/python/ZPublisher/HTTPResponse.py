@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.40 2000/12/27 16:36:12 brian Exp $'''
-__version__='$Revision: 1.40 $'[11:-2]
+$Id: HTTPResponse.py,v 1.41 2001/01/22 16:58:30 brian Exp $'''
+__version__='$Revision: 1.41 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -272,6 +272,10 @@ class HTTPResponse(BaseResponse):
 
     def setBody(self, body, title='', is_error=0,
                 bogus_str_search=regex.compile(" [a-fA-F0-9]+>$").search,
+                latin1_alias_match=re.compile(
+                r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
+                r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
+                r'(iso[-_]8859[-_]1(:1987)?)))?$',re.I).match
                 ):
         '''\
         Set the body of the response
@@ -298,6 +302,22 @@ class HTTPResponse(BaseResponse):
                 body=body.asHTML()
 
         body=str(body)
+ 
+        isHTML=self.isHTML(body)
+        if not self.headers.has_key('content-type'):
+            if isHTML: c='text/html'
+            else:      c='text/plain'
+            self.setHeader('content-type', c)
+
+        # Some browsers interpret certain characters in Latin 1 as html
+        # special characters. These cannot be removed by html_quote,
+        # because this is not the case for all encodings.
+        content_type=self.headers['content-type']
+        if content_type == 'text/html' or latin1_alias_match(
+            content_type) is not None:
+            body = join(split(body,'\213'),'&lt;')
+            body = join(split(body,'\233'),'&gt;')
+
         l=len(body)
             
         if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
@@ -689,14 +709,6 @@ class HTTPResponse(BaseResponse):
 
         headers=self.headers
         body=self.body
-        if body:
-            isHTML=contHTML=self.isHTML(body)
-            if not headers.has_key('content-type'):
-                if isHTML:
-                    c='text/html'
-                else:
-                    c='text/plain'
-                self.setHeader('content-type',c)
 
         if not headers.has_key('content-length') and \
                 not headers.has_key('transfer-encoding'):
