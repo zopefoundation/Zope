@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.132 2001/04/03 15:25:14 brian Exp $"""
+$Id: ObjectManager.py,v 1.133 2001/04/09 19:31:27 andreas Exp $"""
 
-__version__='$Revision: 1.132 $'[11:-2]
+__version__='$Revision: 1.133 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -102,7 +102,7 @@ import marshal
 import App.Common
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
-import sys
+import sys,string,fnmatch,copy
 
 import XMLExportImport
 customImporters={
@@ -595,6 +595,32 @@ class ObjectManager(
             ob=ob.aq_parent
         
         files=self.objectItems()
+
+        # recursive ride through all subfolders (ls -R) (ajung)
+
+        if REQUEST.environ.get('FTP_RECURSIVE',0) == 1:
+
+            all_files = copy.copy(files)
+            for f in files:
+                if f[1].meta_type == "Folder":
+                    all_files.extend(findChilds(f[1]))
+                else:
+                    all_files.append(f)
+            
+            files = all_files
+
+        try:
+            files.sort()
+        except AttributeError:
+            files=list(files)
+            files.sort()
+
+        # Perform globbing on list of files (ajung)
+           
+        globbing = REQUEST.environ.get('GLOBBING','')
+        if globbing is not None:
+            files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g) , files)
+
         try:
             files.sort()
         except AttributeError:
@@ -649,5 +675,19 @@ class ObjectManager(
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
+
+def findChilds(obj,dirname=''):
+    """ recursive walk through the object hierarcy to
+    find all childs of an object (ajung)
+    """
+
+    lst =[]
+    for name,child in obj.objectItems():
+        if child.meta_type=="Folder":
+            lst.extend(findChilds(child,dirname+ obj.id + '/'))
+        else:
+            lst.append( (dirname + obj.id + "/" + name,child) )
+
+    return lst
 
 Globals.default__class_init__(ObjectManager)
