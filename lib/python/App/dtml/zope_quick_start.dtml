@@ -26,10 +26,9 @@
 	   )">
 
 <p>
-Welcome to <strong>Zope</strong> - a new generation of software that 
-we call a web application platform. Like web application servers, Zope
-provides very high performance and a strong framework for dynamic 
-applications. Here are some quick pointers to get you started:
+Welcome to <strong>Zope</strong>, a high-performance object-oriented 
+platform for building dynamic Web applications. Here are some quick 
+pointers to get you started:
 </p>
 
 <ul>
