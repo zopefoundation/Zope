@@ -1,5 +1,5 @@
-__rcs_id__='$Id: SendMailTag.py,v 1.1 1998/01/05 19:34:31 jeffrey Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.2 1998/01/27 17:27:31 jeffrey Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
 from MailHost import MailBase
 from DocumentTemplate.DT_Util import *
@@ -80,6 +80,7 @@ class SendMailTag:
 	has_key=args.has_key
 
 	if self.mailhost:
+	    mhost=md[self.mailhost]
 	    mhost.send(self.section(md.this, md), self.mailto, self.mailfrom,
 		       self.subject)
 	elif self.smtphost:
@@ -98,6 +99,9 @@ String.commands['sendmail']=SendMailTag
 #############################################################
 #
 # $Log: SendMailTag.py,v $
+# Revision 1.2  1998/01/27 17:27:31  jeffrey
+# fixed mailhost-getting bug
+#
 # Revision 1.1  1998/01/05 19:34:31  jeffrey
 # split out the SendMail tag machinery into new module
 #
