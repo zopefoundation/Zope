@@ -18,6 +18,9 @@ TransientObjectContainer - Change
        persist for.  Objects in the container are passively deleted, so
        they may not be deleted exactly after timeout_minutes elapses.
 
+       If you change the timeout value, all objects in the transient
+       container will be flushed.
+
      - *addNotification*
 
        The name of an object to receive notifications when objects are
