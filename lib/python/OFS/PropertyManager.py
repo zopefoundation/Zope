@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -319,8 +319,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         for prop in self._properties:
             name=prop['id']
             if REQUEST.has_key(name):
-                value=REQUEST.get(name)
-                self._setPropValue(name, value)
+                if 'w' in prop.get('mode', 'wd'):
+                    value=REQUEST.get(name)
+                    self._setPropValue(name, value)
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
