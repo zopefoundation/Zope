@@ -16,9 +16,7 @@ def manage_addZCatalog(id, title, vocab_id=None):
 
     Add a ZCatalog object.
 
-    'vocab_id' is the name of a Vocabulary object this catalog should
-    use.  A value of None will cause the Catalog to create its own
-    private vocabulary.
+    'vocab_id' -- this argument is deprecated and ignored.
 
     """
 
@@ -31,11 +29,10 @@ class ZCatalog:
     ZCatalog object
 
     A ZCatalog contains arbitrary index like references to Zope
-    objects.  ZCatalog's can index either 'Field' values of object,
-    'Text' values, or 'KeyWord' values:
+    objects.  ZCatalog's can index object attribute using a variety
+    of "plug-in" index types.
 
-    ZCatalogs have three types of
-    indexes:
+    Several index types are included, and others may be added.
 
       Text -- Text indexes index textual content.  The index can be
       used to search for objects containing certain words.
@@ -46,6 +43,20 @@ class ZCatalog:
       Keyword -- Keyword indexes index sequences of values.  The index
       can be used to search for objects that match one or more of the
       search terms.
+      
+      Path -- Path indexes index URI paths. They allow you to find objects
+      based on their placement in a hierarchy.
+      
+      Date -- Date indexes index date and type data. They are a type of field
+      index specifically optimized for indexing dates.
+
+      Date Range -- Date range indexes index time intervals. They are designed
+      for efficient searching of dates falling between two boundaries
+      (such as effective / expiration dates).
+      
+      Topic -- Topic indexes store prefiltered sets of documents. They are used
+      to optimize complex queries into a single fast query by prefiltering 
+      documents by an expression 
 
     The ZCatalog can maintain a table of extra data about cataloged
     objects.  This information can be used on search result pages to
