@@ -1,5 +1,22 @@
 Aqueduct SQL Methods Changes
 
+  AqueductSQLMethods 1.2
+
+    Bugs Fixed
+
+      - Source changes were lost when resizing the editing screen.
+
+      - When testing, on DAs that use new DA protocol, 
+        non-select SQL is reported as such.
+
+    Features Added
+
+      - Support for new Aqueduct DA protocol, providing much faster
+        retrievals.
+
+      - Edit screen size preferences are now distinct from Document
+        size preferences. 
+
   AqueductSQLMethods 1.1.5
 
     Features Added
