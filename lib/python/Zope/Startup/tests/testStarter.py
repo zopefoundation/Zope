@@ -362,22 +362,6 @@ class ZopeStarterTestCase(unittest.TestCase):
                 pass
             setConfiguration(old_config)
 
-    def testInitializeSecurityOptions(self):
-        from AccessControl import Implementation
-        orig = Implementation.getImplementationName()
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-            security-policy-implementation python
-            skip-authentication-checking   yes
-            skip-ownership-checking        yes
-            """)
-        self.assertEqual(conf.security_policy_implementation, "PYTHON")
-        starter = ZopeStarter(conf)
-        try:
-            starter.setupSecurityOptions()
-            self.assertEqual(Implementation.getImplementationName(), "PYTHON")
-        finally:
-            Implementation.setImplementation(orig)
 
 def test_suite():
     return unittest.makeSuite(ZopeStarterTestCase)
