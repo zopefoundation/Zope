@@ -54,14 +54,17 @@ class ZPTRegressions(unittest.TestCase):
         # no object is returned when REQUEST is passed.
         pt = self.app.pt1
         self.assertEqual(pt.document_src(), self.text)
+
         
- class DummyFileUpload:
+class DummyFileUpload:
+
     def __init__(self, data='', filename='', content_type=''):
         self.data = data
         self.filename = filename
         self.headers = {'content_type': content_type}
 
     def read(self):
+        return self.data
 
        
 def test_suite():
