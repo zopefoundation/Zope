@@ -18,8 +18,38 @@ $Id: ZCatalog.py 25050 2004-05-27 15:06:40Z chrisw $
 import time, sys
 from zLOG import LOG, INFO
 
+from Interface import Interface
+
+class IProgressHandler(Interface):
+    """ A handler to log progress informations for long running 
+        operations.
+    """
+
+    def init(ident, max):
+        """ Called add the start of the long running process.
+
+            'ident' -- a string identifying the operation
+            'max' -- maximum number of objects to be processed
+        """ 
+
+    def finish():
+        """ Called up terminiation """
+
+    def report(current, *args, **kw):
+        """ Called for every iteration.
+
+            'current' -- an integer representing the number of objects 
+                         processed so far.
+        """
+
+    def output(text):
+        """ Log 'text' to some output channel """        
+
+
 class StdoutHandler:
     """ A simple progress handler """
+
+    __implements__ = IProgressHandler
 
     def __init__(self, steps=100):
         self._steps = steps
@@ -29,10 +59,10 @@ class StdoutHandler:
         self._max = max
         self._start = time.time()
         self.fp = sys.stdout
-        self.output('started')
+        self.output('Process started')
 
     def finish(self):
-        self.output('terminated. Duration: %0.2f seconds' % \
+        self.output('Process terminated. Duration: %0.2f seconds' % \
                     (time.time() -self._start))
 
     def report(self, current, *args, **kw):
@@ -45,6 +75,8 @@ class StdoutHandler:
 
 class ZLogHandler(StdoutHandler):
     """ Use zLOG """
+
+    __implements__ = IProgressHandler
 
     def output(self, text):
         LOG(self._ident, INFO, text)
