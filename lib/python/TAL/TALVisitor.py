@@ -90,7 +90,6 @@ import string
 import re
 from xml.dom import Node
 from CopyingDOMVisitor import CopyingDOMVisitor
-from DOMVisitor import DOMVisitor
 
 ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
 ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
