@@ -54,7 +54,8 @@ in: Loops over sequences
 
     Current Item Variables
 
-      These variables describe the current item.
+      These variables describe the
+      current item.
 
         sequence-item -- The current item.
 
@@ -118,13 +119,13 @@ in: Loops over sequences
         count-1 degrees of freedom. 
 
         variance-n-*variable* -- The variance of an item variable with
-        count degrees of freedom. 
+        n degrees of freedom. 
 
         standard-deviation-*variable* -- The standard-deviation of an
         item variable with count-1 degrees of freedom.
 
         standard-deviation-n-*variable* -- The standard-deviation of
-        an item variable with count degrees of freedom.
+        an item variable with n degrees of freedom.
 
     Grouping Variables
 
@@ -146,7 +147,7 @@ in: Loops over sequences
       sequence-step-size -- The batch size.
 
       previous-sequence -- True if the current batch is not the
-      first one. Note, this variable is only true the first loop
+      first one. Note, this variable is only true for the first loop
       iteration. 
 
       previous-sequence-start-index -- The starting index of the

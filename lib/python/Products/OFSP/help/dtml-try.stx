@@ -18,12 +18,12 @@ try: Handles exceptions
 
     The 'try' tag encloses a block in which exceptions can be caught and
     handled. There can be one or more 'except' tags that handles
-    zero or more exceptions. If a 'except' tag does not specify an
+    zero or more exceptions. If an 'except' tag does not specify an
     exception, then it handles all exceptions.
 
     When an exception is raised, control jumps to the first 'except'
     tag that handles the exception. If there is no 'except' tag to
-    handled the exception, then the exception is raised normally.
+    handle the exception, then the exception is raised normally.
 
     If no exception is raised, and there is an 'else' tag, then the
     'else' tag will be executed after the body of the 'try' tag.

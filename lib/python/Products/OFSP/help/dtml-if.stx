@@ -23,8 +23,8 @@ if: Tests Conditions
 
     If the initial condition is false, each 'elif' condition is tested
     in turn. If any 'elif' condition is true, its block is
-    executed. Finally the optional 'else' condition is tested. If it
-    is true, the 'else' block is executed. Only one block will be
+    executed. Finally the optional 'else' block is executed if none of
+    the 'if' and 'elif' conditions were true. Only one block will be
     executed.
 
   Examples

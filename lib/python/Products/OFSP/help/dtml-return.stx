@@ -11,8 +11,7 @@ return: Returns data
 
     Stops execution of DTML and returns a variable or expression. The
     DTML output is not returned. Usually a return expression is more
-    useful than a return variable. Python Methods largely obsolete
-    this tag.
+    useful than a return variable. Scripts largely obsolete this tag.
 
   Examples
 

@@ -102,7 +102,7 @@ tree: Inserts a tree widget
 
   Examples
 
-    Display a rooted in the current object::
+    Display a tree rooted in the current object::
 
       <dtml-tree>
         <dtml-var title_or_id>

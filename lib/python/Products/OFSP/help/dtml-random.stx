@@ -1,6 +1,6 @@
-whrandom: DTML Pseudo-Random Number Functions
+random: DTML Pseudo-Random Number Functions
 
-  The 'whrandom' module provides pseudo-random number functions. With
+  The 'random' module provides pseudo-random number functions. With
   it, you can generate random numbers and select random elements from
   sequences. This module is a standard Python module.
 
@@ -22,7 +22,7 @@ whrandom: DTML Pseudo-Random Number Functions
 
   See Also
 
-    "Python 'whrandom' module":http://www.python.org/doc/current/lib/module-whrandom.html
+    "Python 'random' module":http://www.python.org/doc/current/lib/module-whrandom.html
 
 
 

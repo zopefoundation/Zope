@@ -46,7 +46,8 @@ functions: DTML Functions
     returned if provided, otherwise 'AttributeError' is raised.
 
     getitem(variable, render=0) -- Returns the value of a DTML variable.
-    If 'render' is true, the variable is rendered.
+    If 'render' is true, the variable is rendered. See the 'render'
+    function.
 
     hasattr(object, string) -- The arguments are an object and a
     string. The result is 1 if the string is the name of one of the
@@ -138,13 +139,13 @@ functions: DTML Functions
     equally close, rounding is done away from 0 (so e.g. round(0.5) is 1.0
     and round(-0.5) is -1.0).
 
-    render(object) -- Render 'object'.  For DTML objects this renders
-    (calls) the DTML.  For other objects, this is equivalent to
-    'str(object)'.
+    render(object) -- Render 'object'.  For DTML objects this
+    evaluates the DTML code with the current namespace.  For other
+    objects, this is equivalent to 'str(object)'.
 
     reorder(s [,with] [,without]) -- Reorder the items in s according
-      to the order given in with and with items mentioned in without
-      removed.  Items from s not mentioned in with are removed.  s,
+      to the order given in 'with' and without the items mentioned in
+      'without'.  Items from s not mentioned in with are removed.  s,
       with, and without are all either sequences of strings or
       sequences of key-value tuples, with ordering done on the
       keys. This function is useful for constructing ordered select
@@ -199,7 +200,7 @@ functions: DTML Functions
 
     "'string' module":dtml-string.stx
 
-    "'whrandom' module":dtml-whrandom.stx
+    "'random' module":dtml-random.stx
 
     "'math' module":dtml-math.stx
 

@@ -105,12 +105,12 @@ var: Inserts a variable
 
       <dtml-var standard_html_header>
 
-    Truncation. Suppose *colors* is the string 'red yellow green',
-    then::
+    Truncation::
 
       <dtml-var colors size=10 etc=", etc.">
 
-    will produce the output::
+    will produce the following output if *colors* is the string 'red
+    yellow green'::
 
       red yellow, etc.
 
@@ -127,13 +127,15 @@ var: Inserts a variable
 
       <a href="&dtml-link;">Link</a>
 
-    Inserting a variable using entity syntax with attributes::
+    Inserting a link to a document 'doc', using entity syntax with
+    attributes::
 
       <a href="&dtml.url-doc;"><dtml-var doc fmt="title_or_id"></a>
 
     This creates an HTML link to an object using its URL and
     title. This example calls the object's 'absolute_url' method for
-    the URL and its 'title_or_id' method for the title.
+    the URL (using the 'url' attribute) and its 'title_or_id' method
+    for the title.
 
 
 
