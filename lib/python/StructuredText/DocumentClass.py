@@ -246,7 +246,6 @@ class StructuredTextColumn(ST.StructuredTextParagraph):
     """
     
     def __init__(self,text,span,kw):
-        # print "StructuredTextColumn", text, span
         apply(ST.StructuredTextParagraph.__init__,(self,text,[]),kw)
         self._span = span
     
@@ -309,7 +308,6 @@ class DocumentClass:
     instance with a strong instance stored in its string
     """
     
-    #'doc_table',
     paragraph_types  = [
         'doc_bullet',
         'doc_numbered',
@@ -322,6 +320,7 @@ class DocumentClass:
     #'doc_named_link',
     #'doc_underline',
     text_types = [
+        'doc_sgml',
         'doc_href',
         'doc_strong',
         'doc_emphasize',
@@ -425,7 +424,6 @@ class DocumentClass:
                            st=type('')):
        result=[]
        for paragraph in raw_paragraphs:
-          #print type(paragraph)
           if paragraph.getNodeName() != 'StructuredTextParagraph':
              result.append(paragraph)
              continue
@@ -453,7 +451,6 @@ class DocumentClass:
           for paragraph in new_paragraphs:
              
              if paragraph.getNodeName() is "StructuredTextTable":
-                #print "we have a table"
                 cells = paragraph.getColumns()
                 text = paragraph.getColorizableTexts()
                 text = map(ST.StructuredText,text)
@@ -479,58 +476,100 @@ class DocumentClass:
         if not (m):
             return None
         rows = []
-                                                                
-        rows = split(text,'\n')        
-        
+                
         spans   = []
         ROWS    = []
         COLS    = []
-    
-        TDdivider = re.compile("[\-]+").match
-        THdivider = re.compile("[\=]+").match
-    
-        # find where the column markers are located
-        col = re.compile('\|').search
+        indexes = []
+        ignore  = []
+        
+        TDdivider   = re.compile("[\-]+").match
+        THdivider   = re.compile("[\=]+").match
+        col         = re.compile('\|').search
+        innertable  = re.compile('\|([-]+|[=]+)\|').search
+        
         text = strip(text)
         rows = split(text,'\n')
+        foo  = ""
+        
         for row in range(len(rows)):
             rows[row] = strip(rows[row])
-    
-        for row in rows:
-            tmp = strip(row)
-            tmp = row[1:len(tmp)-1] # remove leading and trailing |
-            offset = 0
+        
+        # have indexes store if a row is a divider
+        # or a cell part
+        for index in range(len(rows)):
+            tmpstr = rows[index][1:len(rows[index])-1]
+            if TDdivider(tmpstr) or THdivider(tmpstr):
+                indexes.append("divider")
+            else:
+                indexes.append("cell")
+
+        for index in range(len(indexes)):
+            if indexes[index] is "divider":
+                ignore = [] # reset ignore
+                #continue    # skip dividers
+
+            tmp     = strip(rows[index])    # clean the row up
+            tmp     = tmp[1:len(tmp)-1]     # remove leading + trailing |
+            offset  = 0
+
+            # find the start and end of inner
+            # tables. ignore everything between
+            if innertable(tmp):
+                tmpstr = strip(tmp)
+                while innertable(tmpstr):
+                    start,end   = innertable(tmpstr).span()
+                    if not (start,end-1) in ignore:
+                        ignore.append(start,end-1)
+                    tmpstr = " " + tmpstr[end:]
+
+            # find the location of column dividers
+            # NOTE: |'s in inner tables do not count
+            #   as column dividers
             if col(tmp):
                 while col(tmp):
-                    start,end = col(tmp).span()
+                    bar         = 1   # true if start is not in ignore
+                    start,end   = col(tmp).span()
+
                     if not start+offset in spans:
-                        spans.append(start + offset)
-                    COLS.append((tmp[0:start],start+offset))
-                    tmp = " " + tmp[end:]
-                    offset = offset + (start)
+                        for s,e in ignore:
+                            if start+offset >= s or start+offset <= e:
+                                bar = None
+                                break
+                        if bar:   # start is clean
+                            spans.append(start+offset)
+                    if not bar:
+                        foo = foo + tmp[:end]
+                        tmp = tmp[end:]
+                        offset = offset + end
+                    else:
+                        COLS.append((foo + tmp[0:start],start+offset))
+                        foo = ""
+                        tmp = " " + tmp[end:]
+                        offset = offset + start
             if not offset+len(tmp) in spans:
                 spans.append(offset+len(tmp))
-            COLS.append((tmp,offset+len(tmp)))
+            COLS.append((foo + tmp,offset+len(tmp)))
+            foo = ""
             ROWS.append(COLS)
             COLS = []
-    
+
         spans.sort()
-    
-        ROWS = ROWS[1:len(ROWS)]        
-        
+        ROWS = ROWS[1:len(ROWS)]
+
         # find each column span
         cols    = []
         tmp     = []
-    
+
         for row in ROWS:
             for c in row:
                 tmp.append(c[1])
             cols.append(tmp)
             tmp = []
-    
-        cur = 1     # the current column span
-        tmp = []    
-        C   = []    # holds the span of each cell
+
+        cur = 1
+        tmp = []
+        C   = []
         for col in cols:
             for span in spans:
                 if not span in col:
@@ -540,15 +579,14 @@ class DocumentClass:
                     cur = 1
             C.append(tmp)
             tmp = []
-        
-        # make rows contain the cell's text and the span
-        # of that cell
+
         for index in range(len(C)):
             for i in range(len(C[index])):
                 ROWS[index][i] = (ROWS[index][i][0],C[index][i])
         rows = ROWS
-        
-        # now munge the table cells together
+
+        # now munge the multi-line cells together
+        # as paragraphs
         ROWS    = []
         COLS    = []
         for row in rows:
@@ -561,8 +599,9 @@ class DocumentClass:
                     ROWS.append(COLS)
                     COLS = []
                 else:
-                    COLS[index][0] = COLS[index][0] + rstrip(row[index][0]) + "\n"
+                    COLS[index][0] = COLS[index][0] + strip(row[index][0]) + "\n"
                     COLS[index][1] = row[index][1]
+        
         return StructuredTextTable(ROWS,text,subs,indent=paragraph.indent)
             
     def doc_bullet(self, paragraph, expr = re.compile('\s*[-*o]\s+').match):
@@ -766,7 +805,7 @@ class DocumentClass:
         else:
             return None
     
-    def doc_sgml(self,s,expr=re.compile("\<[a-zA-Z0-9\.\=\'\"\:\/\-\#\+\s]+\>").search):
+    def doc_sgml(self,s,expr=re.compile("\<[a-zA-Z0-9\.\=\'\"\:\/\-\#\+\s\*]+\>").search):
         """
         SGML text is ignored and outputed as-is
         """
