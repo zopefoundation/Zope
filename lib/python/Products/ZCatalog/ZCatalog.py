@@ -787,8 +787,6 @@ class ZCatalog(Folder, Persistent, Implicit):
         from Products.PluginIndexes.KeywordIndex import KeywordIndex 
         from Products.PluginIndexes.FieldIndex import FieldIndex
         from Products.PluginIndexes.TextIndex import TextIndex
-        from Acquisition import aq_base
-        import copy
 
         converted = []
         for id in ids:
