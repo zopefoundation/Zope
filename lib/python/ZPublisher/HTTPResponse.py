@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.70 2002/09/24 22:13:26 jeremy Exp $'''
-__version__ = '$Revision: 1.70 $'[11:-2]
+$Id: HTTPResponse.py,v 1.71 2002/12/17 00:38:17 andym Exp $'''
+__version__ = '$Revision: 1.71 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -423,10 +423,13 @@ class HTTPResponse(BaseResponse):
         return body.encode('latin1','replace')
 
     def setBase(self,base):
-        'Set the base URL for the returned document.'
-        if not base.endswith('/'):
+        """Set the base URL for the returned document.
+        If base is None, or the document already has a base, do nothing."""
+        if base is None:
+            base = ''
+        elif not base.endswith('/'):          
             base = base+'/'
-        self.base = base
+        self.base = base            
 
     def insertBase(self,
                    base_re_search=re.compile('(<base.*?>)',re.I).search
