@@ -7,7 +7,7 @@ sendmail: Sends email with SMTP
 
     'sendmail' tag syntax::
 
-      <dtml sendmail>
+      <dtml-sendmail>
       </dtml-sendmail>
 
     The 'sendmail' tag is a block tag. It either requires a 'mailhost'
