@@ -44,6 +44,9 @@ class EventCollector(HTMLParser.HTMLParser):
 
     # all other markup
 
+    def handle_comment(self, data):
+        self.append(("comment", data))
+
     def handle_charref(self, data):
         self.append(("charref", data))
 
@@ -97,8 +100,12 @@ class HTMLParserTestCase(unittest.TestCase):
         self._run_check("""
 <!DOCTYPE html PUBLIC 'foo'>
 <html>&entity;&#32;
+<!--comment1a
+-></foo><bar>&lt;<?pi?></foo<bar
+comment1b-->
 <img src='bar' ismap>sample
 text
+<!--comment2a-- --comment2b-->
 </html>
 """, [
     ("data", "\n"),
@@ -108,8 +115,12 @@ text
     ("entityref", "entity"),
     ("charref", "32"),
     ("data", "\n"),
+    ("comment", "comment1a\n-></foo><bar>&lt;<?pi?></foo<bar\ncomment1b"),
+    ("data", "\n"),
     ("starttag", "img", [("src", "bar"), ("ismap", "ismap")]),
     ("data", "sample\ntext\n"),
+    ("comment", "comment2a-- --comment2b"),
+    ("data", "\n"),
     ("endtag", "html"),
     ("data", "\n"),
     ])
@@ -142,7 +153,6 @@ text
             ])
 
     def check_attr_entity_replacement(self):
-        # we expect entities *not* to be replaced by HTLMParser!
         self._run_check("""<a b='&amp;&gt;&lt;&quot;&apos;'>""", [
             ("starttag", "a", [("b", "&><\"'")]),
             ])
