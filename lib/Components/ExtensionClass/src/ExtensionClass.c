@@ -21,7 +21,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.56 2002/06/18 23:19:02 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.57 2002/08/22 16:55:53 shane Exp $\n"
 ;
 
 #include <stdio.h>
@@ -826,7 +826,15 @@ PMethod_repr(PMethod *self)
     char *func_name, buf[8192];
     int n;
 
-    func_name = PyString_AS_STRING(((PyFunctionObject*)self->meth)->func_name);
+    if (PyFunction_Check(self->meth)) {
+	func_name = PyString_AS_STRING(
+		((PyFunctionObject*)self->meth)->func_name);
+    }
+    else {
+	/* self->meth is some other kind of object */
+	func_name = "(?)";
+    }
+    
     if (self->self) {
 	PyObject *repr = PyObject_Repr(self->self);
 	if (!repr)
