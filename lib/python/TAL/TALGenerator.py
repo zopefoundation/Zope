@@ -646,7 +646,8 @@ class TALGenerator:
             self.pushProgram()
         if attrsubst or i18nattrs:
             if attrsubst:
-                repldict = TALDefs.parseAttributeReplacements(attrsubst)
+                repldict = TALDefs.parseAttributeReplacements(attrsubst,
+                                                              self.xml)
             else:
                 repldict = {}
             if i18nattrs:
