@@ -200,8 +200,9 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
 
     meta_type = 'ZCTextIndex Lexicon'
 
-    manage_options = ({'label':'Overview', 'action':'manage_main'},) + \
-                     SimpleItem.manage_options
+    manage_options = ({'label':'Overview', 'action':'manage_main'},
+                      {'label':'Query', 'action':'queryLexicon'},
+                     ) + SimpleItem.manage_options
 
     def __init__(self, id, title='', *pipeline):
         self.id = str(id)
@@ -213,7 +214,50 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     def getPipelineNames(self):
         """Return list of names of pipeline element classes"""
         return [element.__class__.__name__ for element in self._pipeline]
-
+    
+    _queryLexicon = DTMLFile('dtml/queryLexicon', globals())
+    
+    def queryLexicon(self, REQUEST, words=None, page=0, rows=20, cols=4):
+        """Lexicon browser/query user interface
+        """
+        if words:
+            wids = []
+            for word in words:
+                wids.extend(self.globToWordIds(word))
+            words = [self.get_word(wid) for wid in wids]
+        else:
+            words = self.words()
+                    
+        word_count = len(words)
+        rows = max(min(rows, 500),1)
+        cols = max(min(cols, 12), 1)
+        page_count = word_count / (rows * cols) + \
+                     (word_count % (rows * cols) > 0)
+        page = max(min(page, page_count - 1), 0)
+        start = rows * cols * page
+        end = min(rows * cols * (page + 1), word_count)
+        
+        if word_count:
+            words = list(words[start:end])
+        else:
+            words = []
+            
+        columns = []
+        i = 0
+        while i < len(words):
+            columns.append(words[i:i + rows])
+            i += rows
+        
+        return self._queryLexicon(self, REQUEST,
+                                  page=page,
+                                  rows=rows,
+                                  cols=cols,
+                                  start_word=start+1,
+                                  end_word=end,
+                                  word_count=word_count,
+                                  page_count=page_count,
+                                  page_columns=columns)
+        
     manage_main = DTMLFile('dtml/manageLexicon', globals())
 
 InitializeClass(PLexicon)

@@ -25,14 +25,13 @@ ZCTextIndex Lexicon - Add: Create a new ZCTextIndex Lexicon
               tags. The HTML aware splitter gives best results when all of
               the incoming content to index is HTML.
 
-            - **Stop Words** To conserve space in the vocabulary, and possibly increase
-              performance, you can select a stop word remover which subtracts
-              very common or single letter words from the Lexicon. Bear in
-              mind that you will not be able to search on removed stop words,
-              and they will also be removed from queries passed to search
-              ZCTextIndexes using the Lexicon.
+            - **Stop Words** To conserve space in the vocabulary, and possibly
+              increase performance, you can select a stop word remover which
+              subtracts very common or single letter words from the Lexicon.
+              Bear in mind that you will not be able to search on removed stop
+              words, and they will also be removed from queries passed to
+              search ZCTextIndexes using the Lexicon.
 
-            - **Case Normalizer** The case normalizer removes case information from the words in
-              the  Lexicon. If case-sensitive searching is desires, then omit
-              this element from the pipeline.
-S
+            - **Case Normalizer** The case normalizer removes case information
+              from the words in the  Lexicon. If case-sensitive searching is
+              desires, then omit this element from the pipeline.

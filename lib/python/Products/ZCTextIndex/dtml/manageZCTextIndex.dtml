@@ -2,8 +2,12 @@
 <dtml-var manage_tabs>
 
 <p class="form-help">
-
-  There is nothing to manage here. Move along.
-
+  The ZCTextIndex Lexicon in use by this index is: 
+  <em><dtml-var expr="lexicon.getId()"></em>
+</p>
+<p class="form-help">
+  <em>Note:</em> You cannot change the lexicon assigned to a ZCTextIndex.
+  To use another lexicon, delete this index and create a new one that
+  uses the desired lexicon.
 </p>
 <dtml-var manage_page_footer>

@@ -10,12 +10,12 @@
   <span class="form-label">Input Pipeline Stages</span>
 </p>
 
-<p>
+<p class="form-help">
   Text indexed through this lexicon is processed by the following pipeline 
   stages
 </p>
 
-<ol>
+<ol class="form-help">
   <dtml-in name="getPipelineNames">
     <li>&dtml-sequence-item;</li>
   </dtml-in>
