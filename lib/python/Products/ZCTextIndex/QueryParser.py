@@ -27,17 +27,19 @@ The key words (AND, OR, NOT) are recognized in any mixture of case.
 An ATOM is either:
 
 + A sequence of characters not containing whitespace or parentheses or
-  double quotes, and not equal to one of the key words 'AND', 'OR', 'NOT'; or
+  double quotes, and not equal (ignoring case) to one of the key words
+  'AND', 'OR', 'NOT'; or
 
-+ A non-empty string enclosed in double quotes.  The interior of the string
-  can contain whitespace, parentheses and key words.
++ A non-empty string enclosed in double quotes.  The interior of the
+  string can contain whitespace, parentheses and key words, but not
+  quotes.
 
-In addition, an ATOM may optionally be preceded by a hyphen, meaning
-that it must not be present.
++ A hyphen followed by one of the two forms above, meaning that it
+  must not be present.
 
-An unquoted ATOM may also end in a star.  This is a primitive
-"globbing" function, meaning to search for any word with a given
-prefix.
+An unquoted ATOM may also contain globbing characters.  Globbing
+syntax is defined by the lexicon; for example "foo*" could mean any
+word starting with "foo".
 
 When multiple consecutive ATOMs are found at the leaf level, they are
 connected by an implied AND operator, and an unquoted leading hyphen
@@ -202,32 +204,37 @@ class QueryParser:
             tree = self._parseOrExpr()
             self._require(_RPAREN)
         else:
-            atoms = [self._get(_ATOM)]
-            while self._peek(_ATOM):
-                atoms.append(self._get(_ATOM))
             nodes = []
-            nots = []
-            for a in atoms:
-                words = self._lexicon.parseTerms(a)
-                if not words:
-                    self._ignored.append(a)
-                    continue # Only stopwords
-                if len(words) > 1:
-                    n = ParseTree.PhraseNode(" ".join(words))
-                elif self._lexicon.isGlob(words[0]):
-                    n = ParseTree.GlobNode(words[0])
-                else:
-                    n = ParseTree.AtomNode(words[0])
-                if a[0] == "-":
-                    n = ParseTree.NotNode(n)
-                    nots.append(n)
-                else:
-                    nodes.append(n)
+            nodes = [self._parseAtom()]
+            while self._peek(_ATOM):
+                nodes.append(self._parseAtom())
+            nodes = filter(None, nodes)
             if not nodes:
-                return None # Only stowords
-            nodes.extend(nots)
+                return None # Only stopwords
+            structure = [(isinstance(nodes[i], ParseTree.NotNode), i, nodes[i])
+                         for i in range(len(nodes))]
+            structure.sort()
+            nodes = [node for (bit, index, node) in structure]
+            if isinstance(nodes[0], ParseTree.NotNode):
+                raise ParseTree.ParseError(
+                    "a term must have at least one positive word")
             if len(nodes) == 1:
-                tree = nodes[0]
-            else:
-                tree = ParseTree.AndNode(nodes)
+                return nodes[0]
+            tree = ParseTree.AndNode(nodes)
+        return tree
+
+    def _parseAtom(self):
+        term = self._get(_ATOM)
+        words = self._lexicon.parseTerms(term)
+        if not words:
+            self._ignored.append(term)
+            return None
+        if len(words) > 1:
+            tree = ParseTree.PhraseNode(words)
+        elif self._lexicon.isGlob(words[0]):
+            tree = ParseTree.GlobNode(words[0])
+        else:
+            tree = ParseTree.AtomNode(words[0])
+        if term[0] == "-":
+            tree = ParseTree.NotNode(tree)
         return tree

@@ -454,7 +454,7 @@ class QueryTestsBase(testQueryEngine.TestQueryEngine,
                                StopWordRemover())
         caller = LexiconHolder(self.lexicon)
         self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
-        self.p = self.parser = QueryParser(self.lexicon)
+        self.parser = QueryParser(self.lexicon)
         self.index = self.zc_index.index
         self.add_docs()
 
