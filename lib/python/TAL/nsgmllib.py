@@ -174,7 +174,7 @@ class SGMLParser:
                     name = match.group(1)
                     self.handle_charref(name)
                     k = match.end(0)
-                    if rawdata[i-1] != ';':
+                    if rawdata[k-1] != ';':
                         k = k-1
                     i = self.updatepos(i, k)
                     continue
@@ -183,7 +183,7 @@ class SGMLParser:
                     name = match.group(1)
                     self.handle_entityref(name)
                     k = match.end(0)
-                    if rawdata[i-1] != ';':
+                    if rawdata[k-1] != ';':
                         k = k-1
                     i = self.updatepos(i, k)
                     continue
