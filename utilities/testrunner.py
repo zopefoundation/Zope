@@ -109,6 +109,9 @@ class TestRunner:
             Return a list of the names to be traversed to build tests.
         """
         names = os.listdir(pathname)
+        if "build" in names:
+            # Don't recurse into build directories created by setup.py
+            names.remove("build")
         if '.testinfo' in names:  # allow local control
             f = open( os.path.join( pathname, '.testinfo' ) )
             lines = filter( None, f.readlines() )
