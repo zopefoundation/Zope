@@ -110,8 +110,17 @@ class FS:
             self.tpc_finish()
             return
         if newtrans:
-            if not first: self.tpc_finish()
-            self.tpc_begin(tname, user, t)
+            try: string.atof(tname)
+            except:
+                # Ugh, we have a weird tname.  We'll just ignore the transaction
+                # boundary and merge transactions
+                if first:
+                    # But we can't ignore the first one, so we'll hack in a
+                    # bogus start date
+                    self.tpc_begin('100', user, t)
+            else:
+                if not first: self.tpc_finish()
+                self.tpc_begin(tname, user, t)
         self.store(oid, p)
 
     def store(self, oid, data):
@@ -211,11 +220,15 @@ def cp(f1, f2, l):
 class Ghost: pass
 
 class Global:
-
+    __safe_for_unpickling__=1
+    
     def __init__(self, m, n):
         self._module, self._name = m, n
+
     def __call__(self, *args):
         return Inst(self, args)
+
+    __basicnew__=__call__
 
 def _global(m, n):
     if m[:8]=='BoboPOS.':
