@@ -2,8 +2,8 @@
    <!--#if sequence-start-->
 
       <!--#if previous-sequence-->
-        <a href="<!--#var URL-->/<!--#var sequence-query
-                 -->&query_start=<!--#var
+        <a href="<!--#var URL--><!--#var sequence-query
+                 -->query_start=<!--#var
                  previous-sequence-start-number-->">
         (Previous <!--#var previous-sequence-size--> results)
         </a>
@@ -19,8 +19,8 @@
    <!--#if sequence-end-->
       %(else no_table)[</table>%(else)]
       <!--#if next-sequence-->
-         <a href="<!--#var URL-->/<!--#var sequence-query
-            -->&query_start=<!--#var
+         <a href="<!--#var URL--><!--#var sequence-query
+            -->query_start=<!--#var
             next-sequence-start-number-->">
          (Next <!--#var next-sequence-size--> results)
          </a>
