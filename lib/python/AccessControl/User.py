@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -135,6 +135,9 @@ class UserFolder(Persistent, Item, Implicit, Management):
 	return self.validRoles()
 
     def validate(self,request,auth,roles=None):
+	if auth is None:
+	    # Handle "anonymous" users:
+	    return None
 	if lower(auth[:6])!='basic ':
 	    return None
 	[name,password]=split(decodestring(split(auth)[-1]), ':')
@@ -268,6 +271,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.26  1997/12/31 13:34:34  jim
+# Added (incomplete) code to handle "anonymous" users.
+#
 # Revision 1.25  1997/12/23 21:09:45  jim
 # Made REQUEST argument to addUserFolder optional.
 #
