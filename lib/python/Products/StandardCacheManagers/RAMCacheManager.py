@@ -268,9 +268,8 @@ class RAMCache (Cache):
             priorities = counters.items()
             # Remove the least accessed entries until we've reached
             # our target count.
-            if len(priortities) > 0:
+            if len(priorities) > 0:
                 priorities.sort()
-                priorities.reverse()
                 access_count = 0
                 for access_count, effect in priorities:
                     new_count = new_count - effect
