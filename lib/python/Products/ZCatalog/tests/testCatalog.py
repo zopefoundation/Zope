@@ -373,20 +373,20 @@ class TestCatalogObject(unittest.TestCase):
             self.assertEqual(a[x].data_record_score_, 1)
 
     def testKeywordIndexWithMinRange(self):
-        a = self._catalog(att3='att', att3_usage='range:min')
+        a = self._catalog(att3={'query': 'att', 'range': 'min'})
         self.assertEqual(len(a), self.upper)
 
     def testKeywordIndexWithMaxRange(self):
-        a = self._catalog(att3='att35', att3_usage='range:max')
+        a = self._catalog(att3={'query': 'att35', 'range': ':max'})
         self.assertEqual(len(a), self.upper)
 
     def testKeywordIndexWithMinMaxRangeCorrectSyntax(self):
-        a = self._catalog(att3=['att', 'att35'], att3_usage='range:min:max')
+        a = self._catalog(att3={'query': ['att', 'att35'], 'range': 'min:max'})
         self.assertEqual(len(a), self.upper)
 
     def testKeywordIndexWithMinMaxRangeWrongSyntax(self):
         # checkKeywordIndex with min/max range wrong syntax.
-        a = self._catalog(att3=['att'], att3_usage='range:min:max')
+        a = self._catalog(att3={'query': ['att'], 'range': 'min:max'})
         self.assert_(len(a) != self.upper)
 
     def testCombinedTextandKeywordQuery(self):
@@ -463,13 +463,11 @@ class testRS(unittest.TestCase):
 
     def testRangeSearch(self):
         for i in range(10000):
-
             m = random.randrange(0,20000)
             n = m + 1000
 
             for r  in self._catalog.searchResults(
-                { "number" : (m,n) ,
-                  "length_usage" : "range:min:max" } ):
+                 number= {'query': (m,n) , 'range' : 'min:max' } ):
                 size = r.number
                 self.assert_(m<=size and size<=n,
                              "%d vs [%d,%d]" % (r.number,m,n))
