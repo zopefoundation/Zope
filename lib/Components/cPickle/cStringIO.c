@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.5 1996/10/11 21:03:42 jim Exp $
+  $Id: cStringIO.c,v 1.6 1996/10/15 18:42:07 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.6  1996/10/15 18:42:07  jim
+  Added lots of casts to make warnings go away.
+
   Revision 1.5  1996/10/11 21:03:42  jim
   *** empty log message ***
 
@@ -245,10 +248,10 @@ O_readline(self, args)
        n < s && *n != '\n'; n++);
   if (n < s) n++;
  
-  s = PyString_FromStringAndSize(self->buf + self->pos, 
+  r = PyString_FromStringAndSize(self->buf + self->pos, 
       n - self->buf - self->pos);
   self->pos = n - self->buf;
-  return s;
+  return r;
 }
 
 
@@ -301,7 +304,7 @@ O_write(self, args)
     }
 
   Py_INCREF(self);
-  return self;
+  return (PyObject *)self;
 }
 
 static PyObject *
@@ -489,7 +492,7 @@ static PyTypeObject Otype = {
 	0,		/*tp_as_sequence*/
 	0,		/*tp_as_mapping*/
 	(hashfunc)0,		/*tp_hash*/
-	(binaryfunc)0,		/*tp_call*/
+	(ternaryfunc)0,		/*tp_call*/
 	(reprfunc)0,		/*tp_str*/
 
 	/* Space for future expansion */
@@ -515,15 +518,15 @@ I_close(self, args)
 }
 
 static struct PyMethodDef I_methods[] = {
-  {"read",	O_read,         1,      O_read__doc__},
-  {"readline",	O_readline,	0,	O_readline__doc__},
-  {"reset",	O_reset,	0,	O_reset__doc__},
-  {"seek",      O_seek,         1,      O_seek__doc__},  
-  {"tell",      O_tell,         0,      O_tell__doc__},
-  {"truncate",  O_truncate,     0,      O_truncate__doc__},
-  {"isatty",    O_isatty,       0,      O_isatty__doc__},
-  {"close",     I_close,        0,      O_close__doc__},
-  {"flush",     O_flush,        0,      O_flush__doc__},
+  {"read",	(PyCFunction)O_read,         1,      O_read__doc__},
+  {"readline",	(PyCFunction)O_readline,	0,	O_readline__doc__},
+  {"reset",	(PyCFunction)O_reset,	0,	O_reset__doc__},
+  {"seek",      (PyCFunction)O_seek,         1,      O_seek__doc__},  
+  {"tell",      (PyCFunction)O_tell,         0,      O_tell__doc__},
+  {"truncate",  (PyCFunction)O_truncate,     0,      O_truncate__doc__},
+  {"isatty",    (PyCFunction)O_isatty,       0,      O_isatty__doc__},
+  {"close",     (PyCFunction)I_close,        0,      O_close__doc__},
+  {"flush",     (PyCFunction)O_flush,        0,      O_flush__doc__},
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -588,7 +591,7 @@ static PyTypeObject Itype = {
 	0,		/*tp_as_sequence*/
 	0,		/*tp_as_mapping*/
 	(hashfunc)0,		/*tp_hash*/
-	(binaryfunc)0,		/*tp_call*/
+	(ternaryfunc)0,		/*tp_call*/
 	(reprfunc)0,		/*tp_str*/
 
 	/* Space for future expansion */
@@ -612,14 +615,14 @@ IO_StringIO(self, args)
   PyObject *s=0;
 
   UNLESS(PyArg_ParseTuple(args, "|O", &s)) return NULL;
-  if(s) return newIobject(s);
-  return newOobject(128);
+  if(s) return (PyObject *)newIobject(s);
+  return (PyObject *)newOobject(128);
 }
 
 /* List of methods defined in the module */
 
 static struct PyMethodDef IO_methods[] = {
-	{"StringIO",	IO_StringIO,	1,	IO_StringIO__doc__},
+	{"StringIO",	(PyCFunction)IO_StringIO,	1,	IO_StringIO__doc__},
 	{NULL,		NULL}		/* sentinel */
 };
 
