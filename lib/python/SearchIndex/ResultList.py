@@ -140,7 +140,7 @@ class ResultList:
         return self.__class__(result, self._words+x._words, self._index)
 
     def near(self, x):
-        result = IIBucket
+        result = IIBucket()
         dict = self._dict
         xdict = x._dict
         xhas = xdict.has_key
