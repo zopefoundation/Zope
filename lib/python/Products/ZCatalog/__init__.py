@@ -103,7 +103,7 @@ def initialize(context):
         permission='Add Vocabularies',
         constructors=(Vocabulary.manage_addVocabularyForm,
                       Vocabulary.manage_addVocabulary),
-        icon='www/ZCatalog.gif',
+        icon='www/Vocabulary.gif',
         )
     
     context.registerBaseClass(ZCatalog.ZCatalog)
