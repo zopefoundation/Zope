@@ -6,9 +6,9 @@ Language.  For TAL, see the Zope Presentation Templates ZWiki:
 
     http://dev.zope.org/Wikis/DevSite/Projects/ZPT/FrontPage
 
-It is not yet a Zope product nor is it intended to run inside of Zope,
-but you must have a Zope checkout to access the DOM implementation
-used.
+It is not a Zope product nor is it designed exclusively to run inside
+of Zope, but if you have a Zope checkout that includes
+Products/ParsedXML, its Expat parser will be used.
 
 Prerequisites
 -------------
@@ -16,11 +16,11 @@ Prerequisites
 You need:
 
 - A recent checkout of Zope2; don't forget to run the wo_pcgi.py
-  script to compile everything.
+  script to compile everything.  (See above -- this is now optional.)
 
 - A recent checkout of the Zope2 product ParsedXML, accessible
   throught <Zope2>/lib/python/Products/ParsedXML; don't forget to run
-  the setup.py script to compiles Expat.
+  the setup.py script to compiles Expat.  (Again, optional.)
 
 - Python 1.5.2; the driver script refuses to work with other versions
   unless you specify the -n option; this is done so that I don't
@@ -28,12 +28,12 @@ You need:
 
 - Edit the setpath.py script to set the proper module search path; the
   variable libPython should be set to the <Zope2>/lib/python directory
-  that you want to use.
+  that you want to use.  (Again, optional.)
 
 How To Play
 -----------
 
-(Don't forget to edit setpath.py, see above!)
+(If you want to use Zope, don't forget to edit setpath.py, see above!)
 
 The script driver.py takes an XML file with TAL markup as argument and
 writes the expanded version to standard output.  The filename argument
@@ -43,9 +43,9 @@ Regression test
 ---------------
 
 There are a number of test cases in the test subdirectory, named
-test/test<number>.xml.  The Python script ./runtest.py runs
-./driver.py for each test case, and should print "<file> OK" for each
-testcase.
+test/test<number>.xml and test/test<number>.html.  The Python script
+./runtest.py calls driver.main() for each test case, and should print
+"<file> OK" for each testcase.
 
 What's Here
 -----------
@@ -68,11 +68,28 @@ test/			drectory with test files and output
 Author and License
 ------------------
 
-This code is written by Guido van Rossum.  It is owned by Digital
-Creations and can be redistributed under the Zope Public License.
+This code is written by Guido van Rossum (project lead), Fred Drake,
+and Tim Peters.  It is owned by Digital Creations and can be
+redistributed under the Zope Public License.
 
 TO DO
 -----
 
+- Change tal:insert to tal:content (are there other approved changes
+  to TAL?)
+
+- HTMLTALParser should reject unknown TAL keywords.
+
+- Implement on-error, when it's approved.
+
 - Finish implementing insertStructure(): attribute replacement isn't
   implemented yet.
+
+- TALInterpreter currently always uses an XML parser to parse inserted
+  structure; it should use a parser appropriate to the mode.
+
+- Insert line number and offset information into generated code.
+
+- Should we preserve case of tags and attribute names in HTML?
+
+- Optimize more?
