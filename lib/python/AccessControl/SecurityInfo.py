@@ -87,9 +87,9 @@ class SecurityInfo(Acquisition.Implicit):
         self._setaccess(names, ACCESS_PRIVATE)
 
     declareProtected__roles__=ACCESS_PRIVATE
-    def declareProtected(self, permission_name, *names):
+    def declareProtected(self, permission_name, name, *names):
         """Declare names to be associated with a permission."""
-        self._setaccess(names, permission_name)
+        self._setaccess((name,) + names, permission_name)
 
     declareObjectPublic__roles__=ACCESS_PRIVATE
     def declareObjectPublic(self):
