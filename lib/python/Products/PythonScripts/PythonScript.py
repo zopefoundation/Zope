@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -359,6 +359,8 @@ class PythonScript(Script, Historical, Cacheable):
     manage_proxyForm = DTMLFile('www/pyScriptProxy', globals())
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
+        if not roles:
+            raise ValueError, 'You must select one or more proxy roles.'
         self._validateProxy(roles)
         self._validateProxy()
         self.ZCacheable_invalidate()

@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -346,6 +346,8 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
 
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
+        if not roles:
+            raise ValueError, 'You must select one or more proxy roles.'
         self._validateProxy(REQUEST, roles)
         self._validateProxy(REQUEST)
         self._proxy_roles=tuple(roles)
