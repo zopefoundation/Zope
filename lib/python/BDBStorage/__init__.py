@@ -82,7 +82,5 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-""" init file """
 
-__version__ ='$Revision: 1.3 $'[11:-2]
-
+__version__ = '1.0 beta 2'
