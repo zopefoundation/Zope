@@ -19,7 +19,7 @@ New Native Query Template
 <tr>    <td><strong>Arguments:</strong></td>
         <td><input name="arguments" size="40"></td></tr>
 <tr>    <td colspan=2><strong>Query template:</strong><br>
-            <textarea name="template" rows=10 cols=60>
+            <textarea name="template:text" rows=10 cols=60>
 select *
 from data
 </textarea></td></tr>
