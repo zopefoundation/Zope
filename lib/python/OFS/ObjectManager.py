@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.156 2002/08/01 16:00:39 mj Exp $"""
+$Id: ObjectManager.py,v 1.157 2002/08/14 19:59:18 mj Exp $"""
 
-__version__='$Revision: 1.156 $'[11:-2]
+__version__='$Revision: 1.157 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -412,10 +412,10 @@ class ObjectManager(
                     except: pass
                     
             if hasattr(obj,'aq_parent'):
-	        obj=obj.aq_parent
-		relativePhysicalPath = ('..',) + relativePhysicalPath
+                obj=obj.aq_parent
+                relativePhysicalPath = ('..',) + relativePhysicalPath
             else:
-	        return vals
+                return vals
             x=x+1
         return vals
 
