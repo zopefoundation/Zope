@@ -23,7 +23,6 @@
   <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
   </TD>
 </TR>
-<!--#var smallRolesWidget-->
 <TR>
 <TD></TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE="Edit"></TD>

@@ -14,8 +14,8 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.6 1997/12/19 17:06:20 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: DraftFolder.py,v 1.7 1997/12/31 17:17:04 brian Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import time, OFS.SimpleItem, AccessControl.Role
 import Persistence, Acquisition, Globals
@@ -63,8 +63,8 @@ class DraftFolder(Persistence.Persistent,
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Security',
-     'action':'manage_rolesForm',   'target':'manage_main'},
+    {'icon':'', 'label':'Security',
+     'action':'manage_access',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
     {'icon':'OFS/DraftFolderControl.gif', 'label':'Supervise',
@@ -211,6 +211,9 @@ class Supervisor(AccessControl.User.UserFolder, Session.Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.7  1997/12/31 17:17:04  brian
+# Security update
+#
 # Revision 1.6  1997/12/19 17:06:20  jim
 # moved Sessions and Daft folders here.
 #

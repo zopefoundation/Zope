@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Version.py,v 1.9 1997/12/19 17:06:20 jim Exp $'''
+$Id: Version.py,v 1.10 1997/12/31 17:17:04 brian Exp $'''
 
 import time, OFS.SimpleItem, AccessControl.Role
 import Persistence, Acquisition, Globals
@@ -20,20 +20,12 @@ from string import rfind
 
 _addForm=Globals.HTMLFile('sessionAdd', globals())
 def addForm(realself, self, REQUEST, **ignored):
-    return _addForm(self, REQUEST,
-		    selectedRoles=map(
-			lambda i:
-			('<OPTION VALUE="%s"%s>%s' %
-			 (i, i=='manage' and ' SELECTED' or '', i))
-			, self.validRoles()),
-		    aclEChecked=' CHECKED', aclAChecked='', aclPChecked=''
-		    )
+    return _addForm(self, REQUEST)
 
-def add(self, id, title, acl_type='A',acl_roles=[], REQUEST=None):
+def add(self, id, title, REQUEST=None):
     'Add a session'
     i=Session()
     i._init(id, title, REQUEST)
-    i._setRoles(acl_type,acl_roles)
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
 
@@ -56,12 +48,23 @@ class Session(Persistence.Persistent,
 		     'action':'manage_propertiesForm', 'target':'manage_main',
 	            },
 		    {'icon':'', 'label':'Security',
-		     'action':'manage_rolesForm', 'target':'manage_main',
+		     'action':'manage_access', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Undo',
 		     'action':'manage_UndoForm','target':'manage_main',
 		    },
 		   )
+
+    __ac_permissions__=(
+    ('View management screens', ['manage','manage_tabs','index_html']),
+    ('Change permissions', ['manage_access']),
+    ('Edit session', ['manage_edit']),
+    ('Join/leave session', ['enter','leave','leave_another']),
+    ('Save/discard session', ['save','discard']),
+    )
+   
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		 )
 
     def _init(self, id, title, REQUEST):
 	self.id=id
@@ -79,11 +82,9 @@ class Session(Persistence.Persistent,
 	if Globals.SessionBase[self.cookie].nonempty(): return '%s *' % r
 	return r
 
-    def manage_edit(self, title, acl_type='A',acl_roles=[], REQUEST=None):
+    def manage_edit(self, title, REQUEST=None):
 	'Modify a session'
-	self._setRoles(acl_type,acl_roles)
 	self.title=title
-	
 	if REQUEST is not None: return self.manage_editedDialog(REQUEST)
 
     def enter(self, REQUEST, RESPONSE):
@@ -124,7 +125,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 
@@ -132,6 +133,9 @@ __version__='$Revision: 1.9 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.10  1997/12/31 17:17:04  brian
+# Security update
+#
 # Revision 1.9  1997/12/19 17:06:20  jim
 # moved Sessions and Daft folders here.
 #
