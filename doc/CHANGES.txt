@@ -59,6 +59,13 @@ Zope changes
         - The StandardCacheManagers product has been added as a primary
           product, making it easier to get started with caching.
 
+        - The class DTMLFile has been added alongside of HTMLFile.
+          It supports name bindings, ignores positional parameters,
+          and puts the container on top of the namespace by default.
+          Most HTMLFiles should work the same (or more securely) if
+          converted to a DTMLFile.  Most management interface methods
+          should be converted by the final release of 2.3.
+
       Bugs Fixed
 
         - A misspelled function name which prevented the addition of
