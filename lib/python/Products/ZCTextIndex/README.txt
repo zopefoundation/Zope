@@ -14,7 +14,7 @@ Advantages of using ZCTextIndex over TextIndex:
 
 - A more refined scoring algorithm, resulting in better selectiveness:
   it's much more likely that you'll find the document you are looking
-  for among the first fe highest-ranked results.
+  for among the first few highest-ranked results.
 
 - Actually, ZCTextIndex gives you a choice of two scoring algorithms
   from recent literature: the Cosine ranking from the Managing
@@ -39,11 +39,7 @@ functional test programs in the tests subdirectory show how to do
 this, for example mhindex.py, mailtest.py, indexhtml.py, and
 queryhtml.py.
 
-
-How to use as a Zope Product
-----------------------------
-
-XXX Casey, please write this.
+See the online help for how to use ZCTextIndex within Zope.
 
 
 Code overview

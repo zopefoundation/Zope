@@ -1,0 +1,39 @@
+ZCTextIndex  Add: Create a new ZCTextIndex
+
+    Description
+    
+        A ZCTextIndex is an index for performing full text searches over
+        bodies of text. It includes the following features:
+        
+        - Boolean query operators with parenthetical grouping
+        
+        - Globbing (partial word) and phrase matching
+        
+        - Two selectable relevance scoring algorithms
+        
+        ZCTextIndex is designed as a replacement for standard TextIndex, and
+        has several advantages over it.
+        
+    Controls
+    
+        'Id' -- The id of the ZCTextIndex, must be unique for this ZCatalog.
+        
+        'Field Name' -- The name of the field (object attribute) to be indexed.
+        
+        'Ranking Strategy'
+        
+        - **Okapi BM25 Rank** A relevance scoring technique that seems to
+          work well when the document text is considerably longer than the
+          query string, which is often the case with user specified query
+          strings.
+
+        - **Cosine Measure** A relevance scoring technique derived from the
+          "*Managing Gigabytes*":http://www.cs.mu.oz.au/mg/ book. It seems
+          to work best when the queries are similar in size and content to
+          the text they are searching.
+             
+        'Lexicon' -- The ZCTextIndex Lexicon to be used by this ZCTextIndex.
+                     Lexicons process and store the words from the text and
+                     help in processing queries. You must define a ZCTextIndex
+                     Lexicon before you can create a ZCTextIndex. Several
+                     ZCTextIndexes can share the same Lexicon if desired.

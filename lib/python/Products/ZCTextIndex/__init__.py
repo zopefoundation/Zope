@@ -40,6 +40,9 @@ def initialize(context):
         icon='www/lexicon.gif'
     )
 
+    context.registerHelp()
+    context.registerHelpTitle("Zope Help")
+
 ## Functions below are for use in the ZMI constructor forms ##
 
 def getElementGroups(self):

@@ -2,6 +2,8 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Add ZCTextIndex Lexicon',
+           help_product='ZCTextIndex',
+           help_topic='Lexicon_Add.stx'
 	   )">
      
 <p class="form-help">
