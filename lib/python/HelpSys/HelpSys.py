@@ -86,7 +86,7 @@
 import Acquisition
 from OFS.SimpleItem import Item
 from OFS.ObjectManager import ObjectManager
-from Globals import Persistent, DTMLFile, HTMLFile, HTML
+from Globals import Persistent, DTMLFile, HTML
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
 import Products
@@ -147,7 +147,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     searchResults=__call__
     
     index_html=DTMLFile('dtml/frame', globals())
-    menu=HTMLFile('dtml/menu', globals())
+    menu=DTMLFile('dtml/menu', globals())
     search=DTMLFile('dtml/search', globals())
     results=DTMLFile('dtml/results', globals())
     main=HTML("""<html></html>""")
