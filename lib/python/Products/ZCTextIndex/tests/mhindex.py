@@ -544,7 +544,7 @@ class Indexer:
             st = os.stat(path)
         except os.error, msg:
             return 0
-        return st[ST_MTIME]
+        return int(st[ST_MTIME])
 
     def maycommit(self):
         self.trans_count += 1
