@@ -54,8 +54,8 @@
 
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.106 1998/11/20 18:16:36 jim Exp $"""
-__version__='$Revision: 1.106 $'[11:-2]
+$Id: Publish.py,v 1.107 1998/11/23 15:29:15 jim Exp $"""
+__version__='$Revision: 1.107 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -589,7 +589,7 @@ def get_module_info(module_name, modules={},
         if hasattr(module,'__bobo_debug_mode__'):
             debug_mode=not not module.__bobo_debug_mode__
         elif os.environ.has_key('BOBO_DEBUG_MODE'):
-            debug_mode=lower(request.environ['BOBO_DEBUG_MODE'])
+            debug_mode=lower(os.environ['BOBO_DEBUG_MODE'])
             if debug_mode=='y' or debug_mode=='yes':
                 debug_mode=1
             else:
@@ -601,7 +601,7 @@ def get_module_info(module_name, modules={},
         if hasattr(module,'__bobo_hide_tracebacks__'):
             hide_tracebacks=not not module.__bobo_hide_tracebacks__
         elif os.environ.has_key('BOBO_HIDE_TRACEBACKS'):
-            hide_tracebacks=lower(request.environ['BOBO_HIDE_TRACEBACKS'])
+            hide_tracebacks=lower(os.environ['BOBO_HIDE_TRACEBACKS'])
             if hide_tracebacks=='y' or hide_tracebacks=='yes':
                 hide_tracebacks=1
             else:
