@@ -85,14 +85,14 @@
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.7 1999/03/10 00:15:44 klm Exp $'''
+$Id: dbi_db.py,v 1.8 2000/05/30 15:46:55 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1997 Digital Creations, Inc, 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved. 
 # 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import string, sys
 from string import strip, split, find, join
@@ -196,7 +196,8 @@ class DB:
                 c.execute(query_string)
                 result=c.fetchall()
                 desc=c.description
-            else: raise sys.exc_type, sys.exc_value, sys.exc_traceback
+            else:
+                raise sys.exc_info()
         
         if result:
             result=join(

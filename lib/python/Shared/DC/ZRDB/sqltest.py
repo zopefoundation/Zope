@@ -127,7 +127,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.12 1999/11/03 16:22:22 brian Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.13 2000/05/30 15:46:55 brian Exp $'
 
 ############################################################################
 #     Copyright 
@@ -137,7 +137,7 @@ __rcs_id__='$Id: sqltest.py,v 1.12 1999/11/03 16:22:22 brian Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -179,7 +179,7 @@ class SQLTest:
         try: v = md[name]
         except KeyError, key:
             if str(key)==name and self.optional: return ''
-            raise KeyError, key, sys.exc_traceback
+            raise KeyError, key, sys.exc_info()[2]
             
         
         if type(v) in (ListType, TupleType):

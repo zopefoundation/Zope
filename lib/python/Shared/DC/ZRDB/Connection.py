@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.24 2000/05/16 19:34:45 brian Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: Connection.py,v 1.25 2000/05/30 15:46:55 brian Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -230,7 +230,7 @@ class Connection(
             try:
                 self._v_database_connection=DB(s)
             except:
-                t, v, tb = sys.exc_type, sys.exc_value, sys.exc_traceback
+                t, v, tb = sys.exc_info()
                 raise 'BadRequest', (
                     '<strong>Invalid connection string: </strong><CODE>%s</CODE><br>\n'
                     '<!--\n%s\n%s\n-->\n'
