@@ -748,26 +748,3 @@ class FasterStringIO(StringIO):
 
 def _write_ValueError(s):
     raise ValueError, "I/O operation on closed file"
-
-
-def test():
-    from driver import FILE, parsefile
-    from DummyEngine import DummyEngine
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "")
-    except getopt.error, msg:
-        print msg
-        sys.exit(2)
-    if args:
-        file = args[0]
-    else:
-        file = FILE
-    doc = parsefile(file)
-    compiler = TALCompiler(doc)
-    program, macros = compiler()
-    engine = DummyEngine()
-    interpreter = TALInterpreter(program, macros, engine)
-    interpreter()
-
-if __name__ == "__main__":
-    test()
