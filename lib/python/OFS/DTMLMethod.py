@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -278,7 +278,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         if user is not None:
             user=user.hasRole
             for r in roles:
-                if r and not user(None, (r,)):
+                if r and not user(self, (r,)):
                     user=None
                     break
 
