@@ -32,11 +32,12 @@ def eq(scaled1, scaled2, epsilon=scaled_int(0.01)):
     if abs(scaled1 - scaled2) > epsilon:
         raise AssertionError, "%s != %s" % (scaled1, scaled2)
 
-# a series of text chunks to use for the re-index tests
+# A series of text chunks to use for the re-index tests (testDocUpdate).
 text = [
     """Here's a knocking indeed! If a
     man were porter of hell-gate, he should have
-    old turning the key.""",
+    old turning the key.  knock (that made sure
+    sure there's at least one word in common)."""
 
     """Knock,
     knock, knock! Who's there, i' the name of
@@ -96,26 +97,27 @@ class ZCIndexTestsBase:
 
     def testDocUpdate(self):
         docid = 1
-        stop = get_stopdict()
-        unique = {} # compute a set of unique words for each version
-        d = {} # find some common words
-        common = []
         N = len(text)
+        stop = get_stopdict()
+
+        d = {} # word -> list of version numbers containing that word
         for version, i in zip(text, range(N)):
             # use a simple splitter rather than an official one
             words = [w for w in re.split("\W+", version.lower())
                      if len(w) > 1 and not stop.has_key(w)]
-            # count occurences of each word
+            word_seen = {}
             for w in words:
-                l = d[w] = d.get(w, [])
-                l.append(i)
-        for k, v in d.items():
-            if len(v) == 1:
-                v = v[0]
-                l = unique[v] = unique.get(v, [])
-                l.append(k)
-            elif len(v) == N:
-                common.append(k)
+                if not word_seen.has_key(w):
+                    d.setdefault(w, []).append(i)
+                    word_seen[w] = 1
+
+        unique = {} # version number -> list of words unique to that version
+        common = [] # list of words common to all versions
+        for w, versionlist in d.items():
+            if len(versionlist) == 1:
+                unique.setdefault(versionlist[0], []).append(w)
+            elif len(versionlist) == N:
+                common.append(w)
 
         for version, i in zip(text, range(N)):
             doc = Indexable(version)
