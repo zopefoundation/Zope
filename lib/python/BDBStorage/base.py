@@ -84,19 +84,29 @@
 ##############################################################################
 """ Base module for BerkeleyStorage implementations """
 
-__version__ ='$Revision: 1.4 $'[11:-2]
+__version__ ='$Revision: 1.5 $'[11:-2]
 
 from ZODB.BaseStorage import BaseStorage
 from ZODB import POSException
 from bsddb3 import db
 import os, tempfile
-
+try:
+    DB = db.DB
+    DBEnv = db.DBEnv
+    DBError = db.DBError
+except:
+    DB = db.Db
+    DBEnv = db.DbEnv
+    DBError = db.error
+    
 class BerkeleyDBError(POSException.POSError):
     """ A BerkeleyDB exception occurred.  This probably indicates that
     there is a low memory condition, a tempfile space shortage, or
     a space shortage in the directory which houses the BerkeleyDB log
     files.  Check available tempfile space, logfile space, and RAM and
-    restart the server process."""
+    restart the server process.  This error could have additionally
+    been caused by too few locks available to BerkeleyDB for the
+    transaction size you were attempting to commit."""
 
 class Base(BaseStorage):
 
@@ -118,7 +128,7 @@ class Base(BaseStorage):
     def _setupDB(self, name, flags=0):
         """Open an individual database and assign to an "_" attribute.
         """
-        d=db.Db(self._env)
+        d=DB(self._env)
         if flags: d.set_flags(flags)
         d.open(self._prefix+name, db.DB_BTREE, db.DB_CREATE)
         setattr(self, '_'+name, d)
@@ -152,12 +162,6 @@ class Base(BaseStorage):
         # TBD
         return 0
 
-    def _finish(self, tid, user, desc, ext):
-        self._txn.commit()
-
-    def _abort(self, tid, user, desc, ext):
-        self._txn.abort()
-
     def _clear_temp(self):
         self._tmp.seek(0)
 
@@ -182,12 +186,13 @@ def envFromString(name):
         if not os.path.exists(name): os.mkdir(name)
     except:
         raise "Error creating BerkeleyDB environment dir: %s" % name
-    e=db.DbEnv()
+    e=DBEnv()
+    e.set_lk_max(10000)  # this can be overridden in the DB_CONFIG file
     try:
         e.open(name,
                db.DB_CREATE | db.DB_RECOVER
                | db.DB_INIT_MPOOL | db.DB_INIT_LOCK | db.DB_INIT_TXN
                )
-    except db.error, msg:
+    except DBError, msg:
         raise BerkeleyDBError, "%s (%s)" % (BerkeleyDBError.__doc__, msg)
     return e

@@ -88,9 +88,9 @@ counting garbage-collection strategy which necessitates packing only when
 the stored data has cyclically-referenced garbage.
 """
 
-__version__ ='$Revision: 1.4 $'[11:-2]
+__version__ ='$Revision: 1.5 $'[11:-2]
 
-from base import Base
+from base import Base, DBError
 from base import BerkeleyDBError
 from bsddb3 import db
 from struct import pack, unpack
@@ -129,6 +129,9 @@ class Packless(Base):
         """
         return 'current', 'referenceCount', 'oreferences', 'opickle'
 
+    def _abort(self):
+        pass
+
     def load(self, oid, version):
         self._lock_acquire()
         try:
@@ -136,7 +139,7 @@ class Packless(Base):
                 s=self._index[oid]
                 p=self._opickle[oid]
                 return p, s # pickle, serial
-            except db.error, msg:
+            except DBError, msg:
                 raise BerkeleyDBError, (
                     "%s (%s)" % (BerkeleyDBError.__doc__, msg)
                     )
@@ -200,8 +203,8 @@ class Packless(Base):
                 referenced=references.has_key
 
                 # Create refcnt
-                if not referenceCount_get(oid, txn):
-                    referenceCount_put(oid, '\0'*intlen, txn)
+                if not referenceCount_get(oid, txn=txn):
+                    referenceCount_put(oid, '\0'*intlen, txn=txn)
                     # zeros[oid]=1
                     # ^^^^^^^^^^^^
                     # this should happen when ZODB import is fixed
@@ -228,7 +231,7 @@ class Packless(Base):
                                 c.delete()
                                 # decrement refcnt:
                                 rc=unpack(">i",
-                                          referenceCount_get(roid, txn))[0]
+                                          referenceCount_get(roid,txn=txn))[0]
                                 rc=rc-1
                                 if rc < 0:
                                     # This should never happen
@@ -248,7 +251,7 @@ class Packless(Base):
                     oreferences_put(oid, roid, txn)
 
                     # Create/update refcnt
-                    rcs=referenceCount_get(roid, txn)
+                    rcs=referenceCount_get(roid, txn=txn)
                     if rcs:
                         rc=unpack(">i", rcs)[0]
                         if rc==0:
@@ -275,7 +278,7 @@ class Packless(Base):
             tmp.seek(0)
             if fsize > MAXTEMPFSIZE: tmp.truncate()
 
-        except db.error, msg:
+        except DBError, msg:
             try:
                 txn.abort()
             except db.error, msg:
@@ -310,7 +313,7 @@ class Packless(Base):
                     roid=roid[1]
                     
                     # decrement refcnt:
-                    rc=referenceCount_get(roid, txn)
+                    rc=referenceCount_get(roid, txn=txn)
                     if rc:
                         rc=unpack(">i", rc)[0]-1
                         if rc < 0:
