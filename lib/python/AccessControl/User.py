@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.124 $'[11:-2]
+__version__='$Revision: 1.125 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -217,39 +217,57 @@ class BasicUser(Implicit):
                   parent=parent.aq_parent
               else: return r
 
-    def allowed(self, parent, roles=None):
-        """Check whether the user has access to parent, assuming that
-           parent.__roles__ is the given roles."""
-        if roles is None or 'Anonymous' in roles:
+
+    def allowed(self, object, object_roles=None):
+        """Check whether the user has access to object, assuming that
+           object.__roles__ is the given roles."""
+        if object_roles is None or 'Anonymous' in object_roles:
             return 1
-        usr_roles=self.getRolesInContext(parent)
-        for role in roles:
+        usr_roles=self.getRolesInContext(object)
+        for role in object_roles:
             if role in usr_roles:
-                if (hasattr(self,'aq_parent') and
-                    hasattr(self.aq_parent,'aq_parent')):
-                    if parent is None: return 1
-                    if (not hasattr(parent, 'aq_inContextOf') and
-                        hasattr(parent, 'im_self')):
-                        # This is a method, grab it's self.
-                        parent=parent.im_self
-                    if not parent.aq_inContextOf(self.aq_parent.aq_parent,1):
-                        if 'Shared' in roles:
+                # The user apparently has one of the necessary
+                # roles, but first make sure the object exists
+                # in the context of the parent of the acl_users
+                # folder.
+                ufolder = getattr(self, 'aq_parent', None)
+                ucontext = getattr(ufolder, 'aq_parent', None)
+                if ucontext is not None:
+                    if object is None:
+                        # This is a strange rule, though
+                        # it doesn't cause any security holes. SDH
+                        return 1
+                    if not hasattr(object, 'aq_inContextOf'):
+                        if hasattr(object, 'im_self'):
+                            # This is a method.  Grab its self.
+                            object=object.im_self
+                        if not hasattr(object, 'aq_inContextOf'):
+                            # object is not wrapped, therefore we
+                            # can't determine context.
+                            # Fail the access attempt.  Otherwise
+                            # this would be a security hole.
+                            return None
+                    if not object.aq_inContextOf(ucontext, 1):
+                        if 'Shared' in object_roles:
                             # Damn, old role setting. Waaa
-                            roles=self._shared_roles(parent)
+                            object_roles=self._shared_roles(object)
                             if 'Anonymous' in roles: return 1
                         return None
+                # Note that if self were not wrapped, it would
+                # not be possible to determine the user's context
+                # and this method would return 1.
+                # However, as long as user folders always return
+                # wrapped user objects, this is safe.
                 return 1
 
         if 'Shared' in roles:
             # Damn, old role setting. Waaa
-            roles=self._shared_roles(parent)
+            roles=self._shared_roles(object)
             if roles is None or 'Anonymous' in roles: return 1
             while 'Shared' in roles: roles.remove('Shared')
-            return self.allowed(parent,roles)
+            return self.allowed(object,roles)
 
         return None
-
-
 
     hasRole=allowed
     domains=[]
