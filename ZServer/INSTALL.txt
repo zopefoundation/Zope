@@ -16,7 +16,7 @@ Configuration
   
   Here's an example of use::
   
-    $ python1.5.2 z2.py -w 8888 -f "" -p "" -m "" &
+    $ python2.1 z2.py -w 8888 -f "" -p "" -m "" &
     
   This example starts Zope using a web server on port 8888. It does
   not start and FTP server, or a PCGI server, or a Monitor server. It
@@ -52,7 +52,7 @@ Starting ZServer
 
   To start ZServer run the start script::
   
-    $ python1.5.2 z2.py
+    $ python2.1 z2.py
     
   To stop the server type 'control-c'.
 

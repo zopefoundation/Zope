@@ -60,7 +60,7 @@ Using Zope Components Separately
 
 Notes
 
-  * Zope requires Python 1.5.2.
+  * Zope requires Python 2.1.
 
   * Lots more documentation is coming.
 
