@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.25 1998/01/21 22:59:34 jim Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: DA.py,v 1.26 1998/01/22 20:32:50 jim Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -119,19 +119,24 @@ class DA(
 
     def manage_test(self, REQUEST):
 	'Perform an actual query'
-	
-	try: 
+
+	src="Could not render the query template!"
+	result=()
+	try:
+	    src=self(REQUEST,1)
 	    result=self(REQUEST)
 	    r=custom_default_report(self.id, result)
 	except:
 	    r=(
-		'<hr><strong>Error, <em>%s</em>:</strong> %s'
+		'<strong>Error, <em>%s</em>:</strong> %s'
 		% (sys.exc_type, sys.exc_value))
 
 	report=HTML(
 	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
-	    '<!--#var manage_tabs-->\n%s\n</body></html>'
-	    % r)
+	    '<!--#var manage_tabs-->\n<hr>\n%s\n\n'
+	    '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>/n<hr>\n'
+	    '</body></html>'
+	    % (r,src))
 
 	return apply(report,(self,REQUEST),{self.id:result})
 
@@ -175,7 +180,7 @@ class DA(
 
 	return result
 
-    def __call__(self, REQUEST=None, **kw):
+    def __call__(self, REQUEST=None, src__=0, **kw):
 
 	if REQUEST is None:
 	    if kw: REQUEST=kw
@@ -191,6 +196,8 @@ class DA(
 
 	argdata=self._argdata(REQUEST)
 	query=apply(self.template, (self,), argdata)
+
+	if src__: return query
 
 	if self.cache_time_:
 	    result=self._cached_result(DB__, (query, self.max_rows_))
@@ -341,6 +348,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.26  1998/01/22 20:32:50  jim
+# Fixed bug in testing code and added output of SQL query.
+#
 # Revision 1.25  1998/01/21 22:59:34  jim
 # Updated for latest security model.
 #
