@@ -117,7 +117,7 @@ import DebugLogger
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
-from types import StringType
+from types import StringType, TupleType
 
 tz_for_log=compute_timezone_for_log()
 
@@ -219,11 +219,12 @@ class PCGIChannel(asynchat.async_chat):
             method=self.env['REQUEST_METHOD']
         else:
             method="GET"
-        if self.addr:
+        addr=self.addr
+        if addr and type(addr) is TupleType:
             self.server.logger.log (
-                self.addr[0],
+                addr[0],
                 '%d - - [%s] "%s %s" %d %d' % (
-                    self.addr[1],
+                    addr[1],
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.gmtime(time.time())
