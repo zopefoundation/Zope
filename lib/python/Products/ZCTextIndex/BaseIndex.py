@@ -12,10 +12,8 @@
 #
 ##############################################################################
 
-"""Full text index with relevance ranking, using an Okapi BM25 rank."""
+"""Abstract base class for full text index with relevance ranking."""
 
-# Lots of comments are at the bottom of this file.  Read them to
-# understand what's going on.
 
 import math
 
@@ -24,7 +22,6 @@ from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
-from Products.ZCTextIndex.BaseIndex import BaseIndex
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
@@ -47,37 +44,24 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
-class OkapiIndex(BaseIndex):
+class BaseIndex(Persistent):
 
     __implements__ = IIndex
 
-    # BM25 free parameters.
-    K1 = 1.2
-    B  = 0.75
-    assert K1 >= 0.0
-    assert 0.0 <= B <= 1.0
-
     def __init__(self, lexicon):
-        BaseIndex.__init__(self, lexicon)
+        self._lexicon = lexicon
 
-        # wid -> {docid -> frequency}; t -> D -> f(D, t)
-        # There are two kinds of OOV words:  wid 0 is explicitly OOV,
-        # and it's possible that the lexicon will return a non-zero wid
-        # for a word *we've* never seen (e.g., lexicons can be shared
-        # across indices, and a query can contain a word some other
-        # index knows about but we don't).
-        self._wordinfo = IOBTree()
+        # docid -> WidCode'd list of wids
+        # Used for un-indexing, and for phrase search.
+        self._docwords = IOBTree()
 
-        # docid -> # of words in the doc
-        # This is just len(self._docwords[docid]), but _docwords is stored
-        # in compressed form, so uncompressing it just to count the list
-        # length would be ridiculously expensive.
-        self._doclen = IIBTree()
+    def length(self):
+        """Return the number of documents in the index."""
+        return len(self._docwords)
 
-        # sum(self._doclen.values()), the total # of words in all docs
-        # This is a long for "better safe than sorry" reasons.  It isn't
-        # used often enough that speed should matter.
-        self._totaldoclen = 0L
+    def get_words(self, docid):
+        """Returns the wordids for a given docid"""
+        return WidCode.decode(self._docwords[docid])
 
     def index_doc(self, docid, text):
         wids = self._lexicon.sourceToWordIds(text)
@@ -440,3 +424,4 @@ to always be 1, and then that quotient is
 regardless of k3's value.  So, in a trivial sense, we are incorporating
 this measure (and optimizing it by not bothering to multiply by 1 <wink>).
 """
+

@@ -21,6 +21,7 @@ from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
+from Products.ZCTextIndex.BaseIndex import BaseIndex
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
@@ -43,30 +44,18 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
-class CosineIndex(Persistent):
+class CosineIndex(BaseIndex):
 
     __implements__ = IIndex
 
     def __init__(self, lexicon):
-        self._lexicon = lexicon
+        BaseIndex.__init__(self, lexicon)
 
         # wid -> { docid -> frequency }
         self._wordinfo = IOBTree()
 
         # docid -> W(docid)
         self._docweight = IIBTree()
-
-        # docid -> [ wid ]
-        # used for un-indexing
-        self._docwords = IOBTree()
-
-    def length(self):
-        """Return the number of documents in the index."""
-        return len(self._docwords)
-
-    def get_words(self, docid):
-        """Returns the wordids for a given docid"""
-        return WidCode.decode(self._docwords[docid])
 
     # Most of the computation for computing a relevance score for the
     # document occurs in the search() method.  The code currently
