@@ -56,42 +56,45 @@ class Index:
     def __init__(self, lexicon):
         self._lexicon = lexicon
 
-        # wid -> { docid -> frequency }; t -> D -> f(D, t)
+        # wid -> {docid -> frequency}; t -> D -> f(D, t)
         self._wordinfo = IOBTree()
 
         # docid -> # of words in the doc
-        # XXX this is just len(self._docwords[docid]), but if _docwords
-        # XXX is stored in compressed form then uncompressing just to count
-        # XXX the list length would be ridiculously expensive.
+        # This is just len(self._docwords[docid]), but _docwords is stored
+        # in compressed form, so uncompressing it just to count the list
+        # length would be ridiculously expensive.
         self._doclen = IIBTree()
 
-        # docid -> [ wid ]
-        # used for un-indexing
-        self._docwords = IOBTree()
-
         # sum(self._doclen.values()), the total # of words in all docs
+        # This is a long for "better safe than sorry" reasons.  It isn't
+        # used often enough that speed should matter.
         self._totaldoclen = 0L
+
+        # docid -> WidCode'd list of wids
+        # Used for un-indexing, and for phrase search.
+        self._docwords = IOBTree()
 
     def length(self):
         """Return the number of documents in the index."""
         return len(self._docwords)
 
-    # Most of the computation for computing a relevance score for the
-    # document occurs in the search() method.
-
     def index_doc(self, docid, text):
         wids = self._lexicon.sourceToWordIds(text)
         self._doclen[docid] = len(wids)
         self._totaldoclen += len(wids)
+
         wid2count = self._get_frequencies(wids)
         for wid, count in wid2count.items():
             self._add_wordinfo(wid, count, docid)
-        self._add_undoinfo(docid, wids)
+
+        self._docwords[docid] = WidCode.encode(wids)
 
     def unindex_doc(self, docid):
-        for wid in self._get_undoinfo(docid):
+        for wid in WidCode.decode(self._docwords[docid]):
             self._del_wordinfo(wid, docid)
+
         del self._docwords[docid]
+
         count = self._doclen[docid]
         del self._doclen[docid]
         self._totaldoclen -= count
@@ -117,27 +120,34 @@ class Index:
                 result[docid] = weight
         return result
 
+    # The workhorse.  Return a list of (IIBucket, weight) pairs, one pair
+    # for each wid t in wids.  The IIBucket, times the weight, maps D to
+    # TF(D,t) * IDF(t) for every docid D containing t.
+    # As currently written, the weights are always 1, and the IIBucket maps
+    # D to TF(D,t)*IDF(t) directly, where the product is computed as a float
+    # but stored as a scaled_int.
     def _search_wids(self, wids):
         if not wids:
             return []
-        N = float(len(self._doclen))
-        L = []
+        N = float(len(self._doclen))  # total # of docs
+        meandoclen = self._totaldoclen / N
         K1 = self.K1
         B = self.B
         K1_plus1 = K1 + 1.0
         B_from1 = 1.0 - B
-        meandoclen = self._totaldoclen / N
 
         #                           f(D, t) * (k1 + 1)
         #   TF(D, t) =  -------------------------------------------
         #               f(D, t) + k1 * ((1-b) + b*len(D)/E(len(D)))
 
-        for wid in wids:
-            d2f = self._wordinfo[wid] # map {docid -> f(docid, wid)}
-            idf = inverse_doc_frequency(len(d2f), N)  # this is an unscaled float
+        L = []
+        docid2len = self._doclen
+        for t in wids:
+            d2f = self._wordinfo[t] # map {docid -> f(docid, t)}
+            idf = inverse_doc_frequency(len(d2f), N)  # an unscaled float
             result = IIBucket()
             for docid, f in d2f.items():
-                lenweight = B_from1 + B * self._doclen[docid] / meandoclen
+                lenweight = B_from1 + B * docid2len[docid] / meandoclen
                 tf = f * K1_plus1 / (f + K1 * lenweight)
                 result[docid] = scaled_int(tf * idf)
             L.append((result, 1))
@@ -153,18 +163,21 @@ class Index:
         # just store scaled_int(tf) in result[docid], and use scaled_int(idf)
         # as an invariant weight across the whole result.  But besides
         # skating near the edge, it's not a speed cure, since the computation
-        # of tf would still done at Python speed, and it's a lot more
+        # of tf would still be done at Python speed, and it's a lot more
         # work than just multiplying by idf.
 
     def query_weight(self, terms):
-        # XXX I have no idea what to put here
-        return 10
+        # This method was inherited from the cosine measure, and doesn't
+        # make sense for Okapi measures in the way the cosine measure uses
+        # it.  See the long comment at the end of the file for how full
+        # Okapi BM25 deals with weighting query terms.
+        return 10   # arbitrary
 
     def _get_frequencies(self, wids):
         """Return individual term frequencies."""
         # Computes f(d, t) for each term.
-        # Returns a dict mapping wid to the number of times wid appeared
-        # in wids, {t: f(d, t)}
+        # Returns a dict mapping wid to the number of times wid appeares
+        # in wids, {t -> f(d, t)}
         d = {}
         dget = d.get
         for wid in wids:
@@ -222,32 +235,6 @@ class Index:
                 new[k] = v
             map = new
         self._wordinfo[wid] = map # Not redundant, because of Persistency!
-
-    def _add_undoinfo(self, docid, wids):
-        self._docwords[docid] = WidCode.encode(wids)
-
-    def _get_undoinfo(self, docid):
-        return WidCode.decode(self._docwords[docid])
-
-    # The rest are helper methods to support unit tests
-    # XXX These don't work for Okapi, I assume
-
-    def _get_wdt(self, d, t):
-        wid, = self._lexicon.termToWordIds(t)
-        map = self._wordinfo[wid]
-        return map.get(d, 0) * self._doclen[d] / SCALE_FACTOR
-
-    def _get_Wd(self, d):
-        return self._doclen[d]
-
-    def _get_ft(self, t):
-        wid, = self._lexicon.termToWordIds(t)
-        return len(self._wordinfo[wid])
-
-    def _get_wt(self, t):
-        wid, = self._lexicon.termToWordIds(t)
-        map = self._wordinfo[wid]
-        return scaled_int(math.log(1 + len(self._docweight) / float(len(map))))
 
 def inverse_doc_frequency(term_count, num_items):
     """Return the inverse doc frequency for a term,
@@ -400,4 +387,38 @@ Putting it all together, the final TF function is
                 f(D, t) + k1 * ((1-b) + b*len(D)/E(len(D)))
 
 with k1=1.2 and b=0.75.
+
+
+Query Term Weighting
+--------------------
+
+I'm ignoring the query adjustment part of Okapi BM25 because I expect our
+queries are very short.  Full BM25 takes them into account by adding the
+following to every score(D, Q); it depends on the lengths of D and Q, but
+not on the specific words in Q, or even on whether they appear in D(!):
+
+                   E(len(D)) - len(D)
+    k2 * len(Q) * -------------------
+                   E(len(D)) + len(D)
+
+Here k2 is another "tuning constant", len(Q) is the number of words in Q, and
+len(D) & E(len(D)) were defined above. The Okapi group set k2 to 0 in TREC-9,
+so it apparently doesn't do much good (or may even hurt).
+
+Full BM25 *also* multiplies the following factor into IDF(Q, t):
+
+    f(Q, t) * (k3 + 1)
+    ------------------
+       f(Q, t) + k3
+
+where k3 is yet another free parameter, and f(Q,t) is the number of times t
+appears in Q.  Since we're using short "web style" queries, I expect f(Q,t)
+to always be 1, and then that quotient is
+
+     1 * (k3 + 1)
+     ------------ = 1
+        1 + k3
+
+regardless of k3's value.  So, in a trivial sense, we are incorporating
+this measure (and optimizing it by not bothering to multiply by 1 <wink>).
 """
