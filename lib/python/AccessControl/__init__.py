@@ -13,9 +13,6 @@
 
 from unauthorized import Unauthorized
 
-import DTML
-del DTML
-
 from SecurityManagement import getSecurityManager, setSecurityPolicy
 from SecurityInfo import ClassSecurityInfo, ModuleSecurityInfo
 from SecurityInfo import ACCESS_PRIVATE
@@ -26,3 +23,6 @@ from SimpleObjectPolicies import allow_type
 from ZopeGuards import full_read_guard, full_write_guard, safe_builtins
 
 ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')
+
+import DTML
+del DTML
