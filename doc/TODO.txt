@@ -189,9 +189,6 @@ Status:  Request for comment sent to the community:
 http://mail.zope.org/pipermail/zope-dev/2003-March/018999.html
 Lots of discussion!
 
- - need to be able to specify PRODUCTS_PATH (to extend the
-   path Zope looks for Products within)
-
  - ZConfig is too complex when compared with envvar parsing.
 
  - Somewhat unrelated, but the features of "debug mode" should be
