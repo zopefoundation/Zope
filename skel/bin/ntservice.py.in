@@ -89,7 +89,7 @@ import sys
 PYTHON = r'<<PYTHON>>'
 SOFTWARE_HOME=r'<<SOFTWARE_HOME>>'
 INSTANCE_HOME = r'<<INSTANCE_HOME>>'
-ZOPE_RUN = '%s\Zope\Startup\run.py' % SOFTWARE_HOME
+ZOPE_RUN = r'%s\Zope\Startup\run.py' % SOFTWARE_HOME
 CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
 
 sys.path.insert(0, SOFTWARE_HOME)
