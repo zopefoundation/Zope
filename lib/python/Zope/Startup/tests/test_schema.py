@@ -28,6 +28,7 @@ from App.config import getConfiguration
 
 
 TEMPNAME = tempfile.mktemp()
+TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
 
 class StartupTestCase(unittest.TestCase):
@@ -40,9 +41,11 @@ class StartupTestCase(unittest.TestCase):
         sio = cStringIO.StringIO(
             text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         os.mkdir(TEMPNAME)
+        os.mkdir(TEMPPRODUCTS)
         try:
             conf, handler = ZConfig.loadConfigFile(schema, sio)
         finally:
+            os.rmdir(TEMPPRODUCTS)
             os.rmdir(TEMPNAME)
         self.assertEqual(conf.instancehome, TEMPNAME)
         return conf
