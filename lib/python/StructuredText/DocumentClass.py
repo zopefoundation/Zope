@@ -230,7 +230,7 @@ class StructuredTextRow(ST.StructuredTextParagraph):
         """
         row is a list of tuples, where each tuple is
         the raw text for a cell/column and the span
-        of that cell/column". 
+        of that cell/column. 
         EX 
         [('this is column one',1), ('this is column two',1)]
         """
