@@ -353,9 +353,9 @@ class TALInterpreter:
         value = self.engine.evaluateValue(expr)
         self.engine.setGlobal(name, value)
 
-    def do_tagDict(self, dict):
+    def do_rawAttrs(self, dict):
         if self.tal:
-            self.engine.setLocal("tag", dict)
+            self.engine.setLocal("attrs", dict)
 
     def do_insertText(self, expr, block):
         if not self.tal:

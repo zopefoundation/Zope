@@ -410,7 +410,7 @@ class TALGenerator:
             todo["fillSlot"] = fillSlot
         if taldict:
             self.emit("beginScope")
-            self.emit("tagDict", self.makeAttrDict(attrlist))
+            self.emit("rawAttrs", self.makeAttrDict(attrlist))
             todo["scope"] = 1
         if onError:
             self.pushProgram() # handler
