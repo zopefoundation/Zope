@@ -375,7 +375,7 @@ print raise return try while == >= <= <> != >x> << NEWLINE
 **
 """
 
-import kjParser, string, regex
+import kjParser, string, re
 from kjParser import KEYFLAG, ENDOFFILETERM
 
 alphanumunder = string.letters+string.digits+"_"
@@ -386,33 +386,33 @@ id_letters = map(None, alphanumunder)
 
 # terminator re for names
 nametermre = "[^" + alphanumunder + "]"
-nameterm = regex.compile(nametermre)
+nameterm = re.compile(nametermre)
 
 # terminator re for numbers (same as above but allow "." in num).
 numtermre =  "[^" + alphanumunder + "\.]"
-numterm = regex.compile(numtermre)
+numterm = re.compile(numtermre)
 
 parseerror = "parseerror"
 
-pycommentre = "\(#.*\)"
+pycommentre = r"(#.*)"
 
 # whitespace regex outside of brackets
 #  white followed by (comment\n maybe repeated)
 #  DON'T EAT NEWLINE!!
-pywhiteoutre = "\([ \t\r\014]\|\\\\\n\)*%s?" % pycommentre
-pywhiteout = regex.compile(pywhiteoutre)
+pywhiteoutre = r"([ \t\r\014]|[\]\n)*%s?" % pycommentre
+pywhiteout = re.compile(pywhiteoutre)
 
 # whitespace regex inside brackets
 #  white or newline possibly followed by comment, all maybe repeated
-pywhiteinre = pywhiteoutre #"[ \t\r]*\(\\\\\n\)*%s?" % pycommentre
-pywhitein = regex.compile(pywhiteinre)
+pywhiteinre = pywhiteoutre #"[ \t\r]*(\\\\\n)*%s?" % pycommentre
+pywhitein = re.compile(pywhiteinre)
 
 # totally blank lines (only recognize if next char is newline)
 #allblankre = "\n" + pywhiteinre
-#allblank = regex.compile(allblankre)
+#allblank = re.compile(allblankre)
 
 # re for indentation (might accept empty string)
-indentp = regex.compile("[\t ]*")
+indentp = re.compile(r"[\t ]*")
 
 # two char kws and puncts
 char2kw = ["if", "or", "in", "is"]
@@ -449,6 +449,11 @@ newlineresult = kwmap["\n"] = (((KEYFLAG, "NEWLINE"), "NEWLINE"), 1)
 # Python lexical dictionary.
 
 ### MUST HANDLE WHOLELY BLANK LINES CORRECTLY!
+
+def RMATCH(re, key, start=0):
+    group = re.match(key, start)
+    if group is None: return -1
+    return group.end() - group.start()
 
 class pylexdict(kjParser.LexDictionary):
    def __init__(self):
@@ -504,7 +509,7 @@ class pylexdict(kjParser.LexDictionary):
           cursor = 0
           self.lineno = 1
           while 1:
-             test = pywhitein.match(String, cursor)
+             test = RMATCH(pywhitein,String, cursor)
              if test<0: break
              next = cursor + test
              #print "lead skip:", next, String[cursor:next]
@@ -565,7 +570,7 @@ class pylexdict(kjParser.LexDictionary):
                    start = start+1
                    #self.lineno = self.lineno+1
              #print "matching", `String[start:start+10]`
-             skip = pywhitein.match(String, start)
+             skip = RMATCH(pywhitein,String, start)
              #print "skip=", skip
              if skip<0: break
              rs = skip + realindex + (start-realindex)
@@ -599,7 +604,7 @@ class pylexdict(kjParser.LexDictionary):
                 skipto = skipto + 1
                 self.realindex = realindex = skipto
                 continue
-             skip = pywhiteout.match(String, skipto)
+             skip = RMATCH(pywhiteout,String, skipto)
              nextskipto = skipto+skip
              #skipped = String[skipto:nextskipto]
              #if "\n" in skipped:
@@ -610,7 +615,7 @@ class pylexdict(kjParser.LexDictionary):
              else: break
           skip = skipto - realindex
        elif not atlineend:
-          skip = pywhitein.match(String, realindex)
+          skip = RMATCH(pywhitein,String, realindex)
        if skip<=0: 
           skip = 0
        else:
@@ -631,7 +636,7 @@ class pylexdict(kjParser.LexDictionary):
        if (self.brackets<=0 and (lastresult is newlineresult or self.atdedent)
            and first != "\n"):
           #print "looking for dent", realindex, `String[realindex:realindex+20]`
-          match = indentp.match(String, realindex)
+          match = RMATCH(indentp,String, realindex)
           if match>=0:
              dent = String[realindex: realindex+match]
              #print "dent match", match, `dent`
@@ -923,7 +928,7 @@ teststring = """#
 #
 from string import join, split
 '''
-import regex
+import re
 
 for a in l:
     a.attr, a[x], b = c
@@ -935,7 +940,7 @@ class zzz:
    #doc string 
    '''
    '''
-   global regex, join
+   global re, join
    
    d = {} 
    for i in range(10): d[i] = i

@@ -13,8 +13,7 @@
 
 import kjSet
 import string
-import regex
-import regsub
+import re
 import string
 
 # set this flag for regression testing at each load
@@ -40,7 +39,7 @@ THISMODULE = "kjParser"
 
 # regular expression for matching whitespace
 WHITERE = "["+string.whitespace+"]+"
-WHITEREGEX = regex.compile(WHITERE)
+WHITEREGEX = re.compile(WHITERE)
 
 # local errors
 LexTokenError = "LexTokenError" # may happen on bad string
@@ -61,6 +60,17 @@ ENDOFFILETOKEN = (TERMFLAG, EOFFLAG)
 
 # in FSM use the following terminal to indicate eof
 ENDOFFILETERM = (ENDOFFILETOKEN, EOFFLAG)
+
+# Utility function for match conversion from regex to re
+def RMATCH(re, key, start=0):
+    #print "RMATCH: %s -> %s <- start=%s" % (re.pattern, key, start)
+    group = re.match(key, start)
+    if group is None:
+        #print "RMATCH: -1"
+        return -1
+    len = group.end() - group.start()
+    #print "RMATCH: %s (%s)" % (len, group.group())
+    return len
 
 # utility function for error diagnostics
 def DumpStringWindow(Str, Pos, Offset=15):
@@ -169,7 +179,7 @@ class LexDictionary:
        length = len(key)
        for triple in self.regexprlist:
           (regexpr, Flag, Function) = triple
-          index = regexpr.match(key)
+          index = RMATCH(regexpr,key)
           if index == length:
              found = 1
              # use the function to interpret the string, if given
@@ -205,7 +215,7 @@ class LexDictionary:
   def terminal(self, string, RegExpr=None, Function=None):
     if RegExpr != None and Function != None:
        if type(RegExpr) == type(""):
-          RegExpr = regex.compile(RegExpr)
+          RegExpr = re.compile(RegExpr)
        self[ RegExpr ] = ( string, Function)
     for triple in self.regexprlist:
        (regexpr,token,Function) = triple
@@ -235,7 +245,7 @@ class LexDictionary:
   # register a regular expression as a comment
   def comment(self, string):
     # regexpr better be a uncompiled string regular expression! (not verified)
-    regexpr = regex.compile(string)
+    regexpr = re.compile(string)
     self.commentpatterns = self.commentpatterns + [ regexpr ]
     self.commentstrings = self.commentstrings + [ string ]
 
@@ -272,7 +282,7 @@ class LexDictionary:
            return (ENDOFFILETERM, 0)
         # skip whitespace
         whitespacefound = 0
-        skip = WHITEREGEX.match(String, StartPosition)
+        skip = RMATCH(WHITEREGEX,String, StartPosition)
         if skip > 0:
            StartPosition = StartPosition + skip
            totalOffset = totalOffset + skip
@@ -281,7 +291,7 @@ class LexDictionary:
         # looking for comment
         commentfound = 0
         for commentexpr in self.commentpatterns:
-           offset = commentexpr.match(String,StartPosition)
+           offset = RMATCH(commentexpr,String,StartPosition)
            if offset != -1:
               if offset<1:
                  info = DumpStringWindow(String,StartPosition)
@@ -296,7 +306,7 @@ class LexDictionary:
            return ( keypair[0], keypair[1] + totalOffset)
         # looking for terminal
         for (regexpr, Flag, Function) in self.regexprlist:
-           offset = regexpr.match(String,StartPosition)
+           offset = RMATCH(regexpr,String,StartPosition)
            if offset != -1:
               matchstring = String[StartPosition : offset+StartPosition]
               if Function != None:
@@ -386,18 +396,17 @@ class lexdictionary:
        punctlist = self.punctuationlist
        termregex = self.termregex
        while not finished:
-          #print String[StartPosition:]
           if len(String) <= StartPosition:
              result = self.lastresult = (ENDOFFILETERM, 0)
              return result
           # skip ws and comments 
-          skip = skipprog.match(String, StartPosition)
+          #skip = skipprog.match(String, StartPosition)
+          skip = RMATCH(skipprog, String, StartPosition)
           if skip>0:
              if skip==0:
                 info = DumpStringWindow(String, StartPosition)
                 raise LexTokenError, \
-                     "zero length whitespace or comment "+info
-             #print "skipping", `String[StartPosition: StartPosition+skip]`
+                  "zero length whitespace or comment "+info
              StartPosition = StartPosition + skip
              totalOffset = totalOffset + skip
              continue
@@ -408,9 +417,10 @@ class lexdictionary:
              result = self.lastresult = (keypair[0], keypair[1]+totalOffset)
              return result
           # look for terminal
+          #print "Termregex: %s --> %s <-- start=%s" % (termregex.pattern, String, StartPosition)
           offset = termregex.match(String, StartPosition)
-          if (offset>0):
-             g = termregex.group
+          if offset is not None:
+             g = offset.group
              for (term, regex, flag, fn) in self.termlist:
                  test = g(term)
                  if test:
@@ -420,7 +430,7 @@ class lexdictionary:
                     else:
                        value = test
                     result = self.lastresult = (
-                       (flag, value), offset + totalOffset)
+                       (flag, value), offset.end() - offset.start() + totalOffset)
                     return result
           # error if we get here
           info = DumpStringWindow(String, StartPosition)
@@ -431,19 +441,19 @@ class lexdictionary:
 
    def compile(self):
        from string import joinfields, whitespace
-       import regex
+       import re
        skipregexen = self.commentstrings + [WHITERE]
-       skipregex = "\(" + joinfields(skipregexen, "\)\|\(") + "\)"
+       skipregex = "(" + joinfields(skipregexen, ")|(") + ")"
        #print skipregex; import sys; sys.exit(1)
-       self.skipprog = regex.compile(skipregex)
+       self.skipprog = re.compile(skipregex)
        termregexen = []
        termnames = []
        for (term, rgex, flag, fn) in self.termlist:
-           fragment = "\(<%s>%s\)" % (term, rgex)
+           fragment = "(?P<%s>%s)" % (term, rgex)
            termregexen.append(fragment)
            termnames.append(term)
-       termregex = joinfields(termregexen, "\|")
-       self.termregex = regex.symcomp(termregex)
+       termregex = joinfields(termregexen, "|")
+       self.termregex = re.compile(termregex)
        self.termnames = termnames
 
 LexDictionary = lexdictionary ##### test!

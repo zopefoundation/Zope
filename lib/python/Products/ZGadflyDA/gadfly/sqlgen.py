@@ -27,7 +27,7 @@ def charstfn(str):
 digits = string.digits
 # rely in python to filter out the good/bad/ugly
 intre = "[%s][%s.jJ]*" % (digits,digits)
-numlitre = "%s\([Ee][+-]?%s\)?" % (intre, intre)
+numlitre = "%s([Ee][+-]?%s)?" % (intre, intre)
 
 def numlitfn(str):
     """Note: this is "safe" because regex
