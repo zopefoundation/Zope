@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -59,6 +59,20 @@ class RoleManager:
 	    p.setRole(role_to_manage, name in permissions)
 
 	if REQUEST is not None: return self.manage_access(self,REQUEST)
+
+    manage_acquiredForm=HTMLFile('acquiredEdit', globals())
+    def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
+	"Change the permissions that acquire"
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+            p=Permission(name,value,self)
+            roles=p.getRoles()
+            if roles is None: continue
+            if name in permissions: p.setRoles(list(roles))
+            else:                   p.setRoles(tuple(roles))
+
+	if REQUEST is not None: return self.manage_access(self,REQUEST)
+        
 
     manage_permissionForm=HTMLFile('permissionEdit', globals())
     def manage_permission(self, permission_to_manage,

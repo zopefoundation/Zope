@@ -1,0 +1,14 @@
+<html><head><title>Manage Acquired Permission Settings</title></head>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#if manage_tabs--><!--#var manage_tabs--><!--#/if manage_tabs-->
+
+<FORM ACTION="manage_acquiredPermissions" METHOD="POST">
+
+Select permissions that acquire permission settings:<br>
+<select name=permissions:list multiple size=10>
+<!--#in permission_settings mapping-->
+  <option <!--#if acquire-->SELECTED<!--#/if-->><!--#var name--></option>
+<!--#/in-->
+</select><p>
+<input type=submit value="Change">
+</form></body></html>

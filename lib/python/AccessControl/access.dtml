@@ -27,11 +27,7 @@ indicate where roles are assigned permissions.
 <TABLE>
 <TR>
   <!--#unless isTopLevelPrincipiaApplicationObject-->
-  <TD>
-  <STRONG>
-  Acquire<BR>permission<BR>settings?
-  </STRONG>
-  </TD>
+  <TD></TD>
   <!--#/unless-->
   <TD>
   <STRONG>
@@ -46,7 +42,11 @@ indicate where roles are assigned permissions.
 </TR>
 <TR>
   <!--#unless isTopLevelPrincipiaApplicationObject-->
-  <TD></TD>
+  <TD>
+  <STRONG>
+  <a href="manage_acquiredForm">Acquire<BR>permission<BR>settings</a>?
+  </STRONG>
+  </TD>
   <!--#/unless-->
   <TD></TD>
   <!--#in valid_roles-->
