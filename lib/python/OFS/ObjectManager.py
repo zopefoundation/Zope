@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.42 1998/05/22 22:30:42 jim Exp $"""
+$Id: ObjectManager.py,v 1.43 1998/07/23 17:16:52 jim Exp $"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -157,6 +157,7 @@ class ObjectManager(
 	    for ob in self._objects:
 		if ob['meta_type'] in spec:
 		    set.append((ob['id'], getattr(self, ob['id'])))
+	    return set
 	return map(lambda i,s=self: (i['id'], getattr(s,i['id'])),
 		                    self._objects)
     def objectMap(self):
@@ -525,6 +526,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.43  1998/07/23 17:16:52  jim
+# Fixed ornery bug in objectItems.
+#
 # Revision 1.42  1998/05/22 22:30:42  jim
 # Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
 # right into Persistent in Globals.
