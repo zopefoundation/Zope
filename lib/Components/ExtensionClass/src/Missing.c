@@ -53,19 +53,10 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.1 1997/07/01 21:36:34 jim Exp $"
+"\n$Id: Missing.c,v 1.2 1997/07/02 20:19:37 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
-
-static PyObject *ErrorObject;
-
-/* ----------------------------------------------------- */
-
-static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
-#define ASSIGN(V,E) PyVar_Assign(&(V),(E))
-#define UNLESS(E) if(!(E))
-#define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 
 /* Declarations for objects of type Missing */
 
@@ -246,7 +237,7 @@ void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
 
   /* Create the module and add the functions */
   m = Py_InitModule4("Missing", Module_Level__methods,
@@ -257,9 +248,6 @@ initMissing()
   d = PyModule_GetDict(m);
 
   PyExtensionClass_Export(d,"Missing",MissingType);
-
-  ErrorObject = PyString_FromString("Missing.error");
-  PyDict_SetItemString(d, "error", ErrorObject);
 
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
@@ -278,6 +266,9 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.2  1997/07/02 20:19:37  jim
+  Got rid of unused macros and ErrorObject.
+
   Revision 1.1  1997/07/01 21:36:34  jim
   *** empty log message ***
 
