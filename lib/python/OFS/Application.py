@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.19 1997/11/07 17:11:48 brian Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Application.py,v 1.20 1997/11/07 17:33:09 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -119,8 +119,19 @@ class Application(Folder.Folder):
 
 
 def open_bobobase():
+    import App.ApplicationManager
+
     # Open the application database
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
+    
+    try: app=Bobobase['Application']
+    except KeyError:
+	app=Application()
+	app._init()
+	app.app=App.ApplicationManager.ApplicationManager()
+
+	Bobobase['Application']=app
+	get_transaction().commit()
     
     if not Bobobase.has_key('products'):
 	import initial_products
@@ -224,6 +235,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.20  1997/11/07 17:33:09  jim
+# Added code to add Application key to Bobobase if necessary.
+#
 # Revision 1.19  1997/11/07 17:11:48  brian
 # Added role mgmt to Application object
 #
