@@ -190,6 +190,21 @@ class DateTimeTests (unittest.TestCase):
         assert ddays == 3000000L, ddays
 
 
+    def testISO8601(self):
+        ''' iso 8601 dates '''
+
+        ref0 = DateTime('2002/5/2 8:00am GMT')
+        ref1 = DateTime('2002/5/2 8:00am US/Eastern')
+
+        isoDt = DateTime('2002-05-02T08:00:00')
+        self.assertEqual( ref0, isoDt)
+        isoDt = DateTime('2002-05-02T08:00:00Z')
+        self.assertEqual( ref0, isoDt)
+
+        isoDt = DateTime('2002-05-02T08:00:00Z-04:00')
+        self.assertEqual( ref1, isoDt)
+
+
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
 
