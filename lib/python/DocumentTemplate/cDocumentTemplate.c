@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.11 1998/04/02 17:37:40 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.12 1998/04/02 21:17:41 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -141,10 +141,12 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
 	    }
 	}
       else
-	UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
+	UNLESS_ASSIGN(r, PyObject_GetAttr(self->inst, key)) goto KeyError;
     }  
   else
     {
+      PyErr_Clear();
+
       /* OK, use getattr */
       UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
 
@@ -828,7 +830,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -878,6 +880,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.12  1998/04/02 21:17:41  jim
+  Fixed (old) memory leak for DocumentTemplates wo validate.
+
   Revision 1.11  1998/04/02 17:37:40  jim
   Major redesign of block rendering. The code inside a block tag is
   compiled as a template but only the templates blocks are saved, and
