@@ -158,18 +158,17 @@ class Catalog(Persistent, Acquisition.Implicit):
         """ Returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
         """
-##        import pdb
-##        pdb.set_trace()
         if type(index) is ttype:
-            score, key = index
+            normalized_score, score, key = index
             r=self._v_result_class(self.data[key]).__of__(self.aq_parent)
-            r.data_record_score_ = score
             r.data_record_id_ = key
+            r.data_record_score_ = score
+            r.data_record_normalized_score_ = normalized_score
         else:
             r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
             r.data_record_id_ = index
             r.data_record_score__ = 1
-
+            r.data_record_normalized_score_ = 1
         return r
 
     def __setstate__(self, state):
@@ -193,6 +192,8 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         scopy['data_record_id_']=len(self.schema.keys())
         scopy['data_record_score_']=len(self.schema.keys())+1
+        scopy['data_record_normalized_score_']=len(self.schema.keys())+2
+
         mybrains.__record_schema__ = scopy
 
         self._v_brains = brains
@@ -285,7 +286,6 @@ class Catalog(Persistent, Acquisition.Implicit):
 
     def catalogObject(self, object, uid, threshold=None):
         """ 
-
         Adds an object to the Catalog by iteratively applying it
         all indexes.
 
@@ -294,7 +294,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         'uid' is the unique Catalog identifier for this object
 
         """
-
         data = self.data
 
         if self.uids.has_key(uid):
@@ -322,7 +321,6 @@ class Catalog(Persistent, Acquisition.Implicit):
 
     def uncatalogObject(self, uid):
         """ 
-
         Uncatalog and object from the Catalog.  and 'uid' is a unique
         Catalog identifier
 
@@ -330,7 +328,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         catalogued, otherwise it will not get removed from the catalog
 
         """
-        
         if uid not in self.uids.keys():
             return
         
@@ -352,7 +349,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         del self.paths[rid]
 
     def clear(self):
-
         """ clear catalog """
         
         self.data = BTree.BTree()
@@ -401,6 +397,7 @@ class Catalog(Persistent, Acquisition.Implicit):
     def _indexedSearch(self, args, sort_index, append, used,
                        IIBType=type(IIBucket()), intSType=type(intSet())):
 
+
         rs=None
         data=self.data
         
@@ -438,7 +435,11 @@ class Catalog(Persistent, Acquisition.Implicit):
                     rset.append((score, key))
                 rset.sort()
                 rset.reverse()
-                append(LazyMap(self.__getitem__, rset))
+                max = float(rset[0][0])
+                rs = []
+                for score, key in rset:
+                    rs.append(( int((score/max)*100), score, key))
+                append(LazyMap(self.__getitem__, rs))
                     
             elif sort_index is None and type(rs) is intSType:
                 append(LazyMap(self.__getitem__, rs))
