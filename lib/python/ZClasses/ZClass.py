@@ -258,6 +258,10 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         # Save base meta-classes:
         self._zbases=zbases
 
+    def cb_isCopyable(self):
+        pass # for now, we don't allow ZClasses to be copied.
+    cb_isMovable=cb_isCopyable
+
     def _setBasesHoldOnToYourButts(self, bases):
         # Eeeek
         copy=self.__class__(self.id, self.title, bases)
@@ -286,6 +290,75 @@ class ZClass(OFS.SimpleItem.SimpleItem):
                                  copy.propertysheets.__class__)
 
         self._zbases=copy._zbases
+
+    def _new_class_id(self):
+        import md5, base64, time
+
+        id=md5.new()
+        id.update(self.absolute_url())
+        id.update(str(time.time()))
+        id=id.digest()
+        id=string.strip(base64.encodestring(id))
+
+        return '*'+id
+
+    def changeClassId(self, newid=None):
+        if Globals.DatabaseVersion!='3': return
+        if newid is None: newid=self._new_class_id()
+        self._unregister()
+        if newid:
+            if not newid[:1] == '*': newid='*'+newid
+            self.setClassAttr('__module__', newid)
+            self._register()
+
+    def _waaa_getJar(self):
+        # Waaa, we need our jar to register, but we may not have one yet when
+        # we need to register, so we'll walk our acquisition tree looking
+        # for one.
+        while 1:
+            try: jar=self._p_jar
+            except: return
+            if jar is not None: return jar
+            try: self=self.aq_parent
+            except: return
+
+    def _register(self):
+        if Globals.DatabaseVersion!='3': return
+        z=self._zclass_
+        class_id=z.__module__
+        if not class_id: return
+
+        jar=self._waaa_getJar()
+        globals=jar.root()['ZGlobals']
+        if globals.has_key(class_id):
+            raise 'Duplicate Class Ids'
+
+        globals[class_id]=z
+
+    def _unregister(self):
+        if Globals.DatabaseVersion!='3': return
+        class_id=self._zclass_.__module__
+        if not class_id: return
+        
+        globals=self._p_jar.root()['ZGlobals']
+        if globals.has_key(class_id):
+            del globals[class_id]
+
+    def manage_afterClone(self, item):
+        self.setClassAttr('__module__', None)
+        self.propertysheets.methods.manage_afterClone(item)
+        
+    def manage_afterAdd(self, item, container):
+        if Globals.DatabaseVersion!='3': return
+        if not self._zclass_.__module__:
+            self.setClassAttr('__module__', self._new_class_id())
+        self._register()
+        self.propertysheets.methods.manage_afterAdd(item, container)
+
+    def manage_beforeDelete(self, item, container):
+        if Globals.DatabaseVersion!='3': return
+        self._unregister()
+        self.propertysheets.methods.manage_beforeDelete(item, container)
 
     def manage_options(self):
         r=[]
