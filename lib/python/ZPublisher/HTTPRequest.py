@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -1107,9 +1107,10 @@ class HTTPRequest(BaseRequest):
                     path = [''] + path[:n]
                 else:
                     path = [other['SERVER_URL']] + path[:n]
+                URL = '/'.join(path)
                 if other.has_key('PUBLISHED'):
                     # Don't cache URLs until publishing traversal is done.
-                    other[key] = URL = '/'.join(path)
+                    other[key] = URL
                     self._urls = self._urls + (key,)
                 return URL
 
@@ -1139,9 +1140,10 @@ class HTTPRequest(BaseRequest):
                     v.insert(0, '')
                 else:
                     v.insert(0, other['SERVER_URL'])
+                URL = '/'.join(v)
                 if other.has_key('PUBLISHED'):
                     # Don't cache URLs until publishing traversal is done.
-                    other[key] = URL = '/'.join(v)
+                    other[key] = URL
                     self._urls = self._urls + (key,)
                 return URL
 
