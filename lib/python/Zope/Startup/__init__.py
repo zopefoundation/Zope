@@ -342,17 +342,12 @@ class UnixZopeStarter(ZopeStarter):
 def check_python_version():
     # check for Python version
     python_version = sys.version.split()[0]
-    optimum_version = '2.2.3'
-    if python_version < '2.2':
+    optimum_version = '2.3.3'
+    if python_version < '2.3.3':
         raise ZConfig.ConfigurationError(
-            'Invalid python version ' + python_version)
-    if python_version[:3] == '2.2':
-        if python_version[4:5] < '2':
-            err = ('You are running Python version %s.  This Python version '
-                   'has known bugs that may cause Zope to run improperly. '
-                   'Consider upgrading to Python %s\n' %
-                   (python_version, optimum_version))
-            sys.stderr.write(err)
+            'Invalid python version: %s, the optimal version is %s or higher' %
+            (python_version, optimum_version))
+
 
 def dropPrivileges(cfg):
     # Drop root privileges if we have them and we're on a posix platform.
