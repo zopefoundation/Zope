@@ -296,7 +296,9 @@ class ZClass( Base
 
     def _setBasesHoldOnToYourButts(self, bases):
         # Eeeek
-        copy=self.__class__(self.id, self.title, bases)
+        copy=self.__class__(self.id, self.title, bases,
+                            hasattr(self._zclass_, '_p_deactivate')
+                            )
 
         copy._zclass_.__dict__.update(
             self._zclass_.__dict__)
