@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.53 1997/09/23 10:32:57 jim Exp $"""
+$Id: Publish.py,v 1.54 1997/09/24 18:47:18 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.53 1997/09/23 10:32:57 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 
 def main():
@@ -603,7 +603,7 @@ class ModulePublisher:
 	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
 	try: fslist=fs.list
 	except: fslist=None
-	if fslist is None: form={'BODY':fs}
+	if fslist is None: form={'BODY':fs.value}
 	else:
 	    tuple_items={}
 
@@ -1465,6 +1465,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.54  1997/09/24 18:47:18  jim
+# Fixed bug in handling of case with body and no form data.
+#
 # Revision 1.53  1997/09/23 10:32:57  jim
 # Added machinery to compute AUTHENTICATION_PATH, which is used, with
 # AUTHENTICATED_USER to label transactions.
