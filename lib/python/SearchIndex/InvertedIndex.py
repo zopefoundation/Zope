@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.5 1996/12/03 18:15:07 chris Exp $'''
+$Id: InvertedIndex.py,v 1.6 1996/12/09 15:50:15 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.5 1996/12/03 18:15:07 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.6  1996/12/09 15:50:15  jim
+# Checked in so jim can hack.
+#
 # Revision 1.5  1996/12/03 18:15:07  chris
 # Updated doc strings
 #
@@ -104,12 +107,13 @@ $Id: InvertedIndex.py,v 1.5 1996/12/03 18:15:07 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 import regex, regsub, string, marshal
 import SingleThreadedTransaction, PickleDictionary
 
+from types import *
 
 class ResultList:
   '''\
@@ -245,7 +249,6 @@ class ResultList:
     self._list.reverse()    
 
 
-StringType = type('')
 RegexType = type(regex.compile(''))
 
 IndexingError = 'InvertedIndex.IndexingError'
@@ -371,10 +374,11 @@ class Index:
         i[s] = 1
 
     for s in i.keys():
+      freq = int(10000 * (i[s] / nwords))
       try:
-        index[s].addentry(i[s] / nwords, srckey)
+        index[s].addentry(freq, srckey)
       except:
-        index[s] = List([(i[s] / nwords, srckey)])
+        index[s] = List([(freq, srckey)])
 
 
   def __getitem__(self, key):
@@ -466,11 +470,26 @@ class Index:
 class PersistentResultList(ResultList, PickleDictionary.Persistent):
 
   def __getstate__(self):
-      return marshal.dumps(self._list)
+#      l = self._list
+#      new_l = []
+#      for key, freq in l:
+#        new_l = new_l + [ key, freq ]
+ 
+      new_l = self._list       
+      return marshal.dumps(new_l)
 
 
   def __setstate__(self, marshaled_state):
-      self._list = marshal.loads(marshaled_state)
+      l = marshal.loads(marshaled_state)
+
+#      if (len(l) and l[0] is not TupleType):
+#        new_l = []
+#	for i in range(0, len(l), 2):
+#          new_l.append(tuple(l[i : (i + 2)]))
+#
+#        l = new_l
+
+      self._list = l
 
 
   def addentry(self, freq, key):
@@ -483,11 +502,26 @@ class PersistentResultList(ResultList, PickleDictionary.Persistent):
 class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
 
   def __getstate__(self):
-      return marshal.dumps(self._list)
+      l = self._list
+      new_l = []
+      for key, freq in l:
+        new_l = new_l + [ key, freq ]
+        
+      return marshal.dumps(new_l)
 
 
   def __setstate__(self, marshaled_state):
-      self._list = marshal.loads(marshaled_state)
+      l = marshal.loads(marshaled_state)
+
+      if (len(l) and l[0] is not TupleType):
+        new_l = []
+	for i in range(0, len(l), 2):
+          new_l.append(tuple(l[i : (i + 2)]))
+
+        l = new_l
+
+      self._list = l
+
 
 
   def addentry(self, freq, key):
@@ -737,21 +771,6 @@ class Transactional(Index):
     Recover wasted space in the index file.'''
 
     self._index_object.pack()
-
-
-  def __getinitargs__(self):
-     return (self.picklefile,)
-
-
-  def __getstate__(self):
-     pass
-
-
-  def __setstate__(self,arg):
-     pass
-
-
-
 
 
 
