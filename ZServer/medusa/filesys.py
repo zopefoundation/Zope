@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: filesys.py,v 1.9 2001/05/01 11:44:48 andreas Exp $
+#	$Id: filesys.py,v 1.10 2002/02/15 18:41:43 andreasjung Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 # Generic filesystem interface.
@@ -396,8 +396,8 @@ def unix_longify (file, stat_info):
             dirchar,
             mode,
             stat_info[stat.ST_NLINK],
-            stat_info[stat.ST_UID],
-            stat_info[stat.ST_GID],
+            stat_info[stat.ST_UID].replace(' ','_'),
+            stat_info[stat.ST_GID].replace(' ','_'),
             stat_info[stat.ST_SIZE],
             date,
             file

@@ -25,6 +25,10 @@ Zope Changes
         because the downloaded file has been stored with a HTTP 
         header at the beginning of the file. Fixed!
 
+      - FTP: Spaces in usernames inside a FTP file listing are now
+        replaced by underscores to avoid confusion with some FTP clients.
+
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
