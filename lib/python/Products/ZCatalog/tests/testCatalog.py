@@ -307,6 +307,14 @@ class TestCatalogObject(unittest.TestCase):
         a = self._catalog(att3='att3', att2='att2')
         assert len(a) == self.upper
 
+    def testLargeSortedResultSetWithSmallIndex(self):
+        # This exercises the optimization in the catalog that iterates
+        # over the sort index rather than the result set when the result
+        # set is much larger than the sort index.
+        a = self._catalog(sort_on='att1')
+        self.assertEqual(len(a), self.upper)
+        
+
 class objRS(ExtensionClass.Base):
 
     def __init__(self,num):
@@ -350,8 +358,5 @@ def test_suite():
     suite.addTest( unittest.makeSuite( testRS ) )
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    unittest.main(defaultTest='test_suite')

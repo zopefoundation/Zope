@@ -23,7 +23,7 @@ from zLOG import LOG, ERROR
 from Lazy import LazyMap, LazyFilter, LazyCat
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 
-from BTrees.IIBTree import intersection, weightedIntersection
+from BTrees.IIBTree import intersection, weightedIntersection, IISet
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 import BTrees.Length
@@ -549,9 +549,19 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if (len(rs) > (len(sort_index) * 4)):
             # The result set is much larger than the sorted index,
             # so iterate over the sorted index for speed.
+
+            try:
+                intersection(rs, IISet(()))
+            except TypeError:
+                # rs is not an object in the IIBTree family.
+                # Try to turn rs into an IISet.
+                if hasattr(rs, 'keys'):
+                    rs = rs.keys()
+                rs = IISet(rs)
+
             for k, intset in sort_index.items():
                 # We have an index that has a set of values for
-                # each sort key, so we interset with each set and
+                # each sort key, so we intersect with each set and
                 # get a sorted sequence of the intersections.
                 intset = _intersection(rs, intset)
                 if intset:
@@ -630,7 +640,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         used = self._indexedSearch(args, sort_index, r.append, used)
         if not _merge:
             # Postpone merging and sorting.  This provides a way to
-            # sort results merged from multiple catalogs.
+            # efficiently sort results merged from multiple queries
+            # or multiple catalogs.
             return r
         else:
             has_sort_keys = 0
