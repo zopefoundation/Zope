@@ -130,7 +130,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     ## External methods not in the Pluggable Index API ##
 
-    security.declareProtected('query', search_zcatalog)
+    security.declareProtected(search_zcatalog, 'query')
 
     def query(self, query, nbest=10):
         """Return pair (mapping from docids to scores, num results).
