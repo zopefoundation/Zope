@@ -292,15 +292,6 @@ LOG_FILE=os.path.join(INSTANCE_HOME, 'var', 'Z2.log')
 # its PID to this file.
 PID_FILE=os.path.join(INSTANCE_HOME, 'var', 'Z2.pid')
 
-# open and close the log file, to make sure one is there.
-v = open(LOG_FILE, 'a')
-v.close()
-
-# if it hasn't failed at this point, create a .pid file.
-pf = open(PID_FILE, 'w')
-pf.write(str(os.getpid()))
-pf.close()
-
 # Try to become nobody. This will only work if this script is run by root.
 try:
     import pwd
@@ -311,6 +302,16 @@ try:
     os.setuid(nobody)
 except:
     pass
+
+# open and close the log file, to make sure one is there.
+v = open(LOG_FILE, 'a')
+v.close()
+
+# if it hasn't failed at this point, create a .pid file.
+pf = open(PID_FILE, 'w')
+pf.write(str(os.getpid()))
+pf.close()
+
 
 # import ZServer stuff
 
