@@ -10,6 +10,9 @@ class HTML:
       self.level     = 1
       self.olevels   = []
       self.ulevels   = []
+      self.par       = "off"
+      self.endofpar  = re.compile("\n\s*\n").search
+      self.self_par = ["header","order_list", "unorder_list"]
       self.types     = {"header":self.header,
                         "named_link":self.named_link,
                         "order_list":self.order_list,
@@ -62,15 +65,7 @@ class HTML:
       self.ulevels = tmp      
       
    def header(self,object):
-
-      """
-      object is a header instance. Everything within
-      this instance's string is also a header. Go through
-      every item in the string an print out the appropriate
-      info for each item and then close the header
-      """
-
-      head = "<h%s>" % self.level
+      head = "<h%s><p>" % self.level            
       self.string = self.string + head
       for item in object.string():
          if type(item).__name__ == "list":
@@ -79,15 +74,10 @@ class HTML:
             self.paragraph(item)
          elif type(item).__name__ == "instance":
             self.instance(item)
-      head = "</h%s>" % self.level
+      head = "</p></h%s>" % self.level
       self.string = self.string + head
       
    def order_list(self,object):
-      """
-      object is an ordered list instance. Everything
-      within is also part of an ordered list.
-      """
-
       tmp = 1
       for x in self.olevels:
          if x == self.level:
@@ -96,7 +86,7 @@ class HTML:
          self.olevels.append(self.level)
          self.string = self.string + "<ol>\n"
 
-      self.string = self.string + "<li>"
+      self.string = self.string + "<li><p>"
       for item in object.string():
          if type(item).__name__ == "list":
             for i in range(len(item)):
@@ -113,14 +103,9 @@ class HTML:
             self.paragraph(item)
          elif type(item).__name__ == "instance":
             self.instance(item)
-      self.string = self.string + "</li>\n"
+      self.string = self.string + "</p></li>\n"
 
    def unorder_list(self,object):
-      """
-      object is an unordered list instance. Everything
-      within is also part of an ordered list.
-      """
-
       tmp = 1
       for x in self.ulevels:
          if x == self.level:
@@ -129,7 +114,7 @@ class HTML:
          self.ulevels.append(self.level)
          self.string = self.string + "<ul>\n"
 
-      self.string = self.string + "<li>"
+      self.string = self.string + "<li><p>"
       for item in object.string():
          if type(item).__name__ == "list":
             for i in range(len(item)):
@@ -142,14 +127,9 @@ class HTML:
          elif type(item).__name__ == "instance":
             self.instance(item)
 
-      self.string = self.string + "</li>\n"
+      self.string = self.string + "</p></li>\n"
 
    def emphasize(self,object):
-      """
-      object is an emphasize instance. Everything
-      within is also emphasized.
-      """
-            
       self.string = self.string + "<em>"
       for item in object.string():
          if type(item).__name__ == "list":
@@ -162,11 +142,6 @@ class HTML:
       self.string = self.string + "</em>"
 
    def strong(self,object):
-      """
-      object is a strong instance. Everything
-      within is also part of an ordered list.
-      """
-      
       self.string = self.string + "<strong>"
       for item in object.string():
          if type(item).__name__ == "list":
@@ -179,11 +154,6 @@ class HTML:
       self.string = self.string + "</strong>"
 
    def underline(self,object):
-      """
-      object is a strong instance. Everything
-      within is also part of an ordered list.
-      """
-      
       self.string = self.string + "<u>"
       for item in object.string():
          if type(item).__name__ == "list":
@@ -196,10 +166,6 @@ class HTML:
       self.string = self.string + "</u>"
 
    def href1(self,object):
-      """
-      The object's string should be a string, nothing more
-      """
-      
       result = ""
       for x in object.string():
          result = result + x
@@ -211,10 +177,6 @@ class HTML:
       self.string = self.string + result
 
    def href2(self,object):
-      """
-      The object's string should be a string, nothing more
-      """
-      
       result = ""
       for x in object.string():
          result = result + x
@@ -224,22 +186,13 @@ class HTML:
       self.string = self.string + result
       
    def description(self,object):
-      """
-      just print the damn thing out for now
-      """
-      
       result = ""
       for x in object.string():
          result = result + x
       result = replace(result,"\n","\n<br>")
-      self.string = self.string + "<descr> " + result + " </descr>"
+      self.string = self.string + "<dt> " + result + " </dt>"
 
    def example(self,object):
-      """
-      An example object's string should be just a string an
-      outputed as-is
-      """
-
       result = ""
       for x in object.string():
          result = result + x
@@ -249,10 +202,6 @@ class HTML:
       self.string = self.string + result
 
    def named_link(self,object):
-      """
-      The object's string should be a string, nothing more
-      """
-      
       result = ""
       for x in object.string():
          result = result + x
@@ -278,9 +227,22 @@ class HTML:
       self.string = self.string + result
 
    def paragraph(self,object):
-      object = replace(object,"\n","<br>\n")
       self.string = self.string + object
 
+   def check_paragraph(self,object):
+      if self.par == "off":
+         if type(object).__name__ == "list":
+            for x in object:
+               if type(x).__name__ == "instance":
+                  for y in self.self_par:
+                     if x.type() == y:
+                        return
+         self.par    = "on"
+         self.string = self.string + "<p>"
+      elif self.par == "on":
+         self.string = self.string + "</p>\n"
+         self.par    = "off"
+      
    def instance(self,object):
       if self.types.has_key(object.type()):
          self.types[object.type()](object)
@@ -289,35 +251,39 @@ class HTML:
       result = "%s,%s" % (object.string(),self.level)
 
    def loop(self,object):
+
       if type(object) == "string":
          self.paragraph(object)
-      for x in object:
-         if type(x).__name__ == "string":
-            self.paragraph(x)
-         elif type(x).__name__ == "list":
-            self.loop(x)
-         elif type(x).__name__ == "instance":
-            self.instance(x)
+      else:
+         for x in object:
+            if type(x).__name__ == "string":
+               self.paragraph(x)
+            elif type(x).__name__ == "list":
+               self.loop(x)
+            elif type(x).__name__ == "instance":
+               self.instance(x)
 
    def call_loop(self,subs):
       for y in subs:
          self.list_check(y[0])
+         self.check_paragraph(y[0])
          self.loop(y[0])
          if y[1]:
             self.level = self.level + 1
             self.call_loop(y[1])
             self.level = self.level - 1
+         self.check_paragraph(y[0])
 
    def __call__(self,struct):
       for x in struct:
          self.list_check(x[0])
+         self.check_paragraph(x[0])
          self.loop(x[0])
+         self.check_paragraph(x[0])
          if x[1]:
             self.level = self.level + 1
             self.call_loop(x[1])
             self.level = self.level - 1
-
-      self.string = "<html>\n<body bgcolor='white' text='black'>\n" + self.string[:len(self.string)]
       result = self.string
       self.string = ""
       return result
