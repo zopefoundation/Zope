@@ -13,8 +13,8 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.5 2002/08/14 21:28:08 mj Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.6 2003/06/10 15:39:04 shane Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 import os, sys, unittest
 
@@ -139,7 +139,7 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         res = self.policy.validate(ob, ob, attrname, getattr(ob, attrname),
                                    self.context)
         if not res:
-            assert 0, 'Policy quietly denied %s' % attrname
+            self.fail('Policy quietly denied %s' % attrname)
 
     def assertPolicyDenies(self, ob, attrname):
         try:
@@ -150,10 +150,10 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
             pass
         else:
             if res:
-                assert 0, 'Policy quietly allowed %s' % attrname
+                self.fail('Policy quietly allowed %s' % attrname)
             else:
-                assert 0, ('Policy denied %s, but did not '
-                           'throw an exception.' % attrname)
+                self.fail('Policy denied %s, but did not '
+                          'throw an exception.' % attrname)
 
     def testUserAccess(self):
         item = self.item
@@ -212,18 +212,23 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         r_item = self.a.r_item
         context = self.context
         v = self.policy.checkPermission('View', r_item, context)
-        assert not v, '_View_Permission should deny access to user'
+        self.assert_(not v, '_View_Permission should deny access to user')
         o_context = SecurityContext(self.uf.getUserById('theowner'))
         v = self.policy.checkPermission('View', r_item, o_context)
-        assert v, '_View_Permission should grant access to theowner'
+        self.assert_(v, '_View_Permission should grant access to theowner')
 
     def testAqNames(self):
         policy = self.policy
-        assert not policy.validate('', '', 'aq_self', '', None)
-        assert not policy.validate('', '', 'aq_base', '', None)
-        assert policy.validate('', '', 'aq_parent', '', None)
-        assert policy.validate('', '', 'aq_explicit', '', None)
-        assert policy.validate('', '', 'aq_inner', '', None)
+        names = {
+            'aq_self': 0, 'aq_base': 0,
+            'aq_parent': 1, 'aq_explicit': 1, 'aq_inner': 1
+            }
+        for name, allowed in names.items():
+            if not allowed:
+                self.assertRaises(Unauthorized, policy.validate,
+                                  '', '', name, '', None)
+            else:
+                policy.validate('', '', name, '', None)
 
     if 0:
         # This test purposely generates a log entry.
@@ -242,7 +247,7 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
             except TypeError:
                 pass
             else:
-                assert 0, 'Policy accepted bad __roles__'
+                self.fail('Policy accepted bad __roles__')
 
 
 def test_suite():

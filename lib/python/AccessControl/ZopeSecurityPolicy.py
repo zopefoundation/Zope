@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.22 2003/06/09 16:26:39 shane Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.23 2003/06/10 15:39:04 shane Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -81,19 +81,13 @@ if _use_python_impl:
                      Containers=SimpleObjectPolicies.Containers,
                      valid_aq_=('aq_parent','aq_inner', 'aq_explicit')):
 
+            # Note: accessed is not used.
 
             ############################################################
             # Provide special rules for the acquisition attributes
             if type(name) is StringType:
                 if name.startswith('aq_') and name not in valid_aq_:
-                    return 0
-
-            containerbase = aq_base(container)
-            accessedbase = aq_base(accessed)
-            if accessedbase is accessed:
-                # accessed is not a wrapper, so assume that the
-                # value could not have been acquired.
-                accessedbase = container
+                    raise Unauthorized(name, value)
 
             ############################################################
             # If roles weren't passed in, we'll try to get them from the object
@@ -111,26 +105,22 @@ if _use_python_impl:
                 # of roles passed in. Presumably, the value is some simple
                 # object like a string or a list.  We'll try to get roles
                 # from its container.
-                if container is None: return 0 # Bail if no container
+                if container is None:
+                    # Either container or a list of roles is required
+                    # for ZopeSecurityPolicy to know whether access is
+                    # allowable.
+                    raise Unauthorized(name, value)
 
                 roles=getattr(container, '__roles__', _noroles)
                 if roles is _noroles:
-                    # Try to acquire __roles__.  If it can't be
-                    # acquired, the value is unprotected.  Deny access
-                    # to acquired unprotected values even if they are
-                    # in a simple container.
-                    if containerbase is container:
-                        # Container is not wrapped.
-                        roles=_noroles
-                        if containerbase is not accessedbase:
-                            return 0
-                    else:
-                        # Try to acquire roles
-                        try: roles = container.aq_acquire('__roles__')
+                    # Try to acquire __roles__.  If __roles__ can't be
+                    # acquired, the value is unprotected and roles is
+                    # left set to _noroles.
+                    if aq_base(container) is not container:
+                        try:
+                            roles = container.aq_acquire('__roles__')
                         except AttributeError:
-                            roles=_noroles
-                            if containerbase is not accessedbase:
-                                return 0
+                            pass
 
                 # We need to make sure that we are allowed to
                 # get unprotected attributes from the container. We are
@@ -151,10 +141,7 @@ if _use_python_impl:
                             p=p(name, value)
 
                 if not p:
-                    if (containerbase is accessedbase):
-                        raise Unauthorized(name, value)
-                    else:
-                        return 0
+                    raise Unauthorized(name, value)
 
                 if roles is _noroles: return 1
 
@@ -183,9 +170,7 @@ if _use_python_impl:
                     if (owner is not None) and not owner.allowed(value, roles):
                         # We don't want someone to acquire if they can't
                         # get an unacquired!
-                        if accessedbase is containerbase:
-                            raise Unauthorized(name, value)
-                        return 0
+                        raise Unauthorized(name, value)
 
                 # Proxy roles, which are a lot safer now.
                 proxy_roles=getattr(eo, '_proxy_roles', None)
@@ -194,10 +179,7 @@ if _use_python_impl:
                         if r in roles: return 1
 
                     # Proxy roles actually limit access!
-                    if accessedbase is containerbase:
-                        raise Unauthorized(name, value)
-
-                    return 0
+                    raise Unauthorized(name, value)
 
 
             try:
@@ -205,11 +187,8 @@ if _use_python_impl:
                     return 1
             except AttributeError: pass
 
-            # We don't want someone to acquire if they can't get an unacquired!
-            if accessedbase is containerbase:
-                raise Unauthorized(name, value)
+            raise Unauthorized(name, value)
 
-            return 0
 
         def checkPermission(self, permission, object, context):
             # XXX proxy roles and executable owner are not checked

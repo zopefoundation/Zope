@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -41,6 +41,11 @@ except ImportError:
 
 
     def guarded_getattr(inst, name, default=_marker):
+        """Retrieves an attribute, checking security in the process.
+
+        Raises Unauthorized if the attribute is found but the user is
+        not allowed to access the attribute.
+        """
         if name[:1] != '_':
             # Try to get the attribute normally so that unusual
             # exceptions are caught early.
@@ -55,12 +60,7 @@ except ImportError:
             validate = getSecurityManager().validate
             # Filter out the objects we can't access.
             if hasattr(inst, 'aq_acquire'):
-                try:
-                    return inst.aq_acquire(name, aq_validate, validate)
-                except AttributeError:
-                    # A denial of access was converted into an
-                    # AttributeError.  Convert it back.
-                    raise Unauthorized, name
+                return inst.aq_acquire(name, aq_validate, validate)
             # Or just try to get the attribute directly.
             if validate(inst, inst, name, v):
                 return v

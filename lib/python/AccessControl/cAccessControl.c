@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.19 2003/01/14 15:03:05 shane Exp $
+  $Id: cAccessControl.c,v 1.20 2003/06/10 15:39:04 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -733,7 +733,7 @@ static void unauthErr(PyObject *name, PyObject *value) {
 */
 
 static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
-	PyObject *accessed = NULL;
+	PyObject *accessed = NULL;  /* Note: accessed is not used. */
 	PyObject *container = NULL;
 	PyObject *name = NULL;
 	PyObject *value = NULL;
@@ -742,8 +742,6 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
         /* Import from SimpleObject Policy._noroles */
         /* Note that _noroles means missing roles, spelled with a NULL in C.
            Jim. */
-	PyObject *containerbase = NULL;
-	PyObject *accessedbase = NULL;
 	PyObject *p = NULL;
 	PyObject *rval = NULL;
 	PyObject *stack = NULL;
@@ -762,7 +760,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	/*| # Provide special rules for acquisition attributes
 	**| if type(name) is StringType:
 	**|     if name[:3] == 'aq_' and name not in valid_aq_:
-	**|	   return 0
+	**|	   raise Unauthorized(name, value)
 	*/ 
 
 	if (PyString_Check(name)) {		/* XXX what about unicode? */
@@ -771,27 +769,14 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 			if (strcmp(sname,"aq_parent")   != 0 &&
                             strcmp(sname,"aq_inner") != 0 &&
                             strcmp(sname,"aq_explicit") != 0) {
-				/* Access control violation, return 0 */
-				return PyInt_FromLong(0);
+				/* Access control violation */
+				unauthErr(name, value);
+				return NULL;  /* roles is not owned yet */
 			}
 		}
 	}
 
 	Py_XINCREF(roles);	/* Convert the borrowed ref to a real one */
-
-	/*| containerbase = aq_base(container)
-	**| accessedbase = getattr(accessed, 'aq_base', container)
-	*/
-
-	containerbase = aq_base(container);
-	if (containerbase == NULL) goto err;
-	
-	if (aq_isWrapper(accessed))
-		accessedbase = aq_base(accessed);
-	else {
-		Py_INCREF(container);
-		accessedbase = container;
-	}
 
 	/*| # If roles weren't passed in, we'll try to get them from
 	**| # the object
@@ -818,48 +803,33 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		**| # is some simple object like a string or a list.
 		**| # We'll try to get roles from it's container
 		**|
-		**| if container is None: return 0  # Bail if no container
+		**| if container is None: raise Unauthorized(name, value)
 		*/
 
 		if (container == Py_None)  {
-			rval= PyInt_FromLong(0);
+			unauthErr(name, value);
 			goto err;
 		}
 
 		/*| roles = getattr(container, "__roles__", _noroles)
-		**| if roles is _noroles:
-		**|    aq = getattr(container, 'aq_acquire', None)
-		**|    if aq is None:
-		**|       roles = _noroles
-		**|       if containerbase is not accessedbase: return 0
-		**|    else:
-		**|       # Try to acquire roles
-		**|      try: roles = aq('__roles__')
-		**|      except AttributeError:
-		**|	    roles = _noroles
-		**|         if containerbase is not accessedbase: return 0
+                **| if roles is _noroles:
+                **|     if aq_base(container) is not container:
+                **|         try:
+                **|             roles = container.aq_acquire('__roles__')
+                **|         except AttributeError:
+                **|             pass
 		*/
                 roles = PyObject_GetAttr(container, __roles__);
 		if (roles == NULL) {
 			PyErr_Clear();
 
-			if (!aq_isWrapper(container)) {
-				if (containerbase != accessedbase)  {
-					rval = PyInt_FromLong(0);
-					goto err;
-				}
-			} 
-                        else {
+			if (aq_isWrapper(container)) {
 				roles = aq_acquire(container, __roles__);
 				if (roles == NULL) {
                                   if (PyErr_ExceptionMatches(
                                       PyExc_AttributeError))
                                     {
                                         PyErr_Clear();
-				        if (containerbase != accessedbase) {
-						rval = PyInt_FromLong(0);
-						goto err;
-					}
                                     }
                                   else
                                     goto err;
@@ -879,7 +849,6 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		**|        "__allow_access_to_unprotected_subobjects__", None)
 		*/
 
-		/** XXX do we need to incref this stuff?  I dont think so */
 		p = callfunction2(Containers, OBJECT(container->ob_type),
                                   Py_None);
 		if (p == NULL)
@@ -916,21 +885,13 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		}
 
 		/*| if not p:
-		**|    if containerbase is accessedbase:
-		**|	  raise Unauthorized, cleanupName(name, value)
-		**|    else:
-		**|       return 0
+		**|     raise Unauthorized, cleanupName(name, value)
 		*/
                
 		if (p == NULL || ! PyObject_IsTrue(p)) {
-			Py_XDECREF(p);
-			if (containerbase == accessedbase) {
-				unauthErr(name, value);
-				goto err;
-			} else {
-				rval = PyInt_FromLong(0);
-				goto err;
-			}
+                  Py_XDECREF(p);
+                  unauthErr(name, value);
+                  goto err;
 		}
                 else
                   Py_DECREF(p);
@@ -1014,10 +975,8 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	**|    if (owner is not None) and not owner.allowed(value, roles)
 	**| 	  # We don't want someone to acquire if they can't 
 	**|	  # get an unacquired!
-	**|	  if accessedbase is containerbase:
-	**|	     raise Unauthorized, ('You are not authorized to'
-	**|		'access <em>%s</em>.' % cleanupName(name, value))
-	**|       return 0
+	**|       raise Unauthorized, ('You are not authorized to'
+	**|	      'access <em>%s</em>.' % cleanupName(name, value))
 	*/
 
 		eo = PySequence_GetItem(stack, -1);
@@ -1047,10 +1006,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
                     {
                       Py_DECREF(owner);
                       Py_DECREF(eo);
-                      if (accessedbase == containerbase) {
-                        unauthErr(name, value);
-                      } 
-                      else rval = PyInt_FromLong(0);
+                      unauthErr(name, value);
                       goto err;
                     }
 		}
@@ -1065,11 +1021,8 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	**|          if r in roles: return 1
 	**|
 	**|       # proxy roles actually limit access!
-	**|       if accessedbase is containerbase:
-	**|	     raise Unauthorized, ('You are not authorized to access'
-	**|		'<em>%s</em>.' % cleanupName(name, value))
-	**|
-	**|	  return 0
+	**|	  raise Unauthorized, ('You are not authorized to access'
+	**|	      '<em>%s</em>.' % cleanupName(name, value))
 	*/
 		proxy_roles = PyObject_GetAttr(eo, _proxy_roles_str);
                 Py_DECREF(eo);
@@ -1111,12 +1064,9 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
                     Py_DECREF(proxy_roles);
 
                     if (contains > 0)
-                      rval = PyInt_FromLong(contains);
+                      rval = PyInt_FromLong(1);
                     else if (contains == 0) {
-                      if (accessedbase == containerbase) {
-                        unauthErr(name, value);
-                      }
-                      else rval = PyInt_FromLong(contains);
+                      unauthErr(name, value);
                     }
                     goto err;
                   }
@@ -1152,25 +1102,15 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           }
         } /* End of authentiction skip for public only access */
 
-	/*| # we don't want someone to acquire if they can't get an
-	**| # unacquired!
-	**| if accessedbase is containerbase:
-	**|   raise Unauthorizied, ("You are not authorized to access"
+	/*| raise Unauthorizied, ("You are not authorized to access"
 	**|	 "<em>%s</em>." % cleanupName(name, value))
-	**| return 0
 	*/
 
-
-        if (accessedbase == containerbase) 
-          unauthErr(name, value);
-        else
-          rval = PyInt_FromLong(0);        
+        unauthErr(name, value);
   err:
 
 	Py_XDECREF(stack);
 	Py_XDECREF(roles);
-	Py_XDECREF(containerbase);
-	Py_XDECREF(accessedbase);
 
 	return rval;
 }
@@ -2011,24 +1951,12 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
       /*
         # Filter out the objects we can't access.
         if hasattr(inst, 'aq_acquire'):
-            try:
-                return inst.aq_acquire(name, aq_validate, validate)
-            except AttributeError:
-                # A denial of access was converted into an
-                # AttributeError.  Convert it back.
-                raise Unauthorized, name
+            return inst.aq_acquire(name, aq_validate, validate)
        */
       if (aq_isWrapper(inst))
         {
-          t = aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0);
-          if (t == NULL && PyErr_Occurred() == PyExc_AttributeError)
-            {
-              PyErr_Clear();
-              unauthErr(name, v);
-              goto err;
-            }
           Py_DECREF(v);
-          return t;
+          return aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0);
         }
 
       /*
@@ -2150,7 +2078,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.19 2003/01/14 15:03:05 shane Exp $\n");
+		"$Id: cAccessControl.c,v 1.20 2003/06/10 15:39:04 shane Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
