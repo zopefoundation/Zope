@@ -5,7 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add Folder</H2>
 
-<FORM ACTION="<!--#var PARENT_URL-->/manage_addFolder" METHOD="POST">
+<FORM ACTION="manage_addFolder" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
