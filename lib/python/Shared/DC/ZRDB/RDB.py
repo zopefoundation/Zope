@@ -11,11 +11,11 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.16 1998/05/04 22:35:58 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: RDB.py,v 1.17 1998/07/12 15:58:57 jim Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import regex, regsub
-from string import split, strip, lower, atof, atoi, atol, find, join
+from string import split, strip, lower, upper, atof, atoi, atol, find, join
 import DateTime
 from Missing import MV
 from array import array
@@ -72,6 +72,8 @@ class DatabaseResults:
 	    if schema.has_key(name):
 		raise ValueError, 'Duplicate column name, %s' % name
 	    schema[name]=i
+	    schema[lower(name)]=i
+	    schema[upper(name)]=i
 	    i=i+1
 
 	self._nv=nv=len(names)
@@ -198,6 +200,9 @@ File=DatabaseResults
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.17  1998/07/12 15:58:57  jim
+# Made row data attributes case-insensitive.
+#
 # Revision 1.16  1998/05/04 22:35:58  jim
 # Fixed flaw in (un)escaping logic.
 #
