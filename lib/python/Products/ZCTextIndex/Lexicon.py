@@ -64,7 +64,8 @@ class Lexicon(Persistent):
             self.length = Length(self.length())        
         # Strategically unload the length value so that we get the most
         # recent value written to the database to minimize conflicting wids
-        # XXX this will not work when MVCC is implemented in the ZODB...
+        # Because length is independent, this will load the most
+        # recent value stored, regardless of whether MVCC is enabled
         self.length._p_deactivate()
         return map(self._getWordIdCreate, last)
 
