@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -228,10 +228,13 @@ class ApplicationManager(Folder,CacheManager):
                 if REQUEST: return self.manage_main(self, REQUEST)
                 return
 
+        # This is a little cheesy.  We really should record the pack
+        # time first, but we may need to pack to have space to
+        # record the information.
+        Globals.Bobobase._jar.db.pack(t,0)
         Globals.Bobobase['_pack_time']=t
         get_transaction().note('')
         get_transaction().commit()
-        Globals.Bobobase._jar.db.pack(t,0)
         if REQUEST: return self.manage_main(self, REQUEST)
 
     def revert_points(self): return ()
