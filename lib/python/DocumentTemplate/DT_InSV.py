@@ -58,8 +58,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.2 1998/04/03 19:28:41 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DT_InSV.py,v 1.3 1998/04/20 15:16:56 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from string import lower, upper, rfind
 from math import sqrt
@@ -356,7 +356,9 @@ class sequence_variables:
         prefix=key[:l]
 
         if hasattr(self, suffix):
-            return getattr(self,suffix)(data[prefix+'-index'])
+	    try: v=data[prefix+'-index']
+	    except: pass
+	    else: return getattr(self,suffix)(v)
 
 	if special_prefix(prefix):
 	    return special_prefixes[prefix](self, suffix, key)
@@ -404,6 +406,9 @@ def opt(start,end,size,orphan,sequence):
 ############################################################################## 
 #
 # $Log: DT_InSV.py,v $
+# Revision 1.3  1998/04/20 15:16:56  jim
+# Fixed bug in backward support for sequence-index-even etc.
+#
 # Revision 1.2  1998/04/03 19:28:41  jim
 # Fixed statistics bug.
 #
