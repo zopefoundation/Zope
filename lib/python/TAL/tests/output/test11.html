@@ -1,0 +1,5 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <a href="http://www.python.org">bar</a>
+  <p tal:define="x python:1" tal:on-error="string:bad boy!">bad boy!</p>
+  <p tal:on-error="string:x undefined">x undefined</p>
+</html>
