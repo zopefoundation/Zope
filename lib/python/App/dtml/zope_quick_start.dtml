@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title>Zope QuickStart</title>
+<dtml-let ag="REQUEST.get('HTTP_USER_AGENT', '')"
+     is_nav4="ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0">
+<dtml-if is_nav4>
+<style type="text/css">
+<!--
+
+<dtml-var manage_page_style.css>
+
+-->
+</style>
+<dtml-else>
+<link rel="stylesheet" type="text/css" href="<dtml-var 
+ BASEPATH1>/manage_page_style.css">
+</dtml-if>
+</dtml-let>
+</head>
+<body bgcolor="#ffffff" link="#000099" alink="#000099" vlink="#000099">
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Zope Quick Start',
+	   )">
+
+<p>
+Welcome to <strong>Zope</strong> - a new generation of software that 
+we call a web application platform. Like web application servers, Zope
+provides very high performance and a strong framework for dynamic 
+applications. Here are some quick pointers to get you started:
+</p>
+
+<ul>
+<li>
+<p>
+<a href="http://www.zope.org/Members/michel/ZB/" target="_new">Read The 
+Fine Manual</a>.  This document guides you through the whole process of
+learning Zope, from logging in for the first time to creating your own
+web applications.
+</p>
+</li>
+
+<li>
+<p>
+There is a built-in interactive <strong>Zope Tutorial</strong> which 
+gets you started with some simple tasks using the Zope managment 
+interface. To use the tutorial, go to any Folder and select 
+<em>Zope Tutorial</em> from the add list and click the <em>Add</em> 
+button. Provide a name for the tutorial and click <em>Add</em> to 
+begin working with the tutorial.
+</p>
+</li>
+
+<li>
+<p>
+Go to the main <a href="http://www.zope.org/Documentation/" target="_new">
+Documentation Overview</a> on Zope.org.  Here you will find pointers to 
+official and community contributed documentation.
+</p>
+</li>
+
+<li>
+<p>
+Look at the various <a 
+href="http://www.zope.org/Resources/MailingLists" target="_new">Mailing 
+Lists</a> about Zope.  The Mailing Lists are where you can get 
+quick, accurate, friendly help from a large community of Zope 
+users from around the world.
+</p>
+</li>
+
+<li>
+<p>
+Browse and search the integrated, <a href="HelpSys" target="zope_help">
+Online Help System</a> which contains documentation on 
+the various kinds of components you'll find in Zope.
+</p>
+</li>
+
+<li>
+<p>
+Go directly to the <a href="<dtml-var BASEPATH1>/manage" target="_top">
+Zope Management Interface</a> if you'd like to start working with Zope 
+right away.
+</p>
+</li>
+
+<li>
+<p>
+Find out about <a href="http://www.digicool.com/" target="_new">Digital
+Creations</a>, the publishers of Zope.
+</p>
+</li>
+
+</ul>
+
+</body>
+</html>

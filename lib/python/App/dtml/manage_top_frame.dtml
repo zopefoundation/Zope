@@ -25,10 +25,10 @@ alt="" />
  AUTHENTICATED_USER></strong></span> &nbsp;&nbsp;
 
 <select class="form-element" name=":action" onChange="window.parent.manage_main.location.href='&dtml-BASEPATH1;/'+this.options[this.selectedIndex].value">
-<option value="ZopeQuickStart">Zope Quick Start</option>
+<option value="zope_quick_start">Zope Quick Start</option>
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
 <option value="manage_zmi_prefs">Set Preferences</option>
-<option value="manage_logout">Logout</option>
+<option value="manage_zmi_logout">Logout</option>
 </dtml-if>
 </select> 
 <input class="form-element" type="submit" name="submit" value=" Go " />
