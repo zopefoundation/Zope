@@ -30,7 +30,7 @@
 # using the CommitLog instance, and derived classes provide a more specific
 # interface for the storage.
 
-__version__ = '$Revision: 1.11 $'.split()[-2:][0]
+__version__ = '$Revision: 1.12 $'.split()[-2:][0]
 
 import sha
 import struct
@@ -341,8 +341,12 @@ class FullLog(CommitLog):
     #           actually higher level API method that write essentially the
     #           same record with some of the elements defaulted to the empty
     #           string or the "all-zeros" string.
-    #     'x' - Like 'o' but might have slightly different semantics in the
-    #           individual databases.
+    #     'a' - Like 'o' but used in abortVersion transaction so that the
+    #           object's serial number doesn't appear to change after the
+    #           abortVersion.
+    #     'x' - Like 'o', but doesn't write a metadata record during _finish
+    #           since the metadata record was written optimistically during
+    #           the store() call.
     #     'v' - new version record, consisting of a version string and a
     #           version id
     #     'd' - discard version, consisting of a version id
@@ -391,7 +395,7 @@ class FullLog(CommitLog):
         # Write zeros for the vid and nvrevid since we're storing this object
         # into version zero (the non-version).  Also, write an empty pickle
         # since we'll reuse one already in the pickle table.
-        self._append('o', (oid, zero, zero, lrevid, None, prevrevid))
+        self._append('a', (oid, zero, zero, lrevid, None, prevrevid))
 
     def write_moved_object(self, oid, vid, nvrevid, lrevid, prevrevid):
         # Write an empty pickle since we're just moving the object and we'll
@@ -421,6 +425,6 @@ class FullLog(CommitLog):
             key, data = rec
         except ValueError:
             raise LogCorruptedError, 'incomplete record'
-        if key not in 'xovdr':
+        if key not in 'xovdra':
             raise LogCorruptedError, 'bad record key: %s' % key
         return key, data
