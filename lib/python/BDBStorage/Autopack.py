@@ -14,7 +14,7 @@
 
 """An autopacking Berkeley storage without undo and versioning.
 """
-__version__ = '$Revision: 1.3 $'.split()[-2:][0]
+__version__ = '$Revision: 1.4 $'.split()[-2:][0]
 
 import sys
 import os
@@ -206,11 +206,6 @@ class Autopack(BerkeleyBase):
 
     def iterator(self):
         raise NotImplementedError
-
-    def getSize(self):
-        # Return the size of the pickles table as a rough estimate
-        filename = os.path.join(self._env.db_home, 'zodb_pickles')
-        return os.path.getsize(filename)
 
     # Not part of the storage API
 

@@ -39,7 +39,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.16 $'.split()[-2:][0]
+__version__ = '$Revision: 1.17 $'.split()[-2:][0]
 
 
 
@@ -165,8 +165,9 @@ class BerkeleyBase(BaseStorage):
 
     def getSize(self):
         """Return the size of the database."""
-        # TBD: this is expensive to calculate and many not be necessary.
-        return 'too hard to determine'
+        # Return the size of the pickles table as a rough estimate
+        filename = os.path.join(self._env.db_home, 'zodb_pickles')
+        return os.path.getsize(filename)
 
     # BAW: this overrides BaseStorage.tpc_vote() with exactly the same
     # implementation.  This is so Zope 2.3.1, which doesn't include the change
