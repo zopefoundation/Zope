@@ -369,21 +369,22 @@ class Catalog(Persistent, Acquisition.Implicit):
         catalogued, otherwise it will not get removed from the catalog
 
         """
-        if uid not in self.uids.keys():
-            raise ValueError, "Uncatalog of absent id %s" % `uid`
-        
-        rid = self.uids[uid]
+        try:
+            rid = self.uids[uid]
 
-        for x in self.indexes.values():
-            if hasattr(x, 'unindex_object'):
-                try:
-                    x.unindex_object(rid)
-                except KeyError:
-                    pass  #fugedaboudit
+            for x in self.indexes.values():
+                if hasattr(x, 'unindex_object'):
+                    try:
+                        x.unindex_object(rid)
+                    except KeyError:
+                        pass  #fugedaboudit
 
-        del self.data[rid]
-        del self.uids[uid]
-        del self.paths[rid]
+            del self.data[rid]
+            del self.uids[uid]
+            del self.paths[rid]
+
+        except:
+            pass
 
     def clear(self):
         """ clear catalog """
