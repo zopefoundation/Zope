@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.9 1999/08/02 17:41:21 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.10 1999/08/04 01:18:23 amos Exp $'
 
 # python modules
 import os
@@ -443,7 +443,21 @@ class http_channel (asynchat.async_chat):
 			# crack the request header
 			# --------------------------------------------------
 			request = lines[0]
-			command, uri, version = crack_request (request)
+			try:
+				command, uri, version = crack_request (request)
+			except:
+				# deal with broken HTTP requests
+				try:
+					# maybe there were spaces in the URL
+					parts=string.split(request)
+					command, uri, version = crack_request(
+							'%s %s %s' % (parts[0], parts[1], parts[-1]))
+				except:
+					self.log_info('Bad HTTP request: %s' % request, 'error')
+					r = http_request (self, request, 
+							None, None, None, join_headers(lines[1:]))
+					r.error(400)
+					return
 			header = join_headers (lines[1:])
 
 			r = http_request (self, request, command, uri, version, header)
