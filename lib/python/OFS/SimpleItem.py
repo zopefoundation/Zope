@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.76 2000/06/09 23:57:46 evan Exp $'''
-__version__='$Revision: 1.76 $'[11:-2]
+$Id: SimpleItem.py,v 1.77 2000/06/12 19:36:37 shane Exp $'''
+__version__='$Revision: 1.77 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -101,17 +101,17 @@ from CopySupport import CopySource
 from string import join, lower, find, split
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
-from urllib import quote, unquote
+from urllib import quote
 from AccessControl import getSecurityManager
+from Traversable import Traversable
 
 import marshal
 import ZDOM
 
 HTML=Globals.HTML
-_marker=[]
 StringType=type('')
 
-class Item(Base, Resource, CopySource, App.Management.Tabs,
+class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
            ZDOM.Element,
            AccessControl.Owned.Owned,
            App.Undo.UndoSupport,
@@ -155,9 +155,6 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
     # Allow (reluctantly) access to unprotected attributes
     __allow_access_to_unprotected_subobjects__=1
 
-    getPhysicalRoot=Acquisition.Acquired
-    getPhysicalRoot__roles__=()
-    
 
     def title_or_id(self):
         """
@@ -351,99 +348,6 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         if relative: # Deprecated - use getPhysicalPath
             return join(path, '/')
         return join([req['SERVER_URL']] + req._script + path, '/')
-
-    def getPhysicalPath(self):
-        '''Returns a path (an immutable sequence of strings)
-        that can be used to access this object again
-        later, for example in a copy/paste operation.  getPhysicalRoot()
-        and getPhysicalPath() are designed to operate together.
-        '''
-        path = (self.id,)
-        
-        p = getattr(self,'aq_inner', None)
-        if p is not None: 
-            path = p.aq_parent.getPhysicalPath() + path
-
-        return path
-
-    unrestrictedTraverse__roles__=()
-    def unrestrictedTraverse(self, path, default=_marker, restricted=0):
-
-        if not path: return self
-
-        get=getattr
-        N=None
-        M=_marker
-
-        if type(path) is StringType: path = split(path,'/')
-        else: path=list(path)
-
-        REQUEST={'TraversalRequestNameStack': path}
-        path.reverse()
-        pop=path.pop
-
-        if not path[-1]:
-            # If the path starts with an empty string, go to the root first.
-            pop()
-            self=self.getPhysicalRoot()
-                    
-        try:
-            object = self
-            while path:
-                name=pop()
-
-                if name[0] == '_':
-                    # Never allowed in a URL.
-                    raise 'NotFound', name
-
-                if name=='..':
-                    o=getattr(object, 'aq_parent', M)
-                    if o is not M:
-                        if (restricted and
-                            not getSecurityManager().validate(object, object, name, o)):
-                            raise 'Unauthorized', name
-                        object=o
-                        continue
-
-                t=get(object, '__bobo_traverse__', N)
-                if t is not N:
-                    o=t(REQUEST, name)
-                    
-                    # Note we pass no container, because we have no
-                    # way of knowing what it is
-                    if (restricted and not getSecurityManager().validate(object, None, name, o)):
-                        raise 'Unauthorized', name
-                      
-                else:
-                    o=get(object, name, M)
-                    if o is not M:
-                        if restricted:
-                            # waaaa
-                            if hasattr(get(object,'aq_base',object), name):
-                                # value wasn't acquired
-                                if not getSecurityManager().validate(object, object, name, o):
-                                    raise 'Unauthorized', name
-                            else:
-                                if not getSecurityManager().validate(object, None, name, o):
-                                    raise 'Unauthorized', name
-                        
-                    else:
-                        o=object[name]
-                        if (restricted and not getSecurityManager().validate(object, object, None, o)):
-                            raise 'Unauthorized', name
-
-                object=o
-
-            return object
-
-        except:
-            if default==_marker: raise
-            return default
-
-    restrictedTraverse__roles__=()
-    def restrictedTraverse(self, path, default=_marker, restricted=0):
-        return self.unrestrictedTraverse(path, default, restricted=1)
-
 
 
 Globals.default__class_init__(Item)
