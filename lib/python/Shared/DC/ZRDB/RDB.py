@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.7 1997/10/09 15:11:12 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: RDB.py,v 1.8 1997/10/09 15:21:49 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -156,7 +156,7 @@ class File:
                 if fields[i]:
                     raise ValueError, (
                         """Invalid value, %s, for %s in record %s"""
-                        % (fields[i], self._names[i], _index))
+                        % (fields[i], self._names[i], index))
                 else: v=MV
             fields[i]=v
 
@@ -168,6 +168,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.8  1997/10/09 15:21:49  jim
+# Fixed name error in exception handler.
+#
 # Revision 1.7  1997/10/09 15:11:12  jim
 # Added optimization to cache result classes.
 #
