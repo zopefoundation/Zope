@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.63 2002/06/14 15:52:49 Brian Exp $'''
-__version__='$Revision: 1.63 $'[11:-2]
+$Id: HTTPResponse.py,v 1.64 2002/06/20 15:17:07 Brian Exp $'''
+__version__='$Revision: 1.64 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -145,7 +145,12 @@ class HTTPResponse(BaseResponse):
     realm='Zope'
     _error_format='text/html'
     _locked_status = 0
-    use_HTTP_content_compression = 0    # indicate if setBody should content-compress output
+
+    # Indicate if setBody should content-compress output.
+    # 0 - no compression
+    # 1 - compress if accept-encoding ok
+    # 2 - ignore accept-encoding (i.e. force)
+    use_HTTP_content_compression = 0    
 
     def __init__(self,body='',status=200,headers=None,
                  stdout=sys.stdout, stderr=sys.stderr,):
@@ -331,7 +336,14 @@ class HTTPResponse(BaseResponse):
                     self.body = z
                     self.setHeader('content-length', newlen)
                     self.setHeader('content-encoding','gzip')
-            
+                    if self.use_HTTP_content_compression == 1:
+                        # use_HTTP_content_compression == 1 if force was
+                        # NOT used in enableHTTPCompression(). 
+                        # If we forced it, then Accept-Encoding
+                        # was ignored anyway, so cache should not
+                        # vary on it. Otherwise if not forced, cache should 
+                        # respect Accept-Encoding client header
+                        self.appendHeader('Vary','Accept-Encoding')
         return self
 
     def enableHTTPCompression(self,REQUEST={},force=0,disable=0,query=0):
@@ -342,7 +354,8 @@ class HTTPResponse(BaseResponse):
            disable -- set true to disable compression
            query   -- just return if compression has been previously requested
 
-           returns -- 1 if compression will be performed, 0 otherwise
+           returns -- 1 if compression will be attempted, 2 if compression
+                      is forced, 0 if no compression
 
            The HTTP specification allows for transfer encoding and content
            encoding. Unfortunately many web browsers still do not support
@@ -377,9 +390,10 @@ class HTTPResponse(BaseResponse):
             self.use_HTTP_content_compression = 0
 
         elif force or (REQUEST.get('HTTP_ACCEPT_ENCODING','').find('gzip') != -1):
-            self.use_HTTP_content_compression = 1
-            if not force:
-                self.appendHeader('Vary', 'Accept-Encoding')
+            if force:
+                self.use_HTTP_content_compression = 2
+            else:
+                self.use_HTTP_content_compression = 1
             
         return self.use_HTTP_content_compression
 
