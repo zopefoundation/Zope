@@ -31,7 +31,7 @@
                          target='_top')
     </PRE>"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 from Globals import HTML
@@ -39,11 +39,11 @@ from Globals import HTML
 MessageDialog = HTML("""
 <HTML>
 <HEAD>
-<TITLE><dtml-var title></TITLE>
+<TITLE>&dtml-title;</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<FORM ACTION="<dtml-var action>" METHOD="GET" <dtml-if
- target>TARGET="<dtml-var target>"</dtml-if>>
+<FORM ACTION="&dtml-action;" METHOD="GET" <dtml-if
+ target>TARGET="&dtml-target;"</dtml-if>>
 <TABLE BORDER="0" WIDTH="100%" CELLPADDING="10">
 <TR>
   <TD VALIGN="TOP">

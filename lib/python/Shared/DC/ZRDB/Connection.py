@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.38 2003/11/18 13:17:14 tseaver Exp $'''
-__version__='$Revision: 1.38 $'[11:-2]
+$Id: Connection.py,v 1.39 2004/01/15 22:44:08 tseaver Exp $'''
+__version__='$Revision: 1.39 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -25,6 +25,7 @@ from cStringIO import StringIO
 from Results import Results
 from sys import exc_info
 from zLOG import LOG, ERROR
+from cgi import escape
 import DocumentTemplate, RDB
 from zExceptions import BadRequest
 
@@ -103,7 +104,7 @@ class Connection(
         if REQUEST is not None:
             return MessageDialog(
                 title='Edited',
-                message='<strong>%s</strong> has been edited.' % self.id,
+                message='<strong>%s</strong> has been edited.' % escape(self.id),
                 action ='./manage_main',
                 )
 

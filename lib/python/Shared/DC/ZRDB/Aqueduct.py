@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.57 2003/11/18 13:17:14 tseaver Exp $'''
-__version__='$Revision: 1.57 $'[11:-2]
+$Id: Aqueduct.py,v 1.58 2004/01/15 22:44:08 tseaver Exp $'''
+__version__='$Revision: 1.58 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -158,7 +158,7 @@ def default_input_form(id,arguments,action='query',
                 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">\n'
                 '<html lang="en"><head><title>%s Input Data</title></head>\n'
                 '<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">\n%s\n'
-                '<form action="<dtml-var URL2>/<dtml-var id>/%s" '
+                '<form action="&dtml-URL2;/&dtml-id;/%s" '
                 'method="get">\n'
                 '<h2>%s Input Data</h2>\n'
                 'Enter query parameters:<br>'
@@ -187,7 +187,7 @@ def default_input_form(id,arguments,action='query',
                 '<dtml-if HTTP_REFERER>\n'
                 '  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
                 '  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"\n'
-                '         VALUE="<dtml-var HTTP_REFERER>">\n'
+                '         VALUE="&dtml-HTTP_REFERER;">\n'
                 '</dtml-if>\n'
                 '</td></tr>\n</table>\n</form>\n</body>\n</html>\n'
                 )
@@ -197,7 +197,7 @@ def default_input_form(id,arguments,action='query',
             '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">\n'
             '<html lang="en"><head><title>%s Input Data</title></head>\n'
             '<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">\n%s\n'
-            '<form action="<dtml-var URL2>/<dtml-var id>/%s" '
+            '<form action="&dtml-URL2;/&dtml-id;/%s" '
             'method="get">\n'
             '<h2>%s Input Data</h2>\n'
             'This query requires no input.<p>\n'
@@ -205,7 +205,7 @@ def default_input_form(id,arguments,action='query',
             '<dtml-if HTTP_REFERER>\n'
             '  <input type="SUBMIT" name="SUBMIT" value="Cancel">\n'
             '  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"\n'
-            '         VALUE="<dtml-var HTTP_REFERER>">\n'
+            '         VALUE="&dtml-HTTP_REFERER;">\n'
             '</dtml-if>\n'
             '</td></tr>\n</table>\n</form>\n</body>\n</html>\n'
             % (id, tabs, action, id)

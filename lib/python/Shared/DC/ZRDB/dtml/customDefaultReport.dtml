@@ -3,8 +3,7 @@
 
       <dtml-if previous-sequence>
 
-        <a href="&dtml-URL;<dtml-var sequence-query
-                 >query_start=<dtml-var previous-sequence-start-number>">
+        <a href="&dtml-URL;&dtml-sequence-query;query_start=&dtml-previous-sequence-start-number;">
         (Previous <dtml-var previous-sequence-size> results)
         </a>
 
@@ -24,8 +23,7 @@
 
       <dtml-if next-sequence>
 
-         <a href="&dtml-URL;<dtml-var sequence-query
-            >query_start=<dtml-var next-sequence-start-number>">
+         <a href="&dtml-URL;&dtml-sequence-query;query_start=&dtml-next-sequence-start-number;">
          (Next <dtml-var next-sequence-size> results)
          </a>
 

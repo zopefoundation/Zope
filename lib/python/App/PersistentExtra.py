@@ -11,6 +11,8 @@
 #
 ##############################################################################
 
+import ZODB
+
 from class_init import default__class_init__
 from Persistence import Persistent
 import Globals

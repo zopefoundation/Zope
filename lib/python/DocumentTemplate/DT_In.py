@@ -179,10 +179,8 @@
                     ... display rows
 
                     <!--#if sequence-end--> <!--#if next-sequence-->
-                      <a href="<!--#var URL-->/<!--#var sequence-query
-                          -->&batch_start=<!--#var
-                          next-sequence-start-number-->">
-                      (Next <!--#var next-sequence-size--> results)
+                      <a href="&dtml-URL;/&dtml-sequence-query;batch_start=&dtml-next-sequence-start-number;">
+                      (Next &dtml-next-sequence-size; results)
                       </a>
                     <!--#/if--> <!--#/if-->
 
@@ -191,7 +189,7 @@
              If the original URL is: 'foo/bar?x=1&y=2', then the
              rendered text (after row data are displayed) will be::
 
-                      <a href="foo/bar?x=1&y=2&batch_start=20">
+                      <a href="foo/bar?x=1&amp;y=2&amp;batch_start=20">
                       (Next 20 results)
                       </a>
 
@@ -199,7 +197,7 @@
              then the rendered text (after row data are displayed)
              will be::
 
-                      <a href="foo/bar?x=1&y=2&batch_start=30">
+                      <a href="foo/bar?x=1&amp;y=2&amp;batch_start=30">
                       (Next 20 results)
                       </a>
 
@@ -331,8 +329,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.61 2003/11/18 13:17:00 tseaver Exp $'
-__version__='$Revision: 1.61 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.62 2004/01/15 22:44:07 tseaver Exp $'
+__version__='$Revision: 1.62 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str, join_unicode

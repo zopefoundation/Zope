@@ -17,6 +17,7 @@ from OFS.ObjectManager import ObjectManager
 from Globals import Persistent, DTMLFile, HTML
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
+from cgi import escape
 import Products
 import HelpTopic
 import Globals
@@ -103,14 +104,14 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
             )
         help_url='%s?help_url=%s' % (self.absolute_url(), help_url)
 
-        script='window.open(\'%s\',\'zope_help\',\'width=600,' \
-                'height=500,menubar=yes,toolbar=yes,scrollbars=yes,' \
-                'resizable=yes\'); return false;' % help_url
+        script="window.open('%s','zope_help','width=600,height=500," \
+               "menubar=yes,toolbar=yes,scrollbars=yes,resizable=yes');" \
+               "return false;" % escape(help_url, 1).replace("'", "\\'")
 
         h_link='<a href="%s" onClick="%s" onMouseOver="window.status=' \
                '\'Open online help\'; return true;" onMouseOut="' \
                'window.status=\'\'; return true;">Help!</a>' % (
-               help_url, script
+               escape(help_url, 1), script
                )
 
         return h_link

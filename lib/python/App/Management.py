@@ -13,7 +13,7 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.65 2003/11/28 16:44:25 jim Exp $
+$Id: Management.py,v 1.66 2004/01/15 22:44:04 tseaver Exp $
 """
 
 import sys, Globals, ExtensionClass, urllib
@@ -21,6 +21,7 @@ from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
 from zExceptions import Redirect
 from AccessControl import getSecurityManager, Unauthorized
+from cgi import escape
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
@@ -89,16 +90,16 @@ class Tabs(ExtensionClass.Base):
         script = REQUEST['BASEPATH1']
         linkpat = '<a href="%s/manage_workspace">%s</a>'
         out = []
-        url = linkpat % (script, '&nbsp;/')
+        url = linkpat % (escape(script, 1), '&nbsp;/')
         if not steps:
             return url
         last = steps.pop()
         for step in steps:
             script = '%s/%s' % (script, step)
-            out.append(linkpat % (script, unquote(step)))
+            out.append(linkpat % (escape(script, 1), escape(unquote(step))))
         script = '%s/%s' % (script, last)
         out.append('<a class="strong-link" href="%s/manage_workspace">%s</a>'%
-                   (script, unquote(last)))
+                   (escape(script, 1), escape(unquote(last))))
         return '%s%s' % (url, '/'.join(out))
 
     def tabs_path_info(self, script, path,

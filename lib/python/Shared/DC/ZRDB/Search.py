@@ -12,12 +12,13 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.21 2003/11/18 13:17:14 tseaver Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: Search.py,v 1.22 2004/01/15 22:44:08 tseaver Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import DTMLFile
 from Aqueduct import custom_default_report, custom_default_zpt_report, nicify, Args
 from string import join
+from cgi import escape
 from AccessControl import getSecurityManager
 
 addForm=DTMLFile('dtml/searchAdd', globals())
@@ -57,7 +58,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
                 cannot be generated.  Before creating a report
                 from this query, you must try out the query.  To
                 try out the query, <a href="%s">click here</a>.
-                """ % (q.title_and_id(), url))
+                """ % (escape(q.title_and_id()), escape(url, 1)))
 
     if object_type == 'dtml_methods':
 

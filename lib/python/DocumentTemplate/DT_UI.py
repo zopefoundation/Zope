@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.14 2003/07/06 10:43:46 andreasjung Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: DT_UI.py,v 1.15 2004/01/15 22:44:07 tseaver Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -33,7 +33,7 @@ HTML._manage_editForm = HTML(
     <BODY bgcolor="#FFFFFF">
     <!--#var document_template_edit_header-->
 
-    <FORM name="editform" ACTION="<!--#var URL1-->/manage_edit" METHOD="POST">
+    <FORM name="editform" ACTION="&dtml-URL1;/manage_edit" METHOD="POST">
     <!--#var document_template_form_header-->
     Document template source:
     <center>
@@ -51,19 +51,19 @@ HTML._manage_editForm = HTML(
       <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
       <INPUT NAME=SUBMIT TYPE="RESET"  VALUE="Reset">
       <INPUT NAME="dt_edit_name" TYPE="HIDDEN"
-             VALUE="<!--#var URL1-->">
+             VALUE="&dtml-URL1;">
       <!--#if FactoryDefaultString-->
         <INPUT NAME=SUBMIT TYPE="SUBMIT"
-         VALUE="<!--#var FactoryDefaultString-->">
+         VALUE="&dtml-FactoryDefaultString;">
       <!--#/if FactoryDefaultString-->
       <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Cancel">
       <!--#if HTTP_REFERER-->
          <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
-                VALUE="<!--#var HTTP_REFERER-->">
+                VALUE="&dtml-HTTP_REFERER;">
       <!--#else HTTP_REFERER-->
          <!--#if URL1-->
            <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
-                  VALUE="<!--#var URL1-->">
+                  VALUE="&dtml-URL1;">
          <!--#/if URL1-->
       <!--#/if HTTP_REFERER-->
     </center>
@@ -78,14 +78,14 @@ HTML._manage_editForm = HTML(
 HTML.editConfirmation=HTML(
     """<html><head><title>Change Successful</title></head><body>
     <!--#if CANCEL_ACTION-->
-      <form action="<!--#var CANCEL_ACTION-->" method="POST">
+      <form action="&dtml-CANCEL_ACTION;" method="POST">
         <center>
-           <em><!--#var dt_edit_name--></em><br>has been changed.<br><br>
+           <em>&dtml-dt_edit_name;</em><br>has been changed.<br><br>
            <input type=submit name="SUBMIT" value="OK">
         </center>
       </form></body></html>
     <!--#else CANCEL_ACTION-->
       <center>
-         <em><!--#var dt_edit_name--></em><br>has been changed.
+         <em>&dtml-dt_edit_name;</em><br>has been changed.
       </center>
     <!--#/if CANCEL_ACTION-->""")

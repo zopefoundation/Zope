@@ -25,6 +25,7 @@ from Products.PythonScripts.PythonScript import PythonScript
 from zExceptions import BadRequest
 
 import marshal
+from cgi import escape
 
 _marker=[]
 class ZClassMethodsSheet(
@@ -107,11 +108,11 @@ class ZClassMethodsSheet(
     def _checkId(self, id, allow_dup=0,
                  _reserved=('propertysheets','manage_workspace')):
         if id in _reserved:
-            raise BadRequest, 'The id, %s, is reseverd' % id
+            raise BadRequest, 'The id, %s, is reserved' % escape(id)
 
         if not allow_dup and self.getClassAttr(id, self) is not self:
             raise BadRequest, (
-                'The id %s is invalid - it is already in use.' % id)
+                'The id %s is invalid - it is already in use.' % escape(id))
 
         ZClassMethodsSheet.inheritedAttribute('_checkId')(
             self, id, 1)
