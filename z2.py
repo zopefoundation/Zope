@@ -175,10 +175,6 @@ Options:
     same as the Zope super manager password set in the 'access'
     file. The default is %(MONITOR_PORT)s.
 
-  -2
-
-    Use ZODB 2 (aka BoboPOS) rather than ZODB 3
-
   -l path
 
     Path to the ZServer log file. If this is a relative path then the
@@ -191,7 +187,20 @@ Options:
     No log files, no pid files, nothing. This means that you can't do a
     lot of stuff like use PCGI, and zdaemon. ZServer will log hits to
     STDOUT and zLOG will log to STDERR.
-    
+
+  -L
+  
+    Enable locale (internationalization) support. The value passed for
+    this option should be the name of the locale to be used (see your
+    operating system documentation for locale information specific to
+    your system). If an empty string is passed for this option (-L ''),
+    Zope will set the locale to the user's default setting (typically
+    specified in the $LANG environment variable). If your Python
+    installation does not support the locale module, the requested
+    locale is not supported by your system or an empty string was
+    passed but no default locale can be found, an error will be raised
+    and Zope will not start.
+
 
 Environment settings are of the form: NAME=VALUE.
 
@@ -259,6 +268,11 @@ MODULE='Zope'
 # The size of the thread pool, if ZODB3 is used.
 NUMBER_OF_THREADS=4
 
+# Localization support
+LOCALE_ID=None
+
+
+
 #
 ########################################################################
 
@@ -269,7 +283,7 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:r')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rL:')
     DEBUG=0
     READ_ONLY=0
     
@@ -334,6 +348,9 @@ try:
             sys.exit(0)
         elif o=='-2': MODULE='Main'
         elif o=='-l': LOG_FILE=v
+        elif o=='-L':
+            if v: LOCALE_ID=v
+            else: LOCALE_ID=''
 
     __builtins__.__debug__=DEBUG
 
@@ -356,6 +373,35 @@ if sys.platform=='win32': Zpid=''
 # Jigger path:
 sys.path=[os.path.join(here,'lib','python'),here
           ]+filter(None, sys.path)
+
+
+# Try to set the locale if specified on the command
+# line. If the locale module is not available or the
+# requested locale is not supported by the local
+# machine, raise an error so that the user is made
+# aware of the problem.
+
+def set_locale(val):
+    try:
+        import locale
+    except:
+        raise SystemExit, (
+            'The locale module could not be imported.\n' \
+            'To use localization options, you must ensure\n' \
+            'that the locale module is compiled into your\n' \
+            'Python installation.'
+            )
+    try:
+        locale.setlocale(locale.LC_ALL, val)
+    except:
+        raise SystemExit, (
+            'The specified locale is not supported by your system.\n' \
+            'See your operating system documentation for more\n' \
+            'information on locale support.'
+            )
+if LOCALE_ID is not None:
+    set_locale(LOCALE_ID)
+
 
 
 # from this point forward we can use the zope logger
