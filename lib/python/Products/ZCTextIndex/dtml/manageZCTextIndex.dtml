@@ -2,8 +2,8 @@
 <dtml-var manage_tabs>
 
 <p class="form-help">
-  Name(s) of attribute(s) indexed: 
-  <em><dtml-var "', '.join(getIndexSourceNames())"></em>
+  Name of attribute indexed: 
+  <em>&dtml-getFieldName;</em>
 </p>
 <p class="form-help">
   Index type: 

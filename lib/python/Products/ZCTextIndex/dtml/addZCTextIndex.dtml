@@ -32,11 +32,10 @@ from the most relevant to the least relevant.
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Indexed attributes
+    Field name
     </div></td>
     <td align="left" valign="top">
     <input type="text" name="extra.doc_attr:record" size="40" />
-    <em>attribute1,attribute2,...</em> or leave empty
     </td>
   </tr>
 
