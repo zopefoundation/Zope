@@ -19,3 +19,7 @@ Zope changes
             This is currently documented only in the Wiki.
 
         - Added unit tests for the DateTime module.
+
+        - Added new BASEPATHn and URLPATHn variables in the REQUEST
+          object, and changed Zope core DTML files to use BASEPATH1
+          instead of SCRIPT_NAME.
