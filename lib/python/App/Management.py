@@ -13,7 +13,7 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.64 2003/11/18 13:16:58 tseaver Exp $
+$Id: Management.py,v 1.65 2003/11/28 16:44:25 jim Exp $
 """
 
 import sys, Globals, ExtensionClass, urllib
@@ -53,16 +53,11 @@ class Tabs(ExtensionClass.Base):
             if path is None:
                     path=d['action']
 
-            o=self.unrestrictedTraverse(path, None)
+            o=self.restrictedTraverse(path, None)
             if o is None:
-                    continue
+                continue
 
-            try:
-                if validate(None, self, None, o):
-                    result.append(d)
-            except:
-                if not hasattr(o, '__roles__'):
-                    result.append(d)
+            result.append(d)
 
         return result
 
