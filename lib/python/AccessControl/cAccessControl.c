@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.6 2001/06/29 22:18:48 matt Exp $
+  $Id: cAccessControl.c,v 1.7 2001/07/03 12:52:56 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -83,6 +83,23 @@ typedef struct {
 	PyObject *_v;
 } imPermissionRole;
 
+/* ZSPCACHE does NOT work securely; don't turn it on! */
+#define ZSPCACHE 0
+
+#if ZSPCACHE
+typedef struct { 
+	long accessed;
+	long container;
+	long name;
+	long value;
+	long context;
+	long roles;
+	PyObject *result;
+} ZSPCacheLine;
+
+#define ZSPCACHEENTRIES 512
+#endif
+
 /*
 ** Prototypes
 */
@@ -114,6 +131,11 @@ static void imPermissionRole_dealloc(imPermissionRole *self);
 static PyObject *rolesForPermissionOn(PyObject *self, PyObject *args);
 
 static PyObject *permissionName(PyObject *name);
+
+#if ZSPCACHE
+static ZSPCacheLine ZSPCache[ZSPCACHEENTRIES];
+#endif
+
 /*
 ** Constants
 */
@@ -449,6 +471,140 @@ static void unauthErr(PyObject *name, PyObject *value) {
 	Py_DECREF(_name1);
 }
 
+#if ZSPCACHE
+
+static void ZSPCacheInit(void) {
+	int i;
+	for (i = 0; i < ZSPCACHEENTRIES; i++) {
+		ZSPCache[i].accessed = 0;
+		ZSPCache[i].container = 0;
+		ZSPCache[i].name = 0;
+		ZSPCache[i].value = 0;
+		ZSPCache[i].context = 0;
+		ZSPCache[i].roles = 0;
+		ZSPCache[i].result = NULL;
+	}
+}
+
+/* ZSPCacheGet
+*/
+
+static PyObject *ZSPCacheGet(PyObject *accessed, PyObject *container,
+	PyObject *name, PyObject *value, PyObject *context, PyObject *roles) {
+
+	unsigned long hash;
+	int h;
+	int i;
+
+	long a_hash;
+	long c_hash;
+	long n_hash;
+	long v_hash;
+	long t_hash;
+	long r_hash;
+
+	a_hash = (long)(accessed);
+	c_hash = (long)(container);
+	n_hash = /* PyObject_Hash(name) */ 0;
+	v_hash = /* PyObject_Hash(value) */ 0;
+	t_hash = PyObject_Hash(context);
+	r_hash = (long)(roles);
+
+	hash =	(unsigned long) a_hash +
+		(unsigned long) c_hash +
+		(unsigned long) n_hash +
+		(unsigned long) v_hash +
+		(unsigned long) t_hash +
+		(unsigned long) r_hash;
+
+	h = hash % ZSPCACHEENTRIES;
+	i = (h + 1) % ZSPCACHEENTRIES;
+
+#if 0
+fprintf(stderr,"zspcacheget: %d %08x %08x %08x %08x %08x %08x\n", i,
+	(unsigned long) a_hash, (unsigned long) c_hash,
+	(unsigned long) n_hash, (unsigned long) v_hash, (unsigned long) t_hash,
+	(unsigned long) r_hash);
+#endif
+
+	while(i != h) {
+		if (	ZSPCache[i].accessed == a_hash &&
+			ZSPCache[i].container == c_hash &&
+			ZSPCache[i].name == n_hash &&
+			ZSPCache[i].value == v_hash &&
+			ZSPCache[i].context == t_hash &&
+			ZSPCache[i].roles == r_hash
+			) {
+
+			Py_INCREF(ZSPCache[i].result);
+#if 0
+fprintf(stderr,"zspcache hit!\n");
+#endif
+			return ZSPCache[i].result;
+		}
+
+		i = (i+1) % ZSPCACHEENTRIES;
+	}
+
+	return NULL;
+
+}
+
+/*
+** ZSPCacheSet
+*/
+
+static void ZSPCacheSet(PyObject *accessed, PyObject *container,
+	PyObject *name, PyObject *value, PyObject *context, PyObject *roles,
+	PyObject *result) {
+
+	unsigned long hash;
+	int h;
+	int i;
+
+	long a_hash;
+	long c_hash;
+	long n_hash;
+	long v_hash;
+	long t_hash;
+	long r_hash;
+
+	a_hash = (long)(accessed);
+	c_hash = (long)(container);
+	n_hash = /* PyObject_Hash(name) */ 0;
+	v_hash = /* PyObject_Hash(value) */ 0;
+	t_hash = PyObject_Hash(context);
+	r_hash = (long)(roles);
+
+	hash =	(unsigned long) a_hash +
+		(unsigned long) c_hash +
+		(unsigned long) n_hash +
+		(unsigned long) v_hash +
+		(unsigned long) t_hash +
+		(unsigned long) r_hash;
+
+	h = hash % ZSPCACHEENTRIES;
+	i = (h + 1) % ZSPCACHEENTRIES;
+
+	ZSPCache[i].accessed = a_hash;
+	ZSPCache[i].container = c_hash;
+	ZSPCache[i].name = n_hash;
+	ZSPCache[i].value = v_hash;
+	ZSPCache[i].context = t_hash;
+	ZSPCache[i].roles = r_hash;
+	Py_XDECREF(ZSPCache[i].result);
+	ZSPCache[i].result = result;
+	Py_INCREF(result);
+
+#if 0
+fprintf(stderr,"zspcacheset: %d %08x %08x %08x %08x %08x %08x\n", i,
+	(unsigned long)  a_hash, (unsigned long) c_hash,
+	(unsigned long) n_hash, (unsigned long) v_hash, (unsigned long) t_hash,
+	(unsigned long) r_hash);
+#endif
+}
+
+#endif
 
 /*
 ** ZopeSecurityPolicy_validate
@@ -467,6 +623,10 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	PyObject *rval = NULL;
 	PyObject *stack = NULL;
 	PyObject *user = NULL;
+#if ZSPCACHE
+	PyObject *iroles = NULL;
+	PyObject *ivalue = NULL;
+#endif
 	char *sname;
 
 
@@ -511,6 +671,19 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		Py_INCREF(container);
 		accessedbase = container;
 	}
+
+#if ZSPCACHE
+	if ((rval = ZSPCacheGet(accessedbase, containerbase, name, value,
+		context, roles)) != NULL) {
+
+		Py_DECREF(containerbase);
+		Py_DECREF(accessedbase);
+		Py_XDECREF(roles);
+		return rval;
+	}
+	iroles = roles;
+	ivalue = value;
+#endif
 
 
 	/*| # If roles weren't passed in, we'll try to get them from
@@ -918,6 +1091,11 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	err:
 
 	if (rval != NULL) PyErr_Clear();
+
+#if ZSPCACHE
+	if (rval != NULL) ZSPCacheSet(accessedbase, containerbase, name, ivalue,
+		context, iroles, rval);
+#endif
 
 	Py_XDECREF(stack);
 	Py_XDECREF(roles);
@@ -1596,7 +1774,7 @@ static PyObject *permissionName(PyObject *name) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.6 $";
+	char *rev = "$Revision: 1.7 $";
 
 	if (!ExtensionClassImported) return;
 
@@ -1645,6 +1823,10 @@ PUBLIC void initcAccessControl(void) {
 		imPermissionRoleType);
 
 	imPermissionRoleObj = PyDict_GetItemString(dict, "imPermissionRole");
+
+#if ZSPCACHE
+	ZSPCacheInit();
+#endif
 
 	if (PyErr_Occurred())
 		Py_FatalError("Can't initialize module cAccessControl");
