@@ -85,13 +85,13 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
-import sys, os, string, mimetypes, davcmds
+import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
 
 
-class Resource:
+class Resource(ExtensionClass.Base):
     """The Resource mixin class provides basic WebDAV support for
     non-collection objects. It provides default implementations
     for most supported WebDAV HTTP methods, however certain methods
@@ -104,6 +104,13 @@ class Resource:
                       'TRACE', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY',
                       'MOVE',
                       )
+
+    __ac_permissions__=(
+        ('View',                             ('HEAD',)),
+        ('Access contents information',      ('PROPFIND',)),
+        ('Delete objects',                   ('DELETE',)),
+        ('Manage properties',                ('PROPPATCH',)),
+    )
 
     def dav__init(self, request, response):
         # Init expected HTTP 1.1 / WebDAV headers which are not
