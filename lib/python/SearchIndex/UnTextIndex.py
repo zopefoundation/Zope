@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.47 $'[11:-2]
+__version__ = '$Revision: 1.48 $'[11:-2]
 
 
 import string, re
@@ -323,7 +323,7 @@ class UnTextIndex(Persistent, Implicit):
                 source = str(source())
             else:
                 source = str(source)
-        except AttributeError:
+        except (AttributeError, TypeError):
             return 0
         
         lexicon = self.getLexicon(self._lexicon)
