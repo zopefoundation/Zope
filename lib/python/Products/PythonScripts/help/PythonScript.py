@@ -122,10 +122,12 @@ class PythonScript:
 
           o math
 
+          o XXX
+
       o Because it allows you to execute arbitrary python code, the python
         "exec" statement is not allowed in Python methods.
 
-      o Because they may represent or cause security violations, the some
+      o Because they may represent or cause security violations, some
         Python builtin functions are not allowed or are restricted.  The
         following Python builtins are not allowed:
 
