@@ -33,7 +33,7 @@ import time, sys, types
 from bisect import bisect
 
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
-    """ An Object Catalog
+    """ An Object Catalog 
 
     An Object Catalog maintains a table of object metadata, and a
     series of manageable indexes to quickly search for objects
@@ -437,7 +437,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         still slice or batch the results as usual."""
 
         rs = None # resultset
-        result_count = 0
 
         # Indexes fulfill a fairly large contract here. We hand each
         # index the request mapping we are given (which may be composed
@@ -472,26 +471,20 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             # We take this to mean that the query was empty (an empty filter)
             # and so we return everything in the catalog
             if sort_index is None:
-                if merge:
-                    return LazyMap(
-                        self.instantiate, self.data.items(), len(self))
-                else:
-                    return self.data.keys()
+                return LazyMap(self.instantiate, self.data.items(), len(self))
             else:
-                result_count = len(self)
-                rs = self.sortResults(
+                return self.sortResults(
                     self.data, sort_index, reverse,  limit, merge)
         elif rs:
-            result_count = len(rs)
-            
             # We got some results from the indexes.
             # Sort and convert to sequences.
             if sort_index is None and hasattr(rs, 'values'):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
                 # it, compute the normalized score, and Lazify it.
-                if not merge:
-                    return rs
+                
+                # For now we cannot return raw scores for later merging :^(
+                
                 rs = rs.byValue(0) # sort it by score
                 max = float(rs[0][0])
 
@@ -517,20 +510,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # no scores
                 if hasattr(rs, 'keys'):
                     rs = rs.keys()
+                return LazyMap(self.__getitem__, rs, len(rs))
             else:
                 # sort.  If there are scores, then this block is not
                 # reached, therefore 'sort-on' does not happen in the
                 # context of a text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
-                rs = self.sortResults(
-                    rs, sort_index, reverse, limit, merge)
-        
-        if merge:
-            rs = LazyMap(self.__getitem__, rs, len(rs))
-            # Give the application an opportunity to see how many results
-            # there really were, regardless of the limit value
-            rs.actual_result_count = result_count
-        return rs 
+                return self.sortResults(rs, sort_index, reverse, limit, merge)
+        else:
+            # Empty result set
+            return LazyCat(rs)
 
     def sortResults(self, rs, sort_index, reverse=0, limit=None, merge=1):
         # Sort a result set using a sort index. Return a lazy
@@ -583,7 +572,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 result.sort()
                 if reverse:
                     result.reverse()
-                return LazyCat(LazyValues(result), length)
+                result = LazyCat(LazyValues(result), length)
             else:
                 return result            
         else:
@@ -610,7 +599,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     result.sort()
                     if reverse:
                         result.reverse()
-                    return LazyValues(result)
+                    result = LazyValues(result)
                 else:
                     return result
             else: 
@@ -638,9 +627,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                             n += 1
                 result.reverse()
                 if merge:
-                    return LazyValues(result) 
+                    result = LazyValues(result) 
                 else:
-                    return result     
+                    return result
+        
+        result = LazyMap(self.__getitem__, result, len(result))
+        result.actual_result_count = len(rs)
+        return result
 
     def _get_sort_attr(self, attr, kw):
         """Helper function to find sort-on or sort-order."""
@@ -737,35 +730,23 @@ class CatalogSearchArgumentsMap:
             return 0
         else:
             return 1
-   
+        
 
-def mergeResults(catalogs_results, has_sort_keys, reverse):
+def mergeResults(results, has_sort_keys, reverse):
     """Sort/merge sub-results, generating a flat sequence.
     
-    catalog_results is a sequence of (catalog, r) tuples. This allows you to
-    merge and sort results efficiently from multiple catalogs.
-
-    The contents of r depend on whether has_sort_keys is set.
-    If not has_sort_keys, r contains sequences of records.
-    If has_sort_keys, r contains pairs of (sort_key, sequence)
-    and now we have to sort the results.
+    results is a list of result set sequences, all with or without sort keys
     """
-    result = []
     if not has_sort_keys:
-        for catalog, r in catalogs_results:
-            if not r:
-                continue
-            result.append(LazyMap(catalog.__getitem__, r))
-        return LazyCat(result)
+        return LazyCat(results)
     else:
         # Concatenate the catalog results into one list and sort it
-        # Each result item consists of a list of tuples with three values:
+        # Each result record consists of a list of tuples with three values:
         # (sortkey, docid, catalog__getitem__)
-        for catalog, r in catalogs_results:
-            result.extend(r)
-        result.sort()
+        all = []
+        for r in results:
+            all.extend(r)
+        all.sort()
         if reverse:
-            result.reverse()
-        return LazyMap(lambda rec: rec[2](rec[1]), result, len(result))
-
-        
+            all.reverse()
+        return LazyMap(lambda rec: rec[2](rec[1]), all, len(all))
