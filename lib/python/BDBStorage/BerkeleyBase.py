@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.8 $
+# $Revision: 1.9 $
 __version__ = '0.1'
 
 
@@ -33,24 +33,22 @@ __version__ = '0.1'
 class BerkeleyBase(BaseStorage):
     """Base storage for Minimal and Full Berkeley implementations."""
 
-    def __init__(self, name, env=None, prefix="zodb_"):
+    def __init__(self, name, env=None, prefix='zodb_'):
         """Create a new storage.
 
         name is an arbitrary name for this storage.  It is returned by the
         getName() method.
 
-        env is the database environment name, used to handle more advanced
-        BSDDB functionality such as transactions.  If env is a non-empty
-        string, it is passed directly to DbEnv().open(), which in turn is
-        passed to the BSDDB function DBEnv->open() as the db_home parameter.
+        Optional env is the database environment name, essentially the name of
+        a directory into which BerkeleyDB will store all its supporting files.
+        If env is a non-empty string, it is passed directly to DbEnv().open(),
+        which in turn is passed to the BerkeleyDB function
+        DBEnv->open() as the db_home parameter.
 
-        If env is not a string, it must be an already existing DbEnv()
-        object.
-
-        prefix is the string to prepend to name when passed to DB.open() as
-        the dbname parameter.  IOW, prefix+name is passed to the BSDDB
-        function DB->open() as the database parameter.  It defaults to
-        "zodb_".
+        Optional prefix is the string to prepend to name when passed to
+        DB.open() as the dbname parameter.  IOW, prefix+name is passed to the
+        BerkeleyDb function DB->open() as the database parameter.  It defaults
+        to "zodb_".
         """
 
         # sanity check arguments
@@ -60,17 +58,21 @@ class BerkeleyBase(BaseStorage):
         if env is None:
             env = name
 
-        if isinstance(env, StringType):
-            if env == '':
-                raise TypeError, 'environment name is empty'
-            env = env_from_string(env)
-        elif not isinstance(env, db.DBEnv):
-            raise TypeError, 'env must be a string or DBEnv instance: %s' % env
+        if env == '':
+            raise TypeError, 'environment name is empty'
+        elif not isinstance(env, StringType):
+            # We used to test isinstance(env, db.DBEnv) but that isn't a valid
+            # test since db.DBEnv() is a factory function, not a class.
+            # AFAIK, there's no way to pass an existing DBEnv into this
+            # constructor.  Note that the most likely reason for wanting to do
+            # this is to increase the lock size of the environment.  Use a
+            # DB_CONFIG file for that instead (see www.sleepycat.com).
+            raise TypeError, 'env must be a string: %s' % env
 
         BaseStorage.__init__(self, name)
 
         # Initialize a few other things
-        self._env = env
+        self._env = env_from_string(env)
         self._prefix = prefix
         self._commitlog = None
         # Give the subclasses a chance to interpose into the database setup
@@ -85,8 +87,8 @@ class BerkeleyBase(BaseStorage):
             # JF: unlinking might be too inefficient.  JH: might use mmap
             # files.  BAW: maybe just truncate the file, or write a length
             # into the headers and just zero out the length.
-            self._commitlog.close(unlink=1)
-            self._commitlog = None
+##            self._commitlog.close(unlink=1)
+##            self._commitlog = None
         
     def _setupDB(self, name, flags=0):
         """Open an individual database with the given flags.
