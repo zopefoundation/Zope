@@ -2,8 +2,6 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Browser Preferences',
-           help_product='OFSP',
-           help_topic='Preferences.stx'
 	   )">
 
 <dtml-if set_zmi_cookies>
