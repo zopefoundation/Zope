@@ -13,6 +13,7 @@ import unittest
 
 
 # Set skipxml to true if an XML parser could not be found.
+pyexpat = None
 skipxml = 0
 try:
     import pyexpat
@@ -22,6 +23,23 @@ except ImportError:
         import xml.parsers.pyexpat
     except ImportError:
         skipxml = 1
+    else:
+        pyexpat = xml.parsers.pyexpat
+
+
+# Set oldexpat if the StartDoctypeDeclHandler and XmlDeclHandler are
+# not supported.  The tests need to know whether the events reported
+# by those handlers should be expected, but need to make sure the
+# right thing is returned if they are.
+oldexpat = 0
+if pyexpat is not None:
+    p = pyexpat.ParserCreate()
+    # Can't use hasattr() since pyexpat supports the handler
+    # attributes in a broken way.
+    try:
+        p.StartDoctypeDeclHandler = None
+    except AttributeError:
+        oldexpat = 1
 
 
 def run_suite(suite, outf=None, errf=None):

@@ -92,7 +92,10 @@ class XMLParserTestCase(unittest.TestCase):
             parser.parseStream(SegmentedFile(source))
         else:
             parser.parseString(source)
-        self.assertEquals(parser.get_events(),events)
+        if utils.oldexpat:
+            while events[0][0] in ('decl', 'doctype'):
+                del events[0]
+        self.assertEquals(parser.get_events(), events)
 
     def _run_check_extra(self, source, events):
         self._run_check(source, events, EventCollectorExtra)
