@@ -84,12 +84,11 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
-from DocumentTemplate.DT_Util import html_quote
 from Globals import DTMLFile, MessageDialog
 from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit

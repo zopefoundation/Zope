@@ -84,9 +84,8 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
-from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
 from OFS.content_types import guess_content_type

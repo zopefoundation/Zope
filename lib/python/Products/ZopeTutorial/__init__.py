@@ -90,7 +90,7 @@ import os
 import stat
 from DateTime import DateTime
 from urllib import quote_plus
-from StructuredText.StructuredText import html_quote
+from cgi import escape
 import re
 from HelpSys import APIHelpTopic
 
@@ -163,7 +163,7 @@ def glossaryTerm(match):
     name=match.group(1)
     if name in terms:
         return """<a href="../tutorialGlossary#%s">%s</a>""" % \
-                (quote_plus(name), html_quote(name))
+                (quote_plus(name), escape(name))
     return """[%s]""" % name
 
 def defineTerm(match):
@@ -173,4 +173,4 @@ def defineTerm(match):
     name=match.group(1)
     terms.append(name)
     return """<a name="%s"></a>\n\n<strong>%s</strong>""" % \
-            (quote_plus(name), html_quote(name))
+            (quote_plus(name), escape(name))

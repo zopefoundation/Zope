@@ -84,6 +84,7 @@
 ##############################################################################
 
 from string import join, split, find
+from cgi import escape
 import re, sys, ST
 
 class HTMLClass:
@@ -198,7 +199,7 @@ class HTMLClass:
         for c in doc.getChildNodes():
             if i==0:
                 output('<pre>')
-                output(html_quote(c.getNodeValue()))
+                output(escape(c.getNodeValue()))
                 output('</pre>\n')
             else:
                 getattr(self, self.element_types[c.getNodeName()])(
@@ -231,7 +232,7 @@ class HTMLClass:
     def literal(self, doc, level, output):
         output('<code>')
         for c in doc.getChildNodes():
-            output(html_quote(c.getNodeValue()))
+            output(escape(c.getNodeValue()))
         output('</code>')
 
     def strong(self, doc, level, output):
@@ -300,17 +301,6 @@ class HTMLClass:
             output("</tr>\n")
         output("</table>\n")
           
-def html_quote(v, name='(Unknown name)', md={},
-                    character_entities=(
-                              (('&'),     '&amp;'),
-                              (('<'),     '&lt;' ),
-                              (('>'),     '&gt;' ),
-                              (('"'),     '&quot;'))): #"
-          text=str(v)
-          for re,name in character_entities:
-                if find(text, re) >= 0: text=join(split(text,re),name)
-          return text
-
 
 
 

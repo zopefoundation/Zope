@@ -89,14 +89,13 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
-import sys, os, traceback, re
+import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
-import AccessControl, OFS, Guarded
+import AccessControl, OFS, RestrictedPython
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
-from string import join, strip, rstrip, split, replace, lower
 from urllib import quote
 from webdav.Lockable import ResourceLockedError
 from webdav.WriteLockInterface import WriteLockInterface
@@ -104,11 +103,16 @@ from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
-from zLOG import LOG, ERROR, INFO
+from AccessControl import full_read_guard, full_write_guard, safe_builtins
+from zLOG import LOG, ERROR, INFO, PROBLEM
 
+# Track the Python bytecode version
 import imp
 Python_magic = imp.get_magic()
 del imp
+
+# This should only be incremented to force recompilation.
+Script_magic = 1
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 _default_file = os.path.join(package_home(globals()),
@@ -145,6 +149,8 @@ class PythonScript(Script, Historical, Cacheable):
     _proxy_roles = ()
 
     _params = _body = ''
+    errors = warnings = ()
+    _v_change = 0
 
     manage_options = (
         {'label':'Edit',
@@ -187,9 +193,6 @@ class PythonScript(Script, Historical, Cacheable):
         self.ZPythonScript_setTitle(title)
         self.ZPythonScript_edit(params, body)
         message = "Saved changes."
-        if getattr(self, '_v_warnings', None):
-            message = ("<strong>Warning:</strong> <i>%s</i>" 
-                       % join(self._v_warnings, '<br>'))
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
                                                manage_tabs_message=message)
 
@@ -205,7 +208,7 @@ class PythonScript(Script, Historical, Cacheable):
             raise ResourceLockedError, "The script is locked via WebDAV."
         if type(body) is not type(''):
             body = body.read()
-        if self._params <> params or self._body <> body:
+        if self._params <> params or self._body <> body or self._v_change:
             self._params = str(params)
             self.write(body)
 
@@ -238,10 +241,10 @@ class PythonScript(Script, Historical, Cacheable):
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""
         param_names = []
-        for name in split(self._params, ','):
-            name = strip(name)
+        for name in self._params.split(','):
+            name = name.strip()
             if name and name[0] != '*':
-                param_names.append(split(name, '=', 1)[0])
+                param_names.append(name.split('=', 1)[0])
         return param_names
 
     def manage_historyCompare(self, rev1, rev2, REQUEST,
@@ -250,58 +253,70 @@ class PythonScript(Script, Historical, Cacheable):
             self, rev1, rev2, REQUEST,
             historyComparisonResults=html_diff(rev1.read(), rev2.read()) )
 
-    def _checkCBlock(self, MakeBlock):
-        params = self._params
-        body = self._body or ' pass'
-        # If the body isn't indented, indent it one space.
-        nbc = re.search('\S', body).start()
-        if nbc and body[nbc - 1] in ' \t':
-            defblk = 'def f(%s):\n%s\n' % (params, body)
+    def __setstate__(self, state):
+        Script.__setstate__(self, state)
+        if (getattr(self, 'Python_magic', None) != Python_magic or
+            getattr(self, 'Script_magic', None) != Script_magic):
+            LOG(self.meta_type, PROBLEM,
+                'Object "%s" needs to be recompiled.' % self.id)
+            # Changes here won't get saved, unless this Script is edited.
+            self._compile()
+            self._v_change = 1
+        elif self._code is None:
+            self._v_f = None
         else:
-            # Waaa: triple-quoted strings will get indented too.
-            defblk = 'def f(%s):\n %s\n' % (params, replace(body, '\n', '\n '))
+            self._newfun(marshal.loads(self._code))
 
-        blk = MakeBlock(defblk, self.id, self.meta_type)
-        self._v_errors, self._v_warnings = blk.errors, blk.warnings
-        if blk.errors:
-            if hasattr(self, '_v_f'): del self._v_f
+    def _compiler(self, *args):
+        return RestrictedPython.compile_restricted_function(*args)
+    def _compile(self):
+        r = self._compiler(self._params, self._body or 'pass',
+                           self.id, self.meta_type)
+        code = r[0]
+        errors = r[1]
+        self.warnings = tuple(r[2])
+        if errors:
+            self._code = None
+            self._v_f = None
             self._setFuncSignature((), (), 0)
-        else:
-            self._t = blk.t
+            # Fix up syntax errors.
+            filestring = '  File "<string>",'
+            for i in range(len(errors)):
+                line = errors[i]
+                if line.startswith(filestring):
+                    errors[i] = line.replace(filestring, '  Script', 1)
+            self.errors = errors
+            return
 
-    def _newfun(self, allowSideEffect, g, **kws):
-        from Guarded import UntupleFunction
-        self._v_f = f = apply(UntupleFunction, (self._t, g), kws)
-        if allowSideEffect:
-            fc = f.func_code
-            self._setFuncSignature(f.func_defaults, fc.co_varnames,
-                                   fc.co_argcount)
-            self.Python_magic = Python_magic
+        self._code = marshal.dumps(code)
+        self.errors = ()
+        f = self._newfun(code)
+        fc = f.func_code
+        self._setFuncSignature(f.func_defaults, fc.co_varnames,
+                               fc.co_argcount)
+        self.Python_magic = Python_magic
+        self.Script_magic = Script_magic
+        self._v_change = 0
+
+    def _newfun(self, code):
+        g = {'__debug__': __debug__,
+             '__builtins__': safe_builtins,
+             '_read_': full_read_guard,
+             '_write_': full_write_guard,
+             '_print_': RestrictedPython.PrintCollector
+             }
+        l = {}
+        exec code in g, l
+        self._v_f = f = l.values()[0]
         return f
 
-    def _makeFunction(self, allowSideEffect=0):
-        from Guarded import GuardedBlock, theGuard, safebin
-        from Guarded import WriteGuard, ReadGuard
-        # Was the cached bytecode compiled with a compatible Python?
-        if getattr(self, 'Python_magic', None) != Python_magic:
-            allowSideEffect = 1
-        if allowSideEffect:
-            self._checkCBlock(GuardedBlock)
-            self.ZCacheable_invalidate()
-        if getattr(self, '_v_errors', None):
-            raise "Python Script Error", ('<pre>%s</pre>' %
-                                          join(self._v_errors, '\n') )
-        return self._newfun(allowSideEffect, {'$guard': theGuard,
-                                              '$write_guard': WriteGuard,
-                                              '$read_guard': ReadGuard,
-                                              '__debug__': __debug__},
-                            __builtins__=safebin)
+    def _makeFunction(self):
+        self.ZCacheable_invalidate()
+        self._compile()
 
     def _editedBindings(self):
-        f = getattr(self, '_v_f', None)
-        if f is None:
-            return
-        self._makeFunction(1)
+        if getattr(self, '_v_f', None) is not None:
+            self._makeFunction()
 
     def _exec(self, bound_names, args, kw):
         """Call a Python Script
@@ -327,13 +342,11 @@ class PythonScript(Script, Historical, Cacheable):
                 # Got a cached value.
                 return result
 
-        # Prepare the function.
-        f = getattr(self, '_v_f', None)
-        if f is None:
-            f = self._makeFunction()
-
         __traceback_info__ = bound_names, args, kw, self.func_defaults
 
+        f = self._v_f
+        if f is None:
+            raise RuntimeError, '%s %s has errors.' % (self.meta_type, self.id)
         if bound_names is not None:
             # Updating func_globals directly *should* be thread-safe.
             f.func_globals.update(bound_names)
@@ -414,7 +427,7 @@ class PythonScript(Script, Historical, Cacheable):
                     # There were no non-empty body lines
                     body = ''
                     break
-                line = strip(m.group(0))
+                line = m.group(0).strip()
                 if line[:2] != '##':
                     # We have found the first line of the body
                     body = text[m.start(0):]
@@ -425,9 +438,9 @@ class PythonScript(Script, Historical, Cacheable):
                 if len(line) == 2 or line[2] == ' ' or '=' not in line:
                     # Null header line
                     continue
-                k, v = split(line[2:], '=', 1)
-                k = lower(strip(k))
-                v = strip(v)
+                k, v = line[2:].split('=', 1)
+                k = k.strip().lower()
+                v = v.strip()
                 if not mdata.has_key(k):
                     SyntaxError, 'Unrecognized header line "%s"' % line
                 if v == mdata[k]:
@@ -443,14 +456,14 @@ class PythonScript(Script, Historical, Cacheable):
                     bindmap[_nice_bind_names[k[5:]]] = v
                     bup = 1
 
-            body = rstrip(body)
+            body = body.rstrip()
             if body != self._body:
                 self._body = body
             if bup:
                 self._setupBindings(bindmap)
 
             if self._p_changed:
-                self._makeFunction(1)
+                self._makeFunction()
         except:
             LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
             raise
@@ -486,8 +499,18 @@ class PythonScript(Script, Historical, Cacheable):
         mm.sort()
         for kv in mm: 
             hlines.append('%s=%s' % kv)
+        if self.errors:
+            hlines.append('')
+            hlines.append(' Errors:')
+            for line in self.errors:
+                hlines.append('  ' + line)
+        if self.warnings:
+            hlines.append('')
+            hlines.append(' Warnings:')
+            for line in self.warnings:
+                hlines.append('  ' + line)
         hlines.append('')
-        return join(hlines, '\n' + prefix) + '\n' + self._body
+        return ('\n' + prefix).join(hlines) + '\n' + self._body
 
     def params(self): return self._params
     def body(self): return self._body

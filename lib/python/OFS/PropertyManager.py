@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -92,7 +92,6 @@ from PropertySheets import DefaultPropertySheets, vps
 from ZPublisher.Converters import type_converters
 from Globals import DTMLFile, MessageDialog
 from string import find,join,lower,split
-from DocumentTemplate import html_quote
 from Acquisition import Implicit, aq_base
 from Globals import Persistent
 from DateTime import DateTime

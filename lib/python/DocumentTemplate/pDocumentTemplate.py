@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.27 2001/01/16 18:08:27 evan Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.28 2001/04/27 20:27:39 shane Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -117,14 +117,14 @@ isSimpleType=isSimpleType.has_key
 
 class InstanceDict:
 
-    validate=None
+    read_guard=None
 
-    def __init__(self,o,namespace,validate=None):
+    def __init__(self,o,namespace,read_guard=None):
         self.self=o
         self.cache={}
         self.namespace=namespace
-        if validate is None: self.validate=namespace.validate
-        else: self.validate=validate
+        if read_guard is None: self.read_guard=namespace.read_guard
+        else: self.read_guard=read_guard
 
     def has_key(self,key):
         return hasattr(self.self,key)
@@ -144,13 +144,15 @@ class InstanceDict:
         if key[:1]=='_':
             if key != '__str__':
                 raise KeyError, key # Don't divuldge private data
-            r=str(inst)
-        else:
-            try: r=getattr(inst,key)
-            except AttributeError: raise KeyError, key
+            else:
+                return str(inst)
 
-        v=self.validate
-        if v is not None: v(inst,inst,key,r,self.namespace)
+        read_guard = self.read_guard
+        if read_guard is not None:
+            inst = read_guard(inst)
+
+        try: r = getattr(inst, key)
+        except AttributeError: raise KeyError, key
 
         self.cache[key]=r
         return r
@@ -212,9 +214,14 @@ class TemplateDict:
                 return v.__render_with_namespace__(self)
             vbase = getattr(v, 'aq_base', v)
             if callable(vbase):
-                if getattr(vbase, 'isDocTemp', None):
-                    return v(None, self)
-                return v()
+                try:
+                    if getattr(vbase, 'isDocTemp', 0):
+                        v = v(None, self)
+                    else:
+                        v = v()
+                except AttributeError, n:
+                    if n != '__call__':
+                        raise
         return v
 
     def has_key(self,key):

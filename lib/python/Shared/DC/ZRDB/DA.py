@@ -85,7 +85,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.101 $'[11:-2]
+__version__='$Revision: 1.102 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -105,7 +105,7 @@ import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, full_read_guard
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
 try: from IOBTree import Bucket
@@ -126,8 +126,8 @@ class nvSQL(DocumentTemplate.HTML):
 class SQL(ExtensionClass.Base, nvSQL):
     # Validating SQL template for Zope SQL Methods.
 
-    def validate(self, inst, parent, name, value, md):
-        return getSecurityManager().validate(inst, parent, name, value)
+    def read_guard(self, ob):
+        return full_read_guard(ob)
 
 class DA(
     Aqueduct.BaseQuery,Acquisition.Implicit,

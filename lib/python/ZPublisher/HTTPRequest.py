@@ -83,13 +83,13 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import  re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
-from cgi import FieldStorage
+from cgi import FieldStorage, escape
 from urllib import quote, unquote, splittype, splitport
 from Converters import get_converter
 from maybe_lock import allocate_lock
@@ -934,28 +934,28 @@ class HTTPRequest(BaseRequest):
         result="<h3>form</h3><table>"
         row='<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
         for k,v in self.form.items():
-            result=result + row % (html_quote(k), html_quote(repr(v)))
+            result=result + row % (escape(k), escape(repr(v)))
         result=result+"</table><h3>cookies</h3><table>"
         for k,v in self.cookies.items():
-            result=result + row % (html_quote(k), html_quote(repr(v)))
+            result=result + row % (escape(k), escape(repr(v)))
         result=result+"</table><h3>other</h3><table>"
         for k,v in self.other.items():
             if k in ('PARENTS','RESPONSE'): continue
-            result=result + row % (html_quote(k), html_quote(repr(v)))
+            result=result + row % (escape(k), escape(repr(v)))
     
         for n in "0123456789":
             key = "URL%s"%n
-            try: result=result + row % (key, html_quote(self[key])) 
+            try: result=result + row % (key, escape(self[key])) 
             except KeyError: pass
         for n in "0123456789":
             key = "BASE%s"%n
-            try: result=result + row % (key, html_quote(self[key])) 
+            try: result=result + row % (key, escape(self[key])) 
             except KeyError: pass
 
         result=result+"</table><h3>environ</h3><table>"
         for k,v in self.environ.items():
             if not hide_key(k):
-                result=result + row % (html_quote(k), html_quote(v))
+                result=result + row % (escape(k), escape(repr(v)))
         return result+"</table>"
 
     __repr__=__str__
@@ -989,21 +989,6 @@ def sane_environment(env):
         try: del dict['HTTP_CGI_AUTHORIZATION']
         except: pass
     return dict
-
-
-# This is duplicated from DocumentTemplate.DT_Util to
-# prevent a dependency on the DocumentTemplate package.
-# Some folks still use the ZPublisher package as a
-# standalone publisher without DocumentTemplate.
-def html_quote(value, character_entities=(
-                      (('&'), '&amp;'),
-                      (("<"), '&lt;' ),
-                      ((">"), '&gt;' ),
-                      (('"'), '&quot;'))): #"
-        text=str(value)
-        for re, name in character_entities:
-            if find(text, re) >= 0: text=join(split(text, re), name)
-        return text
 
 
 def str_field(v):

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.148 $'[11:-2]
+__version__='$Revision: 1.149 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -98,7 +98,7 @@ from App.ImageFile import ImageFile
 from Role import RoleManager
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 from AuthEncoding import pw_validate
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.ZopeSecurityPolicy import _noroles
@@ -572,7 +572,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             except:
                 noSecurityManager()
                 raise
-        except 'Unauthorized': pass
+        except Unauthorized: pass
         return 0
 
     def validate(self, request, auth='', roles=_noroles):

@@ -82,127 +82,31 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.73 2001/04/27 18:07:11 andreas Exp $''' 
-__version__='$Revision: 1.73 $'[11:-2]
+'''$Id: DT_Util.py,v 1.74 2001/04/27 20:27:39 shane Exp $''' 
+__version__='$Revision: 1.74 $'[11:-2]
 
-import  string, math, os
-import re
-from string import strip, join, atoi, lower, split, find
-import VSEval
+import re, os
+from string import lower
+from RestrictedPython.Guards import safe_builtins
+from RestrictedPython.Utilities import utility_builtins
+from RestrictedPython.Eval import RestrictionCapableEval
+
+LIMITED_BUILTINS = 1
 
 str=__builtins__['str'] # Waaaaa, waaaaaaaa needed for pickling waaaaa
 
 ParseError='Document Template Parse Error'
 ValidationError='Unauthorized'
 
-
-def html_quote(v, name='(Unknown name)', md={},
-               character_entities=(
-                       (('&'),    '&amp;'),
-                       (('<'),    '&lt;' ),
-                       (('>'),    '&gt;' ),
-                       (('"'),    '&quot;'))): #"
-        text=str(v)
-        for re,name in character_entities:
-            if find(text, re) >= 0: text=join(split(text,re),name)
-        return text
-
 def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
     except: v=default
     if v:
-        try: v=atoi(v)
+        try: v=int(v)
         except:
             v=md[v]
-            if type(v) is st: v=atoi(v)
+            if type(v) is st: v=int(v)
     return v or 0
-
-_marker=[]
-
-def careful_getattr(md, inst, name, default=_marker):
-    
-    if name[:1]!='_':
-
-        # Try to get the attribute normally so that we don't
-        # accidentally acquire when we shouldn't.
-        try: v=getattr(inst, name)
-        except:
-            if default is not _marker:
-                return default
-            raise
-
-        validate=md.validate
-
-        if validate is None: return v
-
-        if hasattr(inst,'aq_acquire'):
-            return inst.aq_acquire(name, validate, md)
-
-        if validate(inst,inst,name,v,md): return v
-
-    raise ValidationError, name
-
-def careful_hasattr(md, inst, name):
-    v=getattr(inst, name, _marker)
-    if v is not _marker:
-        try: 
-            if name[:1]!='_':
-                validate=md.validate                
-                if validate is None: return 1
-    
-                if hasattr(inst,'aq_acquire'):
-                    inst.aq_acquire(name, validate, md)
-                    return 1
-    
-                if validate(inst,inst,name,v,md): return 1
-        except: pass
-    return 0
-
-def careful_getitem(md, mapping, key):
-    v=mapping[key]
-
-    if type(v) is type(''): return v # Short-circuit common case
-
-    validate=md.validate
-    if validate is None or validate(mapping,mapping,None,v,md): return v
-    raise ValidationError, key
-
-def careful_getslice(md, seq, *indexes):
-    v=len(indexes)
-    if v==2:
-        v=seq[indexes[0]:indexes[1]]
-    elif v==1:
-        v=seq[indexes[0]:]
-    else: v=seq[:]
-
-    if type(seq) is type(''): return v # Short-circuit common case
-
-    validate=md.validate
-    if validate is not None:
-        for e in v:
-            if not validate(seq,seq,None,e,md):
-                raise ValidationError, 'unauthorized access to slice member'
-
-    return v
-
-def careful_range(md, iFirst, *args):
-    # limited range function from Martijn Pieters
-    RANGELIMIT = 1000
-    if not len(args):
-        iStart, iEnd, iStep = 0, iFirst, 1
-    elif len(args) == 1:
-        iStart, iEnd, iStep = iFirst, args[0], 1
-    elif len(args) == 2:
-        iStart, iEnd, iStep = iFirst, args[0], args[1]
-    else:
-        raise AttributeError, 'range() requires 1-3 int arguments'
-    if iStep == 0: raise ValueError, 'zero step for range()'
-    iLen = int((iEnd - iStart) / iStep)
-    if iLen < 0: iLen = 0
-    if iLen >= RANGELIMIT: raise ValueError, 'range() too large'
-    return range(iStart, iEnd, iStep)
-
-import string, math, whrandom
 
 try:
     import ExtensionClass
@@ -210,49 +114,49 @@ try:
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 
-d=TemplateDict.__dict__
-for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
-             'len', 'max', 'min', 'oct', 'ord', 'round', 'str'):
-    d[name]=__builtins__[name]
-d['string']=string
-d['math']=math
-d['whrandom']=whrandom
+functype = type(int_param)
+class NotBindable:
+    # Used to prevent TemplateDict from trying to bind to functions.
+    def __init__(self, f):
+        self.__call__ = f
 
-def careful_pow(self, x, y, z):
-    if not z: raise ValueError, 'pow(x, y, z) with z==0'
-    return pow(x,y,z)
+d = TemplateDict.__dict__
+for name, f in safe_builtins.items() + utility_builtins.items():
+    if type(f) is functype:
+        d[name] = NotBindable(f)
+    else:
+        d[name] = f
 
-d['pow']=careful_pow
+if LIMITED_BUILTINS:
+    # Replace certain builtins with limited versions.
+    from RestrictedPython.Limits import limited_builtins
+    for name, f in limited_builtins.items():
+        if type(f) is functype:
+            d[name] = NotBindable(f)
+        else:
+            d[name] = f
 
-try:
-    import random
-    d['random']=random
-except: pass
+# The functions below are meant to bind to the TemplateDict.
 
-try:
-    import DateTime
-    d['DateTime']=DateTime.DateTime
-except: pass
+_marker = []  # Create a new marker object.
 
-def test(self, *args):
-    l=len(args)
-    for i in range(1, l, 2):
-        if args[i-1]: return args[i]
+def careful_getattr(md, inst, name, default=_marker):
+    read_guard = md.read_guard
+    if read_guard is not None:
+        inst = read_guard(inst)
+    if default is _marker:
+        return getattr(inst, name)
+    else:
+        return getattr(inst, name, default)
 
-    if l%2: return args[-1]
+def careful_hasattr(md, inst, name):
+    read_guard = md.read_guard
+    if read_guard is not None:
+        inst = read_guard(inst)
+    return hasattr(inst, name)
 
-d['test']=test
-
-def obsolete_attr(self, inst, name, md):
-    return careful_getattr(md, inst, name)
-
-d['attr']=obsolete_attr
 d['getattr']=careful_getattr
 d['hasattr']=careful_hasattr
-d['range']=careful_range
-
-#class namespace_:
-#    __allow_access_to_unprotected_subobjects__=1
 
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whose attributes are
@@ -273,66 +177,51 @@ def render(self, v):
     else:
         vbase = getattr(v, 'aq_base', v)
         if callable(vbase):
-            if getattr(vbase, 'isDocTemp', 0):
-                v = v(None, self)
-            else:
-                v = v()
+            try:
+                if getattr(vbase, 'isDocTemp', 0):
+                    v = v(None, self)
+                else:
+                    v = v()
+            except AttributeError, n:
+                if n != '__call__':
+                    raise
     return v
 
 d['render']=render
 
-def reorder(self, s, with=None, without=()):
-    if with is None: with=s
-    d={}
-    tt=type(())
-    for i in s:
-        if type(i) is tt and len(i)==2: k, v = i
-        else:                           k= v = i
-        d[k]=v
-    r=[]
-    a=r.append
-    h=d.has_key
 
-    for i in without:
-        if type(i) is tt and len(i)==2: k, v = i
-        else:                           k= v = i
-        if h(k): del d[k]
-        
-    for i in with:
-        if type(i) is tt and len(i)==2: k, v = i
-        else:                           k= v = i
-        if h(k):
-            a((k,d[k]))
-            del d[k]
+class Eval(RestrictionCapableEval):
 
-    return r
-
-d['reorder']=reorder
-
-
-expr_globals={
-    '__builtins__':{},
-    '__guarded_mul__':      VSEval.careful_mul,
-    '__guarded_getattr__':  careful_getattr,
-    '__guarded_getitem__':  careful_getitem,
-    '__guarded_getslice__': careful_getslice,
-    }
-
-class Eval(VSEval.Eval):
-    
-    def eval(self, mapping):
-        d={'_vars': mapping, '_': mapping}
-        code=self.code
-        globals=self.globals
+    def eval(self, md):
+        guard = getattr(md, 'read_guard', None)
+        if guard is not None:
+            self.prepRestrictedCode()
+            code = self.rcode
+            d = {'_': md, '_vars': md,
+                 '_read_': guard, '__builtins__': None}
+        else:
+            self.prepUnrestrictedCode()
+            code = self.ucode
+            d = {'_': md, '_vars': md}
+        d.update(self.globals)
+        has_key = d.has_key
         for name in self.used:
             __traceback_info__ = name
-            try: d[name]=mapping.getitem(name,0)
+            try:
+                if not has_key(name):
+                    d[name] = md.getitem(name, 0)
             except KeyError:
-                if name=='_getattr':
-                    d['__builtins__']=globals
-                    exec compiled_getattr in d
+                # Swallow KeyErrors since the expression
+                # might not actually need the name.  If it
+                # does need the name, a NameError will occur.
+                pass
+        return eval(code, d)
 
-        return eval(code,globals,d)
+    def __call__(self, **kw):
+        # Never used?
+        md = TemplateDict()
+        md._push(kw)
+        return self.eval(md)
 
 
 def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
@@ -354,7 +243,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
                 if used('expr'):
                     raise ParseError, ('two exprs given', tag)
                 v=v[1:-1]
-                try: expr=Eval(v, expr_globals)
+                try: expr=Eval(v)
                 except SyntaxError, v:
                     raise ParseError, (
                         '<strong>Expression (Python) Syntax error</strong>:'
@@ -384,7 +273,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
         return params[attr]
     elif expr and used('expr'):
         name=params['expr']
-        expr=Eval(name, expr_globals)
+        expr=Eval(name)
         return name, expr
         
     raise ParseError, ('No %s given' % attr, tag)
@@ -521,7 +410,7 @@ def parse_params(text,
         else: result['']=name
         return apply(parse_params,(text[l:],result),parms)
     else:
-        if not text or not strip(text): return result
+        if not text or not text.strip(): return result
         raise ParseError, ('invalid parameter: "%s"' % text, tag)
     
     if not parms.has_key(name):
@@ -536,6 +425,6 @@ def parse_params(text,
             
     result[name]=value
 
-    text=strip(text[l:])
+    text=text[l:].strip()
     if text: return apply(parse_params,(text,result),parms)
     else: return result

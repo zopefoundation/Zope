@@ -94,11 +94,11 @@ import Products
 from Acquisition import Implicit
 from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
-from DocumentTemplate.DT_Util import Eval, expr_globals
+from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
 from Catalog import Catalog, CatalogError
 from Vocabulary import Vocabulary
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, full_read_guard
 from zLOG import LOG, ERROR
 
 StringType=type('')
@@ -592,7 +592,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if obj_expr:
                 # Setup expr machinations
                 md=td()
-                obj_expr=(Eval(obj_expr, expr_globals), md, md._push, md._pop)
+                obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
         base=obj
         if hasattr(obj, 'aq_base'):
@@ -743,8 +743,8 @@ def absattr(attr):
 
 class td(TemplateDict):
 
-    def validate(self, inst, parent, name, value, md):
-        return getSecurityManager().validate(inst, parent, name, value)
+    def read_guard(self, ob):
+        return full_read_guard(ob)
 
 def expr_match(ob, ed, c=InstanceDict, r=0):
     e, md, push, pop=ed

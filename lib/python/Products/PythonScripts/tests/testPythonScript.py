@@ -110,7 +110,7 @@ class TestPythonScriptNoAq(TestCase):
         ps = PythonScript('ps')
         ps.ZBindings_edit(bind or {})
         ps.write(txt)
-        ps._makeFunction(1)
+        ps._makeFunction()
         return ps
 
     def fail(self):
@@ -201,18 +201,17 @@ class TestPythonScriptNoAq(TestCase):
 
     def testComplexPrint(self):
         txt = self._newPS(readf('complex_print'))()
-        assert txt == 'double\ndouble\n x: 1\ny: 0 1 2\n\n', txt
+        assert txt == 'double\ndouble\nx: 1\ny: 0 1 2\n\n', txt
 
     def testNSBind(self):
         f = self._newPS(readf('ns_bind'), bind={'name_ns': '_'})
         bound = f.__render_with_namespace__({'yes': 1, 'no': self.fail})
         assert bound == 1, bound
 
-    def testManyArgs(self):
-        f = self._newPS(readf('manyargs'))
-        f()
-        ss = f._v_f.func_code.co_stacksize
-        assert ss == 24, ss
+    def testBooleanMap(self):
+        true = self._newPS(readf('boolean_map'))()
+        assert true
+
 
 test_classes = (TestPythonScriptNoAq,)
 

@@ -180,7 +180,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         cns = bound_data['caller_namespace']
         ns = self._Bindings_ns_class()
         push = ns._push
-        ns.validate = None
+        ns.read_guard = None
         
         req = None
         kw_bind = kw

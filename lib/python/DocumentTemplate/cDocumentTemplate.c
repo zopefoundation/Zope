@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.35 2000/11/21 22:08:50 evan Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.36 2001/04/27 20:27:39 shane Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -92,7 +92,7 @@ static char cDocumentTemplate_module_documentation[] =
 static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
-static PyObject *py_Unauthorized_fmt, *py_validate;
+static PyObject *py_Unauthorized_fmt, *py_read_guard;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
 
 /* ----------------------------------------------------- */
@@ -108,7 +108,7 @@ typedef struct {
   PyObject *inst;
   PyObject *cache;
   PyObject *namespace;
-  PyObject *validate;
+  PyObject *read_guard;
 } InstanceDictobject;
 
 staticforward PyExtensionClass InstanceDictType;
@@ -116,18 +116,18 @@ staticforward PyExtensionClass InstanceDictType;
 static PyObject *
 InstanceDict___init__(InstanceDictobject *self, PyObject *args)
 {
-  self->validate=NULL;
+  self->read_guard=NULL;
   UNLESS(PyArg_ParseTuple(args, "OO|O",
 			  &(self->inst),
 			  &(self->namespace),
-			  &(self->validate)))
+			  &(self->read_guard)))
     return NULL;
   Py_INCREF(self->inst);
   Py_INCREF(self->namespace);
-  if (self->validate)
-    Py_INCREF(self->validate);
+  if (self->read_guard)
+    Py_INCREF(self->read_guard);
   else
-    UNLESS(self->validate=PyObject_GetAttr(self->namespace, py_validate))
+    UNLESS(self->read_guard=PyObject_GetAttr(self->namespace, py_read_guard))
        return NULL;
     
   UNLESS(self->cache=PyDict_New()) return NULL;
@@ -150,7 +150,7 @@ InstanceDict_dealloc(InstanceDictobject *self)
   Py_XDECREF(self->inst);
   Py_XDECREF(self->cache);
   Py_XDECREF(self->namespace);
-  Py_XDECREF(self->validate);
+  Py_XDECREF(self->read_guard);
   Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
@@ -182,7 +182,7 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
   char *name;
   
   /* Try to get value from the cache */
-  if (r=PyObject_GetItem(self->cache, key)) return r;
+  if ((r=PyObject_GetItem(self->cache, key))) return r;
   PyErr_Clear();
   
   /* Check for __str__ */
@@ -193,56 +193,31 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
       return PyObject_Str(self->inst);
     }
   
-  /* Do explicit acquisition with "roles" rule */
-  if (r=PyObject_GetAttr(self->inst, py_acquire))
-    {
-      /* Sanity check in case of explicit Aq */
-      if (v=PyObject_GetAttr(self->inst, key)) Py_DECREF(v);  
-      else 
-	{
-	  Py_DECREF(r);
-	  goto KeyError;
-	}
+  if (self->read_guard != Py_None) {
+    r = PyObject_CallFunction(self->read_guard, "O", self->inst);
+    if (!r) return NULL;
+  }
+  else {
+    r = self->inst;
+    Py_INCREF(r);
+  }
 
-      if (self->validate != Py_None)
-	{
-	  UNLESS_ASSIGN(r,PyObject_CallFunction(
-		 r, "OOO", key, self->validate, self->namespace))
-	    {
-	      PyObject *tb;
+  ASSIGN(r, PyObject_GetAttr(r, key));
+  if (!r) {
+    PyObject *tb;
 
-	      PyErr_Fetch(&r, &v, &tb);
-	      if (r != PyExc_AttributeError || PyObject_Compare(v,key))
-		{
-		  PyErr_Restore(r,v,tb);
-		  return NULL;
-		}
-	      Py_XDECREF(r);
-	      Py_XDECREF(v);
-	      Py_XDECREF(tb);
-	      
-	      goto KeyError;
-	    }
-	}
-      else
-	UNLESS_ASSIGN(r, PyObject_GetAttr(self->inst, key)) goto KeyError;
-    }  
-  else
-    {
-      PyErr_Clear();
+    PyErr_Fetch(&r, &v, &tb);
+    if (r != PyExc_AttributeError) /* || PyObject_Compare(v,key)) */
+      {
+	PyErr_Restore(r,v,tb);
+	return NULL;
+      }
+    Py_XDECREF(r);
+    Py_XDECREF(v);
+    Py_XDECREF(tb);
 
-      /* OK, use getattr */
-      UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
-
-      if (self->validate != Py_None)
-	{
-	  UNLESS(v=PyObject_CallFunction(
-	    self->validate,"OOOOO",
-	    self->inst, self->inst, key, r, self->namespace))
-	    return NULL;
-	  Py_DECREF(v);
-	}
-    }
+    goto KeyError;
+  }
   
   if (r && PyObject_SetItem(self->cache, key, r) < 0) PyErr_Clear();
   
@@ -312,9 +287,7 @@ typedef struct {
 staticforward PyExtensionClass MMtype;
 
 static PyObject *
-MM_push(self, args)
-	MM *self;
-	PyObject *args;
+MM_push(MM *self, PyObject *args)
 {
   PyObject *src;
   UNLESS(PyArg_Parse(args, "O", &src)) return NULL;
@@ -324,9 +297,7 @@ MM_push(self, args)
 }
 
 static PyObject *
-MM_pop(self, args)
-	MM *self;
-	PyObject *args;
+MM_pop(MM *self, PyObject *args)
 {
   int i=1, l;
   PyObject *r;
@@ -343,9 +314,7 @@ err:
 }
 
 static PyObject *
-MM__init__(self, args)
-     MM *self;
-     PyObject *args;
+MM__init__(MM *self, PyObject *args)
 {
   UNLESS(PyArg_Parse(args, "")) return NULL;
   UNLESS(self->data=PyList_New(0)) return NULL;
@@ -385,7 +354,7 @@ dtObjectIsDocTemp(PyObject *ob) {
     Py_INCREF(base);
   }
 
-  if ( value = PyObject_GetAttr(base, py_isDocTemp) ) {
+  if ( (value = PyObject_GetAttr(base, py_isDocTemp)) ) {
     if (PyObject_IsTrue(value)) {
       result = 1;
     }
@@ -408,12 +377,12 @@ MM_cget(MM *self, PyObject *key, int call)
   while (--i >= 0)
     {
       e=PyList_GetItem(self->data,i);
-      if (e=PyObject_GetItem(e,key))
+      if ((e=PyObject_GetItem(e,key)))
 	{
           if (!call) return e;
 
           /* Try calling __render_with_namespace__ */
-          if (rr = PyObject_GetAttr(e, py_renderNS)) 
+          if ((rr = PyObject_GetAttr(e, py_renderNS))) 
             {
               Py_DECREF(e);
               UNLESS_ASSIGN(rr, PyObject_CallFunction(rr, "O", self))
@@ -516,8 +485,7 @@ static struct PyMethodDef MM_methods[] = {
 };
 
 static void
-MM_dealloc(self)
-     MM *self;
+MM_dealloc(MM *self)
 {
   Py_XDECREF(self->data);
   Py_XDECREF(self->dict);
@@ -538,7 +506,7 @@ MM_getattro(MM *self, PyObject *name)
     {
       PyObject *v;
 
-      if (v=PyDict_GetItem(self->dict, name))
+      if ((v=PyDict_GetItem(self->dict, name)))
 	{
 	  Py_INCREF(v);
 	  return v;
@@ -568,8 +536,7 @@ MM_setattro(MM *self, PyObject *name, PyObject *v)
 }
 
 static int
-MM_length(self)
-	MM *self;
+MM_length(MM *self)
 {
   long l=0, el, i;
   PyObject *e=0;
@@ -800,7 +767,7 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 		    {
 		      /* We have to be careful to handle key errors here */
 		      n=cond;
-		      if (cond=PyObject_GetItem(md,cond))
+		      if ((cond=PyObject_GetItem(md,cond)))
 			{
 			  if (PyDict_SetItem(cache, n, cond) < 0)
 			    {
@@ -912,10 +879,10 @@ static struct PyMethodDef Module_Level__methods[] = {
 };
 
 void
-initcDocumentTemplate()
+initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.35 $";
+  char *rev="$Revision: 1.36 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
@@ -927,7 +894,7 @@ initcDocumentTemplate()
   UNLESS(py___roles__=PyString_FromString("__roles__")) return;
   UNLESS(py__proxy_roles=PyString_FromString("_proxy_roles")) return;
   UNLESS(py_hasRole=PyString_FromString("hasRole")) return;
-  UNLESS(py_validate=PyString_FromString("validate")) return;
+  UNLESS(py_read_guard=PyString_FromString("read_guard")) return;
   UNLESS(py__push=PyString_FromString("_push")) return;
   UNLESS(py__pop=PyString_FromString("_pop")) return;
   UNLESS(py_aq_base=PyString_FromString("aq_base")) return;

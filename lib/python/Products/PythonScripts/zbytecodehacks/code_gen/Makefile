@@ -1,3 +1,0 @@
-clean:
-	$(RM) *~ *.pyc *.pyo
-	

@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.6 2001/01/10 20:21:03 chrism Exp $''' 
-__version__='$Revision: 1.6 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.7 2001/04/27 20:27:37 shane Exp $''' 
+__version__='$Revision: 1.7 $'[11:-2] 
 
 _noroles=[] # this is imported from various places
 
@@ -100,13 +100,16 @@ ContainerAssertions={
     type({}): 1,
     }
 
+class _dummy_class: pass
+
 from DocumentTemplate.DT_Util import TemplateDict
 # Temporarily create a DictInstance so that we can mark its type as
 # being a key in the ContainerAssertions.
 templateDict = TemplateDict()
 try:
     dictInstance = templateDict(dummy=1)[0]
-    ContainerAssertions[type(dictInstance)]=1
+    if type(dictInstance) is not type(_dummy_class()):
+        ContainerAssertions[type(dictInstance)]=1
 except:
     # Hmm, this may cause _() and _.namespace() to fail.
     # What to do?

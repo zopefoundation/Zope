@@ -90,7 +90,7 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
@@ -105,6 +105,7 @@ from DocumentTemplate.DT_Var import special_formats, \
  html_quote, url_quote, url_quote_plus, newline_to_br, thousands_commas
 
 from Globals import HTML
+from AccessControl import full_read_guard
 
 security.declarePublic('DTML')
 class DTML(HTML):
@@ -121,8 +122,8 @@ class DTML(HTML):
 
         finally: security.removeContext(self)
 
-    def validate(self, inst, parent, name, value, md):
-        return getSecurityManager().validate(inst, parent, name, value)
+    def read_guard(self, ob):
+        return full_read_guard(ob)
 
 security.apply(globals())
 

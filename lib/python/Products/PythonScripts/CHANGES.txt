@@ -1,3 +1,9 @@
+2001-04-26  Evan Simpson <evan@digicool.com>
+
+        * Version 2.0.0
+        * Totally replaced zbytecodhacks engine with Zope's new
+        RestrictedPython package, which it shares with DTML.
+
 1999-12-13  Evan Simpson <evan@4-am.com>
 
 	* Version 0.1.7

@@ -84,14 +84,14 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals, ndiff, ExtensionClass
 from DateTime import DateTime
 from Acquisition import Implicit
 from string import join, split, atoi, strip
 from struct import pack, unpack
-from DocumentTemplate.DT_Util import html_quote
+from cgi import escape
 
 class TemporalParadox(Exception): pass
 
@@ -267,7 +267,7 @@ def dump(tag, x, lo, hi, r):
             "<td><pre>\n%s\n</pre></td>\n"
             "<td><pre>\n%s\n</pre></td>\n"
             "</tr>\n"
-            % (join(r1,'\n'), html_quote(join(r2, '\n'))))
+            % (join(r1,'\n'), escape(join(r2, '\n'))))
 
 def replace(x, xlo, xhi, y, ylo, yhi, r):
 
@@ -289,7 +289,7 @@ def replace(x, xlo, xhi, y, ylo, yhi, r):
             "<td><pre>\n%s\n%s\n</pre></td>\n"
             "</tr>\n"
             % (join(rx1, '\n'), join(ry1, '\n'),
-               html_quote(join(rx2, '\n')), html_quote(join(ry2, '\n'))))
+               escape(join(rx2, '\n')), escape(join(ry2, '\n'))))
 
 def html_diff(s1, s2):
     a=split(s1,'\n')

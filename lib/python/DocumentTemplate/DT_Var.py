@@ -217,13 +217,17 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.38 2001/04/27 18:07:11 andreas Exp $'
-__version__='$Revision: 1.38 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.39 2001/04/27 20:27:39 shane Exp $'
+__version__='$Revision: 1.39 $'[11:-2]
 
-from DT_Util import parse_params, name_param, html_quote, str
+from DT_Util import parse_params, name_param, str
 import re, string, sys
 from string import find, split, join, atoi, rfind
 from urllib import quote, quote_plus
+from cgi import escape
+
+def html_quote(v, name='(Unknown name)', md={}):
+    return escape(str(v), 1)
 
 class Var: 
     name='var'
@@ -322,7 +326,7 @@ class Var:
 
         if have_arg('size'):
             size=args['size']
-            try: size=atoi(size)
+            try: size=int(size)
             except: raise 'Document Error',(
                 '''a <code>size</code> attribute was used in a <code>var</code>
                 tag with a non-integer value.''')
@@ -426,7 +430,7 @@ special_formats={
     'collection-length': len_format,
     'structured-text': structured_text,
 
-    # The rest are depricated:
+    # The rest are deprecated:
     'sql-quote': sql_quote,
     'html-quote': html_quote,
     'url-quote': url_quote,

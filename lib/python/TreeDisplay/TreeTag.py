@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.45 2000/12/18 19:25:44 brian Exp $'
-__version__='$Revision: 1.45 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.46 2001/04/27 20:27:57 shane Exp $'
+__version__='$Revision: 1.46 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -130,8 +130,7 @@ class Tree:
             if has_key('branches'):
                 raise ParseError, _tm(
                     'branches and  and branches_expr given', 'tree')
-            args['branches_expr']=VSEval.Eval(
-                args['branches_expr'], expr_globals).eval
+            args['branches_expr']=Eval(args['branches_expr']).eval
         elif not has_key('branches'): args['branches']='tpValues'
 
         if not has_key('id'): args['id']='tpId'
@@ -210,11 +209,11 @@ def tpRender(self, md, section, args,
             have_arg=args.has_key
             if have_arg('branches'):
                 def get_items(node, branches=args['branches'], md=md):
-                    validate=md.validate
-                    if validate is None or not hasattr(node, 'aq_acquire'):
-                        items=getattr(node, branches)
+                    read_guard = md.read_guard
+                    if read_guard is None:
+                        items = getattr(node, branches)
                     else:
-                        items=node.aq_acquire(branches, validate, md)
+                        items = getattr(read_guard(node), branches)
                     return items()
             elif have_arg('branches_expr'):
                 def get_items(node, branches_expr=args['branches_expr'], md=md):
@@ -303,13 +302,14 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 break
         if not exp: items=1
 
+    read_guard = md.read_guard
+
     if items is None:
-        validate=md.validate
         if have_arg('branches') and hasattr(self, args['branches']):
-            if validate is None or not hasattr(self, 'aq_acquire'):
-                items=getattr(self, args['branches'])
+            if read_guard is None:
+                items = getattr(self, args['branches'])
             else:
-                items=self.aq_acquire(args['branches'],validate,md)
+                items = getattr(read_guard(self), args['branches'])
             items=items()
         elif have_arg('branches_expr'):
             items=args['branches_expr'](md)
@@ -318,20 +318,19 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
     if items and items != 1:
 
-        if validate is not None:
+        if read_guard is not None:
             unauth=[]
-            index=0
-            for i in items:
-                try: v=validate(items,items,None,i,md)
-                except: v=0
-                if not v: unauth.append(index)
-                index=index+1
-
+            guarded_items = read_guard(items)
+            for index in range(len(items)):
+                try:
+                    guarded_items[index]
+                except ValidationError:
+                    unauth.append(index)
             if unauth:
                 if have_arg('skip_unauthorized') and args['skip_unauthorized']:
                     items=list(items)
                     unauth.reverse()
-                    for i in unauth: del items[i]
+                    for index in unauth: del items[index]
                 else:
                     raise ValidationError, unauth
 

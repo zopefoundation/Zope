@@ -1,4 +1,3 @@
-
 ##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
@@ -83,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.40 2001/04/27 18:07:10 andreas Exp $"
+"$Id: DT_String.py,v 1.41 2001/04/27 20:27:39 shane Exp $"
 
 from string import split, strip
 import thread,re
@@ -506,7 +505,7 @@ class String:
             if globals: push(globals)
             if mapping:
                 push(mapping)
-            md.validate=self.validate
+            md.read_guard=self.read_guard
             if client is not None:
                 if type(client)==type(()):
                     md.this=client[-1]
@@ -551,8 +550,8 @@ class String:
             if pushed: md._pop(pushed) # Get rid of circular reference!
             md.level=level # Restore previous level
 
-    validate__roles__=()
-    validate=None
+    read_guard__roles__=()
+    read_guard=None
 
     def __str__(self):
         return self.read()

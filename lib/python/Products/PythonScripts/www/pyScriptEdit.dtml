@@ -12,13 +12,13 @@
     Title
     </div>
     </td>
-    <td align="left" valign="top">
+    <td align="left" valign="top" width="99%">
     <input type="text" name="title" size="40" 
      value="&dtml-title;" />
     </td>
   </tr>
   <tr>
-    <td align="left" valign="top">
+    <td align="left" valign="top" nowrap>
     <div class="form-optional">
     Parameter List
     </div>
@@ -59,6 +59,25 @@
     </div>
     </td>
   </tr>
+
+<dtml-if errors>
+  <tr>
+    <td align="left" valign="middle" class="form-label">Errors</td>
+    <td align="left" valign="middle" style="background-color: #FFDDDD">
+<pre><dtml-var expr="'\n'.join(errors)" html_quote></pre>
+    </td>
+  </tr>
+</dtml-if>
+
+<dtml-if warnings>
+  <tr>
+    <td align="left" valign="middle" class="form-label">Warnings</td>
+    <td align="left" valign="middle" style="background-color: #FFEEDD">
+<pre><dtml-var expr="'\n'.join(warnings)" html_quote></pre>
+    </td>
+  </tr>
+</dtml-if>
+
 <dtml-with keyword_args mapping>
   <tr>
     <td align="left" valign="top" colspan="2">

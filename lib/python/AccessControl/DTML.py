@@ -84,20 +84,18 @@
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.2 2000/05/11 18:54:13 jim Exp $''' 
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DTML.py,v 1.3 2001/04/27 20:27:37 shane Exp $''' 
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate import DT_Util
-import SecurityManagement
+import SecurityManagement, string, math, whrandom, random
 
 # Allow access to unprotected attributes
 DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1
-DT_Util.string.__allow_access_to_unprotected_subobjects__=1
-DT_Util.math.__allow_access_to_unprotected_subobjects__=1
-DT_Util.whrandom.__allow_access_to_unprotected_subobjects__=1
-
-try: DT_Util.random.__allow_access_to_unprotected_subobjects__=1
-except: pass
+string.__allow_access_to_unprotected_subobjects__=1
+math.__allow_access_to_unprotected_subobjects__=1
+whrandom.__allow_access_to_unprotected_subobjects__=1
+random.__allow_access_to_unprotected_subobjects__=1
 
 # Add security testing capabilities
 

@@ -105,8 +105,8 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.11 2000/05/11 18:54:14 jim Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.12 2001/04/27 20:27:39 shane Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 from DT_Util import TemplateDict
@@ -139,8 +139,8 @@ class With:
         if self.only:
             _md=md
             md=TemplateDict()
-            if hasattr(_md, 'validate'):
-                md.validate=_md.validate
+            if hasattr(_md, 'read_guard'):
+                md.read_guard = _md.read_guard
 
         md._push(v)
         try: return render_blocks(self.section, md)

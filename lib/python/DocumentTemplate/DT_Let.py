@@ -112,7 +112,7 @@
    as desired.
 ''' 
 
-from DT_Util import render_blocks, Eval, expr_globals, ParseError,  strip
+from DT_Util import render_blocks, Eval, ParseError, strip
 from DT_Util import str # Probably needed due to hysterical pickles.
 import re
 
@@ -132,7 +132,7 @@ class Let:
             if expr[:1]=='"' and expr[-1:]=='"' and len(expr) > 1:
 				# expr shorthand
                 expr=expr[1:-1]
-                try: args[i] = name, Eval(expr, expr_globals).eval
+                try: args[i] = name, Eval(expr).eval
                 except SyntaxError, v:
                     m,(huh,l,c,src) = v
                     raise ParseError, (
@@ -174,12 +174,12 @@ def parse_let_params(text,
         value='"%s"' % mo1.group(3)
         l=len(mo1.group(1))
     else:
-        if not text or not strip(text): return result
+        if not text or not text.strip(): return result
         raise ParseError, ('invalid parameter: "%s"' % text, tag)
 
     result.append((name,value))
 
-    text=strip(text[l:])
+    text=text[l:].strip()
     if text: return apply(parse_let_params,(text,result,tag),parms)
     else: return result
 

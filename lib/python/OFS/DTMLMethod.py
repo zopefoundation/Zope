@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -100,7 +100,7 @@ from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
 from urllib import quote
 import  Globals, sys, Acquisition
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, full_read_guard
 from Cache import Cacheable
 
 _marker = []  # Create a new marker object.
@@ -261,8 +261,8 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     # deprecated; use get_size!
     getSize=get_size
 
-    def validate(self, inst, parent, name, value, md):
-        return getSecurityManager().validate(inst, parent, name, value)
+    def read_guard(self, ob):
+        return full_read_guard(ob)
 
     manage_editForm=DTMLFile('dtml/documentEdit', globals())
 

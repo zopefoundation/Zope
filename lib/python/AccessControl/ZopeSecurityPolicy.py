@@ -85,10 +85,11 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.9 2001/01/16 20:01:09 evan Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.10 2001/04/27 20:27:37 shane Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import SimpleObjectPolicies
+from AccessControl import Unauthorized
 _noroles=SimpleObjectPolicies._noroles
 from zLOG import LOG, PROBLEM
 
@@ -165,7 +166,7 @@ class ZopeSecurityPolicy:
 
             if not p:
                 if (containerbase is accessedbase):
-                    raise 'Unauthorized', cleanupName(name, value)
+                    raise Unauthorized, cleanupName(name, value)
                 else:
                     return 0
                         
@@ -196,7 +197,7 @@ class ZopeSecurityPolicy:
                 # We don't want someone to acquire if they can't
                 # get an unacquired!
                 if accessedbase is containerbase:
-                    raise 'Unauthorized', (
+                    raise Unauthorized, (
                         'You are not authorized to access <em>%s</em>.' \
                         % cleanupName(name, value))
                 return 0
@@ -209,7 +210,7 @@ class ZopeSecurityPolicy:
                     
                 # Proxy roles actually limit access!
                 if accessedbase is containerbase:
-                    raise 'Unauthorized', (
+                    raise Unauthorized, (
                         'You are not authorized to access <em>%s</em>.' \
                         % cleanupName(name, value))
                 
@@ -222,7 +223,7 @@ class ZopeSecurityPolicy:
 
         # We don't want someone to acquire if they can't get an unacquired!
         if accessedbase is containerbase:
-            raise 'Unauthorized', (
+            raise Unauthorized, (
                 'You are not authorized to access <em>%s</em>.' \
                 % cleanupName(name, value))
 

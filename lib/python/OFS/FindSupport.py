@@ -83,17 +83,17 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
-from DocumentTemplate.DT_Util import Eval, expr_globals
+from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
 from Globals import DTMLFile
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DateTime import DateTime
 from string import find
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, full_read_guard
 
 class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
@@ -146,7 +146,7 @@ class FindSupport(ExtensionClass.Base):
             if obj_expr:
                 # Setup expr machinations
                 md=td()
-                obj_expr=(Eval(obj_expr, expr_globals), md, md._push, md._pop)
+                obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
         base=obj
         if hasattr(obj, 'aq_base'):
@@ -238,7 +238,7 @@ class FindSupport(ExtensionClass.Base):
             if obj_expr:
                 # Setup expr machinations
                 md=td()
-                obj_expr=(Eval(obj_expr, expr_globals), md, md._push, md._pop)
+                obj_expr=(Eval(obj_expr), md, md._push, md._pop)
 
         base=obj
         if hasattr(obj, 'aq_base'):
@@ -307,8 +307,8 @@ class FindSupport(ExtensionClass.Base):
 
 class td(TemplateDict):
 
-    def validate(self, inst, parent, name, value, md):
-        return getSecurityManager().validate(inst, parent, name, value)
+    def read_guard(self, ob):
+        return full_read_guard(ob)
 
 
 def expr_match(ob, ed, c=InstanceDict, r=0):

@@ -83,6 +83,8 @@
 # 
 ##############################################################################
 
+Unauthorized = 'Unauthorized'
+
 import DTML
 del DTML
 
@@ -92,6 +94,6 @@ from SecurityInfo import ACCESS_PRIVATE
 from SecurityInfo import ACCESS_PUBLIC
 from SecurityInfo import ACCESS_NONE
 from SecurityInfo import secureModule
+from ZopeGuards import full_read_guard, full_write_guard, safe_builtins
 
-msec = ModuleSecurityInfo('AccessControl')
-msec.declarePublic('getSecurityManager')
+ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')

@@ -402,11 +402,12 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.49 2001/04/27 18:07:09 andreas Exp $'
-__version__='$Revision: 1.49 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.50 2001/04/27 20:27:39 shane Exp $'
+__version__='$Revision: 1.50 $'[11:-2]
 
+import sys
 from DT_Util import ParseError, parse_params, name_param, str
-from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
+from DT_Util import render_blocks, InstanceDict, ValidationError, Eval
 from string import find, atoi, join, split, lower
 import re
 from DT_InSV import sequence_variables, opt
@@ -445,10 +446,10 @@ class InClass:
             if sort=='sequence-item': self.sort=''
 
         if has_key('sort_expr'):
-            self.sort_expr=VSEval.Eval(args['sort_expr'], expr_globals)
+            self.sort_expr=Eval(args['sort_expr'])
 
         if has_key('reverse_expr'):
-            self.reverse_expr=VSEval.Eval(args['reverse_expr'], expr_globals)
+            self.reverse_expr=Eval(args['reverse_expr'])
 
         if has_key('reverse'):
             self.reverse=args['reverse']
@@ -596,7 +597,7 @@ class InClass:
             else:
                 result = []
                 append=result.append
-                validate=md.validate
+                read_guard = md.read_guard
                 for index in range(first,end):
                     # preset
                     kw['previous-sequence']= 0
@@ -626,17 +627,18 @@ class InClass:
         
                     if index==last: kw['sequence-end']=1
 
-                    client=sequence[index]
-
-                    if validate is not None:
-                        try: vv=validate(sequence,sequence,None,client,md)
-                        except: vv=0
-                        if not vv:
+                    if read_guard is not None:
+                        try: client = read_guard(sequence)[index]
+                        except ValidationError, vv:
                             if (params.has_key('skip_unauthorized') and
                                 params['skip_unauthorized']):
                                 if index==first: kw['sequence-start']=0
                                 continue
-                            raise ValidationError, index
+                            tb = sys.exc_info()[2]
+                            raise ValidationError, '(item %s): %s' % (
+                                index, vv), tb
+                    else:
+                        client = sequence[index]
 
                     kw['sequence-index']=index
                     if type(client)==TupleType and len(client)==2:
@@ -654,6 +656,7 @@ class InClass:
                 result=join(result, '')
 
         finally:
+            tb = None
             if cache: pop()
             pop()
 
@@ -709,20 +712,21 @@ class InClass:
         try:
                 result = []
                 append=result.append
-                validate=md.validate
+                read_guard = md.read_guard
                 for index in range(l):
                     if index==last: kw['sequence-end']=1
-                    client=sequence[index]
-
-                    if validate is not None:
-                        try: vv=validate(sequence,sequence,None,client,md)
-                        except: vv=0
-                        if not vv:
+                    if read_guard is not None:
+                        try: client = read_guard(sequence)[index]
+                        except ValidationError, vv:
                             if (self.args.has_key('skip_unauthorized') and
                                 self.args['skip_unauthorized']):
                                 if index==1: kw['sequence-start']=0
                                 continue
-                            raise ValidationError, index
+                            tb = sys.exc_info()[2]
+                            raise ValidationError, '(item %s): %s' % (
+                                index, vv), tb
+                    else:
+                        client = sequence[index]
 
                     kw['sequence-index']=index
                     if type(client)==TupleType and len(client)==2:
@@ -738,6 +742,7 @@ class InClass:
                 result=join(result, '')
 
         finally:
+            tb = None
             if cache: pop()
             pop()
 
@@ -841,7 +846,6 @@ def int_param(params,md,name,default=0, st=type('')):
 def nocase(str1, str2):
     return cmp(lower(str1), lower(str2))
 
-import sys
 if sys.modules.has_key("locale"): # only if locale is already imported
     from locale import strcoll
 

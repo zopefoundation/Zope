@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.5 2000/05/10 18:43:34 tseaver Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.6 2001/04/27 20:27:41 shane Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -136,40 +136,40 @@ class MIMETag:
             if has_key('type_expr'):
                 if has_key('type'):
                     raise ParseError, _tm('type and type_expr given', 'mime')
-                args['type_expr']=VSEval.Eval(args['type_expr'], expr_globals)
+                args['type_expr']=Eval(args['type_expr'])
             elif not has_key('type'):
                 args['type']='application/octet-stream'
 
             if has_key('disposition_expr'):
                 if has_key('disposition'):
                     raise ParseError, _tm('disposition and disposition_expr given', 'mime')
-                args['disposition_expr']=VSEval.Eval(args['disposition_expr'], expr_globals)
+                args['disposition_expr']=Eval(args['disposition_expr'])
             elif not has_key('disposition'):
                 args['disposition']=''
 
             if has_key('encode_expr'):
                 if has_key('encode'):
                     raise ParseError, _tm('encode and encode_expr given', 'mime')
-                args['encode_expr']=VSEval.Eval(args['encode_expr'], expr_globals)
+                args['encode_expr']=Eval(args['encode_expr'])
             elif not has_key('encode'):
                 args['encode']='base64'
 
             if has_key('name_expr'):
                 if has_key('name'):
                     raise ParseError, _tm('name and name_expr given', 'mime')
-                args['name_expr']=VSEval.Eval(args['name_expr'], expr_globals)
+                args['name_expr']=Eval(args['name_expr'])
             elif not has_key('name'):
                 args['name']=''
 
             if has_key('filename_expr'):
                 if has_key('filename'):
                     raise ParseError, _tm('filename and filename_expr given', 'mime')
-                args['filename_expr']=VSEval.Eval(args['filename_expr'], expr_globals)
+                args['filename_expr']=Eval(args['filename_expr'])
             elif not has_key('filename'):
                 args['filename']=''
 
             if has_key('skip_expr'):
-                args['skip_expr']=VSEval.Eval(args['skip_expr'], expr_globals)
+                args['skip_expr']=Eval(args['skip_expr'])
 
             if args['encode'] not in \
             ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',

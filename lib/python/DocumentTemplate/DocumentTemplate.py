@@ -145,31 +145,15 @@ Access Control
 
     Document templates provide a basic level of access control by
     preventing access to names beginning with an underscore.
-    Addational control may be provided by providing document templates
-    with a 'validate' method.  This would typically be done by
+    Additional control may be provided by providing document templates
+    with a 'read_guard' method.  This would typically be done by
     subclassing one or more of the DocumentTemplate classes.
 
-    If provided, the the 'validate' method will be called when objects
+    If provided, the the 'read_guard' method will be called when objects
     are accessed as accessed as instance attributes or when they are
-    accessed through keyed access in an expression..  The 'validate'
-    method will be called with five arguments:
-
-    1. The containing object that the object was accessed from,
-
-    2. The actual containing object that the object was found in,
-       which may be different from the containing onject the object
-       was accessed from, if the containing object supports
-       acquisition,
-
-    3. The name used to acces the object,
-
-    4. The object, and
-
-    5. The namespace object used to render the document template.
-
-       If a document template was called from Bobo, then the namespace
-       object will have an attribute, AUTHENTICATED_USER that is the
-       user object that was found if and when Bobo authenticated a user.
+    accessed through keyed access in an expression..  The 'read_guard'
+    method will be called with the containing object.  It can
+    return a wrapper object from which the attribute will be accessed.
 
 Document Templates may be created 4 ways:
 
@@ -194,11 +178,10 @@ Document Templates may be created 4 ways:
 '''
 
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 
 from DT_String import String, File
 from DT_HTML import HTML, HTMLFile, HTMLDefault
 # import DT_UI # Install HTML editing
-from DT_Util import html_quote

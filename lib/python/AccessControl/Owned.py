@@ -85,11 +85,11 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.10 2001/01/12 15:23:05 chrism Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Owned.py,v 1.11 2001/04/27 20:27:37 shane Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, Unauthorized
 from Acquisition import aq_get, aq_parent, aq_base
 
 UnownableOwner=[]
@@ -201,7 +201,7 @@ class Owned(ExtensionClass.Base):
                      urlparse.urlparse(REQUEST['HTTP_REFERER'])[:3])
         __traceback_info__=want_referer, got_referer
         if (want_referer != got_referer or security.calledByExecutable()):
-            raise 'Unauthorized', (
+            raise Unauthorized, (
                 'manage_takeOwnership was called from an invalid context'
                 )    
 
