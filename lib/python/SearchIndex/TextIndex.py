@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.10 1998/02/05 19:02:09 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: TextIndex.py,v 1.11 1998/09/28 20:43:22 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -272,6 +272,7 @@ class TextIndex(Persistent):
 	"""Return an InvertedIndex-style result "list"
 	"""
         src = tuple(Splitter(word, self._syn))
+        if not src: return ResultList({},(word,),self)
 	if len(src) == 1:
 	    src=src[0]
 	    if src[:1]=='"' and src[-1:]=='"': return self[src]
@@ -309,7 +310,9 @@ class TextIndex(Persistent):
 	elif has_key(id): keys=request[id]
 	else: return None
 
-	if type(keys) is not ListType: keys=[keys]
+        if type(keys) is type(''):
+            if not keys or not strip(keys): return None
+            keys=[keys]
 	r=None
 	for key in keys:
 	    key=strip(key)
@@ -325,7 +328,7 @@ class TextIndex(Persistent):
 		r=r.intersection(rr) 
 
 	if r is not None: return r, (id,)
-	
+	return intSet(), (id,)
 
 class ResultList:
   
@@ -626,6 +629,9 @@ for word in stop_words: stop_word_dict[word]=None
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.11  1998/09/28 20:43:22  jim
+# Fixed bug in searches on stop words.
+#
 # Revision 1.10  1998/02/05 19:02:09  jim
 # Changed to use get method.
 #
