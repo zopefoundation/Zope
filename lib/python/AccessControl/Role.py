@@ -1,15 +1,12 @@
 """Access control support"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
 from string import join, strip, split, find
 from Acquisition import Implicit
-
-
-
-
+import Globals
 
 class RoleManager:
 
@@ -342,7 +339,7 @@ class RoleManager:
     def _setRoles(self,acl_type,acl_roles):
 	pass
 
-
+Globals.default__class_init__(RoleManager)
 
 class Permission:
     # A Permission maps a named logical permission to a set
