@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -49,26 +49,21 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
     ('Change permissions', ['manage_access']),
     ('Change/upload data', ['manage_edit','manage_upload','PUT']),
     ('Change proxy roles', ['manage_proxyForm','manage_proxy']),
-    ('View', ['__call__',]),
-    ('Shared permission', ['',]),
+    ('View', ['__call__', '']),
     )
 
-    __state_names__=(
-	HTML.__state_names__+('title', '_proxy_roles')+
-	tuple(reduce(lambda a, b:
-		     a+b,
-		     map(lambda permission:
-			 map(lambda name:
-			     name+'__roles__',
-			     permission[1]
-			     ),
-			 __ac_permissions__
-			 )
-		     ))
-	)
-	   
+    _state_name={'raw':1, 'globals':1, '__name__':1, '_vars':1}.has_key
 
-    __call____roles__='Manager', 'Shared'
+    def __getstate__(self):
+	r={}
+        state_name=self._state_name
+        for k, v in self.__dict__.items():
+            if state_name(k) or k[-11:]=='_Permission' or k[-9:]=="__roles__":
+                r[k]=v
+
+	return r
+   
+
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
 	""" """
 	kw['document_id']   =self.id
@@ -141,6 +136,28 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
     manage=manage_main=manage_editDocument=manage_editForm
     manage_proxyForm=HTMLFile('documentProxy', globals())
 
+
+    _size_changes={
+        'Bigger': (5,5),
+        'Smaller': (-5,-5),
+        'Narrower': (0,-5),
+        'Wider': (0,5),
+        'Taller': (5,0),
+        'Shorter': (-5,0),
+        }
+
+    def _er(self,data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
+        dr,dc = self._size_changes[SUBMIT]
+        
+        rows=max(1,atoi(dtpref_rows)+dr)
+        cols=max(40,atoi(dtpref_cols)+dc)
+        e='Friday, 31-Dec-99 23:59:59 GMT'
+        resp=REQUEST['RESPONSE']
+        resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
+        resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
+        return self.manage_main(self,REQUEST,title=title,__str__=data,
+                                dtpref_cols=cols,dtpref_rows=rows)
+
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
 		    dtpref_rows='20',REQUEST=None):
 	"""
@@ -153,24 +170,9 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
 	the data gets checked for DTML errors and is saved.
 	"""
 	self._validateProxy(REQUEST)
-        if SUBMIT=='Smaller':
-            rows=atoi(dtpref_rows)-5
-            cols=atoi(dtpref_cols)-5
-	    e='Friday, 31-Dec-99 23:59:59 GMT'
-	    resp=REQUEST['RESPONSE']
-	    resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
-	    resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
-	    return self.manage_main(self,REQUEST,title=title,__str__=data,
-				    dtpref_cols=cols,dtpref_rows=rows)
-        if SUBMIT=='Bigger':
-            rows=atoi(dtpref_rows)+5
-            cols=atoi(dtpref_cols)+5
-	    e='Friday, 31-Dec-99 23:59:59 GMT'
-	    resp=REQUEST['RESPONSE']
-	    resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
-	    resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
-	    return self.manage_main(self,REQUEST,title=title,__str__=data,
-				    dtpref_cols=cols,dtpref_rows=rows)
+        if self._size_changes.has_key(SUBMIT):
+            return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
+
 	self.title=title
 	self.munge(data)
 	if REQUEST: return MessageDialog(
@@ -189,7 +191,6 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
 		    message='Your changes have been saved',
 		    action ='manage_main')
 
-    PUT__roles__='Manager',
     def PUT(self, BODY, REQUEST):
 	"""
    replaces the contents of the document with the BODY of an HTTP PUT request.
