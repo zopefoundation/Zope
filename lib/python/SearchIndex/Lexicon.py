@@ -117,6 +117,7 @@ class Lexicon(Persistent, Implicit):
 
     def __init__(self):
         self._lexicon = OIBTree()
+        self.counter = 0
 
     def set(self, word):
         """ return the word id of 'word' """
@@ -125,6 +126,8 @@ class Lexicon(Persistent, Implicit):
             return self._lexicon[word]
 
         else:
+            if not hasattr(self, 'counter'):
+                self.counter = 0
             self._lexicon[intern(word)] = self.counter
             self.counter = self.counter + 1
             return self.counter - 1 

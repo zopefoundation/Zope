@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -172,7 +172,10 @@ class UnTextIndex(Persistent, Implicit):
         Zope.  I don't think indexes were ever intended to participate 
         in this way, but I don't see too much of a problem with it.
         """
-        vocab =  getattr(self, vocab_id)
+        if type(vocab_id) is not type(""):
+            vocab = vocab_id
+        else:
+            vocab = getattr(self, vocab_id)
         return vocab.lexicon
         
 
