@@ -99,30 +99,31 @@ def zpublisher_exception_hook(
     published, REQUEST, t, v, traceback,
     # static
     StringType=type(''),
-    lower=string.lower,
     ConflictError=ZODB.POSException.ConflictError,
     ListType=type([]),
     ):
     try:
-        if ((type(t) is StringType and
-             lower(t) in ('unauthorized', 'redirect'))
-            or t is SystemExit):
-            raise
-        if issubclass(t, ConflictError):
-            # now what
-            # First, we need to close the current connection. We'll
-            # do this by releasing the hold on it. There should be
-            # some sane protocol for this, but for now we'll use
-            # brute force:
-            global conflict_errors
-            conflict_errors = conflict_errors + 1
-            method_name = REQUEST.get('PATH_INFO', '')
-            err = ('ZODB conflict error at %s (%s conflicts since startup '
-                   'at %s)')
-            LOG(err % (method_name, conflict_errors, startup_time), INFO, '')
-            LOG('Conflict traceback', BLATHER, '', error=sys.exc_info())
-            raise ZPublisher.Retry(t, v, traceback)
-        if t is ZPublisher.Retry: v.reraise()
+        if isinstance(t, StringType):
+            if t.lower() in ('unauthorized', 'redirect'):
+                raise
+        else:
+            if t is SystemExit:
+                raise
+            if issubclass(t, ConflictError):
+                # First, we need to close the current connection. We'll
+                # do this by releasing the hold on it. There should be
+                # some sane protocol for this, but for now we'll use
+                # brute force:
+                global conflict_errors
+                conflict_errors = conflict_errors + 1
+                method_name = REQUEST.get('PATH_INFO', '')
+                err = ('ZODB conflict error at %s '
+                       '(%s conflicts since startup at %s)')
+                LOG(err % (method_name, conflict_errors, startup_time),
+                    INFO, '')
+                LOG('Conflict traceback', BLATHER, '', error=sys.exc_info())
+                raise ZPublisher.Retry(t, v, traceback)
+            if t is ZPublisher.Retry: v.reraise()
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
             !='text/html'): raise
