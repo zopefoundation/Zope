@@ -518,6 +518,17 @@ import os
 if os.name == 'posix':
     import fcntl
 
+    # HACK by ZC: this hack also appears in ZServer.__init__, but it
+    # doesn't get installed if someone uses medusa directly (as they
+    # would when running the monitor client. This ensures that the
+    # compatibility hack is installed. Hopefully this (and any other)
+    # hacks can go away when we move to Python 2.2.
+    if not hasattr(fcntl, 'F_GETFL'):
+        import FCNTL
+        fcntl.F_GETFL = FCNTL.F_GETFL
+        fcntl.F_SETFL = FCNTL.F_SETFL
+
+
     class file_wrapper:
         # here we override just enough to make a file
         # look like a socket for the purposes of asyncore.
