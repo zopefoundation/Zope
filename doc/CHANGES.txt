@@ -20,6 +20,8 @@ Principia 1.4.0
 
     - Added integrated Apache web server preconfigured for Principia.
 
+    - A database with default content is now created for new installations.
+
     - A number of permission names were added/rearranged to
       consolidate recent security enhancements.
 
