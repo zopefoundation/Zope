@@ -218,6 +218,18 @@ class DateTimeTests (unittest.TestCase):
         self.assertEqual( ref1, isoDt)
 
 
+    def testJulianWeek(self):
+        """ check JulianDayWeek function """
+
+        lines  = open('julian_testdata.txt').readlines()
+        
+        for line in lines:
+            d = DateTime(line[:10])
+            result_from_mx=tuple(map(int, line[12:-2].split(',')))
+            self.assertEqual(result_from_mx[1], d.week())
+         
+
+
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
 
