@@ -91,6 +91,11 @@ from string import rfind
 class ProductDispatcher(Acquisition.Implicit):
     " "
 
+    def __getitem__(self, name):
+        product=self.aq_acquire('_getProducts')()._product(name)
+        dispatcher=FactoryDispatcher(product, self.aq_parent)
+        return dispatcher.__of__(self)
+
     def __bobo_traverse__(self, REQUEST, name):
         product=self.aq_acquire('_getProducts')()._product(name)
         dispatcher=FactoryDispatcher(product, self.aq_parent, REQUEST)
@@ -99,13 +104,14 @@ class ProductDispatcher(Acquisition.Implicit):
 class FactoryDispatcher(Acquisition.Implicit):
     " "
 
-    def __init__(self, product, dest, REQUEST):
+    def __init__(self, product, dest, REQUEST=None):
         if hasattr(product,'aq_base'): product=product.aq_base
         self._product=product
         self._d=dest
-        v=REQUEST['URL']
-        v=v[:rfind(v,'/')]
-        self._u=v[:rfind(v,'/')]
+        if REQUEST is not None:
+            v=REQUEST['URL']
+            v=v[:rfind(v,'/')]
+            self._u=v[:rfind(v,'/')]
 
     def Destination(self):
         "Return the destination for factory output"
