@@ -213,7 +213,7 @@ def getDefaultDatabaseFactory(context):
     fs_ns.read_only = None
     fs_ns.quota = None
     storage = FileStorage(fs_ns)
-    db_ns = dummy('default zodb database using filestorage at %s' % path)
+    db_ns = dummy('main')
     db_ns.storage = storage
     db_ns.cache_size = 5000
     db_ns.pool_size = 7
