@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -324,7 +324,7 @@ class CopyContainer(ExtensionClass.Base):
                 mn=string.split(method_name, '/')
                 if len(mn) > 1:
                     pname= mn[1]
-                    product=self.aq_acquire('_getProducts')()._product(pname)
+                    product=self.manage_addProduct[pname]
                     fname=mn[2]
                     factory=getattr(product, fname)
                     try: meth=getattr(factory, factory.initial)
