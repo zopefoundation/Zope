@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.1 1997/09/10 18:42:36 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: SimpleItem.py,v 1.2 1997/10/30 19:51:09 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 class Item:
@@ -53,6 +53,14 @@ class Item:
     def this(self):
 	return self
 
+    # Interact with tree tag
+    def tpURL(self):
+	url=self.id
+	if hasattr(url,'im_func'): url=url()
+	return url
+
+    def tpValues(self): return ()
+
 class Item_w__name__(Item):
 
     # Utility that returns the title if it is not blank and the id
@@ -70,6 +78,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.2  1997/10/30 19:51:09  jim
+# Added methods to support tree browsing.
+#
 # Revision 1.1  1997/09/10 18:42:36  jim
 # Added SimpleItem mix-in and new title/id methods.
 #
