@@ -89,10 +89,10 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import re, sys
-from TALES import Engine, TALESError, _valid_name, NAME_RE
+from TALES import Engine, CompilerError, _valid_name, NAME_RE
 from string import strip, split, join, replace
 from DocumentTemplate.DT_Util import TemplateDict
 
@@ -121,7 +121,7 @@ class PathExpr:
         self._path = path = split(expr, '/')
         self._base = base = path.pop(0)
         if not _valid_name(base):
-            raise TALESError, 'Invalid variable name "%s"' % base
+            raise CompilerError, 'Invalid variable name "%s"' % base
         self._dynparts = dp = []
         for i in range(len(path)):
             e = path[i]
@@ -183,16 +183,16 @@ class StringExpr:
             for exp in split(expr, '$$'):
                 if parts: parts.append('$')
                 m = _interp.search(exp)
-                if m is not None:
+                while m is not None:
                     parts.append(exp[:m.start()])
                     parts.append('%s')
                     vars.append(PathExpr('path', m.group(1) or m.group(2)))
                     exp = exp[m.end():]
                     m = _interp.search(exp)
                 if '$' in exp:
-                    raise TALESError, ('$ must be doubled or '
-                                       'followed by a variable name '
-                                       'in string expression "%s"' % expr)
+                    raise CompilerError, (
+                        '$ must be doubled or followed by a variable name '
+                        'in string expression "%s"' % expr)
                 parts.append(exp)
             expr = join(parts, '')
         self._expr = expr
@@ -231,8 +231,8 @@ if sys.modules.has_key('Zope'):
             self.expr = expr = strip(expr)
             blk = GuardedBlock('def f():\n return %s\n' % expr)
             if blk.errors:
-                raise TALESError, ('Python expression error:\n%s' %
-                                              join(blk.errors, '\n') )
+                raise CompilerError, ('Python expression error:\n%s' %
+                                      join(blk.errors, '\n') )
             guards = {'$guard': theGuard, '$write_guard': WriteGuard,
                       '$read_guard': ReadGuard, '__debug__': __debug__}
             self._f = UntupleFunction(blk.t, guards, __builtins__=safebin)
@@ -263,6 +263,12 @@ if sys.modules.has_key('Zope'):
         def __str__(self):
             return 'Python expression "%s"' % self.expr
 else:
+    class getSecurityManager:
+        '''Null security manager'''
+        def validate(self, *args, **kwargs):
+            return 1
+        validateValue = validate
+
     class PythonExpr:
         def __init__(self, name, expr):
             try:
@@ -270,8 +276,8 @@ else:
                 exec 'def f():\n return %s\n' % strip(expr) in d
                 self._f = d['f']
             except:
-                raise TALESError, ('Python expression error:\n'
-                                   '%s: %s') % sys.exc_info()[:2]
+                raise CompilerError, ('Python expression error:\n'
+                                      '%s: %s') % sys.exc_info()[:2]
             self._f_varnames = vnames = []
             for vname in self._f.func_code.co_names:
                 if vname[0] not in '$_':
@@ -310,14 +316,14 @@ def restrictedTraverse(self, path):
     REQUEST={'TraversalRequestNameStack': path}
     path.reverse()
     pop=path.pop
-    #securityManager=getSecurityManager()
+    securityManager=getSecurityManager()
 
     if not path[-1]:
         # If the path starts with an empty string, go to the root first.
         pop()
         self=self.getPhysicalRoot()
-        #if not securityManager.validateValue(self):
-        #    raise 'Unauthorized', name
+        if not securityManager.validateValue(self):
+            raise 'Unauthorized', name
                     
     object = self
     while path:
@@ -330,8 +336,8 @@ def restrictedTraverse(self, path):
         if name=='..':
             o=getattr(object, 'aq_parent', M)
             if o is not M:
-                #if not securityManager.validate(object, object, name, o):
-                #    raise 'Unauthorized', name
+                if not securityManager.validate(object, object, name, o):
+                    raise 'Unauthorized', name
                 object=o
                 continue
 
@@ -341,8 +347,8 @@ def restrictedTraverse(self, path):
                     
             # Note we pass no container, because we have no
             # way of knowing what it is
-            #if not securityManager.validate(object, None, name, o):
-            #    raise 'Unauthorized', name
+            if not securityManager.validate(object, None, name, o):
+                raise 'Unauthorized', name
                       
         else:
             o=get(object, name, M)
@@ -350,20 +356,20 @@ def restrictedTraverse(self, path):
                 # waaaa
                 if hasattr(get(object,'aq_base',object), name):
                     # value wasn't acquired
-                    #if not securityManager.validate(
-                    #    object, object, name, o):
-                    #    raise 'Unauthorized', name
+                    if not securityManager.validate(
+                        object, object, name, o):
+                        raise 'Unauthorized', name
                     pass
                 else:
-                    #if not securityManager.validate(
-                    #    object, None, name, o):
-                    #    raise 'Unauthorized', name
+                    if not securityManager.validate(
+                        object, None, name, o):
+                        raise 'Unauthorized', name
                     pass
                         
             else:
                 o=object[name]
-                #if not securityManager.validate(object, object, None, o):
-                #    raise 'Unauthorized', name
+                if not securityManager.validate(object, object, None, o):
+                    raise 'Unauthorized', name
         object = o
 
     return object

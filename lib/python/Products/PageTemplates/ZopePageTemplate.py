@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -151,6 +151,8 @@ class ZopePageTemplate(PageTemplate, Script, Historical, Cacheable,
 
     pt_editForm = DTMLFile('dtml/ptEdit', globals())
     manage = manage_main = pt_editForm
+
+    pt_diagnostic = DTMLFile('dtml/ptDiagnostic', globals())
 
     security.declareProtected('Change Page Templates',
       'pt_editAction', 'pt_setTitle', 'pt_edit',

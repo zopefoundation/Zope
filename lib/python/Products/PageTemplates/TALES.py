@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import re, sys
 from MultiMapping import MultiMapping
@@ -97,10 +97,16 @@ _parse_expr = re.compile(r"(%s):(.*)" % NAME_RE).match
 _valid_name = re.compile('%s$' % NAME_RE).match
 
 class TALESError(Exception):
-    '''TALES Error'''
+    __allow_access_to_unprotected_subobjects__ = 1
+    def __init__(self, expression, info=(None, None, None)):
+        self.type, self.value, self.traceback = info
+        self.expression = expression
 
-class RegistrationError(TALESError):
+class RegistrationError(Exception):
     '''TALES Type Registration Error'''
+
+class CompilerError(Exception):
+    '''TALES Compiler Error'''
 
 class Iterator:
     '''Simple Iterator class for use in Contexts'''
@@ -168,7 +174,7 @@ class Engine:
         try:
             handler = self.types[type]
         except KeyError:
-            raise TALESError, (
+            raise CompilerError, (
                 'Unrecognized expression type "%s".' % type)
         try:
             return handler(type, expr, self)
@@ -244,8 +250,7 @@ class Context:
         try:
             return expression(self)
         except:
-            raise TALESError, "%s\n %s" % (expression,
-                                           "%s:%s" % sys.exc_info()[:2])
+            raise TALESError, (`expression`, sys.exc_info())
 
     evaluateValue = evaluate
 
