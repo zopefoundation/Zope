@@ -80,19 +80,11 @@ TO DO
 
 - Bring DummyEngine.py up to specs.
 
-- Disallow TAL on start-tags whose end-tag is implied.
-
-- The call to emitSubstitution() in emitEndElement() for "replace"
-  doesn't pass in anything for attrDict.
-
 - Finish implementing insertStructure(): attribute replacement isn't
   implemented yet.
 
 - TALInterpreter currently always uses an XML parser to parse inserted
   structure; it should use a parser appropriate to the mode.
-
-- Incorporate line number and offset information into remaining
-  compile-time exceptions.
 
 - HTMLTALParser.py and TALParser.py are silly names.  Should be
   HTMLTALCompiler.py and XMLTALCompiler.py (or maybe shortened,

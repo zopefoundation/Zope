@@ -91,7 +91,7 @@ import string
 
 from TALGenerator import TALGenerator
 from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS, METALError, TALError
-from HTMLParser import HTMLParser
+from HTMLParser import HTMLParser, HTMLParseError
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that may be given in
@@ -135,18 +135,12 @@ TIGHTEN_IMPLICIT_CLOSE_TAGS = (PARA_LEVEL_HTML_TAGS
                                + BLOCK_CLOSING_TAG_MAP.keys())
 
 
-class NestingError(Exception):
+class NestingError(HTMLParseError):
     """Exception raised when elements aren't properly nested."""
 
-    def __init__(self, tag, lineno, offset):
+    def __init__(self, tag, position=(None, None)):
         self.tag = tag
-        self.lineno = lineno
-        self.offset = offset
-
-    def __str__(self):
-        s = "line %d, offset %d: unmatched </%s>" % (
-            self.lineno, self.offset, self.tag)
-        return s
+        HTMLParseError.__init__(self, "unmatched </%s>" % tag, position)
 
 
 class HTMLTALParser(HTMLParser):
@@ -156,7 +150,7 @@ class HTMLTALParser(HTMLParser):
     def __init__(self, gen=None):
         HTMLParser.__init__(self)
         if gen is None:
-            gen = TALGenerator()
+            gen = TALGenerator(xml=0)
         self.gen = gen
         self.tagstack = []
         self.nsstack = []
@@ -172,7 +166,7 @@ class HTMLTALParser(HTMLParser):
         self.feed(data)
         self.close()
         while self.tagstack:
-            self.finish_endtag(self.tagstack[-1])
+            self.implied_endtag(self.tagstack[-1], 2)
         assert self.nsstack == [], self.nsstack
         assert self.nsdict == {}, self.nsdict
 
@@ -182,12 +176,43 @@ class HTMLTALParser(HTMLParser):
     # Overriding HTMLParser methods
 
     def finish_starttag(self, tag, attrs):
+        self.close_para_tags(tag)
+        self.tagstack.append(tag)
         self.scan_xmlns(attrs)
+        attrlist, taldict, metaldict = self.extract_attrs(attrs)
+        self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
+                                  self.getpos())
         if tag in EMPTY_HTML_TAGS:
-            self.pop_xmlns()
-        elif BLOCK_CLOSING_TAG_MAP.has_key(tag):
+            self.implied_endtag(tag, -1)
+
+    def finish_startendtag(self, tag, attrs):
+        self.close_para_tags(tag)
+        self.scan_xmlns(attrs)
+        attrlist, taldict, metaldict = self.extract_attrs(attrs)
+        if taldict.get("replace") or taldict.get("content"):
+            self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
+                                      self.getpos())
+            self.gen.emitEndElement(tag)
+        else:
+            self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
+                                      self.getpos(), isend=1)
+        self.pop_xmlns()
+
+    def finish_endtag(self, tag):
+        if tag in EMPTY_HTML_TAGS:
+            # </img> etc. in the source is an error
+            raise NestingError(tag, self.getpos())
+        self.close_enclosed_tags(tag)
+        self.gen.emitEndElement(tag)
+        self.pop_xmlns()
+        self.tagstack.pop()
+
+    def close_para_tags(self, tag):
+        if tag in EMPTY_HTML_TAGS:
+            return
+        close_to = -1
+        if BLOCK_CLOSING_TAG_MAP.has_key(tag):
             blocks_to_close = BLOCK_CLOSING_TAG_MAP[tag]
-            close_to = -1
             for i in range(len(self.tagstack)):
                 t = self.tagstack[i]
                 if t in blocks_to_close:
@@ -195,51 +220,39 @@ class HTMLTALParser(HTMLParser):
                         close_to = i
                 elif t in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
-            self.close_to_level(close_to)
-            self.tagstack.append(tag)
         elif tag in PARA_LEVEL_HTML_TAGS + BLOCK_LEVEL_HTML_TAGS:
-            close_to = -1
             for i in range(len(self.tagstack)):
                 if self.tagstack[i] in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
                 elif self.tagstack[i] in PARA_LEVEL_HTML_TAGS:
                     if close_to == -1:
                         close_to = i
-            self.close_to_level(close_to)
-            self.tagstack.append(tag)
-        else:
-            self.tagstack.append(tag)
-        attrlist, taldict, metaldict = self.extract_attrs(attrs)
-        self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
-                                  self.getpos())
+        if close_to >= 0:
+            while len(self.tagstack) > close_to:
+                self.implied_endtag(self.tagstack[-1], 1)
 
-    def finish_endtag(self, tag, implied=0):
-        if tag in EMPTY_HTML_TAGS:
-            return
+    def close_enclosed_tags(self, tag):
         if tag not in self.tagstack:
-            lineno, offset = self.getpos()
-            raise NestingError(tag, lineno, offset)
-        while self.tagstack[-1] != tag:
-            self.finish_endtag(self.tagstack[-1], implied=1)
+            raise NestingError(tag, self.getpos())
+        while tag != self.tagstack[-1]:
+            self.implied_endtag(self.tagstack[-1], 1)
+        assert self.tagstack[-1] == tag
+
+    def implied_endtag(self, tag, implied):
+        assert tag == self.tagstack[-1]
+        assert implied in (-1, 1, 2)
+        if implied > 0:
+            if tag in TIGHTEN_IMPLICIT_CLOSE_TAGS:
+                # Pick out trailing whitespace from the program, and
+                # insert the close tag before the whitespace.
+                white = self.gen.unEmitWhitespace()
+                self.gen.emitEndElement(tag)
+                if white:
+                    self.gen.emitRawText(white)
+            else:
+                self.gen.emitEndElement(tag)
         self.tagstack.pop()
         self.pop_xmlns()
-        if implied \
-           and tag in TIGHTEN_IMPLICIT_CLOSE_TAGS \
-           and self.gen.program \
-           and self.gen.program[-1][0] == "rawtext":
-            # Pick out trailing whitespace from the last instruction,
-            # if it was a "rawtext" instruction, and insert the close
-            # tag before the whitespace.
-            data = self.gen.program.pop()[1]
-            prefix = string.rstrip(data)
-            white = data[len(prefix):]
-            if data:
-                self.gen.emitRawText(prefix)
-            self.gen.emitEndElement(tag)
-            if white:
-                self.gen.emitRawText(white)
-        else:
-            self.gen.emitEndElement(tag)
 
     def handle_charref(self, name):
         self.gen.emitRawText("&#%s;" % name)
@@ -301,10 +314,3 @@ class HTMLTALParser(HTMLParser):
                     taldict[suffix] = value
             attrlist.append(item)
         return attrlist, taldict, metaldict
-
-    def close_to_level(self, close_to):
-        if close_to > -1:
-            closing = self.tagstack[close_to:]
-            closing.reverse()
-            for t in closing:
-                self.finish_endtag(t, implied=1)

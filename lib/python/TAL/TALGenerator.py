@@ -99,7 +99,7 @@ class DummyCompiler:
 
 class TALGenerator:
 
-    def __init__(self, expressionCompiler=None):
+    def __init__(self, expressionCompiler=None, xml=1):
         if not expressionCompiler:
             expressionCompiler = DummyCompiler()
         self.expressionCompiler = expressionCompiler
@@ -109,6 +109,7 @@ class TALGenerator:
         self.macros = {}
         self.slots = {}
         self.slotStack = []
+        self.xml = xml
 
     def getCode(self):
         return self.optimize(self.program), self.macros
@@ -186,11 +187,15 @@ class TALGenerator:
     def emit(self, *instruction):
         self.program.append(instruction)
 
-    def emitStartTag(self, name, attrlist):
-        self.program.append(("startTag", name, attrlist))
+    def emitStartTag(self, name, attrlist, isend=0):
+        if isend:
+            opcode = "startEndTag"
+        else:
+            opcode = "startTag"
+        self.program.append((opcode, name, attrlist))
 
     def emitEndTag(self, name):
-        if self.program and self.program[-1][0] == "startTag":
+        if self.xml and self.program and self.program[-1][0] == "startTag":
             # Minimize empty element
             self.program[-1] = ("startEndTag",) + self.program[-1][1:]
         else:
@@ -207,8 +212,7 @@ class TALGenerator:
             m = re.match(
                 r"(?s)\s*(?:(global|local)\s+)?(%s)\s+(.*)\Z" % NAME_RE, part)
             if not m:
-                raise TALError("invalid define syntax: " + `part`,
-                               position)
+                raise TALError("invalid define syntax: " + `part`, position)
             scope, name, expr = m.group(1, 2, 3)
             scope = scope or "local"
             cexpr = self.compileExpression(expr)
@@ -222,19 +226,19 @@ class TALGenerator:
         program = self.popProgram()
         self.emit("condition", cexpr, program)
 
-    def emitRepeat(self, arg):
+    def emitRepeat(self, arg, position=(None, None)):
         m = re.match("(?s)\s*(%s)\s+(.*)\Z" % NAME_RE, arg)
         if not m:
-            raise TALError("invalid repeat syntax: " + `repeat`)
+            raise TALError("invalid repeat syntax: " + `repeat`, position)
         name, expr = m.group(1, 2)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
         self.emit("loop", name, cexpr, program)
 
-    def emitSubstitution(self, arg, attrDict={}):
+    def emitSubstitution(self, arg, attrDict={}, position=(None, None)):
         key, expr = parseSubstitution(arg)
         if not key:
-            raise TALError("Bad syntax in insert/replace: " + `arg`)
+            raise TALError("Bad syntax in content/replace: " + `arg`, position)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
         if key == "text":
@@ -243,10 +247,11 @@ class TALGenerator:
             assert key == "structure"
             self.emit("insertStructure", cexpr, attrDict, program)
 
-    def emitDefineMacro(self, macroName):
+    def emitDefineMacro(self, macroName, position=(None, None)):
         program = self.popProgram()
         if self.macros.has_key(macroName):
-            raise METALError("duplicate macro definition: %s" % macroName)
+            raise METALError("duplicate macro definition: %s" % macroName,
+                             position)
         self.macros[macroName] = program
         self.emit("defineMacro", macroName, program)
 
@@ -259,12 +264,35 @@ class TALGenerator:
         program = self.popProgram()
         self.emit("defineSlot", slotName, program)
 
-    def emitFillSlot(self, slotName):
+    def emitFillSlot(self, slotName, position=(None, None)):
         program = self.popProgram()
         if self.slots.has_key(slotName):
-            raise METALError("duplicate slot definition: %s" % slotName)
+            raise METALError("duplicate slot definition: %s" % slotName,
+                             position)
         self.slots[slotName] = program
         self.emit("fillSlot", slotName, program)
+
+    def unEmitWhitespace(self):
+        collect = []
+        i = len(self.program) - 1
+        while i >= 0:
+            item = self.program[i]
+            if item[0] != "rawtext":
+                break
+            text = item[1]
+            if not re.match(r"\A\s*\Z", text):
+                break
+            collect.append(text)
+            i = i-1
+        del self.program[i+1:]
+        if i >= 0 and self.program[i][0] == "rawtext":
+            text = self.program[i][1]
+            m = re.search(r"\s+\Z", text)
+            if m:
+                self.program[i] = ("rawtext", text[:m.start()])
+                collect.append(m.group())
+        collect.reverse()
+        return string.join(collect, "")
 
     def unEmitNewlineWhitespace(self):
         collect = []
@@ -306,7 +334,7 @@ class TALGenerator:
         return newlist
 
     def emitStartElement(self, name, attrlist, taldict, metaldict,
-                         position=(None, None)):
+                         position=(None, None), isend=0):
         for key in taldict.keys():
             if key not in KNOWN_TAL_ATTRIBUTES:
                 raise TALError("bad TAL attribute: " + `key`, position)
@@ -380,46 +408,56 @@ class TALGenerator:
         if replace:
             todo["repldict"] = repldict
             repldict = {}
-        self.emitStartTag(name, self.replaceAttrs(attrlist, repldict))
+        self.emitStartTag(name, self.replaceAttrs(attrlist, repldict), isend)
         if content:
             self.pushProgram()
+        if todo and position != (None, None):
+            todo["position"] = position
         self.todoPush(todo)
+        if isend:
+            self.emitEndElement(name, isend)
 
-    def emitEndElement(self, name):
+    def emitEndElement(self, name, isend=0):
         todo = self.todoPop()
         if not todo:
             # Shortcut
-            self.emitEndTag(name)
+            if not isend:
+                self.emitEndTag(name)
             return
-        content = todo.get("content")
-        if content:
-            self.emitSubstitution(content)
-        self.emitEndTag(name)
-        repeat = todo.get("repeat")
-        if repeat:
-            self.emitRepeat(repeat)
-            self.emit("endScope")
-        replace = todo.get("replace")
-        if replace:
-            repldict = todo.get("repldict", {})
-            self.emitSubstitution(replace, repldict)
-        condition = todo.get("condition")
-        if condition:
-            self.emitCondition(condition)
-        if todo.get("define"):
-            self.emit("endScope")
+
+        position = todo.get("position", (None, None))
         defineMacro = todo.get("defineMacro")
         useMacro = todo.get("useMacro")
         defineSlot = todo.get("defineSlot")
         fillSlot = todo.get("fillSlot")
+        content = todo.get("content")
+        repeat = todo.get("repeat")
+        replace = todo.get("replace")
+        condition = todo.get("condition")
+        define = todo.get("define")
+        repldict = todo.get("repldict", {})
+
+        if content:
+            self.emitSubstitution(content, {}, position)
+        if not isend:
+            self.emitEndTag(name)
+        if repeat:
+            self.emitRepeat(repeat, position)
+            self.emit("endScope")
+        if replace:
+            self.emitSubstitution(replace, repldict, position)
+        if condition:
+            self.emitCondition(condition)
+        if define:
+            self.emit("endScope")
         if defineMacro:
-            self.emitDefineMacro(defineMacro)
+            self.emitDefineMacro(defineMacro, position)
         if useMacro:
             self.emitUseMacro(useMacro)
         if defineSlot:
             self.emitDefineSlot(defineSlot)
         if fillSlot:
-            self.emitFillSlot(fillSlot)
+            self.emitFillSlot(fillSlot, position)
 
 def test():
     t = TALGenerator()
