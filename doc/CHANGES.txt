@@ -8,6 +8,14 @@ Zope Changes
 
     Features added
 
+     - Changed the ZEO server and control process to work with a
+       single configuration file; this is now the default way to
+       configure these processes.  (It's still possible to use
+       separate configuration files.)  The ZEO configuration file can
+       now include a "runner" section used by the control process and
+       ignored by the ZEO server process itself.  If present, the
+       control process can use the same configuration file.
+
      - ZConfig was updated to version 2.0.  The new version includes
        two new ways to perform schema extension; of particular
        interest in Zope is the ability for a configuration file to
