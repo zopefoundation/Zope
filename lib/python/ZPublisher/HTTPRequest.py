@@ -1259,16 +1259,16 @@ class HTTPRequest(BaseRequest):
     def __str__(self):
         result="<h3>form</h3><table>"
         row='<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
-        for k,v in self.form.items():
+        for k,v in _filterPasswordFields(self.form.items()):
             result=result + row % (escape(k), escape(repr(v)))
         result=result+"</table><h3>cookies</h3><table>"
-        for k,v in self.cookies.items():
+        for k,v in _filterPasswordFields(self.cookies.items()):
             result=result + row % (escape(k), escape(repr(v)))
         result=result+"</table><h3>lazy items</h3><table>"
-        for k,v in self._lazies.items():
+        for k,v in _filterPasswordFields(self._lazies.items()):
             result=result + row % (escape(k), escape(repr(v)))
         result=result+"</table><h3>other</h3><table>"
-        for k,v in self.other.items():
+        for k,v in _filterPasswordFields(self.other.items()):
             if k in ('PARENTS','RESPONSE'): continue
             result=result + row % (escape(k), escape(repr(v)))
 
@@ -1516,6 +1516,20 @@ RECORDS=8
 REC=RECORD|RECORDS
 EMPTY=16
 CONVERTED=32
+
+#   Collector #777:  filter out request fields which contain 'passw'
+def _filterPasswordFields(items):
+
+    result = []
+
+    for k, v in items:
+
+        if 'passw' in k.lower():
+            v = '<password obscured>'
+
+        result.append((k, v))
+
+    return result
 
 
 # The trusted_proxies configuration setting contains a sequence
