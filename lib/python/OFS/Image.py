@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -363,10 +363,9 @@ class File(Persistent,Implicit,PropertyManager,
 
     def __str__(self): return str(self.data)
     def __len__(self): return 1
+	
+    manage_FTPget=index_html
 
-    def manage_FTPget(self):
-        "Get data for FTP download"
-        return self.data
 
 manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
 def manage_addImage(self, id, file, title='', precondition='', content_type='',
