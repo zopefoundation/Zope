@@ -29,10 +29,10 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
         """Get the physical path for this record"""
         return self.aq_parent.getpath(self.data_record_id_)
 
-    def getURL(self):
+    def getURL(self, relative=0):
         """Try to generate a URL for this record"""
         try:
-            return self.REQUEST.physicalPathToURL(self.getPath())
+            return self.REQUEST.physicalPathToURL(self.getPath(), relative)
         except:
             return self.getPath()
 
