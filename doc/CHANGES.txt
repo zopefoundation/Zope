@@ -16,7 +16,7 @@ Principia Changes
 
          - Must have "view management screens" to copy.
 
-         - Must have "delete objects" to cut ot delete.
+         - Must have "delete objects" to cut to delete.
 
          - Must be able to add an object of the type being pasted.
 
@@ -28,6 +28,8 @@ Principia Changes
         product management into separate interfaces.
 
       - Through-the-web creation of products and factories.
+
+      - Added "Find" tab to Folders
 
     Bugs Fixed
 
