@@ -6,5 +6,4 @@ MultiMapping MultiMapping.c
 ThreadLock ThreadLock.c
 Missing Missing.c
 Sync Sync.c
-
-# install Xaq.py
+Record Record.c
