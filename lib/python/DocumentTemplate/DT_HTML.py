@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.21 1999/08/03 23:26:17 jim Exp $"""
+$Id: DT_HTML.py,v 1.22 1999/08/26 14:45:48 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -145,20 +145,18 @@ class dtml_re_class:
             else:
                 if text[s:s+6] == '&dtml-':
                     n=s+6
-                    args=n+1
                     while 1:
-                        e=find(text,';',args)
+                        e=find(text,';',n)
                         if e < 0: break
                         args=text[n:e]
-                        if ent_name(text[n+1:e]) > 0:
-                            d=self.__dict__
-                            d=self.__dict__
-                            d[0]=text[s:e+1]
-                            d[1]=d['end']=''
-                            d[2]=d['name']='var'
-                            d[3]=d['args']=args
-                            return s
-
+                        if ent_name(args) < 0: break
+                        d=self.__dict__
+                        d[0]=text[s:e+1]
+                        d[1]=d['end']=''
+                        d[2]=d['name']='var'
+                        d[3]=d['args']=args+' html_quote'
+                        return s
+                        
                 start=s+1
                 continue
 
