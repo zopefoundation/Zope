@@ -1,0 +1,21 @@
+Database Management - Flush Cache: Allows you to manually clear objects out of the Zope cache. 
+  
+    Description
+
+        The fllowing table lists the functionality of the buttons on 
+        the 'Flush Cache' management screen:
+
+    Controls
+
+        'Full Sweep' -- Allows you to remove objects from the cache. The 
+        associated field (with the default value of 60 seconds) indicates 
+        the number of seconds within which an object must have been 
+        accessed in order *not* to be deactivated by  the flush operation.
+      
+        'Minimize' -- Allows you to remove objects from
+        the cache. The field (with the  default value of 60 seconds)
+        indicates the number of seconds within which an object must have
+        been accessed in order not to be deactivated by the flush
+        operation. The minimize operation differs from the full sweep in
+        that it removes all objects which are no longer referenced from
+        the root, while the full sweep merely removes most objects.

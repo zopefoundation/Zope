@@ -1,0 +1,18 @@
+Folder - Rename: Change 'id' of an object(s) 
+  
+    Description
+
+        This view allows you to change the id of an object(s).
+
+    Controls
+
+        '[Old Object Id]' -- Indicates the old object Id and the object type is shown
+        by the little icon.
+
+        '[New Object Id]' -- Allows you to alter the Id of every listed object. The 
+        default value is the old Id.
+
+        'OK' -- Clicked, Zoep changes the Ids of the objects listed.
+
+        'Cancel' -- Clicked, it cancels renaming the objects and returns to 
+        the Folder contents view.

@@ -1,0 +1,31 @@
+Find
+  
+  This view allows you to search for Zope objects.
+  
+  To find objects you specify search criteria in the top frame and
+  then click the 'Find' button. The find results will appear in
+  the button frame. For more search criteria click the
+  'Advanced...' link.
+
+  'Find objects of type' -- Multiple selection list, that lets you choose the types of 
+  objects you wish to search and/or list in the search 
+  results.
+
+  'with ids' -- Allows you to restrict the ids the found items.
+  *Important*You have to enter the id exactly. 
+  Parts of the id or wild cards will not work.
+
+  'containing' -- Allows you to specify text that must be contained in the 
+  *body* of found items. Text in the title or other
+  attribute fields will not be searched.
+
+  'modified' -- Allows you to restrict your search to a specific time 
+  period. You can choose whether objects 'before' or 'after' a specified 
+  date/time (DateTime string format) should be searched.
+  **Note:** If you do not specify a date the current date is assumed.
+  **Examples of a valid DatTime string:** 'YYYY/MM/DD hh:mm:ss', 'YYYY-MM-DD', 
+  and 'hh:mm'.
+
+  **Where?** -- Finally you may choose either the 'Search only in this
+  folder' or the 'Search all subfolders' radio box to control where Zope 
+  should look for found items.

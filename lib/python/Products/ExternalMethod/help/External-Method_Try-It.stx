@@ -1,0 +1,8 @@
+External Method - Try It: This view executes the external method.
+  
+  Description
+
+  	This view executes the external method and returns the results if
+  	any. Objects, such as classes, lists and dictionaries are rendered 
+  	to a string to be displayed. Only parameters from the web request 
+  	are passed the the external method.

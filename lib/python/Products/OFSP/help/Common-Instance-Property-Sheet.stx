@@ -1,0 +1,11 @@
+Common Instance Property Sheet - Define Properties for ZClasses
+  
+    Description
+
+        Common Instance Property Sheets allow ZClasses to define sets of
+        properties. A property sheets provides an editing view for the 
+        properties, and default values for the properties. 
+          
+        Individual instances of ZClasses maintain their properties normally.
+        A property sheet merely provides a way to describe and edit a set of
+        properties.

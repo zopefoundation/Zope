@@ -1,0 +1,22 @@
+Zope Factory - Add: Create new Zope Factory
+  
+    Description
+
+        This view allows you to create a new Zope Factory.
+
+    Controls
+
+        'Id' -- Allows you to specify the id of the Zope Factory.
+      
+        'Title' -- Allows you to specify the title of the Zope Factory.
+      
+        'Add list name' -- Allows you to specify the name that will appear on the in the 
+        product add list. It is sometimes referred to the meta type.
+      
+        'Method' -- Allows you to specify what method is executed when the product 
+        is chosen from the product add list. Typically this method is an 
+        add form.
+      
+        'Generate' -- Clicked, Zope will create the Factory and register the product 
+        in the product list.
+

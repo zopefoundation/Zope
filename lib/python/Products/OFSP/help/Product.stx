@@ -1,0 +1,14 @@
+Product - Allows you ro extend Zope
+  
+    Description
+
+        Products allow you to extend Zope by creating new types of addable Zope
+        objects.
+        
+        **Note:** You can only create and manipulate ZClass-based Products 
+        using the Zope Management interface.
+        
+        A Product contains other objects including a Factory which allows you
+        to make your Product objects available via the Product add list. You 
+        basically will be able to specify you own objects, like Image or 
+        User.

@@ -1,0 +1,33 @@
+Folder - Import/Export: Allows you to import/export objects from/into the Zope database.
+  
+    Description
+
+        This screen actually allows you to do both, exporting and importing. The upper options
+        are for exporting an the lower ones for importing.
+      
+    Controls
+
+        'Export object id' -- Specifies the id of the object to be exported.
+        **Note:**The object must be directly in this Folder object. 
+        Aquisition will not be used for this operation.
+
+        'Export to' -- Allows you to choose, whether you want to save the exported file 
+        locally ('Download to local machine') or on the server 
+        ('Save to file server').
+
+        *XML format?* -- Allows you to choose, whether the exported object will be in 
+        a Python pickel file (binary mode) or in XML format.
+        **Note:** Since XML is human readable, it is usually very easy 
+        to do a search and replace. That comes sometimes very handy.
+
+        'Export' -- Clicked, Zope exports the selected object to the specified 
+        location in the specified format.
+
+        'Import file name' -- Allows you to specify the filename of the Zope export file 
+        that you would like to import.
+        **Note:** The file must be located in the 'import'
+        directory of your Zope installation in order for Zope to find
+        the file, otherwise Zope will throw a file not found 
+        exception.
+
+        'Import' -- Clicked, Zope will attempt to import the specified file.

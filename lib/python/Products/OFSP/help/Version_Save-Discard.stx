@@ -1,0 +1,20 @@
+Version - Save/Discard: Allows to commit/discard Changes
+  
+    Description
+
+        This view allows you to either commit or discard changes made in this version.
+
+    Controls
+      
+        '[Comments textarea]' -- Allows you to enter some comments regarding the current 
+        version, before saving or discarding the version.
+        **Note:** Comment fields are very common in version control systems. You should
+        use it to describe some basic changes you made to the system, so that you can refer 
+        back to them later on.
+      
+        'Save' -- Clicked, it will allow you to commit the changes in the version and make them 
+        publically available.
+      
+        'Discard' -- Clicked, Zope will discard all of the changes made using the version. None
+        of the transactions will be publically available and are deleted from the 
+        version records.

@@ -1,0 +1,27 @@
+Folder - Local Roles: Allows you to manage local roles
+  
+
+    Description
+
+        Local roles allow you to give a particular user additional roles (permissions) for 
+        this Folder (and it children) additional to the regular ones.
+
+    Controls
+
+        '[User List]' -- Allows you to select select users. When clicking on the user name, 
+        you will enter the user's local roles managemant screen.
+        **Note:** There will be no such list, if no local roles are defined.
+      
+        'Remove' -- Upon click, Zope will delete all the checked (in the user list) users' local 
+        roles. 
+        **Note:** There will be no 'Remove' button, if local roles are defined.
+        
+        'Users'[Select List] -- Select a user for which you would like to define a local role.
+      
+        'Roles'[Multi Select] -- Select all the roles you would like to assign to this user 
+        as local roles.
+      
+        'Add' -- Clicked, the local roles for the chosen user will be added as local roles to 
+        the Folder. You will be brought back to the same screen. If a role was already
+        assigned to a certain user, the system will reassign the role and proceed 
+        without any further notification.

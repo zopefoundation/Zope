@@ -1,0 +1,70 @@
+Properties - Define prpoerties for your current object.
+  
+    Description
+
+        This view allows you to define properties on your current object, like a Folder 
+        or DTML Document. 
+        
+    Controls
+
+        The first list describes the fields that allow you to view and modify the 
+        existing properties.
+
+        '[List of Properties]' -- Allows you to select the properties (with the checkbox) 
+        and change the properties' values using the text filed. The default entry is the 
+        current value of the properties.
+
+        'Save Changes' -- Clicked, it will allow you to save the new values of the properties.
+
+        'Delete' -- Clicked, Zope will delete the checked Properties.
+
+        The next table lists all the options assisting you with creating new 
+        properties.
+
+        'Id' -- Allows you to specify the id (name) of the Property.
+
+        'Type' -- Select the type of the property. This is the same as specifying
+        the type of a variable/attribute in C/C++ or Java for example.
+
+        'Value' -- Allows you to specify the value of the property. Make sure that
+        your entered value can be wrapped into the type you specified.
+        **Example:** If your type is an integer, '12.1' is not
+        a legal value, wherby '12' is. Please see the table on types below.
+        **Note:** When creating 'selection' and 'multiple
+        selection' properties, specify the name of another property (or
+        method) as the 'Value'. This property (or method) should
+        return a list of strings will be used to provide choices for the 
+        selection.
+
+        'Add' -- Clicked, the property will be added to the object.
+        This table lists all the property types and lists the allowed values
+        for each. 
+
+    Property Types with description 
+
+        boolean -- 1 or 0. 
+
+        date -- A 'DateTime' value, for example '12/31/1999 15:42:52 PST'.
+        **Note:** DateTime objects in Zope are *not* 
+        implemented using the 'mxDateTime' module. Therefore, not 
+        all of the mxDateTime date syntax is supported. 
+
+        float -- A decimal number, for example '12.4'. 
+
+        int -- An integer number, for example, '12'. 
+
+        lines -- A list of strings, one per line. 
+
+        long -- A long integer, for example '12232322322323232323423'. 
+
+        string -- A string of characters, for example 'This is a string'. 
+
+        text -- A muli-line string, for example a paragraph. 
+
+        tokens -- A list of strings separated by white space, for example
+        'one two three'. 
+
+        selection -- A string selected by a pop-up menu. 
+
+        multiple selection -- A list of strings selected by a selection list.
+

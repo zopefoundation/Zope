@@ -1,0 +1,12 @@
+DTML Document: Provide general content management facilites to Zope.
+
+    Discription  
+
+        They are DTML templates that are evaluated by Zope and then
+        served as an HTML page.
+        
+        A DTML Document roughly corresponds to a web page. DTML Documents can
+        be viewed and edited through the web. DTML Documents can contain scripting
+        commands in Document Templates Markup Language (DTML).
+
+

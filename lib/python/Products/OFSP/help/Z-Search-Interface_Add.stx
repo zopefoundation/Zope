@@ -1,0 +1,33 @@
+Z Search Interface - Add: Add a Zope Search Interface
+  
+    Description
+
+        This view allows you to create new a search results document and
+        optionally a search input form.
+
+        **Note:** This Zope feature may be more useful to Zope 
+        starters, since a well-versed Zope user could easily 
+        write these two methods him/herself and use some advanced
+        features, especially for the 'DTML-IN' tag.
+
+    Controls
+
+        'Select one or more seachable objects' -- Allows you to specify the 
+        searchable objects (usually ZCatalogs or ZSQL Methods).
+      
+        'Report Id' -- Allows you to specify the id of the result document.
+      
+        'Report Title' -- Allows you to specify the title of the result document.
+      
+        'Report Style' -- Allows you to specify whether the report style should group
+        results by 'Record' or display them all 'tabular'.
+      
+        'Search Input Id' -- Allows you to specify the id of the input form.
+      
+        'Search Input Title' -- Allows you to specify the title of the input form.
+      
+        'Add' -- Creates 2 DTML Methods, one being the Search form and the
+        other for showing results.
+
+
+

@@ -1,0 +1,25 @@
+ZClass - Basic: Manage basic attributes
+  
+    Description
+
+        This view allows you to manage the basic attributes of a ZClass.
+      
+    Controls
+
+        'Base classes' -- Indicates the base classes of the ZClass.
+      
+        'Title' -- Allows you to specify the title of the ZClass.
+      
+        'Meta type' -- Allows you to specify the product name of the ZClass as it appears in 
+        the product add list.
+      
+        'class id' -- Allows you to specify a unique class identifier for the ZClass.
+      
+        'icon' -- Allows you to specify the path to the ZClass's icon.
+      
+        'Icon Image' -- Allows you to upload a new image file to sever as the ZClass's icon. 
+        The uploaded image file should be a 16x16 pixel GIF file. To locate 
+        and select an image file for upload, click the 'Browse' button.
+      
+        'Change' -- Clicked, Zope will commit the changes and upload the image, if a 
+        filename was specified in the Icon Image field.

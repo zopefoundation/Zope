@@ -1,0 +1,23 @@
+DTML Document/Method - Add: Allows you to create a new DTML Document/Method
+
+    Description
+    
+        Create a new DTML document. You can either start entering code 
+        or upload a local file to the server.
+
+    Controls
+
+        'Id' -- Allows you to specify the id of the DTML Document.
+      
+        'Title' -- Allows you to specify the title of the DTML Document.
+      
+        'File' -- Allows you to upload a file and make it the content of 
+        the document. Use the 'Berowse...' button to locate
+        and select the file.
+      
+        'Add' -- Upon click, the Document is added to the current Zope 
+        folder and the content of the folder will be shown.
+      
+        'Add and Edit' -- Upon click, the Document is added to the current Zope
+        folder and the 'Edit' view of the
+        Document is displayed.

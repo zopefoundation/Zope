@@ -1,0 +1,59 @@
+Control Panel - Contents: View/Management of Zope internals and system management
+
+    Description
+  
+        This view displays information about the Zope process and provides
+        access to system management functions. 
+  
+    Controls
+
+        The following list explains the information given to you on the top 
+        of the Control Panel Contents screen. 
+
+        **Note**: Some of these information are system/OS specific.
+
+        Zope version -- Indicates the version of Zope, the type of the release 
+        (binary/source), the Python version, and the platform the binaries
+        were compiled on (for example: win32-x86 or linux2)
+      
+        Python version -- Indicates the Python version that Zope is using. It also tells
+        you how many time it was attempted to build this version (#0 means
+        it is the binary release from "python.org":http://www.python.org ), when it 
+        was built, and for which platform if was compiled.
+      
+        System Platform -- Indicates the type of machine Zope is running on.
+        Example: win32 for Windows 95/98/2000 or linux-i386 for 
+        Linux running on an Intel based platform.
+      
+        Process ID -- Indicates the PID of the Zope process.
+        **Note:** Since on Windows systems the concept of 
+        process IDs does not exists, the number (sometimes
+        negative) has no significance.
+      
+        Running for -- Indicates how long the Zope process has been running.
+        
+        The next buttons allow you to interfer with the Zope process by 
+        shutting it down and/or restarting it.
+      
+        Shutdown -- Button click will shutdown th Zope process.
+        **Important:** You will not be able to acces Zope 
+        through the Web interface anymore after shutting it down.
+      
+        Restart -- Button click will restart Zope. The button will only appear
+        if Zope is running under Deamon control.
+        **Note:** It may experience a delay in accessing you Zope 
+        onjects again, since it takes the server a little time to
+        restart itself.
+      
+        The last table shows the Zope administration options you can 
+        execute through the Web management interface.
+      
+        Database Management -- Provides access to the database management functions such 
+        as packing and cache management.
+      
+        Version Management -- Provides access to version management functions, including 
+        version commit and abort.
+      
+        Product Management -- Provides access to management functions for installed Zope
+        Products.
+

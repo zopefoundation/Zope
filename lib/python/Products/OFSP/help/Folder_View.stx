@@ -1,0 +1,10 @@
+Folder - View: Preview public appearance
+  
+    Description
+
+        This view allows you to preview the public appearance of the folder.
+  
+        This view will only be available if the folder contains (or acquires) 
+        an 'index_html' object. So, for example, if your root folder 
+        contains an 'index_html', all of you Folders will have this 
+        view.

@@ -1,0 +1,62 @@
+ObjectManager - Contents: Display the objects contained by the Object Manager
+  
+    Description
+
+        This view displays the objects contained by the object managerr and allows
+        you to add, delete and change them.
+        
+        Each contained object is displayed on a line and is identified by its icon 
+        which shows what type of object it is, its 'id', and its title in 
+        parenthesis. You can manage a contained object by clicking on its identifying 
+        link. If the folder contains no objects, then none will be listed in this view. 
+        
+        If you are currently working in a version, there will be a notice
+        at the top of the list of objects indicating this. If there is a red diamond
+        following the name of an object this indicates that the object has been
+        modified in the version you are currently working in. If there is a red diamond
+        with a lock after an object, this indicates the the object has been modified in
+        another version.
+
+    Controls
+
+        '[Checkbox]' -- Object Selection. Allows you to select the object in order to perform 
+        operations on it. The operations you can perform are rename, cut, copy, 
+        delete, and export. Some operations may not be visible if they are not 
+        allowed.
+
+        'Rename' -- Allows you to change the Ids of the selected objects.
+
+        'Cut' -- Allows you to cut an object and place it into the clipboard. This 
+        is similar to cut in any file manager, such as Konquerer or 
+        Explorer. When the objects are pasted into another location, the old 
+        objects are deleted (similar to the 'mv' in UNIX).
+
+        'Copy' -- Allows you to copy an object and place it in the clipboard. This 
+        is similar to copy in any file manager, such as Konquerer or 
+        Explorer. When the objects are pasted into another location, the old 
+        objects are *not* deleted (similar to the 'cp' in 
+        UNIX).
+
+        'Paste' -- Allows you to paste objects from the clipboard into this object
+        (for example: Folder).
+        **Note:** The button will only appear, if objects are in the 
+        clipboard.
+
+        'Delete' -- Allows you to delete all selected objects from this 
+        ObjectManager (Folder).
+
+        'Export...' -- Allows you to export an object from the Zope database (ZODB)
+        into a Zope Export File (.zexp) or into XML format.
+        **Important:** Only one selected object (first from 
+        the top) will be taken for export. The other selections
+        are ignored.
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+Common Instance Property Sheet - Add: Create a new Common Instance Property Sheet.
+  
+    Description
+    
+        This view allows you to add a 'container object' that will enclose all the 
+        properties for the ZClass.
+
+    Controls
+
+        'Id' -- Specifies the id of the Common Instance Property Sheet.
+       
+        'Title' -- Allows you to specify the title of the Common Instance Propery Sheet.
+ 
+
+
+

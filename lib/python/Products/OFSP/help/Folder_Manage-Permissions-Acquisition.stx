@@ -1,0 +1,11 @@
+Folder - Manage Permissions Acquisition: Manage Securoty Acquisition settings
+  
+    Description
+  
+        This view allows you to manage security acquisition settings.
+
+    Controls
+
+        '[Permissions List]' -- Allows you to select the permissions which should acquire security settings.
+
+        'Change' -- Clicked, it will change the security acquisition settings for the Folder.

@@ -1,0 +1,31 @@
+Ownership: Sets the owner for the project
+
+	Description
+
+		This view allows you to set the ownership of an object.
+
+		On the top of the page Zope will tell you whether the 
+		object has an owner and who it is.
+
+	Controls
+
+		'Take ownership' -- Allows you (the current user) to 
+		take the ownership of this project.
+		**Important:** This button will not show up, if you
+		(the current user) are the owner of the object.
+
+		'Make ownership implicit (acquired)' -- Allows you
+		to adjust all sub-objects to have the same owner-
+		ship, if they have no owner.
+		**Important:** This button will only show up, if the
+		object has an owner.
+
+		'Make ownership explicit' -- Allows you to ignore 
+		aquisition and set you (the current user) as the 
+		owner of the object. 
+		**Important:** This button will only show, if the
+		ownership is acquired.
+
+		All options depend on your permissions for the system,
+		since just a regular user would not be allowed to give
+		her/himself ownership to an arbitrary object.

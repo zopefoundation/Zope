@@ -1,0 +1,25 @@
+Version Management - Version: Manage active versions
+
+    Description
+  
+        This view allows you to manage active versions.
+
+    Controls
+        
+        The following options and information will be only available, if there 
+        are any versions initiated in this object tree (in this ZODB) and some
+        work was done using the activated version.
+
+        '[List of Versions]' -- There is one version per line. The checkbox allows 
+        you to select each version you would either like to 'Save' or to 'Discard'.
+        Beside it you will find the path of the version, so you will be able
+        to see in which Folder the version is and what name (id) it has. Upon
+        clicking on the path, you will be taken to the 'Join/Leave' 
+        management screen of this version.
+
+        'Save' -- Clicked, Zope will commit all the changes made by the selected 
+        version to the public.
+
+        'Discard' -- Clicked, Zope will discard all the transactions saved by the 
+        selected versions and not commit them to the public .
+

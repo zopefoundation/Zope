@@ -1,0 +1,21 @@
+DTML Method: Provide general templating management facilities to Zope.
+  
+    Description
+    
+        A DTML Method can be used to display almost any Zope object. DTML
+        Methods can be viewed and edited through the web. They can contain
+        scripting commands in Document Templates Markup Language. DTML Methods can be
+        called from DTML Documents and other DTML Methods.
+        
+        I read the help for DTML Methods and Documents now, so what is the 
+        difference? The best way to think of it is that DTML Documents are 
+        like classes that have properties and methods, whereby DTML Methods 
+        are methods that act on the class Folder. Therefore it makes no sense
+        for DTML Methods to have properties, whereby DTML Documents have
+        properties.
+      
+        **Example:** Lets say you have the line '&lt;dtml-var id&gt;'
+        in your DTML Document and in your DTML Method. The Document will 
+        display its own id (since it is a property of the Document), wherby
+        the Method will return the id of the parent calling object (eg. 
+        DTML Document, Folder).

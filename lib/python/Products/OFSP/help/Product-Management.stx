@@ -1,0 +1,14 @@
+Product Management: Contains the Zope Products
+  
+    Description
+
+        There are two types of Zope products, Python-based products and
+        ZClasses (developed purely in Zope). You can usually differentiate
+        between the two by the icon. Python products have closed and 
+        ZClasses have opened boxes as icon.
+         
+        If you want to know more about these two types of products, you 
+        will be able to find documentation on the 
+        "Zope.org":http://www.zope.org  or the 
+        "ZDP":http://zdp.zope.org  site.
+

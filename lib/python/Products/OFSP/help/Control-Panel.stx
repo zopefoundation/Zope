@@ -1,0 +1,7 @@
+Control Panel - Provides access to centralized Zope management facilties.
+  
+    Description
+
+        From the Control Panel you can manage the Zope database, versions,
+        and Zope Products.
+

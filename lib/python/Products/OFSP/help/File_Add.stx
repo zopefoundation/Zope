@@ -1,0 +1,16 @@
+File - Add: Allows you to create a new File
+
+    Description
+    
+        Add a new generic file (binary contents) to the ZODB.
+
+    Controls
+
+        'Id' -- Allows you to specify the id of the File.
+      
+        'Title' -- Allows you to specify the title of the File.
+      
+        'Browse...'[Button and Field] -- Allows you to locate and select a file to be uploaded.
+      
+        'Add' -- Upon click, Zope uploads the file into the ZODB and 
+        creates the object.

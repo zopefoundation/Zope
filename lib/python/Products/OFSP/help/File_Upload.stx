@@ -1,0 +1,15 @@
+File - Upload: Allows you to upload a file.
+  
+    Description
+
+        Use this view to completely replace the file with an uploaded file
+        from your local computer.
+    
+    Controls
+  
+        'Id' -- Indicates the id of the File.
+      
+        'Data'[Button and Field] -- Allows you to locate and select a file to be uploaded.
+      
+        'Change' -- Upon click, Zope uploads the file into the ZODB and replaces
+        the old data.

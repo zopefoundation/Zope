@@ -1,0 +1,10 @@
+Mail Host
+  
+  Mail Hosts allow you to send mail via SMTP.
+  
+  **Note:** Please be aware that this object uses relaying
+  to send the E-Mail message. Most E-Mail servers do not allow
+  relaying other from themselves. So, if you have a Mail 
+  server setup by default on your box (like for Red Hat 
+  installs), you should be able to use your localhost as mail
+  server.

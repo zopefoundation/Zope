@@ -1,0 +1,34 @@
+ZClass - Add: Add a new ZClass
+  
+    Description
+
+        This view allows you to create a new ZClass.
+      
+    Controls
+
+        'Id' -- Allows you to specify the id of the ZClass.
+      
+        'Title' -- Allows you to specify the title of the ZClass.
+      
+        'Meta type' -- Allows you to specify the name of the ZClass as it will appear in the
+        product add list.
+      
+        'Create constructor objects' -- Allows you to specify whether you would like Zope 
+        to automatically create the necessary objects to construct new ZClass instances. If 
+        checked it will create a new Zope Permission, Zope Factory, add method and add form.
+        **Note:** If you are not sure about this option, just leave it checked.
+      
+        'Base classes' -- Allows you to specify base classes for your ZClass. To add a base 
+        class select it from the 'Unselected' list and click the right 
+        arrow button. The base class should be added to the selected list. To 
+        remove a base class select it from the 'Selected' list and 
+        click the left arrow button. The names of base classes are divided 
+        into two parts seperated by a colon indicating the product name and 
+        the class name of the base class.
+      
+        'Include standard Zope persistent object base classes' -- Allows you to specify 
+        whether or not your ZClass should subclass Zope persistence classes and thereby act 
+        as a normal persistent object.
+      
+        'Add' -- Clicked, Zoep will create the ZClass and if selected, it will 
+        also generate the constructor objects.

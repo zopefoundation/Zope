@@ -1,0 +1,13 @@
+Product - Add: Create a new Product
+  
+    Description
+
+        This view allows you to create a new Product.
+      
+    Controls
+      
+        'Id' -- Allows you to specify the id of the Product.
+
+        'Title' -- Allows you to specify the title of the Product.
+
+        'Add' -- Clicked, Zope will create a Product in the Product Folder.

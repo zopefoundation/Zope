@@ -1,0 +1,23 @@
+Product - Distribution: Create a Product distribution 
+  
+    Description
+
+        This view allows you to create a distribution from a control panel product.
+        
+        A product distribution is a packaged version of a control panel
+        product which is meant to be shipped to users. A distribution provides limited
+        access to the internals of a product.
+
+    Controls
+
+        'Version' -- Allows you to specify the version of the objects you want to 
+        archive/release.
+
+        'Configurable Objects' -- Allows you to specify the objects that will be included in the this
+        distributions. These will be the objects that will appear when the 
+        release is installed as a Zope product.
+
+        'Create a distribution archive' -- Clicked, Zope will generate the archive and offer you to 
+        download the GZipped file. The distribution file can be installed in other Zopes by 
+        unzipping and untarring it inside the Zope directory.
+

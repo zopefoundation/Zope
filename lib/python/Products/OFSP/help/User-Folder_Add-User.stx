@@ -1,0 +1,23 @@
+User Folder - Add User: Define a new user
+  
+    Description
+
+        This view allows you to define a new user.
+      
+    Controls
+
+        'Name' -- Allows you to specify the userid/login/username of the User.
+      
+        'Password' -- Allows you to assign a password to the user.
+      
+        'Confirm' -- Allows you to confirm the password entered above.
+      
+        'Domains' -- llows you to restrict
+        Internet domains from which the user can log in. Domains should be 
+        separated by spaces.
+        **Example:** 'digicool.com zope.org'
+      
+        'Roles' -- Allows you to select the user's roles. You will always see the 
+        'manager' and 'owner' roles. Additional roles may
+        appear, if you defined any in the security settings of your 
+        objects.

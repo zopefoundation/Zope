@@ -1,0 +1,18 @@
+Version - Create "private sessions"
+  
+    Description
+
+        A Version allows you to make changes to Zope in a private
+        session.
+        
+        But what is a version? Since making objects is transaction-based, you
+        can make the difference between publicly and privately available 
+        transactions (read changes). When you create a version and start 
+        working in it, all the transactions (changes) you do are only done
+        privately, so that you the owner of the version can see the changes,
+        but the rest of the Web site still sees the old version of the 
+        object until you commit the changes to the public. After you review 
+        the changes you can discard them or make them live.
+        That can be extremely useful when you have to make changes to live 
+        sites, where changing one object might break the site for a while 
+        till you changed another one.

@@ -1,0 +1,16 @@
+Zope Permission - Add: Create a new Permission
+
+    Description  
+
+        This view allows you to create a new Permission.
+      
+    Controls
+
+        'Id' -- Allows you to specify the id of the Zope Permission.
+      
+        'Title' -- Allows you to specify the title of the Zope Permission.
+      
+        'Name' -- Allows you to specify the name of the permission.<br>
+        **Important:** A permission's name must be unique.
+      
+        'Add' -- Clicked, a new Permission for Zope will be created.

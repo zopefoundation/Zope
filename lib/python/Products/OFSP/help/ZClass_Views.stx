@@ -1,0 +1,49 @@
+ZClass - Views: Manage ZClass views
+
+    Description
+  
+        This view allows you to manage a ZClass's views.
+        
+        Views are managements screens that are available as tabs while managing a 
+        Zope object. To provides through the web management for your ZClasses you 
+        need to define management views. Each management view consists of a name 
+        and a method. When the management view is selected by the user the view's 
+        method is executed. Typically view methods are edit forms. Note: a view will 
+        not be visible to a user unless they have adequate permissions to execute
+        the view method.
+      
+    Controls
+  
+        '[Views]' -- Each line represents one view of the Zope object. All views listed 
+        in the list will be available as labels on teh top of the right 
+        Zope management screen when working in the object.
+        The 'name' of the view indicates the labels text that will
+        appear on the top of teh management screen. The 'Method'
+        selection field allows you to choose the method that will be called 
+        when working in the specified view. The 'Help Topic' selection
+        list will allow you to map a help screen to the specified view. The 
+        checkbox in the front of the line will allow you to select the views
+        for placing in front of the list ('First') or deleting the
+        view.
+    
+        'Change' -- Clciked, Zope will apply all the changes to the system. All changed
+        objects, whether or not it is check-marked, will be updated.
+      
+        'Delete' -- Clicked, it will delete all checked views.
+      
+        'First' -- Takes the first selected object and places it on the top of the
+        view list. This feature will allow you to organize the order of the 
+        views on the labels list.
+      
+        'New' -- Allows you to create a new view. In the 'Name' field you 
+        will be able to specify the label name of the view. The  'Method' and 
+        'Help Topic' field are the same as above.
+      
+        'Add' -- Clicked, Zope will add the new View to the Views list.
+
+
+
+
+
+
+

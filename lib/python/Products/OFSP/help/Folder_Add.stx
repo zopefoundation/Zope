@@ -1,0 +1,24 @@
+Folder - Add: Allows you to add a new Folder.
+
+    Description
+    
+        This view allows you to create a new Folder based on your input.
+
+    Controls
+
+        'Id' -- Allows you to specify the id of the Folder.
+      
+        'Title' -- Allows you to specify the title of the Folder.
+      
+        'Create public interface' -- When checked, creates automatically an 'index_html' 
+        DTML Method inside the new folder to give the Folder a default HTML 
+        representation.
+      
+        'Create user folder' -- When checked, creates automatically a User
+        Folder in the new Folder to hold authorization information for the Folder.
+        **Note:** It will generate a standard Zope User Folder, not a GUF-derived 
+        one or a UserDB Folder.
+      
+        'Add' -- Clicked, it will generate the new Folder and places the 
+        optional objects into it. The parent folder's contents screen
+        is displayed.

@@ -1,0 +1,11 @@
+Image - Store Image Files (GIF, PNG, JPG) in Zope
+  
+    Description
+
+        The Image object allows you to store image files in Zope.
+  
+        Image objects differ from simple File objects. When displaying an
+        Image you simply write '&lt;dtml var IMAGE_ID&gt;' and Zope
+        will automatically generate an HTML 'IMG' tag with all the
+        correct attributes. Read more in the API Documentation.
+  

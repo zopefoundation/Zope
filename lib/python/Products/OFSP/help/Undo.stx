@@ -1,0 +1,44 @@
+Undo - Undo management actions
+  
+    Description
+
+        This view allows you to undo changes to Zope's database.
+        
+        Zope allows you to undo changes to its database. Changes are
+        defined in terms of transactions which group together related changes. Each
+        transaction has a URL and a user associated with it. In general the URL of a
+        transaction indicates the URL that was called to initiate the changes. 
+        
+        Furthermore, if an object was changed several times, and you want to recover 
+        a version three changes back, you have to undo all the other changes first,
+        otherwise Zope will tell you that you cannot undo this transaction. In short,
+        you can undo only the leaves of the transaction tree.
+
+    Controls
+
+        '[List of Transacions]' -- Each line stands for one transaction. The transactions are sorted by 
+        date and time. The checkbox in the front allows you to check the 
+        transactions you would like to undo. The next entry on the line is the 
+        URL that caused the transaction, followed by the user who commited the 
+        transaction and the DateTime the transaction was performed.
+
+        'Earlier Transactions' -- Allows you to see transactions that were performed earlier then the
+        ones you currently see.
+
+        'Later Transactions' -- Allows you to see transactions that were performed later then the
+        ones you currently see.
+
+        'Undo' -- Clicked, Zope will attempt to undo the selected transactions. As
+        described above, if you selected a transaction that was not the 
+        latest change of an object, Zope will be unable to undo this
+        transaction.
+
+
+
+
+
+
+
+
+
+

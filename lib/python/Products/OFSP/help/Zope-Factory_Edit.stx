@@ -1,0 +1,25 @@
+Zope Factory - Edit: Edit Factory settings
+  
+    Description
+
+         This view allows you to edit factory settings.
+       
+    Controls
+
+        'Id' -- Indicates the id of the Zope Factory.
+        
+        'Title' -- Allows you to specify the title of the Zope Factory.
+        
+        'Add list name' -- Allows you to specify the name that will appear on the in the 
+        product add list. It is sometimes referred to the meta type.
+        
+        'Method' -- Allows you to specify what method is executed when the product 
+        is chosen from the product add list. Typically this method is an 
+        add form.
+        
+        'Permission' -- Allows you to specify what permission is needed to execute the 
+        factory. If the user does not have the factory permission, the 
+        factory's entry will not show up in the product add list.
+        
+        'Change' -- Clicked, Zope will commit the changes to the systema and the 
+        add Zope product list is updated.

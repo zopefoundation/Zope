@@ -1,0 +1,20 @@
+Version - Add: Create a new version
+  
+    Description
+
+        This view allows you to create a new Version.
+
+    Controls
+      
+        'Id' -- Allows you to specify the id of the Version.
+      
+        'Title' -- Allows you to specify the title of the Version.
+      
+        'Add' -- Clicked, Zope creates a new version.
+        **Note:** The version is deactivated by default. You need to enter the 
+        'Join/Leave' Version management screen in order to activate the Version.
+
+
+
+
+

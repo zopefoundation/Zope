@@ -1,0 +1,18 @@
+ZClass - Define new/custom Zope Objects
+  
+    Description
+
+        ZClasses allow you to define new types of Zope objects.
+        
+        ZClasses are only one way to create your custom Zope objects. You
+        can also write a Python product. ZClasses have the advantage that
+        you can create them entirely in the Zope management interface and 
+        test them without restarting Zope all the time.
+        Furthermore, ZClasses are usually faster developed than real 
+        Python products. You can easily inherit the properties of other 
+        Zope objects and use existing objects to organize and display 
+        your data. ZClasses are perfect for prototyping!
+        
+        The disadvantage of ZClasses is that you are restricted in some 
+        areas, where Python products could do more. Further, there is no
+        good way to upgrade from an older version to a new one yet.
