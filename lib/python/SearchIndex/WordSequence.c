@@ -474,7 +474,7 @@ WordSequence_getattr(WordSequence *self, char *name)
 static char WordSequenceType__doc__[] = "";
 
 static PyTypeObject WordSequenceType = {
-    PyObject_HEAD_INIT(&PyType_Type)
+    PyObject_HEAD_INIT(NULL)
     0,                                 /*ob_size*/
     "WordSequence",                    /*tp_name*/
     sizeof(WordSequence),              /*tp_basicsize*/
@@ -538,7 +538,7 @@ static char WordSequence_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: WordSequence.c,v 1.7 1997/06/30 19:41:40 jim Exp $\n"
+"$Id: WordSequence.c,v 1.8 1997/07/17 14:44:45 jim Exp $\n"
 ;
 
 void
