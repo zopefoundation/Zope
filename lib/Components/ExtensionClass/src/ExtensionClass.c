@@ -21,7 +21,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.55 2002/06/18 22:41:26 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.56 2002/06/18 23:19:02 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -831,20 +831,16 @@ PMethod_repr(PMethod *self)
 	PyObject *repr = PyObject_Repr(self->self);
 	if (!repr)
 	    return NULL;
-	n = snprintf(buf, sizeof(buf),
-		     "<bound method %s.%s of %s>",
+	n = sprintf(buf,
+		     "<bound method %.1000s.%.1000s of %.1000s>",
 		     self->type->tp_name, func_name,
 		     PyString_AS_STRING(repr));
-	if (n == -1)
-	    n = sizeof(buf) - 1;
 	Py_DECREF(repr);
     }
     else {
-	n = snprintf(buf, sizeof(buf),
-		     "<unbound method %s.%s>",
+	n = sprintf(buf, 
+		     "<unbound method %.1000s.%.1000s>",
 		     self->type->tp_name, func_name);
-	if (n == -1)
-	    n = sizeof(buf) - 1;
     }
     return PyString_FromStringAndSize(buf, n);
 }
