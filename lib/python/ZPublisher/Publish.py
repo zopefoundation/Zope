@@ -516,7 +516,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.24 1996/10/29 19:21:43 jim Exp $"""
+$Id: Publish.py,v 1.25 1996/11/06 14:27:09 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -569,6 +569,10 @@ $Id: Publish.py,v 1.24 1996/10/29 19:21:43 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.25  1996/11/06 14:27:09  jim
+# Added logic to return status code from publish method.
+# This is needed by the Bobo server.
+#
 # Revision 1.24  1996/10/29 19:21:43  jim
 # Changed rule (and terminology) for acquiring authorization data
 # so that a subobject can aquire data from a container even if an
@@ -674,7 +678,7 @@ $Id: Publish.py,v 1.24 1996/10/29 19:21:43 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 def main():
@@ -760,6 +764,12 @@ class ModulePublisher:
 		raise 'Unauthorized', v
 	self.forbiddenError()
 
+    def get_request_data(self,request_params):
+	try: request_params=request_params()
+	except: pass
+	for key in request_params.keys():
+		self.request[key]=request_params[key]
+
     def publish(self, module_name, published='web_objects',
 		imported_modules={}, module_dicts={},debug=0):
 
@@ -800,6 +810,12 @@ class ModulePublisher:
 	# Try to get realm from module
 	try: realm=theModule.__realm__
 	except: realm=None
+
+	# Get request data from outermost environment:
+	try:
+	    request_params=theModule.__request_data__
+	    self.get_request_data(request_params)
+	except: pass
 
 	# Get initial group data:
 	default_inherited_groups={None:None}
@@ -883,15 +899,7 @@ class ModulePublisher:
 			except: pass
 		    try:
 			request_params=getattr(subobject,'__request_data__')
-
-			# bleh, test gets around Python bug:
-			if not (type(request_params) is types.MethodType and
-				type(subobject) is types.ClassType):
-			    try: request_params=request_params()
-			    except: pass
-			    
-			for key in request_params.keys():
-			    self.request[key]=request_params[key]
+			self.get_request_data(request_params)
 		    except: pass
 		except AttributeError:
 		    try:
@@ -904,10 +912,7 @@ class ModulePublisher:
 
 			try:
 			    request_params=getattr(subobject,'__request_data__')
-			    try: request_params=request_params()
-			    except: pass
-			    for key in request_params.keys():
-				self.request[key]=request_params[key]
+			    self.get_request_data(request_params)
 			except: pass
 			try:
 			    groups=subobject.__allow_groups__
@@ -1418,6 +1423,7 @@ def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
 		   environ=os.environ, debug=0):
     must_die=0
+    status=200
     try:
 	response=Response(stdout=stdout, stderr=stderr)
 	publisher = CGIModulePublisher(stdin=stdin, stdout=stdout,
@@ -1434,10 +1440,13 @@ def publish_module(module_name,
 	must_die=1
 	response.exception(must_die)
     except:
+	status=response.getStatus()
 	response.exception()
-    if response: response=str(response)
+    if response:
+	response=str(response)
     if response: stdout.write(response)
     if must_die:
 	raise sys.exc_type, sys.exc_value, sys.exc_traceback
     sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
+    return status
 
