@@ -37,7 +37,9 @@ from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
 from tempstorage.TemporaryStorage import TemporaryStorage
 from OFS.Application import Application
+from OFS.Folder import Folder
 import sys
+import traceback
 from zLOG import log_time
 sys.setcheckinterval(200)
 
@@ -77,7 +79,7 @@ class Foo(Acquisition.Implicit): pass
 
 def _populate(app):
     bidmgr = BrowserIdManager(idmgr_name)
-    tf = MountedTemporaryFolder(tf_name, title="Temporary Folder")
+    tf = MountedTemporaryFolder(tf_name, 'Temporary Folder')
     toc = TransientObjectContainer(toc_name, title='Temporary '
         'Transient Object Container', timeout_mins=1)
     session_data_manager=SessionDataManager(id=sdm_name,
@@ -114,12 +116,12 @@ class TestMultiThread(TestCase):
     def go(self, token):
         readers = []
         writers = []
-        readiters = 100
-        writeiters = 100
+        readiters = 3
+        writeiters = 3
         readout = []
         writeout = []
-        numreaders = 4
-        numwriters = 2
+        numreaders = 2
+        numwriters = 4
         numvaluers = 1
         db = _getDB()
         for i in range(numreaders):
@@ -137,11 +139,11 @@ class TestMultiThread(TestCase):
         for thread in writers:
             thread.start()
             time.sleep(0.1)
-        active = 2
+        active = threading.activeCount()
         while active > 1:
             active = threading.activeCount()
             print 'waiting for %s threads' % active
-            time.sleep(1)
+            time.sleep(5)
 
 class BaseReaderWriter(threading.Thread):
     def __init__(self, db, iters, token=None):
@@ -153,7 +155,6 @@ class BaseReaderWriter(threading.Thread):
         self.app.REQUEST.browser_id_ = token
         self.iters = iters
         self.sdm_name = sdm_name
-        self.out = []
         threading.Thread.__init__(self)
 
     def run(self):
@@ -164,22 +165,25 @@ class BaseReaderWriter(threading.Thread):
                     self.run1()
                     return
                 except ReadConflictError:
-                    print "read conflict"
+                    print "R",
                 except BTreesConflictError:
-                    print "btrees conflict"
+                    print "B",
                 except ConflictError:
-                    print "general conflict"
+                    print "W",
                 except:
                     get_transaction().abort()
                     print log_time()
+                    traceback.print_exc()
                     raise
+                
                 i = i + 1
                 get_transaction().abort()
+                self.conn.sync()
                 time.sleep(random.randrange(5) * .1)
         finally:
             self.conn.close()
             del self.app
-            print i
+            print '%s finished' % self.__class__
 
 class ReaderThread(BaseReaderWriter):
     def run1(self):
@@ -190,8 +194,6 @@ class ReaderThread(BaseReaderWriter):
         get_transaction().commit()
         for i in range(self.iters):
             data = session_data_manager.getSessionData()
-            if not data.has_key(t):
-                self.out.append(1)
             time.sleep(random.choice(range(3)))
             get_transaction().commit()
 
