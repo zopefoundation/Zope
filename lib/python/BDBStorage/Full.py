@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.31 $'.split()[-2:][0]
+__version__ = '$Revision: 1.32 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -526,6 +526,15 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     def loadSerial(self, oid, serial):
         return self._loadSerialEx(oid, serial)[0]
                         
+    def getSerial(self, oid):
+        # Return the revision id for the current revision of this object,
+        # irrespective of any versions.
+        self._lock_acquire()
+        try:
+            return self._serials[oid]
+        finally:
+            self._lock_release()
+
     def __findcreatevid(self, version):
         # Get the vid associated with a version string, or create one if there
         # is no vid for the version.
