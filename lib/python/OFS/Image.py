@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -101,13 +101,26 @@ from DateTime import DateTime
 
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
-def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
+def manage_addFile(self,id,file,title='',precondition='', content_type='',
+                   REQUEST=None):
     """Add a new File object.
 
     Creates a new File object 'id' with the contents of 'file'"""
 
     id, title = cookId(id, title, file)
-    self._setObject(id, File(id,title,file,precondition))
+
+    self=self.this()
+
+    # First, we create the image without data:
+    self._setObject(id, File(id,title,'',content_type, precondition))
+
+    # And commit to a sub-transaction:
+    if Globals.DatabaseVersion=='3': get_transaction().commit(1)
+
+    # Now we "upload" the data.  By commiting the add first, the
+    # object can use a database trick to make the upload more efficient.
+    self._getOb(id).manage_upload(file)
+    
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 
@@ -117,6 +130,7 @@ class File(Persistent,Implicit,PropertyManager,
     
     meta_type='File'
     precondition=''
+    size=None
 
     manage_editForm  =HTMLFile('fileEdit',globals(),Kind='File',kind='file')
     manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='File',kind='file')
@@ -148,17 +162,10 @@ class File(Persistent,Implicit,PropertyManager,
         self.__name__=id
         self.title=title
         self.precondition=precondition
-        filename=hasattr(file, 'filename') and file.filename or None
-        headers=hasattr(file, 'headers') and file.headers or None
-        if hasattr(file, 'read'):
-            data=file.read()
-        else: data=file
-        if headers and headers.has_key('content-type') and (not content_type):
-            content_type=headers['content-type']
-        if not content_type:
-            filename=filename or id
-            content_type, enc=guess_content_type(id, data)
-        self.update_data(data, content_type)
+       
+        data, size = self._read_data(file)
+        content_type=self._get_content_type(file, data, id, content_type)
+        self.update_data(data, content_type, size)
 
     def id(self):
         return self.__name__
@@ -193,19 +200,17 @@ class File(Persistent,Implicit,PropertyManager,
         RESPONSE.setHeader('Content-Type', self.content_type)
         return self.data
 
-
-
     def view_image_or_file(self, URL1):
         """
         The default view of the contents of the File or Image.
         """
         raise 'Redirect', URL1
 
-    def update_data(self, data, content_type=None):
-        if content_type is not None:
-            self.content_type=content_type
-        self.data=Pdata(data)
-        self.size=len(data)
+    def update_data(self, data, content_type=None, size=None):
+        if content_type is not None: self.content_type=content_type
+        if size is None: size=len(data)
+        self.size=size
+        self.data=data
 
     def manage_edit(self, title, content_type, precondition='', REQUEST=None):
         """
@@ -226,29 +231,89 @@ class File(Persistent,Implicit,PropertyManager,
 
         The file or images contents are replaced with the contents of 'file'.
         """
-        filename=hasattr(file, 'filename') and file.filename or None
-        headers=hasattr(file, 'headers') and file.headers or None
-        body=(headers is None) and file or file.read()        
+        data, size = self._read_data(file)
+        content_type=self._get_content_type(file, data, self.__name__,
+                                            self.content_type)
+        self.update_data(data, content_type, size)
+
+        if REQUEST: return MessageDialog(
+            title  ='Success!',
+            message='Your changes have been saved',
+            action ='manage_main')
+        
+    def _get_content_type(self, file, body, id, content_type=None):
+        headers=getattr(file, 'headers', None)
         if headers and headers.has_key('content-type'):
             content_type=headers['content-type']
         else:
-            filename=filename or self.id()
-            content_type, enc=guess_content_type(self.id(), body)
-        self.update_data(body, content_type)
-        if REQUEST: return MessageDialog(
-                    title  ='Success!',
-                    message='Your changes have been saved',
-                    action ='manage_main')
+            if type(body) is not type(''): body=body.data
+            content_type, enc=guess_content_type(
+                getattr(file, 'filename',id), body, content_type)
+        return content_type
 
+    def _read_data(self, file):
+        
+        n=1<<16
+        
+        if type(file) is type(''):
+            size=len(file)
+            if size < n: return file, size
+            return Pdata(file), size
+        
+        seek=file.seek
+        read=file.read
+        
+        seek(0,2)
+        size=end=file.tell()
+        if size <= 2*n or Globals.DatabaseVersion=='2':
+            seek(0)
+            if size < n: read(size), size
+            return Pdata(read(size)), size
+
+        # Now we're going to build a linked list from back
+        # to front to minimize the number of database updates
+        # and to allow us to get things out of memory as soon as
+        # possible.
+        next=None
+        while end > 0:
+            pos=end-n
+            if pos < n: pos=0 # we always want at least n bytes
+            seek(pos)
+            data=Pdata(read(end-pos))
+            
+            # Woooop Woooop Woooop! This is a trick.
+            # We stuff the data directly into our jar to reduce the
+            # number of updates necessary.
+            data._p_jar=self._p_jar
+
+            # This is needed and has side benefit of getting
+            # the thing registered:
+            data.next=next
+            
+            # Now make it get saved in a sub-transaction!
+            get_transaction().commit(1)
+
+            # Now make it a ghost to free the memory.  We
+            # don't need it anymore!
+            data._p_changed=None
+            
+            next=data
+            end=pos
+        
+        return next, size
 
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
         self.dav__init(REQUEST, RESPONSE)
         type=REQUEST.get_header('content-type', None)
-        body=REQUEST.get('BODY', '')
-        if type is None:
-            type, enc=guess_content_type(self.id(), body)
-        self.update_data(body, type)
+
+        file=REQUEST['BODYFILE']
+        
+        data, size = self._read_data(file)
+        content_type=self._get_content_type(file, data, self.__name__,
+                                            type or self.content_type)
+        self.update_data(data, content_type, size)
+
         RESPONSE.setStatus(204)
         return RESPONSE
     
@@ -257,7 +322,10 @@ class File(Persistent,Implicit,PropertyManager,
 
         Returns the size of the file or image.
         """
-        return len(self.data)
+        size=self.size
+        if size is None: size=len(self.data)
+        return size
+    
     get_size=getSize
     
     def getContentType(self):
@@ -267,7 +335,8 @@ class File(Persistent,Implicit,PropertyManager,
         """
         return self.content_type
 
-    def size(self):    return len(self.data)
+    size=getSize
+
     def __str__(self): return str(self.data)
     def __len__(self): return 1
 
@@ -275,17 +344,21 @@ class File(Persistent,Implicit,PropertyManager,
         "Get data for FTP download"
         return self.data
 
-
-
 manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
-def manage_addImage(self,id,file,title='',REQUEST=None):
+def manage_addImage(self, id, file, title='', precondition='', content_type='',
+                    REQUEST=None):
     """
     Add a new Image object.
 
     Creates a new Image object 'id' with the contents of 'file'.
     """
     id, title = cookId(id, title, file)
-    self._setObject(id, Image(id,title,file))
+
+    self=self.this()
+
+    self._setObject(id, Image(id,title,'',content_type, precondition))
+    if Globals.DatabaseVersion=='3': get_transaction().commit(1)
+    self._getOb(id).manage_upload(file)
     if REQUEST is not None: return self.manage_main(self,REQUEST)
     return id
 
@@ -317,20 +390,22 @@ class Image(File):
                                kind='image')
     manage=manage_main=manage_editForm
 
-    def update_data(self, data, content_type=None):
-        if content_type is not None:
-            self.content_type=content_type
-        self.data=Pdata(data)
-        self.size=len(data)
+    def update_data(self, data, content_type=None, size=None):
+        if content_type is not None: self.content_type=content_type
+        if size is None: size=len(data)
+
+        self.size=size
+        self.data=data
+        data=str(data)
 
         # handle GIFs   
-        if (self.size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
-            w, h = struct.unpack("<HH", self.data[6:10])
+        if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
+            w, h = struct.unpack("<HH", data[6:10])
             self.width=str(int(w))
             self.height=str(int(h))
 
         # handle JPEGs
-        elif (self.size >= 2) and (data[:2] == '\377\330'):
+        elif (size >= 2) and (data[:2] == '\377\330'):
             jpeg=StringIO(data)
             jpeg.read(2)
             b=jpeg.read(1)
@@ -350,8 +425,8 @@ class Image(File):
             except: pass
             
         # handle PNGs
-        elif (self.size >= 16) and (self.data[:8] == '\x89PNG\r\n\x1a\n'):
-            w, h = struct.unpack(">LL", self.data[8:16])
+        elif (size >= 16) and (data[:8] == '\x89PNG\r\n\x1a\n'):
+            w, h = struct.unpack(">LL", data[8:16])
             self.width=str(int(w))
             self.height=str(int(h))
             
@@ -362,8 +437,6 @@ class Image(File):
         return '<img src="%s" %s%salt="%s">' % (
             self.absolute_url(), width, height, self.title_or_id()
             )
-
-
 
 def cookId(id, title, file):
     if not id and hasattr(file,'filename'):
@@ -377,15 +450,26 @@ def cookId(id, title, file):
 
 class Pdata(Persistent, Implicit):
     # Wrapper for possibly large data
+
+    next=None
+    
     def __init__(self, data):
         self.data=data
 
     def __getslice__(self, i, j):
         return self.data[i:j]
 
-    def __str__(self):
-        return self.data
-
     def __len__(self):
         return len(self.data)
 
+    def __str__(self):
+        next=self.next
+        if next is None: return self.data
+
+        r=[self.data]
+        while next is not None:
+            self=next
+            r.append(self.data)
+            next=self.next
+        
+        return string.join(r,'')
