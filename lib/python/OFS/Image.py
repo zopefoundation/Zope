@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -365,13 +365,16 @@ def manage_addImage(self, id, file, title='', precondition='', content_type='',
     self._setObject(id, Image(id,title,'',content_type, precondition))
     if Globals.DatabaseVersion=='3': get_transaction().commit(1)
     self._getOb(id).manage_upload(file)
-    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    if REQUEST is not None:
+        try:    url=self.DestinationURL()
+        except: url=REQUEST['URL1']
+        REQUEST.RESPONSE.redirect('%s/manage_main' % url)
     return id
 
 class Image(File):
-    """Principia object for *Images*, can be GIF, PNG or JPEG.  Has the
-    same methods as File objects.  Images also have a string representation
-    that renders an HTML 'IMG' tag.
+    """Image objects can be GIF, PNG or JPEG and have the same methods
+    as File objects.  Images also have a string representation that
+    renders an HTML 'IMG' tag.
     """
     meta_type='Image'
     height=0
