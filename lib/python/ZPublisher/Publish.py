@@ -211,16 +211,22 @@ Function, method, and class objects
     called object must be prepared to convert string arguments to
     other data types, such as numbers.
     
-    If file upload is used, however, then file objects will be
-    passed instead.
+    If file upload fields are used, however, then FileUpload objects
+    will be passed instead for these fields.  FileUpload objects
+    bahave like file objects and provide attributes for inspecting the
+    uploaded file's source name and the upload headers, such as
+    content-type. 
 
     If field names in form data are of the form: name:type, then an
     attempt will be to convert data from from strings to the indicated
-    type.  The data types currently supported are: float, int, and
-    long.  For example, if the name of a field in an input form is
-    age:int, then the field value will be passed in argument, age, and
-    an attempt will be made to convert the argument value to an
-    integer. 
+    type.  The data types currently supported are: float, int, long,
+    string, and date.  For example, if the name of a field in an input
+    form is age:int, then the field value will be passed in argument,
+    age, and an attempt will be made to convert the argument value to
+    an integer.  This conversion also works with file upload, so using
+    a file upload field with a name like myfile:string will cause the
+    UploadFile to be converted to a string before being passed to the
+    object.  
 
 Published objects that are not functions, methods, or classes
 
@@ -456,7 +462,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.12 1996/07/25 12:39:09 jfulton Exp $"""
+$Id: Publish.py,v 1.13 1996/07/25 16:42:48 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -509,6 +515,12 @@ $Id: Publish.py,v 1.12 1996/07/25 12:39:09 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.13  1996/07/25 16:42:48  jfulton
+# - Added FileUpload objects.
+# - Added logic to check for non-file fields in forms with file upload.
+# - Added new type conversion types: string (esp for use with file-upload)
+#   and date.
+#
 # Revision 1.12  1996/07/25 12:39:09  jfulton
 # Added support for __allow_groups__ method.
 # Made auto-generation of realms smarter about realm names.
@@ -561,7 +573,7 @@ $Id: Publish.py,v 1.12 1996/07/25 12:39:09 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 def main():
@@ -848,20 +860,76 @@ def str_field(v):
 	except: pass
     return v
 
+class FileUpload:
+    '''\
+    File upload objects
+
+    File upload objects are used to represent file-uploaded data.
+
+    File upload objects can be used just like files.
+
+    In addition, they have a 'headers' attribute that is a dictionary
+    containing the file-upload headers, and a 'filename' attribute
+    containing the name of the uploaded file.
+    '''
+
+    def __init__(self, aFieldStorage):
+
+	file=aFieldStorage.file
+	try: methods=file.__methods__
+	except: methods= ['close', 'fileno', 'flush', 'isatty',
+			  'read', 'readline', 'readlines', 'seek',
+			  'tell', 'truncate', 'write', 'writelines']
+	for m in methods:
+	    try: self.__dict__[m]=getattr(file,m)
+	    except: pass
+
+	self.headers=aFieldStorage.headers
+	self.filename=aFieldStorage.filename
+    
+
 def flatten_field(v,converter=None):
     if type(v) is types.ListType:
 	if len(v) > 1: return map(flatten_field,v)
 	v=v[0]
 
     try:
-	if v.file:
-	    v=v.file
+	if v.file and (v.filename is not None or
+		       'content-type' in map(string.lower,
+					     v.headers.keys())):
+	    v=FileUpload(v)
 	else:
 	    v=v.value
     except: pass
     
     if converter: v=converter(v)
     return v
+
+def field2string(v):
+    try: v=v.read()
+    except: v=str(v)
+    return v
+
+def field2int(v):
+    try: v=v.read()
+    except: v=str(v)
+    return string.atoi(v)
+
+def field2float(v):
+    try: v=v.read()
+    except: v=str(v)
+    return string.atof(v)
+
+def field2long(v):
+    try: v=v.read()
+    except: v=str(v)
+    return string.atol(v)
+
+def field2date(v):
+    from DateTime import DateTime
+    try: v=v.read()
+    except: v=str(v)
+    return DateTime(v)
 
 class Request:
     """\
@@ -929,7 +997,13 @@ class Request:
 	self.other[key]=value
 
 
-    __type_converters = {'float':string.atof, 'int': string.atoi, 'long':string.atol}
+    __type_converters = {
+	'float':	field2float,
+	'int': 		field2int,
+	'long':		field2long,
+	'string':	field2string,
+	'date':		field2date,
+	}
 
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
 
