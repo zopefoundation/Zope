@@ -1,21 +1,17 @@
 # install Application.py
 # install CopySupport.py
-# install DraftFolder.py
 # install Document.py
 # install Folder.py
 # install Image.py
 # install Moniker.py
 # install ObjectManager.py
-# install Session.py
 # install SimpleItem.py
 # install __init__.py
 # install content_types.py
 # install rPickle.py
-# install DraftFolderSupervisor.dtml
 # install documentAdd.dtml
 # install documentEdit.dtml
 # install documentUpload.dtml
-# install draftFolderAdd.dtml
 # install editedDialog.dtml
 # install folderAdd.dtml
 # install imageAdd.dtml
@@ -25,7 +21,3 @@
 # install pasteDialog.dtml
 # install properties.dtml
 # install rolesForm.dtml
-# install session.dtml
-# install sessionAdd.dtml
-# install sessionEdit.dtml
-# install www www/%(package)s
