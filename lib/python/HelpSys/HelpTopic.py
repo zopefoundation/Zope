@@ -189,7 +189,7 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
 
     __ac_permissions__=(
         ('View', ('index_html', 'SearchableText', 'url')),
-         'Access contents information', ('helpValues',)),
+        ('Access contents information', ('helpValues',)),
         )
 
     def index_html(self, REQUEST, RESPONSE):
