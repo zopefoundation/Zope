@@ -926,9 +926,11 @@ class ZCatalog(Folder, Persistent, Implicit):
                 idx_type = idx.meta_type
                 idx_id = idx.getId()
                 LOG.info('processing index %s' % idx_id)
-                if idx_type == 'FieldIndex' and idx_id in ('start', 'modified', 'end', 'created'):
+                if idx_type == 'FieldIndex' and idx_id in ('start', 'modified', 
+                                                           'end', 'created'):
                     idx_type = 'DateIndex'
-                if idx_type == 'FieldIndex' and idx_id in ('effective', 'expires'):
+                if idx_type == 'FieldIndex' and idx_id in ('effective', 
+                                                           'expires'):
                     idx_type = 'DateRangeIndex'
                 indexed_attrs = getattr(idx, 'indexed_attrs', None)
                 self.delIndex(idx.getId())
@@ -938,10 +940,11 @@ class ZCatalog(Folder, Persistent, Implicit):
                     setattr(new_idx, 'indexed_attrs', indexed_attrs)
                 self.manage_reindexIndex(idx_id, REQUEST)
 
+        self._migrated_280 = True
         LOG.info('Finished migration of indexes for %s' % self.absolute_url(1))
 
-        RESPONSE.redirect(
-            URL1 +
+        if RESPONSE:
+            RESPONSE.redirect( URL1 +
             '/manage_main?manage_tabs_message=Indexes%20converted%20and%20reindexed')
 
 
