@@ -3,46 +3,61 @@
 <TITLE><!--#var title--></TITLE>
 </HEAD> 
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2"><!--#var title--></FONT>
+<H2><!--#var title--></H2>
 <P>
-The application manager allows you to view application status information,
-and allows you to perform maintenance tasks such as process control,
+<!--#if parentObject-->
+  <!--#in parentObject-->
+  <A HREF="<!--#var URL2-->/manage" target="_top">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0>
+  </A>
+  Return to <!--#if title-->
+            <!--#var title-->
+            <!--#else title-->
+            <!--#var id-->
+            <!--#/if title-->
+  <!--#/in parentObject-->
+<!--#/if parentObject-->
+<P>
+The application manager allows you to view application status information.
+It also allows you to perform maintenance tasks such as process control,
 database packing, and &quot;undoing&quot; previous changes to your
 application's configuration or data.
-
 <P>
-<TABLE>
+<TABLE CELLPADDING="4" BORDER="1">
 <TR>
-<TH>Process Id</TH>
-<TH>Process Uptime</TH>
-<TH>Database Size</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Process Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var process_id-->
+  </TD>
 </TR>
 <TR>
-<TD ALIGN=CENTER><!--#var process_id--></TD>
-<TD ALIGN=CENTER><!--#var process_time--></TD>
-<TD ALIGN=CENTER><!--#var db_size--></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Process Uptime</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var process_time-->
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Database Size</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var db_size-->
+  </TD>
 </TR>
 </TABLE>
-<TABLE>
-<TR>
-<TD ALIGN="LEFT" VALIGN="TOP">
-<BR>Click &quot;Shutdown&quot; to shutdown the application..
-</TD>
-<TD ALIGN="LEFT" VALIGN="TOP">
-<FORM ACTION="manage_shutdown"
- METHOD="POST" TARGET="_top">
-<BR><INPUT TYPE="SUBMIT" VALUE=" Shutdown ">
-</FORM>
-</TD>
-</TR>
 
+
+<TABLE CELLPADDING="4">
 <TR>
-<FORM ACTION="manage_pack"
- METHOD="POST" TARGET="manage_main">
+<FORM ACTION="manage_pack" METHOD="POST" TARGET="manage_main">
 <TD ALIGN="LEFT" VALIGN="TOP">
-<BR>Click &quot;Pack&quot; to pack the database by removing database
-records previous revisions of objects that are older than
-<input type="text" value="0" name="days:float"> days, and for unused objects.  
+<BR>Click &quot;Pack&quot; to pack the Site Studio database, removing 
+previous revisions of objects that are older than
+<INPUT TYPE="TEXT" VALUE="0" NAME="days:float" SIZE="3"> days.
 </TD>
 <TD ALIGN="LEFT" VALIGN="TOP">
 <BR><INPUT TYPE="SUBMIT" VALUE=" Pack ">
@@ -50,6 +65,20 @@ records previous revisions of objects that are older than
 </FORM>
 </TR>
 
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<BR>
+Click &quot;Shutdown&quot; to shutdown the Site Studio process.
+<BR>
+It will be restarted on the next web request.
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<FORM ACTION="<!--#var PARENT_URL-->/manage_shutdown"
+ METHOD="POST" TARGET="_top">
+<BR><INPUT TYPE="SUBMIT" VALUE="Shutdown">
+</FORM>
+</TD>
+</TR>
 
 </TABLE>
 </BODY>

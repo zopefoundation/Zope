@@ -3,9 +3,8 @@
 <TITLE><!--#var title--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2"><!--#var title--></FONT>
+<H2><!--#var title--></H2>
 <P>
-
 <!--#if parentObject-->
   <!--#in parentObject-->
   <A HREF="<!--#var URL2-->/manage" target="_top">
@@ -20,37 +19,29 @@
   <!--#/in parentObject-->
 <!--#/if parentObject-->
 <P>
-<TABLE>
 <!--#if userNames-->
-<TR>
-  <TD VALIGN="TOP">
-  The following users have been defined. To edit a user,
-  select a user and click the <I>Edit User</I> button.
-  </TD>
-  <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_editForm" METHOD="POST">
-  <SELECT NAME="name">
-  <!--#in userNames-->
-  <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
-  <!--#/in userNames-->
-  </SELECT>
-  <BR>
-  <INPUT TYPE="SUBMIT" VALUE="Edit User">
-  </FORM>
-  </TD>
-</TR>
+<FORM ACTION="<!--#var PARENT_URL-->/manage_editForm" METHOD="POST">
+The following users have been defined. To edit a user, 
+select a user and click &quot;Edit&quot;.
+<BR>
+<SELECT NAME="name">
+<!--#in userNames-->
+<OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+<!--#/in userNames-->
+</SELECT>
+<BR>
+<INPUT TYPE="SUBMIT" VALUE=" Edit ">
+</FORM>
 <!--#else userNames-->
-<TR>
-  <TD COLSPAN="2" VALIGN="TOP">
-  There are no users defined.
-  </TD>
-</TR>
+<EM>There are no users defined.</EM>
 <!--#/if userNames-->
+
+<P>
+<TABLE>
 <TR>
   <TD COLSPAN="2" VALIGN="TOP">
-  <BR>
   To add a new user, enter the name, password, confirmation and 
-  roles for the new user and click the <I>Add User</I> button.
+  roles for the new user and click &quot;Add&quot;.
   </TD>
 </TR>
 <TR>
@@ -58,19 +49,33 @@
   <FORM ACTION="<!--#var PARENT_URL-->/manage_addUser" METHOD="POST">
   <TABLE>
   <TR>
-  <TD VALIGN="TOP">Name</TD>
-  <TD VALIGN="TOP"><INPUT TYPE="TEXT" NAME="name" SIZE="20"></TD>
+  <TD VALIGN="TOP">
+  <STRONG>Name</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="name" SIZE="20">
+  </TD>
   </TR>
   <TR>
-  <TD VALIGN="TOP">Password</TD>
-  <TD VALIGN="TOP"><INPUT TYPE="PASSWORD" NAME="password" SIZE="20"></TD>
+  <TD VALIGN="TOP">
+  <STRONG>Password</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="password" SIZE="20">
+  </TD>
   </TR>
   <TR>
-  <TD VALIGN="TOP">(Confirm)</TD>
-  <TD VALIGN="TOP"><INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20"></TD>
+  <TD VALIGN="TOP">
+  <STRONG>(Confirm)</STRONG>
+  </TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20">
+  </TD>
   </TR>
   <TR>
-  <TD VALIGN="TOP">Roles</TD>
+  <TD VALIGN="TOP">
+  <STRONG>Roles</STRONG>
+  </TD>
   <TD VALIGN="TOP">
   <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
   <!--#if roleNames-->
@@ -80,34 +85,28 @@
   <!--#/if roleNames-->
   </SELECT>
   <BR>
-  <INPUT TYPE="SUBMIT" VALUE="Add User">
+  <INPUT TYPE="SUBMIT" VALUE=" Add ">
   </TD>
   </TR>
   </TABLE>
   </FORM>
   </TD>
 </TR>
-<!--#if userNames-->
-<TR>
-  <TD VALIGN="TOP">
-  <BR>
-  To delete one or more users, select the users
-  you wish to delete and click the <I>Delete Users</I> button.
-  </TD>
-  <TD VALIGN="TOP">
-  <BR>
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_deleteUser" METHOD="POST">
-  <SELECT NAME="names:list" MULTIPLE SIZE="5" >
-  <!--#in userNames-->
-  <OPTION><!--#var sequence-item-->
-  <!--#/in userNames-->
-  </SELECT>
-  <BR>
-  <INPUT TYPE="SUBMIT" VALUE="Delete Users">
-  </FORM>
-  </TD>
-</TR>
-<!--#/if userNames-->
 </TABLE>
+
+<P>
+<!--#if userNames-->
+<FORM ACTION="<!--#var PARENT_URL-->/manage_deleteUser" METHOD="POST">
+To delete users, select one or more users and click &quot;Delete&quot;.
+<BR>
+<SELECT NAME="names:list" MULTIPLE SIZE="4" >
+<!--#in userNames-->
+<OPTION><!--#var sequence-item-->
+<!--#/in userNames-->
+</SELECT>
+<BR>
+<INPUT TYPE="SUBMIT" VALUE="Delete">
+</FORM>
+<!--#/if userNames-->
 </BODY>
 </HTML>

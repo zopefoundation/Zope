@@ -3,12 +3,11 @@
 <TITLE>Access Control</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2">Access Control</FONT>
+<H2>Access Control</H2>
 <P>
-
-You may restrict access to <EM><!--#var PARENT_URL--></EM> using the form 
+You may restrict access to <EM><!--#var title--></EM> using the form 
 below. To add or remove roles, select or deselect 
-the desired role names and click <EM>Update</EM>.
+the desired role names and click &quot;Change&quot;.
 <P>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_editRoles" METHOD="POST">
 <TABLE>
@@ -30,7 +29,7 @@ Allow all users
 <!--#/in selectedRoles-->
 </SELECT>
 <BR>
-<INPUT TYPE="SUBMIT" VALUE="Update">
+<INPUT TYPE="SUBMIT" VALUE="Change">
 </TD>
 </TR>
 </TABLE>
@@ -40,13 +39,13 @@ Allow all users
 <TR>
   <TD VALIGN="TOP">
   To add a new, user-defined role to this object, enter the name of
-  the new role and click <EM>Add Role</EM>.
+  the new role and click &quot;Add&quot;.
   </TD>
   <TD VALIGN="TOP">
   <FORM ACTION="<!--#var PARENT_URL-->/manage_addRole" METHOD="POST">
   <INPUT TYPE="TEXT" NAME="role" SIZE="20">
   <BR>
-  <INPUT TYPE="SUBMIT" VALUE="Add Role">
+  <INPUT TYPE="SUBMIT" VALUE=" Add ">
   </FORM>
   </TD>
 </TR>
