@@ -278,7 +278,7 @@ class TALInterpreter:
                             if action == 1: # Cancelled insert
                                 continue
                         else:
-                            value = item[1]
+                            value = evalue
                             if value is None:
                                 continue
                 elif (action == 2 and self.currentMacro and
