@@ -20,13 +20,13 @@
 
 <table>
 
-<tr>	<th>ID</th>
-        <td><!--#var id--></td></tr>
-<tr>	<th><em>Title</em></th>
-        <td><input name="title" size="40"
+<tr>	<th align='LEFT'>ID</th>
+        <td align='LEFT'><!--#var id--></td></tr>
+<tr>	<th align='LEFT'><em>Title</em></th>
+        <td align='LEFT'><input name="title" size="40"
              value="<!--#var title-->"></td></tr>
-<tr>	<th>Connection id</th>
-        <td><select name="connection_id">
+<tr>	<th align='LEFT'>Connection id</th>
+        <td align='LEFT'><select name="connection_id">
               <!--#in SQLConnectionIDs-->
                 <option value="<!--#var sequence-item-->"
                  <!--#if expr="connection_id==_vars['sequence-item']"-->
@@ -34,11 +34,11 @@
                 <!--#var sequence-key--></option>
               <!--#/in-->
             </select></td></tr>
-<tr>	<th><em>Arguments</em></th>
-	<td><input name="arguments" size="40"
+<tr>	<th align='LEFT'><em>Arguments</em></th>
+	<td align='LEFT'><input name="arguments" size="40"
              value="<!--#var arguments_src-->"></td>
 		</tr>
-<tr>	<td colspan=2><strong>Query template</strong><br>
+<tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
 	    <textarea name="template:text" rows=10 cols=50>
 <!--#var src fmt=html-quote-->
 </textarea></td></tr>

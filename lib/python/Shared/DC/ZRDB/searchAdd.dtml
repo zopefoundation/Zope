@@ -10,25 +10,25 @@ and a report for a searchable object.
 
 <table>
             
-<tr>    <th>Select one or more searchable objects</th>
-        <td><select name="queries:list" size=4 multiple>
+<tr>    <th align='LEFT'>Select one<br>or more<br>searchable objects</th>
+        <td align='LEFT'><select name="queries:list" size=4 multiple>
         <!--#in aqueductQueryIds-->
            <option><!--#var sequence-item--></option>
         <!--#/in aqueductQueryIds-->
         </select></td></tr>
-<tr>    <th>Report Id</th>
-        <td><input name="report_id" size="40"></td></tr>
-<tr>	<th><em>Report Title<em></th>
-        <td><input name="report_title" size="40"></td></tr>
-<tr>	<th>Report Style</th>
-        <td><select name='report_style:int'>
+<tr>    <th align='LEFT'>Report Id</th>
+        <td align='LEFT'><input name="report_id" size="40"></td></tr>
+<tr>	<th align='LEFT'><em>Report Title<em></th>
+        <td align='LEFT'><input name="report_title" size="40"></td></tr>
+<tr>	<th align='LEFT'>Report Style</th>
+        <td align='LEFT'><select name='report_style:int'>
             <option value="0">Tabular</option>
             <option value="1">Records</option>
             </select></td></tr>
-<tr>    <th><em>Search Input Id<em></th>
-        <td><input name="input_id" size="40"></td></tr>
-<tr>	<th><em>Search Input Title</em></th>
-        <td><input name="input_title" size="40"></td></tr>
+<tr>    <th align='LEFT'><em>Search Input Id<em></th>
+        <td align='LEFT'><input name="input_id" size="40"></td></tr>
+<tr>	<th align='LEFT'><em>Search Input Title</em></th>
+        <td align='LEFT'><input name="input_title" size="40"></td></tr>
 
 <tr><td></td><td><input type="SUBMIT" name="SUBMIT" value="Add"></td></tr>
 

@@ -6,21 +6,21 @@
 <form action="manage_advanced" method="POST">
 
 <table>
-<tr>	<th>ID</th>
-        <td><!--#var id--></td></tr>
-<tr>	<th>Title</th>
-        <td><!--#var title--></td></tr>
-<tr>	<th>Remote access encyption key</th>
-	<td><input name="key" size="30"
+<tr>	<th align='LEFT'>ID</th>
+        <td align='LEFT'><!--#var id--></td></tr>
+<tr>	<th align='LEFT'><em>Title</em></th>
+        <td align='LEFT'><!--#var title--></td></tr>
+<tr>	<th align='LEFT'><em>Remote access encyption key</em></th>
+	<td align='LEFT'><input name="key" size="30"
              value="<!--#var key-->"></td></tr>
-<tr>	<th>Maximum number of rows retrieved</th>
-	<td><input name="max_rows:int" size="10"
+<tr>	<th align='LEFT'><em>Maximum number of rows retrieved</em></th>
+	<td align='LEFT'><input name="max_rows:int" size="10"
              value="<!--#var max_rows_-->"></td></tr>
-<tr>	<th>Maximum number of results in the cache</th>
-	<td><input name="max_cache:int" size="10"
+<tr>	<th align='LEFT'><em>Maximum number of results in the cache</em></th>
+	<td align='LEFT'><input name="max_cache:int" size="10"
              value="<!--#var max_cache_-->"></td></tr>
-<tr>	<th>Maximum time (seconds) to cache results</th>
-	<td><input name="cache_time:int" size="10"
+<tr>	<th align='LEFT'><em>Maximum time (seconds) to cache results</em></th>
+	<td align='LEFT'><input name="cache_time:int" size="10"
              value="<!--#var cache_time_-->"></td></tr>
 
 <tr><td> </td></tr>
@@ -29,11 +29,11 @@ You may specify a <strong>class</strong> for the data records.  This
 class must be defined in a file that resides in the <code>Extensions</code>
 directory of this Principia installation.
 </td>
-<tr>	<th>Class name</th>
-	<td><input name="class_name" size="30"
+<tr>	<th align='LEFT'><em>Class name</em></th>
+	<td align='LEFT'><input name="class_name" size="30"
              value="<!--#var class_name_-->"></td></tr>
-<tr>	<th>Class file</th>
-	<td><input name="class_file" size="30"
+<tr>	<th align='LEFT'><em>Class file</em></th>
+	<td align='LEFT'><input name="class_file" size="30"
              value="<!--#var class_file_-->"></td></tr>
 
 <tr><td> </td></tr>
