@@ -320,6 +320,9 @@ class Product(Folder, PermissionManager):
     def permissionMappingPossibleValues(self):
         return self.possible_permissions()
 
+    def zclass_product_name(self):
+        return self.id
+
 class CompressedOutputFile:
     def __init__(self, rot):
         self._c=zlib.compressobj()
