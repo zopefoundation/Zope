@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.113 1998/12/11 20:49:21 jim Exp $"""
-__version__='$Revision: 1.113 $'[11:-2]
+$Id: Publish.py,v 1.114 1998/12/11 20:53:46 jim Exp $"""
+__version__='$Revision: 1.114 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -149,10 +149,10 @@ class ModulePublisher:
         form_has=form.has_key
         other={}
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
-        meth=None
         if not hasattr(fs,'list') or fs.list is None:
             form['BODY']=other['BODY']=fs.value
         else:
+            meth=None
             fslist=fs.list
             tuple_items={}
 
@@ -215,13 +215,13 @@ class ModulePublisher:
                 form[key]=item
                 other[key]=item
 
-        if meth:
-            if environ.has_key('PATH_INFO'):
-                path=environ['PATH_INFO']
-                while path[-1:]=='/': path=path[:-1]
-            else: path=''
-            other['PATH_INFO']=path="%s/%s" % (path,meth)
-            self._hacked_path=1
+            if meth:
+                if environ.has_key('PATH_INFO'):
+                    path=environ['PATH_INFO']
+                    while path[-1:]=='/': path=path[:-1]
+                else: path=''
+                other['PATH_INFO']=path="%s/%s" % (path,meth)
+                self._hacked_path=1
 
         # Cookie values should *not* be appended to existing form
         # vars with the same name - they are more like default values
