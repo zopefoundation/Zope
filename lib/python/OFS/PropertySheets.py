@@ -528,7 +528,7 @@ class DAVProperties(Virtual, PropertySheet, View):
         return iso8601_date(43200.0)
 
     def dav__displayname(self):
-        return absattr(self.v_self().id)
+        return absattr(self.v_self().title_or_id())
 
     def dav__resourcetype(self):
         vself=self.v_self()

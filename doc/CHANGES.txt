@@ -46,6 +46,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1407: changed WebDAV display name for objects
+        to title_or_id() 
+
       - the 'trusted-proxy' directive in zope.conf now also accepts
         hostnames instead of IP addresses only (patch by Dieter Maurer)
 
