@@ -278,15 +278,19 @@ PyUnicodeObject *prepareString(PyUnicodeObject *o)
     return  u;
 }
 
+static char *splitter_args[]={"encoding",NULL};
+
 
 static PyObject *
 get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
 {
-    Splitter *self;
-    PyObject *doc, *unicodedoc,*synstop=NULL;
+    Splitter *self=NULL;
+    PyObject *doc=NULL, *unicodedoc=NULL,*synstop=NULL;
+    char *encoding = "latin1";
 
     if (! (self = PyObject_NEW(Splitter, &SplitterType))) return NULL;
-    if (! (PyArg_ParseTuple(args,"O|O",&doc,&synstop))) return NULL;
+    if (! (PyArg_ParseTupleAndKeywords(args,keywds,"O|Os",splitter_args,&doc,&synstop,&encoding))) return NULL;
+
 
 #ifdef DEBUG
     puts("got text");
@@ -294,11 +298,10 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     fflush(stdout);
 #endif
 
-    if (PyString_Check(doc)) {
-        // This sux a bit. The default encoding should be ascii or latin1.
-        // But there must be better support to pass an optional encoding parameter
 
-        unicodedoc = PyUnicode_FromEncodedObject(doc,"latin1","strict");
+    if (PyString_Check(doc)) {
+
+        unicodedoc = PyUnicode_FromEncodedObject(doc,encoding,"strict");
         if (! unicodedoc) goto err;
 
 
@@ -325,8 +328,8 @@ err:
 
 static struct PyMethodDef Splitter_module_methods[] =
     {
-        { "UnicodeSplitter", (PyCFunction)get_Splitter, METH_VARARGS,
-            "UnicodeSplitter(doc[,synstop]) -- Return a word splitter"
+        { "UnicodeSplitter", (PyCFunction)get_Splitter, METH_VARARGS|METH_KEYWORDS,
+            "UnicodeSplitter(doc[,synstop][,encoding='latin1']) -- Return a word splitter"
         },
         { NULL, NULL }
     };
@@ -336,7 +339,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.3 2001/10/17 14:49:23 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.4 2001/10/17 15:29:50 andreasjung Exp $\n"
     ;
 
 
@@ -344,7 +347,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.3 $";
+    char *rev="$Revision: 1.4 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
