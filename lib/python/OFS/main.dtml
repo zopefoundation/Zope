@@ -1,72 +1,92 @@
 <HTML><HEAD><TITLE><!--#var title_or_id--></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2><!--#var title_or_id--></H2>
-<P>
 
-<!--#if parentObject-->
-  <!--#in parentObject-->
-     <A HREF="<!--#var URL2-->/manage" target="_top">
-     <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0></A>
-     Return to <!--#var title_or_id-->
-     <BR>
-  <!--#/in parentObject-->
-<!--#/if parentObject-->
+<table border=0 width="100%" cellpadding=0 cellspacing=0>
+<tr>
+  <td align=left  width="90%"><H2><!--#var title_or_id--></H2></td>
+  <td align=right width="10%">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/Help_icon.jpg" BORDER=0>
+  </td>
+</tr>
+</table>
 
 <!--#if objectValues-->
-  <P>
-  The following items have been defined.  To edit an item, click
-  on the item's icon.  To view an item, click on the item's id.
-  <P>
+<P>
+
+The following items have been defined.  To <strong>manage</strong> the
+item, click on the item's icon.  To <strong>view</strong> the item,
+click on the item's title and id.
+<BR>
+</P>
+
+<table border=0 cellspacing=0 cellpadding=2>
+
+<tr>
+  <th align=center>
+  <font size="-1">Manage</font></th>
+  <th align=left><font size="-1">View</font></th>
+</tr>
+
   <!--#in objectValues sort=title_or_id-->
+<tr>
+    <td align=center>
     <A HREF="<!--#var URL1-->/<!--#var id-->/manage"
     <!--#if sequence-var-manage_options-->
     TARGET="_top"
     <!--#/if sequence-var-manage_options-->>
-    <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0">
-    </A>
-    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#var title_and_id--></A><BR>
+    <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->"
+         ALT="manage" BORDER="0"></A></td>
+    <td>
+    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#var title_and_id--></A></td>
+</tr>
   <!--#/in objectValues-->
+</table>
+
 <!--#/if objectValues-->
 
-<P>
 <TABLE>
 <TR>
 <TD VALIGN="TOP">
-To add a new item, select an item type and click &quot;Add&quot;.
+  To add a new item, select an item type and click &quot;Add&quot;.
 </TD>
+
 <TD VALIGN="TOP">
-<FORM ACTION="<!--#var PARENT_URL-->/manage_addObject" METHOD="GET">
-<SELECT NAME="type">
-<!--#in all_meta_types mapping-->
-  <OPTION><!--#var name-->
-<!--#/in all_meta_types-->
-</SELECT><BR>
-<INPUT TYPE="SUBMIT" VALUE=" Add ">
-</FORM>
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_addObject" METHOD="GET">
+  <SELECT NAME="type">
+  <!--#in all_meta_types mapping-->
+    <OPTION><!--#var name-->
+  <!--#/in all_meta_types-->
+  </SELECT><BR>
+  <INPUT TYPE="SUBMIT" VALUE=" Add ">
+  </FORM>
 </TD>
 </TR>
 <!--#if objectValues_d-->
+
 <TR>
 <TD VALIGN="TOP">
-To delete items, select one or more items and click &quot;Delete&quot;.
+  To delete items, select one or more items and click &quot;Delete&quot;.
 </TD>
+
 <TD VALIGN="TOP">
-<FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
-<SELECT NAME="ids:list" MULTIPLE SIZE="4">
-<!--#in objectValues_d-->
-  <OPTION VALUE="<!--#var id-->">
-  <!--#if title-->
-    <!--#var title size=25--> (<!--#var id-->)
-  <!--#else-->
-    <!--#var id-->
-  <!--#endif-->
-<!--#/in objectValues_d-->
-</SELECT><BR>
-<INPUT TYPE="SUBMIT" VALUE="Delete">
-</FORM>
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
+  <SELECT NAME="ids:list" MULTIPLE SIZE="4">
+  <!--#in objectValues_d-->
+    <OPTION VALUE="<!--#var id-->">
+    <!--#if title-->
+      <!--#var title size=25--> (<!--#var id-->)
+    <!--#else-->
+      <!--#var id-->
+    <!--#endif-->
+  <!--#/in objectValues_d-->
+  </SELECT><BR>
+  <INPUT TYPE="SUBMIT" VALUE="Delete">
+  </FORM>
 </TD>
 </TR>
 <!--#/if objectValues_d-->
 </TABLE>
+
+
 </BODY>
 </HTML>
