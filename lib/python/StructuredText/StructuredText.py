@@ -99,8 +99,8 @@ preceding paragraph that has a lower level.
 
 Special symbology is used to indicate special constructs:
 
-- A single-line paragraph whose succeeding paragraphs are lower level is
-  treated as a header.
+- A single-line paragraph whose immediately succeeding paragraphs are lower
+  level is treated as a header.
 
 - A paragraph that begins with a '-', '*', or 'o' is treated as an
   unordered list (bullet) element.
@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.16 1999/03/12 17:12:12 klm Exp $'''
+$Id: StructuredText.py,v 1.17 1999/03/12 23:21:39 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,9 @@ $Id: StructuredText.py,v 1.16 1999/03/12 17:12:12 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.17  1999/03/12 23:21:39  klm
+# Gratuituous checkin to test my cvs *update* logging hook.
+#
 # Revision 1.16  1999/03/12 17:12:12  klm
 # Added support for underlined elements, in the obvious way (and
 # included an entry in the module docstring for it).
