@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -145,9 +145,9 @@ def guarded_import(mname, globals={}, locals={}, fromlist=None):
                     raise Unauthorized
             else:
                 return __import__(mname, globals, locals, fromlist)
-        except Unauthorized:
-            raise ImportError, ('import of "%s" from "%s" is unauthorized'
-                                % (name, mname))
+        except Unauthorized, why:
+            raise ImportError, ('import of "%s" from "%s" is unauthorized. %s'
+                                % (name, mname, why))
     raise ImportError, 'import of "%s" is unauthorized' % mname
 safe_builtins['__import__'] = guarded_import
 
