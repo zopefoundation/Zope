@@ -20,6 +20,22 @@ Principia 1.4.0
 
     - Added integrated Apache web server preconfigured for Principia.
 
+    - A number of permission names were added/rearranged to
+      consolidate recent security enhancements.
+
+    - Improvided expression (expr) support in DTML:
+
+      - The special variable, '_', now provides namespace access in
+        addition to providing access to special "builtin" functions.
+        '_' and '_vars' are now bound to the same object and _vars
+        is deprecated.
+
+      - Security-aware 'getattr' and 'hasattr' methods have been
+        added to the special '_' variable.
+
+      - New 'render' method for '_' to render expressions in much the
+        same way that the 'name' tag attribute automatically renders
+        retrieved objects by calling sub-templates and functions.
 
 Principia 1.3.0
 
