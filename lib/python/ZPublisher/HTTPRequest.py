@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -261,36 +261,36 @@ class HTTPRequest(BaseRequest):
 
         server_url=get_env('SERVER_URL',None)
         if server_url is not None:
-             other['SERVER_URL'] = server_url = server_url.strip()
+            other['SERVER_URL'] = server_url = server_url.strip()
         else:
-             if have_env('HTTPS') and (
-                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
-                 protocol = 'https'
-             elif (have_env('SERVER_PORT_SECURE') and 
-                   environ['SERVER_PORT_SECURE'] == "1"):
-                 protocol = 'https'
-             else: protocol = 'http'
+            if have_env('HTTPS') and (
+                environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
+                protocol = 'https'
+            elif (have_env('SERVER_PORT_SECURE') and 
+                environ['SERVER_PORT_SECURE'] == "1"):
+                protocol = 'https'
+            else: protocol = 'http'
 
-             if have_env('HTTP_HOST'):
-                 host = environ['HTTP_HOST'].strip()
-                 hostname, port = splitport(host)
+            if have_env('HTTP_HOST'):
+                host = environ['HTTP_HOST'].strip()
+                hostname, port = splitport(host)
 
-                 # NOTE: some (DAV) clients manage to forget the port. This
-                 # can be fixed with the commented code below - the problem
-                 # is that it causes problems for virtual hosting. I've left
-                 # the commented code here in case we care enough to come
-                 # back and do anything with it later.
-                 #
-                 # if port is None and environ.has_key('SERVER_PORT'):
-                 #     s_port=environ['SERVER_PORT']
-                 #     if s_port not in ('80', '443'):
-                 #         port=s_port
+                # NOTE: some (DAV) clients manage to forget the port. This
+                # can be fixed with the commented code below - the problem
+                # is that it causes problems for virtual hosting. I've left
+                # the commented code here in case we care enough to come
+                # back and do anything with it later.
+                #
+                # if port is None and environ.has_key('SERVER_PORT'):
+                #     s_port=environ['SERVER_PORT']
+                #     if s_port not in ('80', '443'):
+                #         port=s_port
 
-             else:
-                 hostname = environ['SERVER_NAME'].strip()
-                 port = environ['SERVER_PORT']
-             self.setServerURL(protocol=protocol, hostname=hostname, port=port)
-             server_url = other['SERVER_URL']
+            else:
+                hostname = environ['SERVER_NAME'].strip()
+                port = environ['SERVER_PORT']
+            self.setServerURL(protocol=protocol, hostname=hostname, port=port)
+            server_url = other['SERVER_URL']
              
         if server_url[-1:]=='/': server_url=server_url[:-1]
                         
@@ -477,96 +477,92 @@ class HTTPRequest(BaseRequest):
                                 if flags&RECORD:
                                     item=getattr(item,attr)
                                 if flags&RECORDS:
-                                    item.reverse()
-                                    item = item[0]
-                                    item=getattr(item,attr)
+                                    item = getattr(item[-1], attr)
                             else:
                                 raise                            
                          
                     #Determine which dictionary to use
                     if flags&DEFAULT:
-                       mapping_object = defaults
+                        mapping_object = defaults
                     else:
-                       mapping_object = form
+                        mapping_object = form
 
                     #Insert in dictionary
                     if mapping_object.has_key(key):
-                       if flags&RECORDS:
-                           #Get the list and the last record
-                           #in the list
-                           reclist = mapping_object[key]
-                           reclist.reverse()
-                           x=reclist[0]
-                           reclist.reverse()
-                           if not hasattr(x,attr):
-                               #If the attribute does not
-                               #exist, setit
-                               if flags&SEQUENCE: item=[item]
-                               reclist.remove(x)
-                               setattr(x,attr,item)
-                               reclist.append(x)
-                               mapping_object[key] = reclist
-                           else:
-                               if flags&SEQUENCE:
-                                   # If the attribute is a
-                                   # sequence, append the item
-                                   # to the existing attribute
-                                   reclist.remove(x)
-                                   y = getattr(x, attr)
-                                   y.append(item)
-                                   setattr(x, attr, y)
-                                   reclist.append(x)
-                                   mapping_object[key] = reclist
-                               else:
-                                   # Create a new record and add
-                                   # it to the list
-                                   n=record()
-                                   setattr(n,attr,item)
-                                   reclist.append(n)
-                                   mapping_object[key]=reclist
-                       elif flags&RECORD:
-                           b=mapping_object[key]
-                           if flags&SEQUENCE:
-                              item=[item]
-                              if not hasattr(b,attr):
-                                  # if it does not have the
-                                  # attribute, set it
-                                  setattr(b,attr,item)
-                              else:
-                                  # it has the attribute so
-                                  # append the item to it
-                                  setattr(b,attr,getattr(b,attr)+item)
-                           else:
-                              # it is not a sequence so
-                              # set the attribute
-                              setattr(b,attr,item)        
-                       else:
-                          # it is not a record or list of records
-                           found=mapping_object[key]
-                           if type(found) is lt:
-                               found.append(item)
-                           else:
-                               found=[found,item]
-                               mapping_object[key]=found
+                        if flags&RECORDS:
+                            #Get the list and the last record
+                            #in the list
+                            reclist = mapping_object[key]
+                            x = reclist[-1]
+                            if not hasattr(x,attr):
+                                #If the attribute does not
+                                #exist, setit
+                                if flags&SEQUENCE: item=[item]
+                                reclist.remove(x)
+                                setattr(x,attr,item)
+                                reclist.append(x)
+                                mapping_object[key] = reclist
+                            else:
+                                if flags&SEQUENCE:
+                                    # If the attribute is a
+                                    # sequence, append the item
+                                    # to the existing attribute
+                                    reclist.remove(x)
+                                    y = getattr(x, attr)
+                                    y.append(item)
+                                    setattr(x, attr, y)
+                                    reclist.append(x)
+                                    mapping_object[key] = reclist
+                                else:
+                                    # Create a new record and add
+                                    # it to the list
+                                    n=record()
+                                    setattr(n,attr,item)
+                                    reclist.append(n)
+                                    mapping_object[key]=reclist
+                        elif flags&RECORD:
+                            b=mapping_object[key]
+                            if flags&SEQUENCE:
+                                item=[item]
+                                if not hasattr(b,attr):
+                                    # if it does not have the
+                                    # attribute, set it
+                                    setattr(b,attr,item)
+                                else:
+                                    # it has the attribute so
+                                    # append the item to it
+                                    setattr(b,attr,getattr(b,attr)+item)
+                            else:
+                                # it is not a sequence so
+                                # set the attribute
+                                setattr(b,attr,item)        
+                        else:
+                            # it is not a record or list of records
+                            found=mapping_object[key]
+                            if type(found) is lt:
+                                found.append(item)
+                            else:
+                                found=[found,item]
+                                mapping_object[key]=found
                     else:
-                       # The dictionary does not have the key
-                       if flags&RECORDS:
-                           # Create a new record, set its attribute
-                           # and put it in the dictionary as a list
-                           a = record()
-                           if flags&SEQUENCE: item=[item]
-                           setattr(a,attr,item)
-                           mapping_object[key]=[a]
-                       elif flags&RECORD:
-                           # Create a new record, set its attribute
-                           # and put it in the dictionary
-                           if flags&SEQUENCE: item=[item]
-                           r = mapping_object[key]=record()
-                           setattr(r,attr,item)
-                       else:
-                           # it is not a record or list of records
-                           if flags&SEQUENCE: item=[item]
-                           mapping_object[key]=item
+                        # The dictionary does not have the key
+                        if flags&RECORDS:
+                            # Create a new record, set its attribute
+                            # and put it in the dictionary as a list
+                            a = record()
+                            if flags&SEQUENCE: item=[item]
+                            setattr(a,attr,item)
+                            mapping_object[key]=[a]
+                        elif flags&RECORD:
+                            # Create a new record, set its attribute
+                            # and put it in the dictionary
+                            if flags&SEQUENCE: item=[item]
+                            r = mapping_object[key]=record()
+                            setattr(r,attr,item)
+                        else:
+                            # it is not a record or list of records
+                            if flags&SEQUENCE: item=[item]
+                            mapping_object[key]=item
 
                 else:
                     # This branch is for case when no type was specified.
@@ -594,46 +590,46 @@ class HTTPRequest(BaseRequest):
                     else:
                         #The form has the key
                         if getattr(values, '__class__',0) is record:
-                           # if the key is mapped to a record, get the
-                           # record
-                           r = form[keys]
-                           for k, v in values.__dict__.items():
-                              # loop through the attributes and values
-                              # in the default dictionary
-                              if not hasattr(r, k):
-                                 # if the form dictionary doesn't have
-                                 # the attribute, set it to the default
-                                 setattr(r,k,v)
-                                 form[keys] = r    
+                            # if the key is mapped to a record, get the
+                            # record
+                            r = form[keys]
+                            for k, v in values.__dict__.items():
+                                # loop through the attributes and values
+                                # in the default dictionary
+                                if not hasattr(r, k):
+                                    # if the form dictionary doesn't have
+                                    # the attribute, set it to the default
+                                    setattr(r,k,v)
+                                    form[keys] = r    
                         elif values == type([]):
-                               # the key is mapped to a list
-                               l = form[keys]
-                               for x in values:
-                                   # for each x in the list
-                                   if getattr(x, '__class__',0) is record:
-                                       # if the x is a record
-                                       for k, v in x.__dict__.items():
-                                           
-                                           # loop through each
-                                           # attribute and value in
-                                           # the record
-                                           
-                                           for y in l:
-                                               
-                                               # loop through each
-                                               # record in the form
-                                               # list if it doesn't
-                                               # have the attributes
-                                               # in the default
-                                               # dictionary, set them
-                                               
-                                               if not hasattr(y, k):
-                                                   setattr(y, k, v)
-                                   else:
-                                       # x is not a record
-                                       if not a in l:
-                                           l.append(a)
-                               form[keys] = l
+                            # the key is mapped to a list
+                            l = form[keys]
+                            for x in values:
+                                # for each x in the list
+                                if getattr(x, '__class__',0) is record:
+                                    # if the x is a record
+                                    for k, v in x.__dict__.items():
+                                        
+                                        # loop through each
+                                        # attribute and value in
+                                        # the record
+                                        
+                                        for y in l:
+                                            
+                                            # loop through each
+                                            # record in the form
+                                            # list if it doesn't
+                                            # have the attributes
+                                            # in the default
+                                            # dictionary, set them
+                                            
+                                            if not hasattr(y, k):
+                                                setattr(y, k, v)
+                                else:
+                                    # x is not a record
+                                    if not a in l:
+                                        l.append(a)
+                            form[keys] = l
                         else:
                             # The form has the key, the key is not mapped
                             # to a record or sequence so do nothing
@@ -642,43 +638,43 @@ class HTTPRequest(BaseRequest):
             # Convert to tuples
             if tuple_items:
                 for key in tuple_items.keys():
-                   # Split the key and get the attr
-                   k=key.split( ".")
-                   k,attr='.'.join(k[:-1]), k[-1]
-                   a = attr
-                   # remove any type_names in the attr
-                   while not a=='':
-                      a=a.split( ":")
-                      a,new=':'.join(a[:-1]), a[-1]
-                   attr = new
-                   if form.has_key(k):
-                      # If the form has the split key get its value
-                      item =form[k]
-                      if (hasattr(item, '__class__') and
-                          item.__class__ is record):
-                         # if the value is mapped to a record, check if it
-                         # has the attribute, if it has it, convert it to
-                         # a tuple and set it
-                         if hasattr(item,attr):
-                            value=tuple(getattr(item,attr))
-                            setattr(item,attr,value)
-                      else:
-                         # It is mapped to a list of  records
-                         for x in item:
-                            # loop through the records
-                            if hasattr(x, attr):
-                               # If the record has the attribute
-                               # convert it to a tuple and set it
-                               value=tuple(getattr(x,attr))
-                               setattr(x,attr,value)          
-                   else:
-                      # the form does not have the split key 
-                      if form.has_key(key):
-                         # if it has the original key, get the item
-                         # convert it to a tuple
-                         item=form[key]  
-                         item=tuple(form[key])
-                         form[key]=item
+                    # Split the key and get the attr
+                    k=key.split( ".")
+                    k,attr='.'.join(k[:-1]), k[-1]
+                    a = attr
+                    # remove any type_names in the attr
+                    while not a=='':
+                        a=a.split( ":")
+                        a,new=':'.join(a[:-1]), a[-1]
+                    attr = new
+                    if form.has_key(k):
+                        # If the form has the split key get its value
+                        item =form[k]
+                        if (hasattr(item, '__class__') and
+                            item.__class__ is record):
+                            # if the value is mapped to a record, check if it
+                            # has the attribute, if it has it, convert it to
+                            # a tuple and set it
+                            if hasattr(item,attr):
+                                value=tuple(getattr(item,attr))
+                                setattr(item,attr,value)
+                        else:
+                            # It is mapped to a list of  records
+                            for x in item:
+                                # loop through the records
+                                if hasattr(x, attr):
+                                # If the record has the attribute
+                                # convert it to a tuple and set it
+                                value=tuple(getattr(x,attr))
+                                setattr(x,attr,value)          
+                    else:
+                        # the form does not have the split key 
+                        if form.has_key(key):
+                            # if it has the original key, get the item
+                            # convert it to a tuple
+                            item=form[key]  
+                            item=tuple(form[key])
+                            form[key]=item
                      
         other.update(form)
         if meth:
@@ -880,9 +876,8 @@ class HTTPRequest(BaseRequest):
         keys.update(self._lazies)
 
         for key in self.environ.keys():
-            if (isCGI_NAME(key) or key[:5] == 'HTTP_') and \
-               (not hide_key(key)):
-                    keys[key] = 1
+            if (isCGI_NAME(key) or key[:5] == 'HTTP_') and (not hide_key(key)):
+                keys[key] = 1
 
         n=0
         while 1:
