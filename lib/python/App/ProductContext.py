@@ -86,7 +86,7 @@
 """
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
-from HelpSys import HelpTopic
+from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSystem import ProductHelp
 import string, os.path
 import stat
@@ -264,11 +264,17 @@ class ProductContext:
         return self.registerZClass(Z, meta_type)
 
 
+    def getProductHelp(self):
+        """
+        Returns the ProductHelp associated with the current Product.
+        """
+        return self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
+
     def registerHelpTopic(self, id, topic):
         """
         Register a Help Topic for a product.
         """
-        self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()._setObject(id, topic)
+        self.getProductHelp()._setObject(id, topic)
 
     def registerHelp(self, directory='help', clear=1):
         """
@@ -286,8 +292,9 @@ class ProductContext:
         .html .htm .txt  -- TextHelpTopic        
         .stx .txt        -- STXHelpTopic
         .jpg .png .gif   -- ImageHelpTopic
+        .py              -- APIHelpTopic
         """
-        help=self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
+        help=self.getProductHelp()
         path=os.path.join(Globals.package_home(self.__pack.__dict__), directory)
         
         # test to see if nothing has changed since last registration
@@ -314,4 +321,7 @@ class ProductContext:
                 self.registerHelpTopic(file, ht)
             elif ext in ('.jpg', '.gif', '.png'):
                 ht=HelpTopic.ImageTopic(file, '', os.path.join(path, file))
+                self.registerHelpTopic(file, ht)
+            elif ext in ('.py',):
+                ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
