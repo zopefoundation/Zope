@@ -390,7 +390,7 @@ pyexpat_ParserCreate(self, args)
 {
 	char *encoding  = NULL;
 	
-	if (!PyArg_ParseTuple(args, "|s", encoding))
+	if (!PyArg_ParseTuple(args, "|s", &encoding))
 		return NULL;
 	return (PyObject *)newxmlparseobject(encoding);
 }
