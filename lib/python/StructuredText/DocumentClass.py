@@ -937,8 +937,8 @@ class DocumentClass:
            return None
 
     ## Some constants to make the doc_href() regex easier to read.
-    _DQUOTEDTEXT = r'("[%s0-9\n\-\.\,\;\(\)\/\:\/\*\']+")'  % letters ## double quoted text
-    _URL_AND_PUNC = r'([%s0-9\@\.\,\?\!\/\:\;\-\#\~]+)' % letters 
+    _DQUOTEDTEXT = r'("[%s0-9\n%s]+")'  % (letters,punctuation) ## double quoted text
+    _URL_AND_PUNC = r'([%s0-9\@%s]+)' % (letters,punctuation) 
     _SPACES = r'(\s*)'
     
     def doc_href(self, s,
