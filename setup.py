@@ -1137,8 +1137,9 @@ class Finder:
         # We're finding packages in lib/python in the source dir, but we're
         # copying them directly under build/lib.<plat>.  So we need to lop off
         # the prefix when calculating the package names from the file names.
-        self._plen = len(prefix)
-
+        prefix, rest = os.path.split(prefix)
+        self._plen = len(prefix) + 1
+        
     def visit(self, ignore, dir, files):
         for file in files:
             # First see if this is one of the packages we want to add, or if
