@@ -50,6 +50,28 @@
   </tr>
   <tr>
     <td align="left" valign="top">
+    <div class="form-label">
+    Authentication ID:
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="smtp_uid" size="15"
+     value="&dtml-smtp_uid;"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Password
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="password" name="smtp_pwd" size="15"
+     value="&dtml-smtp_pwd;"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
     </td>
     <td align="left" valign="top">
     <div class="form-element">
