@@ -65,11 +65,16 @@ Zope Changes
     Zope 2.x.x
     
       Features Changed
-      
+
+	- Added a new online help system. Help is now available for
+	  standard Zope objects. Zope developers can add help for their
+	  Python Products and Control Panel Products.
 
       Bugs Fixed
 
+        - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
 
+        - Fixed broken links in ZCatalog 'Cataloged objects' view.
 
     Zope 2.1.1
 
