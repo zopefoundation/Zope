@@ -118,28 +118,32 @@ class UnKeywordIndex(UnIndex):
         if type(newKeywords) is StringType:
             newKeywords = (newKeywords, )
 
-        # Now comes the fun part, we need to figure out what's changed
-        # if anything from the previous record.
         oldKeywords = self._unindex.get(documentId, None)
 
         if oldKeywords is None:
+            # we've got a new document, let's not futz around.
             try:
                 for kw in newKeywords:
                     self.insertForwardIndexEntry(kw, documentId)
+                self._unindex[documentId] = list(newKeywords)
             except TypeError:
                 return 0
         else:
+            # we have an existing entry for this document, and we need
+            # to figure out if any of the keywords have actually changed
             if type(oldKeywords) is not OOSet: oldKeywords=OOSet(oldKeywords)
             newKeywords=OOSet(newKeywords)
-            self.unindex_objectKeywords(
-                documentId, difference(oldKeywords, newKeywords))
-            for kw in difference(newKeywords, oldKeywords):
-                self.insertForwardIndexEntry(kw, documentId)
-        
-        self._unindex[documentId] = list(newKeywords)
-
+            fdiff = difference(oldKeywords, newKeywords)
+            rdiff = difference(newKeywords, oldKeywords)
+            if fdiff or rdiff:
+                # if we've got forward or reverse changes
+                self._unindex[documentId] = list(newKeywords)
+                if fdiff:
+                    self.unindex_objectKeywords(documentId, fdiff)
+                if rdiff:
+                    for kw in rdiff:
+                        self.insertForwardIndexEntry(kw, documentId)
         return 1
-    
 
     def unindex_objectKeywords(self, documentId, keywords):
         """ carefully unindex the object with integer id 'documentId'"""
