@@ -90,6 +90,7 @@ import sys
 import string
 import getopt
 import cgi
+from XMLParser import XMLParser
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
@@ -226,21 +227,26 @@ class TALInterpreter:
         text = cgi.escape(text)
         self.stream_write(text)
 
-    def do_insertStructure(self, expr, block):
+    def do_insertStructure(self, expr, repldict, block):
         if not self.tal:
             self.interpret(block)
             return
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
             return
-        raise TALError("insertStructure() not implemented")
-        program, macros = XXX # not implemented
-        saveMacros = self.macros
-        if macros:
-            self.macros = saveMacros.copy()
-            self.macros.update(macros)
-        self.interpret(program)
-        self.macros = saveMacros
+        if repldict:
+            raise TALError(
+           "replace structure with attribute replacements not yet implemented")
+        text = str(structure)
+        self.checkXMLSyntax(text)
+        self.stream_write(text) # No quoting -- this is intentional
+
+    def checkXMLSyntax(self, text):
+        # XXX This is a bit of a hack!
+        text = '<!DOCTYPE foo PUBLIC "foo" "bar"><foo>%s</foo>' % text
+        p = XMLParser()
+        p.parseString(text)
+        # If this succeeds without errors, we're fine
 
     def do_loop(self, name, expr, block):
         if not self.tal:
