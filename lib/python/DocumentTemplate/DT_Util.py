@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.52 1999/03/22 17:28:37 jim Exp $''' 
-__version__='$Revision: 1.52 $'[11:-2]
+'''$Id: DT_Util.py,v 1.53 1999/03/22 18:45:29 jim Exp $''' 
+__version__='$Revision: 1.53 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -243,10 +243,10 @@ def render(self, v, simple={
 d['render']=render
 
 def reorder(self, s, with=None, without=()):
-    if with is None: with=s1
+    if with is None: with=s
     d={}
     tt=type(())
-    for i in s1:
+    for i in s:
         if type(i) is tt and len(i)==2: k, v = i
         else:                           k= v = i
         d[k]=v
