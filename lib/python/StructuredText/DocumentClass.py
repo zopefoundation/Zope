@@ -436,7 +436,7 @@ class DocumentClass:
           for paragraph in new_paragraphs:
              
              if paragraph.getNodeName() is "StructuredTextTable":
-                cells = paragraph.getColumns()
+#                cells = paragraph.getColumns()
                 text = paragraph.getColorizableTexts()
                 text = map(ST.StructuredText,text)
                 text = map(self.__call__,text)

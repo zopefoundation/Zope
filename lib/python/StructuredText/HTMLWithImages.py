@@ -13,7 +13,6 @@
 
 from string import join, split, find
 import re, sys, ST
-import time
 
 from HTMLClass import HTMLClass
 

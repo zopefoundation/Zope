@@ -408,7 +408,7 @@ class DocumentClass:
             result.append(tmp)
         
         subs = paragraph.getSubparagraphs()
-        indent=paragraph.indent
+#        indent=paragraph.indent
         return StructuredTextTable(result,text,subs,indent=paragraph.indent)
             
     def doc_bullet(self, paragraph, expr = re.compile('\s*[-*o]\s+').match):

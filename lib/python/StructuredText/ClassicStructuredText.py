@@ -165,7 +165,7 @@ def indent(aString, indent=2):
     r=split(untabify(aString),'\n')
     if not r: return ''
     if not r[-1]: del r[-1]
-    tab=' '*level
+    tab=' '*indent
     return "%s%s\n" % (tab,join(r,'\n'+tab))
 
 def reindent(aString, indent=2, already_untabified=0):

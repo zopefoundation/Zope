@@ -141,7 +141,7 @@ class HTMLClass:
                     c, level, output)
 
     def paragraph(self, doc, level, output):
-        i=0
+
         output('<p>')
         for c in doc.getChildNodes():
             if c.getNodeName() in ['StructuredTextParagraph']:

@@ -11,8 +11,6 @@
 # 
 ##############################################################################
 
-import string
-from string import join, split, find, lstrip
 
 class DocBookClass:
 
@@ -42,13 +40,13 @@ class DocBookClass:
    def __call__(self, doc, level=1):
       r=[]
       self.dispatch(doc, level-1, r.append)
-      return join(r,'')
+      return ''.join(r)
 
    def _text(self, doc, level, output):
       if doc.getNodeName() == 'StructuredTextLiteral':
          output(doc.getNodeValue())
       else:
-         output(lstrip(doc.getNodeValue()))         
+         output(doc.getNodeValue().lstrip())         
 
    def document(self, doc, level, output):
       output('<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN">\n')
@@ -178,20 +176,20 @@ class DocBookClass:
 
 
 def prestrip(v):
-   v=string.replace(v, '\r\n', '\n')
-   v=string.replace(v, '\r', '\n')
-   v=string.replace(v, '\t', '        ')
-   lines=string.split(v, '\n')
+   v=v.replace( '\r\n', '\n')
+   v=v.replace( '\r', '\n')
+   v=v.replace( '\t', '        ')
+   lines=v.split('\n')
    indent=len(lines[0])
    for line in lines:
       if not len(line): continue
-      i=len(line)-len(string.lstrip(line))
+      i=len(line)-len(line.lstrip())
       if i < indent:
          indent=i
    nlines=[]
    for line in lines:
       nlines.append(line[indent:])
-   return string.join(nlines, '\n')
+   return '\n'.join(nlines, '\n')
 
 
 class DocBookChapter(DocBookClass):
