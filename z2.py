@@ -517,7 +517,7 @@ def set_locale(val):
 if LOCALE_ID is not None:
     set_locale(LOCALE_ID)
 
-import zdaemon
+import zdaemon.Daemon
 # from this point forward we can use the zope logger
 # importing ZDaemon before importing ZServer causes ZServer logging
 # not to work.
@@ -550,7 +550,7 @@ if USE_DAEMON and not READ_ONLY:
     # zdaemon.run creates a process which "manages" the actual Zope
     # process (restarts it if it dies).  The management process passes along
     # signals that it receives to its child.
-    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, PID_FILE))
+    zdaemon.Daemon.run(sys.argv, os.path.join(CLIENT_HOME, PID_FILE))
 
 os.chdir(CLIENT_HOME)
 
