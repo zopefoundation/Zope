@@ -12,7 +12,6 @@
 ##############################################################################
 
 import re, ST, STDOM
-from string import split, join, replace, expandtabs, strip, find
 from STletters import letters
 
 StringType=type('')
@@ -25,7 +24,7 @@ class StructuredTextExample(ST.StructuredTextParagraph):
        t=[]; a=t.append
        for s in subs: a(s.getNodeValue())
        apply(ST.StructuredTextParagraph.__init__,
-             (self, join(t,'\n\n'), ()),
+             (self, '\n\n'.join(t), ()),
              kw)
 
     def getColorizableTexts(self): return ()
@@ -374,15 +373,15 @@ class DocumentClass:
         rows = []
     
         # initial split
-        for row in split(text,"\n"):
+        for row in text.split("\n"):
             rows.append(row)    
     
         # clean up the rows
         for index in range(len(rows)):
             tmp = []
-            rows[index] = strip(rows[index])
+            rows[index] = rows[index].strip()
             l = len(rows[index])-2
-            result = split(rows[index][:l],"||")
+            result = rows[index][:l].split("||")
             for text in result:
                 if text:
                     tmp.append(text)
@@ -462,7 +461,7 @@ class DocumentClass:
         if not d: return None
         start, end = d.span()
         title=top[:start]
-        if find(title, '\n') >= 0: return None
+        if title.find('\n') >= 0: return None
         if not nb(title): return None
         d=top[start:end]
         top=top[end:]
@@ -483,16 +482,16 @@ class DocumentClass:
         subs=paragraph.getSubparagraphs()
         if not subs: return None
         top=paragraph.getColorizableTexts()[0]
-        if not strip(top): return None
+        if not top.strip(): return None
         if top[-2:]=='::':
            subs=StructuredTextExample(subs)
-           if strip(top)=='::': return subs
+           if top.strip()=='::': return subs
            return ST.StructuredTextParagraph(top[:-1],
                                              [subs],
                                              indent=paragraph.indent,
                                              level=paragraph.level)
 
-        if find(top,'\n') >= 0: return None
+        if top.find('\n') >= 0: return None
         return StructuredTextSection(top, subs, indent=paragraph.indent, level=paragraph.level)
 
     def doc_literal(
@@ -602,7 +601,7 @@ class DocumentClass:
                         
             start,e = r.span(1)
             name    = s[start:e]
-            name    = replace(name,'"','',2)
+            name    = name.replace('"','',2)
             #start   = start + 1
             st,end   = r.span(3)
             if punctuation(s[end-1:end]):

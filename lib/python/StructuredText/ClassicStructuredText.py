@@ -136,7 +136,6 @@ Special symbology is used to indicate special constructs:
 import ts_regex
 import regex
 from ts_regex import gsub
-from string import split, join, strip, find
 import string,re
 
 
@@ -162,11 +161,11 @@ def untabify(aString,
 
 def indent(aString, indent=2):
     """Indent a string the given number of spaces"""
-    r=split(untabify(aString),'\n')
+    r=untabify(aString).split('\n')
     if not r: return ''
     if not r[-1]: del r[-1]
     tab=' '*indent
-    return "%s%s\n" % (tab,join(r,'\n'+tab))
+    return "%s%s\n" % (tab,('\n'+tab).join(r))
 
 def reindent(aString, indent=2, already_untabified=0):
     "reindent a block of text, so that the minimum indent is as given"
@@ -182,12 +181,12 @@ def reindent(aString, indent=2, already_untabified=0):
 
     if indent > l:
         tab=' ' * (indent-l)
-        for s in split(aString,'\n'): append(tab+s)
+        for s in aString.split('\n'): append(tab+s)
     else:
         l=l-indent
-        for s in split(aString,'\n'): append(s[l:])
+        for s in aString.split('\n'): append(s[l:])
 
-    return join(r,'\n')
+    return '\n'.join(r)
 
 def indent_level(aString,
                  indent_space=ts_regex.compile('\n\( *\)').search_group,
@@ -242,7 +241,7 @@ class Table:
         '''parses a table and returns nested list representing the
         table'''
         self.table=[]
-        text=filter(None,split(aPar,'\n'))
+        text=filter(None,aPar.split('\n'))
         for line in text:
             row=[]
             while 1:
@@ -268,8 +267,8 @@ class Table:
                 else:
                     htmlrow.append(self.CELL%(colspan,cell))
                     colspan=1
-            htmltable.append(self.ROW%join(htmlrow,''))
-        return self.TABLE%join(htmltable,'')
+            htmltable.append(self.ROW % ''.join(htmlrow))
+        return self.TABLE % ''.join(htmltable)
 
 table=Table()
 
@@ -312,7 +311,7 @@ class StructuredText:
         aStructuredString = p_reg.sub(r'<a href="\2">\1</a>\3 ' , aStructuredString)
 
 
-        protoless = find(aStructuredString, '<a href=":')
+        protoless = aStructuredString.find('<a href=":')
         if protoless != -1:
             aStructuredString = re.sub('<a href=":', '<a href="',
                                      aStructuredString)
@@ -373,12 +372,12 @@ class HTML(StructuredText):
         return s
 
     def ul(self, before, p, after):
-        if p: p="<p>%s</p>" % strip(ctag(p))
+        if p: p="<p>%s</p>" % ctag(p).strip()
         return ('%s<ul><li>%s\n%s\n</li></ul>\n'
                 % (before,p,after))
 
     def ol(self, before, p, after):
-        if p: p="<p>%s</p>" % strip(ctag(p))
+        if p: p="<p>%s</p>" % ctag(p).strip()
         return ('%s<ol><li>%s\n%s\n</li></ol>\n'
                 % (before,p,after))
 
@@ -389,9 +388,9 @@ class HTML(StructuredText):
     def head(self, before, t, level, d):
         if level > 0 and level < 6:
             return ('%s<h%d>%s</h%d>\n%s\n'
-                    % (before,level,strip(ctag(t)),level,d))
+                    % (before,level,ctag(t).strip(),level,d))
             
-        t="<p><strong>%s</strong></p>" % strip(ctag(t))
+        t="<p><strong>%s</strong></p>" % ctag(t).strip()
         return ('%s<dl><dt>%s\n</dt><dd>%s\n</dd></dl>\n'
                 % (before,t,d))
 
@@ -540,7 +539,7 @@ def main():
             
         s=str(html_with_references(s))
         if s[:4]=='<h1>':
-            t=s[4:find(s,'</h1>')]
+            t=s[4: s.find('</h1>')]
             s='''<html><head><title>%s</title>
             </head><body>
             %s
