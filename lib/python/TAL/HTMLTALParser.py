@@ -45,6 +45,18 @@ TIGHTEN_IMPLICIT_CLOSE_TAGS = (PARA_LEVEL_HTML_TAGS
                                + CLOSING_BLOCK_LEVEL_HTML_TAGS)
 
 
+class NestingError(Exception):
+    """Exception raised when elements aren't properly nested."""
+
+    def __init__(self, tag, tagstack):
+        self.tag = tag
+        self.tagstack = tagstack[:]
+
+    def __str__(self):
+        return ("could not locate <%s> in tag stack:\n\t%s"
+                % (self.tag, self.tagstack))
+
+
 class HTMLTALParser(SGMLParser):
 
     # External API
@@ -153,7 +165,8 @@ class HTMLTALParser(SGMLParser):
     def finish_endtag(self, tag, implied=0):
         if tag in EMPTY_HTML_TAGS:
             return
-        assert tag in self.tagstack
+        if tag not in self.tagstack:
+            raise NestingError(tag, self.tagstack)
         while self.tagstack[-1] != tag:
             self.finish_endtag(self.tagstack[-1], implied=1)
         self.tagstack.pop()
