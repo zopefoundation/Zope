@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.8 2001/11/28 15:50:52 matt Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.9 2002/04/03 20:59:49 shane Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 import os, sys, unittest
 
@@ -56,13 +56,7 @@ class SecurityTests (DTMLTests):
                 return "This is a protected operation of public object"
 
         html = self.doc_class('<dtml-var expr="myinst.somemethod()">')
-        try:
-            html(myinst=myclass())
-        except Unauthorized:
-            # Passed the test.
-            pass
-        else:
-            assert 0, 'Did not deny attribute access'
+        self.failUnlessRaises(Unauthorized, html, myinst=myclass())
 
     def testSecurityInSyntax(self):
         '''
