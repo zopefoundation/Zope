@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.31 $'[11:-2]
+__version__ = '$Revision: 1.32 $'[11:-2]
 
 
 import  re
@@ -83,7 +83,8 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
     query_options = ["query","operator"]
  
-    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,caller=None,extra=None):
+    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,
+                 caller=None, extra=None):
         """Create an index
 
         The arguments are:
