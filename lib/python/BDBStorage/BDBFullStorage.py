@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.59 $'.split()[-2:][0]
+__version__ = '$Revision: 1.60 $'.split()[-2:][0]
 
 import time
 import cPickle as pickle
@@ -1088,7 +1088,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # The object's revision is in it's initial creation state but
             # we're asking for an undo of something other than the initial
             # creation state.  No, no.
-            raise POSException.UndoError, 'Undoing mismatched zombification'
+            raise POSException.UndoError(
+                'Undoing mismatched zombification', oid)
         last_lrevid     = self._metadata[oid+last_prevrevid][16:24]
         target_metadata = self._metadata[oid+target_prevrevid]
         target_lrevid   = target_metadata[16:24]
@@ -1108,13 +1109,13 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             if data:
                 return oid, target_metadata, data
             else:
-                raise POSException.UndoError, 'Cannot undo transaction'
+                raise POSException.UndoError('Cannot undo transaction', oid)
 
     def _dotxnundo(self, txn, tid):
         # First, make sure the transaction isn't protected by a pack.
         packtime = self._last_packtime()
         if tid <= packtime:
-            raise POSException.UndoError, 'Transaction cannot be undone'
+            raise POSException.UndoError('Transaction cannot be undone')
         # Calculate all the oids of objects modified in this transaction
         newrevs = []
         c = self._txnoids.cursor(txn=txn)
