@@ -101,16 +101,21 @@ usage=""" [options] url file .....
 
          Run in verbose mode.
 
+      -9
+
+         Use *old* zope method names.
 """
 
 import sys, getopt, os, string
 ServerError=''
 verbose=0
+old=0
 
 def main():
     user, password = 'superuser', '123'
-    opts, args = getopt.getopt(sys.argv[1:], 'p:u:v')
+    opts, args = getopt.getopt(sys.argv[1:], 'p:u:v9')
     global verbose
+    global old
     for o, v in opts:
         if o=='-p':
             d, f = os.path.split(v)
@@ -120,6 +125,7 @@ def main():
             v = string.split(v,':')
             user, password = v[0], string.join(v[1:],':')
         elif o=='-v': verbose=1
+        elif o=='-9': old=1
 
     if not args:
         print sys.argv[0]+usage
@@ -173,13 +179,19 @@ def upload_html(object, f):
     # There is a Document bugs that causes file uploads to fail.
     # Waaa.  This will be fixed in 1.10.2.
     f=f.read()
-    call(object.manage_addDTMLDocument, id=name, file=f)
+    if old:
+        call(object.manage_addDocument, id=name, file=f)
+    else:
+        call(object.manage_addDTMLDocument, id=name, file=f)
     
 upload_htm=upload_html
 
 def upload_dtml(object, f):
     dir, name = os.path.split(f)
-    call(object.manage_addDTMLMethod, id=name, file=open(f))
+    if old:
+        call(object.manage_addDocument, id=name, file=open(f))
+    else:
+        call(object.manage_addDTMLDocument, id=name, file=f)
         
 
 def upload_gif(object, f):
