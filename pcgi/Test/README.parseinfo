@@ -1,0 +1,25 @@
+README.parseinfo - JeffBauer@bigfoot.com - May 21, 1998
+
+parseinfo is an executable to test the parsing the pcgi
+  info file.  Although pcgifile.py can be used to test
+  how the pcgi-wrapper is expected to react "in vitro"
+  (i.e. as a CGI process) the parseinfo program actually
+  runs the info file through the parser code  (although
+  it performs no further environment testing).
+
+usage:  parseinfo  <pcgi-info-file>
+
+sample output:
+
+  r->sw_info           /export/home/jbauer/tmp/pcgiinfo
+  r->sw_name           
+  r->sw_home           
+  r->sw_exe            /usr/local/bin/python
+  r->procpath          /export/home/jbauer/var/pcgitime.pid
+  r->sockpath          /export/home/jbauer/var/pcgitime.socket
+  r->modpath           /export/home/jbauer/www/cgi-bin/pcgitime.py
+  r->pubpath           /export/home/jbauer/www/cgi-bin/pcgi_publisher.py
+  r->procid            0
+  r->insertPath        
+  r->pythonPath        .:/usr/local/lib/python1.5:/var/share/s0/python
+  CloseFileDescriptors 0
