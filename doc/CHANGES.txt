@@ -6,7 +6,7 @@ Zope Changes
 
   Releases
 
-    Zope  x.x.x
+    Future Zope  x.x.x
 
       Features Added
 
@@ -14,6 +14,22 @@ Zope Changes
       Bugs Fixed
 
         - Added small fixes to ZopeHTTPServer in anticipation of DAV.
+
+    Zope  1.10.3
+
+      Bugs Fixed
+
+        - Construction, upload, and edit methods did not consistently
+          support either string or file data.  This caused really weird
+          behavior when file upload was used with out includeing the 
+          ":string" suffix in the argument name when doing a file upload.
+
+          This bug was previously (and incorrectly) reported as a 
+          ZPublisher.Client problem.
+
+        - Errors in ExternalMethods were masked by bugs in error
+          reporting logic.  The bugs were made far more effective
+          by Python 1.5.1.
 
     Zope  1.10.2
 
