@@ -163,6 +163,7 @@ class zope_ftp_channel(ftp_channel):
         self.userid=''
         self.password=''
         self.path='/'
+        self.cookies={}
     
     def _join_paths(self,*args):
         path=apply(os.path.join,args)
@@ -218,7 +219,7 @@ class zope_ftp_channel(ftp_channel):
         self.listdir(dir, long)
     
     def listdir (self, path, long=0):
-        response=make_response(self.listdir_completion, long)
+        response=make_response(self, self.listdir_completion, long)
         request=FTPRequest(path, 'LST', self, response)
         handle(self.module, request, response)         
         
@@ -252,7 +253,7 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_cwd (self, line):
         'change working directory'
-        response=make_response(self.cwd_completion, 
+        response=make_response(self, self.cwd_completion, 
                 self._join_paths(self.path,line[1]))
         request=FTPRequest(line[1],'CWD',self,response)
         handle(self.module,request,response)       
@@ -297,7 +298,7 @@ class zope_ftp_channel(ftp_channel):
         if len (line) != 2:
             self.command.not_understood (string.join (line))
             return
-        response=make_response(self.mdtm_completion)
+        response=make_response(self, self.mdtm_completion)
         request=FTPRequest(line[1],'MDTM',self,response)
         handle(self.module,request,response)       
     
@@ -324,7 +325,7 @@ class zope_ftp_channel(ftp_channel):
         if len (line) != 2:
             self.command.not_understood (string.join (line))
             return
-        response=make_response(self.size_completion)
+        response=make_response(self, self.size_completion)
         request=FTPRequest(line[1],'SIZE',self,response)
         handle(self.module,request,response)       
         
@@ -343,7 +344,7 @@ class zope_ftp_channel(ftp_channel):
         if len(line) < 2:
             self.command_not_understood (string.join (line))
             return
-        response=make_response(self.retr_completion,line[1])
+        response=make_response(self, self.retr_completion, line[1])
         request=FTPRequest(line[1],'RETR',self,response)
         handle(self.module,request,response) 
 
@@ -388,7 +389,7 @@ class zope_ftp_channel(ftp_channel):
     
     def stor_callback(self,path,data):
         'callback to do the STOR, after we have the input'
-        response=make_response(self.stor_completion)
+        response=make_response(self, self.stor_completion)
         request=FTPRequest(path,'STOR',self,response,stdin=data)
         handle(self.module,request,response)       
            
@@ -407,7 +408,7 @@ class zope_ftp_channel(ftp_channel):
             self.command.not_understood (string.join (line))
             return
         path,id=os.path.split(line[1])
-        response=make_response(self.dele_completion)
+        response=make_response(self, self.dele_completion)
         request=FTPRequest(path,('DELE',id),self,response)
         handle(self.module,request,response)       
         
@@ -425,7 +426,7 @@ class zope_ftp_channel(ftp_channel):
             self.command.not_understood (string.join (line))
             return
         path,id=os.path.split(line[1])
-        response=make_response(self.mkd_completion)
+        response=make_response(self, self.mkd_completion)
         request=FTPRequest(path,('MKD',id),self,response)
         handle(self.module,request,response)       
     
@@ -447,7 +448,7 @@ class zope_ftp_channel(ftp_channel):
             self.command.not_understood (string.join (line))
             return
         path,id=os.path.split(line[1])
-        response=make_response(self.rmd_completion)
+        response=make_response(self, self.rmd_completion)
         request=FTPRequest(path,('RMD',id),self,response)
         handle(self.module,request,response)       
         
@@ -491,7 +492,8 @@ class zope_ftp_channel(ftp_channel):
             path=self.userid[i+1:]
             self.userid=self.userid[:i]
             self.anonymous=None
-            response=make_response(self.pass_completion, self._join_paths('/',path))
+            response=make_response(self, self.pass_completion,
+                    self._join_paths('/',path))
             request=FTPRequest(path,'PASS',self,response)
             handle(self.module,request,response) 
 

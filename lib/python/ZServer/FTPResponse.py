@@ -133,8 +133,9 @@ class CallbackPipe:
         
         return result    
 
-def make_response(callback,*args):
+def make_response(channel, callback, *args):
     # XXX should this be the FTPResponse constructor instead?
     r=FTPResponse(stdout=CallbackPipe(callback, args), stderr=StringIO())
     r.setHeader('content-type','text/plain')
+    r.cookies=channel.cookies
     return r

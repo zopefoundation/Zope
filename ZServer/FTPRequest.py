@@ -104,7 +104,11 @@ class FTPRequest(HTTPRequest):
             stdin=StringIO()
         env=self._get_env(path, command, channel, stdin)
         HTTPRequest.__init__(self, stdin, env, response, clean=1)
-
+        self.cookies=channel.cookies
+        for k,v in self.cookies.items():
+            if not self.other.has_key(k):
+                self.other[k]=v
+    
     def _get_env(self, path, command, channel, stdin):
         "Returns a CGI style environment"
         env={}
