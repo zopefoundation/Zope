@@ -83,7 +83,7 @@
 # 
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.6 2001/06/13 14:22:52 shane Exp $'
+__version__ = '$Id: util.py,v 1.7 2001/07/25 13:30:04 andreasjung Exp $'
 
 
 import re
@@ -199,9 +199,14 @@ class parseIndexRequest:
                 if request.has_key(field):
                     setattr(self, op, request[field])
 
-        if keys is not None:
-            # Filter out empty strings.
-            keys = filter(lambda key: key != '', keys)
+        # This was some kind of over-optimimization and broke
+        # queries with ("",) to search for empty fields
+        # (See Collector 2423)
+        
+#      if keys is not None:
+#           # Filter out empty strings.
+#            keys = filter(lambda key: key != '', keys)
+
         if not keys:
             keys = None
 
@@ -219,7 +224,7 @@ class parseIndexRequest:
 
 def test():
 
-    r  = parseIndexRequest({'path':{'query':"xxxx","level":2,"operator":'and'}},'path',['query',"level","operator"])
+    r  = parseIndexRequest({'path':{'query':"","level":2,"operator":'and'}},'path',['query',"level","operator"])
     for k in dir(r):
         print k,getattr(r,k)
 

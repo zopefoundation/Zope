@@ -24,6 +24,8 @@ Zope Changes
           the __getslice__ implementation used  range() instead
           of xrange().
 
+        - Collector #2423: Searching a FieldIndexes for documents
+          with a blank string has been broken.
 
     Zope 2.4 beta 2
 
