@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<table xmlns:m="http://xml.zope.org/namespaces/metal" m:use-macro="myTable">
+<table xmlns:m="http://xml.zope.org/namespaces/metal" m:use-macro="test/test7.xml/myTable">
 <!-- macro definition with slots -->
   <tr>
     <td>Top Left</td>
@@ -7,7 +7,7 @@
   </tr>
   <tr>
     <td>Bottom left</td>
-    <td><span m:fill-slot="bottomRight">
+    <td><span xmlns:m="http://xml.zope.org/namespaces/metal" m:fill-slot="bottomRight">
       <h1>Some headline</h1>
       <p>This is the real contents of the bottom right slot.</p>
       <p>It is supposed to contain a lot of text.  Blah, blah, blab.

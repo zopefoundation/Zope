@@ -84,9 +84,6 @@
 ##############################################################################
 """
 Compile a DOM tree for efficient METAL and TAL expansion.
-
-XXX TO DO:
-- get macro define->use substitution in output right (currently ignores prefix)
 """
 
 import string
@@ -95,7 +92,7 @@ from xml.dom import Node
 
 from DOMVisitor import DOMVisitor
 
-from TALVisitor import  ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
+from TALVisitor import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
 from TALVisitor import macroIndexer, slotIndexer
 from TALVisitor import splitParts, parseAttributeReplacements
 from TALVisitor import parseSubstitution
@@ -169,12 +166,14 @@ class METALCompiler(DOMVisitor):
             elif attr.prefix == "xmlns":
                 self.newNS(attr.localName, attr.value)
         list = []
+        # Add namespace declarations for the node itself
         if node.namespaceURI:
             if self.newNS(node.prefix, node.namespaceURI):
                 if node.prefix:
                     list.append(("xmlns:" + node.prefix, node.namespaceURI))
                 else:
                     list.append(("xmlns", node.namespaceURI))
+        # Add namespace declarations for each attribute
         for attr in node.attributes.values():
             if attr.namespaceURI:
                 if self.newNS(attr.prefix, attr.namespaceURI):
@@ -185,6 +184,7 @@ class METALCompiler(DOMVisitor):
                             ("xmlns:" + attr.prefix, attr.namespaceURI))
                     else:
                         list.append(("xmlns", node.namespaceURI))
+        # Add the node's attributes
         list.extend(self.getAttributeList(node))
         return list
 
@@ -283,7 +283,11 @@ class METALCompiler(DOMVisitor):
             return []
         attrList = []
         for attrNode in node.attributes.values():
-            attrList.append((attrNode.nodeName, attrNode.nodeValue))
+            item = attrNode.nodeName, attrNode.nodeValue
+            if (attrNode.namespaceURI == ZOPE_METAL_NS and
+                attrNode.localName == "define-macro"):
+                item = item + ("macroHack",)
+            attrList.append(item)
         return attrList
 
 class TALCompiler(METALCompiler):
@@ -295,12 +299,12 @@ class TALCompiler(METALCompiler):
         if not attrDict:
             return attrList
         list = []
-        for key, value in attrList:
+        for item in attrList:
+            key, value = item[:2]
             if attrDict.has_key(key):
-                list.append((key, value, attrDict[key]))
+                item = (key, value, "replace", attrDict[key])
                 del attrDict[key]
-            else:
-                list.append((key, value))
+            list.append(item)
         return list
 
     # Overriding METAL method to compile TAL statements

@@ -76,12 +76,9 @@ TO DO
 
 Here are some things that should be done.
 
-- Fix the tweaking of the define-macro attribute on macro expansion so
-  that:
-  (1) it is only tweaked if the proper prefix is used; and
-  (2) the argument is taken from the use-macro attribute.
+- Add calls to an expression compiler
 
-- Provide a framework for error messages (currently it just prints to
+- Raise exceptions for all errors (currently it just prints to
   stdout).
 
 - Provide a dummy implementation of evaluateStructure()?

@@ -95,25 +95,35 @@ from TALCompiler import TALCompiler
 
 class TALInterpreter:
 
-    def __init__(self, program, macros, engine, stream=None):
+    def __init__(self, program, macros, engine, stream=None, debug=0):
         self.program = program
         self.macros = macros
         self.engine = engine
         self.stream = stream or sys.stdout
+        self.debug = debug
         self.slots = {}
-        self.inMacro = 0
+        self.currentMacro = None
 
     def __call__(self):
         self.stream.write('<?xml version="1.0" ?>\n')
         self.interpret(self.program)
         self.stream.write("\n")
 
+    level = 0
+
     def interpret(self, program):
+        self.level = self.level + 1
         for item in program:
             methodName = "do_" + item[0]
             args = item[1:]
+            if self.debug:
+                s = "%s%s%s\n" % ("    "*self.level, methodName, repr(args))
+                if len(s) > 80:
+                    s = s[:76] + "...\n"
+                sys.stderr.write(s)
             method = getattr(self, methodName)
             apply(method, args)
+        self.level = self.level - 1
 
     def do_startEndTag(self, name, attrList):
         self.do_startTag(name, attrList, "/>")
@@ -124,16 +134,16 @@ class TALInterpreter:
             return
         self.stream.write("<" + name)
         for item in attrList:
-            name = item[0]
-            if self.inMacro and name[-13:] == ":define-macro":
-                # XXX should check namespaceURI too
-                name = name[:-13] + ":use-macro"
-            if len(item) == 2:
-                self.stream.write(' %s=%s' % (name, quote(item[1])))
-            else:
-                assert len(item) >= 3
-                value = self.engine.evaluateText(item[2])
-                self.stream.write(' %s=%s' % (item[0], quote(value)))
+            name, value = item[:2]
+            if len(item) > 2:
+                action = item[2]
+                if action == "replace" and len(item) > 3:
+                    value = self.engine.evaluateText(item[3])
+                elif (action == "macroHack" and self.currentMacro and
+                      name[-13:] == ":define-macro"):
+                    name = name[:-13] + ":use-macro"
+                    value = self.currentMacro
+            self.stream.write(' %s=%s' % (name, quote(value)))
         self.stream.write(end)
 
     def do_endTag(self, name):
@@ -194,11 +204,11 @@ class TALInterpreter:
 
     def do_useMacro(self, macroName, compiledSlots):
         macro = self.engine.evaluateMacro(macroName)
-        save = self.slots, self.inMacro
+        save = self.slots, self.currentMacro
         self.slots = compiledSlots
-        self.inMacro = 1
+        self.currentMacro = macroName
         self.interpret(macro)
-        self.slots, self.inMacro = save
+        self.slots, self.currentMacro = save
 
     def do_fillSlot(self, slotName, program):
         self.interpret(program)
