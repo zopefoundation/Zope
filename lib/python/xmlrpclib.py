@@ -217,7 +217,7 @@ if sgmlop:
             try:
                 self.parser.close()
             finally:
-                self.parser = None # nuke circular reference
+                self.parser = self.feed = None # nuke circular reference
 
         def handle_entityref(self, entity):
             # <string> entity
