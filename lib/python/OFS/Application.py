@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.130 2000/07/28 15:50:05 jim Exp $'''
-__version__='$Revision: 1.130 $'[11:-2]
+$Id: Application.py,v 1.131 2000/08/02 17:31:54 brian Exp $'''
+__version__='$Revision: 1.131 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -408,6 +408,7 @@ def import_products(_st=type('')):
                 try: modules[pname].__import_error__=f
                 except: pass
 
+
 def install_products(app):
     # Install a list of products into the basic folder class, so
     # that all folders know about top-level objects, aka products
@@ -439,70 +440,94 @@ def install_products(app):
         product_names.sort()
 
         for product_name in product_names:
-
-            if done.has_key(product_name): continue
+            # For each product, we will import it and try to call the
+            # intialize() method in the product __init__ module. If
+            # the method doesnt exist, we put the old-style information
+            # together and do a default initialization.
+            if done.has_key(product_name):
+                continue
             done[product_name]=1
-            
+
             package_dir=path_join(product_dir, product_name)
             __traceback_info__=product_name
             if not isdir(package_dir): continue
             if not exists(path_join(package_dir, '__init__.py')):
                 if not exists(path_join(package_dir, '__init__.pyc')):
                     continue
-
             try:
                 product=__import__("Products.%s" % product_name,
                                    global_dict, global_dict, silly)
 
+                # Install items into the misc_ namespace, used by products
+                # and the framework itself to store common static resources
+                # like icon images.
                 misc_=pgetattr(product, 'misc_', {})
                 if misc_:
                     if type(misc_) is DictType:
                         misc_=Misc_(product_name, misc_)
                     Application.misc_.__dict__[product_name]=misc_
 
-                # Set up dynamic project information.
+                # Here we create a ProductContext object which contains
+                # information about the product and provides an interface
+                # for registering things like classes and help topics that
+                # should be associated with that product. Products are
+                # expected to implement a method named 'initialize' in
+                # their __init__.py that takes the ProductContext as an
+                # argument. 
                 productObject=App.Product.initializeProduct(
                     product, product_name, package_dir, app)
+                context=ProductContext(productObject, app, product)
 
-                pgetattr(product, 'initialize', lambda context: None)(
-                    ProductContext(productObject, app, product))
+                # Look for an 'initialize' method in the product. If it does
+                # not exist, then this is an old product that has never been
+                # updated. In that case, we will analyze the product and
+                # build up enough information to do initialization manually.
+                initmethod=pgetattr(product, 'initialize', None)
+                if initmethod is not None:
+                    initmethod(context)                    
+                else:
+                    permissions={}
+                    new_permissions={}
+                    for p in pgetattr(product, '__ac_permissions__', ()):
+                        permission, names, default = (
+                            tuple(p)+('Manager',))[:3]
+                        if names:
+                            for name in names:
+                                permissions[name]=permission
+                        elif not folder_permissions.has_key(permission):
+                            new_permissions[permission]=()
 
-                permissions={}
-                new_permissions={}
-                for p in pgetattr(product, '__ac_permissions__', ()):
-                    permission, names, default = (tuple(p)+('Manager',))[:3]
-                    if names:
-                        for name in names:
-                            permissions[name]=permission
+                    for meta_type in pgetattr(product, 'meta_types', ()):
+                        # Modern product initialization via a ProductContext
+                        # adds 'product' and 'permission' keys to the meta_type
+                        # mapping. We have to add these here for old products.
+                        pname=permissions.get(meta_type['action'], None)
+                        if pname is not None:
+                            meta_type['permission']=pname
+                        meta_type['product']=productObject.id
+                        meta_types.append(meta_type)
 
-                    elif not folder_permissions.has_key(permission):
-                        new_permissions[permission]=()
+                    for name,method in pgetattr(
+                        product, 'methods', {}).items():
+                        if not hasattr(Folder, name):
+                            setattr(Folder, name, method)
+                            if name[-9:]!='__roles__': # not Just setting roles
+                                if (permissions.has_key(name) and
+                                    not folder_permissions.has_key(
+                                        permissions[name])):
+                                    permission=permissions[name]
+                                    if new_permissions.has_key(permission):
+                                        new_permissions[permission].append(name)
+                                    else:
+                                        new_permissions[permission]=[name]
 
-                for meta_type in pgetattr(product, 'meta_types', ()):
-                    if product_name=='OFSP': meta_types.insert(0,meta_type)
-                    else: meta_types.append(meta_type)
-
-
-                for name,method in pgetattr(product, 'methods', {}).items():
-                    if not hasattr(Folder, name):
-                        setattr(Folder, name, method)
-                        if name[-9:]!='__roles__': # not Just setting roles
-                            if (permissions.has_key(name) and
-                                not folder_permissions.has_key(
-                                    permissions[name])):
-                                permission=permissions[name]
-                                if new_permissions.has_key(permission):
-                                    new_permissions[permission].append(name)
-                                else:
-                                    new_permissions[permission]=[name]
-
-                if new_permissions:
-                    new_permissions=new_permissions.items()
-                    for permission, names in new_permissions:
-                        folder_permissions[permission]=names
-                    new_permissions.sort()
-                    Folder.__dict__['__ac_permissions__']=tuple(
-                        list(Folder.__ac_permissions__)+new_permissions)
+                    if new_permissions:
+                        new_permissions=new_permissions.items()
+                        for permission, names in new_permissions:
+                            folder_permissions[permission]=names
+                        new_permissions.sort()
+                        Folder.__dict__['__ac_permissions__']=tuple(
+                            list(Folder.__ac_permissions__)+new_permissions)
 
                 if os.environ.get('ZEO_CLIENT',''):
                     # we don't want to install products from clients!
