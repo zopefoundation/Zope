@@ -4,7 +4,7 @@
     <!--#var manage_tabs-->
 
     <!--#tree header=info-->
-      <IMG SRC="<!--#var SCRIPT_NAME-->/misc_/AqueductGadfly/<!--#var icon-->"
+      <IMG SRC="<!--#var SCRIPT_NAME-->/misc_/ZGadflyDA/<!--#var icon-->"
        ALT="<!--#var Type-->" BORDER="0">
       <!--#var Name--><!--#var Description-->
     <!--#/tree-->
