@@ -111,7 +111,9 @@ class PersistentUtil:
         if jar is None or oid is None: return None
         try: mv=jar.db().modifiedInVersion
         except: pass
-        else: return mv(oid)
+        else:
+            try: return mv(oid)
+            except: return jar.getVersion() 
         
         # BoboPOS 2 code:
         oid=self._p_oid
@@ -127,7 +129,9 @@ class PersistentUtil:
         if jar is None or oid is None: return None
         try: mv=jar.db().modifiedInVersion
         except: pass
-        else: return mv(oid)==jar.getVersion()
+        else:
+            try: return mv(oid)==jar.getVersion()
+            except: return 1
 
         # BoboPOS 2 code:
         jar=self._p_jar
