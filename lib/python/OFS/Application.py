@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.121 2000/04/24 23:59:55 amos Exp $'''
-__version__='$Revision: 1.121 $'[11:-2]
+$Id: Application.py,v 1.122 2000/05/04 15:31:44 shane Exp $'''
+__version__='$Revision: 1.122 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -127,8 +127,8 @@ _standard_error_msg='''\
   </P>
   
   <P>
-  <STRONG>Error Type: <dtml-var error_type></STRONG><BR>
-  <STRONG>Error Value: <dtml-var error_value></STRONG><BR> 
+  <STRONG>Error Type: <dtml-var error_type html_quote></STRONG><BR>
+  <STRONG>Error Value: <dtml-var error_value html_quote></STRONG><BR> 
   </P>
  
   <HR NOSHADE>
