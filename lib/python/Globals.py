@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -103,17 +103,13 @@ try: home=os.environ['SOFTWARE_HOME']
 except:
     import Products
     home=package_home(Products.__dict__)
-    d,e=os.path.split(home)
-    if d:
-        if d[:1] == '.':
-            home=os.getcwd()
-            if d[:2] == '..':
-                home=os.path.split(home)[0]+d[2:]
-            else:
-                home=home+d[1:]
-        else: home=d
-    else:
-        home=os.getcwd()
+    if not os.path.isabs(home):
+        home=os.path.join(os.getcwd(), home)
+        
+    home,e=os.path.split(home)
+    if os.path.split(home)[1]=='.': home=os.path.split(home)[0]
+    if os.path.split(home)[1]=='..':
+        home=os.path.split(os.path.split(home)[0])[0]
 
 SOFTWARE_HOME=sys.modules['__builtin__'].SOFTWARE_HOME=home
 
