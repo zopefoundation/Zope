@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.18 1999/03/25 20:31:25 jim Exp $"""
+$Id: DT_HTML.py,v 1.19 1999/06/10 20:45:10 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -100,17 +100,51 @@ class dtml_re_class:
                find=find,
                strip=strip
                ):
-        s=find(text,'<!--#',start)
-        if s < 0: return s
-        e=find(text,'-->',s)
-        if e < 0: return e
 
-        n=s+5
-        l=end_match(text,n)
-        if l > 0:
-            end=strip(text[n:n+l])
-            n=n+l
-        else: end=''
+        while 1:
+            s=find(text,'<', start)
+            if s < 0: return -1
+            if text[s+1:s+5] == '!--#':
+                n=s+5
+                e=find(text,'-->',n)
+                if e < 0: return -1
+                en=3
+
+                l=end_match(text,n)
+                if l > 0:
+                    end=strip(text[n:n+l])
+                    n=n+l
+                else: end=''
+
+            elif text[s+1:s+6] == 'dtml.':
+                e=n=s+6
+                while 1:
+                    e=find(text,'>',e+1)
+                    if e < 0: return -1
+                    if len(split(text[n:e],'"'))%2:
+                        # check for even number of "s inside
+                        break
+
+                en=1
+                end=''
+
+            elif text[s+1:s+7] == '/dtml.':
+                e=n=s+7
+                while 1:
+                    e=find(text,'>',e+1)
+                    if e < 0: return -1
+                    if len(split(text[n:e],'"'))%2:
+                        # check for even number of "s inside
+                        break
+
+                en=1
+                end='/'
+
+            else:
+                start=s+1
+                continue
+
+            break
 
         l=name_match(text,n)
         if l < 0: return l
@@ -120,7 +154,7 @@ class dtml_re_class:
         args=strip(text[a:e])
 
         d=self.__dict__
-        d[0]=text[s:e+3]
+        d[0]=text[s:e+en]
         d[1]=end
         d['end']= end
         d[2]=name
