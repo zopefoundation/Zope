@@ -100,7 +100,8 @@ class PersistentClass(Base):
 
 manage_addZClassForm=Globals.HTMLFile(
     'addZClass', globals(), default_class_='OFS.SimpleItem Item',
-    CreateAFactory=1)
+    CreateAFactory=1,
+    zope_object=1)
 
 
 def find_class(ob, name):
@@ -124,7 +125,8 @@ def dbVersionEquals(ver):
 
 
 def manage_addZClass(self, id, title='', baseclasses=[],
-                     meta_type='', CreateAFactory=0, REQUEST=None):
+                     meta_type='', CreateAFactory=0, REQUEST=None,
+                     zope_object=0):
     """Add a Z Class
     """
     bases=[]
@@ -136,7 +138,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
             bases.append(base)
 
 
-    Z=ZClass(id,title,bases)
+    Z=ZClass(id, title, bases, zope_object=zope_object)
     if meta_type: Z._zclass_.meta_type=meta_type
     self._setObject(id, Z)
 
@@ -221,7 +223,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
          ('', '__call__', 'index_html', 'createInObjectManager')),
 	)
 
-    def __init__(self, id, title, bases):
+    def __init__(self, id, title, bases, zope_object=1):
         """Build a Zope class
 
         A Zope class is *really* a meta-class that manages an
@@ -251,7 +253,9 @@ class ZClass(OFS.SimpleItem.SimpleItem):
                     isheets_base_classes.append(psc)
             except AttributeError: pass
 
-        base_classes.append(OFS.SimpleItem.SimpleItem)
+        if zope_object:
+            base_classes.append(OFS.SimpleItem.SimpleItem)
+            
         zsheets_base_classes.append(ZClassSheets)
         isheets_base_classes.append(Property.ZInstanceSheets)
 

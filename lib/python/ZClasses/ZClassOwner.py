@@ -90,14 +90,16 @@ class ZClassOwner(ExtensionClass.Base):
 
     manage_addZClassForm=Globals.HTMLFile(
         'addZClass', globals(), default_class_='OFS.SimpleItem Item',
-        CreateAFactory=1)
+        CreateAFactory=1,
+        zope_object=1)
 
     def manage_addZClass(self, id, title='', baseclasses=[],
                          meta_type='', CreateAFactory=0,
-                         REQUEST=None):
+                         REQUEST=None, zope_object=0):
         "Add a ZClass"
         return ZClass.manage_addZClass(
-            self, id, title, baseclasses, meta_type, CreateAFactory, REQUEST)
+            self, id, title, baseclasses, meta_type, CreateAFactory,
+            REQUEST, zope_object=zope_object)
 
     def manage_subclassableClassNames(self):
         r={}
