@@ -95,7 +95,8 @@ def default__class_init__(self):
     dict=self.__dict__
     have=dict.has_key
     ft=type(default__class_init__)
-    for name, v in dict.items():
+    dict_items=dict.items()
+    for name, v in dict_items:
         if hasattr(v,'_need__name__') and v._need__name__:
             v.__dict__['__name__']=name
             if name=='manage' or name[:7]=='manage_':
@@ -104,6 +105,17 @@ def default__class_init__(self):
         elif name=='manage' or name[:7]=='manage_' and type(v) is ft:
             name=name+'__roles__'
             if not have(name): dict[name]='Manager',
+
+    # Look for a SecurityInfo object on the class. If found, call its
+    # apply() method to generate __ac_permissions__ for the class. We
+    # delete the SecurityInfo from the class dict after it has been
+    # applied out of paranoia.
+    for key, value in dict_items:
+        if hasattr(value, '__security_info__'):            
+            security_info=value
+            security_info.apply(self)
+            del dict[key]
+            break
 
     if self.__dict__.has_key('__ac_permissions__'):
         AccessControl.Permission.registerPermissions(self.__ac_permissions__)
