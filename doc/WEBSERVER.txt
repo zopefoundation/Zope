@@ -176,9 +176,15 @@ FastCgiExternalServer /PATH/TO/apache/htdocs/zope \
 
   ...or like this for a socket configuration::
 
+FastCgiIpcDir /tmp
 FastCgiExternalServer /PATH/TO/apache/htdocs/zope \
-                      -socket /tmp/zope.soc       \
+                      -socket zope.soc            \
                       -pass-header Authorization
+
+  The FastCgiIpcDir directive is needed to tell FastCGI where to find
+  the socket file.  By default, FastCGI will look in /tmp/fcgi.  You
+  *cannot* specify a full path with the '-socket' option, only a
+  filename within the FastCgiIpcDir.
 
   The first argument after the directive name is confusing.  Apache
   maps URLs to directories and files within your 'DocumentRoot'.  You
