@@ -1,5 +1,4 @@
 import string
-
 try:
     del string
     import locale
@@ -9,7 +8,16 @@ except:
 
 import string
 
-letters     = string.letters
-punctuations = string.punctuation 
+def punc_func(exclude):
+    punc = r''
+    for char in string.punctuation:
+        if char not in exclude:
+            punc = punc + r'\%s' % char
+    return punc
 
-lettpunc    = letters + punctuations
+digits      = string.digits
+letters     = string.letters
+literal_punc = punc_func("'")
+strongem_punc = punc_func('*')
+under_punc = punc_func('_')
+phrase_delimiters = r'\s\.\,\?\/\!\&\(\)'
