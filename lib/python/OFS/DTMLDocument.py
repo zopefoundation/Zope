@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -167,12 +167,14 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         Response, and key word arguments."""
         kw['document_id']   =self.id
         kw['document_title']=self.title
+        if hasattr(self, 'aq_base'): bself=self.aq_base
+        else: bself=self
         if client is None:
             # Called as subtemplate, so don't need error propigation!
-            r=apply(HTML.__call__, (self, self, REQUEST), kw)
+            r=apply(HTML.__call__, (self, bself, REQUEST), kw)
             if RESPONSE is None: return r
             return decapitate(r, RESPONSE)
-        try: r=apply(HTML.__call__, (self, (client, self), REQUEST), kw)
+        try: r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
         except:
             if self.id()=='standard_error_message':
                 raise sys.exc_type, sys.exc_value, sys.exc_traceback
