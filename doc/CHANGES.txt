@@ -34,6 +34,8 @@ Zope Changes
        zdrun should run from the Zope config file.  This is necessary
        if the file is moved out of a "single-directory-as-instance"
        instance home.
+    
+     - VHM: manage_edit has been broken    
 
   2.7.0b1
 
