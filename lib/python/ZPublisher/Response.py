@@ -1,8 +1,8 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.37 1998/09/03 16:59:10 jim Exp $'''
+$Id: Response.py,v 1.38 1998/09/09 18:03:14 jim Exp $'''
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.37 1998/09/03 16:59:10 jim Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
