@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.3 2001/05/01 11:45:27 andreas Exp $"
+VERSION_STRING = "$Id: select_trigger.py,v 1.4 2001/05/01 12:03:20 andreas Exp $"
 
 import asyncore
 import asynchat
@@ -89,7 +89,8 @@ if os.name == 'posix':
                 
 else:
 
-        # win32-safe version
+
+    # win32-safe version
 
     class trigger (asyncore.dispatcher):
     
@@ -99,8 +100,22 @@ else:
             a = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
             w = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
             
+            # set TCP_NODELAY to true to avoid buffering
+            w.setsockopt(socket.IPPROTO_TCP, 1, 1)
+            
             # tricky: get a pair of connected sockets
-            a.bind (self.address)
+            host='127.0.0.1'
+            port=19999
+            while 1:
+                try:
+                    self.address=(host, port)
+                    a.bind(self.address)
+                    break
+                except:
+                    if port <= 19950:
+                        raise 'Bind Error', 'Cannot bind trigger!'
+                    port=port - 1
+                    
             a.listen (1)
             w.setblocking (0)
             try:
