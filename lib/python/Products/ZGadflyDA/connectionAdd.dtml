@@ -1,10 +1,10 @@
 <html>
   <head>
-    <title>Add Zope <!--#var database_type--> Database Connection</title>
+    <title>Add Z <!--#var database_type--> Database Connection</title>
   </head>
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
   
-    <h2>Add Zope <!--#var database_type--> Database Connection</h2>
+    <h2>Add Z <!--#var database_type--> Database Connection</h2>
     <p>See the note below.</p>
 
     <!--#if data_sources-->
