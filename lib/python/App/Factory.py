@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.15 2000/01/10 20:21:11 amos Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Factory.py,v 1.16 2000/03/20 16:24:07 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
@@ -100,7 +100,7 @@ class Factory(
 
     permission='' # Waaaa
 
-    _setObject=Acquisition.Acquired
+    _setObject=_getOb=Acquisition.Acquired
  
     __ac_permissions__=(
         ('Edit Factories', ('manage_edit','manage_main')),
