@@ -13,7 +13,7 @@
 ##############################################################################
 """Test Bindings
 
-$Id: testBindings.py,v 1.3 2004/01/21 19:05:33 Brian Exp $
+$Id: testBindings.py,v 1.4 2004/01/27 18:37:24 Brian Exp $
 """
 
 import unittest
@@ -81,7 +81,8 @@ class TestBindings(unittest.TestCase):
     def setUp(self):
         from Testing.ZODButil import makeDB
         get_transaction().begin()
-        self.connection = makeDB().open()
+        self.db = makeDB()
+        self.connection = self.db.open()
 
     def tearDown(self):
         from Testing.ZODButil import cleanDB
@@ -89,6 +90,7 @@ class TestBindings(unittest.TestCase):
         noSecurityManager()
         get_transaction().abort()
         self.connection.close()
+        self.db.close()
         cleanDB()
 
     def _getRoot(self):
