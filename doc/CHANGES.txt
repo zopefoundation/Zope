@@ -8,6 +8,9 @@ Zope Changes
 
       Bugs fixed
 
+        - Corrections to the code that adds interface information to the
+          meta type registry.
+
         - Collector #2274: fixed typo in Transaction.py. Made Connection.py
           a bit more noisy in case of failure
 
@@ -25,6 +28,8 @@ Zope Changes
 
         - Collector #2269: default script for PythonScript is no longer
           compiled during installation
+
+        - Updated to zlib 1.1.3.
 
 
     Zope 2.4 alpha 1
