@@ -224,11 +224,7 @@ class ZopeCmd(ZDCmd):
     def do_test(self, arg):
         args = filter(None, arg.split(' '))
 
-        if not args:
-            print "usage: test [args]+"
-            return
-
-        # test.py lives in $ZOPE_HOME!
+        # test.py lives in $ZOPE_HOME/bin
         zope_home = os.getenv('ZOPE_HOME')
 
         if zope_home is None:
@@ -239,8 +235,14 @@ class ZopeCmd(ZDCmd):
             print "Can't find test.py -- set ZOPE_HOME before running!"
             return
 
-        script = os.path.join(zope_home, 'test.py')
+        script = os.path.join(zope_home, 'bin', 'test.py')
         assert os.path.exists(script)
+
+        # If --libdir is not supplied, use $INSTANCE_HOME/Products
+        # (rather than $INSTANCE_HOME/lib/python)
+        if '--libdir' not in args:
+            args.insert(0, 'Products')
+            args.insert(0, '--libdir')
 
         # Supply our config file by default.
         if '--config-file' not in args and '-C' not in args:
@@ -251,12 +253,6 @@ class ZopeCmd(ZDCmd):
         if '-v' not in args and '-q' not in args:
             args.insert(0, '-v')
 
-        # If --libdir is not supplied, use $INSTANCE_HOME/Products
-        # (rather than $INSTANCE_HOME/lib/python)
-        if '--libdir' not in args:
-            args.insert(0, 'Products')
-            args.insert(0, '--libdir')
-
         args.insert(0, script)
 
         cmdline = ' '.join([self.options.python] + args)
@@ -265,7 +261,7 @@ class ZopeCmd(ZDCmd):
 
     def help_test(self):
         print "test [args]+ -- run unit / functional tests."
-        print "                See $ZOPE_HOME/test.py for syntax."
+        print "                See $ZOPE_HOME/bin/test.py --help for syntax."
 
 
 def main(args=None):
