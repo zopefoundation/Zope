@@ -1,5 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.8 2000/04/06 22:49:28 petrilli Exp $
+# 	Id: asyncore.py,v 2.49 2000/05/04 06:06:04 jim Exp 
+# 	$Id: asyncore.py,v 1.9 2000/05/05 17:28:57 jim Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -52,11 +53,13 @@ class ExitNow (exceptions.Exception):
 
 DEBUG = 0
 
-def poll (timeout=0.0):
+def poll (timeout=0.0, map=None):
 	global DEBUG
-	if socket_map:
+	if map is None:
+		map = socket_map
+	if map:
 		r = []; w = []; e = []
-		for fd, obj in socket_map.items():
+		for fd, obj in map.items():
 			if obj.readable():
 				r.append (fd)
 			if obj.writable():
@@ -68,7 +71,7 @@ def poll (timeout=0.0):
 
 		for fd in r:
 			try:
-				obj = socket_map[fd]
+				obj = map[fd]
 				try:
 					obj.handle_read_event()
 				except ExitNow:
@@ -80,7 +83,7 @@ def poll (timeout=0.0):
 
 		for fd in w:
 			try:
-				obj = socket_map[fd]
+				obj = map[fd]
 				try:
 					obj.handle_write_event()
 				except ExitNow:
@@ -90,24 +93,26 @@ def poll (timeout=0.0):
 			except KeyError:
 				pass
 
-def poll2 (timeout=0.0):
+def poll2 (timeout=0.0, map=None):
 	import poll
+	if map is None:
+		map=socket_map
 	# timeout is in milliseconds
 	timeout = int(timeout*1000)
-	if socket_map:
+	if map:
 		l = []
-		for fd, obj in socket_map.items():
+		for fd, obj in map.items():
 			flags = 0
 			if obj.readable():
 				flags = poll.POLLIN
 			if obj.writable():
 				flags = flags | poll.POLLOUT
 			if flags:
-				l.append (fd, flags)
+				l.append ((fd, flags))
 		r = poll.poll (l, timeout)
 		for fd, flags in r:
 			try:
-				obj = socket_map[fd]
+				obj = map[fd]
 				try:
 					if (flags  & poll.POLLIN):
 						obj.handle_read_event()
@@ -120,15 +125,18 @@ def poll2 (timeout=0.0):
 			except KeyError:
 				pass
 
-def loop (timeout=30.0, use_poll=0):
+def loop (timeout=30.0, use_poll=0, map=None):
 
 	if use_poll:
 		poll_fun = poll2
 	else:
 		poll_fun = poll
 
-	while socket_map:
-		poll_fun (timeout)
+        if map is None:
+			map=socket_map
+
+	while map:
+		poll_fun (timeout, map)
 
 class dispatcher:
 	debug = 0
@@ -137,9 +145,9 @@ class dispatcher:
 	closing = 0
 	addr = None
 
-	def __init__ (self, sock=None):
+	def __init__ (self, sock=None, map=None):
 		if sock:
-			self.set_socket (sock)
+			self.set_socket (sock, map)
 			# I think it should inherit this anyway
 			self.socket.setblocking (0)
 			self.connected = 1
@@ -166,15 +174,19 @@ class dispatcher:
 				
 			return '<__repr__ (self) failed for object at %x (addr=%s)>' % (id(self),ar)
 
-	def add_channel (self):
+	def add_channel (self, map=None):
 		#self.log_info ('adding channel %s' % self)
-		socket_map [self._fileno] = self
+		if map is None:
+			map=socket_map
+		map [self._fileno] = self
 
-	def del_channel (self):
+	def del_channel (self, map=None):
 		fd = self._fileno
-		if socket_map.has_key (fd):
+		if map is None:
+			map=socket_map
+		if map.has_key (fd):
 			#self.log_info ('closing channel %d:%s' % (fd, self))
-			del socket_map [fd]
+			del map [fd]
 
 	def create_socket (self, family, type):
 		self.family_and_type = family, type
@@ -183,10 +195,10 @@ class dispatcher:
 		self._fileno = self.socket.fileno()
 		self.add_channel()
 
-	def set_socket (self, sock):
+	def set_socket (self, sock, map=None):
 		self.__dict__['socket'] = sock
 		self._fileno = sock.fileno()
-		self.add_channel()
+		self.add_channel (map)
 
 	def set_reuse_addr (self):
 		# try to re-use a server port if possible
@@ -399,11 +411,11 @@ def compact_traceback ():
 	t,v,tb = sys.exc_info()
 	tbinfo = []
 	while 1:
-		tbinfo.append (
-				( tb.tb_frame.f_code.co_filename,
-				  tb.tb_frame.f_code.co_name,				
-				  str(tb.tb_lineno) )
-			)
+		tbinfo.append ((
+			tb.tb_frame.f_code.co_filename,
+			tb.tb_frame.f_code.co_name,				
+			str(tb.tb_lineno)
+			))
 		tb = tb.tb_next
 		if not tb:
 			break
@@ -421,11 +433,12 @@ def compact_traceback ():
 		) + ']'
 	return (file, function, line), t, v, info
 
-def close_all ():
-	global socket_map
-	for x in socket_map.values():
+def close_all (map=None):
+	if map is None:
+		map=socket_map
+	for x in map.values():
 		x.socket.close()
-	socket_map.clear()
+	map.clear()
 
 # Asynchronous File I/O:
 #
