@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.47 1998/05/22 16:22:54 jim Exp $"""
+$Id: Folder.py,v 1.48 1998/05/22 22:28:33 jim Exp $"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -88,8 +88,8 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 
     def tpValues(self):
 	r=[]
-	if hasattr(self.aq_self,'tree_ids'):
-	    for id in self.aq_self.tree_ids:
+	if hasattr(self.aq_base,'tree_ids'):
+	    for id in self.aq_base.tree_ids:
 		if hasattr(self, id): r.append(getattr(self, id))
 	else:
 	    for id in self._objects:
