@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -114,7 +114,7 @@ except:
     d,e=os.path.split(chome)
     if e=='python':
         d,e=os.path.split(d)
-        if e=='lib': chome=d
+        if e=='lib': chome=d or '.'
     
 INSTANCE_HOME=sys.modules['__builtin__'].INSTANCE_HOME=chome
 
