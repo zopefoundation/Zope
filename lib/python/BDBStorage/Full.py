@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.16 $
+# $Revision: 1.17 $
 __version__ = '0.1'
 
 import struct
@@ -949,6 +949,71 @@ class Full(BerkeleyBase):
                     continue
                 self._zaprevision(oid+revid, referencesf)
         finally:
+            self._lock_release()
+
+    # GCable interface, for cyclic garbage collection
+    def gcTrash(oids):
+        """Given a list of oids, treat them as trash.
+
+        This means they can be garbage collected, with all necessary cascading
+        reference counting performed
+        """
+        self._lock_acquire()
+        c = None
+        try:
+            c = self._metadata.cursor()
+            for oid in oids:
+                # Convert to a string
+                oid = utils.p64(oid)
+                # Delete all the metadata records
+                rec = c.set(oid)
+                while rec:
+                    key, data = rec
+                    rec = c.next_dup()
+                    self._zaprevision(key)
+        finally:
+            if c:
+                c.close()
+            self._lock_release()
+
+    def gcRefcount(oid):
+        """Return the reference count of the specified object.
+        
+        Raises KeyError if there is no object with oid.  Both the oid argument
+        and the returned reference count are integers.
+        """
+        self._lock_acquire()
+        try:
+            return utils.U64(self._refcounts[utils.p64(oid)])
+        finally:
+            self._lock_release()
+
+    def gcReferences(oid):
+        """Return a list of oids that the specified object refers to.
+
+        Raises KeyError if there is no object with oid.  The oid argument
+        is an integer; the return value is a list of integers of oids.
+        """
+        oids = {}
+        c = None
+        self._lock_acquire()
+        try:
+            c = self._pickles.cursor()
+            rec = c.set(utils.p64(oid))
+            while rec:
+                # We don't care about the key
+                pickle = rec[1]
+                rec = c.next_dup()
+                # Sniff the pickle for object references
+                tmpoids = []
+                referencesf(pickle, tmpoids)
+                # Make sure there's no duplicates, and convert to int
+                for oid in tmpoids:
+                    oids[utils.U64(oid)] = 1
+            return oids.keys()
+        finally:
+            if c:
+                c.close()
             self._lock_release()
 
     # Other interface assertions
