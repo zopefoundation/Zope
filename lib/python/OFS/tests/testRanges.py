@@ -86,6 +86,7 @@ import os, sys, unittest
 
 import string, whrandom, cStringIO, time, re
 import ZODB
+from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from Testing.makerequest import makerequest
@@ -96,13 +97,12 @@ from multifile import MultiFile
 
 def makeConnection():
     import ZODB
-    from ZODB.FileStorage import FileStorage
     from ZODB.DemoStorage import DemoStorage
 
     dfi = os.path.join( os.environ['SOFTWARE_HOME']
                       , '..', '..', 'var', 'Data.fs.in')
     dfi = os.path.abspath(dfi)
-    s = DemoStorage(base=FileStorage(dfi, read_only=1), quota=(1<<20))
+    s = DemoStorage(quota=(1<<20))
     return ZODB.DB( s ).open()
 
 def createBigFile():
@@ -127,7 +127,10 @@ class TestRequestRange(unittest.TestCase):
         self.responseOut = cStringIO.StringIO()
         self.connection = makeConnection()
         try:
-            self.root = self.connection.root()[ 'Application' ]
+            r = self.connection.root()
+            a = Application()
+            r['Application'] = a
+            self.root = a
             self.app = makerequest(self.root, stdout=self.responseOut)
             try: self.app._delObject(TESTFOLDER_NAME)
             except AttributeError: pass
