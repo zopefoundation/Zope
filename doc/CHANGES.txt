@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+     - zopectl now accepts the -m argument to set a umask for files created
+       by the managed process (e.g. -m 002 or --umask 002).
+
      - Recataloging a ZCatalog instance is now more safe and predictable.
        Indexing errors are catched and logged. In addition the progress of the
        recataloging operation is logged. So one can see how much documents are
