@@ -91,6 +91,13 @@ Zope Changes
           connections leaked, the site would accept no more web
           requests. 
 
+	- The transaction-integration for relational databases didn't
+          work properly.  Aborting Zope transactions didn't abort
+          relational database transactions. What's worse, transactions
+          were not committed after a Zope transaction using a
+          relational database was aborted.  This explains the reported
+          problems with Gadfly databases and transactions.
+
         - Fixed a bug which prevented ZPublisher.Client from uploading
           files to ZServer.
 
