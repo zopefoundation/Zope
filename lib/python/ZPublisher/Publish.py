@@ -362,7 +362,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.71 1998/01/05 19:42:30 jim Exp $"""
+$Id: Publish.py,v 1.72 1998/01/07 22:57:26 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -417,7 +417,7 @@ $Id: Publish.py,v 1.71 1998/01/05 19:42:30 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 
 def main():
@@ -1337,7 +1337,7 @@ def publish_module(module_name,
 	response = publisher.response
 	request=publisher.request
 	try: response = publisher.publish(module_name,after_list,debug=debug)
-	finally: del request.other
+	finally: request.other={}
     except SystemExit:
 	must_die=1
 	response.exception(must_die)
