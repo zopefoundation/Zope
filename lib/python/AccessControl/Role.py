@@ -1,12 +1,15 @@
 """Access control support"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
 from string import join, strip, split, find
 from Acquisition import Implicit
 import Globals
+from Permission import Permission
+
+ListType=type([])
 
 class RoleManager:
 
@@ -17,24 +20,126 @@ class RoleManager:
 			('Add properties', []),
 			('Change properties', []),
 			('Delete properties', []),
-			('Shared permission',['']),
 		       )
    
-    __ac_roles__=('Manager', 'Anonymous', 'Shared')
+    __ac_roles__=('Manager', 'Anonymous')
 
-    def access_permissions(self):
-	# Return list of permission objects
-	list=[]
-	for name,value in self.__ac_permissions__:
-	    list.append(Permission(name,value,self))
-	return list
+    #------------------------------------------------------------
 
-    def access_permissions_dict(self):
-	# Return dict of access permission objects
-	dict={}
-	for name,value in self.__ac_permissions__:
-	    dict[name]=Permission(name,value,self)
-	return dict
+    def permission_settings(self):
+	result=[]
+	valid=self.valid_roles()
+	indexes=range(len(valid))
+	ip=0
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+	    p=Permission(name,value,self)
+	    roles=p.getRoles()
+	    d={'name': name,
+	       'acquire': type(roles) is ListType and 'CHECKED' or '',
+	       'roles': map(
+		   lambda ir, roles=roles, valid=valid, ip=ip:
+		   {
+		       'name': "p%dr%d" % (ip,ir),
+		       'checked': (valid[ir] in roles) and 'CHECKED' or '',
+		       },
+		   indexes)
+	       }
+	    ip=ip+1
+	    result.append(d)
+
+	return result
+
+    manage_roleForm=HTMLFile('roleEdit', globals())
+    def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
+	"Change the permissions given to the given role"
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+	    p=Permission(name,value,self)
+	    p.setRole(role_to_manage, name in permissions)
+
+	if REQUEST is not None: return self.manage_access(self,REQUEST)
+
+    manage_permissionForm=HTMLFile('permissionEdit', globals())
+    def manage_permission(self, permission_to_manage,
+			  roles=[], acquire=0, REQUEST=None):
+        "Change the settings for the given permission"
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+	    if name==permission_to_manage:
+		p=Permission(name,value,self)
+		if acquire: roles=list(roles)
+		else: roles=tuple(roles)
+		p.setRoles(roles)
+		if REQUEST is not None: return self.manage_access(self,REQUEST)
+		return
+
+	raise 'Invalid Permission', (
+	    "The permission <em>%s</em> is invalid." % permission_to_manage)
+	
+    manage_access=HTMLFile('access', globals())
+    def manage_changePermissions(self, REQUEST):
+	" "
+	valid_roles=self.valid_roles()
+	indexes=range(len(valid_roles))
+	have=REQUEST.has_key
+	permissions=self.__ac_permissions__
+	for ip in range(len(permissions)):
+	    roles=[]
+	    for ir in indexes:
+		if have("p%dr%d" % (ip,ir)): roles.append(valid_roles[ir])
+	    name, value = permissions[ip][:2]
+	    p=Permission(name,value,self)
+	    if not have('a%d' % ip): roles=tuple(roles)
+	    p.setRoles(roles)
+
+	return MessageDialog(
+	    title  ='Success!',
+	    message='Your changes have been saved',
+	    action ='manage_access')
+
+
+    def permissionsOfRole(self, role):
+	r=[]
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+	    p=Permission(name,value,self)
+	    roles=p.getRoles()
+	    r.append({'name': name,
+		      'selected': role in roles and 'SELECTED' or '',
+		      })
+	return r
+
+    def rolesOfPermission(self, permission):
+	valid_roles=self.valid_roles()
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+	    if name==permission:
+		p=Permission(name,value,self)
+		roles=p.getRoles()
+		return map(
+		    lambda role, roles=roles:
+		    {'name': role,
+		     'selected': role in roles and 'SELECTED' or '',
+		     },
+		    valid_roles)
+	
+	raise 'Invalid Permission', (
+	    "The permission <em>%s</em> is invalid." % permission)
+
+    def acquiredRolesAreUsedBy(self, permission):
+	for p in self.__ac_permissions__:
+	    name, value = p[:2]
+	    if name==permission:
+		p=Permission(name,value,self)
+		roles=p.getRoles()
+		return type(roles) is ListType and 'CHECKED' or ''
+	
+	raise 'Invalid Permission', (
+	    "The permission <em>%s</em> is invalid." % permission)
+
+
+    #------------------------------------------------------------
 
     def access_debug_info(self):
 	# Return debug info
@@ -91,35 +196,9 @@ class RoleManager:
 	    except: pass
 	return roles
 
-    _mainAccess=HTMLFile('mainAccess', globals())
-    _editAccess=HTMLFile('editAccess', globals())
-    _add_Access=HTMLFile('addAccess', globals())
-    _del_Access=HTMLFile('delAccess', globals())
 
-    def manage_access(self,submit=None,REQUEST=None):
+    def manage_defined_roles(self,submit=None,REQUEST=None):
 	""" """
-	if submit=='Add...':
-	    return self._add_Access(self, REQUEST)
-
-	if submit=='Edit':
-	    return self._editAccess(self, REQUEST)
-
-	if submit=='Add':
-	    roles =reqattr(REQUEST, 'roles')
-	    permissions=reqattr(REQUEST, 'permissions')
-	    return self._addAccess(roles, permissions, REQUEST)
-
-	if submit=='Change':
-	    role  =reqattr(REQUEST, 'role')
-	    permissions=reqattr(REQUEST, 'permissions')
-	    return self._changeAccess(role, permissions, REQUEST)
-
-	if submit=='Remove...':
-	    return self._del_Access(self, REQUEST)
-
-	if submit=='Remove':
-	    roles=reqattr(REQUEST, 'roles')
-	    return self._delAccess(roles, REQUEST)
 
 	if submit=='Add Role':
 	    role=reqattr(REQUEST, 'role')
@@ -129,64 +208,7 @@ class RoleManager:
 	    roles=reqattr(REQUEST, 'roles')
 	    return self._delRoles(roles, REQUEST)
 
-	return self._mainAccess(self,REQUEST)
-
-    def _addAccess(self, roles, permissions, REQUEST):
-	if not roles or not permissions:
-	    return MessageDialog(
-		   title  ='Incomplete',
-		   message='You must specify roles and permissions',
-		   action ='manage_access')
-	if not self.validate_roles(roles):
-	    return MessageDialog(
-		   title  ='Undefined Role',
-		   message='An undefined role was specified',
-		   action ='manage_access')
-	dict=self.access_permissions_dict()
-	if 0 in map(dict.has_key, permissions):
-	    return MessageDialog(
-		   title  ='Unknown permission',
-		   message='An unknown permission was specified',
-		   action ='manage_changeAccess')
-	for p in dict.values():
-	    p.delRoles(roles)
-	for p in permissions:
-	    dict[p].setRoles(roles)
-	return self._mainAccess(self, REQUEST)
-
-    def _changeAccess(self, role, permissions, REQUEST=None):
-	if not role or not permissions:
-	    return MessageDialog(
-		   title  ='Incomplete',
-		   message='You must specify roles and permissions',
-		   action ='manage_access')
-	if not self.validate_roles([role]):
-	    return MessageDialog(
-		   title  ='Undefined Role',
-		   message='An undefined role was specified',
-		   action ='manage_access')
-	dict=self.access_permissions_dict()
-	if 0 in map(dict.has_key, permissions):
-	    return MessageDialog(
-		   title  ='Unknown permission',
-		   message='An unknown permission was specified',
-		   action ='manage_changeAccess')
-	for p in dict.values():
-	    p.delRoles([role])
-	for p in permissions:
-	    dict[p].setRoles([role])
-	return self._mainAccess(self, REQUEST)
-
-    def _delAccess(self, roles, REQUEST=None):
-	if not roles:
-	    return MessageDialog(
-		   title  ='Incomplete',
-		   message='You must specify roles to remove',
-		   action ='manage_access')
-	dict=self.access_permissions_dict()
-	for p in dict.values():
-	    p.delRoles(roles)
-	return self._mainAccess(self, REQUEST)
+	return self.manage_access(self,REQUEST)
 
     def _addRole(self, role, REQUEST=None):
 	if not role:
@@ -202,7 +224,7 @@ class RoleManager:
 	data=list(self.__ac_roles__)
 	data.append(role)
 	self.__ac_roles__=tuple(data)
-	return self._mainAccess(self, REQUEST)
+	return self.manage_access(self, REQUEST)
 
     def _delRoles(self, roles, REQUEST):
 	if not roles:
@@ -215,7 +237,7 @@ class RoleManager:
 	    try:    data.remove(role)
 	    except: pass
 	self.__ac_roles__=tuple(data)
-	return self._mainAccess(self, REQUEST)
+	return self.manage_access(self, REQUEST)
 
 
     # Compatibility names only!!
@@ -232,100 +254,6 @@ class RoleManager:
 
 Globals.default__class_init__(RoleManager)
 
-
-
-ListType=type([])
-
-class Permission:
-    # A Permission maps a named logical permission to a set
-    # of attribute names. Attribute names which appear in a
-    # permission may not appear in any other permission defined
-    # by the object.
-
-    def __init__(self,name,data,obj):
-	self.name=name
-	self.data=data
-	if hasattr(obj, 'aq_self'):
-	    obj=obj.aq_self
-	self.obj =obj
-
-    def getRoles(self):
-	# Return the list of role names which have been given
-	# this permission for the object in question. To do
-	# this, we try to get __roles__ from all of the object
-	# attributes that this permission represents.
-	name=self.data[0]
-	if name=='': attr=self.obj
-	else: attr=getattr(self.obj, name)
-	if hasattr(attr,'aq_self'): attr=attr.aq_self
-	if hasattr(attr, '__roles__'):
-	    roles=attr.__roles__
-	    if roles is None:
-		return ['Manager','Anonymous']
-	    return roles
-	#return []
-	return ['Shared']
-
-    def setRoles(self, roles):
-	# Add the given list of role names to the appropriate
-	# subobjects for this permission. To do this, we add
-	# the given roles to the __roles__ of each attribute
-	# that this permission represents.
-	first=1
-	data=None
-	for name in self.data:
-	    if name=='': attr=self.obj
-	    else: attr=getattr(self.obj, name)
-	    if hasattr(attr,'aq_self'):
-		attr=attr.aq_self
-
-	    if first:
-		if hasattr(attr, '__roles__'):
-		    data=attr.__roles__
-		    if data is None: data=[]
-		    else: data=list(data)
-		else: data=[]
-		for role in roles: data.append(role)
-		first=0
-
-	    attr.__roles__=data
-
-    def delRoles(self, roles):
-	# Remove the given list of role names from the appropriate
-	# subobjects for this permission. To do this, we remove
-	# the given roles from the __roles__ of each attribute
-	# that this permission represents. If the __roles__ of any
-	# attribute is thus left empty, it is deleted.
-	first=1
-	data=None
-	for name in self.data:
-	    if name=='': attr=self.obj
-	    else: attr=getattr(self.obj, name)
-	    if hasattr(attr,'aq_self'):
-		attr=attr.aq_self
-
-	    if first:
-		if hasattr(attr, '__roles__'):
-		    data=attr.__roles__
-		    if data is None: data=[]
-		    else: data=list(data)
-		else: data=['Shared']
-		for role in roles:
-		    if role in data: data.remove(role)
-		first=0
-
-	    attr.__roles__=data
-		
-    def __len__(self): return 1
-    def __str__(self): return self.name
-
-
-
-
-
-def absattr(attr):
-    if callable(attr): return attr()
-    return attr
 
 def reqattr(request, attr):
     try:    return request[attr]

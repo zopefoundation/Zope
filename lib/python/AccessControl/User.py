@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -25,30 +25,18 @@ class User(Implicit, Persistent):
 	return password==self.__
 
     def allowed(self,parent,roles=None):
-	obj=parent
-	obj_roles=roles
 	usr_roles=self.roles
 
-	while 1:
-	    if (obj_roles is None) or ('Anonymous' in obj_roles):
-		return 1
-	    for role in obj_roles:
-		if role in usr_roles:
-		    return 1
-	    if 'Shared' in obj_roles:
-                if obj is None: return 0
-		if hasattr(obj, '__roles__'):
-		    obj_roles=obj.__roles__
-		else:
-		    obj_roles=['Shared',]
-		if hasattr(obj, 'aq_parent'):
-		    obj=obj.aq_parent
-	        elif hasattr(obj, 'im_self'):
-                    obj=obj.im_self
-		else:
-		    obj=None
-		continue
-	    return 0
+        if roles is None or 'Anonymous' in roles: return 1
+
+	for role in roles:
+	    if role in usr_roles:
+                if (hasattr(self,'aq_parent') and
+                    hasattr(self.aq_parent,'aq_parent')):
+                    if not parent.aq_inContextOf(self.aq_parent.aq_parent,1):
+                        return None
+                return 1
+	return None
 
     hasRole=allowed
 
@@ -86,7 +74,6 @@ nobody=User('Anonymous User','',('Anonymous',))
 class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 		 Item, App.Undo.UndoSupport):
     """ """
-    __roles__=['Manager','Shared']
 
     meta_type='User Folder'
     id       ='acl_users'
@@ -110,7 +97,6 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     ('Undo changes',       ['manage_undo_transactions']),
     ('Change permissions', ['manage_access']),
     ('Manage users',       ['manage_users']),
-    ('Shared permission', ['']),
     )
 
 
@@ -157,6 +143,9 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	if not user.authenticate(password):
 	    return None
 
+        # We need the user to be able to acquire!
+        user=user.__of__(self)
+
 	# Try to authorize user
 	if user.hasRole(parent, roles):
 	    return user
@@ -187,11 +176,6 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    message='Password and confirmation do not match',
                    action ='manage_main')
 	if not roles: roles=[]
-	if 'Shared' in roles:
-            return MessageDialog(
-		   title  ='Illegal value', 
-                   message='Shared is not a legal role name',
-                   action ='manage_main')
         self.data[name]=User(name,password,roles)
 	if REQUEST: return self._mainUser(self, REQUEST)
 
@@ -212,11 +196,6 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    message='Password and confirmation do not match',
                    action ='manage_main')
 	if not roles: roles=[]
-	if 'Shared' in roles:
-            return MessageDialog(
-		   title  ='Illegal value', 
-                   message='Shared is not a legal role name',
-                   action ='manage_main')
 	user=self.data[name]
 	user.__=password
 	user.roles=roles
@@ -311,6 +290,9 @@ if _remote_user_mode:
 	    # Try to get user
 	    try:    user=self.data[name]
 	    except: return None
+
+            # We need the user to be able to acquire!
+            user=user.__of__(self)
 
 	    # Try to authorize user
 	    if user.hasRole(parent, roles):
