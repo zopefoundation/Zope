@@ -90,6 +90,10 @@ Zope Changes
         tree._check() can be used if you suspect such a problem (and if
         you find one, rebuilding the tree is the best solution for now).
 
+      - Added support for the ZOPE_HOME environment variable, which
+        points to the Zope root, where the ZServer package and default
+        imports may be found.
+
   Zope 2.6.0 alpha 1
 
     Features Added

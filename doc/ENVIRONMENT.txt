@@ -31,6 +31,12 @@ Zope installation
         See also: INSTANCE_HOME
 
 
+    ZOPE_HOME
+
+        ZOPE_HOME is the root of the Zope software, where the ZServer
+        package, z2.py, and the default import directory may be found.
+
+
 Profiling
 
     PROFILE_PUBLISHER

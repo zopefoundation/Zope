@@ -59,6 +59,18 @@ functions such as database and product management.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
+  ZOPE_HOME
+  </div>
+  </td>
+  <td align="left" valign="top">
+  <div class="form-text">
+  <dtml-var getZOPE_HOME>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
   INSTANCE_HOME
   </div>
   </td>

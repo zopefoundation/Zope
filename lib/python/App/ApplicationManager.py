@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 
 import sys,os,time,Globals, Acquisition, os, Undo
@@ -415,6 +415,9 @@ class ApplicationManager(Folder,CacheManager):
             
     def getSOFTWARE_HOME(self):
         return SOFTWARE_HOME
+
+    def getZOPE_HOME(self):
+        return ZOPE_HOME
 
     def getINSTANCE_HOME(self):
         return INSTANCE_HOME

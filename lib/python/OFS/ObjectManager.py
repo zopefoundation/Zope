@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.154 2002/07/02 21:00:00 chrism Exp $"""
+$Id: ObjectManager.py,v 1.155 2002/07/09 15:14:51 zigg Exp $"""
 
-__version__='$Revision: 1.154 $'[11:-2]
+__version__='$Revision: 1.155 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -514,10 +514,9 @@ class ObjectManager(
             raise BadRequestException, 'Invalid file name %s' % file
 
         instance_home = INSTANCE_HOME
-        software_home = os.path.join(SOFTWARE_HOME, '..%s..' % os.sep)
-        software_home = os.path.normpath(software_home)
+        zope_home = ZOPE_HOME
         
-        for impath in (instance_home, software_home):
+        for impath in (instance_home, zope_home):
             filepath = os.path.join(impath, 'import', file)
             if os.path.exists(filepath):
                 break

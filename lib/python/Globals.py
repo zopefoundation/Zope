@@ -13,7 +13,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -23,7 +23,7 @@ UNIQUE = 2
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay
 
-from App.FindHomes import INSTANCE_HOME, SOFTWARE_HOME
+from App.FindHomes import INSTANCE_HOME, SOFTWARE_HOME, ZOPE_HOME
 from App.Common import package_home, attrget, Dictionary
 from Persistence import Persistent, PersistentMapping
 from App.special_dtml import HTML, HTMLFile, DTMLFile

@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import os, sys, Products
 from Common import package_home, realpath
@@ -33,6 +33,13 @@ except:
 
 home=realpath(home)
 sys.modules['__builtin__'].SOFTWARE_HOME=SOFTWARE_HOME=home
+
+try: zhome=os.environ['ZOPE_HOME']
+except:
+    zhome=os.path.join(home, '..', '..')
+
+zhome=realpath(zhome)
+sys.modules['__builtin__'].ZOPE_HOME=ZOPE_HOME=zhome
 
 try:
     chome=os.environ['INSTANCE_HOME']
