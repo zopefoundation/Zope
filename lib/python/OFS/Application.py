@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.127 2000/06/09 14:54:37 jim Exp $'''
-__version__='$Revision: 1.127 $'[11:-2]
+$Id: Application.py,v 1.128 2000/06/09 23:52:45 evan Exp $'''
+__version__='$Revision: 1.128 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -281,7 +281,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         will reflect the acquisition path of the object if the object
         has been acquired."""
         if relative: return ''
-        return self.aq_acquire('REQUEST').script
+        return self.aq_acquire('REQUEST')['BASE1']
 
     def getPhysicalPath(self):
         '''Returns a path that can be used to access this object again
