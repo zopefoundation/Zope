@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.18 2001/11/28 15:51:13 matt Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Search.py,v 1.19 2002/07/19 18:24:23 efge Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import DTMLFile
 from Aqueduct import custom_default_report, custom_default_zpt_report, nicify, Args
@@ -198,7 +198,7 @@ def default_input_form(arguments,action='query',
             '<h2><dtml-var document_title></h2>\n'
             'This query requires no input.<p>\n'
             '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
-            '</td></tr>\n</table>\n</form>\n'
+            '</form>\n'
             '<dtml-var standard_html_footer>\n'
             % (tabs, action)
             )
@@ -213,7 +213,7 @@ def default_input_zpt_form(arguments,action='query',
             "%s\n%s%s" % (
                 '<html><body>\n%s\n'
                 '<form action="%s" method="get">\n'
-                '<h2><dtml-var document_title></h2>\n'
+                '<h2 tal:content="template/title_or_id">Title</h2>\n'
                 'Enter query parameters:<br>'
                 '<table>\n'
                 % (tabs,action),
@@ -245,10 +245,10 @@ def default_input_zpt_form(arguments,action='query',
         return (
             '<html><body>\n%s\n'
             '<form action="%s" method="get">\n'
-            '<h2><dtml-var document_title></h2>\n'
-            'This query requires no input.<p>\n'
+            '<h2 tal:content="template/title_or_id">Title</h2>\n'
+            '<p>This query requires no input.</p>\n'
             '<input type="SUBMIT" name="SUBMIT" value="Submit Query">\n'
-            '</td></tr>\n</table>\n</form>\n'
+            '</form>\n'
             '</body></html>\n'
             % (tabs, action)
             )

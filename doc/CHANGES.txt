@@ -6,10 +6,16 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #478: Z Search Interfaces with no parameters are now
+        generating correct HTML.
+
+      - Collector #448: Z Search Interfaces created as PageTemplates
+        have a correct title, not a fragment of dtml.
+
       - Fixed brokenness of session data manager hasSessionData method.
         The old method created a session data object as a result of the
         call; it does not now.
-    
+
       - Collector #458: Fixed broken reindex_all in CatalogAwareness classes.
 
       - The default "start" script now causes the event log to be sent to
