@@ -149,6 +149,12 @@ Access Control
        error response to the web browser that causes a password dialog
        to be displayed. 
 
+     Specifying a realm name for basic authentication
+
+       You can control the realm name used for Bobo's Basic
+       authentication by providing a module variable named
+       '__bobo_realm__'.
+
      Using the web server to perform authentication
 
        Some web servers cannot be coaxed into passing authentication
@@ -338,7 +344,11 @@ Exception handling
        returned.
 
   When a body is returned, traceback information will be included in a
-  comment in the output. 
+  comment in the output.  The module variable
+  '__bobo_hide_tracebacks__' can be used to control how tracebacks are
+  included.  If this variable and false, then tracebacks are included
+  in PRE tags, rather than in comments.  This is very handy during
+  debugging. 
 
 Redirection
 
@@ -377,7 +387,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.78 1998/03/18 19:19:47 jim Exp $"""
+$Id: Publish.py,v 1.79 1998/03/18 20:20:34 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -432,7 +442,7 @@ $Id: Publish.py,v 1.78 1998/03/18 19:19:47 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 
 def main():
@@ -442,7 +452,7 @@ def main():
 
 if __name__ == "__main__": main()
 
-import sys, os, string, cgi, regex, regsub
+import sys, os, string, cgi, regex, regsub, CGIResponse
 from string import *
 from CGIResponse import Response
 from urllib import quote, unquote
@@ -627,7 +637,15 @@ class ModulePublisher:
 
     def get_module_info(self, server_name, module_name, module):
 
-	realm="%s.%s" % (module_name,server_name)
+	# Let the app specify a realm
+	if hasattr(module,'__bobo_realm__'): realm=module.__bobo_realm__
+	else: realm=module_name
+
+	# Check whether tracebacks should be hidden:
+	if (hasattr(module,'__bobo_hide_tracebacks__')
+	    and not module.__bobo_hide_tracebacks__):
+	    CGIResponse._tbopen, CGIResponse._tbclose = '<PRE>', '</PRE>'
+	
 		
 	if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
 	else: bobo_before=None
