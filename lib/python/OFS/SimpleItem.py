@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.66 1999/11/03 14:37:38 brian Exp $'''
-__version__='$Revision: 1.66 $'[11:-2]
+$Id: SimpleItem.py,v 1.67 2000/03/14 17:30:31 brian Exp $'''
+__version__='$Revision: 1.67 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -140,28 +140,32 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
 
     manage_options=()
 
-    def title_or_id(self, st=type('')):
+    def title_or_id(self):
         """
         Utility that returns the title if it is not blank and the id
         otherwise.
         """
         title=self.title
-        if type(title) is not st: title=title()
+        if callable(title):
+            title=title()
         if title: return title
         id=self.id
-        if type(id) is not st: id=id()
+        if callable(id):
+            id=id()
         return id
 
-    def title_and_id(self, st=type('')):
+    def title_and_id(self):
         """
         Utility that returns the title if it is not blank and the id
         otherwise.  If the title is not blank, then the id is included
         in parens.
         """
         title=self.title
-        if type(title) is not st: title=title()
+        if callable(title):
+            title=title()
         id=self.id
-        if type(id) is not st: id=id()
+        if callable(id):
+            id=id()
         return title and ("%s (%s)" % (title,id)) or id
     
     def this(self):
