@@ -10,18 +10,6 @@ Zope Changes
       
       Lots has changed in this release. The major news is ZClasses and WebDAV.
       
-      TO DO !!!!!!
-
-        - Fix binary distributions so they aren't so darn big:
-
-           - Remove config and other unneeded subdirs of the
-             inluded python libraries.
-
-           - Don't include pycs and pyos in dist.
-
-           - Compile pycs and pys as part of the desitination
-             install.
-
       Features Added
 
         - Added WebDAV support. See http://webdav.zope.org/ for details.
@@ -51,7 +39,11 @@ Zope Changes
 
         - Revised Zope error messages.
 
-        - A new DTML try 'tag' added based on work by Jordan B. Baker.
+        - A new DTML 'try' tag added based on work by Jordan B. Baker.
+          See the source for details. Documentation is forthcoming.
+
+        - A new DTML 'mime' tag has been added. See the MIMETools README.txt
+          for more information.
 
         - A new 'range' function added the the '_' DTML variable. 
 
