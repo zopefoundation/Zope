@@ -54,9 +54,6 @@ class Method(Attribute):
     def __call__(self, *args, **kw):
         raise Exceptions.BrokenImplementation(self.interface, self.__name__)
 
-    def isMethod(self):
-        return 1
-        
     def getSignatureInfo(self):
         info = {}
         for t in sig_traits:

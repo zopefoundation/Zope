@@ -11,8 +11,6 @@ class Attribute(InterfaceBase):
         self.__name__=__name__
         self.__doc__=__doc__ or __name__
 
-    def isAttr(self):
-        return 1
 
 
 
