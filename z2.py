@@ -733,7 +733,7 @@ try:
             zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
                      ' because no emergency user exists.')
         if pw:
-            if ininstance(MONITOR_PORT, IntType): 
+            if isinstance(MONITOR_PORT, IntType): 
                 MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
             for address, port in MONITOR_PORT:
                 monitor=secure_monitor_server(
@@ -792,10 +792,10 @@ try:
                 try:    UID = string.atoi(UID)
                 except: pass
                 gid = None
-                if instance(UID, StringType):
+                if isinstance(UID, StringType):
                     uid = pwd.getpwnam(UID)[2]
                     gid = pwd.getpwnam(UID)[3]
-                elif instance(UID, IntType):
+                elif isinstance(UID, IntType):
                     uid = pwd.getpwuid(UID)[2]
                     gid = pwd.getpwuid(UID)[3]
                     UID = pwd.getpwuid(UID)[0]
