@@ -392,8 +392,8 @@ def unix_longify (file, stat_info):
     else:
         dirchar = '-'
     date = ls_date (long(time.time()), stat_info[stat.ST_MTIME])
-    user = str(stat_info[stat.ST_UID].replace(' ','_'))
-    group= str(stat_info[stat.ST_GID].replace(' ','_'))
+    user = str(stat_info[stat.ST_UID]).replace(' ','_')
+    group= str(stat_info[stat.ST_GID]).replace(' ','_')
     if user=='System_Processes': user='Sysproc'
     if group=='System_Processes': group='Sysproc'
 

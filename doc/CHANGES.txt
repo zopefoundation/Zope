@@ -51,6 +51,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1648: Fix bug in Medusa FTP
+
       - Collector #1667: allow 'max-number-of-session-objects 0' to have
         the same effect as setting the value via the web interface (i.e.,
         make the number of session objects unlimited, rather than falling
