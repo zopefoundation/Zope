@@ -28,7 +28,7 @@ def get_default_host_info():
         try:
             ip = socket.gethostbyname(hostname)
         except socket.error:
-            hostname = ''
+            hostname = 'localhost'
             ip = socket.gethostbyname(hostname)
         try:
             hostname = socket.gethostbyaddr(ip)[0]
