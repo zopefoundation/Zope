@@ -28,7 +28,7 @@ that have one or more keywords specified in a search query.</p>
 <form action="<dtml-var URL1>">
 
 <ul>
-<dtml-in index_objects>
+<dtml-in index_objects sort=id>
  <li>
   <input type="checkbox" name="names:list" value="<dtml-var id html_quote>">
 <dtml-var id>    (<i><dtml-var meta_type></i>)</li>

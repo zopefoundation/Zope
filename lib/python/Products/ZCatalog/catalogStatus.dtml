@@ -58,7 +58,7 @@
     <h3>Index Status</h3>
 
     <ul>
-      <dtml-in index_objects>
+      <dtml-in index_objects sort=id>
       <li>
 	<dtml-var "_.len(_['sequence-item'])"> 
 	object are indexed in <b><dtml-var "_['sequence-item'].id"></b>
