@@ -188,8 +188,8 @@ class DummyEngine:
         else:
             # Up to last slash is the filename
             fileName = macroName[:i]
-            from Products.ParsedXML.DOM import ExpatBuilder
-            doc = ExpatBuilder.parse(fileName, 1)
+            from driver import parsefile
+            doc = parsefile(fileName)
             return doc, macroName[i+1:]
 
     def setRepeat(self, name, expr):
