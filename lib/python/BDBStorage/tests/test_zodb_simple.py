@@ -6,38 +6,11 @@ import os
 import errno
 import time
 import unittest
-
-DBHOME = 'test-db'
+import test_create
 
 
 
-class CommitAndRead(unittest.TestCase):
-    # Never tear down the test framework since we want the database support
-    # files to persist.  MasterSetup will take care of cleaning things up when
-    # we're done.
-    def setUp(self):
-        from ZODB import DB
-
-        self._dbhome = DBHOME
-        try:
-            os.mkdir(self._dbhome)
-        except OSError, e:
-            if e.errno <> errno.EEXIST: raise
-
-        try:
-            self._storage = self.ConcreteStorage(self._dbhome)
-            self._db = DB(self._storage)
-            self._conn = self._db.open()
-            self._root = self._conn.root()
-        except:
-            self.tearDown()
-            raise
-
-    def tearDown(self):
-        for file in os.listdir(DBHOME):
-            os.unlink(os.path.join(DBHOME, file))
-        os.removedirs(DBHOME)
-        
+class CommitAndRead(test_create.BaseFramework):
     def checkCommit(self):
         from Persistence import PersistentMapping
 
