@@ -13,6 +13,8 @@ Zope Changes
 
    Bugs fixed
 
+     - debug-mode config file option did not work.
+
      - ZClasses that subclassed ObjectManager that were created in 
        earlier versions of Zope would not load under 2.6, due to 
        the new Interfaces package. Added back a simple stub module 
