@@ -235,41 +235,19 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
         __traceback_info__=args, kw, self.func_defaults
 
         try:
-            try:
-                try: return apply(f,args,kw)
-                except TypeError, v:
-                    tb=sys.exc_traceback
-                    try:
-                        if ((self.func_code.co_argcount-
-                             len(self.func_defaults or ()) - 1 == len(args))
-                            and self.func_code.co_varnames[0]=='self'):
-                            return apply(f,(self.aq_parent,)+args,kw)
-
-                        raise TypeError, v, tb
-                    finally: tb=None
-            except:
-                error_type=sys.exc_type
-                error_value=sys.exc_value
+            try: return apply(f,args,kw)
+            except TypeError, v:
                 tb=sys.exc_traceback
-                if lower(error_type) in ('redirect',):
-                    raise error_type, error_value, tb
-                if (type(error_value) is type('') and
-                    regex.search('[a-zA-Z]>', error_value) > 0):
-                    error_message=error_value
-                else:
-                    error_message=''
-                error_tb=pretty_tb(error_type, error_value, tb)
-                c=self.aq_parent
                 try:
-                    s=getattr(c, 'standard_error_message')
-                    v=HTML.__call__(s, c, self.aq_acquire('REQUEST'),
-                                    error_type=error_type,
-                                    error_value=error_value,
-                                    error_tb=error_tb, error_traceback=error_tb,
-                                    error_message=error_message)
-                except: v='Sorry, an error occured'
-                raise error_type, v, tb
-        finally: tb=None
+                    if ((self.func_code.co_argcount-
+                         len(self.func_defaults or ()) - 1 == len(args))
+                        and self.func_code.co_varnames[0]=='self'):
+                        return apply(f,(self.aq_parent,)+args,kw)
+                    
+                    raise TypeError, v, tb
+                finally: tb=None
+        except:
+            self.raise_standardErrorMessage()
                 
 
     def function(self): return self._function
