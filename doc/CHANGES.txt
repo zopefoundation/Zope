@@ -229,6 +229,10 @@ Zope Changes
         - ZServer's select trigger has been updated and now shouldn't give
           errors when running ZServer as another users.   
 
+        - The tree tag used persistent object ids in ways that were 
+          not compatible with ZODB 3.  This caused strange behavior
+          like weird cntent-types and invalid state messages.
+
     Zope 2.0 alpha 2
 
       Features added
