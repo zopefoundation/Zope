@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.31 1999/08/18 20:50:37 jim Exp $"
+"$Id: DT_String.py,v 1.32 2000/03/09 19:15:39 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -465,7 +465,9 @@ class String:
             if mapping:
                 push(mapping)
                 if hasattr(mapping,'AUTHENTICATED_USER'):
-                    md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
+                    auth_user=mapping['AUTHENTICATED_USER']
+                    verify_watermark(auth_user)
+                    md.AUTHENTICATED_USER=auth_user
             md.validate=self.validate
             if client is not None:
                 if type(client)==type(()):
@@ -549,3 +551,25 @@ class File(FileMixin, String):
     template is used the first time.
     """
     def manage_edit(self,data): raise TypeError, 'cannot edit files'
+
+
+
+# This bit performs watermark verification on the authenticated
+# user object passed into the template. It is Zope-specific, and
+# we don't want to break non-Zope apps so we check to see if we
+# are running with Zope before installing the watermark function.
+
+if hasattr(__builtins__, 'INSTANCE_HOME'):
+    
+    from ZPublisher.BaseRequest import _marker
+
+    def verify_watermark(auth_user):
+        if not hasattr(auth_user, '__marker__') or \
+           auth_user.__marker__ is not _marker:
+            raise 'Unauthorized', (
+                'You are not authorized to access this resource.'
+                )
+else:
+
+    def verify_watermark(auth_user):
+        pass
