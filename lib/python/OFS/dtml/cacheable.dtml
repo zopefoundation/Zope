@@ -1,20 +1,24 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<h2>Caching properties</h2>
-
 <form action="&dtml-absolute_url;" method="POST">
 <dtml-if ZCacheable_isAMethod>
 
 <input type="checkbox" name="enable" value="1"<dtml-if 
 ZCacheable_enabled> checked="checked"</dtml-if
->>Cache this view of the object<br>
-
-<input type="submit" name="ZCacheable_setEnabled:method" value="Change">
+>><span class="form-label">Cache this view of the object</span>
+<br>
+<div class="form-element">
+<input class="form-element" type="submit" name="ZCacheable_setEnabled:method" 
+ value="Save Changes">
+</div>
 
 <dtml-else>
-
+<div class="form-element">
+<span class="form-label">
 Cache this object using:
+</span>
+
 <select name="manager_id">
 <option value="">(None)</option>
 <dtml-in ZCacheable_getManagerIds mapping>
@@ -24,20 +28,25 @@ Cache this object using:
   <dtml-if title>(&dtml-title;)</dtml-if></option>
 </dtml-in>
 </select>
-<input type="submit" name="ZCacheable_setManagerId:method" value="Change">
+<br />    
+<input class="form-element" type="submit" 
+ name="ZCacheable_setManagerId:method" value="Save Changes">
+</div>
 
 <dtml-if ZCacheable_getManagerURL>
-<p>
-<a href="&dtml-ZCacheable_getManagerURL;/manage_main">Settings</a>
+<p class="form-text">
+<a href="&dtml-ZCacheable_getManagerURL;/manage_main">Cache Settings</a>
 </p>
-<p>
-<input type="submit" name="ZCacheable_invalidate:method" value="Invalidate">
-</p>
+
+<div class="form-element">
+<input class="form-element" type="submit" 
+ name="ZCacheable_invalidate:method" value="Invalidate">
+</div>
 </dtml-if>
 
 </dtml-if>
 
-<p><dtml-var ZCacheable_configHTML></p>
+<dtml-var ZCacheable_configHTML>
 
 </form>
 

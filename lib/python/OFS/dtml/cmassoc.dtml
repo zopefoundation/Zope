@@ -11,15 +11,19 @@ those objects for which you have the "Change cache settings" permission
 are shown.
 </p>
 
-<table>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
 <dtml-in results mapping sort=sortkey>
-<tr>
-  <td>
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
+  <td align="left" valign="top">
   <input type="checkbox" name="associate_&dtml-path;:int" value="1"<dtml-if 
    associated> checked="checked"</dtml-if>>
   <input type="hidden" name="associate_&dtml-path;:int:default" value="0">
   </td>
-  <td>
+  <td align="left" valign="top">
   <div class="form-text">
   <dtml-if icon><a href="../&dtml-path;/manage_main"><img src="&dtml-icon;"
    border="0"></a> &nbsp;</dtml-if>
@@ -34,49 +38,76 @@ are shown.
   <td align="left" valign="top">
   <div class="form-element">
   <input type="submit" name="ZCacheManager_setAssociations:method" 
-   value="Save changes">
+   value="Save Changes">
   </div>
   </td>
 </tr>
 </table>
 
 <dtml-else>
-<p class="form-help">
+<p class="form-text">
 No objects matched your query.
 </p>
 </dtml-if>
-
 <hr>
-
 </dtml-if>
 
-<table>
-<tr>
-<td valign="top">
-Locate cacheable objects:
-</td>
-<td valign="top">
-<input type="radio" name="require_assoc:int" value="0" checked="checked"> All
-<input type="radio" name="require_assoc:int" value="1">
-  Associated with this cache manager
-<br>
-<table><tr><td valign="top">
-Meta types:
-</td><td valign="top">
+<table cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Locate cacheable objects:
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <input type="radio" name="require_assoc:int" value="0" 
+     checked="checked"> All
+    <input type="radio" name="require_assoc:int" value="1">
+     Associated with this cache manager
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Of the type(s):
+    </div>
+    </td>
+    <td align="left" valign="top">
+<div class="form-element">
 <select multiple="multiple" name="meta_types:list" size="5">
-<option value="">All</option>
+<option value="" selected>All</option>
 <dtml-in all_meta_types mapping sort=name>
 <option value="&dtml-name;">&dtml-name;</option>
 </dtml-in>
 </select>
-</td></tr></table>
+</div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+<div class="form-text">
 <input type="checkbox" name="subfolders:int" value="1" checked="checked">
 <input type="hidden" name="subfolders:int" value="0">
 Search subfolders
+</div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    </td>
+    <td align="left" valign="top">
+<div class="form-element">
 <br>
 <input type="submit" name="ZCacheManager_locate:method" value="Locate">
-</td></tr></table>
-
+</div>
+    </td>
+  </tr>
+</table>
 </form>
-</body>
-</html>
+
+<dtml-var manage_page_footer>
+
