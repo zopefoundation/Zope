@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -297,7 +297,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         Return a tuple of mappings, giving meta-data for properties.
         Return copies of the real definitions for security.
         """
-        return map(lambda dict: dict.copy(), self._propertyMap())
+        return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
 
     def propertyLabel(self, id):
         """Return a label for the given property id

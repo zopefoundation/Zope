@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -338,7 +338,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def propertyMap(self):
         # Returns a secure copy of the property definitions.
-        return map(lambda dict: dict.copy(), self._propertyMap())
+        return tuple(map(lambda dict: dict.copy(), self._propertyMap()))
 
     def _propdict(self):
         dict={}
