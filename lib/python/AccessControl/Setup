@@ -1,15 +1,2 @@
-# install Role.py
-# install User.py
-# install addUser.dtml
-# install editUser.dtml
-# install mainUser.dtml
-# install www
-# install Permission.py
-# install PermissionRole.py
-# install access.dtml
-# install permissionEdit.dtml
-# install roleEdit.dtml
-
 *shared*
-
 cAccessControl cAccessControl.c -I../../Components/ExtensionClass/src
