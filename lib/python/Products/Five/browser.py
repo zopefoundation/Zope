@@ -19,6 +19,9 @@ $Id: browser.py 9730 2005-03-10 22:50:43Z jw $
 import sys
 from datetime import datetime
 
+# ZODB
+import transaction
+
 # Zope 2
 import Acquisition
 from  Acquisition import aq_inner, aq_parent, aq_base
@@ -212,7 +215,7 @@ class EditView(BrowserView):
             except WidgetsError, errors:
                 self.errors = errors
                 status = "An error occured."
-                get_transaction().abort()
+                transaction.abort()
             else:
                 setUpEditWidgets(self, self.schema, source=self.adapted,
                                  ignoreStickyValues=True,

@@ -58,7 +58,8 @@ The Zope Object Database, ZODB, version 3.0
 
     Don't forget to::
 
-      get_transaction().commit()
+      import transaction
+      transaction.commit()
 
     If you want any changes to made to be saved.
 
