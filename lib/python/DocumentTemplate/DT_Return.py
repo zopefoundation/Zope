@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DT_Util import parse_params, name_param
 
@@ -25,7 +25,7 @@ class ReturnTag:
         self.expr = expr
 
     def render(self, md):
-        if val is None:
+        if self.expr is None:
             val = md[self.__name__]
         else:
             val = self.expr.eval(md)
