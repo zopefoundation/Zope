@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.9 1997/12/11 15:37:54 jim Exp $
+  $Id: ExtensionClass.h,v 1.10 1998/03/13 22:19:04 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,13 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.10  1998/03/13 22:19:04  jim
+  Added an interface for testing subclass relationships.
+
+  Added macro to test whether ExtensionClass has been imported and
+  import it if it hasn't been.  This is handy in cases where extension
+  modules are implemented in multiple C files.
+
   Revision 1.9  1997/12/11 15:37:54  jim
   Added EXTENSIONCLASS_BASICNEW_FLAG.
 
@@ -315,13 +322,21 @@ typedef struct {
 #define PyEC_SetAttr(SELF,NAME,V) \
      (PyExtensionClassCAPI->setattro((SELF),(NAME),(V)))
 
-/* Export an Extension Base class in a given module dictionary with a
-   given name and ExtensionClass structure.
-   */
-
+/* Import the ExtensionClass CAPI */
 #define ExtensionClassImported \
   (PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
 
+/* Make sure the C interface has been imported and import it if necessary.
+   This can be used in an if.
+   */
+#define MakeSureExtensionClassImported \
+  (PyExtensionClassCAPI || \
+   (PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI")))
+
+
+/* Export an Extension Base class in a given module dictionary with a
+   given name and ExtensionClass structure.
+   */
 #define PyExtensionClass_Export(D,N,T) \
  if(PyExtensionClassCAPI || \
    (PyExtensionClassCAPI= PyCObject_Import("ExtensionClass","CAPI"))) \
@@ -405,7 +420,18 @@ static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
 #define INSTANCE_DICT(inst) \
 *(((PyObject**)inst) + (inst->ob_type->tp_basicsize/sizeof(PyObject*) - 1))
 
+#define ExtensionClassSubclass_Check(S,C) ( \
+  ((PyObject*)(S)->ob_type==PyExtensionClassCAPI->ExtensionClassType) && \
+  ((PyObject*)(C)->ob_type==PyExtensionClassCAPI->ExtensionClassType) && \
+  (PyExtensionClassCAPI->issubclass((PyExtensionClass *)(S), \
+				    (PyExtensionClass *)(C))))
 
+#define ExtensionClassSubclassInstance_Check(I,C) ( \
+  ((PyObject*)(I)->ob_type->ob_type== \
+                             PyExtensionClassCAPI->ExtensionClassType) && \
+  ((PyObject*)(C)->ob_type==PyExtensionClassCAPI->ExtensionClassType) && \
+  (PyExtensionClassCAPI->issubclass((PyExtensionClass *)((I)->ob_type), \
+				    (PyExtensionClass *)(C))))
 
 
 /*****************************************************************************
@@ -424,6 +450,7 @@ static struct ExtensionClassCAPIstruct {
   PyObject *ExtensionClassType;
   PyObject *MethodType;
   PyObject *(*Method_New)(PyObject *callable, PyObject *inst);
+  int (*issubclass)(PyExtensionClass *sub, PyExtensionClass *type);
 } *PyExtensionClassCAPI = NULL;
 
 typedef struct { PyObject_HEAD } PyPureMixinObject;
