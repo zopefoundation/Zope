@@ -86,6 +86,10 @@ Published objects
   fails, then the object publisher raises a '"Not Found"' exception.  If
   either of the accesses suceeds, then, of course, processing continues.
 
+  If the final object encountered when traversing the URL has an
+  'index_html' attribute, the object traversal will continue to this
+  attribute.   This is useful for providing default methods for objects.
+
   In some cases, a parent object may hold special attributed for a
   subobject.  This may be the case either when a sub-object cannot have
   the special attribute or when it is convenience for the parent
@@ -104,21 +108,23 @@ Published objects
 
 Access Control
 
-  Access to an object (and it's sub-objects) may be further
-  restricted by specifying an object attribute named:
-  '__allow_groups__'.  If set, then this attribute should
-  contain a dictionary or sequence.  Each of the
-  items in the attribute must be dictionaries that use names
-  as keys (i.e. sets of names).  The values in these dictionaries
-  may contain passwords for authenticating each of the names.
-  Alternatively, passwords may be provided in separate "realm"
-  objects.  If no realm is provided, then basic authentication
-  will be used and the object publisher will attempt to
-  authenticate the access to the object using one of the supplied
-  name and password pairs.  The basic authentication realm name
-  used is 'module_name.server_name', where 'module_name' is the
-  name of the module containing the published objects, and
-  server_name is the name of the web server.      
+  Access to an object (and it's sub-objects) may be further restricted
+  by specifying an object attribute named '__allow_groups__'.  If set,
+  this attribute should contain a collection of authorization groups.
+  The '__allow_groups__' attribute may be a mapping object, in which
+  case it is a collection of named groups.  Alternatively, the
+  '__allow_groups__' attribute may be a sequence, in which case it is
+  a collection of named groups.  Each group must be a dictionary that
+  use names as keys (i.e. sets of names).  The values in these
+  dictionaries may contain passwords for authenticating each of the
+  names.  Alternatively, passwords may be provided in separate "realm"
+  objects.  If no realm is provided, then basic authentication will be
+  used and the object publisher will attempt to authenticate the
+  access to the object using one of the supplied name and password
+  pairs.  The basic authentication realm name used is
+  'module_name.server_name', where 'module_name' is the name of the
+  module containing the published objects, and server_name is the name
+  of the web server.
 
   The module used to publish an object may contain it's own
   '__allow_groups__' attribute, thereby limiting access to all of the
@@ -128,7 +134,27 @@ Access Control
   attributes, then the '__allow_groups__' attribute from the last
   object in the path that has this attribute will be used.  The
   '__allow_groups__' attribute for a subobject overides
-  '__allow_groups__' attributes for containing objects.
+  '__allow_groups__' attributes for containing objects, however, if
+  named groups are used, group data from containing objects may be
+  inherited by contained objects.  If a published object uses named
+  groups, then for each named group in the published object, group
+  data from groups with the same name in container objects will be
+  inherited from container objects if:
+
+     - The contained object uses named groups,
+     - There is no object that is a sub-object of the container
+       object, is a container of the published object, and that has
+       unnamed groups.
+
+  If the name of a group is the python object, 'None', then data from
+  named groups in container objects will be inherited even if the
+  groupd don't appear in the inheriting object, subject to the
+  restrictions above.
+
+  When group data are inherited, then inherited data is appended to
+  the existing data.  When groups contain names and passwords,
+  individual user names may have multiple passwords if they appear in
+  multiple groups.
 
   Note that an object may have an '__allow_groups__' attribute that is
   set to None, in which case the object will be public, even if
@@ -137,28 +163,28 @@ Access Control
   Realms
 
       Realms provide a mechanism for separating authentication and
-	authorization.  
-
-	An object may have an attribute '__realm__', which should be
-	either a realm object, or a mapping object mapping names to
-	passwords.
-
-	If a mapping object is provided, then it will be used for
-	basic authentication using a realm name of
-	"module_name.server_name", where "module_name" is the name of
-	the module containing the published objects, and server_name
-	is the name of the web server.
-	
-	If a realm object is used, then it will use an application
-	supplied realm name and password mapping object, and may use
-	other than basic authentication.  If a realm is provided that
-	does not include it's own name to password mapping, then the
-	name to password mappings contained in an object's
-	'__allow_groups__' attribute will be used.
-
-	An object may "inherit" a realm from one of it's parent
-	objects in the URI path to the object, including the module
-	used to publish the object.
+      authorization.  
+      
+      An object may have an attribute '__realm__', which should be
+      either a realm object, or a mapping object mapping names to
+      passwords.
+      
+      If a mapping object is provided, then it will be used for
+      basic authentication using a realm name of
+      "module_name.server_name", where "module_name" is the name of
+      the module containing the published objects, and server_name
+      is the name of the web server.
+      
+      If a realm object is used, then it will use an application
+      supplied realm name and password mapping object, and may use
+      other than basic authentication.  If a realm is provided that
+      does not include it's own name to password mapping, then the
+      name to password mappings contained in an object's
+      '__allow_groups__' attribute will be used.
+      
+      An object may "inherit" a realm from one of it's parent
+      objects in the URI path to the object, including the module
+      used to publish the object.
 
   Fixed-attribute objects
 
@@ -219,8 +245,23 @@ Function, method, and class objects
 
     If field names in form data are of the form: name:type, then an
     attempt will be to convert data from from strings to the indicated
-    type.  The data types currently supported are: float, int, long,
-    string, and date.  For example, if the name of a field in an input
+    type.  The data types currently supported are: 
+
+	float -- Python floating point numbers
+    
+	int -- Python integers
+    
+	long -- Python long integers
+    
+	string -- python strings
+    
+	regex -- Python case-sensitive regular expressions
+    
+	Regex -- Python case-insensitive regular expressions
+    
+	date -- Date-time values
+
+    For example, if the name of a field in an input
     form is age:int, then the field value will be passed in argument,
     age, and an attempt will be made to convert the argument value to
     an integer.  This conversion also works with file upload, so using
@@ -236,11 +277,13 @@ Published objects that are not functions, methods, or classes
 Return types
 
   A published object, or the returned value of a called published
-  object can be of any Python type.  The returned value will be
-  converted to a string and examined to see if it appears to be an
-  HTML document.  If it appears to be an HTML document, then the
-  response content-type will be set to 'text/html'.  Otherwise the
-  content-type will be set to 'text/plain'.
+  object can be of any Python type.  If the returned value has an
+  'asHTML' method, then this method will be called to convert the
+  object to HTML, otherwise the returned value will be converted to a
+  string and examined to see if it appears to be an HTML document.  If
+  it appears to be an HTML document, then the response content-type
+  will be set to 'text/html'.  Otherwise the content-type will be set
+  to 'text/plain'.
 
   A special case is when the returned object is a two-element tuple.
   If the return object is a two-element tuple, then the first element
@@ -254,6 +297,18 @@ Return types
   returned object is an empty string, then HTTP the return status will
   be set "No Content", and no body will be returned.  On some
   browsers, this will cause the displayed document to be unchanged.
+
+Base References
+
+  If result of a request is HTML text and the text does not define a
+  'base' tag in the 'head' portion of the HTML, then a base reference
+  will be inserted that is the location of the directory in which the
+  published module was published, such as a cgi-directory.  If the
+  HTML text contains a base reference that begins with a slash, then
+  the server URL will be prepended to the reference.  If the base
+  reference is a relative reference beginning with a dot, then an
+  absolute reference will be constructed from the effective URL used
+  to access the published object and from the relative reference. 
 
 Providing On-Line help
 
@@ -316,7 +371,7 @@ Redirection
 The default object
 
   If no object is specified in a URI, then the publisher will try to
-  publish the object 'index_html', if it exists, otherwise the module
+  publish the object 'index_html', if it exists, otherwise the module's
   doc string will be published.
 
 Examples
@@ -462,7 +517,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.14 1996/08/05 11:33:54 jfulton Exp $"""
+$Id: Publish.py,v 1.15 1996/08/07 19:37:54 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -515,6 +570,16 @@ $Id: Publish.py,v 1.14 1996/08/05 11:33:54 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.15  1996/08/07 19:37:54  jfulton
+# Added:
+#
+#   - Regex, regex input types,
+#   - New rule for inheriting allow groups,
+#   - Support for index_html attribute,
+#   - Support for relative base refs
+#   - Added URL as magic variable
+#   - Added error checking of typed fields
+#
 # Revision 1.14  1996/08/05 11:33:54  jfulton
 # Added first cut at group composition.
 #
@@ -576,7 +641,7 @@ $Id: Publish.py,v 1.14 1996/08/05 11:33:54 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 def main():
@@ -659,7 +724,7 @@ class ModulePublisher:
 	if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 	self.module_name=module_name
 	response=self.response
-	response.setBase(self.base)
+	response.setBase(self.base,'')
 	default_realm_name="%s.%s" % (self.module_name,self.request.SERVER_NAME)
 	realm_name=default_realm_name
 
@@ -678,16 +743,23 @@ class ModulePublisher:
 
 	self.module=theModule
 
+
 	# Try to get realm from module
 	try: realm=theModule.__realm__
 	except: realm=None
 
-	# Do authorization check, if need be:
-	try: groups=theModule.__allow_groups__
+	# Get initial group data:
+	default_inherited_groups={None:None}
+	inherited_groups=default_inherited_groups
+	try:
+	    groups=theModule.__allow_groups__
+	    inherited_groups=allow_group_composition(
+		inherited_groups,groups,default_inherited_groups)
 	except: groups=None
 
 	# Get a nice clean path list:
-	path=(string.strip(self.env('PATH_INFO')) or '/')[1:]
+	path=(string.strip(self.env('PATH_INFO')))
+	if path[:1]=='/': path=path[1:]
 	path=string.splitfields(path,'/')
 	while path and not path[0]: path = path[1:]
  
@@ -712,23 +784,26 @@ class ModulePublisher:
 		except: pass
 	    if not path: path = ['help']
 
+	URL=self.base
 	parents=[]
 	while path:
 	    entry_name,path=path[0], path[1:]
+	    URL="%s/%s" % (URL,entry_name)
 	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
 	    if entry_name:
 		try:
 		    subobject=getattr(object,entry_name)
 		    try:
-			g=subobject.__allow_groups__
-			groups=allow_group_composition(
-			    subobject.__allow_groups__,
-			    groups)
+			groups=subobject.__allow_groups__
+			inherited_groups=allow_group_composition(
+			    inherited_groups,groups,default_inherited_groups)
 		    except:
 			try:
-			    groups=allow_group_composition(
-				getattr(object, entry_name+'__allow_groups__'),
-				groups)
+			    groups=getattr(object,
+					   entry_name+'__allow_groups__')
+			    inherited_groups=allow_group_composition(
+				inherited_groups,groups,
+				default_inherited_groups)
 			except: pass
 		    try: doc=subobject.__doc__
 		    except:
@@ -746,14 +821,16 @@ class ModulePublisher:
 		    try:
 			subobject=object[entry_name]
 			try:
-			    groups=allow_group_composition(
-				subobject.__allow_groups__,
-				groups)
+			    groups=subobject.__allow_groups__
+			    inherited_groups=allow_group_composition(
+				inherited_groups,groups,
+				default_inherited_groups)
 			except:
 			    try:
-				groups=allow_group_composition(
-				    object[entry_name+'__allow_groups__'],
-				    groups)
+				groups=object[entry_name+'__allow_groups__']
+				inherited_groups=allow_group_composition(
+				    inherited_groups,groups,
+				    default_inherited_groups)
 			    except: pass
 			try: doc=subobject.__doc__
 			except:
@@ -794,8 +871,13 @@ class ModulePublisher:
 		parents.append(object)
 		object=subobject
 
+		# Check for index_html:
+		if not path and hasattr(object,'index_html'):
+		    path=['index_html']
+
 	# Do authorization checks
 	if groups is not None:
+	    groups=allow_group_composition(groups,inherited_groups)
 	    if not groups: self.forbiddenError()
 	    try:
 		if realm.name is None:
@@ -839,19 +921,14 @@ class ModulePublisher:
 	    except:
 		return response.setBody(object)
 
-	#elif type(object_as_function) is types.FunctionType:
-	#    defaults=object_as_function.func_defaults
-	#    argument_names=object_as_function.func_code.co_varnames[
-	#	:object_as_function.func_code.co_argcount]
-	#else:
-	#    return response.setBody(object)
-    
 	query=self.request
 	query['RESPONSE']=response
+	query['URL']=URL
 	if parents:
 	    parents.reverse()
 	    query['self']=parents[0]
 	query['PARENTS']=parents
+	response.setBase(self.base,URL)
 
 	args=[]
 	nrequired=len(argument_names) - (len(defaults or []))
@@ -860,9 +937,12 @@ class ModulePublisher:
 	    try:
 		v=query[argument_name]
 		args.append(v)
-	    except:
+	    except (KeyError,AttributeError,IndexError):
 		if name_index < nrequired:
 		    self.badRequestError(argument_name)
+	    except:
+		raise 'BadRequest', ('<strong>Invalid entry for %s </strong>'
+				     % argument_name)
 
 
 	if args: result=apply(object,tuple(args))
@@ -930,7 +1010,7 @@ def flatten_field(v,converter=None):
 	else:
 	    v=v.value
     except: pass
-    
+
     if converter: v=converter(v)
     return v
 
@@ -953,6 +1033,16 @@ def field2long(v):
     try: v=v.read()
     except: v=str(v)
     return string.atol(v)
+
+def field2Regex(v):
+    try: v=v.read()
+    except: v=str(v)
+    if v: return regex.compile(v)
+
+def field2regex(v):
+    try: v=v.read()
+    except: v=str(v)
+    if v: return regex.compile(v,regex.casefold)
 
 def field2date(v):
     from DateTime import DateTime
@@ -1037,6 +1127,8 @@ class Request:
 	'string':	field2string,
 	'date':		field2date,
 	'list':		field2list,
+	'regex':	field2regex,
+	'Regex':	field2Regex,
 	}
 
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
@@ -1081,12 +1173,11 @@ class Request:
 				tf[k[:l]]=form[k],k[l+len(group(1)):]
 
 		    v,t=tf[key]
-		    try:
-			converter=self.__type_converters[t]
+		    try: converter=self.__type_converters[t]
 		    except: pass
 		v=flatten_field(v,converter)
 		return v
-	    except: pass
+	    except (KeyError,AttributeError,IndexError): pass
 
 	if not self.__dict__.has_key('cookies'):
 	    cookies=self.cookies={}
