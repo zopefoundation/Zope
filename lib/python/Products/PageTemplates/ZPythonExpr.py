@@ -89,7 +89,7 @@ Handler for Python expressions, using the pre-Python 2.1 restriction
 machinery from PythonScripts.
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from AccessControl import getSecurityManager
 from Products.PythonScripts.Guarded import _marker, \
@@ -109,20 +109,6 @@ class PythonExpr(PythonExpr):
                   '$read_guard': ReadGuard, '__debug__': __debug__}
         self._f = UntupleFunction(blk.t, guards, __builtins__=safebin)
         self._get_used_names()
-
-    def __call__(self, econtext):
-        f = self._f
-        f.func_globals.update(self._bind_used_names(econtext))
-        
-        # Execute the function in a new security context.
-        template = econtext.contexts['template']
-        security = getSecurityManager()
-        security.addContext(template)
-        try:
-            __traceback_info__ = self.expr
-            return f()
-        finally:
-            security.removeContext(template)
 
 class _SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = 1

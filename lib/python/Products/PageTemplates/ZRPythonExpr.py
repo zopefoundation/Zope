@@ -88,7 +88,7 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
@@ -112,19 +112,11 @@ class PythonExpr(PythonExpr):
         self._code = code
         
     def __call__(self, econtext):
+        __traceback_info__ = self.expr
         code = self._code
         g = self._bind_used_names(econtext)
-        g.update(self._globals)
-        
-        # Execute the function in a new security context.
-        template = econtext.contexts['template']
-        security = getSecurityManager()
-        security.addContext(template)
-        try:
-            __traceback_info__ = self.expr
-            return eval(code, g, {})
-        finally:
-            security.removeContext(template)
+        g.update(self._globals)        
+        return eval(code, g, {})
 
 class _SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = 1
