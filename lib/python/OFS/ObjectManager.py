@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.8 1997/09/02 18:39:50 jim Exp $"""
+$Id: ObjectManager.py,v 1.9 1997/09/18 20:03:37 brian Exp $"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -95,23 +95,137 @@ class ObjectManager(Acquirer,Management,Persistent):
     def _delObject(self,id):
         delattr(self,id)
         self._objects=tuple(filter(lambda i,n=id: i['id'] != n, 
-				                    self._objects))
-
-    def objectIds(self):
+				                  self._objects))
+    def objectIds(self,t=None):
         # Return a list of subobject ids
+	if t is not None:
+	    if type(t)==type('s'): t=(t,)
+	    return filter(None, map(lambda x,v=t: 
+			  (x['meta_type'] in v) and x['id'] or None, 
+			  self._objects))
 	return map(lambda i: i['id'], self._objects)
 
-    def objectValues(self):
+    def objectValues(self,t=None):
         # Return a list of the actual subobjects
+	if t is not None:
+	    if type(t)==type('s'): t=(t,)
+	    return filter(None, map(lambda x,v=t,s=self: 
+			  (x['meta_type'] in v) and getattr(s,x['id']) or None,
+			  self._objects))
 	return map(lambda i,s=self: getattr(s,i['id']), self._objects)
 
-    def objectItems(self):
+    def objectItems(self,t=None):
         # Return a list of (id, subobject) tuples
+	if t is not None:
+	    if type(t)==type('s'): t=(t,)
+	    return filter(None, map(lambda x,v=t,s=self: 
+	                  (x['meta_type'] in v) and \
+			  (x['id'],getattr(s,x['id'])) or None, 
+			  self._objects))
 	return map(lambda i,s=self: (i['id'], getattr(s,i['id'])),
 		                    self._objects)
+
+
+    def superIds(self,t):
+        if type(t)==type('s'): t=(t,)
+        obj=self
+        vals=[]
+        x=0
+        while x < 100:
+	    try:    set=obj._objects
+	    except: set=()
+	    for i in set:
+	        try:
+		    if i['meta_type'] in t:
+			id=i['id']
+			if not id in vals: vals.append(id)
+	        except: pass
+	    try:    obj=obj.aq_parent
+	    except: return vals
+	    x=x+1
+	return vals
+
+    def superValues(self,t):
+        if type(t)==type('s'): t=(t,)
+        obj=self
+        seen={}
+        vals=[]
+	have=seen.has_key
+        x=0
+        while x < 100:
+	    try:    set=obj._objects
+	    except: set=()
+	    for i in set:
+	        try:
+		    id=i['id']
+		    if (not have(id)) and (i['meta_type'] in t):
+			vals.append(getattr(obj,id))
+			seen[id]=1
+	        except: pass
+	    try:    obj=obj.aq_parent
+	    except: return vals
+	    x=x+1
+	return vals
+
+    def superItems(self,t):
+        if type(t)==type('s'): t=(t,)
+        obj=self
+        seen={}
+        vals=[]
+	have=seen.has_key
+        x=0
+        while x < 100:
+	    try:    set=obj._objects
+	    except: set=()
+	    for i in set:
+	        try:
+		    id=i['id']
+		    if (not have(id)) and (i['meta_type'] in t):
+			vals.append((id,getattr(obj,id),))
+			seen[id]=1
+	        except: pass
+	    try:    obj=obj.aq_parent
+	    except: return vals
+	    x=x+1
+	return vals
+
+    def superHasAttr(self,attr):
+        obj=self
+        seen={}
+        vals=[]
+	have=seen.has_key
+        x=0
+        while x < 100:
+	    try:    set=obj._objects
+	    except: set=()
+	    for i in set:
+	        try:
+		    id=i['id']
+		    if not have(id):
+			v=getattr(obj,id)
+			if hasattr(v,attr):
+			    vals.append(v)
+			    seen[id]=1
+	        except: pass
+	    try:    obj=obj.aq_parent
+	    except: return vals
+	    x=x+1
+	return vals
+
+
     def objectMap(self):
 	# Return a tuple of mappings containing subobject meta-data
         return self._objects
+
+
+
+
+
+
+
+
+
+
 
     def manage_addObject(self,type,REQUEST):
 	"""Add a subordinate object"""
@@ -125,6 +239,13 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def manage_delObjects(self,ids,REQUEST):
 	"""Delete a subordinate object"""
+	try:    p=map(lambda d: d['id'], self.__class__._objects)
+	except: p=[]
+	for n in ids:
+	    if n in p:
+	        return MessageDialog(title  ='Not Deletable' % n,
+	               message='<EM>%s</EM> cannot be deleted.' % n,
+	               action ='./manage_main',)
 	while ids:
 	    try:    self._delObject(ids[-1])
 	    except: raise 'BadRequest', ('%s does not exist' % ids[-1])
@@ -140,7 +261,6 @@ class ObjectManager(Acquirer,Management,Persistent):
         delattr(self,id)
         self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
 				     self._properties))
-
     def propertyIds(self):
         # Return a list of property ids
 	return map(lambda i: i['id'], self._properties)
@@ -255,6 +375,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.9  1997/09/18 20:03:37  brian
+# Added superX type sniffer
+#
 # Revision 1.8  1997/09/02 18:39:50  jim
 # Added check for missing or blank ids.
 #
