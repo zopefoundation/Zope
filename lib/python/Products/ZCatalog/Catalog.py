@@ -276,11 +276,9 @@ class Catalog(Persistent, Acquisition.Implicit):
             self.data[key] = tuple(rec)
 
     def addIndex(self, name, type):
-        """
-        adds an index
+        """Create a new index, of one of the following types
 
-        Currently supported are 'FieldIndexes', 'TextIndexes' and
-        'KeywordIndexes'.
+        Types: 'FieldIndex', 'TextIndex', 'KeywordIndex'.
         """
 
         if self.indexes.has_key(name):
@@ -297,6 +295,10 @@ class Catalog(Persistent, Acquisition.Implicit):
                                                     self.lexicon)
         elif type == 'KeywordIndex':
             indexes[name] = UnKeywordIndex.UnKeywordIndex(name)
+        else:
+            raise 'Unknown Index Type', ("%s invalid - must be one of %s"
+                                         % (type, ['FieldIndex', 'TextIndex',
+                                                   'KeywordIndex']))
 
         self.indexes = indexes
 
