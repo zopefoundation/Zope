@@ -33,9 +33,11 @@ class Interface:
         if attrs.has_key('__doc__'):
             if __doc__ is None: __doc__=attrs['__doc__']
             del attrs['__doc__']
-        self.__attrs=attrs
 
-        if __doc__ is not None: self.__doc__=__doc__
+        if __doc__ is not None:
+            self.__doc__=__doc__
+        else:
+            self.__doc__ = ""
 
         for k, v in attrs.items():
             if isinstance(v, Method):
@@ -46,6 +48,8 @@ class Interface:
             elif not isinstance(v, Attribute):
                 raise Exceptions.InvalidInterface(
                     "Concrete attribute, %s" % k)
+
+        self.__attrs = attrs
 
     def deferred(self):
         """Return a defrered class corresponding to the interface
@@ -64,7 +68,7 @@ class Interface:
 
     def __d(self, dict):
 
-        for k, v in self.__dict__.items():
+        for k, v in self.__attrs.items():
             if isinstance(v, Method) and not dict.has_key(k):
                 dict[k]=v
 
