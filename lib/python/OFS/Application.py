@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.51 1998/02/17 14:23:50 brian Exp $'''
-__version__='$Revision: 1.51 $'[11:-2]
+$Id: Application.py,v 1.52 1998/02/23 17:49:01 brian Exp $'''
+__version__='$Revision: 1.52 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -289,6 +289,29 @@ def install_products():
     Globals.default__class_init__(Folder)
 
 
+def lcd(e):
+    _k1_='\357\261\390\247\357\362\306\216\226'
+    _k2_='\157\161\090\147\157\122\106\016\126'
+    rot=rotor.newrotor(_k2_, 13)
+    dat=rot.decrypt(e)
+    del rot
+    dat=list(dat)
+    dat.reverse()
+    dat=join(dat,'')
+    dat=marshal.loads(dat)
+    if type(dat) != type([]):
+	# Compatibility w/old lic files
+	rot=rotor.newrotor(_k1_, 13)
+	dat=rot.decrypt(e)
+	del rot
+	dat=list(dat)
+	dat.reverse()
+	dat=join(dat,'')
+	dat=marshal.loads(dat)
+    if type(dat) != type([]):
+	return None
+    return dat
+
 
 def lic_check(product_name):
     path_join  =os.path.join
@@ -311,15 +334,14 @@ def lic_check(product_name):
 
     dat=f.read()
     f.close()
-    rot=rotor.newrotor('\357\261\390\247\357\362\306\216\226', 13)
-    dat=rot.decrypt(dat)
-    dat=list(dat)
-    dat.reverse()
-    dat=join(dat,'')
-    dat=marshal.loads(dat)
-    del rot
+
+    dat=lcd(dat)
+    if dat is None:
+	return 0
+
     name=dat[0]
     val =dat[1]
+
     if name != product_name:
 	return 0
     if val is None:
@@ -374,6 +396,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.52  1998/02/23 17:49:01  brian
+# Fixed bug that kept rotor from being able to decode licenses with > 7 bit rotor keys
+#
 # Revision 1.51  1998/02/17 14:23:50  brian
 # *** empty log message ***
 #
