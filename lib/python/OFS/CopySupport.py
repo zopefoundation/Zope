@@ -11,17 +11,17 @@
 #
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
+
 from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
 from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import Unauthorized, BadRequest
-from AccessControl import getSecurityManager
 from webdav.Lockable import ResourceLockedError
 
 CopyError='Copy Error'
@@ -35,7 +35,7 @@ class CopyContainer(ExtensionClass.Base):
          ('manage_copyObjects', 'manage_pasteObjects',
           'manage_renameForm', 'manage_renameObject', 'manage_renameObjects',)),
         ('Delete objects',
-         ('manage_cutObjects')),
+         ('manage_cutObjects',)),
         )
 
 
