@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.52 2000/06/16 19:46:32 srichter Exp $"""
-__version__ = "$Revision: 1.52 $"[11:-2]
+$Id: MailHost.py,v 1.53 2000/06/19 18:51:58 brian Exp $"""
+__version__ = "$Revision: 1.53 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -100,7 +100,9 @@ smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
 addForm=HTMLFile('addMailHost_form', globals())
-def add(self, id, title='', smtp_host=None, smtp_port=25, REQUEST=None):
+def add(self, id, title='', smtp_host=None,
+        localhost='localhost', smtp_port=25,
+        timeout=1.0, REQUEST=None):
     ' add a MailHost into the system '
 
     id=str(id)
