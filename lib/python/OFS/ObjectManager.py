@@ -84,12 +84,13 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.105 2000/08/07 19:22:41 brian Exp $"""
+$Id: ObjectManager.py,v 1.106 2000/08/08 17:15:10 chrism Exp $"""
 
-__version__='$Revision: 1.105 $'[11:-2]
+__version__='$Revision: 1.106 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
+from OFS.Traversable import Traversable
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
@@ -125,6 +126,7 @@ class ObjectManager(
     Acquisition.Implicit,
     Persistent,
     Collection,
+    Traversable,
     ):
     """Generic object manager
 
