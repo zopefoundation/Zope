@@ -58,7 +58,7 @@ class NotNode(ParseTreeNode):
         return []
 
     def executeQuery(self, index):
-        raise QueryError, "NOT operator must occur right after AND"
+        raise QueryError, "NOT parse tree node cannot be executed directly"
 
 class AndNode(ParseTreeNode):
 

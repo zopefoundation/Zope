@@ -1,3 +1,17 @@
+##############################################################################
+#
+# Copyright (c) 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.tests \
      import testIndex, testQueryEngine, testQueryParser
@@ -9,6 +23,7 @@ from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser
 from Products.ZCTextIndex.StopDict import get_stopdict
+from Products.ZCTextIndex.ParseTree import ParseError
 
 import re
 import unittest
@@ -84,6 +99,15 @@ class ZCIndexTestsBase:
         self.index = self.zc_index.index
         self.lexicon = self.zc_index.lexicon
 
+    def parserFailure(self, query):
+        self.assertRaises(ParseError, self.zc_index.query, query)
+
+    def parserSuccess(self, query, n):
+        r, num = self.zc_index.query(query)
+        self.assertEqual(num, n)
+        if n:
+            self.assertEqual(r[0][0], 1)
+
     def testStopWords(self):
         # the only non-stopword is question
         text = ("to be or not to be "
@@ -96,61 +120,23 @@ class ZCIndexTestsBase:
                 self.assertEqual(wids, [])
         self.assertEqual(len(self.index.get_words(1)), 1)
 
-        r, num = self.zc_index.query('question')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
+        self.parserSuccess('question', 1)
+        self.parserSuccess('question AND to AND be', 1)
+        self.parserSuccess('to AND question AND be', 1)
+        self.parserSuccess('question AND NOT gardenia', 1)
+        self.parserSuccess('question AND gardenia', 0)
+        self.parserSuccess('gardenia', 0)
+        self.parserSuccess('question OR gardenia', 1)
+        self.parserSuccess('question AND NOT to AND NOT be', 1)
+        self.parserSuccess('question OR to OR be', 1)
+        self.parserSuccess('question to be', 1)
 
-        r, num = self.zc_index.query('question AND to AND be')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('to AND question AND be')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('to AND NOT question')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('to AND NOT gardenia')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('question AND NOT gardenia')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('question AND gardenia')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('gardenia')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('question OR gardenia')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('question AND NOT to AND NOT be')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('question OR to OR be')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('question to be')
-        self.assertEqual(num, 1)
-        self.assertEqual(r[0][0], 1)
-
-        r, num = self.zc_index.query('to be')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('to AND be')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('to OR be')
-        self.assertEqual(num, 0)
-
-        r, num = self.zc_index.query('to AND NOT be')
-        self.assertEqual(num, 0)
+        self.parserFailure('to be')
+        self.parserFailure('to AND be')
+        self.parserFailure('to OR be')
+        self.parserFailure('to AND NOT be')
+        self.parserFailure('to AND NOT question')
+        self.parserFailure('to AND NOT gardenia')
 
     def testDocUpdate(self):
         docid = 1   # doesn't change -- we index the same doc repeatedly
@@ -482,10 +468,11 @@ class QueryTestsBase(testQueryEngine.TestQueryEngine,
         # XXX The FauxIndex and the real Index score documents very
         # differently.  The set comparison can't actually compare the
         # items, but it can compare the keys.  That will have to do for now.
-        d = {}
-        for k, v in set.items():
-            d[k] = v
-        self.assertEqual(d.keys(), dict.keys())
+        setkeys = list(set.keys())
+        dictkeys = dict.keys()
+        setkeys.sort()
+        dictkeys.sort()
+        self.assertEqual(setkeys, dictkeys)
 
 class CosineQueryTests(QueryTestsBase):
     IndexFactory = CosineIndex

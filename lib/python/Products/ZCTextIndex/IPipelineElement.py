@@ -21,3 +21,9 @@ class IPipelineElement(Interface):
 
         Process a source sequence of words into a result sequence.
         """
+
+    def processGlob(source):
+        """Process, passing through globbing metacharaters.
+
+        This is an optional method; if it is not used, process() is used.
+        """

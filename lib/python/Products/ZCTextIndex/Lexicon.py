@@ -69,9 +69,21 @@ class Lexicon:
             wids.append(self._wids.get(word, 0))
         return wids
 
+    def parseTerms(self, text):
+        last = _text2list(text)
+        for element in self._pipeline:
+            process = getattr(element, "processGlob", element.process)
+            last = process(last)
+        return last
+
+    def isGlob(self, word):
+        return "*" in word
+
     def get_word(self, wid):
-        """Return the word for the given word id"""
         return self._words[wid]
+
+    def get_wid(self, word):
+        return self._wids.get(word, 0)
 
     def globToWordIds(self, pattern):
         if not re.match("^\w+\*$", pattern):
@@ -116,11 +128,18 @@ class Splitter:
 
     import re
     rx = re.compile(r"\w+")
+    rxGlob = re.compile(r"\w+\*?")
 
     def process(self, lst):
         result = []
         for s in lst:
             result += self.rx.findall(s)
+        return result
+
+    def processGlob(self, lst):
+        result = []
+        for s in lst:
+            result += self.rxGlob.findall(s)
         return result
 
 class CaseNormalizer:

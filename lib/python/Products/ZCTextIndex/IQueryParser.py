@@ -24,6 +24,31 @@ class IQueryParser(Interface.Base):
 
         Return a parse tree (which implements IQueryParseTree).
 
+        Some of the query terms may be ignored because they are
+        stopwords; use getIgnored() to find out which terms were
+        ignored.  But if the entire query consists only of stop words,
+        or of stopwords and one or more negated terms, an exception is
+        raised.
+
+        May raise ParseTree.ParseError.
+        """
+
+    def getIgnored():
+        """Return the list of ignored terms.
+
+        Return the list of terms that were ignored by the most recent
+        call to parseQuery() because they were stopwords.
+
+        If parseQuery() was never called this returns None.
+        """
+
+    def parseQueryEx(query):
+        """Parse a query string.
+
+        Return a tuple (tree, ignored) where 'tree' is the parse tree
+        as returned by parseQuery(), and 'ignored' is a list of
+        ignored terms as returned by getIgnored().
+
         May raise ParseTree.ParseError.
         """
 

@@ -22,8 +22,8 @@ class ILexicon(Interface):
 
         The input text may be either a string or a list of strings.
 
-        Parses the text as if they are search terms, and skips words that
-        aren't in the lexicon.
+        Parse the text as if they are search terms, and skips words
+        that aren't in the lexicon.
         """
 
     def sourceToWordIds(text):
@@ -31,8 +31,9 @@ class ILexicon(Interface):
 
         The input text may be either a string or a list of strings.
 
-        Parses the text as if they come from a source document, and creates
-        new word ids for words that aren't (yet) in the lexicon.
+        Parse the text as if they come from a source document, and
+        creates new word ids for words that aren't (yet) in the
+        lexicon.
         """
 
     def globToWordIds(pattern):
@@ -43,9 +44,34 @@ class ILexicon(Interface):
 
         NOTE: Currently only a single trailing * is supported.
 
-        Returns the wids for all words in the lexicon that match the
+        Return the wids for all words in the lexicon that match the
         pattern.
         """
 
     def length():
         """Return the number of unique term in the lexicon."""
+
+    def get_word(wid):
+        """Return the word for the given word id.
+
+        Raise KeyError if the word id is not in the lexicon.
+        """
+
+    def get_wid(word):
+        """Return the wird id for the given word.
+
+        Return 0 of the word is not in the lexicon.
+        """
+
+    def parseTerms(text):
+        """Pass the text through the pipeline.
+
+        Return a list of words, normalized by the pipeline
+        (e.g. stopwords removed, case normalized etc.).
+        """
+
+    def isGlob(word):
+        """Return true if the word is a globbing pattern.
+
+        The word should be one of the words returned by parseTerm().
+        """

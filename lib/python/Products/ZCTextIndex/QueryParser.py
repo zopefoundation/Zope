@@ -83,7 +83,7 @@ _tokenizer_regex = re.compile(r"""
 |   -?
     # followed by
     (?:
-        # a string
+        # a string inside double quotes (and not containing these)
         " [^"]* "
         # or a non-empty stretch w/o whitespace, parens or double quotes
     |    [^()\s"]+
@@ -92,46 +92,64 @@ _tokenizer_regex = re.compile(r"""
 
 class QueryParser:
 
+    # This class is not thread-safe;
+    # each thread should have its own instance
+
     def __init__(self, lexicon):
         self._lexicon = lexicon
+        self._ignored = None
+
+    # Public API methods
 
     def parseQuery(self, query):
         # Lexical analysis.
         tokens = _tokenizer_regex.findall(query)
-        self.__tokens = tokens
+        self._tokens = tokens
         # classify tokens
-        self.__tokentypes = [_keywords.get(token.upper(), _ATOM)
-                             for token in tokens]
+        self._tokentypes = [_keywords.get(token.upper(), _ATOM)
+                            for token in tokens]
         # add _EOF
-        self.__tokens.append(_EOF)
-        self.__tokentypes.append(_EOF)
-        self.__index = 0
+        self._tokens.append(_EOF)
+        self._tokentypes.append(_EOF)
+        self._index = 0
 
         # Syntactical analysis.
+        self._ignored = [] # Ignored words in the query, for parseQueryEx
         tree = self._parseOrExpr()
         self._require(_EOF)
+        if tree is None:
+            raise ParseTree.ParseError(
+                "Query contains only common words: %s" % repr(query))
         return tree
+
+    def getIgnored(self):
+        return self._ignored
+
+    def parseQueryEx(self, query):
+        tree = self.parseQueryEx(query)
+        ignored = self.getIgnored()
+        return tree, ignored
 
     # Recursive descent parser
 
     def _require(self, tokentype):
         if not self._check(tokentype):
-            t = self.__tokens[self.__index]
+            t = self._tokens[self._index]
             msg = "Token %r required, %r found" % (tokentype, t)
             raise ParseTree.ParseError, msg
 
     def _check(self, tokentype):
-        if self.__tokentypes[self.__index] is tokentype:
-            self.__index += 1
+        if self._tokentypes[self._index] is tokentype:
+            self._index += 1
             return 1
         else:
             return 0
 
     def _peek(self, tokentype):
-        return self.__tokentypes[self.__index] is tokentype
+        return self._tokentypes[self._index] is tokentype
 
     def _get(self, tokentype):
-        t = self.__tokens[self.__index]
+        t = self._tokens[self._index]
         self._require(tokentype)
         return t
 
@@ -140,16 +158,31 @@ class QueryParser:
         L.append(self._parseAndExpr())
         while self._check(_OR):
             L.append(self._parseAndExpr())
-        if len(L) == 1:
+        L = filter(None, L)
+        if not L:
+            return None # Only stopwords
+        elif len(L) == 1:
             return L[0]
         else:
             return ParseTree.OrNode(L)
 
     def _parseAndExpr(self):
         L = []
-        L.append(self._parseTerm())
+        t = self._parseTerm()
+        if t is not None:
+            L.append(t)
+        Nots = []
         while self._check(_AND):
-            L.append(self._parseNotExpr())
+            t = self._parseNotExpr()
+            if t is None:
+                continue
+            if isinstance(t, ParseTree.NotNode):
+                Nots.append(t)
+            else:
+                L.append(t)
+        if not L:
+            return None # Only stopwords
+        L.extend(Nots)
         if len(L) == 1:
             return L[0]
         else:
@@ -157,7 +190,10 @@ class QueryParser:
 
     def _parseNotExpr(self):
         if self._check(_NOT):
-            return ParseTree.NotNode(self._parseTerm())
+            t = self._parseTerm()
+            if t is None:
+                return None # Only stopwords
+            return ParseTree.NotNode(t)
         else:
             return self._parseTerm()
 
@@ -172,12 +208,13 @@ class QueryParser:
             nodes = []
             nots = []
             for a in atoms:
-                words = re.findall(r"\w+\*?", a)
+                words = self._lexicon.parseTerms(a)
                 if not words:
-                    continue
+                    self._ignored.append(a)
+                    continue # Only stopwords
                 if len(words) > 1:
                     n = ParseTree.PhraseNode(" ".join(words))
-                elif words[0].endswith("*"):
+                elif self._lexicon.isGlob(words[0]):
                     n = ParseTree.GlobNode(words[0])
                 else:
                     n = ParseTree.AtomNode(words[0])
@@ -187,9 +224,7 @@ class QueryParser:
                 else:
                     nodes.append(n)
             if not nodes:
-                text = " ".join(atoms)
-                msg = "At least one positive term required: %r" % text
-                raise ParseTree.ParseError, msg
+                return None # Only stowords
             nodes.extend(nots)
             if len(nodes) == 1:
                 tree = nodes[0]

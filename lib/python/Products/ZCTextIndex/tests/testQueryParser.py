@@ -61,18 +61,18 @@ class TestQueryParser(TestCase):
     def testParseQuery(self):
         self.expect("foo", AtomNode("foo"))
         self.expect("note", AtomNode("note"))
-        self.expect("a and b AND c",
-                    AndNode([AtomNode("a"), AtomNode("b"), AtomNode("c")]))
-        self.expect("a OR b or c",
-                    OrNode([AtomNode("a"), AtomNode("b"), AtomNode("c")]))
-        self.expect("a AND b OR c AnD d",
-                    OrNode([AndNode([AtomNode("a"), AtomNode("b")]),
-                            AndNode([AtomNode("c"), AtomNode("d")])]))
-        self.expect("(a OR b) AND (c OR d)",
-                    AndNode([OrNode([AtomNode("a"), AtomNode("b")]),
-                             OrNode([AtomNode("c"), AtomNode("d")])]))
-        self.expect("a AND not b",
-                    AndNode([AtomNode("a"), NotNode(AtomNode("b"))]))
+        self.expect("aa and bb AND cc",
+                    AndNode([AtomNode("aa"), AtomNode("bb"), AtomNode("cc")]))
+        self.expect("aa OR bb or cc",
+                    OrNode([AtomNode("aa"), AtomNode("bb"), AtomNode("cc")]))
+        self.expect("aa AND bb OR cc AnD dd",
+                    OrNode([AndNode([AtomNode("aa"), AtomNode("bb")]),
+                            AndNode([AtomNode("cc"), AtomNode("dd")])]))
+        self.expect("(aa OR bb) AND (cc OR dd)",
+                    AndNode([OrNode([AtomNode("aa"), AtomNode("bb")]),
+                             OrNode([AtomNode("cc"), AtomNode("dd")])]))
+        self.expect("aa AND not bb",
+                    AndNode([AtomNode("aa"), NotNode(AtomNode("bb"))]))
 
         self.expect('"foo bar"', PhraseNode("foo bar"))
         self.expect("foo bar", AndNode([AtomNode("foo"), AtomNode("bar")]))
@@ -80,7 +80,10 @@ class TestQueryParser(TestCase):
         self.expect('(("foo bar"))"', PhraseNode("foo bar"))
         self.expect("((foo bar))", AndNode([AtomNode("foo"), AtomNode("bar")]))
 
-        self.expect('and/', AtomNode("and"))
+        if self.__class__ is TestQueryParser:
+            # This test fails when testZCTextIndex subclasses this class,
+            # because its lexicon's pipeline removes stopwords
+            self.expect('and/', AtomNode("and"))
 
         self.expect("foo-bar", PhraseNode("foo bar"))
         self.expect("foo -bar", AndNode([AtomNode("foo"),
