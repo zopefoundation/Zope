@@ -1,5 +1,16 @@
 Principia Changes
 
+  Principia 1.8.0
+
+    Features Added
+
+      - Added id, single, url, and assume_children attributes to the Tree tag.
+
+    Bugs Fixed
+
+      - The folder objectItems method returned all items even when
+        specific item types were given.
+
   Principia 1.7.0
 
     Features Added
