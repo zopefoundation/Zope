@@ -37,8 +37,9 @@ will need to be adjusted if the class is moved.</p>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <!--#if classIcon-->
-  <img src="<!--#var SCRIPT_NAME-->/<!--#var classIcon-->" border="0">
-  <!--#/if--><br>
+  <img src="<!--#var SCRIPT_NAME-->/<!--#var classIcon
+     -->?t=<!--#var ZopeTime fmt=second-->" border="0"><br>
+  <!--#/if-->
   <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
   </TD>
 </TR>
