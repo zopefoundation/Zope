@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.31 2001/01/24 16:52:27 brian Exp $'''
+$Id: StructuredText.py,v 1.32 2001/02/12 20:46:43 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,8 +256,11 @@ $Id: StructuredText.py,v 1.31 2001/01/24 16:52:27 brian Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
-# Revision 1.31  2001/01/24 16:52:27  brian
-# merged from 2.3
+# Revision 1.32  2001/02/12 20:46:43  brian
+# merge from 2.3 branch
+#
+# Revision 1.30.4.2  2001/02/12 20:45:55  brian
+# fixed bug 1908 (CRLF fix)
 #
 # Revision 1.30.4.1  2001/01/24 16:51:48  brian
 # Fixed regex in html_with_references (bug 1649) and also removed the \213
@@ -582,7 +585,7 @@ class StructuredText:
     """
 
     def __init__(self, aStructuredString, level=0,
-                 paragraph_divider=regex.compile('\(\n *\)+\n'),
+                 paragraph_divider=regex.compile('\(\r?\n *\)+\r?\n'),
                  ):
         '''Convert a structured text string into a structured text object.
 
