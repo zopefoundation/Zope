@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.145 $'[11:-2]
+__version__='$Revision: 1.146 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -375,7 +375,9 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_set(None)
 
         data=self.data
-        if type(data) is type(''): return data
+        if type(data) is type(''):
+            RESPONSE.setBase(None) 
+            return data
 
         while data is not None:
             RESPONSE.write(data.data)

@@ -71,6 +71,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #342: Avoiding insertion of a BASE tag for file objects 
+       with content-type text/html 
+
      - Collector #953: fixed namespace collision with form_title in ZMI
 
      - Collector #628: Applied patch to fix several textarea resize
