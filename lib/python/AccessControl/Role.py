@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -330,51 +330,11 @@ class RoleManager:
 	return self._mainAccess(self, REQUEST)
 
 
+    # Compatibility names only!!
 
-
-    smallRolesWidget=''
-
-
-
-
+    smallRolesWidget=selectedRoles=aclAChecked=aclPChecked=aclEChecked=''
     validRoles=valid_roles
     manage_rolesForm=manage_access
-    #manage_rolesForm=HTMLFile('manage_rolesForm', globals())
-    #smallRolesWidget=HTMLFile('smallRolesWidget', globals())
-
-
-    def selectedRoles(self):
-	try:    roles=self.aq_self.__roles__
-	except: roles=[]
-	if roles is None: roles=[]
-	return map(lambda i, r=roles:
-		   i in r and ('<OPTION VALUE="%s" SELECTED>%s' % (i,i)) \
-		   or  ('<OPTION VALUE="%s">%s' % (i,i)), self.validRoles())
-
-    def aclAChecked(self):
-	if hasattr(self,'aq_self'):
-	    self=self.aq_self
-	try:    roles=self.__roles__
-	except: return ' CHECKED'
-	return ''
-
-    def aclPChecked(self):
-	if hasattr(self,'aq_self'):
-	    self=self.aq_self
-	try:    roles=self.__roles__
-	except: return ''
-	if roles is None: 
-	    return ' CHECKED'
-	return ''
-
-    def aclEChecked(self):
-	if hasattr(self,'aq_self'):
-	    self=self.aq_self
-	try:    roles=self.__roles__
-	except: return 0
-	if roles is None: 
-	    return ''
-	return ' CHECKED'
 
     def manage_editRoles(self,REQUEST,acl_type='A',acl_roles=[]):
 	pass

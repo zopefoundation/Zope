@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -226,7 +226,7 @@ class UserFolderHandler:
     """ """
     meta_types_=({'name':'User Folder', 'action':'manage_addUserFolder'},)
 
-    def manage_addUserFolder(self,dtself,REQUEST,**ignored):
+    def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
         """ """
 	try:    self._setObject('acl_users', UserFolder())
 	except: return MessageDialog(
