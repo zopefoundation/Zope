@@ -82,8 +82,6 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''
-$Id: MML.py,v 1.3 1999/03/10 00:15:46 klm Exp $'''
 
 from StructuredText import * # :-)
         
