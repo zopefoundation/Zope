@@ -519,7 +519,7 @@ class DocumentClass:
              result.append(paragraph)
 
        return result
-    
+
     def doc_table(self, paragraph, expr = re.compile(r'\s*\|[-]+\|').match):
         text    = paragraph.getColorizableTexts()[0]
         m       = expr(text)
@@ -849,8 +849,11 @@ class DocumentClass:
         if top[-2:]=='::':
            subs=StructuredTextExample(subs)
            if strip(top)=='::': return subs
-           return ST.StructuredTextParagraph(
-              top[:-1], [subs], indent=paragraph.indent)
+           # copy attrs when returning a paragraph
+           kw = {}
+           atts = getattr(paragraph, '_attributes', [])
+           for att in atts: kw[att] = getattr(paragraph, att)
+           return apply(ST.StructuredTextParagraph, (top[:-1], [subs]), kw)
 
         if find(top,'\n') >= 0: return None
         return StructuredTextSection(top, subs, indent=paragraph.indent)
