@@ -100,10 +100,18 @@ import string
 class FTPRequest(HTTPRequest):
 
     def __init__(self, path, command, channel, response, stdin=None,
-                 environ=None):
+                 environ=None,globbing=None,recursive=0):
+
+        # we need to store the globbing information to pass it
+        # to the ZPublisher and the manage_FTPlist function 
+        # (ajung)
+        self.globbing = globbing
+        self.recursive= recursive
+        
         if stdin is None: stdin=StringIO()
         if environ is None:
             environ=self._get_env(path, command, channel, stdin)
+
         self._orig_env=environ
         HTTPRequest.__init__(self, stdin, environ, response, clean=1)
         
@@ -174,6 +182,11 @@ class FTPRequest(HTTPRequest):
             env['CONTENT_LENGTH']=len(stdin.getvalue())
         else:
             env['PATH_INFO']=self._join_paths(channel.path, path, command)
+
+        # Fake in globbing information 
+        env['GLOBBING'] = self.globbing
+        env['FTP_RECURSIVE'] = self.recursive
+
         return env
     
     def _join_paths(self,*args):

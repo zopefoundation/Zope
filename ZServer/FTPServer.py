@@ -140,6 +140,7 @@ from PubCore import handle
 from medusa.ftp_server import ftp_channel, ftp_server, recv_channel
 import asyncore, asynchat
 from medusa import filesys
+
 from FTPResponse import make_response
 from FTPRequest import FTPRequest
 
@@ -203,28 +204,45 @@ class zope_ftp_channel(ftp_channel):
         self.get_dir_list(line,1)
     
     def get_dir_list(self, line, long=0):
+        self.globbing = None
+        self.recursive = 0
         # we need to scan the command line for arguments to '/bin/ls'...
         # XXX clean this up, maybe with getopts
+
         if len(line) > 1:
             args = string.split(line[1])
         else:
             args =[]
         path_args = []
+
+        # Extract globbing information 
+
+       
+        for i in range(len(args)):
+            x = args[i]
+            if string.find(x,'*')!=-1 or string.find(x,'?')!=-1:
+                self.globbing = x
+                args[i] = '.'     
+
         for arg in args:
             if arg[0] != '-':
                 path_args.append (arg)
             else:
                 if 'l' in arg:
                     long=1
+                if 'R' in arg:
+                    self.recursive = 1
+
         if len(path_args) < 1:
             dir = '.'
         else:
             dir = path_args[0]
+
         self.listdir(dir, long)
     
     def listdir (self, path, long=0):
         response=make_response(self, self.listdir_completion, long)
-        request=FTPRequest(path, 'LST', self, response)
+        request=FTPRequest(path, 'LST', self, response,globbing=self.globbing,recursive=self.recursive)
         handle(self.module, request, response)         
         
     def listdir_completion(self, long, response):
