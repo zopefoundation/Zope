@@ -206,7 +206,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             LOG.error('delColumn attempted to delete nonexistent column %s.' % str(name))
             return
 
-        names.remove(name)
+        del names[_index]
 
         # rebuild the schema
         i=0; schema = {}
@@ -223,7 +223,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # remove the column value from each record
         for key in self.data.keys():
             rec = list(self.data[key])
-            rec.remove(rec[_index])
+            del rec[_index]
             self.data[key] = tuple(rec)
 
     def addIndex(self, name, index_type):

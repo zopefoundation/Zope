@@ -58,6 +58,14 @@ Zope Changes
 
     Bugs fixed
 
+      - Use 'del' instead of 'list.remove()' in
+        Catalog.delColumn(). There can be only one column with the
+        same name, and it could potentially break catalog metadata as
+        remove() may remove more than one element from the list if
+        they have the same value. Also, we already have the list index
+        we are interested in deleting so it doesn't make sense to look
+        up the value and call 'list.remove()' on it.
+
       - Collector #1628: FTP server has been broken (directory
         listings did not work)
 
