@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.17 1997/11/10 14:54:42 jim Exp $"""
+$Id: ObjectManager.py,v 1.18 1997/11/11 18:52:53 jim Exp $"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -406,7 +406,10 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def modified_in_session(self):
 	jar=self._p_jar
-	if jar is None: return 1
+	if jar is None:
+	    if hasattr(self,'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
+		jar=self.aq_parent._p_jar
+	    if jar is None: return 0
 	if not jar.name: return 0
 	try: jar.db[self._p_oid]
 	except: return 0
@@ -418,6 +421,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.18  1997/11/11 18:52:53  jim
+# Fixed bug in modified_in_session.
+#
 # Revision 1.17  1997/11/10 14:54:42  jim
 # Added two new methods, bobobase_modification_time, and
 # modified_in_session, to support flagging new and session objects.
