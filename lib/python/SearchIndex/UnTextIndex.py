@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree
@@ -287,12 +287,15 @@ class UnTextIndex(Persistent):
 
         id = self.id
 
-        k = getattr(obj, id)
-        if callable(k):
-            k = str(k())
-        else:
-            k = str(k)
-
+        try:
+            k = getattr(obj, id)
+            if callable(k):
+                k = str(k())
+            else:
+                k = str(k)
+        except:
+            return
+        
         d = {}
         old = d.has_key
         last = None

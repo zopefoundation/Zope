@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import Persistent
 import BTree
@@ -156,10 +156,13 @@ class UnIndex(Persistent):
         unindex = self._unindex
 
         id = self.id
-        k=getattr(obj, id)
 
-        if callable(k):
-            k = k()
+        try:
+            k=getattr(obj, id)
+            if callable(k):
+                k = k()
+        except:
+            k = MV
  
         if k is None or k == MV:
             return
