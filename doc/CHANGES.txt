@@ -4,6 +4,11 @@ Principia Changes
 
     Features Added
 
+      - Added Draft objects.  Draft objects allow you to delagate authority 
+        while retaining approval. Changes made to a draft object are
+        (implicitly) saved in a session.  Session changes are saved
+        when the draft is approved.
+
       - Added id, single, url, and assume_children attributes to the Tree tag.
 
       - Added support for expr shorthand, as in:
