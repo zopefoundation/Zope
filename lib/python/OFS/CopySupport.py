@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -102,7 +102,7 @@ class CopyContainer(ExtensionClass.Base):
     __ac_permissions__=(
         ('View management screens',
          ('manage_cutObjects', 'manage_copyObjects', 'manage_pasteObjects',
-          'manage_renameForm', 'manage_renameObject',)),
+          'manage_renameForm', 'manage_renameObjects', 'manage_renameObjects',)),
         )
 
 
@@ -119,6 +119,9 @@ class CopyContainer(ExtensionClass.Base):
 
     def manage_CopyContainerFirstItem(self, REQUEST):
         return self._getOb(REQUEST['ids'][0])        
+
+    def manage_CopyContainerAllItems(self, REQUEST):
+        return map(lambda i, s=self: s._getOb(i), tuple(REQUEST['ids']))
 
     def manage_cutObjects(self, ids, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
@@ -240,6 +243,17 @@ class CopyContainer(ExtensionClass.Base):
 
 
     manage_renameForm=Globals.HTMLFile('renameForm', globals())
+
+    def manage_renameObjects(self, ids, new_ids, REQUEST=None):
+        """Rename several sub-objects"""
+        if len(ids) != len(new_ids):
+            raise 'BadRequst','Please rename each listed object.'
+        for i in range(len(ids)):
+            if ids[i] != new_ids[i]:
+                self.manage_renameObject(ids[i], new_ids[i], REQUEST)
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, update_menu=1)
+        return None
 
     def manage_renameObject(self, id, new_id, REQUEST=None):
         """Rename a particular sub-object"""
