@@ -195,6 +195,10 @@ Zope Changes
         - Check for invalid characters in whole id, not just first character
           (Collector #1131).
 
+        - Prevent unintentional exceptions from blocking manage_beforeDelete;
+          added OFS.ObjectManager.BeforeDeleteException to allow an object
+          to veto its deletion (Collector #1183).
+
     Zope 2.1.6
 
       Bugs Fixed
