@@ -95,7 +95,6 @@ import Products
 from Acquisition import Implicit
 from Persistence import Persistent
 from Catalog import Catalog, orify
-import pdb, traceback
 from SearchIndex import UnIndex, UnTextIndex
 import IOBTree
 
@@ -196,7 +195,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
 
-        
 
     def manage_catalogObject(self, REQUEST, urls=None, blah=None):
         """ index all Zope objects that 'urls' point to """
@@ -323,7 +321,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return self.manage_catalogIndexes(self, REQUEST,
                                           manage_tabs_message=message)
     
-
     def catalog_object(self, obj, uid):
         """ wrapper around catalog """
         if not hasattr(self, '_v_total'):
@@ -411,9 +408,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     __call__=searchResults
 
 
-
-# this stuff is so the find machinery works
-
+## this stuff is so the find machinery works
 
     meta_types=() # Sub-object types that are specific to this object
     
@@ -445,9 +440,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         roles.sort()
         return roles
 
-
-# stolen from ZPublisher and modified slightly
-
+## stolen from ZPublisher and modified slightly
 
     def resolve_url(self, path, REQUEST):
 	""" The use of this function is depricated """
@@ -473,9 +466,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             # waaa - traversal may return a "default object"
             # like an index_html document, though you really
             # wanted to get a Folder back :(
-##            print path
-##            print `object`
-##            print (str(req.PARENTS))
 
             if hasattr(object, 'id'):
                 if callable(object.id):
@@ -484,7 +474,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             elif hasattr(object, '__name__'):
                 name=object.__name__
             else: name=''
-
                 
             if name != os.path.split(path)[-1]:
 		result = req.PARENTS[0]
