@@ -37,11 +37,14 @@
 	</TD>
       </TR>
       <TR>
-	<TD></TD>
-	<TD>
-	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
-	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Smaller">
-	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Bigger">
+	<TD align=left>
+          <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
+	</TD>
+	<TD align=right>
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Taller">
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Shorter">
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Wider">
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Narrower">
 	</TD>
       </TR>
     </TABLE>
