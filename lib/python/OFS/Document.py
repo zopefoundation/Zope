@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -53,7 +53,7 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
     )
 
     _state_name={'raw':1, 'globals':1, '__name__':1, '_vars':1,
-		 '_proxy_roles'}.has_key
+		 '_proxy_roles':1}.has_key
 
     def __getstate__(self):
 	r={}
