@@ -44,6 +44,7 @@ from cStringIO import StringIO
 from PubCore import handle
 from HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
+from App.config import getConfiguration
 
 from medusa.http_server import http_server,get_header, http_channel, VERSION_STRING
 import asyncore
@@ -288,13 +289,13 @@ class zhttp_channel(http_channel):
     closed = 0
     no_more_requests = 0
     zombie_timeout=100*60 # 100 minutes
-    max_header_len = 8196
 
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
         requestCloseOnExec(conn)
         self.queue=[]
         self.working=0
+        self.max_header_len = getConfiguration().http_header_max_length
 
     def push(self, producer, send=1):
         # this is thread-safe when send is false
@@ -365,7 +366,8 @@ class zhttp_channel(http_channel):
         else:
                 # we are receiving header (request) data
             self.in_buffer = self.in_buffer + data
-            if len(self.in_buffer) > self.max_header_len:
+            inbuf_len = len(self.in_buffer) 
+            if inbuf_len > self.max_header_len:
                 # Don't bother with a proper response header,
                 # we are probably under attack and that would just consume 
                 # precious resources.
@@ -373,7 +375,7 @@ class zhttp_channel(http_channel):
                 # Hanging's too good for them!
                 # Unfortunate side effect: the attack gets logged to the
                 # event log, but not the access log.
-                raise ValueError('HTTP headers invalid (too long)')
+                raise ValueError('HTTP headers invalid (too long) (got: %d bytes, allowed %d bytes' % (inbuf_len, self.max_header_len))
 
 class zhttp_server(http_server):
     "http server"

@@ -99,6 +99,9 @@ def cgi_maxlen(value):
     import cgi
     cgi.maxlen = value
 
+def http_header_max_length(value):
+    return value
+
 # server handlers
 
 def root_handler(config):

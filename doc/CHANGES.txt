@@ -46,6 +46,11 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1003: added new 'http-header-max-length' directive
+        to zope.conf to specific the maximum length of a HTTP request
+        header before it is considered as a possible DoS attack and
+        discarded.
+
       - Collector #1371: added new 'cgi-maxlen' directive to zope.conf 
         to limit the amount of form data being processed by Zope 
         to prevent DoS attacks

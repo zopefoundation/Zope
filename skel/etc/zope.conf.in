@@ -431,6 +431,20 @@ instancehome $INSTANCE
 #    cgi-maxlen 10000
 
 
+# Directive: http-header-max-length
+#
+# Description:
+#     Maximum number of bytes allowed within a HTTP request header. The request
+#     is discarded and considered as a DoS attack if the header size exceeds
+#     this limit.
+#
+# Default: 8192
+#
+# Example:
+#
+#     http-header-max-length 16384
+
+
 # Directive: automatically-quote-dtml-request-data
 #
 # Description:

@@ -530,6 +530,12 @@
     </description>
   </key>
 
+  <key name="http-header-max-length" default="8192" handler="http_header_max_length" datatype="integer">
+    <description>
+     Maximum size of received HTTP header being processed by Zope
+    </description>
+  </key>
+
   <key name="dns-server" datatype=".dns_resolver" attribute="dns_resolver">
     <description>
      Specify the ip address of your DNS server in order to cause resolved
