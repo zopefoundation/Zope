@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.2 2002/02/28 15:31:41 andreasjung Exp $'
+__version__ = '$Id: FilteredSet.py,v 1.3 2002/03/11 14:53:05 andreasjung Exp $'
 
 from BTrees.IIBTree import IISet
 from Persistence import Persistent
@@ -55,25 +55,6 @@ class FilteredSetBase(Persistent):
 
 
 
-class AttributeFilteredSet(FilteredSetBase):
-    """ The implementation of this FS is currently nonsense """
-
-    meta_type = 'AttributeFilteredSet'
-
-    def index_object(self, documentId, o):
-
-        if hasattr(o,self.id):
-            attr = getattr(o,self.id)
-            if callable(attr):
-                attr = attr()
-
-            try:
-                if attr in eval(self.expr):
-                    self.ids.insert(documentId)
-            except: 
-                pass
-    
-
 class PythonFilteredSet(FilteredSetBase):
 
     meta_type = 'PythonFilteredSet'
@@ -88,25 +69,12 @@ class PythonFilteredSet(FilteredSetBase):
                 sys.exc_info())
 
 
-class CatalogFilteredSet(FilteredSetBase):
-
-    meta_type = 'CatalogFilteredSet'
-
-    def index_object(self, documentId, obj):
-        raise RuntimeError, 'not implemented yet' 
-
 
 def factory(f_id, f_type, expr):
     """ factory function for FilteredSets """
 
     if f_type=='PythonFilteredSet':
         return PythonFilteredSet(f_id, expr)
-
-    elif f_type=='AttributeFilteredSet':
-        return AttributeFilteredSet(f_id, expr)
-
-    elif f_type=='CatalogFilteredSet':
-        return CatalogFilteredSet(f_id, expr)
 
     else:
         raise TypeError,'unknown type for FilteredSets: %s' % f_type
