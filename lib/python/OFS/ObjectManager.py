@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.13 1997/09/25 15:44:18 brian Exp $"""
+$Id: ObjectManager.py,v 1.14 1997/11/05 16:39:10 brian Exp $"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -328,10 +328,10 @@ class ObjectManager(Acquirer,Management,Persistent):
 	return self.manage_propertiesForm(self,REQUEST)
 
     def _defaultInput(self,n,t,v):
-        return '<INPUT NAME="%s:%s" SIZE="50" VALUE="%s"></TD>' % (n,t,v)
+        return '<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>' % (n,t,v)
 
     def _stringInput(self,n,t,v):
-        return ('<INPUT NAME="%s:%s" SIZE="50" VALUE="%s"></TD>'
+        return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
 		% (n,t,html_quote(v)))
 
     def _booleanInput(self,n,t,v):
@@ -350,11 +350,11 @@ class ObjectManager(Acquirer,Management,Persistent):
 	try: v=html_quote(join(v,'\n'))
 	except: v=''
         return (
-	'<TEXTAREA NAME="%s:lines" ROWS="10" COLS="50">%s</TEXTAREA>'
+	'<TEXTAREA NAME="%s:lines" ROWS="10" COLS="40">%s</TEXTAREA>'
 	% (n,v))
 
     def _textInput(self,n,t,v):
-        return ('<TEXTAREA NAME="%s" ROWS="10" COLS="50">%s</TEXTAREA>'
+        return ('<TEXTAREA NAME="%s" ROWS="10" COLS="40">%s</TEXTAREA>'
 		% (n,html_quote(v)))
 
     _inputMap={
@@ -394,6 +394,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.14  1997/11/05 16:39:10  brian
+# Style fix
+#
 # Revision 1.13  1997/09/25 15:44:18  brian
 # *** empty log message ***
 #

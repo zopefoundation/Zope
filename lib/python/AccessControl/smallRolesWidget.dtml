@@ -1,6 +1,8 @@
 <!--#if AUTHENTICATED_USER-->
 <TR>
-  <TD><STRONG>Access<BR>Control</STRONG></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Access<BR>Control</STRONG>
+  </TD>
   <TD>
   <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
   <TR>

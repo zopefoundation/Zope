@@ -11,13 +11,10 @@
 </table>
 
 <!--#if objectValues-->
-<P>
-
 The following items have been defined.  To <strong>manage</strong> the
 item, click on the item's icon.  To <strong>view</strong> the item,
 click on the item's title and id.
-<BR>
-</P>
+<BR><BR>
 
 <table border=0 cellspacing=0 cellpadding=2>
 
