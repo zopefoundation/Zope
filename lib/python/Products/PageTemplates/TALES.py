@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -120,6 +120,28 @@ class RegistrationError(Exception):
 
 class CompilerError(Exception):
     '''TALES Compiler Error'''
+
+class SecureMultiMap:
+    '''MultiMapping wrapper with security declarations'''
+    __allow_access_to_unprotected_subobjects__ = 1
+    def __init__(self, *dicts):
+        self._mm = apply(MultiMapping, dicts)
+    def __getitem__(self, index):
+        return self._mm[index]
+    def __len__(self):
+        return len(self._mm)
+    def _push(self, arg):
+        self._mm.push(arg)
+    def _pop(self):
+        return self._mm.pop()
+    def has_key(self, key):
+        return self._mm.has_key(key)
+    def has_get(self, key):
+        v = self._mm.get(key, self)
+        if v is self:
+            return 0, None
+        else:
+            return 1, v
 
 class Iterator(ZTUtils.Iterator):
     def __init__(self, name, seq, context):
@@ -204,15 +226,15 @@ class Context:
         # These contexts will need to be pushed.
         self._current_ctxts = {'local': 1, 'repeat': 1}
         
-        contexts['local'] = lv = MultiMapping()
+        contexts['local'] = lv = SecureMultiMap()
         init_local = contexts.get('local', None)
         if init_local:
-            lv.push(init_local)
+            lv._push(init_local)
+        contexts['repeat'] = rep =  SecureMultiMap()
+        contexts['loop'] = rep # alias
         contexts['global'] = gv = contexts.copy()
         gv['standard'] = contexts
-        contexts['var'] = MultiMapping(gv, lv)
-        contexts['repeat'] = rep =  MultiMapping()
-        contexts['loop'] = rep # alias
+        contexts['var'] = SecureMultiMap(gv, lv)
         
     def beginScope(self):
         oldctxts = self._current_ctxts
@@ -221,13 +243,13 @@ class Context:
         for ctxname in oldctxts.keys():
             # Push fresh namespace on each local stack.
             ctxts[ctxname] = ctx = {}
-            self.contexts[ctxname].push(ctx)
+            self.contexts[ctxname]._push(ctx)
 
     def endScope(self):
         self._current_ctxts = ctxts = self._ctxts_pushed.pop()
         # Pop the ones that were pushed at the beginning of the scope.
         for ctxname in ctxts.keys():
-            ctx = self.contexts[ctxname].pop()
+            ctx = self.contexts[ctxname]._pop()
             # Make sure there's no circular garbage
             ctx.clear()
 

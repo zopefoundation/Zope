@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -217,15 +217,9 @@ class PathExpr:
                 path[i:i+1] = list(val)
         try:
             __traceback_info__ = base
-            if var.has_key(base):
-                ob = var[base]
-            else:
+            has, ob = var.has_get(base)
+            if not has:
                 ob = contexts[base]
-                # Work around lack of security declaration
-                if path and (ob is contexts['repeat']):
-                    step = path.pop(0)
-                    __traceback_info__ = (base, step)
-                    ob = ob[step]
             return restrictedTraverse(ob, path)
         except (AttributeError, KeyError, TypeError, IndexError), e:
             raise Undefined, (self._s, sys.exc_info()), sys.exc_info()[2]
@@ -317,8 +311,8 @@ if sys.modules.has_key('Zope'):
             # Bind template variables
             var = econtext.contexts['var']
             for vname in self._f_varnames:
-                val = var.get(vname, _marker)
-                if val is not _marker:
+                has, val = var.has_get(vname)
+                if has:
                     f.func_globals[vname] = val
 
             # Execute the function in a new security context.
@@ -364,8 +358,8 @@ else:
             # Bind template variables
             var = econtext.contexts['var']
             for vname in self._f_varnames:
-                val = var.get(vname, _marker)
-                if val is not _marker:
+                has, val = var.has_get(vname)
+                if has:
                     f.func_globals[vname] = val
 
             # Execute the function in a new security context.
@@ -443,7 +437,7 @@ def restrictedTraverse(self, path):
                     o=object[name]
                 except (AttributeError, TypeError):
                     raise AttributeError, name
-                if not securityManager.validate(object, object, None, o):
+                if not securityManager.validate(object, object, name, o):
                     raise 'Unauthorized', name
         object = o
 
