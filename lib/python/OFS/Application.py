@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.140 2001/01/25 21:48:50 chrism Exp $'''
-__version__='$Revision: 1.140 $'[11:-2]
+$Id: Application.py,v 1.141 2001/02/15 19:05:15 brian Exp $'''
+__version__='$Revision: 1.141 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -248,7 +248,11 @@ class Application(Globals.ApplicationDefaultPermissions,
         if not method in ('GET', 'POST'):
             return NullResource(self, name, REQUEST).__of__(self)
 
-        REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
+        # Waaa. unrestrictedTraverse calls us with a fake REQUEST.
+        # There is proabably a better fix for this.
+        try: REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
+        except AttributeError:
+            raise KeyError, name
 
     def PrincipiaTime(self, *args):
         """Utility function to return current date/time"""
