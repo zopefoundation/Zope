@@ -1,7 +1,8 @@
 """
-ZTUtils
+ZTUtils: Page Template Utilities
 
-Page Template Utilities
+  The classes in this module are available from Page Templates.
+  
 """
 
 class Batch:
