@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -9,18 +9,26 @@ from string import atof, rfind
 import Acquisition
 DevelopmentMode=None
 
+def package_home(globals_dict):
+    __name__=globals_dict['__name__']
+    m=sys.modules[__name__]
+    if hasattr(m,'__path__'): return m.__path__[0]
+    return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+
 try:
-    home=CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL
-    CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL=home
+    home=CUSTOMER_HOME,SOFTWARE_HOME
+    CUSTOMER_HOME,SOFTWARE_HOME=home
 except:
-    # Debugger support
     try: home=os.environ['SOFTWARE_HOME']
     except:
-	home=os.getcwd()
-        if home[-4:]=='/bin': home=home[:-4]
-    CUSTOMER_HOME=sys.modules['__builtin__'].CUSTOMER_HOME=home
+        import Products
+        home=package_home(Products.__dict__)
+        home=(os.path.split(os.path.split(os.path.split(home)[0])[0])[0]
+              or os.getcwd())
+    try: chome=os.environ['CUSTOMER_HOME']
+    except: chome=home
+    CUSTOMER_HOME=sys.modules['__builtin__'].CUSTOMER_HOME=chome
     SOFTWARE_HOME=sys.modules['__builtin__'].SOFTWARE_HOME=home
-    SOFTWARE_URL=sys.modules['__builtin__'].SOFTWARE_URL=''
 
 
 from BoboPOS import Persistent, PickleDictionary
@@ -129,17 +137,9 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
 data_dir     = CUSTOMER_HOME+'/var'
 BobobaseName = '%s/Data.bbb' % data_dir
 
-HTML.shared_globals['SOFTWARE_URL']=SOFTWARE_URL
-
 from App.Dialogs import MessageDialog
 
 SessionNameName='Principia-Session'
-
-def package_home(globals_dict):
-    __name__=globals_dict['__name__']
-    m=sys.modules[__name__]
-    if hasattr(m,'__path__'): return m.__path__[0]
-    return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
     
 # utility stuff
 
