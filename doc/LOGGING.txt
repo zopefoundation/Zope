@@ -27,6 +27,13 @@ Zope Logging
    to the named UNIX domain socket (usually '/dev/log').  This will only 
    work on UNIX.
 
+  ZSYSLOG_FACILITY="facilityname"
+
+   Setting this environment variable will cause Zope to use the
+   syslog logger with the given facility. This environment variable
+   is optional and  overrides the default facility "user". This will
+   only work on UNIX.
+
   ZSYSLOG_SERVER="machine.name:port"
 
    Setting this environment variable tells Zope to connect a UDP
