@@ -31,7 +31,7 @@ from urllib import quote
 from urlparse import urlparse, urlunparse
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse, queryBeforeTraverse
-import zLOG
+import logging
 
 b64_trans = string.maketrans('+/', '-.')
 b64_untrans = string.maketrans('-.', '+/')
@@ -48,6 +48,8 @@ BROWSERID_MANAGER_NAME = 'browser_id_manager'# imported by SessionDataManager
 ALLOWED_BID_NAMESPACES = ('form', 'cookies', 'url')
 ADD_BROWSER_ID_MANAGER_PERM="Add Browser Id Manager"
 TRAVERSAL_APPHANDLE = 'BrowserIdManager'
+
+LOG = logging.getLogger('Zope.BrowserIdManager')
 
 def constructBrowserIdManager(
     self, id=BROWSERID_MANAGER_NAME, title='', idname='_ZopeId',
@@ -469,8 +471,7 @@ class BrowserIdManagerTraverser(Persistent):
         # fail if we cannot find a browser id manager (that means this
         # instance has been "orphaned" somehow)
         if browser_id_manager is None:
-            zLOG.LOG('Browser Id Manager Traverser', zLOG.ERROR,
-                     'Could not locate browser id manager!')
+            LOG.error('Could not locate browser id manager!')
             return
 
         try:
@@ -498,8 +499,7 @@ class BrowserIdManagerTraverser(Persistent):
                 request._script.append(quote(bid_name))
                 request._script.append(quote(browser_id))
         except:
-            zLOG.LOG('Browser Id Manager Traverser', zLOG.ERROR,
-                     'indeterminate error', error=sys.exc_info())
+            LOG.error('indeterminate error', exc_info=sys.exc_info())
 
 def getB64TStamp(
     b2a=binascii.b2a_base64,gmtime=time.gmtime, time=time.time,
