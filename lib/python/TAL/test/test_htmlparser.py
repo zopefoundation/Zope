@@ -162,8 +162,8 @@ text
                                             ("c", "yyy\t\nyyy"),
                                             ("d", "\txyz\n")])
                          ])
-        self._run_check("""<a b='' c="" d=>""", [
-            ("starttag", "a", [("b", ""), ("c", ""), ("d", "")]),
+        self._run_check("""<a b='' c="">""", [
+            ("starttag", "a", [("b", ""), ("c", "")]),
             ])
 
     def check_attr_entity_replacement(self):
@@ -216,6 +216,7 @@ text
         self._parse_error("<a foo='bar")
         self._parse_error("<a foo='>'")
         self._parse_error("<a foo='>")
+        self._parse_error("<a foo=>")
 
     def check_declaration_junk_chars(self):
         self._parse_error("<!DOCTYPE foo $ >")
