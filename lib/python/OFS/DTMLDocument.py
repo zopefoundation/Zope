@@ -84,10 +84,10 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
-from Globals import HTML, HTMLFile, MessageDialog
+from Globals import HTML, DTMLFile, MessageDialog
 from OFS.content_types import guess_content_type
 from DTMLMethod import DTMLMethod, decapitate
 from PropertyManager import PropertyManager
@@ -200,7 +200,7 @@ This is the <dtml-var id> Document.
 </p>
 <dtml-var standard_html_footer>"""
 
-addForm=HTMLFile('dtml/documentAdd', globals())
+addForm=DTMLFile('dtml/documentAdd', globals())
 
 def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Document object with the contents of file. If

@@ -83,13 +83,13 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
-from Globals import HTMLFile
+from Globals import DTMLFile
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DateTime import DateTime
 from string import find
@@ -99,14 +99,14 @@ class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
 
 #findframe is deprecated
-    manage_findFrame=HTMLFile('dtml/findFrame', globals())
-    manage_findForm=HTMLFile('dtml/findForm', globals(),
+    manage_findFrame=DTMLFile('dtml/findFrame', globals())
+    manage_findForm=DTMLFile('dtml/findForm', globals(),
                              management_view='Find')
-    manage_findAdv=HTMLFile('dtml/findAdv', globals(),
+    manage_findAdv=DTMLFile('dtml/findAdv', globals(),
                             management_view='Find',
                             help_topic='Find_Advanced.stx',
                             help_product='OFSP')
-    manage_findResult=HTMLFile('dtml/findResult', globals(),
+    manage_findResult=DTMLFile('dtml/findResult', globals(),
                                management_view='Find')
 
     __ac_permissions__=(

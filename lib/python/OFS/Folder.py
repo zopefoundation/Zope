@@ -87,18 +87,18 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.92 2001/01/08 22:46:58 brian Exp $"""
+$Id: Folder.py,v 1.93 2001/01/11 21:11:04 chrism Exp $"""
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
 
-from Globals import HTMLFile
+from Globals import DTMLFile
 from AccessControl import getSecurityManager
 
 
-manage_addFolderForm=HTMLFile('dtml/folderAdd', globals())
+manage_addFolderForm=DTMLFile('dtml/folderAdd', globals())
 
 def manage_addFolder(self, id, title='',
                      createPublic=0,

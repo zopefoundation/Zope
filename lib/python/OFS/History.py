@@ -84,7 +84,7 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals, ndiff, ExtensionClass
 from DateTime import DateTime
@@ -170,7 +170,7 @@ class Historical(ExtensionClass.Base):
                      },
                    )
 
-    manage_change_history_page=Globals.HTMLFile(
+    manage_change_history_page=Globals.DTMLFile(
         'dtml/history', globals(),
         HistoryBatchSize=20,
         first_transaction=0, last_transaction=20)
@@ -222,7 +222,7 @@ class Historical(ExtensionClass.Base):
     def manage_afterHistoryCopy(self): pass # ? (Hook)
 
     
-    _manage_historyComparePage=Globals.HTMLFile(
+    _manage_historyComparePage=Globals.DTMLFile(
         'dtml/historyCompare', globals(), management_view='History')
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):

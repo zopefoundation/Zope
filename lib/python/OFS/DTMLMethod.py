@@ -84,10 +84,10 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import History
-from Globals import HTML, HTMLFile, MessageDialog
+from Globals import HTML, DTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
 from SimpleItem import Item_w__name__, pretty_tb
 from OFS.content_types import guess_content_type
@@ -229,7 +229,7 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
                 kw[key] = val
             self.ZCacheable_set(result, keywords=kw)
 
-    ZCacheable_configHTML = HTMLFile('dtml/cacheNamespaceKeys', globals())
+    ZCacheable_configHTML = DTMLFile('dtml/cacheNamespaceKeys', globals())
 
     def getCacheNamespaceKeys(self):
         '''
@@ -260,13 +260,13 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
     def validate(self, inst, parent, name, value, md):
         return getSecurityManager().validate(inst, parent, name, value)
 
-    manage_editForm=HTMLFile('dtml/documentEdit', globals())
+    manage_editForm=DTMLFile('dtml/documentEdit', globals())
 
     # deprecated!
     manage_uploadForm=manage_editForm
 
     manage=manage_main=manage_editDocument=manage_editForm
-    manage_proxyForm=HTMLFile('dtml/documentProxy', globals())
+    manage_proxyForm=DTMLFile('dtml/documentProxy', globals())
 
     _size_changes={
         'Bigger': (5,5),
@@ -425,7 +425,7 @@ in the <dtml-var title_and_id> Folder.
 </p>
 <dtml-var standard_html_footer>"""
 
-addForm=HTMLFile('dtml/methodAdd', globals())
+addForm=DTMLFile('dtml/methodAdd', globals())
 
 def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If

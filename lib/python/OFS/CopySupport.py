@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -272,7 +272,7 @@ class CopyContainer(ExtensionClass.Base):
         return ''
 
 
-    manage_renameForm=Globals.HTMLFile('dtml/renameForm', globals())
+    manage_renameForm=Globals.DTMLFile('dtml/renameForm', globals())
 
     def manage_renameObjects(self, ids, new_ids, REQUEST=None):
         """Rename several sub-objects"""
