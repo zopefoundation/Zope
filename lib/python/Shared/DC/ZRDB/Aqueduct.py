@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.47 2001/04/28 07:21:59 chrism Exp $'''
-__version__='$Revision: 1.47 $'[11:-2]
+$Id: Aqueduct.py,v 1.48 2001/05/01 20:09:00 andreas Exp $'''
+__version__='$Revision: 1.48 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -359,20 +359,20 @@ def parse(text,
 
     mo  = parmre.match(text)
     if mo:
-        name=mo.group(1)
-        value={'default':mo.group(2)}
-        l=len(mo.group(0))
+        name=mo.group(2)
+        value={'default':mo.group(3)}
+        l=len(mo.group(1))
     else:
         mo = qparmre.match(text)
         if mo:
-                name=mo.group(0)
-                value={'default':mo.group(2)}
-                l=len(mo.group(0))
+                name=mo.group(1)
+                value={'default':mo.group(3)}
+                l=len(mo.group(2))
         else:
             mo = unparmre.match(text)
             if ts_results:
-                name=mo.group(1)
-                l=len(mo.group(0))
+                name=mo.group(2)
+                l=len(mo.group(1))
                 value={}
             else:
                 if not text or not strip(text): return Args(result,keys)
