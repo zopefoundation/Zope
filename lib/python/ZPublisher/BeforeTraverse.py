@@ -109,5 +109,11 @@ class NameCaller:
             return
 
         args = getattr(getattr(meth, 'func_code', None), 'co_argcount', 2)
-        apply(meth, (container, request, None)[:args])
-    
+        try:
+            apply(meth, (container, request, None)[:args])
+        except:
+            from zLOG import LOG, ERROR
+            import sys
+            LOG('BeforeTraverse', ERROR,
+                'Error while invoking hook: "%s"' % self.name, error=
+                sys.exc_info())
