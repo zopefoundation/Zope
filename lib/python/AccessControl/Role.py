@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -337,8 +337,6 @@ class RoleManager(ExtensionClass.Base):
         """Set local roles for a user."""
         if not roles:
             raise ValueError, 'One or more roles must be given!'
-        if not self.validate_roles(roles):
-            raise ValueError, 'Invalid role given.'
         dict=self.__ac_local_roles__ or {}
         local_roles = dict.get(userid, [])
         for r in roles:
@@ -354,8 +352,6 @@ class RoleManager(ExtensionClass.Base):
         """Set local roles for a user."""
         if not roles:
             raise ValueError, 'One or more roles must be given!'
-        if not self.validate_roles(roles):
-            raise ValueError, 'Invalid role given.'
         dict=self.__ac_local_roles__ or {}
         dict[userid]=roles
         self.__ac_local_roles__=dict
@@ -406,13 +402,14 @@ class RoleManager(ExtensionClass.Base):
         dup =dict.has_key
         x=0
         while x < 100:
-            try:    roles=obj.__ac_roles__
-            except: roles=()
-            for role in roles:
-                if not dup(role):
-                    dict[role]=1
-            try:    obj=obj.aq_parent
-            except: break
+            if hasattr(obj, '__ac_roles__'):
+                roles=obj.__ac_roles__
+                for role in roles:
+                    if not dup(role):
+                        dict[role]=1
+            if not hasattr(obj, 'aq_parent'):
+                break
+            obj=obj.aq_parent
             x=x+1
         roles=dict.keys()
         roles.sort()
