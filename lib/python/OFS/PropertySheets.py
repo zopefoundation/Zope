@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -106,6 +106,8 @@ class PropertySheet(Traversable, Persistent, Implicit):
          ),
         )
 
+    __reserved_ids= ('values','items') 
+
     def property_extensible_schema__(self):
         """Return a flag indicating whether new properties may be
         added or removed."""
@@ -115,6 +117,11 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # Create a new property set, using the given id and namespace
         # string. The namespace string should be usable as an xml name-
         # space identifier.
+
+        if id in self.__reserved_ids:
+            raise ValueError, "'%s' is a reserved Id (forbidden Ids are: %s) " % \
+                     (id, self.__reserved_ids)
+
         self.id=id
         self._md=md or {}
 

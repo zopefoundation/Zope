@@ -189,12 +189,17 @@ Zope Changes
       
       - Fixed a potential bug with cAccessControl's permission
         role deallocator which would try to decref things which
-	may not have been set, due to a change in the initializer
-	(which will bail out if it doesnt get called with a tuple
-	argument)
+        may not have been set, due to a change in the initializer
+        (which will bail out if it doesnt get called with a tuple
+        argument)
 
       - Collector #185, 341: PCGIServer and FCGIServer logs corrected
         and now output extended information like HTTPServer does.
+
+      - Propertysheets: Ids like 'values','keys' and 'values' are
+        now forbidden as they break WebDAV functionality. Existing
+        Propertysheets are not affected
+
 
   Zope 2.5.1 beta 1
     
