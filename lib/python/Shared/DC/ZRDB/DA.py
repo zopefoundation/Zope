@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.53 1998/12/02 12:11:49 jim Exp $'''
-__version__='$Revision: 1.53 $'[11:-2]
+$Id: DA.py,v 1.54 1998/12/15 17:31:02 jim Exp $'''
+__version__='$Revision: 1.54 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -22,7 +22,7 @@ from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split
-import IOBTree, DocumentTemplate, sqlvar, sqltest, sqlgroup
+import DocumentTemplate, sqlvar, sqltest, sqlgroup
 from time import time
 from zlib import compress, decompress
 md5new=md5.new
@@ -31,6 +31,12 @@ import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
+
+try:
+    raise 'waaa'
+    from IOBTree import Bucket
+except: Bucket=lambda:{}
+
 
 class SQL(DocumentTemplate.HTML):
     commands={}
@@ -149,7 +155,7 @@ class DA(
 	self.src=template
 	self.template=t=SQL(template)
 	t.cook()
-	self._v_cache={}, IOBTree.Bucket()
+	self._v_cache={}, Bucket()
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
     def manage_advanced(self, key, max_rows, max_cache, cache_time,
@@ -190,7 +196,7 @@ class DA(
 	self._setKey(key)
 	self.max_rows_ = max_rows
 	self.max_cache_, self.cache_time_ = max_cache, cache_time
-	self._v_cache={}, IOBTree.Bucket()
+	self._v_cache={}, Bucket()
 	self.class_name_, self.class_file_ = class_name, class_file
 	self._v_brain=getBrain(self.class_file_, self.class_name_, 1)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
@@ -241,7 +247,7 @@ class DA(
 
 	# Try to fetch from cache
 	if hasattr(self,'_v_cache'): cache=self._v_cache
-	else: cache=self._v_cache={}, IOBTree.Bucket()
+	else: cache=self._v_cache={}, Bucket()
 	cache, tcache = cache
 	max_cache=self.max_cache_
 	now=time()
