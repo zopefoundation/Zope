@@ -12,7 +12,7 @@
 ##############################################################################
 """Support for owned objects
 
-$Id: Owned.py,v 1.21 2004/01/27 16:59:23 tseaver Exp $
+$Id: Owned.py,v 1.22 2004/01/29 19:31:06 Brian Exp $
 """
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
@@ -62,7 +62,11 @@ class Owned(ExtensionClass.Base):
         return d
 
     getOwner__roles__=()
-    def getOwner(self, info=0):
+    def getOwner(self, info=0,
+                 aq_get=aq_get, None=None,
+                 UnownableOwner=UnownableOwner,
+                 getSecurityManager=getSecurityManager,
+                 ):
         """Get the owner
 
         If a true argument is provided, then only the owner path and id are
@@ -74,9 +78,22 @@ class Owned(ExtensionClass.Base):
                           'please use getOwnerTuple() instead.',
                           DeprecationWarning)
 
-            return self.getOwnerTuple()
 
-        return aq_base(self.getWrappedOwner()) # ugh, backward compat.
+        owner=aq_get(self, '_owner', None, 1)
+        if info or (owner is None): return owner
+
+        if owner is UnownableOwner: return None
+
+        udb, oid = owner
+
+        root=self.getPhysicalRoot()
+        udb=root.unrestrictedTraverse(udb, None)
+        if udb is None:
+            user = SpecialUsers.nobody
+        else:
+            user = udb.getUserById(oid, None)
+            if user is None: user = SpecialUsers.nobody
+        return user
 
     getOwnerTuple__roles__=()
     def getOwnerTuple(self):
