@@ -14,13 +14,17 @@
 
 """%(program)s:  Create a Zope instance home.
 
-usage:  %(program)s [options] directory
+usage:  %(program)s [options]
 
 Options:
-
+-d/--dir -- the directory to which the instance files should be installed
 -h/--help -- print this help text
 -u/--user NAME:PASSWORD -- set the user name and password of the initial user
 -z/--zeo host:port -- set the host:port of the ZEO server
+
+If no arguments are specified, the installer will ask for dir, username, and
+paassword.
+
 """
 
 import getopt
@@ -30,15 +34,21 @@ import sys
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hu:z:", ["help", "user=",
-            "zeo="])
+        opts, args = getopt.getopt(sys.argv[1:], "hu:z:d:", ["help", "user=",
+            "zeo=", "dir="])
     except getopt.GetoptError, msg:
         usage(sys.stderr, msg)
         sys.exit(2)
     user = None
     password = None
     zeo = None
+    dirname = None
     for opt, arg in opts:
+        if opt in ("-d", "--dir"):
+            dirname = os.path.abspath(arg)
+            if not dirname:
+                usage(sys.stderr, "dirname must not be empty")
+                sys.exit(2)
         if opt in ("-h", "--help"):
             usage(sys.stdout)
             sys.exit()
@@ -57,10 +67,8 @@ def main():
             except ValueError:
                 usage(sys.stderr, "zeo server port must be a number")
                 sys.exit(2)
-    if len(args) != 1:
-        usage(sys.stderr, "mkzopeinstance requires exactly one argument")
-        sys.exit(2)
-    dirname = os.path.abspath(args[0])
+    if not dirname:
+        dirname = get_dirname()
     inituser = os.path.join(dirname, "inituser")
     if not (user or os.path.exists(inituser)):
         user, password = get_inituser()
@@ -74,6 +82,20 @@ def usage(stream, msg=None):
         print >>stream
     program = os.path.basename(sys.argv[0])
     print >>stream, __doc__ % {"program": program}
+
+def get_dirname():
+    print 'Please choose a directory in which you\'d like to install'
+    print 'Zope "instance home" files such as database files, configuration'
+    print 'files, etc.'
+    print
+    while 1:
+        dirname = raw_input("Directory: ").strip()
+        if dirname == '':
+            print 'You must specify a directory'
+            continue
+        else:
+            break
+    return dirname
 
 def get_inituser():
     import getpass
@@ -101,7 +123,7 @@ def makeinstance(dirname, user, password, inituser):
 
     # Create the top of the instance:
     if not os.path.exists(dirname):
-        os.mkdir(dirname)
+        os.makedirs(dirname)
 
     replacements = {
         "PYTHON": sys.executable,
