@@ -1061,3 +1061,4 @@ distutils.core.setup(
              "bin/mkzeoinstance", "bin/mkzopeinstance"],
     distclass=ZopeDistribution,
     )
+

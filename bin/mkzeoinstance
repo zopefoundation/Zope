@@ -25,13 +25,17 @@ if softwarehome not in sys.path:
 from ZEO.mkzeoinst import ZEOInstanceBuilder
 
 class InstanceBuilder(ZEOInstanceBuilder):
-    def get_params(self, *args, **kw):
-        params = ZEOInstanceBuilder.get_params(self, *args, **kw)
-        sw = os.path.join(softwarehome, "lib", "python")
-        params["server"] = os.path.join(sw, "ZEO", "runzeo.py")
-        params["zdrun"] = os.path.join(sw, "zdaemon", "zdrun.py")
-        params["zdctl"] = os.path.join(sw, "zdaemon", "zdctl.py")
-        return params
+    def get_params(self, home, port):
+        return {
+            "package": "zeo",
+            "PACKAGE": "ZEO",
+            "home": home,
+            "port": port,
+            "python": sys.executable,
+            "server": os.path.join(softwarehome, "ZEO", "runzeo.py"),
+            "zdrun": os.path.join(softwarehome, "zdaemon", "zdrun.py"),
+            "zdctl": os.path.join(softwarehome, "zdaemon", "zdctl.py"),
+            }
 
 if __name__ == "__main__":
     InstanceBuilder().run()
