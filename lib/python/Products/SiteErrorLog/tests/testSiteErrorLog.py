@@ -10,6 +10,8 @@ from Testing.makerequest import makerequest
 import Zope
 Zope.startup()
 
+import transaction
+
 import sys
 import unittest
 
@@ -17,7 +19,7 @@ import unittest
 class SiteErrorLogTests(unittest.TestCase):
 
     def setUp(self):
-        get_transaction().begin()
+        transaction.begin()
         self.app = makerequest(Zope.app())
         try:
             self.app.manage_addDTMLMethod('doc', '')

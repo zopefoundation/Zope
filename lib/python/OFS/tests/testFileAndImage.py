@@ -12,6 +12,7 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from App.Common import rfc1123_date
 from Testing.makerequest import makerequest
 from zExceptions import Redirect
+import transaction
 
 try:
     here = os.path.dirname(os.path.abspath(__file__))
@@ -99,7 +100,7 @@ class FileTests(unittest.TestCase):
         except:
             self.connection.close()
             raise
-        get_transaction().begin()
+        transaction.begin()
         self.file = getattr( self.app, 'file' )
 
     def tearDown( self ):

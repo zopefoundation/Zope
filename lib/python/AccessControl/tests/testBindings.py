@@ -18,6 +18,7 @@ $Id$
 
 import unittest
 import ZODB
+import transaction
 from Acquisition import Implicit
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
@@ -95,7 +96,7 @@ class TestBindings(unittest.TestCase):
 
     def setUp(self):
         from Testing.ZODButil import makeDB
-        get_transaction().begin()
+        transaction.begin()
         self.db = makeDB()
         self.connection = self.db.open()
 

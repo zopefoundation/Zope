@@ -13,8 +13,8 @@ class UncommittableJar:
         self.reason = reason
         self.time = time.time()
         
-    def sort_key(self):
-        return self.time()
+    def sortKey(self):
+        return str(id(self))
 
     def tpc_begin(self, *arg, **kw):
         pass
@@ -24,6 +24,9 @@ class UncommittableJar:
 
     def tpc_vote(self, transaction):
         raise PreventTransactionCommit(self.reason)
+
+    def abort(*args):
+        pass
 
 class makeTransactionUncommittable:
     """

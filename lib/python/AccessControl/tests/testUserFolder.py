@@ -20,6 +20,8 @@ import os, sys, base64, unittest
 
 from Testing.makerequest import makerequest
 
+import transaction
+
 import Zope
 Zope.startup()
 
@@ -33,7 +35,7 @@ from AccessControl.User import User
 class UserFolderTests(unittest.TestCase):
 
     def setUp(self):
-        get_transaction().begin()
+        transaction.begin()
         self.app = makerequest(Zope.app())
         try:
             # Set up a user and role

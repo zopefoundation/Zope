@@ -16,6 +16,7 @@ if __name__ == "__main__":
     sys.path.insert(0, '../../..')
 
 import ZODB
+import transaction
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 from Products.Transience.TransactionHelper import PreventTransactionCommit, \
          makeTransactionUncommittable
@@ -30,6 +31,7 @@ class TestTransactionHelper(TestCase):
     def testUncommittable(self):
         makeTransactionUncommittable(self.t, "test")
         self.assertRaises(PreventTransactionCommit, get_transaction().commit)
+        transaction.abort()
         
 def test_suite():
     suite = makeSuite(TestTransactionHelper, 'test')

@@ -15,13 +15,15 @@ from Testing.makerequest import makerequest
 import Zope
 Zope.startup()
 
+import transaction
+
 import unittest
 
 
 class VHMRegressions(unittest.TestCase):
 
     def setUp(self):
-        get_transaction().begin()
+        transaction.begin()
         self.app = makerequest(Zope.app())
         try:
             self.app.manage_addProduct['SiteAccess'].manage_addVirtualHostMonster('VHM')

@@ -15,7 +15,7 @@
 import os, sys, unittest
 import string, cStringIO, re
 
-import ZODB, Acquisition
+import ZODB, Acquisition, transaction
 from Acquisition import aq_base
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
@@ -141,7 +141,7 @@ class TestTraverse( unittest.TestCase ):
         except:
             self.connection.close()
             raise
-        get_transaction().begin()
+        transaction.begin()
         self.folder1 = getattr( self.app, 'folder1' )
 
         self.policy = UnitTestSecurityPolicy()

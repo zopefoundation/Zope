@@ -3,6 +3,7 @@ import cStringIO
 from mimetools import Message
 from multifile import MultiFile
 
+import transaction
 from AccessControl import SecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
@@ -90,7 +91,7 @@ class CopySupportTestBase(unittest.TestCase):
         except:
             self.connection.close()
             raise
-        get_transaction().begin()
+        transaction.begin()
 
         return self.app._getOb( 'folder1' ), self.app._getOb( 'folder2' )
 
