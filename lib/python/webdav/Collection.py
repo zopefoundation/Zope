@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, os, string
 from Resource import Resource
@@ -104,7 +104,8 @@ class Collection(Resource):
     def dav__init(self, request, response):
         # By the spec, we are not supposed to accept /foo for a
         # collection, we are supposed to redirect to /foo/.
-        if request['PATH_INFO'][-1] != '/':
+        pathinfo=request.get('PATH_INFO','')
+        if pathinfo and pathinfo[-1] != '/':
             raise 'Moved Permanently', request['URL1']+'/'
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
