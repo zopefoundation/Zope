@@ -40,17 +40,19 @@ if not hasattr(app,'standard_html_footer'):
     get_transaction().commit()
 
 if not hasattr(app, 'standard_html_header'):
-    app.manage_addDocument('standard_html_header',
-			   'Standard Document Beginning',
-			   """<html><head><title><!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></title></head><body>""")
+    app.manage_addDocument(
+	'standard_html_header',
+	'Standard Document Beginning',
+	'<html><head><title><!--#var title_or_id--></title></head><body>')
     get_transaction().commit()
 
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.4  1997/09/10 15:55:50  jim
+# Changed to use title_or_id.
+#
 # Revision 1.3  1997/09/02 21:22:06  jim
 # Added import of TreeDisplay.TreeTag to enable tree tag.
 # Changed document creation call.
