@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.43 1998/05/08 14:56:50 jim Exp $"""
+$Id: Folder.py,v 1.44 1998/05/11 16:03:29 jim Exp $"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -73,7 +73,9 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	 'manage_tabs','manage_propertiesForm','manage_UndoForm',)),
 	('Access Contents Information',
 	 ('objectIds', 'objectValues', 'objectItems','hasProperty',
-	  'propertyIds', 'propertyValues','propertyItems',)),
+	  'propertyIds', 'propertyValues','propertyItems',),
+	 ('Anonymous', 'Manager'),
+	 ),
 	('Undo changes',       ('manage_undo_transactions',)),
 	('Change permissions', ('manage_access',)),
 	('Add objects', ('manage_addObject',)),
