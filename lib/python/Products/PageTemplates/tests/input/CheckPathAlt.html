@@ -15,7 +15,7 @@
    <p tal:attributes="name y/z | python:'||'[:0]">Z</p>
    <p tal:attributes="name y/z | nothing">Z</p>
 
-   <p tal:on-error="python:str(error.value)" tal:content="a/b | c/d">Z</p>
+   <p tal:on-error="python:str(error.value[0])" tal:content="a/b | c/d">Z</p>
    </div>
 </body>
 </html>
