@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.44 2000/12/15 16:10:46 brian Exp $'
-__version__='$Revision: 1.44 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.45 2000/12/18 19:25:44 brian Exp $'
+__version__='$Revision: 1.45 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -550,7 +550,9 @@ def apply_diff(state, diff, expand):
         id=diff[-1]
         del diff[-1]
         if len(s)==1: s.append([])
-        s=list(s[1])
+        s=s[1]
+        if type(s)==type(()):
+            s=list(s)
         loc=-1
         for i in range(len(s)):
             if s[i][0]==id:
