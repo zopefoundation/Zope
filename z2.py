@@ -346,9 +346,6 @@ sys.path=[os.path.join(here,'lib','python'),here
 
 # from this point forward we can use the zope logger
 
-import zLOG, ZLogger
-
-zLOG.log_write = ZLogger.ZLogger.log_write
 
 if Zpid:
     import zdaemon, App.FindHomes, posix
@@ -358,6 +355,12 @@ if Zpid:
 
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
 exec "import "+MODULE in {}
+
+import zLOG
+from Zope import ZLogger
+
+zLOG.log_write = ZLogger.ZLogger.log_write
+
 
 # Location of the ZServer log file. This file logs all ZServer activity.
 # You may wish to create different logs for different servers. See
