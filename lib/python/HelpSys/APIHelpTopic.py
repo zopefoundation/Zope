@@ -104,8 +104,15 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         dict={}
         execfile(file, dict)
         self.doc=dict.get('__doc__','')
+
+        self.apis=[]
+        for v in dict.values():
+            if type(v)==types.ClassType:
+                self.apis.append(APIDoc(v))
+
+        # try to get title from first non-blank line
+        # of module docstring
         if not self.title:
-            # get title from first non-blank line of docstring
             lines=string.split(self.doc,'\n')
             while 1:
                 line=string.strip(lines[0])
@@ -115,10 +122,9 @@ class APIHelpTopic(HelpTopic.HelpTopic):
                 lines.pop(0)
                 if not lines:
                     break
-        self.apis=[]
-        for v in dict.values():
-            if type(v)==types.ClassType:
-                self.apis.append(APIDoc(v))
+        # otherwise get title from first class name
+        if not self.title:
+            self.title=self.apis[0].name
 
     index_html=HTMLFile('APIHelpView', globals())
 

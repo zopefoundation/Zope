@@ -1,6 +1,8 @@
 <dtml-var standard_html_header>
 
 <h1>API Documentation</h1>
+
+<dtml-if "_.len(apis) > 1">
 <dl><dd>
 <h2 class="api">
 <dtml-in apis>
@@ -9,10 +11,12 @@
 </dtml-in>
 </h2>
 </dd></dl>
+</dtml-if>
 
+<dtml-if doc>
 <dtml-var doc fmt="structured-text">
-
 <hr noshade>
+</dtml-if>
 
 <dtml-in apis>
   <dtml-var view>
