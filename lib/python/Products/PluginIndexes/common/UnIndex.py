@@ -99,6 +99,7 @@ class UnIndex(SimpleItem):
     def clear(self):
         self._index = OOBTree()
         self._unindex = IOBTree()
+        self._length.set(0)
 
     def __nonzero__(self):
         return not not self._unindex
@@ -203,7 +204,7 @@ class UnIndex(SimpleItem):
         returnStatus = 0
 
         # First we need to see if there's anything interesting to look at
-        datum = self._get_object_datum(obj, attr)
+        datum = self._get_object_datum(obj, attr)                        
 
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
