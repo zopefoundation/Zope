@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.151 $'[11:-2]
+__version__='$Revision: 1.152 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -244,6 +244,8 @@ class BasicUser(Implicit):
     def allowed(self, object, object_roles=None):
         """Check whether the user has access to object. The user must
            have one of the roles in object_roles to allow access."""
+
+        if object_roles is _what_not_even_god_should_do: return 0
 
         # Short-circuit the common case of anonymous access.
         if object_roles is None or 'Anonymous' in object_roles:

@@ -85,13 +85,16 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.10 2001/04/27 20:27:37 shane Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.11 2001/06/07 22:36:43 shane Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
+
+from types import StringType
 
 import SimpleObjectPolicies
 from AccessControl import Unauthorized
 _noroles=SimpleObjectPolicies._noroles
 from zLOG import LOG, PROBLEM
+from Acquisition import aq_base
 
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 
@@ -112,7 +115,7 @@ class ZopeSecurityPolicy:
             if name[:3]=='aq_' and name not in valid_aq_:
                 return 0
 
-        containerbase=getattr(container, 'aq_base', container)
+        containerbase = aq_base(container)
         accessedbase=getattr(accessed, 'aq_base', container)
 
         ############################################################
@@ -231,8 +234,9 @@ class ZopeSecurityPolicy:
 
     def checkPermission(self, permission, object, context):
         roles=rolesForPermissionOn(permission, object)
-        if roles is _what_not_even_god_should_do: return 0
-        return context.user.has_role(roles, object)
+        if type(roles) is StringType:
+            roles=[roles]
+        return context.user.allowed(object, roles)
     
 
 def cleanupName(name, value):
