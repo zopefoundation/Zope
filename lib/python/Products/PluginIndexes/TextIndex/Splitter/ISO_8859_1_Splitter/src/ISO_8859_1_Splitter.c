@@ -35,6 +35,7 @@ typedef struct
     int allow_single_chars;
     int index_numbers;
     int max_len;
+    int casefolding;
 }
 
 Splitter;
@@ -251,7 +252,10 @@ next_word(Splitter *self, char **startpos, char **endpos)
             continue;
         }
 
-        c=mytolower(*here);
+        if (self->casefolding)
+            c=mytolower(*here);
+        else
+            c = (*here);
 
         /* Check to see if this character is part of a word */
 
@@ -490,7 +494,7 @@ static PyTypeObject SplitterType = {
                                        SplitterType__doc__ /* Documentation string */
                                    };
 
-static char *splitter_args[]={"doc","synstop","encoding","singlechar","indexnumbers","maxlen",NULL};
+static char *splitter_args[]={"doc","synstop","encoding","singlechar","indexnumbers","maxlen","casefolding",NULL};
 
 static PyObject *
 get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
@@ -501,12 +505,18 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     int single_char = 0;
     int index_numbers = 0;
     int max_len=64;
+    int casefolding=1;
 
-    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiii",splitter_args,&doc,&synstop,&encoding,&single_char,&index_numbers,&max_len)) return NULL;
+    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiiii",splitter_args,&doc,&synstop,&encoding,&single_char,&index_numbers,&max_len,&casefolding)) return NULL;
 
 
     if (index_numbers<0 || index_numbers>1) {
         PyErr_SetString(PyExc_ValueError,"indexnumbers must be 0 or 1");
+        return NULL;
+    }
+
+    if (casefolding<0 || casefolding>1) {
+        PyErr_SetString(PyExc_ValueError,"casefolding must be 0 or 1");
         return NULL;
     }
 
@@ -519,7 +529,6 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
         PyErr_SetString(PyExc_ValueError,"maxlen must be between 1 and 128");
         return NULL;
     }
-
 
 
     UNLESS(self = PyObject_NEW(Splitter, &SplitterType)) return NULL;
@@ -539,6 +548,7 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     self->allow_single_chars    = single_char;
     self->index_numbers         = index_numbers;
     self->max_len               = max_len;
+    self->casefolding           = casefolding;
 
     self->index = -1;
 
@@ -553,7 +563,7 @@ err:
 static struct PyMethodDef Splitter_module_methods[] =
     {
         { "ISO_8859_1_Splitter", (PyCFunction)get_Splitter, METH_VARARGS|METH_KEYWORDS,
-          "ISO_8859_1_Splitter(doc[,synstop][,encoding][,singlechar][,indexnumbers][,maxlen]) -- Return a word splitter"
+          "ISO_8859_1_Splitter(doc[,synstop][,encoding][,singlechar][,indexnumbers][,maxlen][,casefolding]) -- Return a word splitter"
         },
 
         { NULL, NULL }
@@ -564,7 +574,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ISO_8859_1_Splitter.c,v 1.6 2002/01/09 15:17:34 andreasjung Exp $\n"
+    "$Id: ISO_8859_1_Splitter.c,v 1.7 2002/01/21 19:28:55 andreasjung Exp $\n"
     ;
 
 
@@ -573,20 +583,22 @@ void
 initISO_8859_1_Splitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.6 $";
+    char *rev="$Revision: 1.7 $";
 
     /* Create the module and add the functions */
     initSplitterTrtabs();
+    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 1");
     m = Py_InitModule4("ISO_8859_1_Splitter", Splitter_module_methods,
                        Splitter_module_documentation,
                        (PyObject*)NULL,PYTHON_API_VERSION);
+    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 2");
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
+    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 3");
     PyDict_SetItemString(d, "__version__",
                          PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
+    if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter 4");
 
-    if (PyErr_Occurred())
-        Py_FatalError("can't initialize module Splitter");
 }
 

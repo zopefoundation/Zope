@@ -25,11 +25,12 @@ typedef struct
     int max_len;
     int allow_single_chars;
     int index_numbers;
+    int casefolding;
 }
 Splitter;
 
 static
-PyUnicodeObject *prepareString(PyUnicodeObject *o);
+PyUnicodeObject *prepareString(Splitter *self, PyUnicodeObject *o);
 
 static PyObject *checkSynword(Splitter *self, PyObject *word)
 {
@@ -201,7 +202,7 @@ static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
     int i=0;
     int start=0;
 
-    doc1 = prepareString(doc);
+    doc1 = prepareString(self,doc);
     if (doc1 == NULL)
       return -1;
 
@@ -297,18 +298,20 @@ void fixlower(PyUnicodeObject *self)
 
 
 static
-PyUnicodeObject *prepareString(PyUnicodeObject *o)
+PyUnicodeObject *prepareString(Splitter *self,PyUnicodeObject *o)
 
 {
     PyUnicodeObject *u;
 
     u = (PyUnicodeObject*) PyUnicode_FromUnicode(o->str, o->length);
-    if (u != NULL)
-      fixlower(u);
+    if (u != NULL){
+        if (self->casefolding)
+          fixlower(u);
+    }
     return  u;
 }
 
-static char *splitter_args[]={"doc","synstop","encoding","indexnumbers","singlechar","maxlen",NULL};
+static char *splitter_args[]={"doc","synstop","encoding","indexnumbers","singlechar","maxlen","casefolding",NULL};
 
 
 static PyObject *
@@ -320,8 +323,9 @@ newSplitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     int index_numbers = 0;
     int max_len=64;
     int single_char = 0;
+    int casefolding=1;
 
-    if (! (PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiii",splitter_args,&doc,&synstop,&encoding,&index_numbers,&single_char,&max_len))) return NULL;
+    if (! (PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiiii",splitter_args,&doc,&synstop,&encoding,&index_numbers,&single_char,&max_len,&casefolding))) return NULL;
 
 #ifdef DEBUG
     puts("got text");
@@ -331,6 +335,11 @@ newSplitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
 
     if (index_numbers<0 || index_numbers>1) {
         PyErr_SetString(PyExc_ValueError,"indexnumbers must be 0 or 1");
+        return NULL;
+    }
+
+    if (casefolding<0 || casefolding>1) {
+        PyErr_SetString(PyExc_ValueError,"casefolding must be 0 or 1");
         return NULL;
     }
 
@@ -371,6 +380,7 @@ newSplitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     self->index_numbers      = index_numbers;
     self->max_len            = max_len;
     self->allow_single_chars = single_char;
+    self->casefolding        = casefolding;
 
     if ((splitUnicodeString(self,(PyUnicodeObject *)unicodedoc)) < 0)
       goto err;
@@ -389,7 +399,7 @@ static struct PyMethodDef Splitter_module_methods[] =
     {
         { "UnicodeSplitter", (PyCFunction)newSplitter,
           METH_VARARGS|METH_KEYWORDS,
-          "UnicodeSplitter(doc[,synstop][,encoding='latin1']) "
+          "UnicodeSplitter(doc[,synstop][,encoding='latin1'][,indexnumbers][,maxlen][,singlechar][,casefolding]) "
           "-- Return a word splitter"
         },
         { NULL, NULL }
@@ -400,7 +410,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.13 2002/01/09 15:17:34 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.14 2002/01/21 19:28:55 andreasjung Exp $\n"
     ;
 
 
@@ -408,7 +418,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.13 $";
+    char *rev="$Revision: 1.14 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,

@@ -28,6 +28,7 @@ typedef struct
     int allow_single_chars;
     int index_numbers;
     int max_len;
+    int casefolding;
 }
 
 Splitter;
@@ -170,7 +171,10 @@ next_word(Splitter *self, char **startpos, char **endpos)
             continue;
         }
 
-        c=tolower((unsigned char) *here);
+        if (self->casefolding) 
+            c = tolower((unsigned char) *here);
+        else
+            c = (unsigned char) *here;
 
         /* Check to see if this character is part of a word */
 
@@ -435,7 +439,7 @@ static PyTypeObject SplitterType = {
     SplitterType__doc__ /* Documentation string */
 };
 
-static char *splitter_args[]={"doc","synstop","encoding","singlechar","indexnumbers","maxlen",NULL};
+static char *splitter_args[]={"doc","synstop","encoding","singlechar","indexnumbers","maxlen","casefolding",NULL};
 
 
 static PyObject *
@@ -447,13 +451,26 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject * keywds)
     int single_char = 0;
     int index_numbers = 0;
     int max_len= 64;
+    int casefolding = 1;
 
-    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiii",splitter_args, \
-                                       &doc,&synstop,&encoding,&single_char,&index_numbers,&max_len)) return NULL;
+    UNLESS(PyArg_ParseTupleAndKeywords(args,keywds,"O|Osiiii",splitter_args, \
+                                       &doc,
+                                       &synstop,
+                                       &encoding,
+                                       &single_char,
+                                       &index_numbers,
+                                       &max_len,
+                                       &casefolding
+                                    )) return NULL;
 
 
     if (index_numbers<0 || index_numbers>1) {
         PyErr_SetString(PyExc_ValueError,"indexnumbers must be 0 or 1");
+        return NULL;
+    }
+
+    if (casefolding<0 || casefolding>1) {
+        PyErr_SetString(PyExc_ValueError,"casefolding must be 0 or 1");
         return NULL;
     }
 
@@ -486,6 +503,7 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject * keywds)
     self->allow_single_chars = single_char;
     self->index_numbers      = index_numbers;
     self->max_len            = max_len;
+    self->casefolding        = casefolding;
 
     return (PyObject*)self;
 
@@ -498,7 +516,7 @@ err:
 static struct PyMethodDef Splitter_module_methods[] =
     {
         { "ZopeSplitter", (PyCFunction)get_Splitter, METH_VARARGS|METH_KEYWORDS,
-            "ZopeSplitter(doc[,synstop][,encoding][,singlechar][,indexnumbers][,maxlen]) -- Return a word splitter"
+            "ZopeSplitter(doc[,synstop][,encoding][,singlechar][,indexnumbers][,maxlen][,casefolding]) -- Return a word splitter"
         },
 
         { NULL, NULL }
@@ -509,7 +527,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ZopeSplitter.c,v 1.6 2002/01/09 15:17:34 andreasjung Exp $\n"
+    "$Id: ZopeSplitter.c,v 1.7 2002/01/21 19:28:55 andreasjung Exp $\n"
     ;
 
 
@@ -517,7 +535,7 @@ void
 initZopeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.6 $";
+    char *rev="$Revision: 1.7 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("ZopeSplitter", Splitter_module_methods,
