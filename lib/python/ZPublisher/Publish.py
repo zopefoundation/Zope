@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.116 1999/01/05 16:17:19 brian Exp $"""
-__version__='$Revision: 1.116 $'[11:-2]
+$Id: Publish.py,v 1.117 1999/01/06 14:37:03 jim Exp $"""
+__version__='$Revision: 1.117 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -764,7 +764,7 @@ def parse_cookie(text,
                      ),
                  parmre=regex.compile(
                      '\([\0- ]*'
-                     '\([^\0- ;,=\"]+\)=\([^\0;-=\"]*\)'
+                     '\([^\0- ;,=\"]+\)=\([^\0- ;,\"]*\)'
                      '\([\0- ]*[;,]\)?[\0- ]*\)'
                      ),
                  acquire=parse_cookie_lock.acquire,
