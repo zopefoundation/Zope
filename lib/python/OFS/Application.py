@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.89 1999/03/10 00:15:14 klm Exp $'''
-__version__='$Revision: 1.89 $'[11:-2]
+$Id: Application.py,v 1.90 1999/03/11 18:56:20 brian Exp $'''
+__version__='$Revision: 1.90 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -286,6 +286,19 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         return '<a href="http://www.zope.org/Credits"><img ' \
                'src="%s/p_/ZopeButton" width="60" height="82" ' \
                'border="0" alt="Powered by Zope"></a>' % self.REQUEST.BASE1
+
+
+    def DELETE(self, REQUEST, RESPONSE):
+        """Delete a resource object."""
+        self.dav__init(REQUEST, RESPONSE)
+        raise 'Forbidden', 'This resource cannot be deleted.'
+
+    def MOVE(self, REQUEST, RESPONSE):
+        """Move a resource to a new location."""
+        self.dav__init(REQUEST, RESPONSE)
+        raise 'Forbidden', 'This resource cannot be moved.'
+
+
 
 class Expired(Persistent):
     icon='p_/broken'
