@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -320,71 +320,74 @@ class CopyContainer(ExtensionClass.Base):
         # existing context, such as checking an object during an import
         # (the object will not yet have been connected to the acquisition
         # heirarchy).
+
         if not hasattr(object, 'meta_type'):
             raise CopyError, MessageDialog(
-                  title='Not Supported',
-                  message='The object <EM>%s</EM> does not support this' \
-                          ' operation' % absattr(object.id),
-                  action='manage_main')
-        mt=object.meta_type
+                  title   = 'Not Supported',
+                  message = ('The object <EM>%s</EM> does not support this' \
+                             ' operation' % absattr(object.id)),
+                  action  = 'manage_main')
+
         if not hasattr(self, 'all_meta_types'):
             raise CopyError, MessageDialog(
-                  title='Not Supported',
-                  message='Cannot paste into this object.',
-                  action='manage_main')
+                  title   = 'Not Supported',
+                  message = 'Cannot paste into this object.',
+                  action  = 'manage_main')
 
-        method_name=None
-        mt_permission=None
-        meta_types=absattr(self.all_meta_types)
+        method_name = None
+        mt_permission = None
+        meta_types = absattr(self.all_meta_types)
+
         for d in meta_types:
-            if d['name']==mt:
-                method_name=d['action']
-                mt_permission=d.get( 'permission', None )
+            if d['name'] == object.meta_type:
+                method_name = d['action']
+                mt_permission = d.get('permission')
                 break
 
-        if mt_permission is not None:
-            if getSecurityManager().checkPermission( mt_permission, self ):
-                if not validate_src:
-                    return
-                # Ensure the user is allowed to access the object on the
-                # clipboard.
-                try:    parent=aq_parent(aq_inner(object))
-                except: parent=None
-                if getSecurityManager().validate(None, parent, None, object):
-                    return
-                raise Unauthorized, absattr(object.id)
-            else:
-                raise Unauthorized(permission=mt_permission)
-        #
-        #   XXX:    Ancient cruft, left here in true co-dependent fashion
-        #           to keep from breaking old products which don't put
-        #           permissions on their metadata registry entries.
-        #
-        if method_name is not None:
-            meth=self.unrestrictedTraverse(method_name)
-            if hasattr(meth, 'im_self'):
-                parent = meth.im_self
-            else:
-                try:    parent=aq_parent(aq_inner(meth))
-                except: parent=None
-            if getSecurityManager().validate(None, parent, None, meth):
-                # Ensure the user is allowed to access the object on the
-                # clipboard.
-                if not validate_src:
-                    return
-                try:    parent=aq_parent(aq_inner(object))
-                except: parent=None
-                if getSecurityManager().validate(None, parent, None, object):
-                    return
-                raise Unauthorized, absattr(object.id)
-            else:
-                raise Unauthorized, method_name
+        if method_name:
+            try:
+                method = self.restrictedTraverse(method_name)
+                # method_name is e.g.
+                # "manage_addProduct/PageTemplates/manage_addPageTemplateForm".
+                # restrictedTraverse will raise Unauthorized if it
+                # can't obtain the factory method by name due to a
+                # security restriction.  We depend on this side effect
+                # here!  Note that we use restrictedTraverse as
+                # opposed to checkPermission to take into account the
+                # special security circumstances related to proxy
+                # roles.  See collector #78.
 
-        raise CopyError, MessageDialog(
-              title='Not Supported',
-              message='The object <EM>%s</EM> does not support this ' \
-                      'operation.' % absattr(object.id),
-              action='manage_main')
+            except Unauthorized:
+                if mt_permission:
+                    message = ('You do not possess the %s permission in the '
+                               'context of the container into which you are '
+                               'pasting, thus you are not able to perform '
+                               'this operation.' % mt_permission)
+                else:
+                    message = ('You do not possess the permission required '
+                               'to call %s in the context of the container '
+                               'into which you are pasting, thus you are not '
+                               'able to perform this operation.' % method_name)
+
+                raise CopyError, MessageDialog(
+                  title = 'Insufficient Privileges',
+                  message = message,
+                  action = 'manage_main')
+
+            if validate_src:
+                # Ensure the user is allowed to access the object on the
+                # clipboard.
+                try:    parent = aq_parent(aq_inner(object))
+                except: parent = None
+                if not getSecurityManager().validate(None,parent,None,object):
+                    raise Unauthorized, absattr(object.id)
+
+        else: # /if method_name
+            raise CopyError, MessageDialog(
+                  title   = 'Not Supported',
+                  message = ('The object <EM>%s</EM> does not support this '
+                             'operation.' % absattr(object.id)),
+                  action  = 'manage_main')
 
 Globals.default__class_init__(CopyContainer)
 
