@@ -20,14 +20,14 @@ focuses on those object services useful in
 <!--#in hs_objectvalues-->
 <!--#with sequence-item-->
 <li> <a href="<!--#var BASE1-->/HelpSys/ObjectRef/<!--#var 
- meta_type fmt=url-quote-->/hs_index"><!--#var meta_type--></a>
+ meta_type fmt=url-quote-->/hs_main"><!--#var meta_type--></a>
 <!--#endwith-->
 </li>
 <!--#endin-->
 </ul>
 
 <p>
-<a href="../hs_index">
+<a href="../hs_main">
 <img src="<!--#var SCRIPT_NAME-->/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Help</a>
 </p>
 

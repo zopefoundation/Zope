@@ -1,6 +1,6 @@
 """Help system implementation"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import sys, os, string, Globals, Acquisition
@@ -19,6 +19,8 @@ class HelpSys(HelpBase):
     __roles__=None
 
     hs_index=HTMLFile('helpsys', globals())
+    hs_menu =HTMLFile('helpsys_menu', globals())
+    hs_main =HTMLFile('helpsys_main', globals())
 
     hs_cicon='HelpSys/hs_cbook'
     hs_eicon='HelpSys/hs_obook'
@@ -33,7 +35,7 @@ class HelpSys(HelpBase):
     hs_cbook=ImageFile('images/hs_cbook.gif', globals())
     
     hs_id='HelpSys'
-    hs_title='Help System'
+    hs_title='Z Help Online'
 
     ObjectRef=ObjectRef()
 

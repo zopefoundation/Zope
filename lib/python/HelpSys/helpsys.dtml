@@ -1,49 +1,14 @@
 <html>
 <head>
-<title>
-ZOPE Help
-</title>
+<title>Z Object Publishing Environment Help</title>
 </head>
-<body bgcolor="#ffffff" link="#000099" vlink="#555555">
-
-<h2>Zope Help</h2>
-
-<p>
-The Zope online help system provides links to in-depth product guides, 
-programming references and other resources.
-</p>
-
-<h3>General Documentation</h3>
-<p>
-General documentation for the use and management of built-in and 
-add-on products, as well as an extensive DTML manual are available 
-on the Zope website at 
-<a href="http://www.zope.org" target="_top">http://www.zope.org</a>.
-</p>
-
-
-<h3>Programming References</h3>
-<p>
-Zope provides an online object reference that documents the 
-services provided by high-level objects such as Documents 
-and Folders. Other references will be added soon.
-</p>
-<ul>
-<li> <a href="<!--#var BASE1-->/HelpSys/ObjectRef/hs_index">
-     Object Reference
-     </a>
-
-</ul>
-
-
-<h3>Other Resources</h3>
-<p>
-One of the best resources available is the <a href="mailto:zope@zope.org"> 
-Zope mailing list</a>. You can subscribe to the mailing list by sending an 
-email to <a href="mailto:zope-request@zope.org">zope-request@zope.org</a> 
-and including the word &quot;subscribe&quot; in the subject line.
-</p>
-
-
-</body>
+<frameset cols="180,*">
+  <frame src="<!--#var SCRIPT_NAME-->/HelpSys/hs_menu" name="hs_tframe"
+   marginwidth="2" marginheight="2" scrolling="auto">
+  <frame src="<!--#var SCRIPT_NAME-->/HelpSys/hs_main" NAME="hs_cframe"
+   marginwidth="2" marginheight="2" scrolling="auto">
+</frameset>
+<noframes>
+This item requires the use of a <em>frames-capable</em> web browser.
+</noframes>
 </html>

@@ -1,6 +1,6 @@
 """Object Reference implementation"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import sys, os, string, Globals, Acquisition
@@ -16,7 +16,7 @@ class ObjectItem(HelpBase, classobject):
     """ """
     __roles__=None
 
-    hs_index=HTMLFile('objectitem', globals())
+    hs_main=HTMLFile('objectitem', globals())
 
     hs_cicon='HelpSys/hs_dnode'
     hs_eicon='HelpSys/hs_dnode'
@@ -74,7 +74,7 @@ class ObjectRef(HelpBase):
     __names__=None
     __roles__=None
 
-    hs_index=HTMLFile('objectref', globals())
+    hs_main=HTMLFile('objectref', globals())
 
     hs_cicon='HelpSys/hs_cbook'
     hs_eicon='HelpSys/hs_obook'
