@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -56,3 +56,10 @@ class ApplicationManager(Acquirer,Management):
 	sys.exit(0)
 
     def revert_points(self): return ()
+
+    def manage_addProduct(self, product):
+	"""Register a product
+	"""
+	products=Globals.Bobobase['products']
+	if product not in products:
+	    Globals.Bobobase['products']=tuple(products)+(product,)
