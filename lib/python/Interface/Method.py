@@ -45,6 +45,6 @@ class Method(Attribute):
         self.__doc__=__doc__ or __name__
 
     def __call__(self, *args, **kw):
-        raise Exception.BrokenImplementation(self.interface, self.name)
+        raise Exceptions.BrokenImplementation(self.interface, self.__name__)
         
     
