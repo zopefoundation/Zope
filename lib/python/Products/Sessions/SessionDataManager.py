@@ -234,7 +234,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             self._hasTraversalHook = 1
             self._requestSessionName = requestSessionName
 
-class SessionDataManagerTraverser:
+class SessionDataManagerTraverser(Persistent):
     def __init__(self, requestSessionName, sdm):
         self._requestSessionName = requestSessionName
         self._sessionDataManager = sdm
