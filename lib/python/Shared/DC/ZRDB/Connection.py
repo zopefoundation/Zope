@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.35 2002/08/14 21:50:59 mj Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: Connection.py,v 1.36 2003/09/24 14:28:43 chrisw Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -23,6 +23,8 @@ from string import find, join, split
 from Aqueduct import custom_default_report
 from cStringIO import StringIO
 from Results import Results
+from sys import exc_info
+from zLOG import LOG, ERROR
 import DocumentTemplate, RDB
 
 class Connection(
@@ -63,7 +65,11 @@ class Connection(
         Globals.Persistent.__setstate__(self, state)
         if self.connection_string:
             try: self.connect(self.connection_string)
-            except: pass
+            except:
+                LOG('Shared.DC.ZRDB.Connection',
+                    ERROR,
+                    'Error connecting to relational database.',
+                    error=exc_info())
 
     def title_and_id(self):
         s=Connection.inheritedAttribute('title_and_id')(self)
@@ -139,7 +145,11 @@ class Connection(
     def manage_close_connection(self, REQUEST):
         " "
         try: self._v_database_connection.close()
-        except: pass
+        except:
+            LOG('Shared.DC.ZRDB.Connection',
+                ERROR,
+                'Error closing relational database connection.',
+                error=exc_info())
         self._v_connected=''
         return self.manage_main(self, REQUEST)
 
@@ -160,7 +170,11 @@ class Connection(
 
     def connect(self,s):
         try: self._v_database_connection.close()
-        except: pass
+        except:
+            LOG('Shared.DC.ZRDB.Connection',
+                ERROR,
+                'Error closing relational database connection.',
+                error=exc_info())
         self._v_connected=''
         DB=self.factory()
         try:

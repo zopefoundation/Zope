@@ -18,6 +18,9 @@ Zope Changes
 
      - Collector #1039: Whitespace problem in Z2.log fixed
 
+     - changed some bare try: except:'s in Shared.DC.ZRDB.Connection
+       so that they now log exceptions that occur.
+
   2.7.0b2
 
     Features added
