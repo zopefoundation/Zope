@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.5 2002/04/24 15:42:16 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.6 2002/04/24 15:46:09 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -55,6 +55,8 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
         self.defaultOperator = 'or'
 
 
+    def getId(self): return self.id
+        
     def clear(self):
         """ clear everything """
         self.filteredSets = OOBTree()

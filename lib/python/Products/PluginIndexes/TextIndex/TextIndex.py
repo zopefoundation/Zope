@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.28 $'[11:-2]
+__version__ = '$Revision: 1.29 $'[11:-2]
 
 
 import  re
@@ -130,6 +130,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             self.vocabulary_id = '__userdefined__'
 
 
+    def getId(self): return self.id
 
     def getLexicon(self, vocab_id=None):
         """Return the Lexicon in use. Removed lots of stinking code"""

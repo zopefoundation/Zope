@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -80,6 +80,8 @@ class UnIndex(Persistent, Implicit):
         self.__len__=BTrees.Length.Length() # see __len__ method docstring
         self.clear()
 
+    def getId(self): return self.id
+        
     def clear(self):
         # inplace opportunistic conversion from old-style to new style BTrees
         try: self.__len__.set(0)

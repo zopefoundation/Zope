@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.19 2002/04/24 15:42:16 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.20 2002/04/24 15:46:09 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -67,7 +67,9 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
         self.clear()
 
-
+    
+    def getId(self): return self.id
+        
     def clear(self):
         """ clear everything """
 
