@@ -89,12 +89,11 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string
 import Shared.DC.xml.xmllib
 from Acquisition import Implicit
-from cStringIO import StringIO
 
 
 type_document=0
