@@ -19,7 +19,7 @@ from Interface.Exceptions import BrokenImplementation
 from Interface.Implements import instancesOfObjectImplements
 from Interface.Implements import objectImplements
 from Interface import Interface
-from Interface._Attribute import Attribute
+from Interface.Attribute import Attribute
 
 class InterfaceTests(unittest.TestCase):
 

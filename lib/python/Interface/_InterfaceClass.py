@@ -14,13 +14,13 @@
 """Interface object implementation
 
 Revision information:
-$Id: _InterfaceClass.py,v 1.4 2002/06/10 20:00:42 jim Exp $
+$Id: _InterfaceClass.py,v 1.5 2002/06/11 15:34:28 chrism Exp $
 """
 
 from inspect import currentframe
 import sys
 from Method import Method, fromFunction
-from _Attribute import Attribute
+from Attribute import Attribute
 from types import FunctionType
 import Exceptions
 from _Element import Element

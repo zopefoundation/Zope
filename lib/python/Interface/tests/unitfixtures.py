@@ -12,7 +12,7 @@
 # 
 ##############################################################################
 from Interface import Interface
-from Interface._Attribute import Attribute
+from Interface.Attribute import Attribute
 
 class mytest(Interface):
     pass

@@ -25,7 +25,7 @@ Example:
 The dotted name is the module name and interface object name connected
 with a dot.
 
-Revision information: $Id: pyskel.py,v 1.3 2002/06/10 16:47:38 chrism Exp $
+Revision information: $Id: pyskel.py,v 1.4 2002/06/11 15:34:28 chrism Exp $
 """
 
 import sys, os, re
@@ -36,7 +36,7 @@ from _object import isInstance
 
 from types import ModuleType
 from Interface.Method import Method
-from Interface._Attribute import Attribute
+from Interface.Attribute import Attribute
 
 class_re = re.compile(r'\s*class\s+([a-zA-Z_][a-zA-Z0-9_]*)')
 def_re = re.compile(r'\s*def\s+([a-zA-Z_][a-zA-Z0-9_]*)')

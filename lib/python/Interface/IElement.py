@@ -14,11 +14,11 @@
 """
 
 Revision information:
-$Id: IElement.py,v 1.3 2002/06/10 16:47:38 chrism Exp $
+$Id: IElement.py,v 1.4 2002/06/11 15:34:28 chrism Exp $
 """
 
 from _Interface import Interface
-from _Attribute import Attribute
+from Attribute import Attribute
 
 class IElement(Interface):
     """Objects that have basic documentation and tagged values.
