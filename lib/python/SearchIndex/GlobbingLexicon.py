@@ -156,9 +156,9 @@ class GlobbingLexicon(Lexicon):
                 set.insert(self.counter)
 
             self._digrams = _digrams
-            
+            counter = self.counter
             self.counter = self.counter + 1
-            return self.counter
+            return counter
 
 
     def get(self, pattern):
