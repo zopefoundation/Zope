@@ -133,7 +133,11 @@ class RoleManager:
             p=class_permissions[i]
             if p and (p not in perms):
                 __traceback_info__=perms, p, i
-                raise 'waaa'
+                raise 'Permission mapping error', (
+                    """Attempted to map a permission to a permission, %s,
+                    that is not valid. This should never happen. (Waaa).
+                    """ % p)
+            
 
             setPermissionMapping(name, wrapper, p)
 
