@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.27 2000/08/29 15:05:10 brian Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: Connection.py,v 1.28 2000/08/31 21:07:17 brian Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
