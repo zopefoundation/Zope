@@ -402,8 +402,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.54 2001/08/14 17:23:58 andreasjung Exp $'
-__version__='$Revision: 1.54 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.55 2001/10/16 15:29:55 klm Exp $'
+__version__='$Revision: 1.55 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
@@ -904,7 +904,7 @@ def make_sortfunctions(sortfields, md):
         elif l == 3:
             pass
         else:
-            raise SyntaxError, "sort option must contains no more than 2 slashes"
+            raise SyntaxError, "sort option must contain no more than 2 slashes"
 
         f_name = f[1]
 
