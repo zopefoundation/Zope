@@ -20,7 +20,7 @@ Testrunner is used to run all checked in test suites before (final) releases
 are made, and can be used to quickly run a particular suite or all suites in
 a particular directory."""
 
-import sys, os, imp, string, getopt
+import sys, os, imp, string, getopt, traceback
 
 pyunit=None
 
@@ -110,7 +110,9 @@ class TestRunner:
             os.chdir(dirname)
         self.report('Running: %s' % filename)
         try:    suite=self.getSuiteFromFile(filename)
-        except: suite=None
+        except:
+            traceback.print_exc()
+            suite=None
         if suite is None:
             self.report('No test suite found in file:\n%s' % filename)
             return
