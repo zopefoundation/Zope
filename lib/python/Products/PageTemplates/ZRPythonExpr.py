@@ -88,7 +88,7 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
@@ -130,11 +130,14 @@ class _SecureModuleImporter:
         return mod
 
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
+from AccessControl.DTML import RestrictedDTML
+class Rtd(RestrictedDTML, TemplateDict):
+    this = None
+
 def call_with_ns(f, ns, arg=1):
-    td = TemplateDict()
-    td.this = None
+    td = Rtd()
     td._push(ns['request'])
-    td._push(InstanceDict(ns['here'], td, guarded_getattr))
+    td._push(InstanceDict(ns['here'], td))
     td._push(ns)
     try:
         if arg==2:
