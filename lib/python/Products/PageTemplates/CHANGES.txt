@@ -4,14 +4,10 @@ Page Template changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.4.1
+    Version 1.5.0
 
-      Bugs Fixed
+      Features Added
 
-        - Tracebacks were often truncated.
+        - Error reporting is improved, with line numbers added.
 
-        - __bobo_traverse__ objects, such as the root, triggered
-          security incorrectly when traversed.
-
-        - If a PageTemplate was owned by a missing user, or one with
-          insufficient permissions, the editing form broke.
+        - In the ZMI, errors are separated from the text and highlighted.
