@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.2 1999/01/13 03:00:27 amos Exp $
+#	$Id: asynchat.py,v 1.3 1999/01/13 19:10:14 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -120,7 +120,8 @@ class async_chat (asyncore.dispatcher):
 					self.ac_in_buffer_read=0
 					self.found_terminator()
 				else:
-					border=int(self.terminator-self.ac_in_buffer_read) # border < 0
+					border=int(self.terminator - 
+						(self.ac_in_buffer_read-len(data)))
 					self.collect_incoming_data(self.ac_in_buffer[:border])
 					self.ac_in_buffer=self.ac_in_buffer[border:]
 					self.ac_in_buffer_read=0
