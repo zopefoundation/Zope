@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.108 1999/05/24 21:03:08 jim Exp $'''
-__version__='$Revision: 1.108 $'[11:-2]
+$Id: Application.py,v 1.109 1999/06/24 19:26:52 jim Exp $'''
+__version__='$Revision: 1.109 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -343,11 +343,18 @@ def initialize(app):
         app.__ac_roles__=app.__ac_roles__ + ('Owner',)
         get_transaction().note('Added Owner role')
         get_transaction().commit()
-            
+
+    # Make sure we have Globals
+    try: root=app._p_jar.root()
+    except: pass # BoboPOS 2
+    else:        
+        if not root.has_key('ZGlobals'):
+            import BTree
+            app._p_jar.root()['ZGlobals']=BTree.BTree()
+            get_transaction().note('Added Globals')
+            get_transaction().commit()
 
     install_products(app)
-    get_transaction().note('Product installations')
-    get_transaction().commit()
 
 def import_products(_st=type('')):
     # Try to import each product, checking for and catching errors.
@@ -414,6 +421,9 @@ def install_products(app):
 
     done={}
 
+    get_transaction().note('Prior to product installs')
+    get_transaction().commit()
+
     for product_dir in Products.__path__:
 
         product_names=os.listdir(product_dir)
@@ -431,59 +441,64 @@ def install_products(app):
                 if not exists(path_join(package_dir, '__init__.pyc')):
                     continue
 
-            product=__import__("Products.%s" % product_name,
-                               global_dict, global_dict, silly)
+            try:
+                product=__import__("Products.%s" % product_name,
+                                   global_dict, global_dict, silly)
 
-            misc_=pgetattr(product, 'misc_', {})
-            if misc_:
-                if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
-                Application.misc_.__dict__[product_name]=misc_
+                misc_=pgetattr(product, 'misc_', {})
+                if misc_:
+                    if type(misc_) is DictType:
+                        misc_=Misc_(product_name, misc_)
+                    Application.misc_.__dict__[product_name]=misc_
 
-            # Set up dynamic project information.
-            productObject=App.Product.initializeProduct(
-                product, product_name, package_dir, app)
+                # Set up dynamic project information.
+                productObject=App.Product.initializeProduct(
+                    product, product_name, package_dir, app)
 
-            pgetattr(product, 'initialize', lambda context: None)(
-                ProductContext(productObject, app, product))
+                pgetattr(product, 'initialize', lambda context: None)(
+                    ProductContext(productObject, app, product))
 
-            permissions={}
-            new_permissions={}
-            for p in pgetattr(product, '__ac_permissions__', ()):
-                permission, names, default = (tuple(p)+('Manager',))[:3]
-                if names:
-                    for name in names:
-                        permissions[name]=permission
+                permissions={}
+                new_permissions={}
+                for p in pgetattr(product, '__ac_permissions__', ()):
+                    permission, names, default = (tuple(p)+('Manager',))[:3]
+                    if names:
+                        for name in names:
+                            permissions[name]=permission
 
-                elif not folder_permissions.has_key(permission):
-                    new_permissions[permission]=()
+                    elif not folder_permissions.has_key(permission):
+                        new_permissions[permission]=()
 
-            for meta_type in pgetattr(product, 'meta_types', ()):
-                if product_name=='OFSP': meta_types.insert(0,meta_type)
-                else: meta_types.append(meta_type)
+                for meta_type in pgetattr(product, 'meta_types', ()):
+                    if product_name=='OFSP': meta_types.insert(0,meta_type)
+                    else: meta_types.append(meta_type)
 
 
-            for name,method in pgetattr(product, 'methods', {}).items():
-                if not hasattr(Folder, name):
-                    setattr(Folder, name, method)
-                    if name[-9:]!='__roles__': # not Just setting roles
-                        if (permissions.has_key(name) and
-                            not folder_permissions.has_key(permissions[name])):
-                            permission=permissions[name]
-                            if new_permissions.has_key(permission):
-                                new_permissions[permission].append(name)
-                            else:
-                                new_permissions[permission]=[name]
+                for name,method in pgetattr(product, 'methods', {}).items():
+                    if not hasattr(Folder, name):
+                        setattr(Folder, name, method)
+                        if name[-9:]!='__roles__': # not Just setting roles
+                            if (permissions.has_key(name) and
+                                not folder_permissions.has_key(
+                                    permissions[name])):
+                                permission=permissions[name]
+                                if new_permissions.has_key(permission):
+                                    new_permissions[permission].append(name)
+                                else:
+                                    new_permissions[permission]=[name]
 
-            if new_permissions:
-                new_permissions=new_permissions.items()
-                for permission, names in new_permissions:
-                    folder_permissions[permission]=names
-                new_permissions.sort()
-                Folder.__dict__['__ac_permissions__']=tuple(
-                    list(Folder.__ac_permissions__)+new_permissions)
+                if new_permissions:
+                    new_permissions=new_permissions.items()
+                    for permission, names in new_permissions:
+                        folder_permissions[permission]=names
+                    new_permissions.sort()
+                    Folder.__dict__['__ac_permissions__']=tuple(
+                        list(Folder.__ac_permissions__)+new_permissions)
 
-            get_transaction().note('Installed product '+product_name)
-            get_transaction().commit()
+                get_transaction().note('Installed product '+product_name)
+                get_transaction().commit()
+            except:
+                get_transaction().abort()
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
 
