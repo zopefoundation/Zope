@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -157,10 +157,10 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	return len(self.data.keys())
 
     def _isTop(self):
-	try:    t=self.aq_parent.aq_parent.acl_users
-	except: return 1
-	return 0
-
+        try: self=self.aq_parent
+        except: return 1
+        return self.isTopLevelPrincipiaApplicationObject
+	
     def user_names(self):
 	keys=self.data.keys()
 	keys.sort()
@@ -350,8 +350,8 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Copy/Paste support
 
     def _getCopy(self, container):
-	try:    obj=container.aq_self
-	except: obj=container
+        obj=container
+        if hasattr(obj, 'aq_base'): obj=obj.aq_base
 	if hasattr(obj,'acl_users'):
 	    raise ('Copy Error',
 		   '<EM>This object already contains a UserFolder</EM>')
