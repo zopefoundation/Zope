@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -167,7 +167,7 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         Response, and key word arguments."""
         kw['document_id']   =self.id
         kw['document_title']=self.title
-        if hasattr(self, 'aq_base'): bself=self.aq_base
+        if hasattr(self, 'aq_explicit'): bself=self.aq_explicit
         else: bself=self
         if client is None:
             # Called as subtemplate, so don't need error propigation!
