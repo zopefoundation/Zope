@@ -37,6 +37,7 @@ Bobobase=OFS.Application.open_bobobase()
 try: app=Bobobase['Application']
 except KeyError:
     app=OFS.Application.Application()
+    app._init()
     app.app=App.ApplicationManager.ApplicationManager()
 
     Bobobase['Application']=app
@@ -44,22 +45,13 @@ except KeyError:
 
 bobo_application=app
 
-if not hasattr(app,'standard_html_footer'):
-    app.manage_addDocument('standard_html_footer','Standard Document Ending',
-			   '</body></html>')
-    get_transaction().commit()
-
-if not hasattr(app, 'standard_html_header'):
-    app.manage_addDocument(
-	'standard_html_header',
-	'Standard Document Beginning',
-	'<html><head><title><!--#var title_or_id--></title></head><body>')
-    get_transaction().commit()
-
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.6  1997/09/19 18:23:36  brian
+# App nicification
+#
 # Revision 1.5  1997/09/17 16:17:00  jim
 # Added scheduler hook.
 #
