@@ -85,7 +85,6 @@
 __doc__='''Collected utilities to support database indexing.
 
 
-$Id: __init__.py,v 1.6 1999/03/10 00:15:36 klm Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: __init__.py,v 1.7 2001/04/27 18:51:24 chrism Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
-import Query
