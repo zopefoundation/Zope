@@ -132,7 +132,9 @@ def index(rt, mboxfile, db):
         pack_time += p1 - p0
 
     if VERBOSE:
+        print
         print "Index time", idx_time
+        print "Pack time", pack_time
         print "Index bytes", Message.total_bytes
         rate = (Message.total_bytes / idx_time) / 1024
         print "Index rate %d KB/sec" % int(rate)
