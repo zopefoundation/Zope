@@ -42,6 +42,9 @@ except ImportError:
             return callable(ob)
 
 
+class CatalogError(Exception):
+    pass
+
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog 
 
@@ -182,10 +185,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         names = list(self.names)
 
         if schema.has_key(name):
-            raise 'Column Exists', 'The column exists'
+            raise CatalogError, 'The column %s already exists' % name
 
         if name[0] == '_':
-            raise 'Invalid Meta-Data Name', \
+            raise CatalogError, \
                   'Cannot cache fields beginning with "_"'
 
         if not schema.has_key(name):
@@ -255,13 +258,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """
 
         if self.indexes.has_key(name):
-            raise 'Index Exists', 'The index specified already exists'
+            raise CatalogError, 'The index %s already exists' % name
 
         if name.startswith('_'):
-            raise 'Invalid Index Name', 'Cannot index fields beginning with "_"'
+            raise CatalogError, 'Cannot index fields beginning with "_"'
 
         if not name:
-            raise 'Invalid Index Name', 'Name of index is empty'
+            raise CatalogError, 'Name of index is empty'
 
         indexes = self.indexes
 
@@ -277,7 +280,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """ deletes an index """
 
         if not self.indexes.has_key(name):
-            raise 'No Index', 'The index specified does not exist'
+            raise CatalogError, 'The index %s does not exist' % name
 
         indexes = self.indexes
         del indexes[name]
@@ -753,8 +756,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 
     __call__ = searchResults
 
-
-class CatalogError(Exception): pass
 
 class CatalogSearchArgumentsMap:
     """Multimap catalog arguments coming simultaneously from keywords

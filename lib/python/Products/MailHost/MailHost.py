@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.80 2003/07/07 16:04:16 andreasjung Exp $"""
-__version__ = "$Revision: 1.80 $"[11:-2]
+$Id: MailHost.py,v 1.81 2003/11/18 13:17:05 tseaver Exp $"""
+__version__ = "$Revision: 1.81 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -26,8 +26,8 @@ from AccessControl.Permissions import view_management_screens, \
                                       use_mailhost_services
 from DateTime import DateTime
 
-smtpError = "SMTP Error"
-MailHostError = "MailHost Error"
+class MailHostError( Exception ):
+    pass
 
 manage_addMailHostForm=DTMLFile('dtml/addMailHost_form', globals())
 def manage_addMailHost( self, id, title='', smtp_host='localhost'

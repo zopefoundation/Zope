@@ -15,9 +15,9 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't derive
 from any Zope persistence classes, for instance).
 
-$Id: DefaultObservable.py,v 1.6 2002/08/14 21:42:56 mj Exp $"""
+$Id: DefaultObservable.py,v 1.7 2003/11/18 13:17:02 tseaver Exp $"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from types import StringType
 
@@ -118,6 +118,8 @@ if __name__ == '__main__':
 
     class DontGoHere( Exception ): pass
 
+    class Idawanna( Exception ): pass
+
     class TestSubject( DefaultObservable ):
 
         def __init__( self, paths ):
@@ -155,7 +157,7 @@ if __name__ == '__main__':
 
     def tryVeto( subject, event ):
         """ Simulate attempted veto. """
-        raise 'Idawanna!'
+        raise Idawanna
 
     observer = TestObserver()
 

@@ -4,6 +4,8 @@ verbosity = 0
 
 import os
 
+from Products.ZGadflyDA import GadflyError
+
 # use whatever kjbuckets sqlsem is using
 #from sqlsem import kjbuckets, maketuple
 
@@ -887,7 +889,8 @@ class View(Relation0):
            from sqlsem import kjbuckets
            target_atts = selection.attributes()
            if len(namelist)!=len(target_atts):
-              raise "select list and namelist don't match in %s"%name
+              raise GadflyError, (
+                "select list and namelist don't match in %s" % name)
            pairs = map(None, namelist, target_atts)
            self.translate = kjbuckets.kjGraph(pairs)
        return self
@@ -1043,7 +1046,9 @@ class shadow_dict:
                    try:
                        value = value_transform(value)
                    except:
-                       raise "transform fails", (sys.exc_type, sys.exc_value, k, value)
+                       raise GadFlyError, (
+                        "transform fails: %s, %s, %s, %s" %
+                          (sys.exc_type, sys.exc_value, k, value))
                 shadowed[k] = value
             self.touched = {}
                     
@@ -1053,9 +1058,9 @@ class shadow_dict:
     def __setitem__(self, key, item):
         from types import StringType
         if type(key) is not StringType:
-           raise "nonstring", key
+           raise GadflyError, "nonstring: %s" % key
         if item is None:
-           raise "none set", (key, item)
+           raise GadflyError, "none set: %s, %s" % (key, item)
         self.touched[key] = 1
         self.shadow[key] = item
         

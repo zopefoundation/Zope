@@ -18,6 +18,8 @@ import DocumentTemplate
 import StructuredText
 import  re
 
+from zExceptions import BadRequest
+
 
 pre_pat=re.compile(r'<PRE>(.+?)</PRE>', re.IGNORECASE|re.DOTALL)
 tutorialExamplesFile='ZopeTutorialExamples.zexp'
@@ -160,7 +162,7 @@ def addTutorial(self, id, REQUEST=None, RESPONSE=None):
         from Products.ZGadflyDA.DA import data_sources
         data_sources()
     except:
-        raise 'Bad Request', 'The ZGadflyDA product must be installed!'
+        raise BadRequest, 'The ZGadflyDA product must be installed!'
 
     # work around old Zope bug in importing
     try:

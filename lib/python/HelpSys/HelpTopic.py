@@ -66,7 +66,7 @@ class HelpTopicBase:
 
     def SearchableText(self):
         "The full text of the Help Topic, for indexing purposes"
-        raise "Unimplemented"
+        raise NotImplementedError
 
     def url(self):
         "URL for indexing purposes"
@@ -139,7 +139,7 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
 
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
-        raise "Unimplemented"
+        raise NotImplementedError
 
 
 class DTMLDocumentTopic(HelpTopicBase, DTMLDocument):

@@ -965,6 +965,9 @@ def kjUndump(t1, t2):
     return result
     
 
+class TestFailure(Exception):
+    pass
+
 def test():
     global S, D, G
     G = kjGraph()
@@ -996,37 +999,37 @@ def test():
         del X[2]
         print X, "Clean after", X.Clean()
         if not X.subset(X):
-           raise "trivial subset fails", X
+           raise TestFaliure, "trivial subset fails: %s" % X
         if not X==X:
-           raise "trivial cmp fails", X
+           raise TestFailure, "trivial cmp fails: %s" % X
         if not X:
-           raise "nonzero fails", X
+           raise TestFailure, "nonzero fails: %s" % X
         if X is S:
            if not S.member(0):
-              raise "huh 1?"
+              raise TestFailure, "huh 1?"
            if S.member(123):
-              raise "huh 2?", S
+              raise TestFailure, "huh 2?: %s" % S
            S.add(999)
            del S[1]
            if not S.has_key(999):
-              raise "huh 3?", S
+              raise TestFailure, "huh 3?: %s" % S
         else:
            print "values", X.values()
            print "keys", X.keys()
            print X, "inverted", ~X
            if not X.member(0,1):
-              raise "member test fails (0,1)", X
+              raise TestFailure, "member test fails (0,1): %s" % X
            print "adding to", X
            X.add(999,888)
            print "added", X
            X.delete_arc(999,888)
            print "deleted", X
            if X.member(999,888):
-              raise "member test fails (999,888)", X
+              raise TestFailure, "member test fails (999,888): %s" % X
            if X.has_key(999):
-              raise "has_key fails 999", X
+              raise TestFailure, "has_key fails 999: %s" % X
            if not X.has_key(0):
-              raise "has_key fails 0", X
+              raise TestFailure, "has_key fails 0: %s" % X
         for Y in ALL:
             print "Y", Y
             if (X!=S and Y!=S):
@@ -1040,7 +1043,7 @@ def test():
             print "%s&%s=%s" % (X,Y,X&Y)
             print "%s*%s=%s" % (X,Y,X*Y)
             x,y = cmp(X,Y), cmp(Y,X)
-            if x!=-y: raise "bad cmp!", (X, Y)
+            if x!=-y: raise TestFailure, "bad cmp!: %s, %s" % (X, Y)
             print "cmp(X,Y), -cmp(Y,X)", x,-y
             print "X.subset(Y)", X.subset(Y)
             

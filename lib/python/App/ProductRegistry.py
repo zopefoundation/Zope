@@ -56,7 +56,7 @@ class ProductRegistryMixin:
             if mt['name']==meta_type:
                 if not mt.has_key('product'): mt['product']=pid
                 if mt['product'] != pid:
-                    raise 'Type Exists', (
+                    raise ValueError, (
                         'The type <em>%s</em> is already defined.' % meta_type)
                 mt['action']='%s%s' % (
                     self._constructor_prefix_string(pid), id)
@@ -97,7 +97,7 @@ class ProductRegistryMixin:
 
         for d in permissions:
             if d['name']==permission:
-                raise 'Type Exists', (
+                raise ValueError, (
                     'The permission <em>%s</em> is already defined.'
                     % permission)
 

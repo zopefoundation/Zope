@@ -260,14 +260,15 @@ class Product(Folder, PermissionManager):
         "Product Distributions"
 
         def __bobo_traverse__(self, REQUEST, name):
-            if name[-7:] != '.tar.gz': raise 'Invalid Name', escape(name)
+            if name[-7:] != '.tar.gz':
+                raise ValueError, 'Invalid Name: %s' % escape(name)
             l=name.find('-')
             id, version = name[:l], name[l+1:-7]
             product=self.aq_parent
             if product.id==id and product.version==version:
                 return Distribution(product)
 
-            raise 'Invalid version or product id', escape(name)
+            raise ValueError, 'Invalid version or product id: %s' % escape(name)
 
     Distributions=Distributions()
 

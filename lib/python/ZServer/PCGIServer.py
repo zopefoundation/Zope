@@ -51,6 +51,9 @@ from types import StringType, TupleType
 
 tz_for_log=compute_timezone_for_log()
 
+class ParseError(Exception):
+    pass
+
 class PCGIChannel(asynchat.async_chat):
     """Processes a PCGI request by collecting the env and stdin and
     then passing them to ZPublisher. The result is wrapped in a
@@ -300,7 +303,7 @@ class PCGIServer(asyncore.dispatcher):
                 k,v=string.split(line,'=',1)
                 directives[string.strip(k)]=string.strip(v)
         except:
-            raise 'ParseError', 'Error parsing PCGI info file'
+            raise ParseError, 'Error parsing PCGI info file'
 
         self.pid_file=directives.get('PCGI_PID_FILE',None)
         self.socket_file=directives.get('PCGI_SOCKET_FILE',None)

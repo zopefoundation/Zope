@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -30,6 +30,7 @@ import  Globals, sys, Acquisition
 from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
 from Cache import Cacheable
+from zExceptions import Forbidden
 from zExceptions.TracebackSupplement import PathTracebackSupplement
 
 _marker = []  # Create a new marker object.
@@ -294,7 +295,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
         if user is not None: return
 
-        raise 'Forbidden', (
+        raise Forbidden, (
             'You are not authorized to change <em>%s</em> because you '
             'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
 

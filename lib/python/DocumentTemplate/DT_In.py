@@ -331,8 +331,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.60 2002/08/14 22:29:52 mj Exp $'
-__version__='$Revision: 1.60 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.61 2003/11/18 13:17:00 tseaver Exp $'
+__version__='$Revision: 1.61 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str, join_unicode
@@ -450,7 +450,7 @@ class InClass:
             return ''
 
         if type(sequence) is type(''):
-            raise 'InError', (
+            raise ValueError, (
                 'Strings are not allowed as input to the in tag.')
 
 
@@ -633,7 +633,7 @@ class InClass:
             return ''
 
         if type(sequence) is type(''):
-            raise 'InError', (
+            raise ValueError, (
                 'Strings are not allowed as input to the in tag.')
 
         section=self.section

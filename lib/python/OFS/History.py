@@ -12,13 +12,14 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, ExtensionClass, difflib
 from DateTime import DateTime
 from Acquisition import Implicit, aq_base
 from struct import pack, unpack
 from cgi import escape
+from zExceptions import Redirect
 
 class TemporalParadox(Exception): pass
 
@@ -69,7 +70,7 @@ class Historian(Implicit):
 
     def manage_workspace(self, REQUEST):
         "We aren't real, so we delegate to that that spawned us!"
-        raise 'Redirect', REQUEST['URL2']+'/manage_change_history_page'
+        raise Redirect, REQUEST['URL2']+'/manage_change_history_page'
 
 class Historical(ExtensionClass.Base):
     """Mix-in class to provide a veiw that shows hystorical changes

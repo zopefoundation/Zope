@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.194 2003/11/05 05:54:12 fdrake Exp $'''
-__version__='$Revision: 1.194 $'[11:-2]
+$Id: Application.py,v 1.195 2003/11/18 13:17:02 tseaver Exp $'''
+__version__='$Revision: 1.195 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -29,6 +29,7 @@ from App.ProductContext import ProductContext
 from misc_ import Misc_
 import ZDOM
 from zLOG import LOG, ERROR, WARNING, INFO
+from zExceptions import Redirect as RedirectException, Forbidden
 from HelpSys.HelpSys import HelpSys
 from Acquisition import aq_base
 from App.Product import doInstall
@@ -87,8 +88,9 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def PrincipiaRedirect(self,destination,URL1):
         """Utility function to allow user-controlled redirects"""
-        if destination.find('//') >= 0: raise 'Redirect', destination
-        raise 'Redirect', ("%s/%s" % (URL1, destination))
+        if destination.find('//') >= 0:
+            raise RedirectException, destination
+        raise RedirectException, ("%s/%s" % (URL1, destination))
     Redirect=ZopeRedirect=PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
@@ -124,12 +126,12 @@ class Application(Globals.ApplicationDefaultPermissions,
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource object."""
         self.dav__init(REQUEST, RESPONSE)
-        raise 'Forbidden', 'This resource cannot be deleted.'
+        raise Forbidden, 'This resource cannot be deleted.'
 
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location."""
         self.dav__init(REQUEST, RESPONSE)
-        raise 'Forbidden', 'This resource cannot be moved.'
+        raise Forbidden, 'This resource cannot be moved.'
 
     test_url___allow_groups__=None
     test_url=ZopeAttributionButton

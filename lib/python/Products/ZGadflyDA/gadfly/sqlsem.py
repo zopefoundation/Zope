@@ -1842,7 +1842,7 @@ class BTand_pred(BTPredicate):
           for m in ms:
               result = result & m # preserves or/and precedence
           if result.__class__!=BTor_pred:
-             raise "what the?"
+             raise Exception, "what the?"
           result = result.detrivialize()
           #print "or detected, returning"
           #print result

@@ -34,6 +34,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Removed pervasive use of string exceptions (some may still be
+       hiding in the woodwork, but all raise's with string literals are
+       gone).
+
      - AccessControl.User used a misleading string exeception,
        'NotImplemented', which shadowed the Python builtin.
 

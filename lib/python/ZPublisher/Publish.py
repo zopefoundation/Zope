@@ -12,14 +12,15 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.165 2003/10/21 14:10:16 chrism Exp $"""
-__version__='$Revision: 1.165 $'[11:-2]
+$Id: Publish.py,v 1.166 2003/11/18 13:17:17 tseaver Exp $"""
+__version__='$Revision: 1.166 $'[11:-2]
 
 import sys, os
 from Response import Response
 from Request import Request
 from maybe_lock import allocate_lock
 from mapply import mapply
+from zExceptions import Redirect
 
 class Retry(Exception):
     """Raise this to retry a request
@@ -69,7 +70,8 @@ def publish(request, module_name, after_list, debug=0,
         # First check for "cancel" redirect:
         if request_get('SUBMIT','').strip().lower()=='cancel':
             cancel=request_get('CANCEL_ACTION','')
-            if cancel: raise 'Redirect', cancel
+            if cancel:
+                raise Redirect, cancel
 
         after_list[0]=bobo_after
         if debug_mode: response.debug_mode=debug_mode

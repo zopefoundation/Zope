@@ -55,7 +55,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.18 2002/08/14 21:50:59 mj Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.19 2003/11/18 13:17:14 tseaver Exp $'
 
 ############################################################################
 #     Copyright
@@ -65,7 +65,7 @@ __rcs_id__='$Id: sqltest.py,v 1.18 2002/08/14 21:50:59 mj Exp $'
 #       rights reserved.
 #
 ############################################################################
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -129,11 +129,11 @@ class SQLTest:
         except KeyError:
             if args.has_key('optional') and args['optional']:
                 return ''
-            raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
+            raise ValueError, 'Missing input variable, <em>%s</em>' % name
 
         if type(v) in (ListType, TupleType):
             if len(v) > 1 and not self.multiple:
-                raise 'Multiple Values', (
+                raise ValueError, (
                     'multiple values are not allowed for <em>%s</em>'
                     % name)
         else: v=[v]
@@ -175,7 +175,7 @@ class SQLTest:
 
         if not vs:
             if self.optional: return ''
-            raise 'Missing Input', (
+            raise ValueError, (
                 'No input was provided for <em>%s</em>' % name)
 
         if len(vs) > 1:

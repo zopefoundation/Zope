@@ -47,7 +47,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.14 2003/03/19 20:21:23 zagy Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.15 2003/11/18 13:17:14 tseaver Exp $'
 
 ############################################################################
 #     Copyright
@@ -57,7 +57,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.14 2003/03/19 20:21:23 zagy Exp $'
 #       rights reserved.
 #
 ############################################################################
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
@@ -96,7 +96,7 @@ class SQLVar:
                 return 'null'
             if type(expr) is not type(''):
                 raise
-            raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
+            raise ValueError, 'Missing input variable, <em>%s</em>' % name
 
         if t=='int':
             try:

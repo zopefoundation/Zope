@@ -31,7 +31,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import sys, re, socket, mimetools
 from httplib import HTTP
@@ -43,6 +43,9 @@ from urllib import urlopen, quote
 from types import FileType, ListType, DictType, TupleType
 from string import translate, maketrans
 from urlparse import urlparse
+
+class BadReply(Exception):
+    pass
 
 class Function:
     username=None
@@ -213,9 +216,9 @@ class Function:
             try:
                 [ver, ec, em] = line.split(None, 2)
             except ValueError:
-                raise 'BadReply','Bad reply from server: '+line
+                raise BadReply,'Bad reply from server: '+line
             if ver[:5] != 'HTTP/':
-                raise 'BadReply','Bad reply from server: '+line
+                raise BadReply,'Bad reply from server: '+line
 
             ec=int(ec)
             em=em.strip()

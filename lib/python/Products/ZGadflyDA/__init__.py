@@ -12,13 +12,19 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.15 2003/02/11 17:17:07 fdrake Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: __init__.py,v 1.16 2003/11/18 13:17:11 tseaver Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, os
 
 classes=('DA.Connection',)
 database_type='Gadfly'
+
+class GadflyError(Exception):
+    pass
+
+class QueryError(GadflyError):
+    pass
 
 misc_={'conn':
        Globals.ImageFile('Shared/DC/ZRDB/www/DBAdapterFolder_icon.gif')}

@@ -69,8 +69,8 @@
 #       rights reserved.
 #
 ############################################################################
-__rcs_id__='$Id: sqlgroup.py,v 1.9 2002/08/14 21:50:59 mj Exp $'
-__version__='$Revision: 1.9 $'[11:-2]
+__rcs_id__='$Id: sqlgroup.py,v 1.10 2003/11/18 13:17:14 tseaver Exp $'
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DocumentTemplate.DT_Util import parse_params
 str=__builtins__['str']
@@ -110,7 +110,7 @@ class SQLGroup:
             return r
 
         if self.required:
-            raise 'Input Error', 'Not enough input was provided!<p>'
+            raise ValueError, 'Not enough input was provided!<p>'
 
         return ''
 

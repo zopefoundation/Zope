@@ -217,7 +217,9 @@ def main():
                 f = h.getfile()
                 data = f.read()
                 print data
-                raise "Error reading from host %s" % server
+                class HTTPRequestError(Exception):
+                    pass
+                raise HTTPRequestError, "Error reading from host %s" % server
             f = h.getfile()
             out=open(mb,'w')
             print "this is going to take a while..."

@@ -12,12 +12,13 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.17 2002/08/21 03:09:31 chrism Exp $'''
-__version__ = '$Revision: 1.17 $'[11:-2]
+$Id: BaseResponse.py,v 1.18 2003/11/18 13:17:17 tseaver Exp $'''
+__version__ = '$Revision: 1.18 $'[11:-2]
 
 import  types, sys
 from types import StringType, InstanceType
-from zExceptions import Unauthorized
+from zExceptions import Unauthorized, Forbidden
+from zExceptions import NotFound, BadRequest
 
 class BaseResponse:
     """Base Response Class
@@ -139,19 +140,19 @@ class BaseResponse:
     def notFoundError(self, v=''):
         """Generate an error indicating that an object was not found.
         """
-        raise 'Not Found', v
+        raise NotFound, v
 
     def debugError(self, v=''):
         """Raise an error with debigging info and in debugging mode"""
-        raise 'Debug Error', v
+        raise NotFound, "Debugging notice: %s" % v
 
     def badRequestError(self, v=''):
         """Raise an error indicating something wrong with the request"""
-        raise 'Bad Request', v
+        raise BadRequest, v
 
     def forbiddenError(self, v=''):
         """Raise an error indicating that the request cannot be done"""
-        raise 'Forbidden', v
+        raise Forbidden, v
 
     def unauthorized(self):
         """Raise an eror indicating that the user was not authizated

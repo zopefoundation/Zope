@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.147 $'[11:-2]
+__version__='$Revision: 1.148 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -31,6 +31,7 @@ from Cache import Cacheable
 from mimetools import choose_boundary
 from ZPublisher import HTTPRangeSupport
 from ZPublisher.HTTPRequest import FileUpload
+from zExceptions import Redirect
 from cgi import escape
 
 StringType=type('')
@@ -389,7 +390,7 @@ class File(Persistent, Implicit, PropertyManager,
         """
         The default view of the contents of the File or Image.
         """
-        raise 'Redirect', URL1
+        raise Redirect, URL1
 
     # private
     update_data__roles__=()

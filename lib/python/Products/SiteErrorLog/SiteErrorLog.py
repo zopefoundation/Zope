@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.16 2003/07/21 04:16:22 chrism Exp $
+$Id: SiteErrorLog.py,v 1.17 2003/11/18 13:17:07 tseaver Exp $
 """
 
 import os
@@ -118,7 +118,7 @@ class SiteErrorLog (SimpleItem):
     # Exceptions that happen all the time, so we dont need
     # to log them. Eventually this should be configured
     # through-the-web.
-    _ignored_exceptions = ( 'Unauthorized', 'NotFound' )
+    _ignored_exceptions = ( 'Unauthorized', 'NotFound', 'Redirect' )
 
     security.declarePrivate('raising')
     def raising(self, info):

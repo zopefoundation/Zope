@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.10 2002/08/14 21:42:56 mj Exp $"""
+$Id: Cache.py,v 1.11 2003/11/18 13:17:02 tseaver Exp $"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import time, sys
 import Globals
@@ -404,7 +404,7 @@ class Cache:
     '''
 
     def ZCache_invalidate(self, ob):
-        raise 'Not implemented'
+        raise NotImplementedError
 
     def ZCache_get(self, ob, view_name, keywords, mtime_func, default):
         # view_name: If an object provides different views that would
@@ -423,11 +423,11 @@ class Cache:
         #
         # default: If no entry is found, ZCache_get() should return
         #   default.
-        raise 'Not implemented'
+        raise NotImplementedError
 
     def ZCache_set(self, ob, data, view_name, keywords, mtime_func):
         # See ZCache_get() for parameter descriptions.
-        raise 'Not implemented'
+        raise NotImplementedError
 
 
 class CacheManager:
@@ -437,7 +437,7 @@ class CacheManager:
 
     ZCacheManager_getCache__roles__ = ()
     def ZCacheManager_getCache(self):
-        raise 'Not implemented'
+        raise NotImplementedError
 
     _isCacheManager = 1
 

@@ -453,7 +453,7 @@ def default_reduction(list, context):
         if type(x)==ListType:
            if result == []:
               if len(x)>0 and type(x[0])==ListType:
-                 raise "oops", x
+                 raise ValueError, "oops: %s" % x
               result = x
            else:
               for y in x:

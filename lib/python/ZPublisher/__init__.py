@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 # This allows ZPublisher to work with embedded interpreters
@@ -19,6 +19,7 @@ import sys
 if not hasattr(sys, 'argv'):
     sys.argv=[]
 
+from zExceptions import NotFound, BadRequest, InternalError, Forbidden
 
 from Publish import publish_module, Retry
 

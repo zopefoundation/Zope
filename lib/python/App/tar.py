@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Simple module for writing tar files
 
-$Id: tar.py,v 1.6 2002/08/14 21:31:41 mj Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: tar.py,v 1.7 2003/11/18 13:16:58 tseaver Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, time, zlib
 try:
@@ -62,7 +62,8 @@ class TarEntry:
             pad(prefix,    155),
             '\0'*12,
             ])
-        if len(header) != 512: raise 'Bad Header Length', len(header)
+        if len(header) != 512:
+            raise ValueError, 'Bad Header Length: %d' % len(header)
         header=(header[:148]+
                 oct8(reduce(lambda a,b: a+b, map(ord,header)))+
                 header[156:])

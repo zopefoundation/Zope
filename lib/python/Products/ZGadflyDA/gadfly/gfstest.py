@@ -49,6 +49,8 @@ STARTUP = "gfstest"
 
 import sys, socket
 
+from Products.ZGadflyDA import QueryError
+
 
 def main():
     argv = sys.argv
@@ -106,7 +108,7 @@ def policy_test():
         print "exception", sys.exc_type, sys.exc_value
         print "as expected"
     else:
-        raise "DAMN!", "illegal query apparently completed!!!"
+        raise QueryError, "illegal query apparently completed!!!"
     print; print "testing policy test1"; print
     conn = gfclient("test1", PORT, "test1", machine)
     cursor = conn.cursor()
@@ -122,7 +124,7 @@ def policy_test():
         print "exception", sys.exc_type, sys.exc_value
         print "as expected"
     else:
-        raise "Damn!(2)", "illegal query apparently completed"
+        raise QueryError, "illegal query apparently completed"
 
 def startup(admin_policy, connection, Server_instance):
     """example startup script.

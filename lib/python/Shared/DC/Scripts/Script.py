@@ -25,6 +25,7 @@ from urllib import quote
 from BindingsUI import BindingsUI
 from Bindings import defaultBindings
 from DocumentTemplate.DT_Util import TemplateDict
+from zExceptions import Redirect
 
 # Temporary:
 from Signature import FuncCode
@@ -51,6 +52,6 @@ class Script(SimpleItem, BindingsUI):
         for argvar in argvars:
             if argvar.value:
                 vv.append("%s=%s" % (quote(argvar.name), quote(argvar.value)))
-        raise "Redirect", "%s?%s" % (REQUEST['URL1'], join(vv, '&'))
+        raise Redirect, "%s?%s" % (REQUEST['URL1'], join(vv, '&'))
 
     from Signature import _setFuncSignature

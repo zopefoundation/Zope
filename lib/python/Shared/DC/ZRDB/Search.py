@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.20 2002/08/14 21:50:59 mj Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Search.py,v 1.21 2003/11/18 13:17:14 tseaver Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import DTMLFile
 from Aqueduct import custom_default_report, custom_default_zpt_report, nicify, Args
@@ -50,7 +50,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
                 arguments[key]=arg
                 keys.append(key)
         if q._searchable_result_columns() is None:
-            raise 'Unusable Searchable Error',(
+            raise ValueError,(
                 """The input searchable object, <em>%s</em>,
                 has not been tested.  Until it has been tested,
                 it\'s output schema is unknown, and a report

@@ -136,9 +136,10 @@ class TestBaseRequest(TestCase):
 
     def test_traverse_withBDEmpty(self):
         # Collector 1079 (infinite loop 2)
+        from ZPublisher import NotFound
         r = self.makeBaseRequest()
         self.f1.objWithBD._default_path = ['']
-        self.failUnlessRaises('NotFound', r.traverse, 'folder/objWithBD')
+        self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBD')
 
     def test_traverse_slash(self):
         r = self.makeBaseRequest()

@@ -11,8 +11,8 @@
 #
 ##############################################################################
 
-'''$Id: db.py,v 1.13 2002/08/14 22:25:17 mj Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+'''$Id: db.py,v 1.14 2003/11/18 13:17:11 tseaver Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import os
 from string import strip, split
@@ -22,6 +22,8 @@ from DateTime import DateTime
 
 data_dir=os.path.join(Globals.data_dir,'gadfly')
 
+from Products.ZGadflyDA import GadflyError, QueryError
+
 def manage_DataSources():
 
     if not os.path.exists(data_dir):
@@ -29,14 +31,14 @@ def manage_DataSources():
             os.mkdir(data_dir)
             os.mkdir(os.path.join(data_dir,'demo'))
         except:
-            raise 'Gadfly Error', (
+            raise GadflyError, (
                 """
                 The Zope Gadfly Database Adapter requires the
                 existence of the directory, <code>%s</code>.  An error
                 occurred  while trying to create this directory.
                 """ % data_dir)
     if not os.path.isdir(data_dir):
-        raise 'Gadfly Error', (
+        raise GadflyError, (
             """
             The Zope Gadfly Database Adapter requires the
             existence of the directory, <code>%s</code>.  This
@@ -99,7 +101,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
         self._register()
         c=self.db.cursor()
         queries=filter(None, map(strip,split(query_string, '\0')))
-        if not queries: raise 'Query Error', 'empty query'
+        if not queries: raise QueryError, 'empty query'
         desc=None
         result=[]
         for qs in queries:
@@ -108,7 +110,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
             if d is None: continue
             if desc is None: desc=d
             elif d != desc:
-                raise 'Query Error', (
+                raise QueryError, (
                     'Multiple incompatible selects in '
                     'multiple sql-statement query'
                     )

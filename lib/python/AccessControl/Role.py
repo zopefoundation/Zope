@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -171,7 +171,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 if REQUEST is not None: return self.manage_access(REQUEST)
                 return
 
-        raise 'Invalid Permission', (
+        raise ValueError, (
             "The permission <em>%s</em> is invalid." %
                 escape(permission_to_manage))
 
@@ -245,7 +245,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                      },
                     valid_roles)
 
-        raise 'Invalid Permission', (
+        raise ValueError, (
             "The permission <em>%s</em> is invalid." % escape(permission))
 
     def acquiredRolesAreUsedBy(self, permission):
@@ -257,7 +257,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
                 roles=p.getRoles()
                 return type(roles) is ListType and 'CHECKED' or ''
 
-        raise 'Invalid Permission', (
+        raise ValueError, (
             "The permission <em>%s</em> is invalid." % escape(permission))
 
 

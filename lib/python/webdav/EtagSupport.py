@@ -11,10 +11,11 @@
 #
 ##############################################################################
 
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.10 $"[11:-2]
 
 
 import time, Interface, re
+from webdav.common import PreconditionFailed
 
 class EtagBaseInterface(Interface.Base):
     """\
@@ -116,7 +117,7 @@ class EtagSupport:
             # The resource etag is not in the list of etags required
             # to match, as specified in the 'if-match' header.  The
             # condition fails and the HTTP Method may *not* execute.
-            raise "Precondition Failed"
+            raise PreconditionFailed
         elif self.http__etag() in matchlist:
             return 1
 
@@ -129,10 +130,10 @@ class EtagSupport:
             # be performed if the specified resource exists
             # (webdav.NullResource will want to do special behavior
             # here)
-            raise "Precondition Failed"
+            raise PreconditionFailed
         elif self.http__etag() in nonelist:
             # The opposite of if-match, the condition fails
             # IF the resources Etag is in the if-none-match list
-            raise "Precondition Failed"
+            raise PreconditionFailed
         elif self.http__etag() not in nonelist:
             return 1

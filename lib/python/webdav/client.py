@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, os,  time, types,re
 import socket, httplib, mimetools
@@ -13,7 +13,8 @@ from random import random
 from urllib import quote
 
 
-
+class NotAvailable(Exception):
+    pass
 
 class HTTP(httplib.HTTP):
     # A revised version of the HTTP class that can do basic
@@ -124,7 +125,7 @@ class Resource:
             data=h.getfile().read()
             h.close()
         except:
-            raise 'NotAvailable', sys.exc_value
+            raise NotAvailable, sys.exc_value
         return http_response(ver, code, msg, hdrs, data)
 
     # HTTP methods

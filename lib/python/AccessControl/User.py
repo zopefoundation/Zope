@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.180 $'[11:-2]
+__version__='$Revision: 1.181 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -26,7 +26,7 @@ from Role import RoleManager, DEFAULTMAXLISTUSERS
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 import AuthEncoding
 from AccessControl import getSecurityManager
-from zExceptions import Unauthorized
+from zExceptions import Unauthorized, BadRequest
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.ZopeSecurityPolicy import _noroles
@@ -568,7 +568,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             try: name, password=tuple(decodestring(
                                       auth.split(' ')[-1]).split(':', 1))
             except:
-                raise 'Bad Request', 'Invalid authentication token'
+                raise BadRequest, 'Invalid authentication token'
             return name, password
         else:
             return None, None

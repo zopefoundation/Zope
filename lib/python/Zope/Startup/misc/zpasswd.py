@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope user bootstrap system"""
 
-__version__='$Revision: 1.4 $ '[11:-2]
+__version__='$Revision: 1.5 $ '[11:-2]
 
 import sys,  sha, binascii, random, getopt, getpass, os
 
@@ -88,6 +88,9 @@ def write_inituser(home, user='', group=''):
         import do; do.ch(ac_path, user, group)
 
 
+class CommandLineError(Exception):
+    pass
+
 def main(argv):
     short_options = ':u:p:e:d:'
     long_options = ['username=',
@@ -120,12 +123,12 @@ Copyright (C) 1999, 2000 Digital Creations, Inc.
 
     try:
         if len(argv) < 2:
-            raise "CommandLineError"
+            raise CommandLineError, "Not enough arguments!"
 
         optlist, args = getopt.getopt(sys.argv[1:], short_options, long_options)
 
         if len(args) != 1:
-            raise "CommandLineError"
+            raise CommandLineError, "Only one filename allowed!"
 
         access_file = open(args[0], 'w')
 
@@ -147,7 +150,7 @@ Copyright (C) 1999, 2000 Digital Creations, Inc.
 
             # Verify that we got what we need
             if not username or not password:
-                raise "CommandLineError"
+                raise CommandLineError, "Must specify username and password."
 
             access_file.write(username + ':' +
                               generate_passwd(password, encoding) +
@@ -191,10 +194,12 @@ CLEARTEXT - no protection
                               generate_passwd(password, encoding) +
                               domains)
 
-    except "CommandLineError":
+    except CommandLineError, v:
         sys.stderr.write(usage)
+        sys.stderr.write("\n\n%s" % v)
         sys.exit(1)
 
 
 # If called from the command line
-if __name__=='__main__': main(sys.argv)
+if __name__=='__main__':
+    main(sys.argv)

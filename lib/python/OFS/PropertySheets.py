@@ -13,7 +13,7 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -28,6 +28,7 @@ from Traversable import Traversable
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from webdav.common import isDavCollection
+from zExceptions import BadRequest, Redirect
 from cgi import escape
 
 
@@ -190,16 +191,16 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # systems.
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise 'Bad Request', 'Invalid property id, %s.' % escape(id)
+            raise BadRequest, 'Invalid property id, %s.' % escape(id)
 
         if not self.property_extensible_schema__():
-            raise 'Bad Request', (
+            raise BadRequest, (
                 'Properties cannot be added to this property sheet')
         pself=self.p_self()
         self=self.v_self()
         if hasattr(aq_base(self),id):
             if not (id=='title' and not self.__dict__.has_key(id)):
-                raise 'Bad Request', (
+                raise BadRequest, (
                     'Invalid property id, <em>%s</em>. It is in use.' %
                         escape(id))
         if meta is None: meta={}
@@ -207,7 +208,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         pself._properties=pself._properties+(prop,)
         if type in ('selection', 'multiple selection'):
             if not value:
-                raise 'Bad Request', (
+                raise BadRequest, (
                     'The value given for a new selection property '
                     'must be a variable name<p>')
             prop['select_variable']=value
@@ -222,10 +223,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # it will used to _replace_ the properties meta data.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise 'Bad Request', 'The property %s does not exist.' % escape(id)
+            raise BadRequest, 'The property %s does not exist.' % escape(id)
         propinfo=self.propertyInfo(id)
         if not 'w' in propinfo.get('mode', 'wd'):
-            raise 'Bad Request', '%s cannot be changed.' % escape(id)
+            raise BadRequest, '%s cannot be changed.' % escape(id)
         if type(value)==type(''):
             proptype=propinfo.get('type', 'string')
             if type_converters.has_key(proptype):
@@ -243,13 +244,13 @@ class PropertySheet(Traversable, Persistent, Implicit):
         # Delete the property with the given id. If a property with the
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
-            raise 'Bad Request', 'The property %s does not exist.' % escape(id)
+            raise BadRequest, 'The property %s does not exist.' % escape(id)
         vself=self.v_self()
         if hasattr(vself, '_reserved_names'):
             nd=vself._reserved_names
         else: nd=()
         if (not 'd' in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
-            raise 'Bad Request', '%s cannot be deleted.' % escape(id)
+            raise BadRequest, '%s cannot be deleted.' % escape(id)
         delattr(vself, id)
         pself=self.p_self()
         pself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
@@ -392,7 +393,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
     manage=DTMLFile('dtml/properties', globals())
     def manage_propertiesForm(self, URL1):
         " "
-        raise 'Redirect', URL1+'/manage'
+        raise Redirect, URL1+'/manage'
 
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
@@ -429,7 +430,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         for name, value in props.items():
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
-                    raise 'BadRequest', '%s cannot be changed' % escape(name)
+                    raise BadRequest, '%s cannot be changed' % escape(name)
                 self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(

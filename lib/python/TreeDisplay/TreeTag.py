@@ -12,8 +12,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.54 2003/11/04 21:17:22 evan Exp $'
-__version__='$Revision: 1.54 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.55 2003/11/18 13:17:14 tseaver Exp $'
+__version__='$Revision: 1.55 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -574,7 +574,7 @@ def decode_seq(state):
         state=a2b_base64(state)
 
     state=decompress(state)
-    if state.find('*') >= 0: raise 'Illegal State', state
+    if state.find('*') >= 0: raise ValueError, 'Illegal State: %s' % state
     try: return list(eval(state,{'__builtins__':{}}))
     except: return []
 

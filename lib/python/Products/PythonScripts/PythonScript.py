@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -34,6 +34,7 @@ from OFS.Cache import Cacheable
 from AccessControl import full_write_guard, safe_builtins
 from AccessControl.ZopeGuards import guarded_getattr, guarded_getitem
 from zLOG import LOG, ERROR, INFO, PROBLEM
+from zExceptions import Forbidden
 
 # Track the Python bytecode version
 import imp
@@ -336,7 +337,7 @@ class PythonScript(Script, Historical, Cacheable):
         user = getSecurityManager().getUser()
         if user is not None and user.allowed(self, roles):
             return
-        raise 'Forbidden', ('You are not authorized to change <em>%s</em> '
+        raise Forbidden, ('You are not authorized to change <em>%s</em> '
             'because you do not have proxy roles.\n<!--%s, %s-->'
             % (self.id, user, roles))
 

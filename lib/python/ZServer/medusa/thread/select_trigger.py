@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.6 2003/03/18 21:17:03 fdrake Exp $"
+VERSION_STRING = "$Id: select_trigger.py,v 1.7 2003/11/18 13:17:19 tseaver Exp $"
 
 import asyncore
 import asynchat
@@ -92,6 +92,9 @@ else:
 
     # win32-safe version
 
+    class BindError(Exception):
+        pass
+
     class trigger (asyncore.dispatcher):
     
         address = ('127.9.9.9', 19999)
@@ -113,7 +116,7 @@ else:
                     break
                 except:
                     if port <= 19950:
-                        raise 'Bind Error', 'Cannot bind trigger!'
+                        raise BindError, 'Cannot bind trigger!'
                     port=port - 1
                     
             a.listen (1)

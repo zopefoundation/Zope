@@ -13,7 +13,7 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import  time, urllib, re
 from App.Common import iso8601_date, rfc850_date, rfc1123_date
@@ -21,6 +21,21 @@ from App.Common import aq_base
 import random
 
 _randGen = random.Random(time.time())
+
+class WebDAVException(Exception):
+    pass
+
+class Locked(WebDAVException):
+    pass
+
+class PreconditionFailed(WebDAVException):
+    pass
+
+class Conflict(WebDAVException):
+    pass
+
+class UnsupportedMediaType(WebDAVException):
+    pass
 
 def absattr(attr):
     if callable(attr):

@@ -90,9 +90,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.40 2002/08/14 22:09:40 mj Exp $
+$Id: Test.py,v 1.41 2003/11/18 13:17:17 tseaver Exp $
 '''
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, traceback, profile, os, getopt
 from time import clock
@@ -130,11 +130,12 @@ def main():
             repeat_count=int(val)
         elif opt=='-e':
             opt=val.find('=')
-            if opt <= 0: raise 'Invalid argument to -e', val
+            if opt <= 0: raise ValueError, 'Invalid argument to -e: %s' % val
             env[val[:opt]]=val[opt+1:]
 
     if (debug or 0)+(timeit or 0)+(profile and 1 or 0) > 1:
-        raise 'Invalid options', 'only one of -p, -t, and -d are allowed'
+        raise ValueError, (
+          'Invalid options: only one of -p, -t, and -d are allowed')
 
     module=args[0]
 

@@ -6,6 +6,8 @@ run in current directory creates a database in files
   test.dfs LIKES.grl SERVES.grl FREQUENTS.grl
 """
 
+from Products.ZGadflyDA import GadflyError
+
 def test(directory):
     print "testing"
     from gadfly import gadfly
@@ -62,7 +64,7 @@ def test(directory):
     except:
         print "exception as expected %s(%s)" %(sys.exc_type, sys.exc_value)
     else:
-        raise "stop!", "unique index permits nonunique field"
+        raise GadflyError, "unique index permits nonunique field"
     print; print "testing introspection"
     itests = ["select 10*4 from dual",
               "select * from __table_names__",

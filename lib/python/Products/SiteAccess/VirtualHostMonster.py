@@ -47,7 +47,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 try:
                     host, path = [x.strip() for x in  line.split('/', 1)]
                 except:
-                    raise 'LineError', 'Needs a slash between host and path'
+                    raise ValueError, (
+                        'Line needs a slash between host and path: %s' % line )
                 pp = filter(None, path.split( '/'))
                 if pp:
                     obpath = pp[:]
@@ -63,16 +64,19 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         try:
                             ob = self.unrestrictedTraverse(obpath)
                         except:
-                            raise 'LineError', 'Path not found'
+                            raise ValueError, (
+                                'Path not found: %s' % obpath )
                         if not getattr(ob.aq_base, 'isAnObjectManager', 0):
-                            raise 'LineError', ('Path must lead to '
-                                                'an Object Manager')
+                            raise ValueError, (
+                                'Path must lead to an Object Manager: %s'
+                                    % obpath)
                     if 'VirtualHostRoot' not in pp:
                         pp.append('/')
                     pp.reverse()
                 try:
                     int(host.replace('.',''))
-                    raise 'LineError',  'IP addresses are not mappable'
+                    raise ValueError,  (
+                        'IP addresses are not mappable: %s' % host)
                 except ValueError:
                     pass
                 if host[:2] == '*.':

@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.106 2003/02/04 16:38:10 matt Exp $'''
-__version__='$Revision: 1.106 $'[11:-2]
+$Id: SimpleItem.py,v 1.107 2003/11/18 13:17:03 tseaver Exp $'''
+__version__='$Revision: 1.107 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -32,6 +32,7 @@ from Traversable import Traversable
 from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from DocumentTemplate.ustr import ustr
 from zExceptions.ExceptionFormatter import format_exception
+from zExceptions import Redirect
 import time
 from zLOG import LOG, BLATHER
 
@@ -222,7 +223,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
 
     def manage(self, URL1):
         " "
-        raise 'Redirect', "%s/manage_main" % URL1
+        raise Redirect, "%s/manage_main" % URL1
 
     # This keeps simple items from acquiring their parents
     # objectValues, etc., when used in simple tree tags.

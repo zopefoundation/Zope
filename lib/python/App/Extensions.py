@@ -14,11 +14,12 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.22 2003/07/09 18:44:24 fdrake Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: Extensions.py,v 1.23 2003/11/18 13:16:58 tseaver Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 import os, zlib, imp
 import Products
+from zExceptions import NotFound
 path_split=os.path.split
 path_join=os.path.join
 exists=os.path.exists
@@ -116,7 +117,7 @@ def getObject(module, name, reload=0,
         p = module
     p=getPath('Extensions', p, suffixes=('','py','pyp','pyc'))
     if p is None:
-        raise "Module Error", (
+        raise NotFound, (
             "The specified module, <em>%s</em>, couldn't be found." % module)
 
     __traceback_info__=p, module
@@ -140,7 +141,7 @@ def getObject(module, name, reload=0,
 
     else:
         try: execsrc=open(p)
-        except: raise "Module Error", (
+        except: raise NotFound, (
             "The specified module, <em>%s</em>, couldn't be opened."
             % module)
         m={}
@@ -154,7 +155,7 @@ def getObject(module, name, reload=0,
     try:
         return m[name]
     except KeyError:
-        raise 'Invalid Object Name', (
+        raise NotFound, (
             "The specified object, <em>%s</em>, was not found in module, "
             "<em>%s</em>." % (name, module))
 

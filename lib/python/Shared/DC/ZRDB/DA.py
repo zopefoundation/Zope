@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.111 $'[11:-2]
+__version__='$Revision: 1.112 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -37,6 +37,7 @@ from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
+from zExceptions import BadRequest
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
 
@@ -411,7 +412,7 @@ class DA(
                 c))
 
         try: DB__=dbc()
-        except: raise 'Database Error', (
+        except: raise BadRequest, (
             '%s is not connected to a database' % self.id)
 
         if hasattr(self, 'aq_parent'):

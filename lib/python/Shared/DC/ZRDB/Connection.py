@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.37 2003/10/22 20:33:56 chrisw Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
+$Id: Connection.py,v 1.38 2003/11/18 13:17:14 tseaver Exp $'''
+__version__='$Revision: 1.38 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -26,6 +26,7 @@ from Results import Results
 from sys import exc_info
 from zLOG import LOG, ERROR
 import DocumentTemplate, RDB
+from zExceptions import BadRequest
 
 class Connection(
     Globals.Persistent,
@@ -168,7 +169,7 @@ class Connection(
             if s:
                 self.connect(s)
                 return self._v_database_connection
-            raise 'Database Not Connected',(
+            raise BadRequest,(
                 '''The database connection is not connected''')
 
     def connect(self,s):
@@ -179,7 +180,7 @@ class Connection(
                 self._v_database_connection=DB(s)
             except:
                 t, v, tb = sys.exc_info()
-                raise 'BadRequest', (
+                raise BadRequest, (
                     '<strong>Invalid connection string: </strong><CODE>%s</CODE><br>\n'
                     '<!--\n%s\n%s\n-->\n'
                     % (s,t,v)), tb

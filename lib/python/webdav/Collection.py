@@ -13,7 +13,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, os,  Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date
@@ -21,7 +21,8 @@ from Resource import Resource
 from AccessControl import getSecurityManager
 from urllib import unquote
 from WriteLockInterface import WriteLockInterface
-
+from zExceptions import MethodNotAllowed, NotFound
+from webdav.common import Locked, PreconditionFailed
 
 class Collection(Resource):
     """The Collection class provides basic WebDAV support for
@@ -54,10 +55,10 @@ class Collection(Resource):
         if hasattr(self, 'index_html'):
             if hasattr(self.index_html, 'HEAD'):
                 return self.index_html.HEAD(REQUEST, RESPONSE)
-            raise 'Method Not Allowed', (
+            raise MethodNotAllowed, (
                   'Method not supported for this resource.'
                   )
-        raise 'Not Found', 'The requested resource does not exist.'
+        raise NotFound, 'The requested resource does not exist.'
 
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
@@ -65,7 +66,7 @@ class Collection(Resource):
         to handle PUT requests. The default response to a PUT request
         for collections is 405 (Method Not Allowed)."""
         self.dav__init(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for collections.'
+        raise MethodNotAllowed, 'Method not supported for collections.'
 
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a collection resource. For collection resources, DELETE
@@ -92,12 +93,12 @@ class Collection(Resource):
             if ifhdr:
                 self.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
             else:
-                raise 'Locked'
+                raise Locked
         elif Lockable.wl_isLocked(parent):
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, 'DELETE', col=1)
             else:
-                raise 'Precondition Failed'
+                raise PreconditionFailed
         # Second level of lock\conflict checking (are any descendants locked,
         # or is the user not permitted to delete?).  This results in a
         # multistatus response

@@ -177,7 +177,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 except AttributeError:
                     if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
                         LOG("ZPublisher",WARNING,"DTML file '%s' could not be read" % self.raw)
-                        raise "DTML file error","Check logfile for details"
+                        raise ValueError, ("DTML file error: "
+                                           "Check logfile for details")
                     else:
                         raise
 

@@ -13,13 +13,13 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.63 2003/10/17 16:21:14 andreasjung Exp $"""
-
-__version__='$Revision: 1.63 $'[11:-2]
+$Id: Management.py,v 1.64 2003/11/18 13:16:58 tseaver Exp $
+"""
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
+from zExceptions import Redirect
 from AccessControl import getSecurityManager, Unauthorized
 
 class Tabs(ExtensionClass.Base):
@@ -38,8 +38,10 @@ class Tabs(ExtensionClass.Base):
 
         result=[]
 
-        try: options=tuple(self.manage_options)
-        except: options=tuple(self.manage_options())
+        try:
+            options=tuple(self.manage_options)
+        except:
+            options=tuple(self.manage_options())
 
         for d in options:
 
@@ -48,10 +50,12 @@ class Tabs(ExtensionClass.Base):
                 continue
 
             path=d.get('path', None)
-            if path is None: path=d['action']
+            if path is None:
+                    path=d['action']
 
             o=self.unrestrictedTraverse(path, None)
-            if o is None: continue
+            if o is None:
+                    continue
 
             try:
                 if validate(None, self, None, o):
@@ -70,13 +74,14 @@ class Tabs(ExtensionClass.Base):
         options=self.filtered_manage_options(REQUEST)
         try:
             m=options[0]['action']
-            if m=='manage_workspace': raise TypeError
+            if m=='manage_workspace':
+                    raise TypeError
         except:
             raise Unauthorized, (
                 'You are not authorized to view this object.')
 
         if m.find('/'):
-            raise 'Redirect', (
+            raise Redirect, (
                 "%s/%s" % (REQUEST['URL1'], m))
 
         return getattr(self, m)(self, REQUEST)
@@ -106,13 +111,19 @@ class Tabs(ExtensionClass.Base):
                        quote=urllib.quote,
                        ):
         out=[]
-        while path[:1]=='/': path=path[1:]
-        while path[-1:]=='/': path=path[:-1]
-        while script[:1]=='/': script=script[1:]
-        while script[-1:]=='/': script=script[:-1]
+        while path[:1]=='/':
+            path = path[1:]
+        while path[-1:]=='/':
+            path = path[:-1]
+        while script[:1]=='/':
+            script = script[1:]
+        while script[-1:]=='/':
+            script = script[:-1]
         path=path.split('/')[:-1]
-        if script: path=[script]+path
-        if not path: return ''
+        if script:
+            path = [script] + path
+        if not path:
+            return ''
         script=''
         last=path[-1]
         del path[-1]
@@ -124,7 +135,8 @@ class Tabs(ExtensionClass.Base):
 
     class_manage_path__roles__=None
     def class_manage_path(self):
-        if self.__class__.__module__[:1] != '*': return
+        if self.__class__.__module__[:1] != '*':
+            return
         path = getattr(self.__class__, '_v_manage_path_roles', None)
         if path is None:
             meta_type = self.meta_type

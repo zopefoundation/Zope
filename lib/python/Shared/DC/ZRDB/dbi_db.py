@@ -13,14 +13,14 @@
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.10 2002/08/14 21:50:59 mj Exp $'''
+$Id: dbi_db.py,v 1.11 2003/11/18 13:17:14 tseaver Exp $'''
 #     Copyright
 #
 #       Copyright 1997 Digital Creations, Inc, 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 #
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import string, sys
 from string import strip, split, find, join
@@ -34,6 +34,9 @@ nonselect_desc=[
     ('Calls',  'STRING', 12, 12, 0, 0, 1),
     ]
 
+class QueryError(Exception):
+    pass
+
 class DB:
 
     _p_oid=_p_changed=_registered=None
@@ -42,7 +45,7 @@ class DB:
 
     def Database_Connection(self, string):
         # Create a dbi-compatible database connection
-        raise 'ImplementedBySubclass', (
+        raise NotImplemetedError, (
             'attempt to create a database connection for an abstract dbi')
 
     Database_Error='Should be overriden by subclass'
@@ -79,12 +82,12 @@ class DB:
             c=self.cursor
             self.register()
             queries=filter(None, map(strip,split(query_string, '\0')))
-            if not queries: raise 'Query Error', 'empty query'
+            if not queries: raise QueryError, 'empty query'
             if len(queries) > 1:
                 result=[]
                 for qs in queries:
                     r=c.execute(qs)
-                    if r is None: raise 'Query Error', (
+                    if r is None: raise QueryError, (
                         'select in multiple sql-statement query'
                         )
                     result.append((qs, str(`r`), calls))

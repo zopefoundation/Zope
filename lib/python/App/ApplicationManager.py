@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -28,6 +28,7 @@ from Product import ProductFolder
 from version_txt import version_txt
 from cStringIO import StringIO
 from AccessControl import getSecurityManager
+from zExceptions import Redirect
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 import zLOG
 import Lifetime
@@ -352,7 +353,7 @@ class ApplicationManager(Folder,CacheManager):
 
     def manage_app(self, URL2):
         """Return to the main management screen"""
-        raise 'Redirect', URL2+'/manage'
+        raise Redirect, URL2+'/manage'
 
     def process_time(self):
         s=int(time.time())-self.process_start
@@ -463,7 +464,7 @@ class ApplicationManager(Folder,CacheManager):
     def version_info(self):
         r=[]
         try: db=self._p_jar.db()
-        except: raise 'Zope database version error', """
+        except: raise ValueError, """
         Sorry, <em>Version management</em> is only supported if you use ZODB 3.
         """
         for v in db.versions():

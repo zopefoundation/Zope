@@ -13,7 +13,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, os,  mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -24,8 +24,10 @@ from Resource import Resource
 from Globals import Persistent, DTMLFile
 from WriteLockInterface import WriteLockInterface
 import OFS.SimpleItem
-from zExceptions import Unauthorized
+from zExceptions import Unauthorized, NotFound, Forbidden, BadRequest
+from zExceptions import MethodNotAllowed
 from common import isDavCollection
+from common import Locked, Conflict, PreconditionFailed, UnsupportedMediaType
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
@@ -52,13 +54,13 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         except: pass
         method=REQUEST.get('REQUEST_METHOD', 'GET')
         if method in ('PUT', 'MKCOL', 'LOCK'):
-            raise 'Conflict', 'Collection ancestors must already exist.'
-        raise 'Not Found', 'The requested resource was not found.'
+            raise Conflict, 'Collection ancestors must already exist.'
+        raise NotFound, 'The requested resource was not found.'
 
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
         self.dav__init(REQUEST, RESPONSE)
-        raise 'Not Found', 'The requested resource does not exist.'
+        raise NotFound, 'The requested resource does not exist.'
 
     # Most methods return 404 (Not Found) for null resources.
     DELETE=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
@@ -94,10 +96,10 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             else:
                 # There was no If header at all, and our parent is locked,
                 # so we fail here
-                raise 'Locked'
+                raise Locked
         elif ifhdr:
             # There was an If header, but the parent is not locked
-            raise 'Precondition Failed'
+            raise PreconditionFailed
 
         body=REQUEST.get('BODY', '')
         typ=REQUEST.get_header('content-type', None)
@@ -116,7 +118,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         except Unauthorized:
             raise
         except:
-            raise 'Forbidden', sys.exc_info()[1]
+            raise Forbidden, sys.exc_info()[1]
 
         # Delegate actual PUT handling to the new object.
         ob.PUT(REQUEST, RESPONSE)
@@ -130,25 +132,25 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         """Create a new collection resource."""
         self.dav__init(REQUEST, RESPONSE)
         if REQUEST.get('BODY', ''):
-            raise 'Unsupported Media Type', 'Unknown request body.'
+            raise UnsupportedMediaType, 'Unknown request body.'
 
         name=self.__name__
         parent = self.__parent__
 
         if hasattr(aq_base(parent), name):
-            raise 'Method Not Allowed', 'The name %s is in use.' % name
+            raise MethodNotAllowed, 'The name %s is in use.' % name
         if not isDavCollection(parent):
-            raise 'Forbidden', 'Cannot create collection at this location.'
+            raise Forbidden, 'Cannot create collection at this location.'
 
         ifhdr = REQUEST.get_header('If', '')
         if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
-                raise 'Locked'
+                raise Locked
         elif ifhdr:
             # There was an If header, but the parent is not locked
-            raise 'Precondition Failed'
+            raise PreconditionFailed
 
         # Add hook for webdav/FTP MKCOL (Collector #2254) (needed for CMF)
 #       parent.manage_addFolder(name)
@@ -175,16 +177,16 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             if ifhdr:
                 parent.dav__simpleifhandler(REQUEST, RESPONSE, col=1)
             else:
-                raise 'Locked'
+                raise Locked
         elif ifhdr:
             # There was an If header, but the parent is not locked.
-            raise 'Precondition Failed'
+            raise PreconditionFailed
 
         # The logic involved in locking a null resource is simpler than
         # a regular resource, since we know we're not already locked,
         # and the lock isn't being refreshed.
         if not body:
-            raise 'Bad Request', 'No body was in the request'
+            raise BadRequest, 'No body was in the request'
 
         locknull = LockNullResource(name)
         parent._setObject(name, locknull)
@@ -268,7 +270,8 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             RESPONSE.setStatus(423)
         else:
             # There's no body, so this is likely to be a refresh request
-            if not ifhdr: raise 'Precondition Failed'
+            if not ifhdr:
+                raise PreconditionFailed
             taglist = IfParser(ifhdr)
             found = 0
             for tag in taglist:
@@ -298,8 +301,10 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         user = security.getUser()
         token = REQUEST.get_header('Lock-Token', '')
         url = REQUEST['URL']
-        if token: token = tokenFinder(token)
-        else: raise 'Bad Request', 'No lock token was submitted in the request'
+        if token:
+            token = tokenFinder(token)
+        else:
+            raise BadRequest, 'No lock token was submitted in the request'
 
         cmd = davcmds.Unlock()
         result = cmd.apply(self, token, url)
@@ -329,7 +334,8 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # Since a Lock null resource is always locked by definition, all
         # operations done by an owner of the lock that affect the resource
         # MUST have the If header in the request
-        if not ifhdr: raise 'Precondition Failed', 'No If-header'
+        if not ifhdr:
+            raise PreconditionFailed, 'No If-header'
 
         # First we need to see if the parent of the locknull is locked, and
         # if the user owns that lock (checked by handling the information in
@@ -338,12 +344,14 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'PUT',
                                                 col=1, url=parenturl,
                                                 refresh=1)
-            if not itrue: raise 'Precondition Failed', (
+            if not itrue:
+                raise PreconditionFailed, (
                 'Condition failed against resources parent')
 
         # Now we need to check the If header against our own lock state
         itrue = self.dav__simpleifhandler(REQUEST, RESPONSE, 'PUT', refresh=1)
-        if not itrue: raise 'Precondition Failed', (
+        if not itrue:
+            raise PreconditionFailed, (
             'Condition failed against locknull resource')
 
         # All of the If header tests succeeded, now we need to remove ourselves
@@ -367,11 +375,11 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         except Unauthorized:
             raise
         except:
-            raise 'Forbidden', sys.exc_info()[1]
+            raise Forbidden, sys.exc_info()[1]
 
         # Put the locks on the new object
         if not WriteLockInterface.isImplementedBy(ob):
-            raise 'Method Not Allowed', (
+            raise MethodNotAllowed, (
                 'The target object type cannot be locked')
         for token, lock in locks:
             ob.wl_setLock(token, lock)
@@ -390,14 +398,15 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         object and transferring its locks to the newly created Folder """
         self.dav__init(REQUEST, RESPONSE)
         if REQUEST.get('BODY', ''):
-            raise 'Unsupported Media Type', 'Unknown request body.'
+            raise UnsupportedMediaType, 'Unknown request body.'
 
         name = self.__name__
         parent = self.aq_parent
         parenturl = parent.absolute_url()
         ifhdr = REQUEST.get_header('If', '')
 
-        if not ifhdr: raise 'Precondition Failed', 'No If-header'
+        if not ifhdr:
+            raise PreconditionFailed, 'No If-header'
 
         # If the parent object is locked, that information should be in the
         # if-header if the user owns a lock on the parent
@@ -405,11 +414,13 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
             itrue = parent.dav__simpleifhandler(REQUEST, RESPONSE, 'MKCOL',
                                                 col=1, url=parenturl,
                                                 refresh=1)
-            if not itrue: raise 'Precondition Failed', (
+            if not itrue:
+                raise PreconditionFailed, (
                 'Condition failed against resources parent')
         # Now we need to check the If header against our own lock state
         itrue = self.dav__simpleifhandler(REQUEST,RESPONSE,'MKCOL',refresh=1)
-        if not itrue: raise 'Precondition Failed', (
+        if not itrue:
+            raise PreconditionFailed, (
             'Condition failed against locknull resource')
 
         # All of the If header tests succeeded, now we need to remove ourselves

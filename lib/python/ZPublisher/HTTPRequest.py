@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -56,6 +56,10 @@ tainting_env = str(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', '')).lower()
 TAINTING_ENABLED  = tainting_env not in ('disabled', '0', 'no')
 
 _marker=[]
+
+class NestedLoopExit( Exception ):
+    pass
+
 class HTTPRequest(BaseRequest):
     """\
     Model HTTP request data.
@@ -886,8 +890,8 @@ class HTTPRequest(BaseRequest):
                                                 for origitem in l:
                                                     if not hasattr(origitem, k):
                                                         missesdefault = 1
-                                                        raise "Break"
-                                        except "Break":
+                                                        raise NestedLoopExit
+                                        except NestedLoopExit:
                                             break
                                     else:
                                         if not defitem in l:

@@ -13,12 +13,14 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.15 2002/08/14 22:25:17 mj Exp $''' % database_type
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: DA.py,v 1.16 2003/11/18 13:17:11 tseaver Exp $''' % database_type
+__version__='$Revision: 1.16 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
 import Shared.DC.ZRDB.Connection, ThreadLock
+from zExceptions import BadRequest
+
 _Connection=Shared.DC.ZRDB.Connection.Connection
 
 _connections={}
@@ -84,7 +86,7 @@ class Connection(DABase.Connection):
                     self._v_database_connection=c[s]=DB(s)
                 except:
                     t, v, tb = sys.exc_info()
-                    raise 'BadRequest', (
+                    raise BadRequest, (
                         '<strong>Invalid connection string: </strong>'
                         '<CODE>%s</CODE><br>\n'
                         '<!--\n%s\n%s\n-->\n'

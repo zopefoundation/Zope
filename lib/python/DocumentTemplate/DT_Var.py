@@ -151,8 +151,8 @@ Evaluating expressions without rendering results
 
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.59 2003/02/01 09:25:58 andreasjung Exp $'
-__version__='$Revision: 1.59 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.60 2003/11/18 13:17:00 tseaver Exp $'
+__version__='$Revision: 1.60 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -303,7 +303,7 @@ class Var:
         if have_arg('size'):
             size=args['size']
             try: size=int(size)
-            except: raise 'Document Error',(
+            except: raise ValueError,(
                 '''a <code>size</code> attribute was used in a <code>var</code>
                 tag with a non-integer value.''')
             if len(val) > size:

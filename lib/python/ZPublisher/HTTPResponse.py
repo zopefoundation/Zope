@@ -12,21 +12,18 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.76 2003/07/08 05:54:11 ctheune Exp $'''
-__version__ = '$Revision: 1.76 $'[11:-2]
+$Id: HTTPResponse.py,v 1.77 2003/11/18 13:17:17 tseaver Exp $'''
+__version__ = '$Revision: 1.77 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
 from string import translate, maketrans
 from BaseResponse import BaseResponse
-from zExceptions import Unauthorized
+from zExceptions import Unauthorized, Redirect
 from zExceptions.ExceptionFormatter import format_exception
+from ZPublisher import BadRequest, InternalError, NotFound
 
 nl2sp = maketrans('\n',' ')
-
-BadRequest = 'BadRequest'
-InternalError = 'InternalError'
-NotFound = 'NotFound'
 
 
 # Enable APPEND_TRACEBACKS to make Zope append tracebacks like it used to,
@@ -215,13 +212,20 @@ class HTTPResponse(BaseResponse):
             # It has already been determined.
             return
 
+        if (isinstance(status, types.ClassType)
+         and issubclass(status, Exception)):
+            status = status.__name__
+
         if isinstance(status, str):
             status = status.lower()
+
         if status_codes.has_key(status):
             status = status_codes[status]
         else:
             status = 500
+
         self.status = status
+
         if reason is None:
             if status_reasons.has_key(status):
                 reason = status_reasons[status]
@@ -725,6 +729,13 @@ class HTTPResponse(BaseResponse):
                     self.setStatus(302)
                 self.setHeader('location', v)
                 tb = None # just one path covered
+                return self
+            elif isinstance(v, Redirect): # death to string exceptions!
+                if self.status == 300:
+                    self.setStatus(302)
+                self.setHeader('location', v.args[0])
+                self.setBody('')
+                tb = None
                 return self
             else:
                 try:

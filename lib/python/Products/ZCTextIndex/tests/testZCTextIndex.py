@@ -14,6 +14,7 @@
 
 from Interface.Verify import verifyClass
 import Acquisition
+from zExceptions import NotFound
 
 from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
@@ -48,7 +49,7 @@ class LexiconHolder(Acquisition.Implicit):
 def dummyUnrestrictedTraverse(self, path):
     if path == ('', 'lexicon',):
         return self.lexicon
-    raise 'NotFound', path
+    raise NotFound, path
 
 # The tests classes below create a ZCTextIndex().  Then they create
 # instance variables that point to the internal components used by

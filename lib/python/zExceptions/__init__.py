@@ -15,7 +15,25 @@
 These exceptions are so general purpose that they don't belong in Zope
 application-specific packages.
 
-$Id: __init__.py,v 1.4 2002/08/14 22:12:06 mj Exp $
+$Id: __init__.py,v 1.5 2003/11/18 13:17:21 tseaver Exp $
 """
 
 from unauthorized import Unauthorized
+
+class BadRequest(Exception):
+    pass
+
+class InternalError(Exception):
+    pass
+
+class NotFound(Exception):
+    pass
+
+class Forbidden(Exception):
+    pass
+
+class MethodNotAllowed(Exception):
+    pass
+
+class Redirect(Exception):
+    pass

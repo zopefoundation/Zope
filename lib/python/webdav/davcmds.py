@@ -11,9 +11,10 @@
 #
 ##############################################################################
 
-"""WebDAV xml request objects."""
+"""WebDAV xml request objects.
 
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: davcmds.py,v 1.22 2003/11/18 13:17:20 tseaver Exp $
+"""
 
 import sys, os
 from common import absattr, aq_base, urlfix, urlbase
@@ -25,7 +26,9 @@ from xmltools import XmlParser
 from cStringIO import StringIO
 from urllib import quote
 from AccessControl import getSecurityManager
+from zExceptions import BadRequest, Forbidden
 from common import isDavCollection
+from common import PreconditionFailed
 
 def safe_quote(url, mark=r'%'):
     if url.find(mark) > -1:
@@ -58,14 +61,18 @@ class PropFind:
     def parse(self, request, dav='DAV:'):
         self.depth=request.get_header('Depth', 'infinity')
         if not (self.depth in ('0','1','infinity')):
-            raise 'Bad Request', 'Invalid Depth header.'
+            raise BadRequest, 'Invalid Depth header.'
         body=request.get('BODY', '')
         self.allprop=(not len(body))
-        if not body: return
-        try:    root=XmlParser().parse(body)
-        except: raise 'Bad Request', sys.exc_info()[1]
+        if not body:
+            return
+        try:
+            root=XmlParser().parse(body)
+        except:
+            raise BadRequest, sys.exc_info()[1]
         e=root.elements('propfind', ns=dav)
-        if not e: raise 'Bad Request', 'Invalid xml request.'
+        if not e:
+            raise BadRequest, 'Invalid xml request.'
         e=e[0]
         if e.elements('allprop', ns=dav):
             self.allprop=1
@@ -74,13 +81,14 @@ class PropFind:
             self.propname=1
             return
         prop=e.elements('prop', ns=dav)
-        if not prop: raise 'Bad Request', 'Invalid xml request.'
+        if not prop:
+            raise BadRequest, 'Invalid xml request.'
         prop=prop[0]
         for val in prop.elements():
             self.propnames.append((val.name(), val.namespace()))
         if (not self.allprop) and (not self.propname) and \
            (not self.propnames):
-            raise 'Bad Request', 'Invalid xml request.'
+            raise BadRequest, 'Invalid xml request.'
         return
 
     def apply(self, obj, url=None, depth=0, result=None, top=1):
@@ -126,7 +134,8 @@ class PropFind:
                     code='404 Not Found'
                     if not rdict.has_key(code):
                         rdict[code]=[prop]
-                    else: rdict[code].append(prop)
+                    else:
+                        rdict[code].append(prop)
             keys=rdict.keys()
             keys.sort()
             for key in keys:
@@ -138,22 +147,27 @@ class PropFind:
                              '  <d:status>HTTP/1.1 %s</d:status>\n' \
                              '</d:propstat>\n' % key
                              )
-        else: raise 'Bad Request', 'Invalid request'
+        else:
+            raise BadRequest, 'Invalid request'
         result.write('</d:response>\n')
         if depth in ('1', 'infinity') and iscol:
             for ob in obj.listDAVObjects():
                 if hasattr(ob,"meta_type"):
-                    if ob.meta_type=="Broken Because Product is Gone": continue
+                    if ob.meta_type=="Broken Because Product is Gone":
+                        continue
                 dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)
                 if hasattr(ob, '__locknull_resource__'):
                     # Do nothing, a null resource shouldn't show up to DAV
-                    if dflag: ob._p_deactivate()
+                    if dflag:
+                        ob._p_deactivate()
                 elif hasattr(ob, '__dav_resource__'):
                     uri=os.path.join(url, absattr(ob.id))
                     depth=depth=='infinity' and depth or 0
                     self.apply(ob, uri, depth, result, top=0)
-                    if dflag: ob._p_deactivate()
-        if not top: return result
+                    if dflag:
+                        ob._p_deactivate()
+        if not top:
+            return result
         result.write('</d:multistatus>')
 
         return result.getvalue()
@@ -169,16 +183,20 @@ class PropPatch:
 
     def parse(self, request, dav='DAV:'):
         body=request.get('BODY', '')
-        try:    root=XmlParser().parse(body)
-        except: raise 'Bad Request', sys.exc_info()[1]
+        try:
+            root=XmlParser().parse(body)
+        except:
+            raise BadRequest, sys.exc_info()[1]
         vals=self.values
         e=root.elements('propertyupdate', ns=dav)
-        if not e: raise 'Bad Request', 'Invalid xml request.'
+        if not e:
+            raise BadRequest, 'Invalid xml request.'
         e=e[0]
         for ob in e.elements():
             if ob.name()=='set' and ob.namespace()==dav:
                 proptag=ob.elements('prop', ns=dav)
-                if not proptag: raise 'Bad Request', 'Invalid xml request.'
+                if not proptag:
+                    raise BadRequest, 'Invalid xml request.'
                 proptag=proptag[0]
                 for prop in proptag.elements():
                     # We have to ensure that all tag attrs (including
@@ -202,7 +220,8 @@ class PropPatch:
                         vals.append(item)
             if ob.name()=='remove' and ob.namespace()==dav:
                 proptag=ob.elements('prop', ns=dav)
-                if not proptag: raise 'Bad Request', 'Invalid xml request.'
+                if not proptag:
+                    raise BadRequest, 'Invalid xml request.'
                 proptag=proptag[0]
                 for prop in proptag.elements():
                     item=(prop.name(), prop.namespace())
@@ -229,12 +248,14 @@ class PropPatch:
                     propset=propsets.get(ns)
                 propdict=propset._propdict()
                 if propset.hasProperty(name):
-                    try: propset._updateProperty(name, val, meta=md)
+                    try:
+                        propset._updateProperty(name, val, meta=md)
                     except:
                         errors.append(str(sys.exc_info()[1]))
                         status='409 Conflict'
                 else:
-                    try: propset._setProperty(name, val, meta=md)
+                    try:
+                        propset._setProperty(name, val, meta=md)
                     except:
                         errors.append(str(sys.exc_info()[1]))
                         status='409 Conflict'
@@ -246,11 +267,13 @@ class PropPatch:
                     # according to RFC 2518
                     status='200 OK'
                 else:
-                    try: propset._delProperty(name)
+                    try:
+                        propset._delProperty(name)
                     except:
                         errors.append('%s cannot be deleted.' % name)
                         status='409 Conflict'
-            if result != '200 OK': abort=1
+            if result != '200 OK':
+                abort = 1
             result.write('<d:propstat xmlns:n="%s">\n' \
                          '  <d:prop>\n' \
                          '  <n:%s/>\n' \
@@ -264,7 +287,8 @@ class PropPatch:
                      '</d:response>\n' \
                      '</d:multistatus>' % errmsg)
         result=result.getvalue()
-        if not errors: return result
+        if not errors:
+            return result
         # This is lame, but I cant find a way to keep ZPublisher
         # from sticking a traceback into my xml response :(
         get_transaction().abort()
@@ -325,14 +349,16 @@ class Lock:
             url = urlfix(self.request['URL'], 'LOCK')
             url = urlbase(url)
         iscol = isDavCollection(obj)
-        if iscol and url[-1] != '/': url = url + '/'
+        if iscol and url[-1] != '/':
+            url = url + '/'
         errmsg = None
         lock = None
 
         try:
             lock = LockItem(creator, self.owner, depth, self.timeout,
                             self.type, self.scope, token)
-            if token is None: token = lock.getLockToken()
+            if token is None:
+                token = lock.getLockToken()
 
         except ValueError, valerrors:
             errmsg = "412 Precondition Failed"
@@ -381,7 +407,8 @@ class Lock:
                     uri = os.path.join(url, absattr(ob.id))
                     self.apply(ob, creator, depth, token, result,
                                uri, top=0)
-        if not top: return token, result
+        if not top:
+            return token, result
         if result.getvalue():
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful locks
@@ -399,7 +426,8 @@ class Unlock:
             url = urlfix(url, 'UNLOCK')
             url = urlbase(url)
         iscol = isDavCollection(obj)
-        if iscol and url[-1] != '/': url = url + '/'
+        if iscol and url[-1] != '/':
+            url = url + '/'
         errmsg = None
 
         islockable = WriteLockInterface.isImplementedBy(obj)
@@ -407,7 +435,8 @@ class Unlock:
         if islockable and obj.wl_hasLock(token):
             method = getattr(obj, 'wl_delLock')
             vld = getSecurityManager().validate(None,obj,'wl_delLock',method)
-            if vld: obj.wl_delLock(token)
+            if vld:
+                obj.wl_delLock(token)
             else:
                 errmsg = "403 Forbidden"
         elif not islockable:
@@ -415,13 +444,16 @@ class Unlock:
             # to a top level object.  Otherwise, we're descending a tree
             # which may contain many objects that don't implement locking,
             # so we just want to avoid them
-            if top: errmsg = "405 Method Not Allowed"
+            if top:
+                errmsg = "405 Method Not Allowed"
 
         if errmsg:
             if top and (not iscol):
                 # We don't need to raise multistatus errors
-                if errmsg[:3] == '403': raise "Forbidden"
-                else: raise "Precondition Failed"
+                if errmsg[:3] == '403':
+                    raise Forbidden
+                else:
+                    raise PreconditionFailed
             elif not result.getvalue():
                 # We haven't had any errors yet, so our result is empty
                 # and we need to set up the XML header
@@ -437,7 +469,8 @@ class Unlock:
                    WriteLockInterface.isImplementedBy(ob):
                     uri = os.path.join(url, absattr(ob.id))
                     self.apply(ob, token, uri, result, top=0)
-        if not top: return result
+        if not top:
+            return result
         if result.getvalue():
             # One or more subitems probably failed, so close the multistatus
             # element and clear out all succesful unlocks
@@ -490,8 +523,10 @@ class DeleteCollection:
                 if hasattr(ob, '__dav_resource__'):
                     uri = os.path.join(url, absattr(ob.id))
                     self.apply(ob, token, user, uri, result, top=0)
-                    if dflag: ob._p_deactivate()
-        if not top: return result
+                    if dflag:
+                        ob._p_deactivate()
+        if not top:
+            return result
         if result.getvalue():
             # One or more subitems can't be delted, so close the multistatus
             # element

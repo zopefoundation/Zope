@@ -142,7 +142,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
 
     def manage_beforeDelete(self, item, container):
         if self.nonempty():
-            raise 'Version Error', (
+            raise ValueError, (
                 'Attempt to %sdelete a non-empty version.<p>'
                 ((self is not item) and 'indirectly ' or ''))
 

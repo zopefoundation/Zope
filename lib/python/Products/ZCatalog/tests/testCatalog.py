@@ -76,12 +76,8 @@ class TestAddDelColumn(CatalogBase,unittest.TestCase):
                          'add column failed')
 
     def testAddBad(self):
-        try:
-            self._catalog.addColumn('_id')
-        except:
-            pass
-        else:
-            raise 'invalid metadata column check failed'
+        from Products.ZCatalog.Catalog import CatalogError
+        self.assertRaises(CatalogError, self._catalog.addColumn, '_id')
 
     def testDel(self):
         self._catalog.addColumn('id')

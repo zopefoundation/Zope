@@ -12,16 +12,30 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
 from time import time, gmtime, localtime, asctime
 from time import daylight, timezone, altzone, strftime
-from types import InstanceType,IntType,FloatType,StringType,UnicodeType
-try: from time import tzname
-except: tzname=('UNKNOWN','UNKNOWN')
+from types import InstanceType, IntType, FloatType, StringType, UnicodeType
 
+try:
+    from time import tzname
+except:
+    tzname=('UNKNOWN','UNKNOWN')
+
+class DateTimeError( Exception ):
+    pass
+
+class SyntaxError( DateTimeError ):
+    pass
+
+class DateError( DateTimeError ):
+    pass
+
+class TimeError( DateTimeError ):
+    pass
 
 _default_datefmt = os.environ.get('DATETIME_FORMAT', "us").lower()
 if not _default_datefmt in ('us', 'international'):
@@ -241,7 +255,7 @@ class _cache:
         try:   n=self._zmap[k.lower()]
         except KeyError:
             if numericTimeZoneMatch(k) == None:
-                raise 'DateTimeError','Unrecognized timezone: %s' % k
+                raise DateTimeError,'Unrecognized timezone: %s' % k
             return k
         try: return self._d[n]
         except KeyError:
@@ -397,7 +411,7 @@ def safegmtime(t):
             raise OverflowError # Python 2.3 fix: int can return a long!
         return  gmtime(t_int)
     except (IOError, OverflowError):
-        raise 'TimeError', 'The time %f is beyond the range ' \
+        raise TimeError, 'The time %f is beyond the range ' \
               'of this Python implementation.' % float(t)
 
 def safelocaltime(t):
@@ -407,7 +421,7 @@ def safelocaltime(t):
         if isinstance(t_int, long):
             raise OverflowError # Python 2.3 fix: int can return a long!
     except OverflowError:
-        raise 'TimeError', 'The time %f is beyond the range ' \
+        raise TimeError, 'The time %f is beyond the range ' \
               'of this Python implementation.' % float(t)
     rval = localtime(t_int)
     return rval
@@ -657,7 +671,7 @@ class DateTime:
             arg=args[0]
 
             if arg=='':
-                raise self.SyntaxError, arg
+                raise SyntaxError, arg
 
             if type(arg) in [StringType,UnicodeType] and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
@@ -678,9 +692,9 @@ class DateTime:
 
 
                 if not self._validDate(yr,mo,dy):
-                    raise self.DateTimeError, 'Invalid date: %s' % arg
+                    raise DateError, 'Invalid date: %s' % arg
                 if not self._validTime(hr,mn,int(sc)):
-                    raise self.DateTimeError, 'Invalid time: %s' % arg
+                    raise TimeError, 'Invalid time: %s' % arg
                 ms = sc - math.floor(sc)
                 x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
 
@@ -688,7 +702,7 @@ class DateTime:
                     try: tz=self._tzinfo._zmap[tz.lower()]
                     except KeyError:
                         if numericTimeZoneMatch(tz) is None:
-                            raise self.DateTimeError, \
+                            raise DateTimeError, \
                                   'Unknown time zone in date: %s' % arg
                 else:
                     tz = self._calcTimezoneName(x, ms)
@@ -734,7 +748,7 @@ class DateTime:
             hr,mn,sc,tz=0,0,0,0
             yr = _correctYear(yr)
             if not self._validDate(yr,mo,dy):
-                raise self.DateTimeError, 'Invalid date: %s' % (args,)
+                raise DateError, 'Invalid date: %s' % (args,)
             args=args[3:]
             if args:
                 hr,args=args[0],args[1:]
@@ -745,9 +759,9 @@ class DateTime:
                         if args:
                             tz,args=args[0],args[1:]
                             if args:
-                                raise self.DateTimeError,'Too many arguments'
+                                raise DateTimeError,'Too many arguments'
             if not self._validTime(hr,mn,sc):
-                raise self.DateTimeError, 'Invalid time: %s' % `args`
+                raise TimeError, 'Invalid time: %s' % `args`
             leap = (yr % 4 == 0) and (yr % 100 != 0 or yr % 400 == 0)
 
             x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
@@ -756,7 +770,7 @@ class DateTime:
                 try: tz=self._tzinfo._zmap[tz.lower()]
                 except KeyError:
                     if numericTimeZoneMatch(tz) is None:
-                        raise self.DateTimeError, \
+                        raise DateTimeError, \
                               'Unknown time zone: %s' % tz
             else:
                 # Get local time zone name
@@ -793,9 +807,6 @@ class DateTime:
         # self._millis is the time since the epoch
         # in long integer milliseconds.
 
-    DateTimeError='DateTimeError'
-    SyntaxError  ='Invalid Date-Time String'
-    DateError    ='Invalid Date Components'
     int_pattern  =re.compile(r'([0-9]+)') #AJ
     flt_pattern  =re.compile(r':([0-9]+\.[0-9]+)') #AJ
     name_pattern =re.compile(r'([a-zA-Z]+)', re.I) #AJ
@@ -949,18 +960,18 @@ class DateTime:
                 if MonthNumbers.has_key(s):
                     v=MonthNumbers[s]
                     if month is None: month=v
-                    else: raise self.SyntaxError, st
+                    else: raise SyntaxError, st
                     continue
                 # Check for time modifier:
                 if s in TimeModifiers:
                     if tm is None: tm=s
-                    else: raise self.SyntaxError, st
+                    else: raise SyntaxError, st
                     continue
                 # Check for and skip day of week:
                 if DayOfWeekNames.has_key(s):
                     continue
 
-            raise self.SyntaxError, st
+            raise SyntaxError, st
 
         day=None
         if ints[-1] > 60 and d not in ['.',':','/'] and len(ints) > 2:
@@ -1023,34 +1034,34 @@ class DateTime:
             year,month,day = localtime(time())[:3]
 
         year = _correctYear(year)
-        if year < 1000: raise self.SyntaxError, st
+        if year < 1000: raise SyntaxError, st
 
         leap = year%4==0 and (year%100!=0 or year%400==0)
         try:
             if not day or day > self._month_len[leap][month]:
-                raise self.DateError, st
+                raise DateError, st
         except IndexError:
-            raise self.DateError, st
+            raise DateError, st
         tod=0
         if ints:
             i=ints[0]
             # Modify hour to reflect am/pm
             if tm and (tm=='pm') and i<12:  i=i+12
             if tm and (tm=='am') and i==12: i=0
-            if i > 24: raise self.DateTimeError, st
+            if i > 24: raise TimeError, st
             tod = tod + int(i) * 3600
             del ints[0]
             if ints:
                 i=ints[0]
-                if i > 60: raise self.DateTimeError, st
+                if i > 60: raise TimeError, st
                 tod = tod + int(i) * 60
                 del ints[0]
                 if ints:
                     i=ints[0]
-                    if i > 60: raise self.DateTimeError, st
+                    if i > 60: raise TimeError, st
                     tod = tod + i
                     del ints[0]
-                    if ints: raise self.SyntaxError,st
+                    if ints: raise SyntaxError,st
 
 
         tod_int = int(math.floor(tod))
@@ -1549,7 +1560,7 @@ class DateTime:
         """A DateTime may be added to a number and a number may be
            added to a DateTime;  two DateTimes cannot be added."""
         if hasattr(other,'_t'):
-            raise self.DateTimeError,'Cannot add two DateTimes'
+            raise DateTimeError,'Cannot add two DateTimes'
         o=float(other)
         tz = self._tz
         t = (self._t + (o*86400.0))
@@ -1636,7 +1647,7 @@ class DateTime:
         try:
             return self.__parse_iso8601(s)
         except IndexError:
-            raise self.DateError,'Not an ISO 8601 compliant date string: "%s"' %  s
+            raise DateError,'Not an ISO 8601 compliant date string: "%s"' %  s
 
 
     def __parse_iso8601(self,s):

@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.56 2002/08/14 21:50:59 mj Exp $'''
-__version__='$Revision: 1.56 $'[11:-2]
+$Id: Aqueduct.py,v 1.57 2003/11/18 13:17:14 tseaver Exp $'''
+__version__='$Revision: 1.57 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -24,6 +24,7 @@ from cStringIO import StringIO
 from OFS import SimpleItem
 from AccessControl.Role import RoleManager
 from DocumentTemplate import HTML
+from zExceptions import Redirect
 
 from string import strip, replace
 
@@ -121,7 +122,7 @@ class Searchable(BaseQuery):
 
     def index_html(self, URL1):
         " "
-        raise 'Redirect', ("%s/manage_testForm" % URL1)
+        raise Redirect, ("%s/manage_testForm" % URL1)
 
 class Composite:
 

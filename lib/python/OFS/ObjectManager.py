@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.164 2003/11/02 18:02:36 efge Exp $"""
+$Id: ObjectManager.py,v 1.165 2003/11/18 13:17:03 tseaver Exp $"""
 
-__version__='$Revision: 1.164 $'[11:-2]
+__version__='$Revision: 1.165 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -36,6 +36,7 @@ import App.Common
 from App.config import getConfiguration
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
+from zExceptions import BadRequest
 import sys,fnmatch,copy
 from cgi import escape
 from types import StringType, UnicodeType
@@ -450,10 +451,11 @@ class ObjectManager(
             v=self._getOb(id, self)
 
             if v.wl_isLocked():
-                raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % v.getId()
+                raise ResourceLockedError, (
+                    'Object "%s" is locked via WebDAV' % v.getId())
 
             if v is self:
-                raise 'BadRequest', '%s does not exist' % escape(ids[-1])
+                raise BadRequest, '%s does not exist' % escape(ids[-1])
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:

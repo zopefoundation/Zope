@@ -22,6 +22,7 @@ from AccessControl.PermissionMapping import aqwrap, PermissionMapper
 import OFS.content_types
 from OFS.DTMLMethod import DTMLMethod
 from Products.PythonScripts.PythonScript import PythonScript
+from zExceptions import BadRequest
 
 import marshal
 
@@ -106,10 +107,10 @@ class ZClassMethodsSheet(
     def _checkId(self, id, allow_dup=0,
                  _reserved=('propertysheets','manage_workspace')):
         if id in _reserved:
-            raise 'Bad Request', 'The id, %s, is reseverd' % id
+            raise BadRequest, 'The id, %s, is reseverd' % id
 
         if not allow_dup and self.getClassAttr(id, self) is not self:
-            raise 'Bad Request', (
+            raise BadRequest, (
                 'The id %s is invalid - it is already in use.' % id)
 
         ZClassMethodsSheet.inheritedAttribute('_checkId')(

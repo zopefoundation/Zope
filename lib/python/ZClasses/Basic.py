@@ -15,6 +15,7 @@
 
 import Globals, OFS.PropertySheets, OFS.Image, ExtensionClass
 import Acquisition, Products
+from zExceptions import BadRequest
 
 class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
                        OFS.PropertySheets.View):
@@ -84,7 +85,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
         options=self.data()
         changed=0
         if len(actions)!=len(options):
-            raise 'Bad Request', 'wrong number of actions'
+            raise BadRequest, 'wrong number of actions'
 
         for i in range(len(actions)):
             if options[i]['action'] != actions[i]:
@@ -140,7 +141,7 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
         options=self.data()
         for option in options:
             if option['label']==label:
-                raise 'Bad Request', (
+                raise BadRequest, (
                     'Please provide a <strong>new</strong> label.'
                     )
         if help:

@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.32 2003/01/21 07:55:22 chrism Exp $
+$Id: Transience.py,v 1.33 2003/11/18 13:17:08 tseaver Exp $
 """
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -931,7 +931,7 @@ class Ring(Persistent):
     purposes (Zope 2.5X). """
     def __init__(self, l, index):
         if not len(l):
-            raise "ring must have at least one element"
+            raise ValueError, "ring must have at least one element"
         DEBUG and TLOG('initial _ring buckets: %s' % map(oid, l))
         self._data = l
         self._index = index

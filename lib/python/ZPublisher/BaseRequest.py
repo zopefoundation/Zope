@@ -12,11 +12,12 @@
 ##############################################################################
 """ Basic ZPublisher request management.
 
-$Id: BaseRequest.py,v 1.52 2003/10/14 09:08:44 yuppie Exp $
+$Id: BaseRequest.py,v 1.53 2003/11/18 13:17:17 tseaver Exp $
 """
 
 from urllib import quote
 import xmlrpc
+from zExceptions import Forbidden
 
 UNSPECIFIED_ROLES=''
 
@@ -499,7 +500,7 @@ def old_validation(groups, request, auth,
 
     if keys is None:
         # Not a named group, so don't go further
-        raise 'Forbidden', (
+        raise Forbidden, (
             """<strong>You are not authorized to access this resource""")
 
     return None

@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -21,6 +21,7 @@ from ZPublisher.Converters import type_converters
 from Globals import DTMLFile, MessageDialog
 from Acquisition import Implicit, aq_base
 from Globals import Persistent
+from zExceptions import BadRequest
 from cgi import escape
 
 
@@ -168,11 +169,11 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
-            raise 'Bad Request', 'Invalid or duplicate property id'
+            raise BadRequest, 'Invalid or duplicate property id'
 
         if type in ('selection', 'multiple selection'):
             if not hasattr(self, value):
-                raise 'Bad Request', 'No select variable %s' % value
+                raise BadRequest, 'No select variable %s' % value
             self._properties=self._properties + (
                 {'id':id, 'type':type, 'select_variable':value},)
             if type=='selection':
@@ -189,7 +190,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         # the value to the type of the existing property.
         self._wrapperCheck(value)
         if not self.hasProperty(id):
-            raise 'Bad Request', 'The property %s does not exist' % escape(id)
+            raise BadRequest, 'The property %s does not exist' % escape(id)
         if type(value)==type(''):
             proptype=self.getPropertyType(id) or 'string'
             if type_converters.has_key(proptype):
@@ -288,7 +289,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         for name, value in props.items():
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
-                    raise 'BadRequest', '%s cannot be changed' % escape(name)
+                    raise BadRequest, '%s cannot be changed' % escape(name)
                 self._updateProperty(name, value)
         if REQUEST:
             message="Saved changes."
@@ -331,7 +332,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         nd=self._reserved_names
         for id in ids:
             if not hasattr(aq_base(self), id):
-                raise 'BadRequest', (
+                raise BadRequest, (
                       'The property <em>%s</em> does not exist' % escape(id))
             if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):
                 return MessageDialog(

@@ -20,6 +20,7 @@ from ExtensionClass import Base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
 from Products.PythonScripts.PythonScript import PythonScript
+from zExceptions import BadRequest, Redirect
 import webdav.Collection
 
 import marshal
@@ -127,7 +128,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
     """Add a Z Class
     """
     if bad_id(id) is not None:
-        raise 'Bad Request', (
+        raise BadRequest, (
             'The id %s is invalid as a class name.' % id)
     if not meta_type: meta_type=id
 
@@ -142,7 +143,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
         elif r.has_key(b):
             bases.append(r[b])
         else:
-            raise 'Invalid class', b
+            raise ValueError, 'Invalid class: %s' % b
 
     Z=ZClass(id, title, bases, zope_object=zope_object)
     Z._zclass_.meta_type=meta_type
@@ -372,7 +373,7 @@ class ZClass( Base
         jar=self._waaa_getJar()
         globals=jar.root()['ZGlobals']
         if globals.has_key(class_id):
-            raise 'Duplicate Class Ids'
+            raise ValueError, 'Duplicate Class Ids'
 
         globals[class_id]=z
 
@@ -620,7 +621,7 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
     #def tpURL(self): return 'propertysheets'
     def manage_workspace(self, URL2):
         "Emulate standard interface for use with navigation"
-        raise 'Redirect', URL2+'/manage_workspace'
+        raise Redirect, URL2+'/manage_workspace'
 
     views       = Basic.ZClassViewsSheet('views')
     basic       = Basic.ZClassBasicSheet('basic')

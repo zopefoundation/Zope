@@ -225,7 +225,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
             p=class_permissions[i]
             if p and (p not in perms):
                 __traceback_info__=perms, p, i
-                raise 'Invalid class permission'
+                raise ValueError, 'Invalid class permission'
 
             if name not in property_sheet_permissions: continue
 

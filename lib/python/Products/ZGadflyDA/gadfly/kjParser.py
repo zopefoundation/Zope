@@ -335,7 +335,7 @@ class lexdictionary:
        self.laststring= self.lastindex= self.lastresult = None
 
    def Dump(self, *k):
-       raise "sorry", "not implemented"
+       raise NotImplementedError
    __getitem__ = Dump
 
    def keyword(self, str):
