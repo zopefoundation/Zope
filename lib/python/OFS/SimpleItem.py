@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.16 1998/03/09 19:58:21 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: SimpleItem.py,v 1.17 1998/03/18 17:55:36 brian Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals, App.Management
 from DateTime import DateTime
@@ -102,6 +102,13 @@ class Item(CopySource, App.Management.Tabs):
 	except: return 0
 	return 1
 
+    def uniqueId(self):
+	return self._p_oid
+
+    def aqObjectBind(self, ob):
+	return ob.__of__(self)
+
+
 
 class Item_w__name__(Item):
 
@@ -123,6 +130,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.17  1998/03/18 17:55:36  brian
+# Added uniqueId and aqObjectBind
+#
 # Revision 1.16  1998/03/09 19:58:21  jim
 # changed session marking support
 #
