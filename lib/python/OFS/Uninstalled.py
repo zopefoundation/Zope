@@ -94,6 +94,7 @@ class BrokenClass(SimpleItem.Item, Acquisition.Explicit):
     meta_type='Broken Because Product is Gone'
     icon='p_/broken'
     product_name='unknown'
+    id='broken'
 
     def __getstate__(self):
         raise SystemError, (
