@@ -12,7 +12,7 @@ Ignore this file for now
 
 <form action="query" method=POST>
   <input name=pattern>
-  <input type="submit" value="bob">
+  <input type="submit" value="Query">
 </form>
 
 </body>
