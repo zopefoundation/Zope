@@ -99,7 +99,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     _refid=''
     _version='/version'
     icon     ='misc_/OFSP/draft'
-    meta_type='Principia Draft'
+    meta_type='Zope Draft'
 
     __ac_permissions__=(
         ('Approve draft changes',
