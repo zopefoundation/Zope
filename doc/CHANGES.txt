@@ -93,7 +93,7 @@ Zope Changes
         - Lack of sys.argv in the win32 service version of Zope caused 
           it to raise errors under certain conditions.
 
-        - A ZPublisher bug caused PUT requests to fail.
+        - Several HTTP PUT related bugs were fixed.
 
         - Simple items did not have an objectValues method, which caused
           odd behavior in certain tree tags since the method would be
@@ -105,6 +105,9 @@ Zope Changes
         - Added a fix to compensate for the fact that Apache servers may 
           rename the entire cgi environment when mod_rewrite rules are 
           used in .htaccess files.
+
+        - Added size and last modification time to DTML Method and DTML
+          Document edit interface.
 
     Zope 1.9.0
 
