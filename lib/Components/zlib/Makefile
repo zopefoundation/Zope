@@ -73,7 +73,7 @@ install: installso
 # But sometimes we may want to:
 installpy: install
 
-installso: build
+installso:
 	cp bin/$(PLATFORM)/$(MODULE).so \
            $(installdir)/lib/python/Components/$(PLATFORM)
 
