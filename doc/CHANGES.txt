@@ -34,6 +34,33 @@ Zope Changes
         - The '_' variable in DTML now has the random module
           as an attribute and DateTime.DateTime as the attribute DateTime.
 
+        - Added keys() and items() methods to the REQUEST object.
+
+        - Added get_header() method to the REQUEST object for retrieving
+          HTTP headers.
+
+        - New SearchIndex package and BTree component have been added to 
+          the distribution, providing low-level support for products with
+          built-in searching such as Tabula and Confera.
+
+        - Documents have now been split into two distinct object types:
+          DTML Documents and DTML Methods. DTML Methods behave exactly
+          as Document objects did. DTML Documents are similar except that
+          the "client" or "self" of a DTML Document is the DTML Document
+          itself rather than its parent, and DTML Documents can have
+          properties.
+
+        - DTML Documents, Image and File objects can now have properties.
+
+        - A new PropertyManager mixin class allows developers to easily
+          add properties and property management to non-Folder objects.
+
+        - Added a new absolute_url method which can generate an absolute
+          url for the object on which the method is called.
+
+        - Images now generate themselves as html IMG tags, using an absolute
+          url and correct height and width tags if possible.
+
       Bugs Fixed
  
         - Permissions for manage_clone method were wrong, meaning that
