@@ -14,10 +14,7 @@ import string
 # Regular expressions used for parsing
 
 interesting = re.compile('[&<]')
-incomplete = re.compile('&([a-zA-Z][a-zA-Z0-9]*|#[0-9]*)?|'
-                           '<([a-zA-Z][^<>]*|'
-                              '/([a-zA-Z][^<>]*)?|'
-                              '![^<>]*)?')
+incomplete = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*|#[0-9]*)?')
 
 entityref = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*)[^a-zA-Z0-9]')
 charref = re.compile('&#([0-9]+)[^0-9]')
@@ -25,7 +22,8 @@ charref = re.compile('&#([0-9]+)[^0-9]')
 starttagopen = re.compile('<[a-zA-Z]')
 piopen = re.compile(r'<\?')
 piclose = re.compile('>')
-endtagopen = re.compile('</[a-zA-Z]')
+endtagopen = re.compile('</')
+declopen = re.compile('<!')
 special = re.compile('<![^<>]*>')
 commentopen = re.compile('<!--')
 commentclose = re.compile(r'--\s*>')
@@ -36,7 +34,7 @@ attrfind = re.compile(
 
 locatestarttagend = re.compile("('[^']*'|\"[^\"]*\"|[^'\">]+)*/?>")
 endstarttag = re.compile(r"\s*/?>")
-endendtag = re.compile('[>]')
+endendtag = re.compile('>')
 
 declname = re.compile(r'[a-zA-Z][-_.a-zA-Z0-9]*\s*')
 declstringlit = re.compile(r'(\'[^\']*\'|"[^"]*")\s*')
@@ -83,18 +81,8 @@ class HTMLParser:
         self.rawdata = ''
         self.stack = []
         self.lasttag = '???'
-        self.nomoretags = 0
-        self.literal = 0
         self.lineno = 1
         self.offset = 0
-
-    # For derived classes only -- enter literal mode (CDATA) till EOF
-    def setnomoretags(self):
-        self.nomoretags = self.literal = 1
-
-    # For derived classes only -- enter literal mode (CDATA)
-    def setliteral(self, *args):
-        self.literal = 1
 
     # Interface -- feed some data to the parser.  Call this as
     # often as you want, with as little or as much text as you
@@ -129,6 +117,12 @@ class HTMLParser:
     def getpos(self):
         return self.lineno, self.offset
 
+    __starttag_text = None
+
+    # Interface -- return full source of start tag: "<...>"
+    def get_starttag_text(self):
+        return self.__starttag_text
+
     # Internal -- handle data as far as reasonable.  May leave state
     # and data to be processed by a subsequent call.  If 'end' is
     # true, force handling all data as if followed by EOF marker.
@@ -137,70 +131,41 @@ class HTMLParser:
         i = 0
         n = len(rawdata)
         while i < n:
-            if self.nomoretags:
-                self.handle_data(rawdata[i:n])
-                i = self.updatepos(i, n)
-                break
-            match = interesting.search(rawdata, i)
-            if match: j = match.start(0)
+            match = interesting.search(rawdata, i) # < or &
+            if match: j = match.start()
             else: j = n
             if i < j: self.handle_data(rawdata[i:j])
             i = self.updatepos(i, j)
             if i == n: break
-            assert rawdata[i] in "<&", "interesting.search() lied"
             if rawdata[i] == '<':
-                if starttagopen.match(rawdata, i):
-                    if self.literal:
-                        self.handle_data(rawdata[i])
-                        i = self.updatepos(i, i+1)
-                        continue
+                if starttagopen.match(rawdata, i): # < + letter
                     k = self.parse_starttag(i)
-                    if k < 0: break
-                    i = self.updatepos(i, k)
-                    continue
-                if endtagopen.match(rawdata, i):
+                elif endtagopen.match(rawdata, i): # </
                     k = self.parse_endtag(i)
-                    if k < 0: break
-                    i = self.updatepos(i, k)
-                    self.literal = 0
-                    continue
-                if commentopen.match(rawdata, i):
-                    if self.literal:
-                        self.handle_data(rawdata[i])
-                        i = self.updatepos(i, i+1)
-                        continue
+                elif commentopen.match(rawdata, i): # <!--
                     k = self.parse_comment(i)
-                    if k < 0: break
-                    i = self.updatepos(i, i+k)
-                    continue
-                if piopen.match(rawdata, i):
-                    if self.literal:
-                        self.handle_data(rawdata[i])
-                        i = self.updatepos(i, i+1)
-                        continue
+                elif piopen.match(rawdata, i): # <?
                     k = self.parse_pi(i)
-                    if k < 0: break
-                    i = self.updatepos(i, i+k)
-                    continue
-                match = special.match(rawdata, i)
-                if match:
-                    if self.literal:
-                        self.handle_data(rawdata[i])
-                        i = self.updatepos(i, i+1)
-                        continue
-                    # This is some sort of declaration; in "HTML as
-                    # deployed," this should only be the document type
-                    # declaration ("<!DOCTYPE html...>").
+                elif declopen.match(rawdata, i): # <!
                     k = self.parse_declaration(i)
-                    if k < 0: break
-                    i = self.updatepos(i, k)
-                    continue
+                else:
+                    if i < n-1:
+                        raise HTMLParseError(
+                            "invalid '<' construct: %s" % `rawdata[i:i+2]`,
+                            self.getpos())
+                    k = -1
+                if k < 0:
+                    if end:
+                        raise HTMLParseError("EOF in middle of construct",
+                                             self.getpos())
+                    break
+                i = self.updatepos(i, k)
             elif rawdata[i] == '&':
                 match = charref.match(rawdata, i)
                 if match:
                     name = match.group(1)
                     self.handle_charref(name)
-                    k = match.end(0)
+                    k = match.end()
                     if rawdata[k-1] != ';':
                         k = k-1
                     i = self.updatepos(i, k)
@@ -209,49 +174,51 @@ class HTMLParser:
                 if match:
                     name = match.group(1)
                     self.handle_entityref(name)
-                    k = match.end(0)
+                    k = match.end()
                     if rawdata[k-1] != ';':
                         k = k-1
                     i = self.updatepos(i, k)
                     continue
-            # We get here only if incomplete matches but
-            # nothing else
-            match = incomplete.match(rawdata, i)
-            if not match:
-                self.handle_data(rawdata[i])
-                i = self.updatepos(i, i+1)
-                continue
-            j = match.end(0)
-            if j == n:
-                break # Really incomplete
-            self.handle_data(rawdata[i:j])
-            i = self.updatepos(i, j)
+                if incomplete.match(rawdata, i):
+                    if end:
+                        raise HTMLParseError(
+                            "EOF in middle of entity or char ref",
+                            self.getpos())
+                    return -1 # incomplete
+                raise HTMLParseError("'&' not part of entity or char ref",
+                                     self.getpos())
+            else:
+                assert 0, "interesting.search() lied"
         # end while
         if end and i < n:
             self.handle_data(rawdata[i:n])
             i = self.updatepos(i, n)
         self.rawdata = rawdata[i:]
-        # XXX if end: check for empty stack
 
-    # Internal -- parse comment, return length or -1 if not terminated
+    # Internal -- parse comment, return end or -1 if not terminated
     def parse_comment(self, i):
         rawdata = self.rawdata
         assert rawdata[i:i+4] == '<!--', 'unexpected call to parse_comment()'
         match = commentclose.search(rawdata, i+4)
         if not match:
             return -1
-        j = match.start(0)
+        j = match.start()
         self.handle_comment(rawdata[i+4: j])
-        j = match.end(0)
-        return j-i
+        j = match.end()
+        return j
 
     # Internal -- parse declaration.
     def parse_declaration(self, i):
+        # This is some sort of declaration; in "HTML as
+        # deployed," this should only be the document type
+        # declaration ("<!DOCTYPE html...>").
         rawdata = self.rawdata
         j = i + 2
+        assert rawdata[i:j] == "<!", "unexpected call to parse_declaration"
         # in practice, this should look like: ((name|stringlit) S*)+ '>'
-        while 1:
-            c = rawdata[j:j+1]
+        n = len(rawdata)
+        while j < n:
+            c = rawdata[j]
             if c == ">":
                 # end of declaration syntax
                 self.handle_decl(rawdata[i+2:j])
@@ -259,55 +226,46 @@ class HTMLParser:
             if c in "\"'":
                 m = declstringlit.match(rawdata, j)
                 if not m:
-                    # incomplete or an error?
-                    return -1
+                    return -1 # incomplete
                 j = m.end()
             elif c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
                 m = declname.match(rawdata, j)
                 if not m:
-                    # incomplete or an error?
-                    return -1
+                    return -1 # incomplete
                 j = m.end()
-            elif i == len(rawdata):
-                # end of buffer between tokens
-                return -1
             else:
                 raise HTMLParseError(
-                    "unexpected char in declaration: %s" % `rawdata[i]`,
+                    "unexpected char in declaration: %s" % `rawdata[j]`,
                     self.getpos())
-        assert 0, "can't get here!"
+        return -1 # incomplete
 
-    # Internal -- parse processing instr, return length or -1 if not terminated
+    # Internal -- parse processing instr, return end or -1 if not terminated
     def parse_pi(self, i):
         rawdata = self.rawdata
         assert rawdata[i:i+2] == '<?', 'unexpected call to parse_pi()'
-        match = piclose.search(rawdata, i+2)
+        match = piclose.search(rawdata, i+2) # >
         if not match:
             return -1
-        j = match.start(0)
+        j = match.start()
         self.handle_pi(rawdata[i+2: j])
-        j = match.end(0)
-        return j-i
+        j = match.end()
+        return j
 
-    __starttag_text = None
-    def get_starttag_text(self):
-        return self.__starttag_text
-
-    # Internal -- handle starttag, return length or -1 if not terminated
+    # Internal -- handle starttag, return end or -1 if not terminated
     def parse_starttag(self, i):
         self.__starttag_text = None
         rawdata = self.rawdata
-        m = locatestarttagend.match(rawdata, i)
+        m = locatestarttagend.match(rawdata, i) # > outside quotes
         if not m:
             return -1
-        endpos = m.end(0)
+        endpos = m.end()
         self.__starttag_text = rawdata[i:endpos]
 
         # Now parse the data between i+1 and j into a tag and attrs
         attrs = []
         match = tagfind.match(rawdata, i+1)
         assert match, 'unexpected call to parse_starttag()'
-        k = match.end(0)
+        k = match.end()
         self.lasttag = tag = string.lower(rawdata[i+1:k])
 
         while k < endpos:
@@ -322,7 +280,7 @@ class HTMLParser:
                 attrvalue = attrvalue[1:-1]
                 attrvalue = self.unescape(attrvalue)
             attrs.append((string.lower(attrname), attrvalue))
-            k = m.end(0)
+            k = m.end()
 
         end = string.strip(rawdata[k:endpos])
         if end not in (">", "/>"):
@@ -343,16 +301,19 @@ class HTMLParser:
             self.finish_starttag(tag, attrs)
         return endpos
 
-    # Internal -- parse endtag
+    # Internal -- parse endtag, return end or -1 if incomplete
     def parse_endtag(self, i):
         rawdata = self.rawdata
-        match = endendtag.search(rawdata, i+1)
+        assert rawdata[i:i+2] == "</", "unexpected call to parse_endtag"
+        match = endendtag.search(rawdata, i+1) # >
         if not match:
             return -1
-        j = match.start(0)
-        tag = string.lower(string.strip(rawdata[i+2:j]))
+        j = match.end()
+        tag = string.lower(string.strip(rawdata[i+2:j-1]))
+        if not tag:
+            raise HTMLParseError("empty start tag", self.getpos())
         self.finish_endtag(tag)
-        return j + 1
+        return j
 
     # Overridable -- finish processing of start+end tag: <tag.../>
     def finish_startendtag(self, tag, attrs):
@@ -360,7 +321,6 @@ class HTMLParser:
         self.finish_endtag(tag)
 
     # Overridable -- finish processing of start tag
-    # Return -1 for unknown tag, 0 for open-only tag, 1 for balanced tag
     def finish_starttag(self, tag, attrs):
         try:
             method = getattr(self, 'start_' + tag)
