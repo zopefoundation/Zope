@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.148 2002/03/27 21:51:03 caseman Exp $"""
+$Id: ObjectManager.py,v 1.149 2002/04/12 19:35:30 shane Exp $"""
 
-__version__='$Revision: 1.148 $'[11:-2]
+__version__='$Revision: 1.149 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -413,6 +413,7 @@ class ObjectManager(
         obj=self
         seen={}
         vals=[]
+        relativePhysicalPath = ()
         have=seen.has_key
         x=0
         while x < 100:
@@ -422,13 +423,17 @@ class ObjectManager(
                 for i in obj._objects:
                     try:
                         id=i['id']
-                        if (not have(id)) and (i['meta_type'] in t):
+                        physicalPath = relativePhysicalPath + (id,)
+                        if (not have(physicalPath)) and (i['meta_type'] in t):
                             vals.append(get(id))
-                            seen[id]=1
+                            seen[physicalPath]=1
                     except: pass
                     
-            if hasattr(obj,'aq_parent'): obj=obj.aq_parent
-            else:                        return vals
+            if hasattr(obj,'aq_parent'):
+	        obj=obj.aq_parent
+		relativePhysicalPath = ('..',) + relativePhysicalPath
+            else:
+	        return vals
             x=x+1
         return vals
 
