@@ -7,7 +7,12 @@ External Methods 1.0.2 release notes
 
     - Add permissions were not editable.
 
-
+  New feature
       
+    - If an ExternalMethod takes a single argument, named self, and is
+      called with no arguments, then the folder in which the method
+      is accessed is passed.  This is handy when the method is called 
+      from a document.
+
 
 
