@@ -183,7 +183,8 @@ class Product(Folder, PermissionManager):
         'manage_subclassableClassNames']
 
     manage_options=(
-        Folder.manage_options+
+        (Folder.manage_options[0],) +
+        tuple(Folder.manage_options[2:]) +
         (
         {'label':'Distribution', 'action':'manage_distributionView',
          'help':('OFSP','Product_Distribution.stx')},
@@ -324,7 +325,7 @@ class Product(Folder, PermissionManager):
             if os.path.isfile(path):
                 return open(path).read()
         return ''
-    
+
     def permissionMappingPossibleValues(self):
         return self.possible_permissions()
 
@@ -454,7 +455,8 @@ def initializeProduct(productp, name, home, app):
     product.version=fver
     product.home=home
     if disable_distribution:
-        product.manage_options=Folder.manage_options
+        product.manage_options=(Folder.manage_options[0],) + \
+                                tuple(Folder.manage_options[2:])
         product._distribution=None
         product.manage_distribution=None
     product.thisIsAnInstalledProduct=1
@@ -474,7 +476,7 @@ def initializeProduct(productp, name, home, app):
                 {'label':'README', 'action':'manage_readme'},
                 )
             break
-        
+
     if (os.environ.get('ZEO_CLIENT') and
         not os.environ.get('FORCE_PRODUCT_LOAD')):
         get_transaction().abort()
