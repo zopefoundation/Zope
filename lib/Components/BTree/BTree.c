@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.21 1999/05/12 15:49:08 jim Exp $"
+"\n$Id: BTree.c,v 1.22 1999/06/10 20:29:41 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -1687,6 +1687,7 @@ Bucket_dealloc(Bucket *self)
   free(self->data);
   PER_DEL(self);
 
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -1703,6 +1704,7 @@ BTree_dealloc(BTree *self)
   free(self->data);
   PER_DEL(self);
 
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -1840,7 +1842,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.21 $";
+  char *rev="$Revision: 1.22 $";
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;
@@ -1862,6 +1864,7 @@ initBTree()
   BTreeType.tp_getattro=PyExtensionClassCAPI->getattro;
 #endif
 
+  BTreeItemsType.ob_type=&PyType_Type;
 
   /* Create the module and add the functions */
   m = Py_InitModule4(MODNAME, module_methods,
