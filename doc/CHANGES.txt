@@ -8,6 +8,22 @@ Zope Changes
 
     new Features:
 
+      - A new permission "Copy or Move" was added.  This permission
+        may be used respective to an object to prevent objects
+        from being copyable or movable while within the management
+        interface.  The "old" behavior stipulated that users whom
+        possessed the "View management screens" permission to an object's
+        container could copy or move the object arbitrarily, even if they
+        had limited access to the object itself.  Once the object was
+        moved or copied, the user became the owner of the new object,
+        allowing them to see potentially sensitive information in
+        the management interface for the object itself.  This permission
+        is granted to Manager and Anonymous by default, and must be
+        revoked on an object-by-object basis if site managers intend
+        to provide management screen access to folders which contain
+        sensitive subobjects.  This patch came as a result of 
+        Collector #376 (thanks to Chris Deckard).
+
       - Structured Text's "DocumentWithImages" class did not recognize
         image filenames with underscores.
 
