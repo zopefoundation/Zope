@@ -10,104 +10,82 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Cache management support
+'''Cache management support.
 
+This class is mixed into the database manager in App.ApplicationManager.
 
-$Id: CacheManager.py,v 1.28 2003/11/03 16:40:37 fdrake Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: CacheManager.py,v 1.29 2003/11/03 19:08:44 fdrake Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
-import Globals, time, sys
+import time
+
+import Globals
 from DateTime import DateTime
 
 class CacheManager:
     """Cache management mix-in
     """
-    _cache_age=60
-    _vcache_age=60
+    _cache_age = 60
+    _vcache_age = 60
     _history_length = 3600  # Seconds
 
-    manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
-    manage_cacheGC=Globals.DTMLFile('dtml/cacheGC', globals())
+    manage_cacheParameters = Globals.DTMLFile('dtml/cacheParameters',
+                                              globals())
+    manage_cacheGC = Globals.DTMLFile('dtml/cacheGC', globals())
 
     transparent_bar = Globals.ImageFile('www/transparent_bar.gif', globals())
     store_bar = Globals.ImageFile('www/store_bar.gif', globals())
     load_bar = Globals.ImageFile('www/load_bar.gif', globals())
 
+    def _getDB(self):
+        return self._p_jar.db()
+
+    def _inVersion(self):
+        return self._p_jar.getVersion() and True or False
+
     def cache_length(self):
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2
-            return len(Globals.Bobobase._jar.cache)
-        else: return db.cacheSize()
+        return self._getDB().cacheSize()
 
     def cache_detail_length(self):
-        try: db=self._p_jar.db()
-        except:
-            return ()
-        else: return db.cacheDetailSize()
+        return self._getDB().cacheDetailSize()
 
     def database_size(self):
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2
-            return len(Globals.Bobobase._jar.db.index)*4
-        else: return db.objectCount()
+        return self._getDB().objectCount()
 
     def cache_age(self):
-        try:
-            if self._p_jar.getVersion():
-                return self._vcache_age
-        except: pass
-
-        return self._cache_age
+        if self._inVersion():
+            return self._vcache_age
+        else:
+            return self._cache_age
 
     def manage_cache_age(self,value,REQUEST):
         "set cache age"
-        try:
-            v=self._p_jar.getVersion()
-        except:
-            # BoboPOS2:
-            if self._p_jar.db is not Globals.Bobobase._jar.db:
-                raise 'Version Error', (
-                    '''You may not change the database cache age
-                    while working in a <em>version</em>''')
-            self._cache_age=Globals.Bobobase._jar.cache.cache_age=value
+        db = self._getDB()
+        if self._inVersion():
+            self._vcache_age = value
+            db.setVersionCacheDeactivateAfter(value)
         else:
-            if v:
-                self._vcache_age=value
-                self._p_jar.db().setVersionCacheDeactivateAfter(value)
-            else:
-                self._cache_age=value
-                self._p_jar.db().setCacheDeactivateAfter(value)
+            self._cache_age = value
+            db.setCacheDeactivateAfter(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
             response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
 
     def cache_size(self):
-        try:
-            if self._p_jar.getVersion():
-                return self._p_jar.db().getVersionCacheSize()
-        except: pass
-        return self._p_jar.db().getCacheSize()
+        db = self._getDB()
+        if self._inVersion():
+            return db.getVersionCacheSize()
+        else:
+            return db.getCacheSize()
 
     def manage_cache_size(self,value,REQUEST):
         "set cache size"
-        try:
-            v=self._p_jar.getVersion()
-        except:
-            # BoboPOS2:
-            if self._p_jar.db is not Globals.Bobobase._jar.db:
-                raise 'Version Error', (
-                    '''You may not change the database cache size
-                    while working in a <em>version</em>''')
-            Globals.Bobobase._jar.cache.cache_size = value
+        db = self._getDB()
+        if self._inVersion():
+            db.setVersionCacheSize(value)
         else:
-            db = self._p_jar.db()
-            if v:
-                db.setVersionCacheSize(value)
-            else:
-                db.setCacheSize(value)
+            db.setCacheSize(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
@@ -115,24 +93,7 @@ class CacheManager:
 
 
     def cacheStatistics(self):
-        try: return self._p_jar.db().cacheStatistics()
-        except: pass
-
-        # BoboPOS 2
-        return (
-            ('Mean time since last access (minutes)',
-             "%.4g" % (Globals.Bobobase._jar.cache.cache_mean_age/60.0)),
-            ('Deallocation rate (objects/minute)',
-             "%.4g" % (Globals.Bobobase._jar.cache.cache_mean_deal*60)),
-            ('Deactivation rate (objects/minute)',
-             "%.4g" % (Globals.Bobobase._jar.cache.cache_mean_deac*60)),
-            ('Time of last cache garbage collection',
-             time.asctime(time.localtime(
-                 Globals.Bobobase._jar.cache.cache_last_gc_time
-                 ))
-             ),
-            )
-
+        return self._getDB().cacheStatistics()
 
     # BoboPOS 2
     def cache_mean_age(self):
@@ -153,11 +114,8 @@ class CacheManager:
 
     def manage_full_sweep(self,value,REQUEST):
         "Perform a full sweep through the cache"
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2
-            Globals.Bobobase._jar.cache.full_sweep(value)
-        else: db.cacheFullSweep(value)
+        db = self._getDB()
+        db.cacheFullSweep(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
@@ -165,11 +123,7 @@ class CacheManager:
 
     def manage_minimize(self,value=1,REQUEST=None):
         "Perform a full sweep through the cache"
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2
-            Globals.Bobobase._jar.cache.minimize(value)
-        else: db.cacheMinimize(value)
+        self._getDB().cacheMinimize(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
@@ -184,8 +138,7 @@ class CacheManager:
         Returns the name of the classes of the objects in the cache
         and the number of objects in the cache for each class.
         """
-        db=self._p_jar.db()
-        detail = db.cacheDetail()
+        detail = self._getDB().cacheDetail()
         if REQUEST is not None:
             # format as text
             REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
@@ -199,8 +152,7 @@ class CacheManager:
         """
         Returns information about each object in the cache.
         """
-        db=self._p_jar.db()
-        detail = db.cacheExtremeDetail()
+        detail = self._getDB().cacheExtremeDetail()
         if REQUEST is not None:
             # sort the list.
             lst = map(lambda dict: ((dict['conn_no'], dict['oid']), dict),
@@ -233,7 +185,7 @@ class CacheManager:
             return detail
 
     def _getActivityMonitor(self):
-        db = self._p_jar.db()
+        db = self._getDB()
         if not hasattr(db, 'getActivityMonitor'):
             return None
         am = db.getActivityMonitor()
