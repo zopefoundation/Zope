@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.8 1997/11/19 15:52:31 jim Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.9 1997/12/01 23:13:57 jim Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -190,15 +190,16 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
             del substate[-1]
 	output('</TD>\n')
     else:
-	level=level+1
-	if level > 3: output('<TD COLSPAN="%s"></TD>' % (level-1))
-	elif level > 1: output('<TD></TD>' * (level-1))
+	if level > 3: output('<TD COLSPAN="%s"></TD>' % level)
+	elif level > 1: output('<TD></TD>' * level)
 	output('<TD WIDTH="16"></TD>\n')
+	
 
 
     # add item text
     dataspan=colspan-level
-    output('<TD COLSPAN="%s" VALIGN="TOP">' % dataspan)
+    output('<TD%s VALIGN="TOP">' %
+	   (dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''))
     output(section(self, md))
     output('</TD>\n</TR>\n')
 
@@ -206,7 +207,8 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
     if exp:
 
 	level=level+1
-	if level > 2: h='<TD COLSPAN="%s"></TD>' % (level-1)
+	dataspan=colspan-level
+	if level > 3: h='<TD COLSPAN="%s"></TD>' % (level-1)
 	elif level > 1: h='<TD></TD>' * (level-1)
 	else: h=''
 
@@ -216,8 +218,10 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 		    self, md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
-			'<TD COLSPAN="%s" VALIGN="TOP">'
-			% (h, dataspan-1)),
+			'<TD%s VALIGN="TOP">'
+			% (h,
+			   (dataspan > 1 and (' COLSPAN="%s"' % dataspan)
+			    or ''))),
 		    standard_html_footer='</TD></TR>',
 		    ))
 	    
@@ -230,8 +234,9 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 		self,md,
 		standard_html_header=(
 		    '<TR>%s<TD WIDTH="16"></TD>'
-		    '<TD COLSPAN="%s" VALIGN="TOP">'
-		    % (h, dataspan-1)),
+		    '<TD%s VALIGN="TOP">'
+		    % (h,
+		       (dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''))),
 		standard_html_footer='</TD></TR>',
 		))
 	    md._pop(1)
@@ -255,8 +260,10 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
 		    self, md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
-			'<TD COLSPAN="%s" VALIGN="TOP">'
-			% (h, dataspan-1)),
+			'<TD%s VALIGN="TOP">'
+			% (h,
+			   (dataspan > 1 and (' COLSPAN="%s"' % dataspan)
+			    or ''))),
 		    standard_html_footer='</TD></TR>',
 		    ))
 
