@@ -21,27 +21,13 @@ from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
-from Products.ZCTextIndex.BaseIndex import BaseIndex, inverse_doc_frequency
+from Products.ZCTextIndex.BaseIndex import BaseIndex, \
+                                           inverse_doc_frequency, \
+                                           scaled_int, SCALE_FACTOR
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
 import ZODB
-
-# Instead of storing floats, we generally store scaled ints.  Binary pickles
-# can store those more efficiently.  The default SCALE_FACTOR of 1024
-# is large enough to get about 3 decimal digits of fractional info, and
-# small enough so that scaled values should almost always fit in a signed
-# 16-bit int (we're generally storing logs, so a few bits before the radix
-# point goes a long way; on the flip side, for reasonably small numbers x
-# most of the info in log(x) is in the fractional bits, so we do want to
-# save a lot of those).
-SCALE_FACTOR = 1024.0
-
-def scaled_int(f, scale=SCALE_FACTOR):
-    # We expect only positive inputs, so "add a half and chop" is the
-    # same as round().  Surprising, calling round() is significantly more
-    # expensive.
-    return int(f * scale + 0.5)
 
 class CosineIndex(BaseIndex):
 
