@@ -145,7 +145,7 @@ exec /usr/bin/python \
      $PYTHONHOME/z2.py \
      -D "$@"
 
-  Insert a line before after '$PYTHONHOME/z2.py \'.  If you are using
+  Insert a line after '$PYTHONHOME/z2.py \'.  If you are using
   a TCP port, it will look like this::
 
      -F 8889 \
