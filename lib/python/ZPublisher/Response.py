@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.7 1996/08/05 11:27:59 jfulton Exp $'''
+$Id: Response.py,v 1.8 1996/08/29 22:11:35 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.7 1996/08/05 11:27:59 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.8  1996/08/29 22:11:35  jfulton
+# Bug fixes.
+#
 # Revision 1.7  1996/08/05 11:27:59  jfulton
 # Added check for asHTML method.
 # Added traceback comment quoting.
@@ -94,7 +97,7 @@ $Id: Response.py,v 1.7 1996/08/05 11:27:59 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -183,7 +186,6 @@ status_codes={
     }
 
 end_of_header_re=regex.compile('</head>',regex.casefold)
-base_re=regex.compile('<base',regex.casefold)
 
 absuri_re=regex.compile("[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?")
 
@@ -286,18 +288,47 @@ class Response:
 	'Returns the current HTTP status code as an integer. '
 	return self.status
 
-    def setBase(self,base):
+    def setBase(self,base, URL):
 	'Set the base URL for the returned document.'
 	self.base=base
+	self.URL=URL
 	self.insertBase()
 
-    def insertBase(self):
+    def host(self,base):
+	return base[:string.find(base,'/',string.find(base,'//'))]
+
+    def insertBase(self,
+		   base_re=regex.compile('\(<base[\0- ]+\([^>]+\)>\)',
+					 regex.casefold)
+		   ):
 	if self.base:
 	    body=self.body
-	    e=end_of_header_re.search(body)
-	    if e >= 0 and base_re.search(body) < 0:
-		self.body=('%s\t<base href="%s">\n%s' %
-			   (body[:e],self.base,body[e:]))
+	    if body:
+		e=end_of_header_re.search(body)
+		if e >= 0:
+		    b=base_re.search(body) 
+		    if b < 0:
+			self.body=('%s\t<base href="%s">\n%s' %
+				   (body[:e],self.base,body[e:]))
+		    elif self.URL:
+			href=base_re.group(2)
+			base=''
+			if href[:1]=='/':
+			    base=self.host(self.base)+href
+			elif href[:1]=='.':
+			    base=self.URL
+			    while href[:1]=='.':
+				if href[:2]=='./' or href=='.':
+				    href=href[2:]
+				elif href[:3]=='../' or href=='..':
+				    href=href[3:]
+				    base=base[:string.rfind(base,'/')]
+				else:
+				    break
+			if base:
+			    self.body=("%s<base %s>%s" %
+				       (body[:b],base,
+					body[b+len(base_re.group(1)):]))
 
     def appendCookie(self, name, value):
 	'''\
@@ -385,20 +416,47 @@ class Response:
 		      (regex.compile('&'), '&amp;'),
 		      (regex.compile("<"), '&lt;' ),
 		      (regex.compile(">"), '&gt;' ),
-		      (regex.compile('"'), '&quote;'))): #"
+		      (regex.compile('"'), '&quot;'))): #"
 	for re,name in character_entities:
 	    text=regsub.gsub(re,name,text)
 	return text
          
-		      
+
+    def format_exception(self,etype,value,tb,limit=None):
+	import traceback
+	result=['Traceback (innermost last):']
+	if limit is None:
+		if hasattr(sys, 'tracebacklimit'):
+			limit = sys.tracebacklimit
+	n = 0
+	while tb is not None and (limit is None or n < limit):
+		f = tb.tb_frame
+		lineno = tb.tb_lineno
+		co = f.f_code
+		filename = co.co_filename
+		name = co.co_name
+		locals=f.f_locals
+		result.append('  File %s, line %d, in %s'
+			      % (filename,lineno,name))
+		try: result.append('    (Object: %s)' %
+				   locals[co.co_varnames[0]].__name__)
+		except: pass
+		try: result.append('    (Info: %s)' %
+				   str(locals['__traceback_info__']))
+		except: pass
+		tb = tb.tb_next
+		n = n+1
+	result.append(string.joinfields(
+	    traceback.format_exception_only(etype, value), ' '))
+	return result
 
     def _traceback(self,t,v,tb):
-	import traceback
-	tb=string.joinfields(traceback.format_exception(t,v,tb,200),'\n')
+	tb=self.format_exception(t,v,tb,200)
+	tb=string.joinfields(tb,'\n')
 	tb=self.quoteHTML(tb)
 	return "\n<!--\n%s\n-->" % tb
 
-    def exception(self):
+    def exception(self, fatal=0):
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
 
 	# Abort running transaction, if any:
@@ -420,6 +478,12 @@ class Response:
 		except: pass
 
 	b=v
+	if fatal:
+	    return self.setBody(
+		(str(t),
+		 'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
+		 + self._traceback(t,v,tb)))
+
 	if type(b) is not types.StringType or regex.search('[ \t\n]',b) < 0:
 	    return self.setBody(
 		(str(t),
