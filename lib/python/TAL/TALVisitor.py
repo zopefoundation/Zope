@@ -122,7 +122,7 @@ class TALVisitor(CopyingDOMVisitor):
         if macroName:
             macroNode = self.findMacro(macroName)
             if macroNode:
-                self.expandMacro(macroNode, node)
+                self.expandMacro(macroNode, node, macroName)
             return
         if self.currentMacro and self.slotIndex and self.originalNode:
             slotName = node.getAttributeNS(ZOPE_METAL_NS, "define-slot")
@@ -181,9 +181,9 @@ class TALVisitor(CopyingDOMVisitor):
             print "No macro found:", macroName
             return None
 
-    def expandMacro(self, macroNode, originalNode):
+    def expandMacro(self, macroNode, originalNode, macroName):
         save = self.currentMacro, self.slotIndex, self.originalNode
-        self.currentMacro = macroNode
+        self.currentMacro = macroName
         self.slotIndex = slotIndexer(originalNode)
         self.originalNode = originalNode
         self.visitElement(macroNode)
@@ -281,6 +281,7 @@ class TALVisitor(CopyingDOMVisitor):
                     namespaceURI == ZOPE_METAL_NS and
                     attr.localName == "define-macro"):
                     attrName = attr.prefix + ":use-macro"
+                    attrValue = self.currentMacro
                 self.curNode.setAttributeNS(namespaceURI, attrName, attrValue)
             else:
                 self.curNode.setAttribute(attrName, attrValue)
