@@ -164,8 +164,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.23 1998/09/14 22:03:33 jim Exp $'
-__version__='$Revision: 1.23 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.24 1998/09/14 22:08:13 jim Exp $'
+__version__='$Revision: 1.24 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -224,7 +224,8 @@ class Var:
                     elif fmt=='': val=''
                     else: val = fmt % val
                 except:
-                    t, v = sys.exc_type, sys.exc_value
+                    t, v= sys.exc_type, sys.exc_value
+                    if hasattr(sys, 'exc_info'): t, v = sys.exc_info()[:2]
                     if val is None or not str(val): return args['null']
                     raise t, v
 
