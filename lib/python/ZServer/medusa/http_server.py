@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.24 2001/05/01 11:44:48 andreas Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.25 2001/05/01 12:49:04 andreas Exp $'
 
 # python modules
 import os
@@ -259,21 +259,28 @@ class http_request:
             self.channel.close_when_done()
             
     def log_date_string (self, when):
-        return time.strftime (
-                '%d/%b/%Y:%H:%M:%S ',
-                time.gmtime(when)
-                ) + tz_for_log
-        
+        logtime=time.localtime(when)
+        return time.strftime('%d/', logtime) + \
+               http_date.monthname[logtime[1]] + \
+               time.strftime('/%Y:%H:%M:%S ', logtime) + \
+               tz_for_log
+
     def log (self, bytes):
+        user_agent=self.get_header('user-agent')
+        if not user_agent: user_agent=''
+        referer=self.get_header('referer')
+        if not referer: referer=''  
         self.channel.server.logger.log (
-                self.channel.addr[0],
-                ' - - [%s] "%s" %d %d\n' % (
-                        self.log_date_string (time.time()),
-                        self.request,
-                        self.reply_code,
-                        bytes
-                        )
+            self.channel.addr[0],
+            ' - - [%s] "%s" %d %d "%s" "%s"\n' % (
+                self.log_date_string (time.time()),
+                self.request,
+                self.reply_code,
+                bytes,
+                referer,
+                user_agent
                 )
+            )
         
     responses = {
             100: "Continue",
@@ -460,7 +467,7 @@ class http_channel (asynchat.async_chat):
             
             # unquote path if necessary (thanks to Skip Montaro for pointing
             # out that we must unquote in piecemeal fashion).
-            # ajung: unquote the request *after* calling crack_request because
+            # ajung: we unquote() the request *after* calling crack_request because
             # this function breaks when it gets an unquoted request
             
             if '%' in request:
