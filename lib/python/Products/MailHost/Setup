@@ -2,6 +2,5 @@
 # install MailHost.py
 # install __init__.py
 # install addMailHost_form.dtml
-# install mailHost.dtml
 # install manageMailHost.dtml
 # install www www/%(package)s

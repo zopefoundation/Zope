@@ -6,8 +6,8 @@ import OFS.SimpleItem
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 
-#$Id: MailHost.py,v 1.16 1997/09/18 20:08:51 brian Exp $ 
-__version__ = "$Revision: 1.16 $"[11:-2]
+#$Id: MailHost.py,v 1.17 1997/09/25 13:29:13 brian Exp $ 
+__version__ = "$Revision: 1.17 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -30,7 +30,7 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
     'a mailhost...?'
     meta_type='Mail Host'
     manage=HTMLFile('MailHost/manageMailHost')
-    index_html=HTMLFile('MailHost/mailHost')
+    index_html=None
     icon="MailHost/MailHost_icon.gif"
     
     def __init__(self):
@@ -213,6 +213,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.17  1997/09/25 13:29:13  brian
+#Removed index_html
+#
 #Revision 1.16  1997/09/18 20:08:51  brian
 #Added meta_type for auto-detection
 #
