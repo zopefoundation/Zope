@@ -5,6 +5,8 @@
     around. This means that this feature is not likely to be supported
     in all future versions of zope.
     </dtml-comment>
+    <dtml-call "REQUEST.set('management_page_charset',
+                          _['management_page_charset'])">
     <dtml-call "REQUEST.set('management_page_charset_tag','')">
 <dtml-else>
     <dtml-comment>
