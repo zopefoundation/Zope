@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.158 $'[11:-2]
+__version__='$Revision: 1.159 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -304,7 +304,19 @@ class BasicUser(Implicit):
             break
         return None
 
-    hasRole=allowed
+    def hasRole(self, *args, **kw):
+        """hasRole is an alias for 'allowed' and has been deprecated.
+        
+        Code still using this method should convert to either 'has_role' or
+        'allowed', depending on the intended behaviour.
+
+        """
+        import warnings
+        warnings.warn('BasicUser.hasRole is deprecated, please use '
+            'BasicUser.allowed instead; hasRole was an alias for allowed, but '
+            'you may have ment to use has_role.', DeprecationWarning)
+        self.allowed(*args, **kw)
+
     domains=[]
     
     def has_role(self, roles, object=None):
@@ -372,7 +384,19 @@ class UnrestrictedUser(SpecialUser):
     def allowed(self,parent,roles=None):
         return roles is not _what_not_even_god_should_do
 
-    hasRole=allowed
+    def hasRole(self, *args, **kw):
+        """hasRole is an alias for 'allowed' and has been deprecated.
+        
+        Code still using this method should convert to either 'has_role' or
+        'allowed', depending on the intended behaviour.
+
+        """
+        import warnings
+        warnings.warn('UnrestrictedUser.hasRole is deprecated, please use '
+            'UnrestrictedUser.allowed instead; hasRole was an alias for '
+            'allowed, but you may have ment to use has_role.',
+            DeprecationWarning)
+        self.allowed(*args, **kw)
 
     def has_role(self, roles, object=None): return 1
 
@@ -412,7 +436,19 @@ class NullUnrestrictedUser(SpecialUser):
     def allowed(self, parent, roles=None):
         return 0
 
-    hasRole=allowed
+    def hasRole(self, *args, **kw):
+        """hasRole is an alias for 'allowed' and has been deprecated.
+        
+        Code still using this method should convert to either 'has_role' or
+        'allowed', depending on the intended behaviour.
+
+        """
+        import warnings
+        warnings.warn('NullUnrestrictedUser.hasRole is deprecated, please use '
+            'NullUnrestrictedUser.allowed instead; hasRole was an alias for '
+            'allowed, but you may have ment to use has_role.',
+            DeprecationWarning)
+        self.allowed(*args, **kw)
 
     def has_role(self, roles, object=None):
         return 0
