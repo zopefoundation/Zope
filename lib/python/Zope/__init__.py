@@ -95,7 +95,7 @@ import ZODB, ZODB.ZApplication, imp
 import Globals, OFS.Application, sys
 import AccessControl.SecurityManagement, AccessControl.User
 
-Globals.BobobaseName = '%s/Data.fs' % Globals.data_dir
+Globals.BobobaseName = os.path.join(Globals.data_dir, 'Data.fs')
 Globals.DatabaseVersion='3'
 
 # Import products
