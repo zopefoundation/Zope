@@ -42,6 +42,12 @@ def startup():
         # Already began (and maybe finished) startup, so don't run again
         return
     _began_startup = 1
+    # Load configuration file from (optional) environment variable
+    # Also see http://zope.org/Collectors/Zope/1233
+    import os
+    configfile = os.environ.get('ZOPE_CONFIG')
+    if configfile is not None:
+        configure(configfile)
     from Zope.App.startup import startup as _startup
     _startup()
 
@@ -71,4 +77,3 @@ import os
 if os.environ.get('ZOPE_COMPATIBLE_STARTUP'):
     # Open the database immediately (see comment above).
     startup()
-

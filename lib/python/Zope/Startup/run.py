@@ -28,6 +28,9 @@ def configure(configfile):
     configure('/path/to/configfile'); import Zope; app = Zope.app() """
     import Zope.Startup
     starter = Zope.Startup.get_starter()
+    if not configfile:
+        import os
+        configfile = os.getenv("ZOPE_CONFIG")
     opts = _setconfig(configfile)
     starter.setConfiguration(opts.configroot)
     starter.setupSecurityOptions()
