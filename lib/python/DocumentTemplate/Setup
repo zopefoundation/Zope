@@ -1,6 +1,6 @@
 *shared*
 
-cDocumentTemplate cDocumentTemplate.c -I/projects/_/ExtensionClass
+cDocumentTemplate ./cDocumentTemplate.c -I/projects/_/ExtensionClass
 
 # install DT_Doc.py
 # install DT_HTML.py
@@ -16,5 +16,4 @@ cDocumentTemplate cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install VSEval.py
 # install DocumentTemplate.py
 # install __init__.py
-# install cDocumentTemplate.c
 # install gparse.py
