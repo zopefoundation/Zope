@@ -93,3 +93,10 @@ def HTML(src,
     # do the format
     return pub.writer.write(document, pub.destination)
 
+
+
+from docutils import writers
+import html4zope
+
+writers.html4zope = html4zope
+sys.modules['docutils.writers.html4zope'] = html4zope
