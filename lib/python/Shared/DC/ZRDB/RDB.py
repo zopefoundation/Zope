@@ -85,8 +85,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.23 1999/03/10 00:15:44 klm Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: RDB.py,v 1.24 1999/12/06 15:31:36 jim Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -113,9 +113,6 @@ Parsers={'n': atof,
          't': parse_text,
          }
 
-
-record_classes={}
-
 class SQLAlias(ExtensionClass.Base):
     def __init__(self, name): self._n=name
     def __of__(self, parent): return getattr(parent, self._n)
@@ -127,12 +124,13 @@ class DatabaseResults:
     """
     _index=None
 
-    def __init__(self,file,brains=NoBrains, parent=None):
+    def __init__(self,file,brains=NoBrains, parent=None, zbrains=None):
 
         self._file=file
         readline=file.readline
         line=readline()
         self._parent=parent
+        if zbrains is None: zbrains=NoBrains
 
         comment_pattern=regex.compile('#')
         while line and comment_pattern.match(line) >= 0: line=readline()
@@ -201,30 +199,27 @@ class DatabaseResults:
 
         # Create a record class to hold the records.
         names=tuple(names)
-        if record_classes.has_key((names,brains)):
-            r=record_classes[names,brains]
-        else:
-            class r(Record, Implicit, brains):
-                'Result record class'               
 
-            r.__record_schema__=schema
-            for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
-                setattr(r,k,getattr(Record,k))
-                record_classes[names,brains]=r
+        class r(Record, Implicit, brains, zbrains):
+            'Result record class'               
 
-            # Add SQL Aliases
-            d=r.__dict__
-            for k, v in aliases:
-                if not hasattr(r,k): d[k]=v
+        r.__record_schema__=schema
+        for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
+            setattr(r,k,getattr(Record,k))
 
-            if hasattr(brains, '__init__'):
-                binit=brains.__init__
-                if hasattr(binit,'im_func'): binit=binit.im_func
-                def __init__(self, data, parent, binit=binit):
-                    Record.__init__(self,data)
-                    binit(self.__of__(parent))
+        # Add SQL Aliases
+        d=r.__dict__
+        for k, v in aliases:
+            if not hasattr(r,k): d[k]=v
 
-                r.__dict__['__init__']=__init__
+        if hasattr(brains, '__init__'):
+            binit=brains.__init__
+            if hasattr(binit,'im_func'): binit=binit.im_func
+            def __init__(self, data, parent, binit=binit):
+                Record.__init__(self,data)
+                binit(self.__of__(parent))
+
+            r.__dict__['__init__']=__init__
                     
 
         self._class=r

@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.75 1999/11/16 20:19:52 jeffrey Exp $'''
-__version__='$Revision: 1.75 $'[11:-2]
+$Id: DA.py,v 1.76 1999/12/06 15:31:36 jim Exp $'''
+__version__='$Revision: 1.76 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -133,6 +133,7 @@ class DA(
     cache_time_=0
     max_cache_=100
     class_name_=class_file_=''
+    _zclass=None
     allow_simple_one_argument_traversal=None
     
     manage_options=(
@@ -150,7 +151,8 @@ class DA(
         'manage_advancedForm', 'PrincipiaSearchSource'
         )),
         ('Change Database Methods',
-         ('manage_edit','manage_advanced', 'manage_testForm','manage_test')),
+         ('manage_edit','manage_advanced', 'manage_testForm','manage_test',
+          'manage_product_zclass_info')),
         ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
         )
    
@@ -231,7 +233,7 @@ class DA(
 
     def manage_advanced(self, max_rows, max_cache, cache_time,
                         class_name, class_file, direct=None,
-                        REQUEST=None):
+                        REQUEST=None, zclass=''):
         """Change advanced properties
 
         The arguments are:
@@ -267,6 +269,14 @@ class DA(
         self.class_name_, self.class_file_ = class_name, class_file
         self._v_brain=getBrain(self.class_file_, self.class_name_, 1)
         self.allow_simple_one_argument_traversal=direct
+
+        if zclass:
+            for d in self.aq_acquire('_getProductRegistryData')('zclasses'):
+                if ("%s/%s" % (d.get('product'),d.get('id'))) == zclass:
+                    self._zclass=d['meta_class']
+                    break
+
+        
         if REQUEST is not None:
             m="ZSQL Method advanced settings have been set"
             return self.manage_advancedForm(self,REQUEST,manage_tabs_message=m)
@@ -296,7 +306,8 @@ class DA(
         try:
             try:
                 src=self(REQUEST, src__=1)
-                if find(src,'\0'): src=join(split(src,'\0'),'\n'+'-'*60+'\n')
+                if find(src,'\0'):
+                    src=join(split(src,'\0'),'\n'+'-'*60+'\n')
                 result=self(REQUEST, test__=1)
                 if result._searchable_result_columns():
                     r=custom_default_report(self.id, result)
@@ -307,7 +318,8 @@ class DA(
                 r='<strong>Error, <em>%s</em>:</strong> %s' % (t, v)
 
             report=DocumentTemplate.HTML(
-                '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
+                '<html>\n'
+                '<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
                 '<dtml-var manage_tabs>\n<hr>\n%s\n\n'
                 '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
                 '</body></html>'
@@ -408,13 +420,16 @@ class DA(
         else:
             brain=self._v_brain=getBrain(self.class_file_, self.class_name_)
 
+        zc=self._zclass
+        if zc is not None: zc=zc._zclass_
+
         if type(result) is type(''):
             f=StringIO()
             f.write(result)
             f.seek(0)
-            result=RDB.File(f,brain,p)
+            result=RDB.File(f,brain,p, zc)
         else:
-            result=Results(result, brain, p)
+            result=Results(result, brain, p, zc)
         columns=result._searchable_result_columns()
         if test__ and columns != self._col: self._col=columns
         return result
@@ -441,6 +456,24 @@ class DA(
 
     def connected(self):
         return getattr(getattr(self, self.connection_id), 'connected')()
+
+
+    def manage_product_zclass_info(self):
+        r=[]
+        Z=self._zclass
+        Z=getattr(Z, 'aq_self', Z)
+        for d in self.aq_acquire('_getProductRegistryData')('zclasses'):
+            z=d['meta_class']
+            if hasattr(z._zclass_,'_p_deactivate'):
+                # Eek, persistent
+                continue
+            x={}
+            x.update(d)
+            x['selected'] = (z is Z) and 'selected' or ''
+            del x['meta_class']
+            r.append(x)
+            
+        return r 
 
 Globals.default__class_init__(DA)
 

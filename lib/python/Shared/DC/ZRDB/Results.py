@@ -88,8 +88,6 @@ from string import strip, lower, upper, join
 from Acquisition import Implicit
 from Record import Record
 
-record_classes={}
-
 class SQLAlias(ExtensionClass.Base):
     def __init__(self, name): self._n=name
     def __of__(self, parent): return getattr(parent, self._n)
@@ -101,7 +99,8 @@ class Results:
     """
     _index=None
 
-    def __init__(self,(items,data),brains=NoBrains, parent=None):
+    def __init__(self,(items,data),brains=NoBrains, parent=None,
+                 zbrains=None):
 
         self._data=data
         self.__items__=items
@@ -110,6 +109,7 @@ class Results:
         self._schema=schema={}
         self._data_dictionary=dd={}
         aliases=[]
+        if zbrains is None: zbrains=NoBrains
         i=0
         for item in items:
             name=item['name']
@@ -131,31 +131,28 @@ class Results:
         
         # Create a record class to hold the records.
         names=tuple(names)
-        if record_classes.has_key((names,brains)):
-            r=record_classes[names,brains]
-        else:
-            class r(Record, Implicit, brains):
-                'Result record class'               
 
-            r.__record_schema__=schema
-            for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
-                setattr(r,k,getattr(Record,k))
-                record_classes[names,brains]=r
+        class r(Record, Implicit, brains, zbrains):
+            'Result record class'               
 
-            # Add SQL Aliases
-            d=r.__dict__
-            for k, v in aliases:
-                if not hasattr(r,k): d[k]=v
+        r.__record_schema__=schema
+        for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
+            setattr(r,k,getattr(Record,k))
 
-            if hasattr(brains, '__init__'):
-                binit=brains.__init__
-                if hasattr(binit,'im_func'): binit=binit.im_func
-                def __init__(self, data, parent, binit=binit):
-                    Record.__init__(self,data)
-                    if parent is not None: self=self.__of__(parent)
-                    binit(self)
+        # Add SQL Aliases
+        d=r.__dict__
+        for k, v in aliases:
+            if not hasattr(r,k): d[k]=v
 
-                r.__dict__['__init__']=__init__
+        if hasattr(brains, '__init__'):
+            binit=brains.__init__
+            if hasattr(binit,'im_func'): binit=binit.im_func
+            def __init__(self, data, parent, binit=binit):
+                Record.__init__(self,data)
+                if parent is not None: self=self.__of__(parent)
+                binit(self)
+
+            r.__dict__['__init__']=__init__
                     
         self._class=r
 
