@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.54 1999/05/24 21:18:50 amos Exp $'''
-__version__='$Revision: 1.54 $'[11:-2]
+$Id: SimpleItem.py,v 1.55 1999/06/08 16:11:12 klm Exp $'''
+__version__='$Revision: 1.55 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -226,12 +226,16 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
             if not REQUEST: REQUEST=self.aq_acquire('REQUEST')
 
             try:
-                s=getattr(client, 'standard_error_message')
+                if hasattr(client, 'standard_error_message'):
+                    s=getattr(client, 'standard_error_message')
+                else:
+                    client = client.aq_parent
+                    s=getattr(client, 'standard_error_message')
                 v=HTML.__call__(s, client, REQUEST, error_type=error_type,
                                 error_value=error_value,
                                 error_tb=error_tb,error_traceback=error_tb,
                                 error_message=error_message)
-            except: v='Sorry, an error occured'
+            except: v = error_value or "Sorry, an error occurred"
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
