@@ -156,6 +156,9 @@ Zope Changes
        is now installed into the 'bin' folder.
 
     Bugs fixed
+ 
+     - Collector #1473: zpasswd.py can now accept --username 
+       without --password
 
      - Collector #1491: talgettext.py did not create a proper header
        for the generated .pot file if multiple pagetemplate files

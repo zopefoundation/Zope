@@ -99,6 +99,16 @@ def write_access(home, user='', group=''):
 
         import do; do.ch(ac_path, user, group)
 
+def get_password():
+    while 1:
+        password = getpass.getpass("Password: ")
+        verify = getpass.getpass("Verify password: ")
+        if verify == password:
+            return password
+        else:
+            password = verify = ''
+            print "Password mismatch, please try again..."
+
 def write_inituser(home, user='', group=''):
     ac_path=os.path.join(home, 'inituser')
     if not os.path.exists(ac_path):
@@ -163,8 +173,8 @@ def main():
 
     if opts:
         # There were some command line args, so verify
-        if username is None or password is None:
-            usage(1, '-u and -p are required')
+        if username is not None and password is None:
+            password = get_password()
     else:
         # No command line args, so prompt
         while 1:
@@ -172,15 +182,8 @@ def main():
             if username != '':
                 break
 
-        while 1:
-            password = getpass.getpass("Password: ")
-            verify = getpass.getpass("Verify password: ")
-            if verify == password:
-                break
-            else:
-                password = verify = ''
-                print "Password mismatch, please try again..."
-
+        password = get_password()
+        
         while 1:
             print """
 Please choose a format from:
