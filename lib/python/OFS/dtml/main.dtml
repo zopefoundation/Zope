@@ -41,7 +41,7 @@ function toggleSelect() {
   <dtml-if "_.len(filtered_meta_types) > 1">
     <select class="form-element" name=":action" 
      onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value" />
-    <option value="manage_workspace" disabled />Select type to add...
+    <option value="manage_workspace" disabled>Select type to add...</option>
     <dtml-in filtered_meta_types mapping sort=name>
     <option value="&dtml.url_quote-action;">&dtml-name;</option>
     </dtml-in>
