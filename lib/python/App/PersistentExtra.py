@@ -117,7 +117,8 @@ class PersistentUtil:
         oid=self._p_oid
         return (oid
                 and Globals.VersionBase.locks.has_key(oid)
-                and Globals.VersionBase.verify_lock(oid))
+                and Globals.VersionBase.verify_lock(oid)
+                and 'some version')
 
     def modified_in_version(self):
         """Was the object modified in this version?
