@@ -1,0 +1,18 @@
+ZServer Changes
+
+  This file gives information on changes made to ZServer over time,
+  things that need to be done before the next release and future
+  plans.
+
+  Releases
+
+    Zserver 1.0a1
+
+      New Features
+
+        Inital release. Includes new threaded architecture--currently
+        limited to a thread pool of 1. Includes preliminary FTP
+        support. Includes HTTP support.
+
+      Bugs Fixed
+ 
