@@ -3,6 +3,9 @@ Credits
   The Zope software receives contributions from far and wide.  Here's
   the Zope Hall of Fame:
 
+    o Stephen Purcell allows us to distribute his PyUnit unit testing
+      framework with Zope.
+
     o Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
       kept pushing it forward through the years.
 
