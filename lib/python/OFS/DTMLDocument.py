@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -95,6 +95,7 @@ from webdav.common import rfc1123_date
 from sgmllib import SGMLParser
 from string import find
 from urllib import quote
+import Globals
 
 done='done'
 
@@ -181,7 +182,7 @@ class DTMLDocument(DTMLMethod, PropertyManager):
 
 
 
-
+Globals.default__class_init__(DTMLDocument)
 
 
 default_dd_html="""<!--#var standard_html_header-->
