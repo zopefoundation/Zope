@@ -219,8 +219,7 @@ def main(args):
        -a
 
           Run all tests found in all subdirectories of the current
-          working directory. This is the default if no options are
-          specified.
+          working directory.
 
        -m
 
