@@ -4,8 +4,8 @@ from AccessControl.Role import RoleManager
 import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
 
-#$Id: MailHost.py,v 1.9 1997/09/12 15:00:00 jeffrey Exp $ 
-__version__ = "$Revision: 1.9 $"[11:-2]
+#$Id: MailHost.py,v 1.10 1997/09/16 15:51:46 jeffrey Exp $ 
+__version__ = "$Revision: 1.10 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -108,8 +108,17 @@ class SendMail:
     def __del__(self):
         self._close()
 
+    def getLine(self):
+	line=''
+	while 1:
+	    data=self.conn.recv(1)
+	    if (not data) or (data == '\n'):
+		break
+	    line=line+data
+	return line
+
     def _check(self, lev='250'):
-        data = self.conn.recv(1024)
+        data = self.getLine()
         if data[:3] != lev:
             raise smtpError, "Expected %s, got %s from SMTP"%(lev, data[:3])
 
@@ -208,6 +217,9 @@ def decapitate(message,
     return (headerDict, body)
 
 #$Log: MailHost.py,v $
+#Revision 1.10  1997/09/16 15:51:46  jeffrey
+#(Hopefully) fixed some socket problems
+#
 #Revision 1.9  1997/09/12 15:00:00  jeffrey
 #Finally added full support for RoleManager, also use of MessageDialog
 #in the management process.
