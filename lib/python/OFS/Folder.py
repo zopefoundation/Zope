@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.4 1997/08/08 15:51:28 jim Exp $"""
+$Id: Folder.py,v 1.5 1997/08/08 23:03:21 jim Exp $"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -65,7 +65,6 @@ class Folder(ObjectManager,DocumentHandler,ImageHandler,FolderHandler):
 
     _properties=({'id':'title', 'type': 'string'},)
 
-    index_html=HTMLFile('OFS/folderIndex_html')
     meta_types=(
 	DocumentHandler.meta_types+
 	ImageHandler.meta_types+
