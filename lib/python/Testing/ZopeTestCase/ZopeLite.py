@@ -7,9 +7,9 @@
 #
 # Typically used as in
 #
-#   import ZopeLite as Zope
-#   Zope.installProduct('SomeProduct')
-#   app = Zope.app()
+#   import ZopeLite as Zope2
+#   Zope2.installProduct('SomeProduct')
+#   app = Zope2.app()
 #
 
 # $Id: ZopeLite.py,v 1.24 2004/08/18 09:28:54 shh42 Exp $
@@ -53,10 +53,10 @@ config = App.config.getConfiguration()
 config.debug_mode = 0
 App.config.setConfiguration(config)
 
-# Need to import Zope early on as the 
+# Need to import Zope2 early on as the 
 # ZTUtils package relies on it
-_exec('import Zope')
-import Zope
+_exec('import Zope2')
+import Zope2
 _exec('import ZODB')
 import ZODB
 _write('.')
@@ -96,7 +96,7 @@ from OFS.Application import get_folder_permissions, get_products, install_produc
 from OFS.Folder import Folder
 import Products
 
-_theApp = Zope.app()
+_theApp = Zope2.app()
 _installedProducts = {}
 
 def hasProduct(name):
@@ -144,16 +144,16 @@ installProduct('OFSP', 1)
 #installProduct('MailHost', 1)
 
 # So people can use ZopeLite.app()
-app = Zope.app
-debug = Zope.debug
-DB = Zope.DB
-configure = Zope.configure
+app = Zope2.app
+debug = Zope2.debug
+DB = Zope2.DB
+configure = Zope2.configure
 def startup(): pass
 
 from ZODB.DemoStorage import DemoStorage
 def sandbox(base=None):
     '''Returns what amounts to a sandbox copy of the base ZODB.'''
-    if base is None: base = Zope.DB
+    if base is None: base = Zope2.DB
     base_storage = base._storage
     quota = getattr(base_storage, '_quota', None)
     storage = DemoStorage(base=base_storage, quota=quota)

@@ -37,7 +37,7 @@ class Environment:
         v = os.environ.get("INSTANCE_HOME")
         if v is None:
             # looking for a Zope/var directory assuming that this code
-            # is installed in Zope/lib/python/ZEO
+            # is installed in Zope2/lib/python/ZEO
             p = parentdir(argv0, 4)
             if os.path.isdir(os.path.join(p, "var")):
                 v = p

@@ -4,7 +4,7 @@
 
 # $Id: sandbox.py,v 1.2 2004/08/19 15:31:26 shh42 Exp $
 
-import ZopeLite as Zope
+import ZopeLite as Zope2
 import transaction
 import utils
 
@@ -19,7 +19,7 @@ class Sandboxed:
 
     def _app(self):
         '''Returns the app object for a test.'''
-        app = Zope.app(Zope.sandbox().open())
+        app = Zope2.app(Zope.sandbox().open())
         AppZapper().set(app)
         return utils.makerequest(app)
 

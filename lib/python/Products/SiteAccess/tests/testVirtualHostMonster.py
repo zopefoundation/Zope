@@ -12,8 +12,8 @@ $Id$
 
 from Testing.makerequest import makerequest
 
-import Zope
-Zope.startup()
+import Zope2
+Zope2.startup()
 
 import transaction
 
@@ -24,7 +24,7 @@ class VHMRegressions(unittest.TestCase):
 
     def setUp(self):
         transaction.begin()
-        self.app = makerequest(Zope.app())
+        self.app = makerequest(Zope2.app())
         try:
             #self.app.manage_addProduct['SiteAccess'].manage_addVirtualHostMonster('VHM')
             # now we have a VHM as virtual_hosting per default

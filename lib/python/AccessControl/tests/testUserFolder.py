@@ -22,8 +22,8 @@ from Testing.makerequest import makerequest
 
 import transaction
 
-import Zope
-Zope.startup()
+import Zope2
+Zope2.startup()
 
 from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
@@ -36,7 +36,7 @@ class UserFolderTests(unittest.TestCase):
 
     def setUp(self):
         transaction.begin()
-        self.app = makerequest(Zope.app())
+        self.app = makerequest(Zope2.app())
         try:
             # Set up a user and role
             self.uf = UserFolder().__of__(self.app)    

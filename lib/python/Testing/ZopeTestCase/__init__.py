@@ -4,7 +4,7 @@
 
 # $Id: __init__.py,v 1.13 2004/08/19 15:52:55 shh42 Exp $
 
-import ZopeLite as Zope
+import ZopeLite as Zope2
 import utils
 
 from ZopeLite import installProduct

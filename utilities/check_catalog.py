@@ -15,7 +15,7 @@
 
 $Id$
 """
-import Zope
+import Zope2
 import os,sys,re,getopt
 from types import IntType
 from BTrees.IIBTree import IISet,difference,intersection
@@ -23,7 +23,7 @@ from BTrees.IIBTree import IISet,difference,intersection
 def checkCatalog(path,indexes):
     """ perform some consistency checks on a ZCatalog instance"""
 
-    root = Zope.app()
+    root = Zope2.app()
 
     try:
         catalog = root.unrestrictedTraverse(path)

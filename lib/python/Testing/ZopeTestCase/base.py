@@ -4,7 +4,7 @@
 
 # $Id: base.py,v 1.1 2004/08/19 13:59:41 shh42 Exp $
 
-import ZopeLite as Zope
+import ZopeLite as Zope2
 
 import unittest
 import transaction
@@ -19,7 +19,7 @@ _connections = utils.ConnectionRegistry()
 
 def app():
     '''Opens a ZODB connection and returns the app object.'''
-    app = Zope.app()
+    app = Zope2.app()
     _connections.register(app._p_jar)
     return utils.makerequest(app)
 

@@ -24,8 +24,8 @@ from DocumentTemplate.DT_Util import ustr
 
 IDomain = None
 try:
-    from Zope.I18n.ITranslationService import ITranslationService
-    from Zope.I18n.IDomain import IDomain
+    from Zope2.I18n.ITranslationService import ITranslationService
+    from Zope2.I18n.IDomain import IDomain
 except ImportError:
     pass
 if IDomain is None:

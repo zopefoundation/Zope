@@ -1,7 +1,7 @@
 import os,sys
 import unittest
 
-import Zope
+import Zope2
 from Products.ZCatalog.ZCatalog import ZCatalog
 
 from Products.PluginIndexes.TextIndex import Splitter

@@ -16,7 +16,7 @@ import os, sys, unittest, tempfile, cStringIO
 
 import ZODB
 from OFS.Application import Application, AppInitializer, get_products
-import Zope.Startup
+import Zope2.Startup
 import ZConfig
 from App.config import getConfiguration, setConfiguration
 
@@ -46,7 +46,7 @@ good_cfg = bad_cfg + """
 """
 
 def getSchema():
-    startup = os.path.dirname(os.path.realpath(Zope.Startup.__file__))
+    startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
 

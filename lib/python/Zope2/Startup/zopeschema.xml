@@ -1,4 +1,4 @@
-<schema prefix="Zope.Startup.datatypes"
+<schema prefix="Zope2.Startup.datatypes"
         datatype=".root_config"
         handler="root_handler">
 
@@ -9,7 +9,7 @@
   <import package="ZODB"/>
   <import package="ZServer"/>
   <import package="tempstorage"/>
-  <import package="Zope.Startup" file="warnfilter.xml"/>
+  <import package="Zope2.Startup" file="warnfilter.xml"/>
 
   <sectiontype name="logger" datatype=".LoggerFactory">
     <description>

@@ -207,7 +207,7 @@ def loadinc(name, mb, f, max=99999999, wait=1):
     from ZODB.POSException import ConflictError
     from time import sleep
     from whrandom import uniform
-    import Zope, sys
+    import Zope2, sys
     rconflicts=wconflicts=0
 
     i=0
@@ -218,7 +218,7 @@ def loadinc(name, mb, f, max=99999999, wait=1):
         # sys.stderr.write("%s " % i)
         # sys.stdout.flush()
         if wait: sleep(uniform(0,wait))
-        jar=Zope.DB.open()
+        jar=Zope2.DB.open()
         app=jar.root()['Application']
         mdest=getattr(app, name)
         if i%100 == 0 and VERBOSE:
@@ -260,14 +260,14 @@ def loadinc(name, mb, f, max=99999999, wait=1):
 def base():
     try: os.unlink('../../var/Data.fs')
     except: pass
-    import Zope
-    app=Zope.app()
+    import Zope2
+    app=Zope2.app()
     if len(sys.argv) > 3:
         max = atoi(sys.argv[3])
     else:
         max = -1
-    print do(Zope.DB, loadmail, (app, 'mail', sys.argv[2], max))
-    Zope.DB.close()
+    print do(Zope2.DB, loadmail, (app, 'mail', sys.argv[2], max))
+    Zope2.DB.close()
 
 class RE:
     def redirect(*args, **kw): pass
@@ -281,9 +281,9 @@ def indexf(app):
 def index():
     os.environ['STUPID_LOG_FILE']=''
     os.environ['STUPID_LOG_SEVERITY']='-111'
-    import Zope, Products.ZCatalog.ZCatalog
+    import Zope2, Products.ZCatalog.ZCatalog
     import AccessControl.SecurityManagement, AccessControl.SpecialUsers
-    app=Zope.app()
+    app=Zope2.app()
     Products.ZCatalog.ZCatalog.manage_addZCatalog(app, 'cat', '')
     try:
         app.cat.threshold = atoi(sys.argv[2])
@@ -311,13 +311,13 @@ def index():
     AccessControl.SecurityManagement.newSecurityManager(None, system)
     r=RE()
     r.PARENTS=[app.cat, app]
-    print do(Zope.DB, indexf, (app,))
+    print do(Zope2.DB, indexf, (app,))
     #hist(sys.argv[2])
-    Zope.DB.close()
+    Zope2.DB.close()
 
 def initmaili(n):
-    import Zope
-    app=Zope.app()
+    import Zope2
+    app=Zope2.app()
     try:
         import Products.BTreeFolder.BTreeFolder
     except:
@@ -329,8 +329,8 @@ def initmaili(n):
     app._p_jar.close()
 
 def hist(n):
-    import Zope
-    app=Zope.app()
+    import Zope2
+    app=Zope2.app()
     import cPickle
     pickler=cPickle.Pickler(open("h%s.hist" % n, 'w'))
     h=app.cat._catalog.indexes['PrincipiaSearchSource'].histogram()
@@ -339,7 +339,7 @@ def hist(n):
     #pickler.dump(list(h))
 
 def inc():
-    import Zope, thread
+    import Zope2, thread
     min, max = atoi(sys.argv[3]), atoi(sys.argv[4])
     count = max-min
     try: threads=atoi(sys.argv[5])
@@ -356,7 +356,7 @@ def inc():
 
     omin=min
 
-    db=Zope.DB
+    db=Zope2.DB
 
     size=db.getSize()
     mem=VmSize()
@@ -383,7 +383,7 @@ def inc():
         argss.append((lock, (dest, mb, f, count, wait), returnf))
 
     for lock, args, returnf in argss:
-        thread.start_new_thread(do, (Zope.DB, loadinc, args, returnf))
+        thread.start_new_thread(do, (Zope2.DB, loadinc, args, returnf))
 
     for lock, args, returnf in argss:
         lock.acquire()
@@ -397,12 +397,12 @@ def inc():
 
     #hist("%s-%s-%s" % (omin, count, threads))
 
-    Zope.DB.close()
+    Zope2.DB.close()
 
 def catdel():
-    import Zope
-    app = Zope.app()
-    db = Zope.DB
+    import Zope2
+    app = Zope2.app()
+    db = Zope2.DB
     t = time.time()
     c = time.clock()
     size = db.getSize()
@@ -605,14 +605,14 @@ words=['banishment', 'indirectly', 'imprecise', 'peeks',
 from ZODB.utils import u64
 
 def incedit(edits, wait, ndel=20, nins=20):
-    import Zope, whrandom, string, time
+    import Zope2, whrandom, string, time
     from ZODB.POSException import ConflictError
 
     rconflicts=wconflicts=0
     did=str(edits.pop())
     while edits:
         if wait: time.sleep(whrandom.uniform(0,wait))
-        jar=Zope.DB.open()
+        jar=Zope2.DB.open()
         app=jar.root()['Application']
         doc=getattr(app.mail, did)
 
@@ -650,7 +650,7 @@ def incedit(edits, wait, ndel=20, nins=20):
     return rconflicts, wconflicts
 
 def edit():
-    import Zope, thread
+    import Zope2, thread
     nedit, ndel, nins = atoi(sys.argv[2]), atoi(sys.argv[3]), atoi(sys.argv[4])
     try: threads=atoi(sys.argv[5])
     except:
@@ -664,8 +664,8 @@ def edit():
     if threads==1: start_new_thread=apply
     else: start_new_thread=thread.start_new_thread
 
-    db=Zope.DB
-    app=Zope.app()
+    db=Zope2.DB
+    app=Zope2.app()
     number_of_messages=app.mail.number_of_messages
     app._p_jar.close()
 
@@ -696,7 +696,7 @@ def edit():
         argss.append((lock, (edits, wait, ndel, nins), returnf))
 
     for lock, args, returnf in argss:
-        start_new_thread(do, (Zope.DB, incedit, args, returnf))
+        start_new_thread(do, (Zope2.DB, incedit, args, returnf))
 
     for lock, args, returnf in argss:
         lock.acquire()
@@ -710,7 +710,7 @@ def edit():
 
     #hist("e%s" % (threads))
 
-    Zope.DB.close()
+    Zope2.DB.close()
 
 def VmSize():
     try: f=open('/proc/%s/status' % os.getpid())

@@ -35,7 +35,7 @@ tracer = Tracer()
 
 class TransactionsManager:
     """Mock TransactionManager to replace
-    Zope.App.startup.TransactionsManager.
+    Zope2.App.startup.TransactionsManager.
     """
 
     def abort(self):
@@ -55,7 +55,7 @@ zpublisher_transactions_manager = TransactionsManager()
 
 def zpublisher_exception_hook(published, request, t, v, traceback):
     """Mock zpublisher_exception_hook to replace
-    Zope.App.startup.zpublisher_exception_hook
+    Zope2.App.startup.zpublisher_exception_hook
     """
 
     if issubclass(t, ConflictError):
