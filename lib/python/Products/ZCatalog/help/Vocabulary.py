@@ -118,12 +118,9 @@ class Vocabulary:
         """
     
 
+def manage_addVocabulary(self, id, title, globbing=None, REQUEST=None):
+    """
 
-
-
-
-
-
-
-
-
+    Add a Vocabulary object to an ObjectManager.
+    
+    """

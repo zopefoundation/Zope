@@ -98,7 +98,7 @@ class PropertyManager:
         Return the value of the property 'id'. If the property is not
         found the optional second argument or None is returned.
         
-        Permission -- XXX None XXX
+        Permission -- Access contents information
         """
 
     def getPropertyType(self, id):
@@ -106,7 +106,7 @@ class PropertyManager:
         Get the type of property 'id'. Returns None if no such
         property exists.
         
-        Permission -- XXX None XXX   
+        Permission -- Access contents information
         """
 
     def hasProperty(self, id):
@@ -143,13 +143,15 @@ class PropertyManager:
         Returns a tuple of mappings, giving meta-data for properties.
         The meta-data includes 'id', 'type', and 'mode'.
         
-        Permission -- XXX None XXX
+        Permission -- Access contents information
         """
 
-    def propdict(self):
-        """
-        Returns the properties as a mapping from property id to
-        property value.
+## Removed for now at brian's request
+##        
+##    def propdict(self):
+##        """
+##        Returns the properties as a mapping from property id to
+##        property value.
         
-        Permission -- XXX None XXX
-        """
+##        Permission -- 
+##        """

@@ -83,6 +83,15 @@
 # 
 ##############################################################################
 
+def manage_addMailHost(self, id, title='', smtp_host=None,
+        localhost='localhost', smtp_port=25,
+        timeout=1.0):
+    """
+
+    Add a mailhost object to an ObjectManager.
+
+    """
+
 
 class MailHost:
     """

@@ -197,8 +197,7 @@ class ObjectManagerItem:
         If an object is not found then the 'default' argument will be
         returned.
 
-        Permission -- XXX
-
+        Permission -- Python only
         """
 
     def restrictedTraverse(self, path, default=None):
@@ -210,7 +209,7 @@ class ObjectManagerItem:
         If an object is not found then the 'default' argument will be
         returned.
 
-        Permission -- XXX
+        Permission -- Python only
 
         """
 

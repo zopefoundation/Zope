@@ -188,3 +188,14 @@ class ZCatalog:
         """
         Search the catalog, the same way as 'searchResults'.
         """
+
+def manage_addZCatalog(self, id, title, vocab_id=None):
+    """
+
+    Add a ZCatalog object.
+
+    'vocab_id' is the name of a Vocabulary object this catalog should
+    use.  A value of None will cause the Catalog to create its own
+    private vocabulary.
+
+    """

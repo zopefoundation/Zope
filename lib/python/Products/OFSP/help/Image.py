@@ -83,6 +83,17 @@
 # 
 ##############################################################################
 
+def manage_addImage(self, id, file, title='', precondition='', content_type=''):
+    """
+
+    Add a new Image object.
+
+    Creates a new Image object 'id' with the contents of 'file'.
+
+    """
+
+
+
 class Image:
     """
     A Image is a Zope object that contains image content.  A Image

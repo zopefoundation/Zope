@@ -85,6 +85,32 @@
 
 
 
+def manage_addExternalMethod(self, id, title, module, function):
+    """
+
+    Add an external method to an ObjectManager.
+  
+    In addition to the standard object-creation arguments,
+    'id' and title, the following arguments are defined:
+
+        function -- The name of the python function. This can be a
+          an ordinary Python function, or a bound method.
+
+        module -- The name of the file containing the function
+          definition.
+
+        The module normally resides in the 'Extensions'
+        directory, however, the file name may have a prefix of
+        'product.', indicating that it should be found in a product
+        directory.
+
+        For example, if the module is: 'ACMEWidgets.foo', then an
+        attempt will first be made to use the file
+        'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
+        failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
+        used.
+
+    """
 
 class ExternalMethod:
     """

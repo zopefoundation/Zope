@@ -83,6 +83,16 @@
 # 
 ##############################################################################
 
+
+def manage_addFile(self,id,file='',title='',precondition='', content_type=''):
+    """
+
+    Add a new File object.
+
+    Creates a new File object 'id' with the contents of 'file'
+
+    """
+
 class File:
     """
     A File is a Zope object that contains file content.  A File object

@@ -102,7 +102,7 @@ class PropertySheet:
         there is no default namespace for a given property sheet
         (especially property sheets added in ZClass definitions).
 
-        Permission -- XXX
+        Permission -- Python only
 
         """
 
@@ -112,7 +112,7 @@ class PropertySheet:
         Get the property 'id', returning the optional second 
         argument or None if no such property is found.
 
-        Permission -- XXX
+        Permission -- Python only
         
         """
 
@@ -122,7 +122,7 @@ class PropertySheet:
         Get the type of property 'id'. Returns None if no such
         property exists.
 
-        Permission -- XXX
+        Permission -- Python only
         
         """
 
@@ -168,7 +168,7 @@ class PropertySheet:
 
         Returns a tuple of mappings, giving meta-data for properties.
 
-        Perimssion -- XXX
+        Perimssion -- Python only
 
         """
 
@@ -177,7 +177,7 @@ class PropertySheet:
 
         Returns a mapping containing property meta-data.
 
-        Permission -- XXX
+        Permission -- Python only
 
         """
 
@@ -188,11 +188,36 @@ class PropertySheet:
 
         Property Types
 
-           XXX
+          'boolean' -- 1 or 0. 
+
+          'date' -- A 'DateTime' value, for example '12/31/1999 15:42:52 PST'.
+
+          'float' -- A decimal number, for example '12.4'. 
+
+          'int' -- An integer number, for example, '12'. 
+
+          'lines' -- A list of strings, one per line. 
+
+          'long' -- A long integer, for example '12232322322323232323423'. 
+
+          'string' -- A string of characters, for example 'This is a string'. 
+
+          'text' -- A multi-line string, for example a paragraph. 
+
+          'tokens' -- A list of strings separated by white space, for example
+          'one two three'. 
+
+          'selection' -- A string selected by a pop-up menu. 
+
+          'multiple selection' -- A list of strings selected by a selection list.
 
         This method will use the passed in 'type' to try to convert
         the 'value' argument to the named type. If the given 'value'
         cannot be converted, a ValueError will be raised.
+
+        The value given for 'selection' and 'multiple selection'
+        properites must be a variable name.  The variable must also be
+        a sequence.
 
         *If the given 'type' is not recognized, the 'value' and 'type'
         given are simply stored blindly by the object. This seems like
