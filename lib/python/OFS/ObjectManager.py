@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.70 1999/04/30 14:12:56 brian Exp $"""
+$Id: ObjectManager.py,v 1.71 1999/05/05 14:58:34 brian Exp $"""
 
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -213,7 +213,7 @@ class ObjectManager(
                 object.manage_setLocalRoles(name, ['Owner'])
         return id
 
-    def _delObject(self,id):
+    def _delObject(self, id, dp=1):
         if id=='acl_users':
             # Yikes - acl_users is referred to by two names and
             # must be treated as a special case! Only get rid of
@@ -224,7 +224,17 @@ class ObjectManager(
             if hasattr(self, '__allow_groups__') and \
                self.__dict__.has_key('__allow_groups__'):
                 delattr(self, '__allow_groups__')
-
+        # Deletion protocol - when an object is being deleted,
+        # attempt to call it's _on_delete_object method if
+        # if has one. The dp flag allows allows callers to
+        # avoid having the delete protocol triggered (for
+        # instance when an object is cut and pasted).
+        if dp:
+            ob=self._getOb(id)
+            if hasattr(ob, '_on_delete_object') and \
+               callable(ob._on_delete_object):
+                ob._on_delete_object()
+            del ob
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
 

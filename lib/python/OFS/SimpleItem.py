@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.47 1999/04/28 16:25:45 brian Exp $'''
-__version__='$Revision: 1.47 $'[11:-2]
+$Id: SimpleItem.py,v 1.48 1999/05/05 14:58:34 brian Exp $'''
+__version__='$Revision: 1.48 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -109,6 +109,14 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
     """A simple Principia object. Not Folderish."""
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
+
+
+
+    # HACK HACK HACK -- TAKE THIS OUT LATER!!!!
+    def _on_delete_object(self):
+        if hasattr(self, 'onDeleteObject') and \
+           callable(self.onDeleteObject):
+            self.onDeleteObject()
 
     # The name of this object and the name used to traverse to thie
     # object in a URL:
