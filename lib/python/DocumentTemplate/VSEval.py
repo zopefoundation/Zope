@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.3 1997/10/28 21:51:20 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.4 1997/10/29 16:17:27 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -55,7 +55,7 @@ __rcs_id__='$Id: VSEval.py,v 1.3 1997/10/28 21:51:20 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from string import join
 import new, sys
@@ -129,10 +129,7 @@ class Eval:
 	    if binops.has_key(c) and custom.has_key(binops[c]):
 		name=binops[c]
 		custop=custom[name]
-		if custop==None:
-		    raise TypeError, ("illegal operation, %s, in %s"
-				      % (name, expr))
-
+		self._checkop(custop, expr, name)
 
 		# custop(op1,op2,env)   
 		self._const(out, custop, consts)
@@ -144,9 +141,7 @@ class Eval:
 	    elif unops.has_key(c) and custom.has_key(unops[c]):
 		name=unops[c]
 		custop=custom[name]
-		if custop==None:
-		    raise TypeError, ("illegal operation, %s, in %s"
-				      % (name, expr))
+		self._checkop(custop, expr, name)
 		
 		# custop(op,env)   
 		self._const(out, custop, consts)
@@ -158,12 +153,7 @@ class Eval:
 	    elif c==LOAD_ATTR and custom.has_key('__getattr__'):
 		name='__getattr__'
 		custop=custom[name]
-		if custop==None:
-		    raise TypeError, (
-			"""Attempt tp perform attribute access in "%s".
-			Attribute access is not allowed.
-			"""
-			% expr)
+		self._checkop(custop, expr, "attribute access")
 		
 		# custop(inst,name,env)  
 		self._const(out, custop, consts)
@@ -173,6 +163,28 @@ class Eval:
 		envpos=self._push_env(out, envpos, names)
 		out[len(out):]=[CALL_FUNCTION, 3, 0]
 		i=i+3
+
+	    elif (c >= SLICE and c <= SLICE_b_e
+		  and custom.has_key('__getslice__')):
+
+		name='__getslice__'
+		custop=custom[name]
+		self._checkop(custop, expr, "slice")
+
+		# custop(seq,(indexes),env)
+		if c==SLICE: nargs=0
+		elif c==SLICE_b_: nargs=1
+		else:
+		    nargs=2
+		    if c==SLICE__e:
+			self._const(out,0,consts)
+			out.append(ROT_TWO)
+		out[len(out):]=[BUILD_TUPLE, nargs, 0]
+		self._const(out, custop, consts)
+		out.append(ROT_THREE)
+		envpos=self._push_env(out, envpos, names)
+		out[len(out):]=[CALL_FUNCTION, 3, 0]
+		i=i+1
 		
 	    elif c==LOAD_NAME:
 		out.append(c)
@@ -197,6 +209,13 @@ class Eval:
 
 	self.code=code
 	self.used=tuple(used.keys())
+
+    def _checkop(self, custop, expr, name):
+	if custop is None:
+	    raise TypeError, (
+		'Attempt tp perform %s in "%s", but %s is not allowed.'
+		% (name,expr,name))
+
 
     def _const(self, out, v, consts):
 	# Load object as a constant
@@ -417,6 +436,9 @@ if __name__=='__main__': globals()[sys.argv[1]]()
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.4  1997/10/29 16:17:27  jim
+# Added support for overriding getslice.
+#
 # Revision 1.3  1997/10/28 21:51:20  jim
 # Removed validate attribute.
 # Added template dict to override arguments.
