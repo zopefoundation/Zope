@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -144,13 +144,17 @@ class File(Persistent,Implicit,PropertyManager,
                    )
 
     __ac_permissions__=(
-        ('View management screens', ('manage','manage_main',
-                                     'manage_uploadForm',)),
-        ('Change Images and Files', ('manage_edit','manage_upload','PUT')),
-        ('View', ('index_html','view_image_or_file','getSize','getContentType',
-                  '')),
-        ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
-        ('Delete objects', ('DELETE',)),
+        ('View management screens',
+         ('manage', 'manage_main', 'manage_uploadForm',)),
+        ('Change Images and Files',
+         ('manage_edit','manage_upload','PUT')),
+        ('View',
+         ('index_html', 'tag', 'view_image_or_file', 'getSize',
+          'getContentType', '')),
+        ('FTP access',
+         ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
+        ('Delete objects',
+         ('DELETE',)),
         )
    
 
@@ -439,6 +443,37 @@ class Image(File):
         return '<img src="%s" %s%salt="%s">' % (
             self.absolute_url(), width, height, self.title_or_id()
             )
+
+
+    def tag(self, height=None, width=None, alt=None, **args):
+        """
+        Generate an HTML IMG tag for this image, with customization.
+        Arguments to self.tag() can be any valid attributes of an IMG tag.
+        'src' will always be an absolute pathname, to prevent redundant
+        downloading of images. Defaults are applied intelligently for
+        'height', 'width', and 'alt'.
+        """
+        if not alt:
+            alt=self.title_or_id()
+
+        string='<img src="%s" alt="%s"' % (self.absolute_url(), alt)
+
+        if not height:
+            height = self.height
+        if height:
+            string = "%s height=%s" % (string, height)
+
+        if not width:
+            width = self.width
+        if width:
+            string = "%s width=%s" % (string, width)
+
+        for key in args.keys():
+            value = args.get(key)
+            string = "%s %s=%s" % (string, key, value)
+
+        return string + '>'
+
 
 def cookId(id, title, file):
     if not id and hasattr(file,'filename'):
