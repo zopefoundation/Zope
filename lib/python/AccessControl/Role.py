@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -192,7 +192,11 @@ class RoleManager(ExtensionClass.Base):
     manage_permissionForm=HTMLFile('permissionEdit', globals())
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
-        "Change the settings for the given permission"
+        """Change the settings for the given permission
+
+        If optional arg acquire is true, then the roles for the permission
+        are acquired, in addition to the ones specified, otherwise the
+        permissions are restricted to only the designated roles."""
         self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.ac_inherited_permissions(1):
             name, value = p[:2]
