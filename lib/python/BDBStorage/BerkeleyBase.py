@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.27 $'.split()[-2:][0]
+__version__ = '$Revision: 1.28 $'.split()[-2:][0]
 
 import os
 import time
@@ -190,7 +190,7 @@ class BerkeleyBase(BaseStorage):
         # Instantiate a pack lock
         self._packlock = ThreadLock.allocate_lock()
         self._autopacker = None
-        self._stop = False
+        self._stop = self._closed = False
         # Initialize a few other things
         self._prefix = prefix
         # Give the subclasses a chance to interpose into the database setup
@@ -316,7 +316,9 @@ class BerkeleyBase(BaseStorage):
         self._stop = True
         self._lock_acquire()
         try:
-            self._doclose()
+            if not self._closed:
+                self._doclose()
+                self._closed = True
         finally:
             self._lock_release()
 
