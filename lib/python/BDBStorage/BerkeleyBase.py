@@ -219,6 +219,7 @@ class BerkeleyBase(BaseStorage):
         # procedure
         self._tables = []
         self._setupDBs()
+        self._withtxn(self._version_check)
         # Initialize the object id counter.
         self._init_oid()
         # Set up the checkpointing thread
@@ -237,6 +238,9 @@ class BerkeleyBase(BaseStorage):
         else:
             self._autopacker = None
         self.log('ready')
+
+    def _version_check(self, txn):
+        raise NotImplementedError
 
     def _make_autopacker(self, event):
         raise NotImplementedError
