@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.126 $'[11:-2]
+__version__='$Revision: 1.127 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -220,6 +220,11 @@ class File(Persistent, Implicit, PropertyManager,
                 else:
                     last_mod = long(0)
                 if last_mod > 0 and last_mod <= mod_since:
+                    # Set header values since apache caching will return Content-Length
+                    # of 0 in response if size is not set here
+                    RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
+                    RESPONSE.setHeader('Content-Type', self.content_type)
+                    RESPONSE.setHeader('Content-Length', self.size)
                     RESPONSE.setStatus(304)
                     return ''
 
