@@ -38,6 +38,10 @@ Zope Changes
 
       Features Added
 
+        - A new DTML try tag added based on work by Jordan B. Baker.
+
+        - A new 'range' function added the the '_' DTML variable. 
+
         - A new 'utilities' directory is included in the distribution.
 
         - A new flag attribute, 'only', of the DTML 'with' tag
