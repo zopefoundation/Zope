@@ -122,6 +122,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #596: Page Templates can now be added via
+       ZPublisher.Client or any other situation in which
+       REQUEST is passed without a file and a text arg is provided.
+
      - Collector #1213: Fixed wrong labels of cache parameters 
 
      - Collector #1265: Fixed handling of orphans in ZTUtil.Batch
