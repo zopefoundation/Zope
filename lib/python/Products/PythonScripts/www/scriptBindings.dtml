@@ -16,20 +16,6 @@
 </em></p>
 <table cellpadding="2">
 <tr>
-  <th align="left" valign="top">Container</th>
-  <td align="left" valign="top" nowrap><input type="text" name="name_container"
-  value="<dtml-var expr="getAssignedName('name_container', '')" html_quote>">
-  <br>
-  Recommended: <code>self</code>
-  </td><td align="left" valign="top">
-  This is the <dtml-with expr="aq_inner.aq_parent">&dtml-meta_type;
-  "&dtml.missing.html_quote-title_or_id;"</dtml-with>, in which this
-  script is located.  This doesn't change unless you move the script.
-  If the script is in a ZClass, the Container is the class instance.
-  </td>
-</tr>
-<tr><td>&nbsp;</td></tr>
-<tr>
   <th align="left" valign="top">Context</th>
   <td align="left" valign="top"><input type="text" name="name_context"
   value="<dtml-var expr="getAssignedName('name_context', '')" html_quote>">
@@ -43,11 +29,25 @@
 </tr>
 <tr><td>&nbsp;</td></tr>
 <tr>
+  <th align="left" valign="top">Container</th>
+  <td align="left" valign="top" nowrap><input type="text" name="name_container"
+  value="<dtml-var expr="getAssignedName('name_container', '')" html_quote>">
+  <br>
+  Rec: <code>container</code>
+  </td><td align="left" valign="top">
+  This is the <dtml-with expr="aq_inner.aq_parent">&dtml-meta_type;
+  "&dtml.missing.html_quote-title_or_id;"</dtml-with>, in which this
+  script is located.  This doesn't change unless you move the script.
+  If the script is in a ZClass, the Container is the class instance.
+  </td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr>
   <th align="left" valign="top">Script</th>
   <td align="left" valign="top"><input type="text" name="name_m_self"
   value="<dtml-var expr="getAssignedName('name_m_self', '')" html_quote>">
   <br>
-  Recommended: <code>m_self</code>
+  Recommended: <code>script</code>
   </td><td align="left" valign="top">
   This is the object &quot;&dtml-title_or_id;&quot; itself.
   </td>

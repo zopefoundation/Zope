@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals
 from Globals import Persistent, HTMLFile, package_home
@@ -95,8 +95,8 @@ import os
 _www = os.path.join(package_home(globals()), 'www')
 
 defaultBindings = {'name_context': 'context',
-                   'name_container': 'self',
-                   'name_m_self': 'm_self',
+                   'name_container': 'container',
+                   'name_m_self': 'script',
                    'name_ns': '',
                    'name_subpath': 'traverse_subpath'}
 
