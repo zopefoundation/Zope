@@ -32,7 +32,7 @@ from ZODB.referencesf import referencesf
 
 GBYTES = 1024 * 1024 * 1000
 
-__version__ = '$Revision: 1.20 $'.split()[-2:][0]
+__version__ = '$Revision: 1.21 $'.split()[-2:][0]
 
 
 
@@ -80,12 +80,30 @@ class BerkeleyConfig:
     These attributes control cache size settings:
 
     - cachesize should be the size of the cache in bytes.
+
+    These attributes control the autopacking thread:
+
+    - frequency is the time in seconds after which an autopack phase will be
+      performed.  E.g. if frequency is 3600, an autopack will be done once per
+      hour.  Set frequency to 0 to disable autopacking (the default).
+
+    - packtime is the time in seconds marking the moment in the past at which
+      to autopack to.  E.g. if packtime is 14400, autopack will pack to 4
+      hours in the past.
+
+    - classicpack is an integer indicating how often an autopack phase should
+      do a full classic pack.  E.g. if classicpack is 24 and frequence is
+      3600, a classic pack will be performed once per day.  Set to zero to
+      never automatically do classic packs.
     """
     interval = 100
     kbyte = 0
     min = 0
     logdir = None
     cachesize = 128 * 1024 * 1024
+    frequency = 0
+    packtime = 4 * 60 * 60
+    classicpack = 24
 
 
 
