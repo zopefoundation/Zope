@@ -9,7 +9,7 @@ You may restrict access to <EM><!--#var title--></EM> using the form
 below. To add or remove roles, select or deselect 
 the desired role names and click &quot;Change&quot;.
 <P>
-<FORM ACTION="<!--#var PARENT_URL-->/manage_editRoles" METHOD="POST">
+<FORM ACTION="manage_editRoles" METHOD="POST">
 <TABLE>
 <TR>
 <TD VALIGN="TOP">
@@ -33,7 +33,7 @@ Allow all users
 </FORM>
 
 <P>
-<FORM ACTION="<!--#var PARENT_URL-->/manage_addRole" METHOD="POST">
+<FORM ACTION="manage_addRole" METHOD="POST">
 To add a new, user-defined role to this object, enter the name of 
 the new role and click &quot;Add&quot;.
 <BR>

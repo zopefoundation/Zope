@@ -19,7 +19,7 @@
 <!--#/if parentObject-->
 <P>
 <!--#if userNames-->
-<FORM ACTION="<!--#var PARENT_URL-->/manage_editForm" METHOD="POST">
+<FORM ACTION="manage_editForm" METHOD="POST">
 The following users have been defined. To edit a user, 
 select a user and click &quot;Edit&quot;.
 <BR>
@@ -45,7 +45,7 @@ select a user and click &quot;Edit&quot;.
 </TR>
 <TR>
   <TD COLSPAN="2" VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_addUser" METHOD="POST">
+  <FORM ACTION="manage_addUser" METHOD="POST">
   <TABLE>
   <TR>
   <TD VALIGN="TOP">
@@ -95,7 +95,7 @@ select a user and click &quot;Edit&quot;.
 
 <P>
 <!--#if userNames-->
-<FORM ACTION="<!--#var PARENT_URL-->/manage_deleteUser" METHOD="POST">
+<FORM ACTION="manage_deleteUser" METHOD="POST">
 To delete users, select one or more users and click &quot;Delete&quot;.
 <BR>
 <SELECT NAME="names:list" MULTIPLE SIZE="4" >
