@@ -356,6 +356,22 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             starter.unlinkPidFile()
             self.failIf(os.path.exists(name))
 
+    def testConfigureInterpreter(self):
+        import sys
+        oldcheckinterval = sys.getcheckinterval()
+        newcheckinterval = oldcheckinterval + 1
+        conf = self.load_config_text("""
+                    instancehome <<INSTANCE_HOME>>
+                    python-check-interval %d
+                    """ %  newcheckinterval  
+        )
+        try:
+            starter = self.get_starter(conf)
+            starter.setupInterpreter()
+            self.failUnlessEqual( sys.getcheckinterval() , newcheckinterval )
+        finally:
+            sys.setcheckinterval(oldcheckinterval)
+
     def testZopeRunConfigure(self):
         old_config = getConfiguration()
         try:

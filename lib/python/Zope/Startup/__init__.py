@@ -94,6 +94,7 @@ class ZopeStarter:
         self.dropPrivileges()
         self.makeLockFile()
         self.makePidFile()
+        self.setupInterpreter()
         self.startZope()
         self.registerSignals()
         # emit a "ready" message in order to prevent the kinds of emails
@@ -305,6 +306,10 @@ class ZopeStarter:
                 os.unlink(self.cfg.lock_filename)
             except OSError:
                 pass
+
+    def setupInterpreter(self):
+        """ make changes to the python interpreter environment """
+        sys.setcheckinterval(self.cfg.python_check_interval)
 
 
 class WindowsZopeStarter(ZopeStarter):
