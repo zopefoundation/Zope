@@ -24,7 +24,6 @@ starttagopen = re.compile('<[a-zA-Z]')
 piopen = re.compile('<\?')
 piclose = re.compile('>')
 endtagopen = re.compile('</[a-zA-Z]')
-endbracket = re.compile('[<>]')
 special = re.compile('<![^<>]*>')
 commentopen = re.compile('<!--')
 commentclose = re.compile(r'--\s*>')
@@ -32,6 +31,10 @@ tagfind = re.compile('[a-zA-Z][-.a-zA-Z0-9:_]*')
 attrfind = re.compile(
     r'\s*([a-zA-Z_][-.:a-zA-Z_0-9]*)(\s*=\s*'
     r'(\'[^\']*\'|"[^"]*"|[-a-zA-Z0-9./:;+*%?!&$\(\)_#=~]*))?')
+
+locatestarttagend = re.compile("('[^']*'|\"[^\"]*\"|[^'\">]+)*/?>")
+endstarttag = re.compile(r"\s*/?>")
+endendtag = re.compile('[>]')
 
 declname = re.compile(r'[a-zA-Z][-_.a-zA-Z0-9]*\s*')
 declstringlit = re.compile(r'(\'[^\']*\'|"[^"]*")\s*')
@@ -215,7 +218,7 @@ class HTMLParser:
             if j == n:
                 break # Really incomplete
             self.handle_data(rawdata[i:j])
-            i = self.updatepos(self, i, j)
+            i = self.updatepos(i, j)
         # end while
         if end and i < n:
             self.handle_data(rawdata[i:n])
@@ -290,14 +293,13 @@ class HTMLParser:
     # Internal -- handle starttag, return length or -1 if not terminated
     def parse_starttag(self, i):
         self.__starttag_text = None
-        start_pos = i
         rawdata = self.rawdata
-        # XXX The following should skip matching quotes (' or ")
-        match = endbracket.search(rawdata, i+1)
-        if not match:
+        m = locatestarttagend.match(rawdata, i)
+        if not m:
             return -1
-        self.__starttag_text = rawdata[i:match.end()]
-        j = match.start(0)
+        endpos = m.end(0)
+        self.__starttag_text = rawdata[i:endpos]
+
         # Now parse the data between i+1 and j into a tag and attrs
         attrs = []
         match = tagfind.match(rawdata, i+1)
@@ -305,9 +307,9 @@ class HTMLParser:
             raise HTMLParseError('unexpected call to parse_starttag()',
                                  self.getpos())
         k = match.end(0)
-        tag = string.lower(rawdata[i+1:k])
-        self.lasttag = tag
-        while k < j:
+        self.lasttag = tag = string.lower(rawdata[i+1:k])
+
+        while k < endpos:
             m = attrfind.match(rawdata, k)
             if not m:
                 break
@@ -317,32 +319,38 @@ class HTMLParser:
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
-            attrvalue = self.unescape(attrvalue)
+                attrvalue = self.unescape(attrvalue)
             attrs.append((string.lower(attrname), attrvalue))
             k = m.end(0)
-        if rawdata[j:j+1] == '/>':
-            explicit_empty = 1
-            j = j + 2
-        elif rawdata[j] == '>':
-            j = j + 1
+
+        end = string.strip(rawdata[k:endpos])
+        if end not in (">", "/>"):
+            lineno, offset = self.getpos()
+            if "\n" in self.__starttag_text:
+                lineno = lineno + string.count(self.__starttag_text, "\n")
+                offset = len(self.__starttag_text) \
+                         - string.rfind(self.__starttag_text, "\n")
+            else:
+                offset = offset + len(self.__starttag_text)
+            raise HTMLParseError("junk characters in start tag: %s"
+                                 % `rawdata[k:endpos][:20]`,
+                                 (lineno, offset))
         self.finish_starttag(tag, attrs)
-        if self.__starttag_text[-2:] == '/>':
+        if end[-2:] == '/>':
             # XHTML-style empty tag: <span attr="value" />
             self.finish_endtag(tag)
-        return j
+        return endpos
 
     # Internal -- parse endtag
     def parse_endtag(self, i):
         rawdata = self.rawdata
-        match = endbracket.search(rawdata, i+1)
+        match = endendtag.search(rawdata, i+1)
         if not match:
             return -1
         j = match.start(0)
         tag = string.lower(string.strip(rawdata[i+2:j]))
-        if rawdata[j] == '>':
-            j = j+1
         self.finish_endtag(tag)
-        return j
+        return j + 1
 
     # Internal -- finish processing of start tag
     # Return -1 for unknown tag, 0 for open-only tag, 1 for balanced tag
