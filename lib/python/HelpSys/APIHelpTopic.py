@@ -156,18 +156,24 @@ class APIDoc(Persistent):
         
         self.name=klass.__name__ 
         self.doc=trim_doc_string(klass.__doc__)
+
+        # inheritence information
         if hasattr(klass,'__extends__'):
             self.extends=[]
             for base in klass.__extends__:
                 names=string.split(base, '.')
                 url="%s/Help/%s.py#%s" % (names[0], names[1], names[2])
                 self.extends.append((names[2], url))
+
+        # constructor information
+        if hasattr(klass, '__constructor__'):
+            self.constructor=MethodDoc(klass.__constructor__)
         
         # Get info on methods and attributes, ignore special items
         self.attributes=[]
         self.methods=[]
         for k,v in klass.__dict__.items():
-            if k not in ('__extends__', '__doc__'):
+            if k not in ('__extends__', '__doc__', '__constructor__'):
                 if type(v)==types.FunctionType:
                     self.methods.append(MethodDoc(v))
                 else:
@@ -213,6 +219,9 @@ class MethodDoc(Persistent):
     kwargs=None
     
     def __init__(self, func):
+        if hasattr(func, 'im_func'):
+            func=func.im_func
+
         self.name=func.__name__
         self.doc=trim_doc_string(func.__doc__)
         

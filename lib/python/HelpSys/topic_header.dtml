@@ -18,23 +18,13 @@ padding: 10pt;
 }
 
 .api{
-font-size: 16pt;
-font-family : "Courier New", Courier, monospace;
-}
-
-.attribute, .method{
 font-size: 14pt;
 font-family : "Courier New", Courier, monospace;
 }
 
-.method_doc{
-background: #FFFFDD;
-padding: 12pt;
-}
-
-.api_doc{
-background: #FFFFDD;
-padding: 12pt;
+.attribute, .method{
+font-size: 12pt;
+font-family : "Courier New", Courier, monospace;
 }
 
 </style>

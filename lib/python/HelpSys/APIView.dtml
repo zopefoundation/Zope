@@ -12,11 +12,22 @@
 </h2>
 
 <dl>
-<dd class="api_doc">
+<dd>
 <dtml-var doc fmt="structured-text">
 </dd>
+</dl>
 
-<dd>
+<dtml-if constructor>
+<hr noshade>
+<h3>Constructor</h3>
+  <dtml-with constructor>
+    <dtml-var view>
+  </dtml-with>
+</dtml-if>
+
+<hr noshade>
+<h3>Methods</h3>
+
 <dtml-in attributes>
   <dtml-var view>
 </dtml-in>
@@ -24,5 +35,3 @@
 <dtml-in methods>
   <dtml-var view>
 </dtml-in>
-</dd>
-</dl>
