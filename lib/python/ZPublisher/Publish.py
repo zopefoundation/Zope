@@ -362,7 +362,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.73 1998/01/09 20:47:13 jim Exp $"""
+$Id: Publish.py,v 1.74 1998/01/14 14:25:10 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -417,7 +417,7 @@ $Id: Publish.py,v 1.73 1998/01/09 20:47:13 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 
 def main():
@@ -1186,7 +1186,9 @@ class Request:
 	""" #"
 
 	other=self.other
-	if other.has_key(key): return other[key]
+	if other.has_key(key):
+	    if key=='REQUEST': return self
+	    return other[key]
 
 	if key[:1]=='U' and URLmatch(key) >= 0 and other.has_key('URL'):
 	    n=ord(key[3])-ord('0')
