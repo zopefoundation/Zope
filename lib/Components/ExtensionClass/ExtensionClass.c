@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.18 1997/12/11 16:00:22 jim Exp $
+  $Id: ExtensionClass.c,v 1.19 1997/12/15 15:18:36 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.18 1997/12/11 16:00:22 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.19 1997/12/15 15:18:36 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -81,6 +81,7 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 #define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
+#define OBJECT(O) ((PyObject*)O)
 
 /* Declarations for objects of type ExtensionClass */
 
@@ -1335,6 +1336,9 @@ basicnew(PyExtensionClass *self, PyObject *args)
       return NULL;
     }
 
+  UNLESS(self->class_flags & EXTENSIONCLASS_BASICNEW_FLAG)
+    return PyObject_CallObject(OBJECT(self), NULL);      
+
   if(self->tp_itemsize)
     {
       /* We have a variable-sized object, we need to get it's size */
@@ -1651,9 +1655,7 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 		return PyString_FromString(self->tp_name);
 	      break;
 	    case 'b':
-	      if(self->class_flags & EXTENSIONCLASS_BASICNEW_FLAG &&
-		 strcmp(n,"basicnew__")==0
-		 )
+	      if(strcmp(n,"basicnew__")==0)
 		return newCMethod(self,(PyObject*)self,
 		   "__basicnew__",(PyCFunction)basicnew,0,
 		   "__basicnew__() -- "
@@ -3214,7 +3216,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.18 $";
+  char *rev="$Revision: 1.19 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3255,6 +3257,10 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.19  1997/12/15 15:18:36  jim
+  Changed so that __basicnew__ is always available and calls regular
+  constructor when EXTENSIONCLASS_BASICNEW_FLAG is not set.
+
   Revision 1.18  1997/12/11 16:00:22  jim
   Added __basicnew__ class protocol.
 
