@@ -26,13 +26,10 @@ class Batch:
       
     Batches have these public attributes:
 
-    size -- The desired size. Note that this can be different than the
-    actual length of the batch due to orphan settings.
-
     start -- The first element number (counting from 1).
 
-    first -- The first element index (counting from 0, this is start -
-    1).
+    first -- The first element index (counting from 0). Note that this
+    is that same as start - 1.
 
     end -- The last element number (counting from 1).
 
@@ -45,6 +42,9 @@ class Batch:
 
     length -- The actual length of the batch. Note that this can be
     different than size due to orphan settings.
+
+    size -- The desired size. Note that this can be different than the
+    actual length of the batch due to orphan settings.
 
     previous -- The previous batch or None if this is the first batch.
 
