@@ -66,9 +66,13 @@ except:
 # processes from Zope code. Thanks to Dieter Maurer for this.
 try:
     import fcntl, FCNTL
-    FCNTL.F_SETFD; FCNTL.FD_CLOEXEC
+    if not (hasattr(fcntl, 'F_SETFD') and hasattr(fcntl, 'FD_CLOEXEC')):
+        # hack to be compatible with Python versions pre-2.2
+        import FCNTL
+        fcntl.F_SETFD = FCNTL.F_SETFD
+        fcntl.FD_CLOEXEC = FCNTL.FD_CLOEXEC
     def requestCloseOnExec(sock):
-        try:    fcntl.fcntl(sock.fileno(), FCNTL.F_SETFD, FCNTL.FD_CLOEXEC)
+        try:    fcntl.fcntl(sock.fileno(), fcntl.F_SETFD, fcntl.FD_CLOEXEC)
         except: pass
 
 except (ImportError, AttributeError):
