@@ -236,12 +236,14 @@ import sys
 # happened, then the path munging code is skipped.
 swhome=r'INSERT_SOFTWARE_HOME'
 if swhome != 'INSERT_SOFTWARE_HOME':
-    sys.path.insert(0, '%s/lib/python' % swhome)
-    sys.path.insert(1, '%s/bin/lib' % swhome)
-    sys.path.insert(2, '%s/bin/lib/plat-win' % swhome)
-    sys.path.insert(3, '%s/bin/lib/win32' % swhome)
-    sys.path.insert(4, '%s/bin/lib/win32/lib' % swhome)
-    sys.path.insert(5, swhome)
+    sys.path[:0] = [
+        swhome + '/lib/python',
+        swhome + '/bin/lib',
+        swhome + '/bin/lib/plat-win',
+        swhome + '/bin/lib/win32',
+        swhome + '/bin/lib/win32/lib',
+        swhome,
+        ]
 
 
 import codecs
@@ -527,7 +529,7 @@ import zdaemon.Daemon
 
 # Import ZServer before we open the database or get at interesting
 # application code so that ZServer's asyncore gets to be the
-# official one. Also gets SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME
+# official one.
 import ZServer
 
 # install signal handlers if on posix
@@ -535,10 +537,13 @@ if os.name == 'posix':
     from Signals import Signals
     Signals.registerZopeSignals()
 
+import App.config
+cfg = App.config.getConfiguration()
+
 # Location of the ZServer pid file. When Zope starts up it will write
 # its PID to this file.  If Zope is run under zdaemon control, zdaemon
 # will write to this pidfile instead of Zope.
-PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
+PID_FILE=os.path.join(cfg.clienthome, 'Z2.pid')
 
 # Import logging support
 import zLOG
@@ -548,14 +553,13 @@ if not READ_ONLY:
     zLOG.initialize()
 
 if USE_DAEMON and not READ_ONLY:
-    import App.FindHomes
     sys.ZMANAGED=1
     # zdaemon.run creates a process which "manages" the actual Zope
     # process (restarts it if it dies).  The management process passes along
     # signals that it receives to its child.
-    zdaemon.Daemon.run(sys.argv, os.path.join(CLIENT_HOME, PID_FILE))
+    zdaemon.Daemon.run(sys.argv, os.path.join(cfg.clienthome, PID_FILE))
 
-os.chdir(CLIENT_HOME)
+os.chdir(cfg.clienthome)
 
 def _warn_nobody():
     zLOG.LOG("z2", zLOG.INFO, ("Running Zope as 'nobody' can compromise "
@@ -565,7 +569,7 @@ def _warn_nobody():
 try:
     if DETAILED_LOG_FILE:
         from ZServer import DebugLogger
-        logfile=os.path.join(CLIENT_HOME, DETAILED_LOG_FILE)
+        logfile=os.path.join(cfg.clienthome, DETAILED_LOG_FILE)
         zLOG.LOG('z2', zLOG.BLATHER,
                  'Using detailed request log file %s' % logfile)
         DL=DebugLogger.DebugLogger(logfile)
@@ -584,7 +588,7 @@ try:
     # You may wish to create different logs for different servers. See
     # medusa/logger.py for more information.
     if not os.path.isabs(LOG_FILE):
-        LOG_PATH=os.path.join(CLIENT_HOME, LOG_FILE)
+        LOG_PATH=os.path.join(cfg.clienthome, LOG_FILE)
     else:
         LOG_PATH=LOG_FILE
 
@@ -841,7 +845,7 @@ try:
                                    'to; fix this to start as root (see '
                                    'doc/SETUID.txt)')
             import stat
-            client_home_stat = os.stat(CLIENT_HOME)
+            client_home_stat = os.stat(cfg.clienthome)
             client_home_faults = []
             if not (client_home_stat[stat.ST_MODE]&01000):
                 client_home_faults.append('does not have the sticky bit set')
@@ -850,7 +854,7 @@ try:
             if client_home_faults:
                 client_home_faults.append('fix this to start as root (see '
                                           'doc/SETUID.txt)')
-                err = '%s %s' % (CLIENT_HOME, ', '.join(client_home_faults))
+                err = '%s %s' % (cfg.clienthome, ', '.join(client_home_faults))
                 raise SystemExit, err
 
             try:
