@@ -6,7 +6,7 @@
 	help_topic='Sessions.stx'
 	)">
 
-<form action="manage_addRAMDB" method="POST">
+<form action="constructRAMDB" method="POST">
 
 <div class="form-help">
 <p>
