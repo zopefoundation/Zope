@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.6 $
+# $Revision: 1.7 $
 __version__ = '0.1'
 
 
@@ -146,7 +146,7 @@ class BerkeleyBase(BaseStorage):
     def getSize(self):
         """Return the size of the database."""
         # TBD: this is expensive to calculate and many not be necessary.
-        return 0
+        return 'too hard to determine'
 
     # BAW: this overrides BaseStorage.tpc_vote() with exactly the same
     # implementation.  This is so Zope 2.3.1, which doesn't include the change
