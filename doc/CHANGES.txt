@@ -16,8 +16,10 @@ Zope changes
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
-          builtin Zope object types to prevent passing inappropriate
-          objects for standard attributes (like title, etc.).
+          builtin Zope object types to prevent inappropriate passing
+          of acquisition-wrapped objects for standard attributes (like 
+          title, etc.). A similar restriction was added to prevent the
+          adding of wrapped objects as properties.
 
         - Fixed a naming bug in MailHost that caused simple_send to
           fail.
