@@ -494,7 +494,7 @@ class DocumentClass:
 
        return result
     
-    def doc_table(self, paragraph, expr = re.compile('\s*\|[-]+\|').match):
+    def doc_table(self, paragraph, expr = re.compile(r'\s*\|[-]+\|').match):
         text    = paragraph.getColorizableTexts()[0]
         m       = expr(text)
         
@@ -747,7 +747,7 @@ class DocumentClass:
             cols = []
         return StructuredTextTable(rows,text,subs,indent=paragraph.indent)
             
-    def doc_bullet(self, paragraph, expr = re.compile('\s*[-*o]\s+').match):
+    def doc_bullet(self, paragraph, expr = re.compile(r'\s*[-*o]\s+').match):
         top=paragraph.getColorizableTexts()[0]
         m=expr(top)
 
@@ -765,7 +765,7 @@ class DocumentClass:
 
     def doc_numbered(
         self, paragraph,
-        expr = re.compile('(\s*[a-zA-Z]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)').match):
+        expr = re.compile(r'(\s*[a-zA-Z]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)').match):
         
         # This is the old expression. It had a nasty habit
         # of grabbing paragraphs that began with a single
@@ -789,7 +789,7 @@ class DocumentClass:
 
     def doc_description(
         self, paragraph,
-        delim = re.compile('\s+--\s+').search,
+        delim = re.compile(r'\s+--\s+').search,
         nb=re.compile(r'[^\0- ]').search,
         ):
 
@@ -814,7 +814,7 @@ class DocumentClass:
            delim=d)
 
     def doc_header(self, paragraph,
-                    expr    = re.compile('[ a-zA-Z0-9.:/,-_*<>\?\'\"]+').match
+                    expr    = re.compile(r'[ a-zA-Z0-9.:/,-_*<>\?\'\"]+').match
                     ):
         subs=paragraph.getSubparagraphs()
         if not subs: return None
@@ -832,9 +832,9 @@ class DocumentClass:
     def doc_literal(
         self, s,
         expr=re.compile(
-          "(?:\s|^)'"                                                  # open
-          "([^ \t\n\r\f\v']|[^ \t\n\r\f\v'][^\n']*[^ \t\n\r\f\v'])" # contents
-          "'(?:\s|[,.;:!?]|$)"                                        # close
+          r"(?:\s|^)'"                                                  # open
+          r"([^ \t\n\r\f\v']|[^ \t\n\r\f\v'][^\n']*[^ \t\n\r\f\v'])" # contents
+          r"'(?:\s|[,.;:!?]|$)"                                        # close
           ).search):
         
         r=expr(s)
@@ -846,7 +846,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile('\s*\*([ \na-zA-Z0-9.:/;,\'\"\?]+)\*(?!\*|-)').search
+        expr = re.compile(r'\s*\*([ \na-zA-Z0-9.:/;,\'\"\?\-\_\/\=]+)\*(?!\*|-)').search
         ):
 
         r=expr(s)
@@ -858,8 +858,8 @@ class DocumentClass:
     
     def doc_inner_link(self,
                        s,
-                       expr1 = re.compile("\.\.\s*").search,
-                       expr2 = re.compile("\[[a-zA-Z0-9]+\]").search):
+                       expr1 = re.compile(r"\.\.\s*").search,
+                       expr2 = re.compile(r"\[[a-zA-Z0-9]+\]").search):
         
         # make sure we dont grab a named link
         if expr2(s) and expr1(s):
@@ -879,7 +879,7 @@ class DocumentClass:
     
     def doc_named_link(self,
                        s,
-                       expr=re.compile("(\.\.\s)(\[[a-zA-Z0-9]+\])").search):
+                       expr=re.compile(r"(\.\.\s)(\[[a-zA-Z0-9]+\])").search):
         
         result = expr(s)
         if result:
@@ -893,7 +893,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile("\_([a-zA-Z0-9\s\.,\?]+)\_").search):
+                      expr=re.compile(r"\_([a-zA-Z0-9\s\.,\?]+)\_").search):
         
         result = expr(s)
         if result:
@@ -905,7 +905,7 @@ class DocumentClass:
     
     def doc_strong(self, 
                    s,
-        expr = re.compile('\s*\*\*([ \na-zA-Z0-9.:/;\-,!\?\'\"]+)\*\*').search
+        expr = re.compile(r'\s*\*\*([ \na-zA-Z0-9.:/;\-,!\?\'\"]+)\*\*').search
         ):
 
         r=expr(s)
@@ -914,14 +914,17 @@ class DocumentClass:
            return (StructuredTextStrong(s[start:end]), start-2, end+2)
         else:
            return None
+
+    ## Some constants to make the doc_href() regex easier to read.
+    _DQUOTEDTEXT = r'("[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/]+")' ## double quoted text
+    _URL_AND_PUNC = r'([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)'
+    _SPACES = r'(\s*)'
     
-    def doc_href(
+    def doc_href(self, s,
+                 expr1 = re.compile(_DQUOTEDTEXT + "(:)" + _URL_AND_PUNC + _SPACES).search,
+                 expr2 = re.compile(_DQUOTEDTEXT + r'(\,\s+)' + _URL_AND_PUNC + _SPACES).search):
         
-        self, s,
-        expr1 = re.compile("(\"[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/]+\")(:)([a-zA-Z0-9\:\/\.\~\-]+)([,]*\s*)").search,
-        expr2 = re.compile('(\"[ a-zA-Z0-9\n\-\.\:\;\(\)\/]+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#]+)(\s*)').search):
-        
-        punctuation = re.compile("[\,\.\?\!\;]+").match
+        punctuation = re.compile(r"[\,\.\?\!\;]+").match
         r=expr1(s) or expr2(s)
 
         if r:
@@ -948,7 +951,7 @@ class DocumentClass:
         else:
             return None
     
-    def doc_sgml(self,s,expr=re.compile("\<[a-zA-Z0-9\.\=\'\"\:\/\-\#\+\s\*]+\>").search):
+    def doc_sgml(self,s,expr=re.compile(r"\<[a-zA-Z0-9\.\=\'\"\:\/\-\#\+\s\*]+\>").search):
         """
         SGML text is ignored and outputed as-is
         """

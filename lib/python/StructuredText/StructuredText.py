@@ -121,15 +121,15 @@ Special symbology is used to indicate special constructs:
   word 'examples', or '::' is treated as example code and is output as is.
 
 - Text enclosed single quotes (with white-space to the left of the
-  first quote and whitespace or puctuation to the right of the second quote)
+  first quote and whitespace or punctuation to the right of the second quote)
   is treated as example code.
 
 - Text surrounded by '*' characters (with white-space to the left of the
-  first '*' and whitespace or puctuation to the right of the second '*')
+  first '*' and whitespace or punctuation to the right of the second '*')
   is emphasized.
 
 - Text surrounded by '**' characters (with white-space to the left of the
-  first '**' and whitespace or puctuation to the right of the second '**')
+  first '**' and whitespace or punctuation to the right of the second '**')
   is made strong.
 
 - Text surrounded by '_' underscore characters (with whitespace to the left 
@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.32 2001/02/12 20:46:43 brian Exp $'''
+$Id: StructuredText.py,v 1.33 2001/03/07 21:35:38 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -254,187 +254,6 @@ $Id: StructuredText.py,v 1.32 2001/02/12 20:46:43 brian Exp $'''
 #   Jim Fulton, jim@digicool.com
 #
 #   (540) 371-6909
-#
-# $Log: StructuredText.py,v $
-# Revision 1.32  2001/02/12 20:46:43  brian
-# merge from 2.3 branch
-#
-# Revision 1.30.4.2  2001/02/12 20:45:55  brian
-# fixed bug 1908 (CRLF fix)
-#
-# Revision 1.30.4.1  2001/01/24 16:51:48  brian
-# Fixed regex in html_with_references (bug 1649) and also removed the \213
-# and \233 screening from html_quote (these must be an application-level
-# decision, else unicode cannot be supported).
-#
-# Revision 1.30  2001/01/04 15:01:59  brian
-# Merged StructuredText-Dev
-#
-# Revision 1.29  2000/11/10 16:55:56  brian
-# Fixed stx to allow ampersands in urls.
-#
-# Revision 1.28  2000/11/10 16:51:27  brian
-# Fixed a typo in stx
-#
-# Revision 1.27  2000/04/21 13:38:10  jim
-# Added closing list tags. Woo hoo!
-#
-# Revision 1.26  2000/03/14 17:22:04  brian
-# Allow ~ in hrefs.
-#
-# Revision 1.25  2000/02/17 00:53:24  klm
-# HTML._str(): We were getting preformatted examples rendered twice,
-# second time without preformatting.  Problem was a missing 'continue'
-# in one of the cases.
-#
-# Revision 1.24  1999/12/13 16:32:48  klm
-# Incorporated pavlos christoforou's mods to handle simple tables.  From
-# his web page at http://www.zope.org/Members/gaaros/StructuredText:
-#
-#   Structured Text module with table support
-#
-#   A paragraph that has blocks of text enclosed in '||' is treated as a
-#   table. The text blocks correspond to table cells and table rows are
-#   denoted by newlines. By default the cells are center aligned. You can
-#   change the defaults by modifying the CELL,ROW and TABLE class
-#   attributes in class Table. A cell can span more than one column by
-#   preceding a block of text with an equivalent number of cell separators
-#   '||'. Newlines and '|' cannot be a part of the cell text. If you need
-#   newlines use <BR>. For example:
-#
-#        |||| **Ingredients** ||
-#        || *Name* || *Amount* ||
-#        ||Spam||10||
-#        ||Eggs||3||
-#
-# Revision 1.23  1999/08/03 20:49:05  jim
-# Fixed to allow list elements to introduce examples.
-#
-# Restructured _str using continue to avoid excessive nesting.
-#
-# Revision 1.22  1999/08/02 22:01:28  jim
-# Fixed a bunch of bugs introduced by making ts_regex actually thread
-# safe.
-#
-# Also localized a bunch of regular expressions
-# using "static" variables (aka always default arguments).
-#
-# Revision 1.21  1999/08/02 13:26:52  jim
-# paragraph_divider needs to be a regular (thread-unsafe) regex
-# since it gets passed to ts_regex.split, which is thread-safe
-# and wants to use regs.
-#
-# Revision 1.20  1999/07/21 13:33:59  jim
-# untabified.
-#
-# Revision 1.19  1999/07/15 16:43:15  jim
-# Checked in Scott Robertson's thread-safety fixes.
-#
-# Revision 1.18  1999/03/24 00:03:18  klm
-# Provide for relative links, eg <a href="file_in_same_dir">whatever</a>,
-# as:
-#
-#   "whatever", :file_in_same_dir
-#
-# or
-#
-#   "whatever"::file_in_same_dir
-#
-# .__init__(): relax the second gsub, using a '*' instead of a '+', so
-# the stuff before the ':' can be missing, and also do postprocessing so
-# any resulting '<a href=":file_in_same_dir">'s have the superfluous ':'
-# removed.  *Seems* good!
-#
-# Revision 1.17  1999/03/12 23:21:39  klm
-# Gratuituous checkin to test my cvs *update* logging hook.
-#
-# Revision 1.16  1999/03/12 17:12:12  klm
-# Added support for underlined elements, in the obvious way (and
-# included an entry in the module docstring for it).
-#
-# Added an entry in the module docstring describing what i *guess* is
-# the criterion for identifying header elements.  (I'm going to have to
-# delve into and understand the framework a bit better before *knowing*
-# this is the case.)
-#
-# Revision 1.15  1999/03/11 22:40:18  klm
-# Handle links that include '#' named links.
-#
-# Revision 1.14  1999/03/11 01:35:19  klm
-# Fixed a small typo, and refined the module docstring link example, in
-# order to do a checkin to exercise the CVS repository mirroring.  Might
-# as well include my last checkin message, with some substantial stuff:
-#
-# Links are now recognized whether or not the candidate strings are
-# terminated with punctuation before the trailing whitespace.  The old
-# form - trailing punctuation then whitespace - is preserved, but the
-# punctuation is now unnecessary.
-#
-# The regular expressions are a bit more complicated, but i've factored
-# out the common parts and but them in variables with suggestive names,
-# which may make them easier to understand.
-#
-# Revision 1.13  1999/03/11 00:49:57  klm
-# Links are now recognized whether or not the candidate strings are
-# terminated with punctuation before the trailing whitespace.  The old
-# form - trailing punctuation then whitespace - is preserved, but the
-# punctuation is now unnecessary.
-#
-# The regular expressions are a bit more complicated, but i've factored
-# out the common parts and but them in variables with suggestive names,
-# which may make them easier to understand.
-#
-# Revision 1.12  1999/03/10 00:15:46  klm
-# Committing with version 1.0 of the license.
-#
-# Revision 1.11  1999/02/08 18:13:12  klm
-# Trival checkin (spelling fix "preceedeing" -> "preceding" and similar)
-# to see what pitfalls my environment presents to accomplishing a
-# successful checkin.  (It turns out that i can't do it from aldous because
-# the new version of cvs doesn't support the '-t' and '-f' options in the
-# cvswrappers file...)
-#
-# Revision 1.10  1998/12/29 22:30:43  amos
-# Improved doc string to describe hyper link and references capabilities.
-#
-# Revision 1.9  1998/12/04 20:15:31  jim
-# Detabification and new copyright.
-#
-# Revision 1.8  1998/02/27 18:45:22  jim
-# Various updates, including new indentation utilities.
-#
-# Revision 1.7  1997/12/12 15:39:54  jim
-# Added level as argument for html_with_references.
-#
-# Revision 1.6  1997/12/12 15:27:25  jim
-# Added additional pattern matching for HTML references.
-#
-# Revision 1.5  1997/03/08 16:01:03  jim
-# Moved code to recognize: "foo bar", url.
-# into object initializer, so it gets applied in all cases.
-#
-# Revision 1.4  1997/02/17 23:36:35  jim
-# Added support for "foo title", http:/foohost/foo
-#
-# Revision 1.3  1996/12/06 15:57:37  jim
-# Fixed bugs in character tags.
-#
-# Added -t command-line option to generate title if:
-#
-#    - The first paragraph is one line (i.e. a heading) and
-#
-#    - All other paragraphs are indented.
-#
-# Revision 1.2  1996/10/28 13:56:02  jim
-# Fixed bug in ordered lists.
-# Added option for either HTML-style headings or descriptive-list style
-# headings.
-#
-# Revision 1.1  1996/10/23 14:00:45  jim
-# *** empty log message ***
-#
-#
-#
 
 import ts_regex, regex
 from ts_regex import gsub
