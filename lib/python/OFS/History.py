@@ -12,9 +12,9 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
-import Globals, ndiff, ExtensionClass
+import Globals, ExtensionClass, difflib
 from DateTime import DateTime
 from Acquisition import Implicit, aq_base
 from struct import pack, unpack
@@ -34,12 +34,13 @@ class HystoryJar:
     def __getattr__(self, name):
         return getattr(self.__base__, name)
 
-    def commit(*args, **kw):
-        raise TemporalParadox, "You can\'t change history!"
-
-    tpc_begin = tpc_finish = commit
+    def commit(self, object, transaction):
+        if object._p_changed:
+            raise TemporalParadox, "You can\'t change history!"
 
     def abort(*args, **kw): pass
+
+    tpc_begin = tpc_finish = abort
 
 def historicalRevision(self, serial):
     state=self._p_jar.oldstate(self, serial)
@@ -227,7 +228,8 @@ def html_diff(s1, s2):
     from string import split
     a=s1.split('\n')
     b=s2.split('\n')
-    cruncher=ndiff.SequenceMatcher(isjunk=split, a=a, b=b)
+    cruncher=difflib.SequenceMatcher()
+    cruncher.set_seqs(a,b)
 
     r=['<table border=1>']
     for tag, alo, ahi, blo, bhi in cruncher.get_opcodes():
