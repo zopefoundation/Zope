@@ -18,7 +18,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.41 $'.split()[-2:][0]
+__version__ = '$Revision: 1.42 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -87,26 +87,30 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     def _setupDBs(self):
         # Data Type Assumptions:
         #
-        # object ids (oid) are 8-bytes
-        # object serial numbers are 8-bytes
-        # transaction ids (tid) are 8-bytes
-        # revision ids (revid) are the same as transaction ids, just used in a
-        #     different context.
-        # version ids (vid) are 8-bytes
-        # data pickles are of arbitrary length
+        # - object ids (oid) are 8-bytes
+        # - object revision ids (revid) are 8-bytes
+        # - transaction ids (tid) are 8-bytes
+        # - version ids (vid) are 8-bytes
+        # - data pickles are of arbitrary length
+        #
+        # Note that revids are usually the same as tids /except/ in the face
+        # of abortVersion().
         #
         # Create the tables used to maintain the relevant information.  The
         # full storage needs a bunch of tables.  These two are defined by the
         # base class infrastructure and are shared by the Minimal
         # implementation.
         #
-        # serials -- {oid -> serial}
-        #     Maps oids to object serial numbers.  The serial number is
-        #     essentially a timestamp used to determine if conflicts have
-        #     arisen, and serial numbers double as transaction ids and object
-        #     revision ids.  If an attempt is made to store an object with a
-        #     serial number that is different than the current serial number
-        #     for the object, a ConflictError is raised.
+        # serials -- {oid -> serial} | {oid -> serial + tid}
+        #     Maps oids to revids.  Usually the revision id of the object is
+        #     the transaction id of the last transaction that object is
+        #     modified in.  This doesn't work for transactions which contained
+        #     an abortVersion() because in that case, the serial number of the
+        #     object is the revid of the last non-version revision before the
+        #     version was created (IOW, by definition, a serial number doesn't
+        #     change when an abortVersion occurs).  However, the tid /does/
+        #     change so in those cases, the value of the oid key is a 16 byte
+        #     value instead of an 8 byte value.  This is considered rare.
         #
         # pickles -- {oid+revid -> pickle}
         #     Maps the concrete object referenced by oid+revid to that
@@ -301,7 +305,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 if rec is None:
                     break
                 op, data = rec
-                if op in 'ox':
+                if op in 'aox':
                     # This is a `versioned' object record.  Information about
                     # this object must be stored in the pickle table, the
                     # object metadata table, the currentVersions tables , and
@@ -330,7 +334,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                         for roid in refdoids:
                             refcounts[roid] = refcounts.get(roid, 0) + 1
                     # Update the metadata table
-                    if op == 'o':
+                    if op <> 'x':
                         # `x' opcode does an immediate write to metadata
                         metadata.append(
                             (key, ''.join((vid,nvrevid,lrevid,prevrevid))))
@@ -340,7 +344,13 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                     # than to weed them out now.
                     if vid <> ZERO:
                         self._currentVersions.put(vid, oid, txn=txn)
-                    serials.append((oid, tid))
+                    # If this was an abortVersion, we need to store the
+                    # revid+tid as the value of the key, since in this one
+                    # instance, the two are not equivalent
+                    if op == 'a':
+                        serials.append((oid, lrevid, tid))
+                    else:
+                        serials.append((oid, None, tid))
                     # Update the pickle's reference count.  Remember, the
                     # refcount is stored as a string, so we have to do the
                     # string->long->string dance.
@@ -363,11 +373,14 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                         c.close()
             # It's actually faster to boogie through this list twice
             #print >> sys.stderr, 'start:', self._lockstats()
-            for oid, tid in serials:
+            for oid, serial, tid in serials:
                 self._txnoids.put(tid, oid, txn=txn)
             #print >> sys.stderr, 'post-txnoids:', self._lockstats()
-            for oid, tid in serials:
-                self._serials.put(oid, tid, txn=txn)
+            for oid, serial, tid in serials:
+                if serial is None:
+                    self._serials.put(oid, tid, txn=txn)
+                else:
+                    self._serials.put(oid, serial+tid, txn=txn)
             #print >> sys.stderr, 'post-serials:', self._lockstats()
             for key, data in metadata:
                 self._metadata.put(key, data, txn=txn)
@@ -449,7 +462,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 if oids.has_key(oid):
                     # We've already dealt with this oid...
                     continue
-                revid = self._serials[oid]
+                serial, tid = self._getSerialAndTid(oid)
+                revid = tid
                 meta = self._metadata[oid+revid]
                 curvid, nvrevid = struct.unpack('>8s8s', meta[:16])
                 # Make sure that the vid in the metadata record is the same as
@@ -519,7 +533,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 rec = c.next_dup()
                 if oids.has_key(oid):
                     continue
-                revid = self._serials[oid]
+                serial, tid = self._getSerialAndTid(oid)
+                revid = tid
                 meta = self._metadata[oid+revid]
                 curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', meta[:24])
                 # Our database better be consistent.
@@ -551,7 +566,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         self._lock_acquire()
         try:
             # Let KeyErrors percolate up
-            revid = self._serials[oid]
+            serial, tid = self._getSerialAndTid(oid)
+            revid = tid
             vid = self._metadata[oid+revid][:8]
             if vid == ZERO:
                 # Not in a version
@@ -579,7 +595,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         try:
             # Get the current revid for the object.  As per the protocol, let
             # any KeyErrors percolate up.
-            revid = self._serials[oid]
+            serial, tid = self._getSerialAndTid(oid)
+            revid = tid
             # Get the metadata associated with this revision of the object.
             # All we really need is the vid, the non-version revid and the
             # pickle pointer revid.
@@ -591,13 +608,41 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # object is living in is the one that was requested, we simply
             # return the current revision's pickle.
             if vid == ZERO or self._versions.get(vid) == version:
-                return self._pickles[oid+lrevid], revid
+                return self._pickles[oid+lrevid], serial
             # The object was living in a version, but not the one requested.
             # Semantics here are to return the non-version revision.
             lrevid = self._metadata[oid+nvrevid][16:24]
             return self._pickles[oid+lrevid], nvrevid
         finally:
             self._lock_release()
+
+    def _getSerialAndTid(self, oid):
+        # For the object, return the curent serial number and transaction id
+        # of the last transaction that modified the object.  Usually these
+        # will be the same, unless the last transaction was an abortVersion
+        self._lock_acquire()
+        try:
+            data = self._serials[oid]
+        finally:
+            self._lock_release()
+        if len(data) == 8:
+            return data, data
+        return data[:8], data[8:]
+
+    def _getSerialAndTidMissingOk(self, oid):
+        # For the object, return the curent serial number and transaction id
+        # of the last transaction that modified the object.  Usually these
+        # will be the same, unless the last transaction was an abortVersion
+        self._lock_acquire()
+        try:
+            data = self._serials.get(oid)
+        finally:
+            self._lock_release()
+        if data is None:
+            return None, None
+        if len(data) == 8:
+            return data, data
+        return data[:8], data[8:]
 
     def _loadSerialEx(self, oid, serial):
         # Just like loadSerial, except that it returns both the pickle and the
@@ -629,7 +674,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # irrespective of any versions.
         self._lock_acquire()
         try:
-            return self._serials[oid]
+            serial, tid = self._getSerialAndTid(oid)
+            return serial
         finally:
             self._lock_release()
 
@@ -691,7 +737,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # a single transaction.  It's not clear though under what
             # situations that can occur or what the semantics ought to be.
             # For now, we'll assume this doesn't happen.
-            oserial = orevid = self._serials.get(oid)
+            oserial, orevid = self._getSerialAndTidMissingOk(oid)
             if oserial is None:
                 # There's never been a previous revision of this object, so
                 # set its non-version revid to zero.
@@ -778,7 +824,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 # that would be restored if we were undoing the current
                 # revision.  Otherwise, we attempt application level conflict
                 # resolution.  If that fails, we raise an exception.
-                revid = self._serials[oid]
+                cserial, ctid = self._getSerialAndTid(oid)
+                revid = ctid
                 if revid == tid:
                     vid, nvrevid, lrevid, prevrevid = struct.unpack(
                         '>8s8s8s8s', self._metadata[oid+tid])
@@ -1012,7 +1059,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # start with the most recent revision of the object, then search
             # the transaction records backwards until we find enough records.
             history = []
-            revid = self._serials[oid]
+            serial, tid = self._getSerialAndTid(oid)
+            revid = tid
             # BAW: Again, let KeyErrors percolate up
             while len(history) < size:
                 # Some information comes out of the revision metadata...
@@ -1037,7 +1085,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 d = {'time'       : TimeStamp(revid).timeTime(),
                      'user_name'  : user,
                      'description': desc,
-                     'serial'     : revid,
+                     'serial'     : serial,
                      'version'    : retvers,
                      'size'       : len(data),
                      }
@@ -1047,7 +1095,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 # revision, stopping when we've reached the end.
                 if previd == ZERO:
                     break
-                revid = previd
+                serial = revid = previd
             return history
         finally:
             self._lock_release()
@@ -1070,7 +1118,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             seen[oid] = 1
             reachables[oid] = 1
             # Get the pickle data for the object's current version
-            revid = self._serials.get(oid)
+            serial, tid = self._getSerialAndTidMissingOk(oid)
+            revid = tid
             if revid is None:
                 # BAW: how can this happen?!  This means that an object is
                 # holding references to an object that we know nothing about.
@@ -1280,8 +1329,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                         packablerevs.setdefault(oid, []).append(key)
                     # Otherwise, if this isn't the current revision for this
                     # object, then it's packable.
-                    elif self._serials[oid] <> key[8:]:
-                        packablerevs.setdefault(oid, []).append(key)
+                    else:
+                        serial, tid = self._getSerialAndTid(oid)
+                        if tid <> key[8:]:
+                            packablerevs.setdefault(oid, []).append(key)
         finally:
             c.close()
         # We now have all the packable revisions we're going to handle.  For
