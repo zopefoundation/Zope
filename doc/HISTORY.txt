@@ -4,6 +4,102 @@ Zope history
   Zope. Change information for the current release can be found
   in the file CHANGES.txt.
 
+    Zope 2.2.5
+
+      Bugs fixed
+
+        - Corrected a mounted database connection leak.  The reference
+          to the sub-connection was occasionally being garbage collected,
+          meaning the sub-connection never get closed and Zope eventually
+          used up all connections from the pool.
+
+    Zope 2.2.5 beta 1
+
+      Bugs fixed
+
+        - Secured the hole that was patched by Hotfix_2000-12-08.
+
+        - A bug in ZServer caused concurrent POST requests to overwrite
+          each others incoming data, leading to 'AttributeError: data'
+          errors.
+
+        - The ZSQLMethods code to handle query caching had a bug 
+          that could cause a KeyError in certain cicumstances.
+
+        - A dumb algorithm in the basic user folder interface caused a 
+          reverse dns lookup to be done for each user in a user folder
+          if domain-based matching was being used. This could cause a 
+          real lag for sites with large user folders doing domain 
+          matching.
+
+        - The "View" management page for Image objects generated an 
+          incorrect link to the image object (though it often happened
+          to work thanks to acquisition).
+
+        - Import only looked for files in INSTANCE_HOME/import.  Now,
+          if the file is not found there it looks in SOFTWARE_HOME/import.
+
+	- Fixed situation where the Catalog would attempt to loop over 
+	  a bucket as if it were a list, which won't work.  This was
+	  reported by Steve Alexander with a patch (#1586).
+
+        - It was not possible to access the 'manage_access' screen for
+          a custom propertysheet on an instance. Thanks to Steve 
+          Alexander for this one as well.
+
+        - The checkboxes on the "Add ZClass" form were being reset after 
+          every base class addition.
+
+        - A WebDAV support bug that caused authentication to fail for 
+          MOVE and COPY (and possibly other) requests was fixed.
+
+        - The WebDAV support was setting an extra HTTP 'Connection' 
+          header when Zope was running under ZSever, because ZServer 
+          didn't handle that correctly back when the DAV code was written.
+
+        - Several other DAV-related fixes were made to address bugs 
+          discovered in the course of using Zope with several DAV 
+          clients. The DAV support now generates a faux creation 
+          date property to make Adobe GoLive happy.
+
+        - A bug in state diffing in the Tree tag when a tuple was passed
+          in instead of a list was fixed.
+
+        - Corrected local role computation (Hotfix 2000-12-15).
+
+        - Fixed protection of the update_data method of File / Image
+          objects (Hotfix 2000-12-18).
+
+        - The content_type argument passed to manage_addImage or 
+          manage_addFile was ineffective.
+
+        - The Image.tag() and ZopeAttributionButton methods now return an
+          image tag that is XHTML compatible; a space and a slash have been
+          added.
+
+        - Long running processes spawned via os.system() from Zope code 
+          could hang the request that spawned them due to inheritance of 
+          open file descriptors. Thanks to Dieter Maurer for a fix for 
+          ZServer to set the close-on-exec flag on ZServer sockets.
+
+        - Some of ZServer's medusa underpinnings were outputting various
+          'WARNING' messages that should have been ignorable and caused 
+          confusion for new Zope users. The startup messages have been 
+          fixed to avoid spewing things that scare newbies unnecessarily.
+
+        - SQLAlias objects were leaking when a database column was 
+          accessed via an aliased name. This was tracked down to a 
+          subtle bug in ExtensionClass.
+
+        - A packing bug could, on rare occasions, cause corruption of
+          transactions committed while the database was being
+          packed. This corruption wouldn't show up until the database
+          was scanned, either on startup without an index, or on
+          subsequent packs. The actual data records were correct in
+          most cases, but contained invalid file pointers to their
+          transaction or other record data.  The problem could be
+          corrected using the FileStorage recovery tool, fsrecover.py.
+
     Zope 2.2.4
 
       Bugs fixed

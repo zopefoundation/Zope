@@ -63,6 +63,11 @@ Zope changes
 	  queries, 'getObject()' now tries to resolve URLs as well as
 	  paths.  This should catch more cases.
 
+        - Tags generated for ImageFile objects attempted to use 
+          title_or_id(), which is not defined for those objects.
+
+        - Mounting now fails gracefully in when getId() is not
+          available in the mounted object.
 
     Zope 2.3.0 alpha 2
 
