@@ -42,6 +42,11 @@ Zope changes
 
         - StructuredText now takes care of your locale settings. 
 
+        - Image and File objects now support the HTTP Range and If-Range
+          headers, enabeling partial downloads of such objects. This can be
+          used by clients to restart a broken download. Downloads of these
+          objects through FTP can also be restarted.
+
     Zope 2.3.0 beta 3
 
       Features Added

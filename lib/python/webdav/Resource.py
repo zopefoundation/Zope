@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -94,6 +94,7 @@ from urllib import quote, unquote
 from AccessControl import getSecurityManager
 from WriteLockInterface import WriteLockInterface
 import Globals, time
+from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
 
 class Resource(ExtensionClass.Base, Lockable.LockableItem):
     """The Resource mixin class provides basic WebDAV support for
@@ -130,6 +131,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             response.setHeader('Connection', 'close')
             response.setHeader('Date', rfc1123_date(), 1)
         response.setHeader('MS-Author-Via', 'DAV')
+
+        # HTTP Range support
+        if HTTPRangeInterface.isImplementedBy(self):
+            response.setHeader('Accept-Ranges', 'bytes')
+        else:
+            response.setHeader('Accept-Ranges', 'none')
 
     def dav__validate(self, object, methodname, REQUEST):
         msg='<strong>You are not authorized to access this resource.</strong>'

@@ -369,6 +369,9 @@ class zope_ftp_channel(ftp_channel):
         response=make_response(self, self.retr_completion, line[1])
         self._response_producers = response.stdout._producers
         request=FTPRequest(line[1],'RETR',self,response)
+        # Support download restarts if possible.
+        if self.restart_position > 0:
+            request.environ['HTTP_RANGE'] = 'bytes=%d-' % self.restart_position
         handle(self.module,request,response) 
 
     def retr_completion(self, file, response):        
