@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.185 2002/07/09 15:14:51 zigg Exp $'''
-__version__='$Revision: 1.185 $'[11:-2]
+$Id: Application.py,v 1.186 2002/08/09 14:51:53 chrism Exp $'''
+__version__='$Revision: 1.186 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -416,6 +416,14 @@ def initialize(app):
             app.acl_users._createInitialUser()
             get_transaction().note('Created initial user')
             get_transaction().commit()
+
+    # Install an error_log
+    if not hasattr(app, 'error_log'):
+        from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
+        error_log = SiteErrorLog()
+        app._setObject('error_log', error_log)
+        get_transaction().note('Added site error_log at /error_log')
+        get_transaction().commit()
 
     install_products(app)
     install_standards(app)
