@@ -938,6 +938,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                     setattr(new_idx, 'indexed_attrs', indexed_attrs)
                 self.manage_reindexIndex(idx_id, REQUEST)
 
+        LOG.info('Finished migration of indexes for %s' % self.absolute_url(1))
+
         RESPONSE.redirect(
             URL1 +
             '/manage_main?manage_tabs_message=Indexes%20converted%20and%20reindexed')
