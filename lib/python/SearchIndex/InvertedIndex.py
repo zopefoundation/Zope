@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.50 1997/06/23 19:31:42 jim Exp $'''
+$Id: InvertedIndex.py,v 1.51 1997/07/01 14:15:35 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,7 +82,7 @@ $Id: InvertedIndex.py,v 1.50 1997/06/23 19:31:42 jim Exp $'''
 #   (540) 371-6909
 #
 # 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 
 import regex, string, copy
@@ -640,6 +640,8 @@ class Index:
 	    try: o=my_map[key]
 	    except: o=None
 
+	    if type(v) is tt: v = { v[0] : v[1:] }
+
 	    if o is None:
 
 		for id in v.keys():
@@ -652,7 +654,6 @@ class Index:
 		my_map[key]=v
 		continue
 
-	    if type(v) is tt: v = { v[0] : v[1:] }
 	    if type(o) is tt: o = { o[0] : o[1:] }
 
 	    for id in v.keys():
@@ -750,6 +751,9 @@ class Index:
 
 ############################################################################
 # $Log: InvertedIndex.py,v $
+# Revision 1.51  1997/07/01 14:15:35  jim
+# Fixed bug in merge map.
+#
 # Revision 1.50  1997/06/23 19:31:42  jim
 # Fixed bug in merge when first thing merged had 'UnindexedData'.
 # Note that this "should" never occur.
