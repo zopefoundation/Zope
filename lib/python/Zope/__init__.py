@@ -20,6 +20,7 @@ DB=ZODB.FileStorage.FileStorage(
     Globals.BobobaseName,
     log=lambda x: sys.stderr.write(x))
 DB=ZODB.DB(DB)
+Globals.DB=DB # Ick, this is temporary until we come up with some registry
 Globals.opened.append(DB)
 
 # Set up the "application" object that automagically opens
@@ -33,3 +34,6 @@ c=app()
 OFS.Application.initialize(c)
 c._p_jar.close()
 del c
+
+# This is sneaky, but we don't want to play with Main:
+sys.modules['Main']=sys.modules['Zope']
