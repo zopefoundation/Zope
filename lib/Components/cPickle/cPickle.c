@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.32 1997/03/04 23:14:16 chris Exp $
+     $Id: cPickle.c,v 1.33 1997/03/05 18:37:54 chris Exp $
 
      Copyright 
 
@@ -123,6 +123,7 @@ static PyObject *dispatch_table;
 static PyObject *safe_constructors;
 static PyObject *class_map;
 static PyObject *empty_tuple;
+static PyObject *mark_ob;
 
 static PyObject *__class___str, *__getinitargs___str, *__dict___str,
   *__getstate___str, *__setstate___str, *__name___str, *__reduce___str,
@@ -919,7 +920,7 @@ save_tuple(Picklerobject *self, PyObject *args) {
         if (has_key) {
             static char pop = POP;
 
-            while (i-- > 0) {
+            while (i-- >= 0) {
                 if ((*self->write_func)(self, &pop, 1) < 0)
                     goto finally;
             }
@@ -1871,7 +1872,18 @@ finally:
 
 static int
 marker(Unpicklerobject *self) {
-    return ((self->num_marks < 1) ? -1 : self->marks[--self->num_marks]);
+    int i;
+
+    if (self->num_marks < 1)
+    {
+        PyErr_SetString(UnpicklingError, "could not find MARK");
+        return -1;
+    }
+
+    i = self->marks[--self->num_marks];
+    if (DEL_LIST_SLICE(self->stack, i, i + 1) < 0)
+        return -1;
+    return i;
 }
 
     
@@ -2225,7 +2237,8 @@ load_tuple(Unpicklerobject *self, PyObject *args) {
     PyObject *tup = 0, *slice = 0, *list = 0;
     int i, j, res = -1;
 
-    i = marker(self);
+    if ((i = marker(self)) < 0)
+        goto finally;
 
     if ((j = PyList_Size(self->stack)) < 0)  
         goto finally;
@@ -2295,7 +2308,8 @@ load_list(Unpicklerobject *self, PyObject *args) {
     PyObject *list = 0, *slice = 0;
     int i, j, l, res = -1;
 
-    i = marker(self);
+    if ((i = marker(self)) < 0)
+        goto finally;
 
     if ((j = PyList_Size(self->stack)) < 0)
         goto finally;
@@ -2335,7 +2349,8 @@ load_dict(Unpicklerobject *self, PyObject *args) {
     PyObject *list = 0, *dict = 0, *key = 0, *value = 0;
     int i, j, k, res = -1;
 
-    i = marker(self);
+    if ((i = marker(self)) < 0)
+        goto finally;
 
     if ((j = PyList_Size(self->stack)) < 0)
         goto finally;
@@ -2423,7 +2438,8 @@ load_obj(Unpicklerobject *self, PyObject *args) {
     PyObject *class = 0, *slice = 0, *tup = 0, *obj = 0;
     int i, len, res = -1;
 
-    i = marker(self);
+    if ((i = marker(self)) < 0)
+        goto finally;
 
     class = PyList_GET_ITEM((PyListObject *)self->stack, i);
     Py_INCREF(class);
@@ -2466,7 +2482,8 @@ load_inst(Unpicklerobject *self, PyObject *args) {
     int i, j, len, res = -1;
     char *s;
 
-    i = marker(self);
+    if ((i = marker(self)) < 0)
+        goto finally;
 
     if ((j = PyList_Size(self->stack)) < 0)
         goto finally;
@@ -3063,6 +3080,9 @@ load_mark(Unpicklerobject *self, PyObject *args) {
 
     self->marks[self->num_marks++] = len;
 
+    if (PyList_Append(self->stack, mark_ob) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -3468,6 +3488,16 @@ Unpickler_getattr(Unpicklerobject *self, char *name) {
         return self->memo;
     }
 
+    if (!strcmp(name, "stack")) {
+        if (!self->stack) {
+            PyErr_SetString(PyExc_AttributeError, name);
+            return NULL;
+        }
+
+        Py_INCREF(self->stack);
+        return self->stack;
+    }
+
     if (!strcmp(name, "UnpicklingError")) {
         Py_INCREF(UnpicklingError);
         return UnpicklingError;
@@ -3692,6 +3722,9 @@ init_stuff(PyObject *module, PyObject *module_dict) {
     UNLESS(class_map = PyDict_New())
         return -1;
 
+    UNLESS(mark_ob = Py_BuildValue("[s]", "spam"))
+        return -1;
+
     UNLESS(PicklingError = PyString_FromString("cPickle.PicklingError"))
         return -1;
 
@@ -3716,7 +3749,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.32 $";
+    char *rev="$Revision: 1.33 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
