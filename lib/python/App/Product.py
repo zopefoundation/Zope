@@ -118,6 +118,7 @@ import ZClasses, ZClasses.ZClass
 from HelpSys.HelpSys import ProductHelp
 
 
+
 class ProductFolder(Folder):
     "Manage a collection of Products"
 

@@ -84,11 +84,12 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.20 2000/08/14 14:34:23 shane Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Factory.py,v 1.21 2000/08/14 15:04:22 shane Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
+
 
 class Factory(
     AccessControl.Role.RoleManager,
