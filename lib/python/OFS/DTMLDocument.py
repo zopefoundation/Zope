@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -100,7 +100,7 @@ import Globals
 done='done'
 
 
-class DTMLDocument(DTMLMethod, PropertyManager):
+class DTMLDocument(PropertyManager, DTMLMethod):
     """DTML Document objects are DocumentTemplate.HTML objects that act
        as methods whose 'self' is the DTML Document itself."""
 

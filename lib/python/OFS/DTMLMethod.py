@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -94,13 +94,14 @@ from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.common import rfc1123_date
+from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
 from urllib import quote
 import ts_regex, Globals, sys, Acquisition
 
 
 class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
-                 Item_w__name__):
+                 ElementWithTitle, Item_w__name__):
     """DTML Method objects are DocumentTemplate.HTML objects that act
        as methods of their containers."""
     meta_type='DTML Method'
