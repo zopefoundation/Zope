@@ -70,7 +70,7 @@ class HTMLParserTestCase(unittest.TestCase):
         else:
             parser.feed(source)
         parser.close()
-        assert parser.get_events() == events, parser.get_events()
+        self.assert_(parser.get_events() == events, parser.get_events())
 
     def _parse_error(self, source):
         def parse(source=source):
@@ -165,7 +165,25 @@ text
         self._run_check(["<a b='>'", ">"], output)
 
     def check_starttag_junk_chars(self):
+        self._parse_error("<")
+        self._parse_error("<>")
+        self._parse_error("</>")
+        self._parse_error("</")
+        self._parse_error("</a")
+        self._parse_error("</a")
+##        self._parse_error("</a<a>")
+        self._parse_error("<$")
+        self._parse_error("<$>")
+        self._parse_error("<!")
         self._parse_error("<a $>")
+        self._parse_error("<a")
+        self._parse_error("<a foo='bar'")
+        self._parse_error("<a foo='bar")
+        self._parse_error("<a foo='>'")
+        self._parse_error("<a foo='>")
+
+    def check_declaration_junk_chars(self):
+        self._parse_error("<!DOCTYPE foo $ >")
 
     def check_startendtag(self):
         self._run_check("<p/>", [
