@@ -92,7 +92,12 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     def index_object(self, docid, obj, threshold=None):
         # XXX We currently ignore subtransaction threshold
-        count = self.index.index_doc(docid, self._get_object_text(obj))
+        text = getattr(obj, self._fieldname, None)
+        if text is None:
+            return 0
+        if callable(text):
+            text = text()
+        count = self.index.index_doc(docid, text)
         self._p_changed = 1 # XXX
         return count
 
@@ -131,15 +136,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def clear(self):
         """reinitialize the index"""
         self.index = self._index_factory(self.lexicon)
-
-    ## Helper ##
-
-    def _get_object_text(self, obj):
-        x = getattr(obj, self._fieldname)
-        if callable(x):
-            return x()
-        else:
-            return x
 
     ## User Interface Methods ##
 
