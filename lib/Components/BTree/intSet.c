@@ -85,7 +85,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.19 2000/05/16 17:41:16 jim Exp $"
+"\n$Id: intSet.c,v 1.20 2001/05/23 18:27:42 shane Exp $"
 ;
 
 #include <limits.h>
@@ -95,10 +95,7 @@ static char intSet_module_documentation[] =
 #include <time.h>
 #include "cPersistence.h"
 
-static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
-#define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
-#define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 #define RETURN_NONE Py_INCREF(Py_None); return Py_None
 
 #define MIN_INTSET_ALLOC 8
@@ -117,20 +114,6 @@ staticforward PyExtensionClass intSetType;
 
 #define OBJECT(O) ((PyObject*)(O))
 #define INTSET(O) ((intSet*)(O))
-
-static PyObject *
-_PER_RETURN(intSet *self, PyObject *r)
-{
-  PER_ALLOW_DEACTIVATION(self);
-  return r;
-}
-
-static int
-_PER_INT_RETURN(intSet *self, int r)
-{
-  PER_ALLOW_DEACTIVATION(self);
-  return r;
-}
 
 /* We want to be sticky most of the time */
 #define PER_RETURN(O,R) R
@@ -276,7 +259,7 @@ intSet___getstate__(intSet *self, PyObject *args)
   UNLESS(r=PyString_FromStringAndSize(NULL,l*4)) goto err;
   UNLESS(c=PyString_AsString(r)) goto err;
   d=self->data;
-  for(i=0; i < l; i++, *d++)
+  for(i=0; i < l; i++, d++)
     {
       *c++ = (int)( *d        & 0xff);
       *c++ = (int)((*d >> 8)  & 0xff);
@@ -610,14 +593,14 @@ static struct PyMethodDef module_methods[] = {
 };
 
 void
-initintSet()
+initintSet(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.19 $";
+  char *rev="$Revision: 1.20 $";
 
   UNLESS(ExtensionClassImported) return;
 
-  if(cPersistenceCAPI=PyCObject_Import("cPersistence","CAPI"))
+  if((cPersistenceCAPI=PyCObject_Import("cPersistence","CAPI")))
     {
       intSetType.methods.link=cPersistenceCAPI->methods;
       intSetType.tp_getattro=cPersistenceCAPI->getattro;
