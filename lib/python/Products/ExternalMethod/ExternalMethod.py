@@ -14,9 +14,9 @@ import AccessControl.Role
 braindir=SOFTWARE_HOME+'/Extensions'    
 modules={}
 
-addForm=HTMLFile('methodAdd', globals())
+manage_addExternalMethodForm=HTMLFile('methodAdd', globals())
 
-def add(self, id, title, module, function, REQUEST=None):
+def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder"""
     i=ExternalMethod(id,title,module,function)
     self._setObject(id,i)
