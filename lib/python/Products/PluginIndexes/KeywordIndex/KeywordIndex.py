@@ -12,17 +12,12 @@
 ##############################################################################
 
 from zLOG import LOG, ERROR
-from types import StringType
 from BTrees.OOBTree import OOSet, difference
 
-from Globals import Persistent, DTMLFile
-from Acquisition import Implicit
-
+from Globals import DTMLFile
 from Products.PluginIndexes import PluggableIndex 
 
 from Products.PluginIndexes.common.UnIndex import UnIndex 
-
-_marker = []
 
 class KeywordIndex(UnIndex):
 
@@ -74,8 +69,9 @@ class KeywordIndex(UnIndex):
         else:
             # we have an existing entry for this document, and we need
             # to figure out if any of the keywords have actually changed
-            if type(oldKeywords) is not OOSet: oldKeywords=OOSet(oldKeywords)
-            newKeywords=OOSet(newKeywords)
+            if type(oldKeywords) is not OOSet:
+                oldKeywords = OOSet(oldKeywords)
+            newKeywords = OOSet(newKeywords)
             fdiff = difference(oldKeywords, newKeywords)
             rdiff = difference(newKeywords, oldKeywords)
             if fdiff or rdiff:
