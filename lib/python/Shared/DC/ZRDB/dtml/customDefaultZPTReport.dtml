@@ -10,10 +10,10 @@
   <p>
     <a tal:condition="previous"
        tal:attributes="href string:${request/URL0}?start:int=${previous/first}"
-       href="previous_url">previous</a>
+       href="previous_url">previous <span tal:replace="previous/length">20</span> results</a>
     <a tal:condition="next"
        tal:attributes="href string:${request/URL0}?start:int=${next/first}"
-       href="next_url">next</a>
+       href="next_url">next <span tal:replace="next/length">20</span> results</a>
   </p>
 
   %(else no_table)[<table border>
@@ -31,10 +31,10 @@
   <p>
     <a tal:condition="previous"
        tal:attributes="href string:${request/URL0}?start:int=${previous/first}"
-       href="previous_url">previous</a>
+       href="previous_url">previous <span tal:replace="previous/length">20</span> results</a>
     <a tal:condition="next"
        tal:attributes="href string:${request/URL0}?start:int=${next/first}"
-       href="next_url">next</a>
+       href="next_url">next <span tal:replace="next/length">20</span> results</a>
   </p>
 
   </body>
