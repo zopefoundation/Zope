@@ -47,6 +47,9 @@ ExtensionClass = Extension(name = 'ExtensionClass',
 Acquisition = Extension(name = 'Acquisition',
                         sources = ['src/Acquisition.c'])
 
+ComputedAttribute = Extension(name = 'ComputedAttribute',
+                              sources = ['src/ComputedAttribute.c'])
+
 MethodObject = Extension(name = 'MethodObject',
                          sources = ['src/MethodObject.c'])
 
@@ -70,8 +73,9 @@ setup(name = "ExtensionClass",
       maintainer_email = "zodb-dev@zope.org",
       url = "http://www.digicool.com/releases/ExtensionClass/",
 
-      ext_modules = [ExtensionClass, Acquisition, MethodObject,
-                     Missing, MultiMapping, Sync, ThreadLock, Record],
+      ext_modules = [ExtensionClass, Acquisition, ComputedAttribute,
+                     MethodObject, Missing, MultiMapping, Sync,
+                     ThreadLock, Record],
       headers = ["src/ExtensionClass.h"],
 
       long_description=__doc__
