@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.96 $'[11:-2]
+__version__='$Revision: 1.97 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -409,8 +409,8 @@ def safegmtime(t):
         t_int = int(t)
         if isinstance(t_int, long):
             raise OverflowError # Python 2.3 fix: int can return a long!
-        return  gmtime(t_int)
-    except (IOError, OverflowError):
+        return gmtime(t_int)
+    except (ValueError, OverflowError):
         raise TimeError, 'The time %f is beyond the range ' \
               'of this Python implementation.' % float(t)
 
@@ -420,11 +420,10 @@ def safelocaltime(t):
         t_int = int(t)
         if isinstance(t_int, long):
             raise OverflowError # Python 2.3 fix: int can return a long!
-    except OverflowError:
+        return localtime(t_int)
+    except (ValueError, OverflowError):
         raise TimeError, 'The time %f is beyond the range ' \
               'of this Python implementation.' % float(t)
-    rval = localtime(t_int)
-    return rval
 
 def _tzoffset2rfc822zone(seconds):
     """Takes an offset, such as from _tzoffset(), and returns an rfc822 
@@ -891,6 +890,11 @@ class DateTime:
             yr = ((yr - 1970) % 28) + 1970
             x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
             nearTime = x - fsetAtEpoch - long(EPOCH) + 86400L + ms
+
+            # nearTime might still be negative if we are east of Greenwich.
+            # But we can asume on 1969/12/31 were no timezone changes.
+            nearTime = max(0, nearTime)
+
             ltm = safelocaltime(nearTime)
         tz = self.localZone(ltm)
         return tz
@@ -1028,7 +1032,7 @@ class DateTime:
                     else:
                         day=ints[0]
                         month=ints[1]
-    
+
             elif ints[0] <= 12:
                 month=ints[0]
                 day=ints[1]
@@ -1489,7 +1493,7 @@ class DateTime:
     def rfc822(self):
         """Return the date in RFC 822 format"""
         tzoffset = _tzoffset2rfc822zone(_tzoffset(self._tz, self._t))
-            
+
         return '%s, %2.2d %s %d %2.2d:%2.2d:%2.2d %s' % (
             self._aday,self._day,self._amon,self._year,
             self._hour,self._minute,self._nearsec,tzoffset)
@@ -1686,8 +1690,8 @@ class DateTime:
             if fields[5]:   seconds  = int(fields[5])
             if fields[6]:   seconds  = seconds+float(fields[6])
             z = fields[7]
-            
-	    if z and z.startswith('Z'):
+
+            if z and z.startswith('Z'):
                 # Waaaa! This is wrong, since 'Z' and '+HH:MM'
                 # are supposed to be mutually exclusive.
                 # It's only here to prevent breaking 2.7 beta.

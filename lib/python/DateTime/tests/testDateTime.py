@@ -232,11 +232,11 @@ class DateTimeTests(unittest.TestCase):
         # A negative numerical timezone
         dt = DateTime('Tue, 24 Jul 2001 09:41:03 -0400')
         self.assertEqual(dt.tzoffset(), -14400)
-        
+
         # A positive numerical timzone
         dt = DateTime('Tue, 6 Dec 1966 01:41:03 +0200')
         self.assertEqual(dt.tzoffset(), 7200)
-        
+
         # A negative numerical timezone with minutes.
         dt = DateTime('Tue, 24 Jul 2001 09:41:03 -0637')
         self.assertEqual(dt.tzoffset(), -23820)
@@ -244,11 +244,9 @@ class DateTimeTests(unittest.TestCase):
         # A positive numerical timezone with minutes.
         dt = DateTime('Tue, 24 Jul 2001 09:41:03 +0425')
         self.assertEqual(dt.tzoffset(), 15900)
-        
 
     def testISO8601(self):
         ''' iso 8601 dates '''
-        from DateTime.DateTime import SyntaxError
 
         ref0 = DateTime('2002/5/2 8:00am GMT')
         ref1 = DateTime('2002/5/2 8:00am US/Eastern')
@@ -264,10 +262,10 @@ class DateTimeTests(unittest.TestCase):
         dgood = '2002-05-02'
         tgood = 'T08:00:00-04:00'
         for dbad in '2002-5-2', '2002-10-2', '2002-2-10', '02-2-10':
-            self.assertRaises(SyntaxError, DateTime, dbad)
-            self.assertRaises(SyntaxError, DateTime, dbad + tgood)
+            self.assertRaises(DateTime.SyntaxError, DateTime, dbad)
+            self.assertRaises(DateTime.SyntaxError, DateTime, dbad + tgood)
         for tbad in '08:00', 'T8:00': #, 'T08:00Z-04:00':
-            self.assertRaises(SyntaxError, DateTime, dgood + tbad)
+            self.assertRaises(DateTime.SyntaxError, DateTime, dgood + tbad)
 
     def testJulianWeek(self):
         """ check JulianDayWeek function """
@@ -328,6 +326,14 @@ class DateTimeTests(unittest.TestCase):
 
                     d_int = DateTime("%d/%d/%d" % (day,month,year), datefmt="international")
                     self.assertEqual(d_us, d_int)
+
+    def test_calcTimezoneName(self):
+        timezone_dependent_epoch = 2177452800L
+        try:
+            DateTime()._calcTimezoneName(timezone_dependent_epoch, 0)
+        except DateTime.TimeError:
+            self.fail('Zope Collector issue #484 (negative time bug): '
+                      'TimeError raised')
 
 
 def test_suite():
