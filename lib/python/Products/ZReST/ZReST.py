@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.2 2003/02/01 09:28:30 andreasjung Exp $
+# $Id: ZReST.py,v 1.3 2003/02/01 10:23:10 andreasjung Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -53,12 +53,16 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         self.stylesheet = 'default.css'
         self.report_level = '2'
         self.source = self.formatted = ''
+        self.input_encoding = 'iso-8859-15'
+        self.output_encoding = 'iso-8859-15'
 
     # define the properties that define this object
     _properties = (
         {'id':'stylesheet', 'type': 'string', 'mode': 'w',
             'default': 'default.css'},
         {'id':'report_level', 'type': 'string', 'mode': 'w', 'default': '2'},
+        {'id':'input_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
+        {'id':'output_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
     )
     property_extensible_schema__ = 0
 
@@ -182,11 +186,11 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
 
         # input
         pub.source = docutils.io.StringInput(
-            source=self.source, encoding=sys.getdefaultencoding())
+            source=self.source, encoding=self.input_encoding)
 
         # output - not that it's needed
         pub.destination = docutils.io.StringOutput(
-            encoding=sys.getdefaultencoding())
+            encoding=self.output_encoding)
 
         # parse!
         document = pub.reader.read(pub.source, pub.parser, pub.settings)
@@ -266,6 +270,9 @@ modulesecurity.apply(globals())
 
 #
 # $Log: ZReST.py,v $
+# Revision 1.3  2003/02/01 10:23:10  andreasjung
+# input/output_encoding are now properties making ZReST more configurable
+#
 # Revision 1.2  2003/02/01 09:28:30  andreasjung
 # merge from ajung-restructuredtext-integration-branch
 #
