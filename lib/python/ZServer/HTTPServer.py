@@ -243,8 +243,9 @@ class zhttp_handler:
             pass
         
         for header in request.header:
-            [key,value]=string.split(header,": ",1)
+            key,value=string.split(header,":",1)
             key=string.lower(key)
+            value=string.strip(value)
             if header2env.has_key(key) and value:
                 env[header2env[key]]=value
             else:
