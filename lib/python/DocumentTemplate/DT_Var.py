@@ -96,7 +96,7 @@ __doc__='''Variable insertion parameters
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.7 1998/01/05 21:23:01 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.8 1998/01/08 20:57:34 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -150,7 +150,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.7 1998/01/05 21:23:01 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DT_Util import *
 
@@ -293,7 +293,7 @@ def sql_quote(v, name='(Unknown name)', md={}):
     This is needed to securely insert values into sql
     string literals in templates that generate sql.
     """
-    if find(c,"'") >= 0: return join(split(v,"'"),"''")
+    if find(v,"'") >= 0: return join(split(v,"'"),"''")
     return v
 
 special_formats={
@@ -314,6 +314,9 @@ special_formats={
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.8  1998/01/08 20:57:34  jim
+# *** empty log message ***
+#
 # Revision 1.7  1998/01/05 21:23:01  jim
 # Added support for fmt="" to allow vars with side effects.
 #
