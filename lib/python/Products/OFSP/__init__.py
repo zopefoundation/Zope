@@ -83,11 +83,11 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.28 1999/03/31 00:02:50 amos Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: __init__.py,v 1.29 1999/04/19 22:31:08 jim Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import Version, Draft, OFS.Image, OFS.Folder, AccessControl.User
-import OFS.DTMLMethod, OFS.DTMLDocument
+import OFS.DTMLMethod, OFS.DTMLDocument, ZClasses.ObjectManager
 
 # This is the new way to initialize products.  It is hoped
 # that this more direct mechanism will be more understandable.
@@ -161,3 +161,6 @@ def initialize(context):
                  Draft.manage_addPrincipiaDraft),
         icon='images/draft.gif'
         )
+
+    context.registerZClass(ZClasses.ObjectManager.ZObjectManager)
+                           
