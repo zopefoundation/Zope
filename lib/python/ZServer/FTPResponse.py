@@ -97,6 +97,18 @@ class FTPResponse(HTTPResponse):
     Response to an FTP command
     """
 
+    def setCookie(self, name, value, **kw):
+        self.cookies[name]=value
+
+    def appendCookie(self, name, value):
+        self.cookies[name]=self.cookies[name] + value
+
+    def expireCookie(self, name, **kw):
+        del self.cookies[name]
+
+    def _cookie_list(self):
+        return []
+
     def _finish(self):
         self.stdout.finish(self)
 

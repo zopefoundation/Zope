@@ -104,11 +104,16 @@ class FTPRequest(HTTPRequest):
             stdin=StringIO()
         env=self._get_env(path, command, channel, stdin)
         HTTPRequest.__init__(self, stdin, env, response, clean=1)
+        
+        # support for cookies and cookie authentication
         self.cookies=channel.cookies
+        if not self.cookies.has_key('__ac') and channel.userid != 'anonymous':
+            self.cookies['__ac']=encodestring('%s:%s' %
+                    (channel.userid, channel.password))       
         for k,v in self.cookies.items():
             if not self.other.has_key(k):
                 self.other[k]=v
-    
+   
     def _get_env(self, path, command, channel, stdin):
         "Returns a CGI style environment"
         env={}
@@ -122,7 +127,7 @@ class FTPRequest(HTTPRequest):
         env['SERVER_PORT']=str(channel.server.port)
         env['REMOTE_ADDR']=channel.client_addr[0]
         env['GATEWAY_INTERFACE']='CGI/1.1' # that's stretching it ;-)
-        
+       
         # FTP commands
         #
         if type(command)==type(()):
