@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -58,7 +58,7 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
 	r={}
         state_name=self._state_name
         for k, v in self.__dict__.items():
-            if state_name(k) or k[-11:]=='_Permission' or k[-9:]=="__roles__":
+            if state_name(k) or k[-11:]=='_Permission':
                 r[k]=v
 
 	return r
