@@ -21,6 +21,7 @@ void
 initMethodObject()
 {
   PyObject *m, *d;
+  char *rev="$Revision: 1.2 $";
   PURE_MIXIN_CLASS(Method,
 	"Base class for objects that want to be treated as methods\n"
 	"\n"
@@ -31,15 +32,17 @@ initMethodObject()
 	"will call the method and pass the instance in addition to\n"
 	"other arguments.  It is the responsibility of Method objects\n"
 	"to implement (or inherit) a __call__ method.\n",
-	Method_methods)
+	Method_methods);
 
-    /* Create the module and add the functions */
-    m = Py_InitModule4("MethodObject", methods,
-		       "Method-object mix-in class module",
-		       (PyObject*)NULL,PYTHON_API_VERSION);
+  /* Create the module and add the functions */
+  m = Py_InitModule4("MethodObject", methods,
+		     "Method-object mix-in class module",
+		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"Method",MethodType);
+  PyDict_SetItemString(d,"__version__",
+		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   /* Check for errors */
   CHECK_FOR_ERRORS("can't initialize module MethodObject");

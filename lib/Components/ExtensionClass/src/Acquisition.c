@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.1 1997/02/17 15:05:40 jim Exp $
+  $Id: Acquisition.c,v 1.2 1997/02/17 16:20:11 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,10 @@
   Full description
 
   $Log: Acquisition.c,v $
+  Revision 1.2  1997/02/17 16:20:11  jim
+  Fixed bug in mix-in class declaration.
+  Added __version__.
+
   Revision 1.1  1997/02/17 15:05:40  jim
   *** empty log message ***
 
@@ -529,19 +533,22 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
+  char *rev="$Revision: 1.2 $";
   PURE_MIXIN_CLASS(Acquirer,
 	"Base class for objects that acquire attributes from containers\n"
-	, Acquirer_methods)
+	, Acquirer_methods);
 
-    /* Create the module and add the functions */
-    m = Py_InitModule4("Acquisition", methods,
-		       "",
-		       (PyObject*)NULL,PYTHON_API_VERSION);
+  /* Create the module and add the functions */
+  m = Py_InitModule4("Acquisition", methods,
+		     "",
+		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   init_py_names();
   PyExtensionClass_Export(d,"Acquirer",AcquirerType);
   PyExtensionClass_Export(d,"Wrapper",Wrappertype);
+  PyDict_SetItemString(d,"__version__",
+		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }
