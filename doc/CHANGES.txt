@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+     - Improved Unicode handling in Page Templates. Template contents
+       and title will now be saved as a Unicode string if 
+       the management_page_charset variable can be acquired and is true.
+       The character set of an uploaded file can now be specified.
+
      - zopectl now accepts the -m argument to set a umask for files created
        by the managed process (e.g. -m 002 or --umask 002).
 
