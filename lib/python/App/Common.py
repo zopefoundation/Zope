@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, os, time
 
@@ -127,27 +127,31 @@ def attrget(o,name,default):
 
 def Dictionary(**kw): return kw # Sorry Guido
 
-def realpath(p):
-    """ Computes the 'real' path of a file or directory devoid of
-    any symlink in any element of the path """
-    p = os.path.abspath(p)
+try:
+    # Python 2.2. already has a realpath function, while 2.1 doesn't
+    realpath = os.path.realpath
+except:
     if os.name == 'posix':
-        path_list = p.split(os.sep)
-        orig_len = len(path_list)
-        changed = 0
-        i = 1
-        while not changed and i <= orig_len:
-            head = path_list[:i]
-            tail = path_list[i:]
-            head_s = os.sep.join(head)
-            tail_s = os.sep.join(tail)
-            if os.path.islink(head_s):
-                head_s = os.path.join(os.sep.join(head[:-1]),
-                                      os.readlink(head_s))
-                path_list = head_s.split(os.sep)
-                path_list.extend(tail)
-                p = os.sep.join(path_list)
-                p = realpath(p)
-                changed = 1
-            i = i + 1
-    return p
+        def realpath(filename):
+            """
+            Return the canonical path of the specified filename,
+            eliminating any symbolic links encountered in the path
+            (this is ripped off from Python 2.2).
+            """
+            filename = os.path.abspath(filename)
+
+            bits = ['/'] + filename.split('/')[1:]
+            for i in range(2, len(bits)+1):
+                component = os.path.join(*bits[0:i])
+                if os.path.islink(component):
+                    resolved = os.readlink(component)
+                    (dir, file) = os.path.split(component)
+                    resolved = os.path.normpath(os.path.join(dir, resolved))
+                    newpath = os.path.join(*([resolved] + bits[i:]))
+                    return realpath(newpath)
+
+            return filename
+    else:
+        # other platforms are assumed to not have symlinks, so we alias
+        # realpath to abspath
+        realpath = os.path.abspath
