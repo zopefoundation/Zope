@@ -51,7 +51,7 @@ TALES Path expressions
 
     Since every path must start with a variable name, you need a set
     of starting variables that you can use to find other objects and
-    values.  See the "TALES overview":../tales.stx for a list of
+    values.  See the "TALES overview":tales.stx for a list of
     built-in variables.  Since variable names are looked up first in
     locals, then in globals, then in this list, these names act just
     like built-ins in Python; They are always available, but they can

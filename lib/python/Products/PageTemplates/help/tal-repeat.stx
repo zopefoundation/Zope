@@ -67,7 +67,7 @@ repeat: Repeat an element
     example, 'repeat/item/start'.  In Python expressions, you use
     normal dictionary notation to get the repeat variable, then
     attribute access to get the information, for example,
-    'python:repeat['item'].start'.
+    "python:repeat['item'].start".
 
     Note that 'first' and 'last' are intended for use with sorted
     sequences.  They try to divide the sequence into group of items

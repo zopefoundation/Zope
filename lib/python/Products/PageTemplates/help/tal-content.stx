@@ -22,7 +22,7 @@ content: Replace the content of an element
 
     Inserting the user name::
 
-      <p tal:content="user/name">Fred Farkas</p>
+      <p tal:content="user/getUserName">Fred Farkas</p>
 
     Inserting HTML/XML::
 
@@ -31,4 +31,4 @@ content: Replace the content of an element
 
   See Also
 
-    "'tal:replace'":../tal-replace.stx
+    "'tal:replace'":tal-replace.stx

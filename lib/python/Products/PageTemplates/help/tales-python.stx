@@ -46,22 +46,22 @@ TALES Python expressions
 
       In addition, these utility functions are available: 'DateTime',
       'test', and 'same_type'. See "DTML
-      functions":../../../OFSP/Help/dtml-funcs.stx for more
+      functions":../../OFSP/Help/dtml-funcs.stx for more
       information on these functions.
 
       Finally, these functions are available in Python expressions,
       but not in Python-based scripts:
 
-      'path(string)' -- Evaluate a TALES "path":../tales-path.stx
+      'path(string)' -- Evaluate a TALES "path":tales-path.stx
       expression.
 
-      'string(string)' -- Evaluate a TALES "string":../tales-string.stx
+      'string(string)' -- Evaluate a TALES "string":tales-string.stx
       expression.
 
-      'exists(string)' -- Evaluates a TALES "exists":../tales-exists.stx
+      'exists(string)' -- Evaluates a TALES "exists":tales-exists.stx
       expression.
 
-      'nocall(string)' -- Evaluates a TALES "nocall":../tales-nocall.stx
+      'nocall(string)' -- Evaluates a TALES "nocall":tales-nocall.stx
       expression.
 
     Python Modules
@@ -84,19 +84,19 @@ TALES Python expressions
       module":http://www.python.org/doc/current/lib/module-math.html.
 
       'sequence' -- A module with a powerful sorting function. See
-      "sequence":../../../OFSP/Help/sequence.py for more information.
+      "sequence":../../OFSP/Help/sequence.py for more information.
 
       'Products.PythonScripts.standard' -- Various HTML formatting
       functions available in DTML. See
-      "Products.PythonScripts.standard":../../../OFSP/Help/standard.py
+      "Products.PythonScripts.standard":../../PythonScripts/Help/standard.py
       for more information.
 
       'ZTUtils' -- Batch processing facilities similar to those
-      offered by 'dtml-in'. See "ZTUtils":../../../OFSP/Help/ZTUtils.py
+      offered by 'dtml-in'. See "ZTUtils":ZTUtils.py
       for more information.
 
       'AccessControl' -- Security and access checking facilities. See
-      "AccessControl":../../../OFSP/Help/AccessControl.py for more
+      "AccessControl":../../OFSP/Help/AccessControl.py for more
       information.
 
   Examples
