@@ -1,4 +1,4 @@
-from iclass import Interface, Class, ClassType, Base, assertTypeImplements
+from iclass import Interface, Class, ClassType, Base, assertTypeImplements, _typeImplements #uuh..
 from types import FunctionType
 
 def impliedInterface(klass, __name__=None, __doc__=None):
@@ -20,7 +20,7 @@ def _ii(klass, items):
     for b in klass.__bases__: _ii(b, items)
     return items
     
-def objectImplements(object):        
+def objectImplements(object, tiget=_typeImplements.get):        
     """Return the interfaces implemented by the object
     """
     r=[]
@@ -43,7 +43,7 @@ def objectImplements(object):
     return r
 
     
-def instancesOfObjectImplements(klass):
+def instancesOfObjectImplements(klass, tiget=_typeImplements.get):
     """Return the interfaces that instanced implement (by default)
     """
     r=[]
