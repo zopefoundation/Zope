@@ -11,9 +11,10 @@ def indention(str,front = re.compile("^\s+").match):
     Find the number of leading spaces. If none, return 0
     """
     
-    if front(str):
-        start,end = front(str).span()
-        return end-start-1
+    result = front(str)
+    if result is not None:
+        start, end = result.span()
+        return end-start
     else:
         return 0     # no leading spaces
 
