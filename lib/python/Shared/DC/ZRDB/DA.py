@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.85 2000/05/23 18:57:12 brian Exp $'''
-__version__='$Revision: 1.85 $'[11:-2]
+$Id: DA.py,v 1.86 2000/05/23 19:20:20 brian Exp $'''
+__version__='$Revision: 1.86 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -327,17 +327,16 @@ class DA(
         return DocumentTemplate.HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
     def manage_test(self, REQUEST):
-        ' '
+        """Test an SQL method."""
 
         src="Could not render the query template!"
         result=()
         t=v=tb=None
         try:
             try:
-                src=self(REQUEST, src__=1)
+                src, result=self(REQUEST, test__=1)
                 if find(src,'\0'):
                     src=join(split(src,'\0'),'\n'+'-'*60+'\n')
-                result=self(REQUEST, test__=1)
                 if result._searchable_result_columns():
                     r=custom_default_report(self.id, result)
                 else:
@@ -467,6 +466,11 @@ class DA(
             result=Results(result, brain, p, zc)
         columns=result._searchable_result_columns()
         if test__ and columns != self._col: self._col=columns
+
+        # If run in test mode, return both the query and results so
+        # that the template doesn't have to be rendered twice!
+        if test__: return query, result
+
         return result
 
     def da_has_single_argument(self): return len(self._arg)==1
