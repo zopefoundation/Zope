@@ -42,7 +42,7 @@ disallowed otherwise.
 XXX This descrition doesn't actually match what's done in ZopeGuards
 or in ZopeSecurityPolicy. :(
 
-$Id: SimpleObjectPolicies.py,v 1.14 2004/01/27 20:40:22 Brian Exp $'''
+$Id: SimpleObjectPolicies.py,v 1.15 2004/01/27 20:44:04 Brian Exp $'''
 
 _noroles = [] # this is imported in various places
 
@@ -94,6 +94,7 @@ except:
 
 Containers = ContainerAssertions.get
 
+from types import IntType, DictType, TypeType, ListType
 def allow_type(Type, allowed=1):
     """Allow a type and all of its methods and attributes to be used from
     restricted code.  The argument Type must be a type."""
