@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<TITLE>New External Method</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2" COLOR="#77003B">New External Method</FONT>
+
+<FORM ACTION="manage_addExternalMethod" METHOD="POST">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>External name:</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+	<INPUT TYPE="TEXT" NAME="ExternalName" SIZE="50">
+  </TD>
+</TR>
+<TR>
+<TD></TD>
+<TD><BR><INPUT TYPE="SUBMIT" VALUE="Add External Method"></TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+
