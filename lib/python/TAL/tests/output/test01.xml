@@ -6,26 +6,26 @@
 
   <head>dadada</head>
 
-  <body xmlns:z="http://xml.zope.org/namespaces/tal" z:define="foo python:1">
+  <body>
 
-    <h1 z:condition="python:1" z:content="str:This Is The Replaced Title">This Is The Replaced Title</h1>
+    <h1>This Is The Replaced Title</h1>
 
   <!-- test entity references -->
   &nbsp;&HarryPotter;
 
   <!-- examples adapted from TemplateAttributeLanguageSyntax -->
 
-    <span z:content="str:here/id">here/id</span>
+    <span>here/id</span>
 
-    <p z:define="x str:template/title; global five python:2+3;" z:content="text var:five">5</p>
+    <p>5</p>
 
-    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+    <p>
       honda
     </p>
-    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+    <p>
       subaru
     </p>
-    <p z:repeat="car python:['honda', 'subaru', 'acura']">
+    <p>
       acura
     </p>
 
@@ -34,31 +34,31 @@
   <!-- more examples -->
 
     <ul>
-    <span z:repeat="car python:['honda', 'subaru', 'acura']">
-      <li z:content="var:car">honda</li>
+    <span>
+      <li>honda</li>
     </span>
-    <span z:repeat="car python:['honda', 'subaru', 'acura']">
-      <li z:content="var:car">subaru</li>
+    <span>
+      <li>subaru</li>
     </span>
-    <span z:repeat="car python:['honda', 'subaru', 'acura']">
-      <li z:content="var:car">acura</li>
+    <span>
+      <li>acura</li>
     </span>
     </ul>
 
   <!-- test attribute expansion -->
 
-    <a href="http://python.org" z:attributes="href python:'http://python.org' ">python</a>
-    <a z:attributes="href python:'http://python.org' " href="http://python.org">python</a>
+    <a href="http://python.org">python</a>
+    <a href="http://python.org">python</a>
 
   <!-- test insert/replace structure -->
-    <span z:content="structure python:None"></span>
+    <span></span>
     
 
-    <span z:define="global x str:&lt;h3&gt;Header Level 3&lt;/h3&gt;"/>
-    <span z:define="global x python:'&amp;' + 'nbsp;;' + x"/>
+    <span/>
+    <span/>
 
     &nbsp;<h3>Header Level 3</h3>
-    <span z:content="structure x">&nbsp;<h3>Header Level 3</h3></span>
+    <span>&nbsp;<h3>Header Level 3</h3></span>
 
   </body>
 
