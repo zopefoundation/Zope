@@ -248,6 +248,7 @@ class DateTimeTests(unittest.TestCase):
 
     def testISO8601(self):
         ''' iso 8601 dates '''
+        from DateTime.DateTime import SyntaxError
 
         ref0 = DateTime('2002/5/2 8:00am GMT')
         ref1 = DateTime('2002/5/2 8:00am US/Eastern')
@@ -263,10 +264,10 @@ class DateTimeTests(unittest.TestCase):
         dgood = '2002-05-02'
         tgood = 'T08:00:00-04:00'
         for dbad in '2002-5-2', '2002-10-2', '2002-2-10', '02-2-10':
-            self.assertRaises(DateTime.SyntaxError, DateTime, dbad)
-            self.assertRaises(DateTime.SyntaxError, DateTime, dbad + tgood)
+            self.assertRaises(SyntaxError, DateTime, dbad)
+            self.assertRaises(SyntaxError, DateTime, dbad + tgood)
         for tbad in '08:00', 'T8:00': #, 'T08:00Z-04:00':
-            self.assertRaises(DateTime.SyntaxError, DateTime, dgood + tbad)
+            self.assertRaises(SyntaxError, DateTime, dgood + tbad)
 
     def testJulianWeek(self):
         """ check JulianDayWeek function """
