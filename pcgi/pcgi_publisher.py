@@ -210,8 +210,6 @@ class PCGIPublisher:
             try: os.chmod(self.socketFile, 0777)
             except os.error: pass
 
-
-
     def initPrincipia(self):
         if self.resource.has_key('SOFTWARE_NAME'):
             self.moduleName = self.resource['SOFTWARE_NAME']
@@ -271,7 +269,7 @@ class PCGIPublisher:
         if size > 1048576:
             ### write large upload data to a file ###
             from tempfile import TemporaryFile
-            stdin = TemporaryFile('wb')
+            stdin = TemporaryFile('w+b')
             bufsize = self.bufsize
             while size > 0:
                 if size < bufsize: 
