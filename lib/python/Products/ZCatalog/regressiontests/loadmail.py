@@ -90,6 +90,11 @@ Commands:
 
        as described above.
 
+    catdel
+
+       Delete the entire catalog in one transaction.  This is a fun one for
+       storages that do reference counting garbage collection.
+
     pdebug command args
 
        Run one of the other commands in the Python debugger.
@@ -102,10 +107,12 @@ sample suite of tests::
     python Products/ZCatalog/regressiontests/loadmail.py \
                                                   inc ~/python-dev.mbox 0 10 2
     python Products/ZCatalog/regressiontests/loadmail.py edit 10 10 10 2
+    python Products/ZCatalog/regressiontests/loadmail.py catdel
 
 """
 
 
+import getopt
 import mailbox, time, sys, os, string
 sys.path.insert(0, '.')
 
@@ -114,6 +121,8 @@ whrandom.seed(1,2,3)
 
 from string import strip, find, split, lower, atoi
 from urllib import quote
+
+VERBOSE = 0
 
 def do(db, f, args, returnf=None):
     """Do something and measure it's impact"""
@@ -159,7 +168,7 @@ def loadmessage(dest, message, i, body=None, headers=None):
             try: doc.manage_addProperty(name, v, type)
             except: pass
 
-def loadmail(dest, name, mbox, printstat=0, max=-1):
+def loadmail(dest, name, mbox, max=-1):
 
     try:
         import Products.BTreeFolder.BTreeFolder
@@ -176,7 +185,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
     while message:
         if max >= 0 and i > max:
             break
-        if i%100 == 0 and printstat:
+        if i%100 == 0 and VERBOSE:
             fmt = "\t%s\t%s\t\r"
             if os.environ.get('TERM') in ('dumb', 'emacs'):
                 fmt = "\t%s\t%s\t\n"
@@ -194,7 +203,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
     print
     get_transaction().commit()
 
-def loadinc(name, mb, f, printstat=0, max=99999999, wait=1):
+def loadinc(name, mb, f, max=99999999, wait=1):
     from ZODB.POSException import ConflictError
     from time import sleep
     from whrandom import uniform
@@ -212,7 +221,7 @@ def loadinc(name, mb, f, printstat=0, max=99999999, wait=1):
         jar=Zope.DB.open()
         app=jar.root()['Application']
         mdest=getattr(app, name)
-        if i%100 == 0 and printstat:
+        if i%100 == 0 and VERBOSE:
             fmt = "\t%s\t%s\t\r"
             if os.environ.get('TERM') in ('dumb', 'emacs'):
                 fmt = "\t%s\t%s\t\n"
@@ -243,7 +252,8 @@ def loadinc(name, mb, f, printstat=0, max=99999999, wait=1):
         jar.close()
 
 
-    if printstat: sys.stdout.write("\t%s\t%s\t\n" % (i, f.tell()))
+    if VERBOSE:
+        sys.stdout.write("\t%s\t%s\t\n" % (i, f.tell()))
     sys.stdout.flush()
     return rconflicts, wconflicts
 
@@ -256,7 +266,7 @@ def base():
         max = atoi(sys.argv[3])
     else:
         max = -1
-    print do(Zope.DB, loadmail, (app, 'mail', sys.argv[2], 1, max))
+    print do(Zope.DB, loadmail, (app, 'mail', sys.argv[2], max))
     Zope.DB.close()
 
 class RE:
@@ -370,7 +380,7 @@ def inc():
         def returnf(t, c, size, mem, r, lock=lock):
             print c, r
             lock.release()
-        argss.append((lock, (dest, mb, f, 1, count, wait), returnf))
+        argss.append((lock, (dest, mb, f, count, wait), returnf))
 
     for lock, args, returnf in argss:
         thread.start_new_thread(do, (Zope.DB, loadinc, args, returnf))
@@ -388,6 +398,25 @@ def inc():
     #hist("%s-%s-%s" % (omin, count, threads))
 
     Zope.DB.close()
+
+def catdel():
+    import Zope
+    app = Zope.app()
+    db = Zope.DB
+    t = time.time()
+    c = time.clock()
+    size = db.getSize()
+    mem = VmSize()
+
+    del app.cat
+    get_transaction().commit()
+    
+    t = time.time() - t
+    c = time.clock() - c
+    size = db.getSize() - size
+    mem = VmSize() - mem
+    print t, c, size, mem
+
 
 words=['banishment', 'indirectly', 'imprecise', 'peeks',
 'opportunely', 'bribe', 'sufficiently', 'Occidentalized', 'elapsing',
@@ -698,9 +727,28 @@ def pdebug():
     del sys.argv[1]
     pdb.run('globals()[sys.argv[1]]()')
 
+def usage(code, msg=''):
+    print >> sys.stderr, __doc__
+    if msg:
+        print >> sys.stderr, msg
+    sys.exit(code)
+
 if __name__=='__main__':
-    try: f=globals()[sys.argv[1]]
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hv', ['help', 'verbose'])
+    except getopt.error, msg:
+        usage(1, msg)
+
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            usage(0)
+        elif opt in ('-v', '--verbose'):
+            VERBOSE = 1
+
+    try:
+        f=globals()[sys.argv[1]]
     except:
         print __doc__
         sys.exit(1)
-    else: f()
+    else:
+        f()
