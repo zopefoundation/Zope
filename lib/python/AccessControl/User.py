@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -15,6 +15,8 @@ from ImageFile import ImageFile
 from Role import RoleManager
 import Globals, App.Undo
 
+ListType=type([])
+
 class User(Implicit, Persistent):
     def __init__(self,name,password,roles):
 	self.name =name
@@ -23,6 +25,24 @@ class User(Implicit, Persistent):
 
     def authenticate(self, password):
 	return password==self.__
+
+    def _shared_roles(self, parent):
+        r=[]
+        while 1:
+            if hasattr(parent, 'aq_parent'):
+                while hasattr(parent.aq_self,'aq_self'):
+                    parent=parent.aq_self
+                parent=parent.aq_parent
+            else: return r
+            roles=parent.__roles__
+            if roles is None: return 'Anonymous',
+            if 'Shared' in roles:
+                roles=list(roles)
+                roles.remove('Shared')
+                r=r+roles
+            else:
+                try: return r+list(roles)
+                except: return r
 
     def allowed(self,parent,roles=None):
 	usr_roles=self.roles
@@ -34,8 +54,18 @@ class User(Implicit, Persistent):
                 if (hasattr(self,'aq_parent') and
                     hasattr(self.aq_parent,'aq_parent')):
                     if not parent.aq_inContextOf(self.aq_parent.aq_parent,1):
+                        if 'Shared' in roles:
+                            # Damn, old role setting. Waaa
+                            roles=self._shared_roles(parent)
+                            if 'Anonymous' in roles: return 1
                         return None
                 return 1
+
+        if 'Shared' in roles:
+            # Damn, old role setting. Waaa
+            roles=self._shared_roles(parent)
+            if 'Anonymous' in roles: return 1
+            
 	return None
 
     hasRole=allowed
