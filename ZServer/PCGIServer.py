@@ -385,4 +385,7 @@ class PCGIPipe:
     def finish(self,request):
         if request.headers.get('bobo-exception-type','') == \
                 'exceptions.SystemExit':
-            self._shutdown=1
+            r=response.headers.get('bobo-exception-value','0')
+            try: r=string.atoi(r)
+            except: r = r and 1 or 0
+            self._shutdown=r,
