@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.149 $'[11:-2]
+__version__='$Revision: 1.150 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -480,9 +480,7 @@ class File(Persistent, Implicit, PropertyManager,
         # doing a sub-transaction commit.
         get_transaction().commit(1)
 
-        jar=self._p_jar
-
-        if jar is None:
+        if self._p_jar is None:
             # Ugh
             seek(0)
             return Pdata(read(size)), size
@@ -491,31 +489,29 @@ class File(Persistent, Implicit, PropertyManager,
         # to front to minimize the number of database updates
         # and to allow us to get things out of memory as soon as
         # possible.
-        next=None
+        next = None
         while end > 0:
-            pos=end-n
-            if pos < n: pos=0 # we always want at least n bytes
+            pos = end-n
+            if pos < n:
+                pos = 0 # we always want at least n bytes
             seek(pos)
-            data=Pdata(read(end-pos))
+            
+            # Create the object and assign it a next pointer
+            # in the same transaction, so that there is only
+            # a single database update for it.
+            data = Pdata(read(end-pos))
+            self._p_jar.add(data)
+            data.next = next
 
-            # Woooop Woooop Woooop! This is a trick.
-            # We stuff the data directly into our jar to reduce the
-            # number of updates necessary.
-            data._p_jar=jar
-
-            # This is needed and has side benefit of getting
-            # the thing registered:
-            data.next=next
-
-            # Now make it get saved in a sub-transaction!
+            # Save the object so that we can release its memory.
             get_transaction().commit(1)
+            data._p_deactivate()
+            # The object should be assigned an oid and be a ghost.
+            assert data._p_oid is not None
+            assert data._p_state == -1
 
-            # Now make it a ghost to free the memory.  We
-            # don't need it anymore!
-            data._p_changed=None
-
-            next=data
-            end=pos
+            next = data
+            end = pos
 
         return next, size
 
