@@ -18,7 +18,7 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
@@ -61,10 +61,30 @@ security.declarePublic('Object')
 class _Object(record):
     _guarded_writes = 1
 
-    def __setitem__(self, key, value):
-        self.__dict__[str(key)] = value
+    def __init__(self, **kw):
+        self.update(kw)
 
-def Object():
-    return _Object()
+    def __setitem__(self, key, value):
+        key = str(key)
+        if key.startswith('_'):
+            raise ValueError, ('Object key %s is invalid. '
+                               'Keys may not begin with an underscore.' % `key`)
+        self.__dict__[key] = value
+
+    def update(self, d):
+        for key in d.keys():
+            # Ignore invalid keys, rather than raising an exception.
+            try:
+                skey = str(key)
+            except:
+                continue
+            if skey==key and not skey.startswith('_'):
+                self.__dict__[skey] = d[key]
+
+    def __hash__(self):
+        return id(self)
+
+def Object(**kw):
+    return _Object(**kw)
 
 security.apply(globals())
