@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -204,7 +204,8 @@ def addDTMLDocument(self, id, title='', file='', REQUEST=None, submit=None):
     ob.title=title
     id=self._setObject(id, ob)
     if REQUEST is not None:
-        u=REQUEST['URL1']
+        try: u=self.DestinationURL()
+        except: u=REQUEST['URL1']
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
