@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.20 1999/06/14 21:45:33 jim Exp $"""
+$Id: DT_HTML.py,v 1.21 1999/08/03 23:26:17 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -148,16 +148,16 @@ class dtml_re_class:
                     args=n+1
                     while 1:
                         e=find(text,';',args)
-                        if e > 0:
-                            args=text[n:e]
-                            if ent_name(text[n+1:e]) > 0:
-                                d=self.__dict__
-                                d=self.__dict__
-                                d[0]=text[s:e+1]
-                                d[1]=d['end']=''
-                                d[2]=d['name']='var'
-                                d[3]=d['args']=args
-                                return s
+                        if e < 0: break
+                        args=text[n:e]
+                        if ent_name(text[n+1:e]) > 0:
+                            d=self.__dict__
+                            d=self.__dict__
+                            d[0]=text[s:e+1]
+                            d[1]=d['end']=''
+                            d[2]=d['name']='var'
+                            d[3]=d['args']=args
+                            return s
 
                 start=s+1
                 continue
