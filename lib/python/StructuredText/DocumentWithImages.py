@@ -108,6 +108,9 @@ class DocumentWithImages(DocumentClass):
         expr2=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9\-.:/;,\n\~]+):([a-zA-Z0-9\-.:/;,\n\~]+)').search
         ):
 
+        # Warning: the regex are getting confused when the string after :img:
+        # is an URL containing ":" (Collector #2276)
+
 
         r = expr2(s)
         if r:
