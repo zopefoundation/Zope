@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -21,6 +21,7 @@ from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
 from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import Unauthorized
+from AccessControl import getSecurityManager
 
 CopyError='Copy Error'
 
@@ -309,8 +310,8 @@ class CopyContainer(ExtensionClass.Base):
         if not hasattr(object, 'meta_type'):
             raise CopyError, MessageDialog(
                   title='Not Supported',
-                  message='The object <EM>%s</EM> does not support this ' \
-                          'operation' % absattr(object.id),
+                  message='The object <EM>%s</EM> does not support this' \
+                          ' operation' % absattr(object.id),
                   action='manage_main')
         mt=object.meta_type
         if not hasattr(self, 'all_meta_types'):
@@ -369,15 +370,21 @@ class CopyContainer(ExtensionClass.Base):
         raise CopyError, MessageDialog(
               title='Not Supported',
               message='The object <EM>%s</EM> does not support this ' \
-                      'operation' % absattr(object.id),
+                      'operation.' % absattr(object.id),
               action='manage_main')
 
 Globals.default__class_init__(CopyContainer)
 
 
 
-class CopySource:
+class CopySource(ExtensionClass.Base):
     """Interface for objects which allow themselves to be copied."""
+
+    # declare a dummy permission for Copy or Move here that we check
+    # in cb_isCopyable.
+    __ac_permissions__=(
+        ('Copy or Move', (), ('Anonymous', 'Manager',)),
+        )
     
     def _canCopy(self, op=0):
         """Called to make sure this object is copyable. The op var
@@ -414,6 +421,8 @@ class CopySource:
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
             return 0
+        if not self.cb_userHasCopyOrMovePermission():
+            return 0
         return 1
 
     def cb_isMoveable(self):
@@ -426,8 +435,15 @@ class CopySource:
         except: n=()
         if absattr(self.id) in n:
             return 0
+        if not self.cb_userHasCopyOrMovePermission():
+            return 0
         return 1
 
+    def cb_userHasCopyOrMovePermission(self):
+        if getSecurityManager().checkPermission('Copy or Move', self):
+            return 1
+
+Globals.default__class_init__(CopySource)
 
 
 def sanity_check(c, ob):
@@ -516,7 +532,15 @@ eNotFound=MessageDialog(
 
 eNotSupported=fMessageDialog(
               title='Not Supported',
-              message='The item <EM>%s</EM> does not support this operation.',
+              message=(
+              'The action against the <em>%s</em> object could not be carried '
+              'out. '
+              'One of the following constraints caused the problem: <br><br>'
+              'The object does not support this operation.'
+              '<br><br>-- OR --<br><br>'
+              'The currently logged-in user does not have the <b>Copy or '
+              'Move</b> permission respective to the object.'
+              ),
               action ='manage_main',)
 
 eNoItemsSpecified=MessageDialog(
