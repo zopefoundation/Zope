@@ -95,19 +95,31 @@ from TALCompiler import TALCompiler
 
 class TALInterpreter:
 
-    def __init__(self, program, macros, engine, stream=None, debug=0):
+    def __init__(self, program, macros, engine, stream=None,
+                 debug=0, wrap=60):
         self.program = program
         self.macros = macros
         self.engine = engine
         self.stream = stream or sys.stdout
         self.debug = debug
+        self.wrap = wrap
         self.slots = {}
         self.currentMacro = None
 
     def __call__(self):
-        self.stream.write('<?xml version="1.0" ?>\n')
+        self.stream_write('<?xml version="1.0" ?>\n')
         self.interpret(self.program)
-        self.stream.write("\n")
+        self.stream_write("\n")
+
+    col = 0
+
+    def stream_write(self, s):
+        self.stream.write(s)
+        i = string.rfind(s, '\n')
+        if i < 0:
+            self.col = self.col + len(s)
+        else:
+            self.col = len(s) - (i + 1)
 
     level = 0
 
@@ -130,9 +142,10 @@ class TALInterpreter:
 
     def do_startTag(self, name, attrList, end=">"):
         if not attrList:
-            self.stream.write("<%s%s" % (name, end))
+            self.stream_write("<%s%s" % (name, end))
             return
-        self.stream.write("<" + name)
+        self.stream_write("<" + name)
+        align = self.col+1
         for item in attrList:
             name, value = item[:2]
             if len(item) > 2:
@@ -143,11 +156,18 @@ class TALInterpreter:
                       name[-13:] == ":define-macro"):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro
-            self.stream.write(' %s=%s' % (name, quote(value)))
-        self.stream.write(end)
+            s = "%s=%s" % (name, quote(value))
+            if (self.wrap and
+                self.col >= align and
+                self.col + 1 + len(s) > self.wrap):
+                self.stream_write("\n" + " "*align)
+            else:
+                self.stream_write(" ")
+            self.stream_write(s)
+        self.stream_write(end)
 
     def do_endTag(self, name):
-        self.stream.write("</%s>" % name)
+        self.stream_write("</%s>" % name)
 
     def do_beginScope(self):
         self.engine.beginScope()
@@ -168,7 +188,7 @@ class TALInterpreter:
         if text is None:
             return
         text = cgi.escape(text)
-        self.stream.write(text)
+        self.stream_write(text)
 
     def do_insertStructure(self, expr):
         structure = self.engine.evaluateStructure(expr)
@@ -188,12 +208,12 @@ class TALInterpreter:
             self.interpret(block)
 
     def do_text(self, text):
-        self.stream.write(text)
+        self.stream_write(text)
 
     def do_comment(self, text):
-        self.stream.write("<!--")
-        self.stream.write(text)
-        self.stream.write("-->")
+        self.stream_write("<!--")
+        self.stream_write(text)
+        self.stream_write("-->")
 
     def do_condition(self, condition, block):
         if self.engine.evaluateBoolean(condition):
