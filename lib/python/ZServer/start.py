@@ -2,41 +2,51 @@
 
 """Sample ZServer start script"""
 
-import sys
-import os
-
 # configuration variables
 #
 IP_ADDRESS=''
-HOST='tarzan.digicool.com'
-DNS_IP='206.156.192.156'
+HOST='localhost'
+DNS_IP='127.0.0.1'
 HTTP_PORT=9673
 FTP_PORT=8021
+PCGI_PORT=88889
+PID_FILE='Zope.pid'
 MODULE='Main'
-ZOPE_HOME='/projects/users/amos/ftpbox/Zope--linux2-x86'
-
-
-sys.path.insert(0,os.path.join(ZOPE_HOME,'lib/python'))
+LOG_FILE='ZServer.log'
 
 from medusa import resolver,logger,http_server,asyncore
 
 import zope_handler
 import ZServerFTP
-
-lg = logger.file_logger (sys.stdout)
+import ZServerPCGI
 
 rs = resolver.caching_resolver(DNS_IP)
+lg = logger.file_logger(LOG_FILE)
 
-hs = http_server.http_server (IP_ADDRESS, HTTP_PORT, rs, lg)
-zh = zope_handler.zope_handler(MODULE)
+hs = http_server.http_server(
+	ip=IP_ADDRESS,
+	port=HTTP_PORT,
+	resolver=rs,
+	logger_object=lg)
+	
+zh = zope_handler.zope_handler(MODULE,'')
 hs.install_handler(zh)
 
-zftp = ZServerFTP.zope_ftp_server(
-	MODULE,
+zftp = ZServerFTP.FTPServer(
+	module=MODULE,
 	hostname=HOST,
 	port=FTP_PORT,
 	resolver=rs,
 	logger_object=lg)
 
+zpcgi = ZServerPCGI.PCGIServer(
+	module=MODULE,
+	ip=IP_ADDRESS,
+	port=PCGI_PORT,
+	pid_file=PID_FILE,
+	resolver=rs,
+	logger_object=lg)
+
 asyncore.loop()
+
 
