@@ -7,7 +7,7 @@
 <dtml-var manage_tabs>
 
 <p>
-<img src="<dtml-var id url_quote>" <dtml-if width>width="<dtml-var width>" </dtml-if
+<img src="<dtml-var absolute_url url_quote>" <dtml-if width>width="<dtml-var width>" </dtml-if
 ><dtml-if height>height="<dtml-var height>" </dtml-if>ALT="<dtml-var 
 title_or_id>">
 </p>
