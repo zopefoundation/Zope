@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -134,6 +134,17 @@ psxml='<d:propstat xmlns:n="%s">\n' \
       '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
       '</d:propstat>\n'
 
+
+propstat='<d:propstat xmlns:n="%s">\n' \
+             '  <d:prop>\n' \
+             '%s\n' \
+             '  </d:prop>\n' \
+             '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
+             '</d:propstat>\n',
+
+propdesc='  <d:responsedescription>\n' \
+             '  %s\n' \
+             '  </d:responsedescription>\n'
 
 
 class PropertySheet(Persistent, Implicit):
@@ -273,16 +284,16 @@ class PropertySheet(Persistent, Implicit):
 
 
 
-    propstat='<d:propstat xmlns:n="%s">\n' \
-             '  <d:prop>\n' \
-             '%s\n' \
-             '  </d:prop>\n' \
-             '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
-             '</d:propstat>\n',
+##     propstat='<d:propstat xmlns:n="%s">\n' \
+##              '  <d:prop>\n' \
+##              '%s\n' \
+##              '  </d:prop>\n' \
+##              '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
+##              '</d:propstat>\n',
 
-    propdesc='  <d:responsedescription>\n' \
-             '  %s\n' \
-             '  </d:responsedescription>\n'
+##     propdesc='  <d:responsedescription>\n' \
+##              '  %s\n' \
+##              '  </d:responsedescription>\n'
     
 
     def dav__allprop(self, propstat=propstat, join=string.join):
@@ -350,8 +361,8 @@ class PropertySheet(Persistent, Implicit):
             prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
             return propstat % (xml_id, prop, '200 OK', ''))
 
-    del propstat
-    del propdesc
+#    del propstat
+#    del propdesc
 
     def olddav__propstat(self, allprop, names, join=string.join):
         # The dav__propstat method returns a chunk of xml containing
