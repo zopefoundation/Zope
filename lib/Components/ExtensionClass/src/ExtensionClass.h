@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.14 1999/10/14 13:13:49 jim Exp $
+  $Id: ExtensionClass.h,v 1.15 2000/05/16 17:13:57 jim Exp $
 
   Extension Class Definitions
 
@@ -174,6 +174,10 @@ typedef struct {
 #define EXTENSIONCLASS_INSTDICT_FLAG      1 << 4
 #define EXTENSIONCLASS_NOINSTDICT_FLAG    1 << 5
 #define EXTENSIONCLASS_BASICNEW_FLAG      1 << 6
+#define EXTENSIONCLASS_PYTHONICATTR_FLAG  1 << 7
+#define EXTENSIONCLASS_USERGETATTR_FLAG   1 << 8
+#define EXTENSIONCLASS_USERSETATTR_FLAG   1 << 9
+#define EXTENSIONCLASS_USERDELATTR_FLAG   1 << 10
 
   /* The following flags are for use by extension class developers. */
 #define EXTENSIONCLASS_USER_FLAG1  	  1 << 16

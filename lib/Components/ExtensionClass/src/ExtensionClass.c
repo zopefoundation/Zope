@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.38 1999/12/16 18:30:24 jim Exp $
+  $Id: ExtensionClass.c,v 1.39 2000/05/16 17:13:57 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.38 1999/12/16 18:30:24 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.39 2000/05/16 17:13:57 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -980,6 +980,23 @@ static PyTypeObject PMethodType = {
 
 static PyObject *CCL_getattr(PyExtensionClass*,PyObject*,int);
 
+static int
+CCL_hasattr(PyExtensionClass *self,PyObject *name)
+{
+  PyObject *r;
+
+  r=CCL_getattr(self, name, 0);
+  if (r)
+    {
+      Py_DECREF(r);
+      return 1;
+    }
+  else
+    PyErr_Clear();
+  
+  return 0;
+}
+
 /* Special Methods */
 
 #define UNARY_OP(OP) \
@@ -1036,6 +1053,17 @@ setattr_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
 }
 
 static PyObject *
+delsetattr_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
+{
+  char *name;
+  PyObject *v;
+  UNLESS(PyArg_ParseTuple(args,"s",&name)) return NULL;
+  UNLESS(-1 != ob_type->tp_setattr(self,name,NULL)) return NULL;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject *
 getattro_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
 {
   PyObject *name;
@@ -1050,6 +1078,17 @@ setattro_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
   PyObject *v;
   UNLESS(PyArg_ParseTuple(args,"OO",&name,&v)) return NULL;
   UNLESS(-1 != ob_type->tp_setattro(self,name,v)) return NULL;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject *
+delsetattro_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
+{
+  PyObject *name;
+  PyObject *v;
+  UNLESS(PyArg_ParseTuple(args,"O",&name)) return NULL;
+  UNLESS(-1 != ob_type->tp_setattro(self,name,NULL)) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -1232,6 +1271,12 @@ UNOP(hex)
                (PyCFunction)MN ## _by_name, F | METH_BY_NAME, # D))) \
     goto err; }
 
+#define delFILLENTRY(T,MN,N,F,D) if (T ## _ ## MN) { \
+  UNLESS(-1 != PyMapping_SetItemString(dict,"__" # N "__", \
+    newCMethod(type, NULL, "__" # N "__", \
+               (PyCFunction)del ## MN ## _by_name, F | METH_BY_NAME, # D))) \
+    goto err; }
+
 static PyObject *
 getBaseDictionary(PyExtensionClass *type)
 {
@@ -1250,10 +1295,19 @@ getBaseDictionary(PyExtensionClass *type)
 	    "call as a function");
   FILLENTRY(type->tp, compare, comp, METH_VARARGS,
 	    "compare with another object");
-  FILLENTRY(type->tp, getattr, getattr, METH_VARARGS, "Get an attribute");
-  FILLENTRY(type->tp, setattr, setattr, METH_VARARGS, "Set an attribute");
-  FILLENTRY(type->tp, getattro, getattr, METH_VARARGS, "Get an attribute");
-  FILLENTRY(type->tp, setattro, setattr, METH_VARARGS, "Set an attribute");
+ 
+  UNLESS (type->class_flags & EXTENSIONCLASS_PYTHONICATTR_FLAG)
+    {
+      FILLENTRY(type->tp, getattr, getattr, METH_VARARGS, "Get an attribute");
+      FILLENTRY(type->tp, setattr, setattr, METH_VARARGS, "Set an attribute");
+      delFILLENTRY(type->tp, setattr, delattr, METH_VARARGS, 
+		   "Delete an attribute");
+      
+      FILLENTRY(type->tp, getattro, getattr, METH_VARARGS, "Get an attribute");
+      FILLENTRY(type->tp, setattro, setattr, METH_VARARGS, "Set an attribute");
+      delFILLENTRY(type->tp, setattro, delattr, METH_VARARGS, 
+		   "Delete an attribute");
+    }
 
   if ((sm=type->tp_as_sequence))
     {
@@ -3146,7 +3200,7 @@ static void
 subclass_init_setattr(PyExtensionClass *self, PyObject *methods)
 {
   PyObject *m;
-
+  
   if ((m=CCL_getattr(self,py__setattr__,0)))
     {
       if (UnboundCMethod_Check(m)
@@ -3251,8 +3305,33 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   copy_member(tp_print);
   self->tp_dealloc=subclass_dealloc;
 
-  subclass_init_getattr(self,methods);
-  subclass_init_setattr(self,methods);
+  if (type->class_flags & EXTENSIONCLASS_PYTHONICATTR_FLAG)
+    {
+      /* The base class wants subclass __get/setattr__ to have
+         Python class semantics and *it* will be providing them.
+	 That means that we simply copy the base class 
+	 get/setattr.
+      */
+      PyObject *r;
+
+      copy_member(tp_getattr);
+      copy_member(tp_getattro);
+      copy_member(tp_setattr);
+      copy_member(tp_setattro);
+      self->class_flags |= EXTENSIONCLASS_PYTHONICATTR_FLAG;
+
+      if (CCL_hasattr(self, py__getattr__))
+	self->class_flags |= EXTENSIONCLASS_USERGETATTR_FLAG;
+      if (CCL_hasattr(self, py__setattr__))
+	self->class_flags |= EXTENSIONCLASS_USERSETATTR_FLAG;
+      if (CCL_hasattr(self, py__delattr__))
+	self->class_flags |= EXTENSIONCLASS_USERDELATTR_FLAG;
+    }
+  else
+    {
+      subclass_init_getattr(self, methods);
+      subclass_init_setattr(self, methods);
+    }
 
 #define subclass_set(OP,N) \
   self->tp_ ##OP = subclass_ ##OP
@@ -3406,22 +3485,22 @@ export_type(PyObject *dict, char *name, PyExtensionClass *typ)
 
 static struct ExtensionClassCAPIstruct
 TrueExtensionClassCAPI = {
-  export_type,
-  EC_findiattrs,
-  EC_findiattro,
-  subclass_simple_setattr,
-  subclass_simple_setattro,
-  (PyObject*)&ECType,
-  (PyObject*)&PMethodType,
-  PMethod_New,
-  CMethod_issubclass,
+  export_type,			/* Export */
+  EC_findiattrs,		/* getattrs */
+  EC_findiattro,		/* getattro */
+  subclass_simple_setattr,	/* setattrs */
+  subclass_simple_setattro,	/* setattro */
+  (PyObject*)&ECType,		/* ExtensionClassType */
+  (PyObject*)&PMethodType,	/* MethodType */
+  PMethod_New,			/* Method_New */
+  CMethod_issubclass,		/* issubclass */
 };
 
 void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.38 $";
+  char *rev="$Revision: 1.39 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
