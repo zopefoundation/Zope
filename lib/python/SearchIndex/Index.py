@@ -10,9 +10,10 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.13 1998/02/05 19:02:37 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Index.py,v 1.14 1998/02/25 22:38:34 jeffrey Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
+from Globals import Persistent
 from BTree import BTree
 from intSet import intSet
 import operator
@@ -21,7 +22,7 @@ import string
 
 ListType=type([])
 
-class Index:
+class Index(Persistent):
     """Index object interface"""
 
     def _init(self,data,schema,id):
@@ -180,6 +181,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.14  1998/02/25 22:38:34  jeffrey
+# made the Index persistent, just as it should be
+#
 # Revision 1.13  1998/02/05 19:02:37  jim
 # Replaced try/except with get
 #
