@@ -18,9 +18,13 @@ class FileTestCase(unittest.TestCase):
         unittest.TestCase.__init__(self)
 
     def runTest(self):
-        sys.stdout.write(os.path.basename(self.__file) + " ")
+        basename = os.path.basename(self.__file)
+        sys.stdout.write(basename + " ")
         sys.stdout.flush()
-        sys.argv = ["", "-Q", self.__file]
+        if basename[:10] == 'test_metal':
+            sys.argv = ["", "-Q", "-m", self.__file]
+        else:
+            sys.argv = ["", "-Q", self.__file]
         pwd = os.getcwd()
         try:
             try:
