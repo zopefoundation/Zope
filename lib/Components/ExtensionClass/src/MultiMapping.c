@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: MultiMapping.c,v 1.8 1999/06/10 20:10:46 jim Exp $
+  $Id: MultiMapping.c,v 1.9 2001/03/28 14:06:51 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -231,16 +231,16 @@ static struct PyMethodDef MultiMapping_methods[] = {
 };
 
 void
-initMultiMapping()
+initMultiMapping(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
 
   m = Py_InitModule4(
       "MultiMapping", MultiMapping_methods,
       "MultiMapping -- Wrap multiple mapping objects for lookup"
       "\n\n"
-      "$Id: MultiMapping.c,v 1.8 1999/06/10 20:10:46 jim Exp $\n",
+      "$Id: MultiMapping.c,v 1.9 2001/03/28 14:06:51 jeremy Exp $\n",
       (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);

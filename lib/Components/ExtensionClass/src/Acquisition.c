@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.50 2001/03/27 03:36:30 brian Exp $
+  $Id: Acquisition.c,v 1.51 2001/03/28 14:06:50 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -70,7 +70,7 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
 static PyObject *Acquired=0;
 
 static void
-init_py_names()
+init_py_names(void)
 {
 #define INIT_PY_NAME(N) py ## N = PyString_FromString(#N)
   INIT_PY_NAME(__add__);
@@ -1424,10 +1424,10 @@ static struct PyMethodDef methods[] = {
 };
 
 void
-initAcquisition()
+initAcquisition(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.50 $";
+  char *rev="$Revision: 1.51 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1446,7 +1446,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.50 2001/03/27 03:36:30 brian Exp $\n",
+	   "$Id: Acquisition.c,v 1.51 2001/03/28 14:06:50 jeremy Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

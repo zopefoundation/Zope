@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Sync.c,v 1.2 1998/11/17 20:22:34 jim Exp $
+  $Id: Sync.c,v 1.3 2001/03/28 14:06:51 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -47,12 +47,10 @@
 
 static char Sync_module_documentation[] = 
 ""
-"\n$Id: Sync.c,v 1.2 1998/11/17 20:22:34 jim Exp $"
+"\n$Id: Sync.c,v 1.3 2001/03/28 14:06:51 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
-
-static PyObject *ErrorObject;
 
 /* ----------------------------------------------------- */
 
@@ -113,10 +111,10 @@ static struct PyMethodDef Module_Level__methods[] = {
 };
 
 void
-initSync()
+initSync(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   PURE_MIXIN_CLASS(
        Synchronized,
        "Mix-in class that provides synchonization of method calls\n"

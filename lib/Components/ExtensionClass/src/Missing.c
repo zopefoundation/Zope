@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Missing.c,v 1.10 1999/08/25 20:15:29 jim Exp $
+  $Id: Missing.c,v 1.11 2001/03/28 14:06:51 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -47,7 +47,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.10 1999/08/25 20:15:29 jim Exp $"
+"\n$Id: Missing.c,v 1.11 2001/03/28 14:06:51 jeremy Exp $"
 ;
 
 #include <string.h>
@@ -301,10 +301,10 @@ static struct PyMethodDef Module_Level__methods[] = {
 };
 
 void
-initMissing()
+initMissing(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.10 $";
+  char *rev="$Revision: 1.11 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -340,6 +340,11 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.11  2001/03/28 14:06:51  jeremy
+  gcc -Wall cleanup
+      - make function decls prototypes
+      - remove unreferenced functions
+
   Revision 1.10  1999/08/25 20:15:29  jim
   Made getattr a bit pickler to prevent getting attributes like "%f5.3".
 

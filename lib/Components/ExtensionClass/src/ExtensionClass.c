@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.45 2001/03/27 21:09:40 jeremy Exp $
+  $Id: ExtensionClass.c,v 1.46 2001/03/28 14:06:50 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.45 2001/03/27 21:09:40 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.46 2001/03/28 14:06:50 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -622,24 +622,6 @@ CMethod_getattro(CMethod *self, PyObject *oname)
   return NULL;
 }
 
-static int
-CMethod_setattro(CMethod *self, PyObject *oname, PyObject *v)
-{
-  int r;
-
-  if (self->self && ! PyEval_GetRestricted())	/* Psuedo attributes */
-    {
-      UNLESS(oname=Py_BuildValue("sO", self->name, oname)) return -1;
-      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return -1;
-      r=PyObject_SetAttr(self->self, oname, v);
-      Py_DECREF(oname);
-      return r;
-    }
-
-  PyErr_SetObject(PyExc_AttributeError, oname);
-  return -1;
-}
-
 static PyTypeObject CMethodType = {
   PyObject_HEAD_INIT(NULL)
   0,				/*ob_size*/
@@ -660,7 +642,7 @@ static PyTypeObject CMethodType = {
   (ternaryfunc)CMethod_call,	/*tp_call*/
   (reprfunc)0,			/*tp_str*/
   (getattrofunc)CMethod_getattro, 	/* tp_getattro */
-  (setattrofunc)0 /*CMethod_setattro*/, 	/* tp_setattro */
+  (setattrofunc)0, 		/* tp_setattro */
   
   /* Space for future expansion */
   0L,0L,
@@ -940,42 +922,6 @@ PMethod_getattro(PMethod *self, PyObject *oname)
   return PyObject_GetAttr(self->meth, oname);
 }
 
-static int
-PMethod_setattro(PMethod *self, PyObject *oname, PyObject *v)
-{
-  int r;
-  PyObject *spam;
-
-  if (self->meth)
-    {
-      if ((spam=PyObject_GetAttr(self->meth, oname)))
-	{
-	  Py_DECREF(spam);
-	  PyErr_SetString(PyExc_TypeError,
-			  "Attempt to overwrite shared method attribute");
-	  return -1;
-	}
-      else PyErr_Clear();
-
-      if (self->self && ! PyEval_GetRestricted()) /* Psuedo attrs */
-	{
-	  PyObject *myname;
-
-	  UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return -1;
-	  oname=Py_BuildValue("OO", myname, oname);
-	  Py_DECREF(myname);
-	  UNLESS(oname) return -1;
-	  UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return -1;
-	  r=PyObject_SetAttr(self->self, oname, v);
-	  Py_DECREF(oname);
-	  return r;
-	}
-    }
-
-  PyErr_SetObject(PyExc_AttributeError, oname);
-  return -1;
-}
-
 static PyTypeObject PMethodType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -996,7 +942,7 @@ static PyTypeObject PMethodType = {
   (ternaryfunc)PMethod_call,		/*tp_call*/
   (reprfunc)0,				/*tp_str*/
   (getattrofunc)PMethod_getattro,	/*tp_getattro*/
-  (setattrofunc)0 /*PMethod_setattro*/, 	/* tp_setattro */
+  (setattrofunc)0, 			/* tp_setattro */
   
   /* Space for future expansion */
   0L,0L,
@@ -3530,7 +3476,7 @@ void
 initExtensionClass(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.45 $";
+  char *rev="$Revision: 1.46 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;

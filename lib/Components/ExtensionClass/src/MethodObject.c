@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: MethodObject.c,v 1.5 1998/11/17 19:50:20 jim Exp $
+  $Id: MethodObject.c,v 1.6 2001/03/28 14:06:51 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -64,10 +64,10 @@ struct PyMethodDef Method_methods[] = {
 static struct PyMethodDef methods[] = {{NULL,	NULL}};
 
 void
-initMethodObject()
+initMethodObject(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
   PURE_MIXIN_CLASS(Method,
 	"Base class for objects that want to be treated as methods\n"
 	"\n"
@@ -83,7 +83,7 @@ initMethodObject()
   /* Create the module and add the functions */
   m = Py_InitModule4("MethodObject", methods,
 		     "Method-object mix-in class module\n\n"
-		     "$Id: MethodObject.c,v 1.5 1998/11/17 19:50:20 jim Exp $\n",
+		     "$Id: MethodObject.c,v 1.6 2001/03/28 14:06:51 jeremy Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
