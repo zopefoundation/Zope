@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.12 2002/08/14 22:29:52 mj Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: DT_UI.py,v 1.13 2002/08/26 13:30:18 Brian Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -23,8 +23,8 @@ HTML.document_template_edit_header='<h2>Edit Document</h2>'
 HTML.document_template_form_header=''
 HTML.document_template_edit_footer=(
     """<FONT SIZE="-1">
-    <I><A HREF="http://www.digicool.com/products/copyright.html">
-    &copy; 1997 Digital Creations, L.L.C.</A></I></FONT>""")
+    <I><A HREF="http://www.zope.com">
+    &copy; 2002 Zope Corporation</A></I></FONT>""")
 
 HTML.document_template_edit_width=58
 
