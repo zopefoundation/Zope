@@ -65,8 +65,7 @@ function toggleSelect() {
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
 <tr class="list-header">
   <td width="5%" align="right" colspan="2"><div 
-   class="list-item"><a href="<dtml-var 
-   absolute_url>/manage_main?skey=meta_type<dtml-if 
+   class="list-item"><a href="./manage_main?skey=meta_type<dtml-if 
    "rkey == ''">&rkey=meta_type</dtml-if>"
    onMouseOver="window.status='Sort objects by type'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
