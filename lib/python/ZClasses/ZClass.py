@@ -226,8 +226,14 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             zbases.append(z)
             try: zsheets_base_classes.append(z.propertysheets.__class__)
             except AttributeError: pass
-            try: isheets_base_classes.append(
-                z._zclass_.propertysheets.__class__)
+            try:
+                psc=z._zclass_.propertysheets.__class__
+                if getattr(psc,
+                           '_implements_the_notional'
+                           '_subclassable_propertysheet'
+                           '_class_interface',
+                           0):
+                    isheets_base_classes.append(psc)
             except AttributeError: pass
 
         base_classes.append(OFS.SimpleItem.SimpleItem)
@@ -510,9 +516,9 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
     #isPrincipiaFolderish=1
     #def tpValues(self): return self.methods, self.common
     #def tpURL(self): return 'propertysheets'
-    #def manage_workspace(self, URL1):
-    #    "Emulate standard interface for use with navigation"
-    #    raise 'Redirect', URL1+'/manage'
+    def manage_workspace(self, URL2):
+        "Emulate standard interface for use with navigation"
+        raise 'Redirect', URL2+'/manage_workspace'
 
     views       = Basic.ZClassViewsSheet('views')
     basic       = Basic.ZClassBasicSheet('basic')
