@@ -310,6 +310,9 @@ class TALParser(XMLParser):
     def CharacterDataHandler(self, text):
         self.gen.emitText(text)
 
+    def DefaultHandler(self, text):
+        self.gen.emit("rawtext", text)
+
 def test():
     import sys
     p = TALParser()
