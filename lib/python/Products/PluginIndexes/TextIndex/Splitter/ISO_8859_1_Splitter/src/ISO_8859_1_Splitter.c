@@ -17,7 +17,7 @@
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E) UNLESS(V)
 
-#define UPPERCASE "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖÙÚÛÜİ"
+#define UPPERCASE "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖÙÚÛÜİß"
 #define LOWERCASE "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïğñòóôõöùúûüıß"
 #define DIGITSETC "0123456789-µ"
 
@@ -574,7 +574,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ISO_8859_1_Splitter.c,v 1.9 2002/02/20 16:14:34 jens Exp $\n"
+    "$Id: ISO_8859_1_Splitter.c,v 1.10 2002/07/18 21:53:45 bwarsaw Exp $\n"
     ;
 
 
