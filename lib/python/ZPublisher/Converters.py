@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
@@ -165,7 +165,6 @@ type_converters = {
     'required':           field2required,
     'tokens':             field2tokens,
     'lines':              field2lines,
-    'multiple selection': field2lines,
     'text':               field2text,
     'boolean':            field2boolean,
     'ustring':            field2ustring,

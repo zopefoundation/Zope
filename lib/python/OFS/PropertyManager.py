@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -259,7 +259,10 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         for prop in self._propertyMap():
             name=prop['id']
             if 'w' in prop.get('mode', 'wd'):
-                value=REQUEST.get(name, '')
+                if prop['type'] == 'multiple selection':
+                    value=REQUEST.get(name, [])
+                else:
+                    value=REQUEST.get(name, '')
                 self._updateProperty(name, value)
         if REQUEST:
             message="Saved changes."
