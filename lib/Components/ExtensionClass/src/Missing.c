@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.16 2002/11/18 22:53:22 jeremy Exp $"
+"\n$Id: Missing.c,v 1.17 2003/01/03 21:22:12 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -293,4 +293,3 @@ initMissing(void)
   PyDict_SetItemString(d, "V", theValue); 
   PyDict_SetItemString(d, "MV", theValue); 
 }
-
