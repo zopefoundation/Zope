@@ -84,52 +84,109 @@
 ##############################################################################
 
 
-class PropertySheets:
-    """
 
-    A PropertySheet is an abstraction for organizing and working with
-    a set of related properties. Conceptually it acts like a container
-    for a set of related properties and meta-data describing those
-    properties. PropertySheet objects are accessed through a
-    PropertySheets object that acts as a collection of PropertySheet
-    instances.
-
-    Objects that support property sheets (objects that support the
-    PropertyManager interface or ZClass objects) have a
-    'propertysheets' attribute (a PropertySheets instance) that is the
-    collection of PropertySheet objects. The PropertySheets object
-    exposes an interface much like a Python mapping, so that
-    individual PropertySheet objects may be accessed via
-    dictionary-style key indexing.
+class Request:
 
     """
-    
-    def values(self):
+
+    The request object encapsulates all of the information regarding
+    the current request in Zope.  This includes, the input headers,
+    form data, server data, and cookies.
+
+    The request object is a mapping object that represents a
+    collection of variable to value mappings.  In addition, variables
+    are divided into four categories:
+
+      - Environment variables
+
+        These variables include input headers, server data, and other
+        request-related data.  The variable names are as <a
+        href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
+        in the <a
+        href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
+        specification</a>
+
+      - Form data
+
+        These are data extracted from either a URL-encoded query
+        string or body, if present.
+
+      - Cookies
+
+        These are the cookie data, if present.
+
+      - Other
+
+        Data that may be set by an application object.
+
+    The request object may be used as a mapping object, in which case
+    values will be looked up in the order: environment variables,
+    other variables, form data, and then cookies.
+
+    """
+
+
+    def set(name, value):
         """
 
-        Return a sequence of all of the PropertySheet objects for
-        in the collection.
+        Create a new name in the REQUEST object and assign it a value.
+        This name and value is stored in the 'Other' category.
 
-        Permission -
+        Permission - Always available
+        
+        """
+
+        
+    def get_header(self, name, default=None):
+        """
+
+        Return the named HTTP header, or an optional default argument
+        or None if the header is not found. Note that both original
+        and CGI-ified header names are recognized,
+        e.g. 'Content-Type', 'CONTENT_TYPE' and 'HTTP_CONTENT_TYPE'
+        should all return the Content-Type header, if available.
+
+        Permission - Always available
+        
+        """
+
+
+    def has_key(self, key):
+        """
+
+        Returns a true value if the REQUEST object contains key,
+        returns a false value otherwise.
+
+        Permission - Always available
+        
+        """
+
+
+    def keys(self):
+        """
+
+        Returns a sorted sequence of all keys in the REQUEST object.
+
+        Permission - Always available
         
         """
 
     def items(self):
         """
 
-        Return a sequence containing an '(id, object)' tuple for
-        each PropertySheet object in the collection.
+        Returns a sequence of (key, value) tuples for all the keys in
+        the REQUEST object.
 
-        Permission - 
-
+        Permission - Always available
+        
         """
 
-    def get(self, name, default=None):
+    def values(self):
         """
 
-        Return the PropertySheet identified by 'name', or the value
-        given in 'default' if the named PropertySheet is not found.
+        Returns a sequence of values for all the keys in the REQUEST
+        object.
 
-        Permission -
+        Permission - Always available
         
         """

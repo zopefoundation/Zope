@@ -84,52 +84,59 @@
 ##############################################################################
 
 
-class PropertySheets:
+class ExternalMethod:
     """
 
-    A PropertySheet is an abstraction for organizing and working with
-    a set of related properties. Conceptually it acts like a container
-    for a set of related properties and meta-data describing those
-    properties. PropertySheet objects are accessed through a
-    PropertySheets object that acts as a collection of PropertySheet
-    instances.
+    Web-callable functions that encapsulate external python functions.
 
-    Objects that support property sheets (objects that support the
-    PropertyManager interface or ZClass objects) have a
-    'propertysheets' attribute (a PropertySheets instance) that is the
-    collection of PropertySheet objects. The PropertySheets object
-    exposes an interface much like a Python mapping, so that
-    individual PropertySheet objects may be accessed via
-    dictionary-style key indexing.
+    The function is defined in an external file.  This file is treated
+    like a module, but is not a module.  It is not imported directly,
+    but is rather read and evaluated.  The file must reside in the
+    'Extensions' subdirectory of the Zope installation, or in an
+    'Extensions' subdirectory of a product directory.
+
+    Due to the way ExternalMethods are loaded, it is not *currently*
+    possible to use Python modules that reside in the 'Extensions'
+    directory.  It is possible to load modules found in the
+    'lib/python' directory of the Zope installation, or in
+    packages that are in the 'lib/python' directory.
 
     """
-    
-    def values(self):
+
+    def manage_edit(self, title, module, function, REQUEST=None):
         """
 
-        Return a sequence of all of the PropertySheet objects for
-        in the collection.
+        Change the external method
 
-        Permission -
-        
-        """
+        See the description of manage_addExternalMethod for a
+        descriotion of the arguments 'module' and 'function'.
 
-    def items(self):
-        """
-
-        Return a sequence containing an '(id, object)' tuple for
-        each PropertySheet object in the collection.
-
-        Permission - 
+        Note that calling 'manage_edit' causes the "module" to be
+        effectively reloaded.  This is useful during debugging to see
+        the effects of changes, but can lead to problems of functions
+        rely on shared global data.
 
         """
 
-    def get(self, name, default=None):
+    def __call__(self, *args, **kw):
+
         """
 
-        Return the PropertySheet identified by 'name', or the value
-        given in 'default' if the named PropertySheet is not found.
+        Call an ExternalMethod
 
-        Permission -
-        
+        Calling an External Method is roughly equivalent to calling
+        the original actual function from Python.  Positional and
+        keyword parameters can be passed as usual.  Note however that
+        unlike the case of a normal Python method, the "self" argument
+        must be passed explicitly.  An exception to this rule is made
+        if:
+
+        - The supplied number of arguments is one less than the
+          required number of arguments, and
+
+        - The name of the function\'s first argument is 'self'.
+
+        In this case, the URL parent of the object is supplied as the
+        first argument.
+
         """

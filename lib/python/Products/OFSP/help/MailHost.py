@@ -84,52 +84,35 @@
 ##############################################################################
 
 
-class PropertySheets:
+class MailHost:
     """
 
-    A PropertySheet is an abstraction for organizing and working with
-    a set of related properties. Conceptually it acts like a container
-    for a set of related properties and meta-data describing those
-    properties. PropertySheet objects are accessed through a
-    PropertySheets object that acts as a collection of PropertySheet
-    instances.
-
-    Objects that support property sheets (objects that support the
-    PropertyManager interface or ZClass objects) have a
-    'propertysheets' attribute (a PropertySheets instance) that is the
-    collection of PropertySheet objects. The PropertySheets object
-    exposes an interface much like a Python mapping, so that
-    individual PropertySheet objects may be accessed via
-    dictionary-style key indexing.
+    MailHost objects work as adapters to Simple Mail Transfer Protocol
+    (SMTP) servers.  MailHosts are used by <dtml-sendmail> tags to
+    find the proper host to deliver mail to.
 
     """
+
     
-    def values(self):
+    def send(self, messageText, mto=None, mfrom=None, subject=None,
+             encode=None):
         """
 
-        Return a sequence of all of the PropertySheet objects for
-        in the collection.
+        Sends mail.
 
-        Permission -
-        
+        messageText - Is the body of the mail message.
+
+        mto - is a string or list of recipient(s) of the message.
+
+        mfrom - is the address of the message sender.
+
+        subject - is the subject of the message.
+
+        encode - is the rfc822 defined encoding of the message.  The
+        default of 'None' means no encoding is done.  Valid values are
+        'base64', 'quoted-printable' and 'uuencode'.
+
         """
 
-    def items(self):
-        """
 
-        Return a sequence containing an '(id, object)' tuple for
-        each PropertySheet object in the collection.
-
-        Permission - 
-
-        """
-
-    def get(self, name, default=None):
-        """
-
-        Return the PropertySheet identified by 'name', or the value
-        given in 'default' if the named PropertySheet is not found.
-
-        Permission -
-        
-        """
+    

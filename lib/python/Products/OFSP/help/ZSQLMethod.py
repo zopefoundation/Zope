@@ -84,52 +84,58 @@
 ##############################################################################
 
 
-class PropertySheets:
+class ZSQLMethod:
     """
 
-    A PropertySheet is an abstraction for organizing and working with
-    a set of related properties. Conceptually it acts like a container
-    for a set of related properties and meta-data describing those
-    properties. PropertySheet objects are accessed through a
-    PropertySheets object that acts as a collection of PropertySheet
-    instances.
-
-    Objects that support property sheets (objects that support the
-    PropertyManager interface or ZClass objects) have a
-    'propertysheets' attribute (a PropertySheets instance) that is the
-    collection of PropertySheet objects. The PropertySheets object
-    exposes an interface much like a Python mapping, so that
-    individual PropertySheet objects may be accessed via
-    dictionary-style key indexing.
-
-    """
+    ZSQLMethods abstract SQL code in Zope.
     
-    def values(self):
+        They support three important abstractions:
+
+      - Method
+
+        SQL Methods behave like methods of the folders they are
+        accessed in.  In particular, they can be used from other
+        methods, like Documents, ExternalMethods, and even other SQL
+        Methods.
+
+      - Searchability
+
+        Database methods support the Searchable Object Interface.
+        Search interface wizards can be used to build user
+        interfaces to them.  They can be used in joins and
+        unions. They provide meta-data about their input parameters
+        and result data.
+
+        For more information, see the searchable-object interface
+        specification. 
+
+      - Containment
+
+        Database methods support URL traversal to access and invoke
+        methods on individual record objects. For example, suppose you
+        had an 'employees' database method that took a single argument
+        'employee_id'.  Suppose that employees had a 'service_record'
+        method (defined in a record class or acquired from a
+        folder). The 'service_record' method could be accessed with a
+        URL like::
+
+           employees/employee_id/1234/service_record
+
+    """
+
+
+    def __call__(self, REQUEST=None, __ick__=None, src__=0, test__=0, **kw):
         """
 
-        Return a sequence of all of the PropertySheet objects for
-        in the collection.
+        Call the ZSQLMethod.
 
-        Permission -
-        
-        """
+        The arguments to the method should be passed via keyword
+        arguments, or in a single mapping object. If no arguments are
+        given, and if the method was invoked through the Web, then the
+        method will try to acquire and use the Web REQUEST object as
+        the argument mapping.
 
-    def items(self):
-        """
-
-        Return a sequence containing an '(id, object)' tuple for
-        each PropertySheet object in the collection.
-
-        Permission - 
+        The returned value is a sequence of record objects.
 
         """
-
-    def get(self, name, default=None):
-        """
-
-        Return the PropertySheet identified by 'name', or the value
-        given in 'default' if the named PropertySheet is not found.
-
-        Permission -
-        
-        """
+    

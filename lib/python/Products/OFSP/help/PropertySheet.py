@@ -102,6 +102,8 @@ class PropertySheet:
         there is no default namespace for a given property sheet
         (especially property sheets added in ZClass definitions).
 
+        Permission -
+
         """
 
     def getProperty(self, id, d=None):
@@ -110,6 +112,8 @@ class PropertySheet:
         Get the property 'id', returning the optional second 
         argument or None if no such property is found.
 
+        Permission -
+        
         """
 
     def getPropertyType(self, id):
@@ -118,38 +122,44 @@ class PropertySheet:
         Get the type of property 'id'.  returns None if no such
         property exists.
 
+        Permission -
+        
         """
 
     def hasProperty(self, id):
         """
 
         Returns true if 'self' has a property with the given 'id', 
-        false otherwise. This method is protected by the 'Access 
-        contents information' permission.
+        false otherwise.
+
+        Permission - 'Access contents information'
 
         """
 
     def propertyIds(self):
         """
 
-        Returns a list of property ids. This method is protected by 
-        the 'Access contents information' permission.
+        Returns a list of property ids.
+
+        Permission - 'Access contents information'
 
         """
 
     def propertyValues(self):
         """
 
-        Returns a list of actual property values. This method is 
-        protected by the 'Access contents information' permission.
+        Returns a list of actual property values.
+
+        Permission - 'Access contents information'
 
         """
 
     def propertyItems(self):
         """
 
-        Return a list of (id, property) tuples. This method is 
-        protected by the 'Access contents information' permission.
+        Return a list of (id, property) tuples.
+
+        Permission - 'Access contents information'
 
         """
         
@@ -158,12 +168,16 @@ class PropertySheet:
 
         Returns a tuple of mappings, giving meta-data for properties.
 
+        Perimssion - 
+
         """
 
     def propertyInfo(self):
         """
 
         Returns a mapping containing property meta-data.
+
+        Permission
 
         """
 
@@ -189,8 +203,9 @@ class PropertySheet:
         object will be rendered and returned.
 
         This method may be called via the web, from DTML or from
-        Python code. It is protected by the 'Manage properties'
-        permission.
+        Python code.
+
+        Permission - 'Manage Properties'
 
         """
 
@@ -216,8 +231,9 @@ class PropertySheet:
         success.
 
         This method may be called via the web, from DTML or from
-        Python code. It is protected by the 'Manage properties'
-        permission.
+        Python code.
+
+        Permission - 'Manage Properties'
 
         """
 
@@ -243,8 +259,9 @@ class PropertySheet:
         object will be rendered and returned.
 
         This method may be called via the web, from DTML or from
-        Python code. It is protected by the 'Manage properties'
-        permission.
+        Python code.
+
+        Permission - 'Manage Properties'
 
         """
 
