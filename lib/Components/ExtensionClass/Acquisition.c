@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.7 1997/06/19 19:32:31 jim Exp $
+  $Id: Acquisition.c,v 1.8 1997/07/02 20:15:27 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: Acquisition.c,v $
+  Revision 1.8  1997/07/02 20:15:27  jim
+  Added stupid parens to make 'gcc -Wall -pedantic' and Barry happy.
+
   Revision 1.7  1997/06/19 19:32:31  jim
   *** empty log message ***
 
@@ -269,7 +272,7 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 
       if(self->container) 
 	{
-	  if(r=PyObject_GetAttr(self->container,oname))
+	  if((r=PyObject_GetAttr(self->container,oname)))
 	    return r;
 	  PyErr_Clear();
 	}
@@ -393,12 +396,12 @@ Wrapper_acquire(Wrapper *self, PyObject *oname)
 	{
 	  if(isWrapper(self->container))
 	    {
-	      if(r=Wrapper_acquire((Wrapper*)self->container,oname))
+	      if((r=Wrapper_acquire((Wrapper*)self->container,oname)))
 		return r;
 	    }
 	  else
 	    {
-	      if(r=PyObject_GetAttr(self->container,oname))
+	      if((r=PyObject_GetAttr(self->container,oname)))
 		return r;
 	    }
 	  PyErr_Clear();
@@ -430,7 +433,7 @@ Wrapper_repr(Wrapper *self)
 {
   PyObject *r;
 
-  if(r=PyObject_GetAttr((PyObject*)self,py__repr__))
+  if((r=PyObject_GetAttr((PyObject*)self,py__repr__)))
     {
       ASSIGN(r,PyObject_CallFunction(r,NULL,NULL));
       return r;
@@ -447,7 +450,7 @@ Wrapper_str(Wrapper *self)
 {
   PyObject *r;
 
-  if(r=PyObject_GetAttr((PyObject*)self,py__str__))
+  if((r=PyObject_GetAttr((PyObject*)self,py__str__)))
     {
       ASSIGN(r,PyObject_CallFunction(r,NULL,NULL));
       return r;
@@ -718,7 +721,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -733,7 +736,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 		     "Provide base classes for acquiring objects\n\n"
-		     "$Id: Acquisition.c,v 1.7 1997/06/19 19:32:31 jim Exp $\n",
+		     "$Id: Acquisition.c,v 1.8 1997/07/02 20:15:27 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
