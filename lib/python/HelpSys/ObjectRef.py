@@ -84,13 +84,13 @@
 ##############################################################################
 """Object Reference implementation"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 import sys, os, string, Globals, Acquisition
 from HelpUtil import HelpBase, classobject
 from HelpUtil import is_class, is_module
-from Globals import HTMLFile
+from Globals import DTMLFile
 from urllib import quote
 
 
@@ -100,7 +100,7 @@ class ObjectItem(HelpBase, classobject):
     """ """
     __roles__=None
 
-    hs_main=HTMLFile('dtml/objectitem', globals())
+    hs_main=DTMLFile('dtml/objectitem', globals())
 
     hs_cicon='HelpSys/hs_dnode'
     hs_eicon='HelpSys/hs_dnode'
@@ -158,7 +158,7 @@ class ObjectRef(HelpBase):
     __names__=None
     __roles__=None
 
-    hs_main=HTMLFile('dtml/objectref', globals())
+    hs_main=DTMLFile('dtml/objectref', globals())
 
     hs_cicon='HelpSys/hs_cbook'
     hs_eicon='HelpSys/hs_obook'
