@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2001 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -13,9 +13,9 @@
 ##############################################################################
 
 """Berkeley storage with full undo and versioning support.
-"""
 
-__version__ = '$Revision: 1.63 $'.split()[-2:][0]
+$Revision: 1.64 $
+"""
 
 import time
 import cPickle as pickle
@@ -27,13 +27,12 @@ from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
-from BDBStorage import db
+from BDBStorage import db, ZERO
 from BDBStorage.BerkeleyBase import BerkeleyBase, PackStop, _WorkThread
 
 ABORT = 'A'
 COMMIT = 'C'
 PRESENT = 'X'
-ZERO = '\0'*8
 
 # Special flag for uncreated objects (i.e. Does Not Exist)
 DNE = '\377'*8
@@ -178,9 +177,15 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         #     pending table is empty, the oids, pvids, and prevrevids tables
         #     must also be empty.
         #
-        # packtime -- tid
-        #     The time of the last pack.  It is illegal to undo to before the
-        #     last pack time.
+        # info -- {key -> value}
+        #     This table contains storage metadata information.  The keys and
+        #     values are simple strings of variable length.   Here are the
+        #     valid keys:
+        #
+        #         packtime - time of the last pack.  It is illegal to undo to
+        #         before the last pack time.
+        #
+        #         version - the version of the database (reserved for ZODB4)
         #
         # objrevs -- {newserial+oid -> oldserial}
         #     This table collects object revision information for packing
@@ -223,7 +228,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # Tables to support packing.
         self._objrevs = self._setupDB('objrevs', db.DB_DUP)
         self._packmark = self._setupDB('packmark')
-        self._packtime = self._setupDB('packtime')
+        self._info = self._setupDB('info')
         self._oidqueue = self._setupDB('oidqueue', 0, db.DB_QUEUE, 8)
         self._delqueue = self._setupDB('delqueue', 0, db.DB_QUEUE, 8)
         # Do recovery and consistency checks
@@ -1032,13 +1037,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             self._lock_release()
 
     def _last_packtime(self):
-        packtimes = self._packtime.keys()
-        if len(packtimes) == 1:
-            return packtimes[0]
-        elif len(packtimes) == 0:
-            return ZERO
-        else:
-            assert False, 'too many packtimes'
+        return self._info.get('packtime', ZERO)
 
     def lastTransaction(self):
         """Return transaction id for last committed transaction"""
@@ -1306,11 +1305,10 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         finally:
             self._lock_release()
 
-    #
     # Packing
     #
     # There are two types of pack operations, the classic pack and the
-    # autopack.  Autopack's sole job is to periodically delete non-current
+    # autopack.  Autopack's primary job is to periodically delete non-current
     # object revisions.  It runs in a thread and has an `autopack time' which
     # is essentially just a time in the past at which to autopack to.  For
     # example, you might set up autopack to run once per hour, packing away
@@ -1333,7 +1331,6 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
     # acquisition as granularly as possible so that packing doesn't block
     # other operations for too long.  But remember we don't use Berkeley locks
     # so we have to be careful about our application level locks.
-    #
 
     # First, the public API for classic pack
     def pack(self, t, zreferencesf):
@@ -1471,10 +1468,9 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             if co: co.close()
             if ct: ct.close()
         # Note that before we commit this Berkeley transaction, we also need
-        # to update the packtime table, so we can't have the possibility of a
-        # race condition with undoLog().
-        self._packtime.truncate(txn)
-        self._packtime.put(packtid, PRESENT, txn=txn)
+        # to update the last packtime entry, so we can't have the possibility
+        # of a race condition with undoLog().
+        self._info.put('packtime', packtid, txn=txn)
 
     def _decrefPickle(self, oid, lrevid, txn):
         if lrevid == DNE:
