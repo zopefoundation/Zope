@@ -83,11 +83,11 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
-from Globals import HTMLFile
+from Globals import DTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
 from CacheManager import CacheManager
@@ -107,7 +107,7 @@ class Fake:
 
 class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Database management"""
-    manage=manage_main=HTMLFile('dtml/dbMain', globals())
+    manage=manage_main=DTMLFile('dtml/dbMain', globals())
     id        ='DatabaseManagement'
     name=title='Database Management'
     meta_type ='Database Management'
@@ -128,7 +128,7 @@ Globals.default__class_init__(DatabaseManager)
 
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Version management"""
-    manage=manage_main=HTMLFile('dtml/versionManager', globals())
+    manage=manage_main=DTMLFile('dtml/versionManager', globals())
     id        ='Versions'
     name=title='Version Management'
     meta_type ='Version Management'
@@ -152,7 +152,7 @@ _v_rst=None
 
 class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Debug and profiling information"""
-    manage=manage_main=HTMLFile('dtml/debug', globals())
+    manage=manage_main=DTMLFile('dtml/debug', globals())
     id        ='DebugInfo'
     name=title='Debug Information'
     meta_type = name
@@ -166,7 +166,7 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
            )
         )
 
-    manage_debug=HTMLFile('dtml/debug', globals())
+    manage_debug=DTMLFile('dtml/debug', globals())
     
     def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
         # return class reference info
@@ -230,7 +230,7 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
     # Profiling support
 
-    manage_profile=HTMLFile('dtml/profile', globals())
+    manage_profile=DTMLFile('dtml/profile', globals())
 
     def manage_profile_stats(self, sort='time', limit=200):
         """Return profile data if available"""
@@ -259,8 +259,8 @@ class ApplicationManager(Folder,CacheManager):
     Versions= VersionManager()
     DebugInfo=DebugManager()
 
-    manage=manage_main=HTMLFile('dtml/cpContents', globals())
-    manage_undoForm=HTMLFile('dtml/undo', globals())
+    manage=manage_main=DTMLFile('dtml/cpContents', globals())
+    manage_undoForm=DTMLFile('dtml/undo', globals())
 
     def version_txt(self):
         if not hasattr(self, '_v_version_txt'):

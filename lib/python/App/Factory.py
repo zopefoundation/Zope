@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.23 2001/01/08 22:46:56 brian Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: Factory.py,v 1.24 2001/01/11 22:08:38 chrism Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
@@ -171,7 +171,7 @@ class Factory(
         product.aq_acquire('_manage_remove_product_meta_type')(
             product, self.id, self.object_type)
 
-    manage_main=Globals.HTMLFile('dtml/editFactory',globals())
+    manage_main=Globals.DTMLFile('dtml/editFactory',globals())
 
     def index_html(self, REQUEST):
         " "

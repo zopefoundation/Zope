@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Zope registerable permissions
 
-$Id: Permission.py,v 1.5 2001/01/08 22:46:56 brian Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Permission.py,v 1.6 2001/01/11 22:17:15 chrism Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, ExtensionClass, AccessControl.Role
 
@@ -138,7 +138,7 @@ class Permission(
         product.aq_acquire('_manage_remove_product_permission')(
             product, self.name)
 
-    manage_main=Globals.HTMLFile('dtml/editPermission',globals())
+    manage_main=Globals.DTMLFile('dtml/editPermission',globals())
 
     index_html=None
 
@@ -153,7 +153,7 @@ class PermissionManager(ExtensionClass.Base):
         'name': Permission.meta_type, 'action': 'manage_addPermissionForm'
         },
 
-    manage_addPermissionForm=Globals.HTMLFile('dtml/addPermission',globals())
+    manage_addPermissionForm=Globals.DTMLFile('dtml/addPermission',globals())
     def manage_addPermission(
         self, id, title, permission, REQUEST=None):
         ' '

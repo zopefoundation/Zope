@@ -85,13 +85,13 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.38 2001/01/09 23:42:07 evan Exp $"""
+$Id: Management.py,v 1.39 2001/01/11 22:13:14 chrism Exp $"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
-from Globals import HTMLFile, DTMLFile
+from Globals import DTMLFile
 from string import split, join, find
 from AccessControl import getSecurityManager
 
@@ -207,12 +207,12 @@ class Navigation(ExtensionClass.Base):
           )),
         )
 
-    manage            =HTMLFile('dtml/manage', globals())
-    manage_menu       =HTMLFile('dtml/menu', globals())
+    manage            =DTMLFile('dtml/manage', globals())
+    manage_menu       =DTMLFile('dtml/menu', globals())
 
-    manage_top_frame  =HTMLFile('dtml/manage_top_frame', globals())
-    manage_page_header=HTMLFile('dtml/manage_page_header', globals())
-    manage_page_footer=HTMLFile('dtml/manage_page_footer', globals())
+    manage_top_frame  =DTMLFile('dtml/manage_top_frame', globals())
+    manage_page_header=DTMLFile('dtml/manage_page_header', globals())
+    manage_page_footer=DTMLFile('dtml/manage_page_footer', globals())
 
     manage_form_title__roles__=None
     manage_form_title =DTMLFile('dtml/manage_form_title', globals(),
@@ -223,7 +223,7 @@ class Navigation(ExtensionClass.Base):
         varnames=('form_title', 'help_product', 'help_topic') )
 
     manage_copyright__roles__=None
-    manage_copyright=HTMLFile('dtml/copyright', globals())
+    manage_copyright=DTMLFile('dtml/copyright', globals())
 
     
     manage_logout__roles__=None
@@ -238,7 +238,7 @@ Sorry, this is not yet implemented.
 
 
 setattr(Navigation, 'manage_page_style.css',
-        HTMLFile('dtml/manage_page_style.css', globals())
+        DTMLFile('dtml/manage_page_style.css', globals())
         )
 setattr(Navigation, 'manage_page_style.css__roles__', None)
 
