@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.26 1999/08/05 13:32:34 jim Exp $"
+"\n$Id: BTree.c,v 1.27 1999/08/19 23:39:01 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -1786,8 +1786,17 @@ BTree_setstate(BTree *self, PyObject *args)
 
   UNLESS(PyArg_ParseTuple(args,"O",&state)) return NULL;
   if((l=PyTuple_Size(state))<0) return NULL;
-  
+ 
   PER_PREVENT_DEACTIVATION(self); 
+
+  if (l==0)
+    {
+      if (_BTree_clear(self) < 0) return NULL;
+
+      PER_ALLOW_DEACTIVATION(self);
+      Py_INCREF(Py_None);
+      return Py_None;
+    }
 
   if(l>self->size)
     {
@@ -2102,7 +2111,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.26 $";
+  char *rev="$Revision: 1.27 $";
 
 
 
