@@ -97,8 +97,8 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.11 1998/12/31 18:19:49 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: __init__.py,v 1.12 1999/01/22 10:59:44 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 from ImageFile import ImageFile
 import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 import Shared.DC.ZRDB.RDB
@@ -108,6 +108,9 @@ import Shared.DC.ZRDB.sqlvar, Shared.DC.ZRDB.sqlgroup, Shared.DC.ZRDB.sqltest
 classes=('SQL.SQL',)
 
 __module_aliases__=(
+    ('Products.AqueductSQLMethods','Products.ZSQLMethods'),
+    ('Aqueduct', Shared.DC.ZRDB),
+    ('AqueductDA', Shared.DC.ZRDB),
     ('Products.AqueductSQLMethods.SQL', SQL),
     ('Aqueduct.Aqueduct', Shared.DC.ZRDB.Aqueduct),
     ('AqueductDA.DA',     Shared.DC.ZRDB.DA),
