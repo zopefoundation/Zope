@@ -220,7 +220,7 @@ def magic_import(modulename, filename):
     globals()[modulename] = mod
     win32api.FreeLibrary(h)
 
-magic_import('pywintypes','pywintypes15.dll')
+magic_import('pywintypes','pywintypes21.dll')
 
 import win32serviceutil, win32service, win32event, win32process
 try: import servicemanager
