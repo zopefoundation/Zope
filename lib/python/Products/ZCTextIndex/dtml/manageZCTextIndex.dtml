@@ -11,9 +11,9 @@
 </p>
 <p class="form-help">
   ZCTextIndex Lexicon used: 
-  <dtml-if getLexiconPath>
-    <a href="<dtml-var getLexiconPath>/manage_main"
-    ><dtml-var getLexiconPath></a>
+  <dtml-if getLexiconURL>
+    <a href="<dtml-var getLexiconURL>/manage_main"
+    ><dtml-var getLexiconURL></a>
   <dtml-else>
     <em>(Lexicon Not Found)</em>
   </dtml-if>

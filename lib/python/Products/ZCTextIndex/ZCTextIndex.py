@@ -20,6 +20,7 @@ from types import TupleType
 import ZODB
 from Persistence import Persistent
 import Acquisition
+from Acquisition import aq_base, aq_inner, aq_parent
 from OFS.SimpleItem import SimpleItem
 
 from Globals import DTMLFile, InitializeClass
@@ -81,7 +82,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                              'ZCTextIndex Lexicon interface'
                              % lexicon.getId())
 
-        self.lexicon_path = lexicon.getPhysicalPath()
+        self.lexicon_id = lexicon.getId()
         self._v_lexicon = lexicon
 
         if index_factory is None:
@@ -102,17 +103,25 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def getLexicon(self):
         """Get the lexicon for this index
         """
-        if hasattr(self, 'lexicon'):
+        if hasattr(aq_base(self), 'lexicon'):
             # Fix up old ZCTextIndexes by removing direct lexicon ref
-            # and changing it to a path
-            lexicon = getattr(self.aq_parent, self.lexicon.getId())
-            self.lexicon_path = lexicon.getPhysicalPath()
+            # and changing it to an ID
+            lexicon = getattr(aq_parent(aq_inner(self)), self.lexicon.getId())
+            self.lexicon_id = lexicon.getId()
             del self.lexicon
+
+        if getattr(aq_base(self), 'lexicon_path', None):
+            # Fix up slightly less old ZCTextIndexes by removing
+            # the physical path and changing it to an ID.
+            # There's no need to use a physical path, which otherwise
+            # makes it difficult to move or rename ZCatalogs.
+            self.lexicon_id = self.lexicon_path[-1]
+            del self.lexicon_path
 
         try:
             return self._v_lexicon
         except AttributeError:
-            lexicon = self.unrestrictedTraverse(self.lexicon_path)
+            lexicon = getattr(aq_parent(aq_inner(self)), self.lexicon_id)
             if not ILexicon.isImplementedBy(lexicon):
                 raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
                                 % lexicon.getId())
@@ -214,13 +223,15 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         """Return indexed attribute name"""
         return self._fieldname
 
-    def getLexiconPath(self):
-        """Return the path of the lexicon used by the index"""
+    def getLexiconURL(self):
+        """Return the url of the lexicon used by the index"""
         try:
-            self.getLexicon() # Make sure the path is set
-            return '/'.join(self.lexicon_path)
-        except KeyError:
-            return
+            lex = self.getLexicon()
+        except (KeyError, AttributeError):
+            return None
+        else:
+            return lex.absolute_url()
+            
 
 InitializeClass(ZCTextIndex)
 
