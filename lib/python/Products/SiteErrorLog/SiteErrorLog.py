@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.7 2002/05/22 15:14:14 shane Exp $
+$Id: SiteErrorLog.py,v 1.8 2002/06/25 20:52:56 caseman Exp $
 """
 
 import os
@@ -125,6 +125,7 @@ class SiteErrorLog (SimpleItem):
         """Log an exception.
 
         Called by SimpleItem's exception handler.
+        Returns the url to view the error log entry
         """
         try:
             now = time.time()
@@ -163,11 +164,12 @@ class SiteErrorLog (SimpleItem):
                     strv = '<unprintable %s object>' % str(type(info[1]).__name__)
 
                 log = self._getLog()
+                entry_id = str(now) + str(random()) # Low chance of collision
                 log.append({
                     'type': strtype,
                     'value': strv,
                     'time': now,
-                    'id': str(now) + str(random()), # Low chance of collision
+                    'id': entry_id,
                     'tb_text': tb_text,
                     'tb_html': tb_html,
                     'username': username,
@@ -181,6 +183,8 @@ class SiteErrorLog (SimpleItem):
                         del log[:-self.keep_entries]
                 finally:
                     cleanup_lock.release()
+                    
+                return '%s/showEntry?id=%s' % (self.absolute_url(), entry_id)
             except:
                 LOG('SiteError', ERROR, 'Error while logging',
                     error=sys.exc_info())
@@ -257,7 +261,6 @@ class SiteErrorLog (SimpleItem):
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return entry['tb_text']
-
 
 Globals.InitializeClass(SiteErrorLog)
 

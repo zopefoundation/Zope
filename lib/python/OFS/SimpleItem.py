@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.100 2002/06/12 18:34:17 shane Exp $'''
-__version__='$Revision: 1.100 $'[11:-2]
+$Id: SimpleItem.py,v 1.101 2002/06/25 20:52:56 caseman Exp $'''
+__version__='$Revision: 1.101 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -159,9 +159,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             try:
                 log = aq_acquire(self, '__error_log__', containment=1)
             except AttributeError:
-                pass
+                error_log_url = ''
             else:
-                log.raising((error_type, error_value, tb))
+                error_log_url = log.raising((error_type, error_value, tb))
 
             # turn error_type into a string
             if hasattr(error_type, '__name__'):
@@ -200,7 +200,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                           'error_value': error_value,
                           'error_tb': error_tb,
                           'error_traceback': error_tb,
-                          'error_message': error_message}
+                          'error_message': error_message,
+                          'error_log_url': error_log_url}
 
                 if isinstance(s, HTML):
                     v = s(client, REQUEST, **kwargs)
