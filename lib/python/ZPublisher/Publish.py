@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.119 1999/01/22 10:53:51 jim Exp $"""
-__version__='$Revision: 1.119 $'[11:-2]
+$Id: Publish.py,v 1.120 1999/01/25 16:42:32 brian Exp $"""
+__version__='$Revision: 1.120 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -122,6 +122,21 @@ except:
         def __init__(self,**kw):
             for k,v in kw.items(): self.__dict__[k]=v
 
+def sane_environment(env):
+    # return an environment mapping which has been cleaned of
+    # funny business such as REDIRECT_ prefixes added by Apache
+    # or HTTP_CGI_AUTHORIZATION hacks.
+    dict={}
+    for key, val in env.items():
+        while key[:9]=='REDIRECT_':
+            key=key[9:]
+        dict[key]=val
+    if env.has_key('HTTP_CGI_AUTHORIZATION'):
+        dict['HTTP_AUTHORIZATION']=env['HTTP_CGI_AUTHORIZATION']
+        try: del env['HTTP_CGI_AUTHORIZATION']
+        except: pass
+    return dict
+
 class ModulePublisher:
 
     HTTP_AUTHORIZATION=None
@@ -138,10 +153,6 @@ class ModulePublisher:
         if environ.has_key('HTTP_AUTHORIZATION'):
             self.HTTP_AUTHORIZATION=environ['HTTP_AUTHORIZATION']
             try: del environ['HTTP_AUTHORIZATION']
-            except: pass
-        elif environ.has_key('HTTP_CGI_AUTHORIZATION'):
-            self.HTTP_AUTHORIZATION=environ['HTTP_CGI_AUTHORIZATION']
-            try: del environ['HTTP_CGI_AUTHORIZATION']
             except: pass
 
         form={}
