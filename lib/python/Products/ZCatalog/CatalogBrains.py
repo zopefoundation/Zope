@@ -14,6 +14,8 @@
 __version__ = "$Revision$"[11:-2]
 
 import Acquisition, Record
+import zLOG
+import sys
 
 class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     """Abstract base brain that handles looking up attributes as
@@ -44,6 +46,8 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
                 obj = self.aq_parent.resolve_url(self.getPath(), REQUEST)
             return obj
         except:
+            zLOG.LOG('CatalogBrains', zLOG.INFO, 'getObject raised an error',
+                     error=sys.exc_info())
             pass
         
     def getRID(self):
