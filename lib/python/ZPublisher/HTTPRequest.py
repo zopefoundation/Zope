@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import regex, re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -1016,7 +1016,12 @@ class FileUpload:
 
         self.headers=aFieldStorage.headers
         self.filename=aFieldStorage.filename
-    
+
+        # Add an assertion to the rfc822.Message object that implements
+        # self.headers so that managed code can access them.
+        try:    self.headers.__allow_access_to_unprotected_subobjects__ = 1
+        except: pass
+
 
 parse_cookie_lock=allocate_lock()
 def parse_cookie(text,
