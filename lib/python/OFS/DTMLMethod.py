@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -182,8 +182,11 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         # debugging.
         #################################################################
 
-        if name[:3]=='aq_' and name != 'aq_parent' and name != 'aq_explicit':
-            return 0
+        try:
+            if (name[:3]=='aq_' and
+                name != 'aq_parent' and name != 'aq_explicit'):
+                return 0
+        except: pass # name might not be a string!
 
         # Try to get roles
         if hasattr(value, '__roles__'): roles=value.__roles__
