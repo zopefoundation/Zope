@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -123,8 +123,13 @@ class CopyContainer(ExtensionClass.Base):
     def manage_CopyContainerAllItems(self, REQUEST):
         return map(lambda i, s=self: s._getOb(i), tuple(REQUEST['ids']))
 
-    def manage_cutObjects(self, ids, REQUEST=None):
+    def manage_cutObjects(self, ids=None, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
+        if ids is None and REQUEST is not None:
+            return eNoItemsSpecified
+        elif ids is None:
+            raise ValueError, 'ids must be specified'
+
         if type(ids) is type(''):
             ids=[ids]
         oblist=[]
@@ -142,8 +147,13 @@ class CopyContainer(ExtensionClass.Base):
             return self.manage_main(self, REQUEST, cb_dataValid=1)
         return cp
     
-    def manage_copyObjects(self, ids, REQUEST=None, RESPONSE=None):
+    def manage_copyObjects(self, ids=None, REQUEST=None, RESPONSE=None):
         """Put a reference to the objects named in ids in the clip board"""
+        if ids is None and REQUEST is not None:
+            return eNoItemsSpecified
+        elif ids is None:
+            raise ValueError, 'ids must be specified'
+
         if type(ids) is type(''):
             ids=[ids]
         oblist=[]
@@ -549,3 +559,10 @@ eNotSupported=fMessageDialog(
               title='Not Supported',
               message='The item <EM>%s</EM> does not support this operation.',
               action ='manage_main',)
+
+eNoItemsSpecified=MessageDialog(
+                  title='No items specified',
+                  message='You must select one or more items to perform ' \
+                  'this operation.',
+                  action ='manage_main'
+                  )
