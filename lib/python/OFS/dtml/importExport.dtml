@@ -62,6 +62,8 @@ on the server.
 </table>
 </form>
 
+<hr />
+
 <p class="form-help">
 You may import Zope objects which have been previously
 exported to a file, by placing the file in the &quot;import&quot;
@@ -111,7 +113,7 @@ ownership information".
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <input type="submit" name="submit" value="Import" />
+  <input class="form-element" type="submit" name="submit" value="Import" />
   </div>
   </td>
 </tr>
