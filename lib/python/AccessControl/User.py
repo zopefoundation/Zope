@@ -1,10 +1,10 @@
 """Access control package"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
-from Persistence import PersistentMapping
+from PersistentMapping import PersistentMapping
 from App.Management import Management
 from OFS.SimpleItem import Item
 from Acquisition import Implicit
@@ -265,6 +265,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.21  1997/12/18 13:34:04  jim
+# Changed PersistentMapping import
+#
 # Revision 1.20  1997/12/05 17:10:10  brian
 # New UI
 #
