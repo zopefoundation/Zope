@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.24 2000/06/16 19:31:37 shane Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.25 2000/06/19 14:26:12 shane Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -238,7 +238,7 @@ class TemplateDict:
                 for a in args: m._push(a)
                 if kw: m._push(kw)
         else: m=kw
-        return DictInstance(m)
+        return (DictInstance(m),)
 
 def render_blocks(blocks, md):
     rendered = []
