@@ -2,12 +2,7 @@
 Zope Medusa Handler
 
 Uses a new threaded architecture.
-
-Requires:
-
-  * Python 1.5 or greater, with threads
-  * Medusa 990107 or greater
-  * ZPublisher
+Works with http_server.py
   
 """
 
