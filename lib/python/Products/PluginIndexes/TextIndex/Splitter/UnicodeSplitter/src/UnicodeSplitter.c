@@ -140,13 +140,6 @@ static PySequenceMethods Splitter_as_sequence = {
     (intintobjargproc)0,                 /*sq_ass_slice*/
 };
 
-static PyObject *
-Splitter_pos(Splitter *self, PyObject *args)
-{
-    return Py_BuildValue("(ii)", 0,0);
-}
-
-
 static struct PyMethodDef Splitter_methods[] =
     {
         { "split", (PyCFunction) Splitter_split, 0,
@@ -412,7 +405,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.15 2002/01/24 20:01:56 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.16 2002/05/13 22:52:00 jeremy Exp $\n"
     ;
 
 
@@ -420,7 +413,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.15 $";
+    char *rev="$Revision: 1.16 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
