@@ -94,8 +94,8 @@ class MultiHook:
 
     def __call__(self, container, request):
         if self._defined_in_class:
-            # Assume it's an unbound method
-            getattr(container.__class__, self._hookname)(container, request)
+            getattr(container.__class__, self._hookname)(container,
+                                                         container, request)
         prior = self._prior
         if prior is not None:
             prior(container, request)
