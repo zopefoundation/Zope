@@ -83,13 +83,11 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.26 1999/03/30 18:15:31 jim Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: __init__.py,v 1.27 1999/03/30 19:08:42 jim Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
-import Version, Draft, Globals
-import OFS.Image, OFS.Folder, AccessControl.User
+import Version, Draft, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument
-from ImageFile import ImageFile
 
 # This is the new way to initialize products.  It is hoped
 # that this more direct mechanism will be more understandable.
