@@ -12,12 +12,12 @@
 ##############################################################################
 """Python implementations of document template some features
 
-$Id: pDocumentTemplate.py,v 1.40 2002/09/24 22:11:17 jeremy Exp $"""
-__version__='$Revision: 1.40 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.41 2002/09/24 22:25:57 jeremy Exp $"""
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, types
 from types import StringType, UnicodeType, TupleType
-from DocumentTemplate.ustr import ustr
+from ustr import ustr
 
 ClassTypes = [types.ClassType]
 
