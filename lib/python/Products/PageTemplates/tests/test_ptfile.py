@@ -9,7 +9,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 class TypeSniffingTestCase(unittest.TestCase):
 
-    TEMPFILENAME = tempfile.mktemp()
+    TEMPFILENAME = tempfile.mktemp(".zpt")
 
     def tearDown(self):
         if os.path.exists(self.TEMPFILENAME):
