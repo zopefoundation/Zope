@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #539: Fixed rendering of TAL namespace tags with an
+        'on-error' statement.
+
       - Collector #586:  Generated 'start' scripts had a nonsensical
         export of an "INST_HOME" environment variable.
 

@@ -1,7 +1,12 @@
 <html>
-<body>
 <head>
    <title tal:content="string:Hello World!">This is the title</title>
 </head>
+<body>
+  <tal:block on-error="string:Error:${error/value}" replace="x" />
+  <tal:block on-error="string:Error:${error/value}">
+    <p tal:content="x">p</p>
+  </tal:block>
+  <div tal:replace="structure string:&lt;hr /&gt;">rule</div>
 </body>
 </html>
