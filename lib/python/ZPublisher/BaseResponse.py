@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.6 2000/05/11 18:54:17 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: BaseResponse.py,v 1.7 2000/06/08 15:47:35 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -118,7 +118,7 @@ class BaseResponse:
         self.status=status
 
     def setHeader(self, name, value):
-        self.headers[n]=value
+        self.headers[name]=value
 
     __setitem__=setHeader
 
