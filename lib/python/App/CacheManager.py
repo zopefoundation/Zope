@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.17 2000/05/11 18:54:13 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: CacheManager.py,v 1.18 2000/05/23 15:38:43 brian Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, time, sys
 
@@ -142,14 +142,17 @@ class CacheManager:
                 self._cache_age=value
                 self._p_jar.db().setCacheDeactivateAfter(value)
 
-        return self.manage_cacheParameters(self,REQUEST)
+        if REQUEST is not None:
+            response=REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
+
+
 
     def cache_size(self):
         try:
             if self._p_jar.getVersion():
                 return self._vcache_size
         except: pass
-
         return self._cache_size
 
     def manage_cache_size(self,value,REQUEST):
@@ -171,7 +174,10 @@ class CacheManager:
                 self._cache_size=value
                 self._p_jar.db().setCacheSize(value)
 
-        return self.manage_cacheParameters(self,REQUEST)
+        if REQUEST is not None:
+            response=REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
+
 
     def cacheStatistics(self):
         try: return self._p_jar.db().cacheStatistics()
@@ -218,7 +224,9 @@ class CacheManager:
             Globals.Bobobase._jar.cache.full_sweep(value)
         else: db.cacheFullSweep(value)
 
-        return self.manage_cacheGC(self,REQUEST)
+        if REQUEST is not None:
+            response=REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1']+'/manage_cacheGC')
 
     def manage_minimize(self,value,REQUEST):
         "Perform a full sweep through the cache"
@@ -228,7 +236,9 @@ class CacheManager:
             Globals.Bobobase._jar.cache.minimize(value)
         else: db.cacheMinimize(value)
 
-        return self.manage_cacheGC(self,REQUEST)
+        if REQUEST is not None:
+            response=REQUEST['RESPONSE']
+            response.redirect(REQUEST['URL1']+'/manage_cacheGC')
 
     def initialize_cache(self):
         try: db=self._p_jar.db()
