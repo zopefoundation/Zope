@@ -89,24 +89,23 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os, traceback, re
-from Globals import MessageDialog, HTMLFile, package_home
+from Globals import DTMLFile, package_home
 import AccessControl, OFS, Guarded
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
 from string import join, strip, rstrip, split, replace, lower
 from urllib import quote
-from Bindings import Bindings, defaultBindings
-from Script import Script
+from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from zLOG import LOG, ERROR, INFO
 
 _www = os.path.join(package_home(globals()), 'www')
-manage_addPythonScriptForm=HTMLFile('pyScriptAdd', _www)
+manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 
 _marker = []  # Create a new marker object
 
@@ -141,43 +140,34 @@ class PythonScript(Script, Historical, Cacheable):
 
     manage_options = (
         {'label':'Edit', 'action':'ZPythonScriptHTML_editForm'},
-        ) + Bindings.manage_options + (
+        ) + BindingsUI.manage_options + (
         {'label':'Test', 'action':'ZScriptHTML_tryForm'},
         {'label':'Proxy', 'action':'manage_proxyForm'},
         ) + Historical.manage_options + SimpleItem.manage_options + \
         Cacheable.manage_options
-
-    __ac_permissions__ = (
-        ('View management screens',
-          ('ZPythonScriptHTML_editForm', 'ZPythonScriptHTML_changePrefs',
-           'manage_main', 'ZScriptHTML_tryForm', 'read')),
-        ('Change Python Scripts',
-          ('ZPythonScript_edit', 'PUT', 'manage_FTPput', 'write',
-           'ZPythonScript_setTitle', 'ZPythonScriptHTML_upload',
-           'ZPythonScriptHTML_uploadForm', 'manage_historyCopy',
-           'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
-           'ZPythonScriptHTML_editAction',)),
-        ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
-        ('View', ('__call__', '')),
-        )
-
-    security = AccessControl.ClassSecurityInfo()
 
     def __init__(self, id):
         self.id = id
         self.ZBindings_edit(defaultBindings)
         self._makeFunction(1)
 
+    security = AccessControl.ClassSecurityInfo()
+
+    security.declareObjectProtected('View')
+    security.declareProtected('View', '__call__')
+
     security.declareProtected('View management screens',
       'ZPythonScriptHTML_editForm', 'manage_main', 'read',
-      'ZPythonScriptHTML_uploadForm', 'ZPythonScriptHTML_editAction',
-      'document_src')
-    ZPythonScriptHTML_editForm = HTMLFile('pyScriptEdit', _www)
+      'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
+      'document_src', 'params', 'body')
+
+    ZPythonScriptHTML_editForm = DTMLFile('www/pyScriptEdit', globals())
     manage = manage_main = ZPythonScriptHTML_editForm
-    ZPythonScriptHTML_uploadForm = HTMLFile('pyScriptUpload', _www)
 
-    ZScriptHTML_tryForm = HTMLFile('scriptTry', _www)
-
+    security.declareProtected('Change Python Scripts',
+      'ZPythonScriptHTML_editAction',
+      'ZPythonScript_setTitle', 'ZPythonScript_edit',
+      'ZPythonScriptHTML_upload', 'ZPythonScriptHTML_changePrefs')
     def ZPythonScriptHTML_editAction(self, REQUEST, title, params, body):
         """Change the script's main parameters."""
         self.ZPythonScript_setTitle(title)
@@ -189,8 +179,6 @@ class PythonScript(Script, Historical, Cacheable):
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
                                                manage_tabs_message=message)
 
-    security.declareProtected('Change Python Scripts',
-      'ZPythonScript_setTitle', 'ZPythonScript_edit')
     def ZPythonScript_setTitle(self, title):
         title = str(title)
         if self.title != title:
@@ -213,6 +201,22 @@ class PythonScript(Script, Historical, Cacheable):
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
                                                manage_tabs_message=message)
 
+    def ZPythonScriptHTML_changePrefs(self, REQUEST, height=None, width=None,
+                                      dtpref_cols='50', dtpref_rows='20'):
+        """Change editing preferences."""
+        szchh = {'Taller': 1, 'Shorter': -1, None: 0}
+        szchw = {'Wider': 5, 'Narrower': -5, None: 0}
+        try: rows = int(height)
+        except: rows = max(1, int(dtpref_rows) + szchh.get(height, 0))
+        try: cols = int(width)
+        except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
+        e = (DateTime('GMT') + 365).rfc822()
+        setc = REQUEST['RESPONSE'].setCookie
+        setc('dtpref_rows', str(rows), path='/', expires=e)
+        setc('dtpref_cols', str(cols), path='/', expires=e)
+        REQUEST.form.update({'dtpref_cols': cols, 'dtpref_rows': rows})
+        return apply(self.manage_main, (self, REQUEST), REQUEST.form)
+
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""
         param_names = []
@@ -221,25 +225,6 @@ class PythonScript(Script, Historical, Cacheable):
             if name and name[0] != '*':
                 param_names.append(name)
         return param_names
-
-    def ZPythonScriptHTML_changePrefs(self, REQUEST, height=None, width=None,
-                                      dtpref_cols='50', dtpref_rows='20'):
-        """Change editing preferences."""
-        LOG('PythonScript', INFO, 'Change prefs h: %s, w: %s, '
-            'cols: %s, rows: %s' % (height, width, dtpref_cols, dtpref_rows)) 
-        szchh = {'Taller': 1, 'Shorter': -1, None: 0}
-        szchw = {'Wider': 5, 'Narrower': -5, None: 0}
-        try: rows = int(height)
-        except: rows = max(1, int(dtpref_rows) + szchh.get(height, 0))
-        try: cols = int(width)
-        except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
-        LOG('PythonScript', INFO, 'to cols: %s, rows: %s' % (cols, rows))
-        e = (DateTime('GMT') + 365).rfc822()
-        setc = REQUEST['RESPONSE'].setCookie
-        setc('dtpref_rows', str(rows), path='/', expires=e)
-        setc('dtpref_cols', str(cols), path='/', expires=e)
-        REQUEST.form.update({'dtpref_cols': cols, 'dtpref_rows': rows})
-        return apply(self.manage_main, (self, REQUEST), REQUEST.form)
 
     def manage_historyCompare(self, rev1, rev2, REQUEST,
                               historyComparisonResults=''):
@@ -362,17 +347,23 @@ class PythonScript(Script, Historical, Cacheable):
 
     security.declareProtected('Change proxy roles',
       'manage_proxyForm', 'manage_proxy')
-    manage_proxyForm = HTMLFile('pyScriptProxy', _www)
+
+    manage_proxyForm = DTMLFile('www/pyScriptProxy', globals())
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(roles)
         self._validateProxy()
         self.ZCacheable_invalidate()
         self._proxy_roles=tuple(roles)
-        if REQUEST: return MessageDialog(
+        if REQUEST: return Globals.MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
                     action ='manage_main')
+
+    security.declareProtected('Change Python Scripts',
+      'PUT', 'manage_FTPput', 'write',
+      'manage_historyCopy',
+      'manage_beforeHistoryCopy', 'manage_afterHistoryCopy')
 
     def PUT(self, REQUEST, RESPONSE):
         """ Handle HTTP PUT requests """

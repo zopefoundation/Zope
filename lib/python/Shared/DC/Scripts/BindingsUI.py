@@ -82,31 +82,30 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.5 2001/01/09 21:48:42 evan Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
 
-import PythonScript
-try:
-    import standard
-except: pass
+__version__='$Revision$'[11:-2]
 
-# Temporary
-from Shared.DC import Scripts
-__module_aliases__ = (
-    ('Products.PythonScripts.Script', Scripts.Script),
-    ('Products.PythonScripts.Bindings', Scripts.Bindings),
-    ('Products.PythonScripts.BindingsUI', Scripts.BindingsUI),)
+import Globals
+from Bindings import Bindings
 
-__roles__ = None
-__allow_access_to_unprotected_subobjects__ = 1
+class BindingsUI(Bindings):
+    
+    manage_options = (
+        {'label':'Bindings', 'action':'ZBindingsHTML_editForm'},
+        )
 
-def initialize(context):
-    context.registerClass(
-        instance_class=PythonScript.PythonScript,
-        constructors=(PythonScript.manage_addPythonScriptForm,
-                      PythonScript.manage_addPythonScript),
-        icon='www/pyscript.gif')
+    __ac_permissions__ = (
+        ('View management screens', ('ZBindingsHTML_editForm',)),
+        ('Change bindings', ('ZBindingsHTML_editAction',)),
+        )
 
-    context.registerHelp()
-    context.registerHelpTitle('Zope Help')    
+    ZBindingsHTML_editForm = Globals.DTMLFile('dtml/scriptBindings', globals())
+
+    def ZBindingsHTML_editAction(self, REQUEST):
+        '''Changes binding names.
+        '''
+        self.ZBindings_edit(REQUEST)
+        message = "Bindings changed."
+        return self.manage_main(self, REQUEST, manage_tabs_message=message)
+
+Globals.default__class_init__(BindingsUI)

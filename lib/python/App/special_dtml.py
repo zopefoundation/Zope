@@ -84,8 +84,6 @@
 ##############################################################################
 
 import DocumentTemplate, Common, Persistence, MethodObject, Globals, os
-from Persistence import Persistent
-
 
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
     "Persistent HTML Document Templates"
@@ -109,7 +107,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
             kw['__name__']=os.path.split(name)[-1]
         apply(HTMLFile.inheritedAttribute('__init__'),args,kw)
 
-    def __call__(self, *args, **kw):
+    def _cook_check(self):
         if Globals.DevelopmentMode:
             __traceback_info__=self.raw
             try:    mtime=os.stat(self.raw)[8]
@@ -117,10 +115,110 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
             if mtime != self._v_last_read:
                 self.cook()
                 self._v_last_read=mtime
+        elif not hasattr(self,'_v_cooked'):
+            try: changed=self.__changed__()
+            except: changed=1
+            self.cook()
+            if not changed: self.__changed__(0)
+
+    def __call__(self, *args, **kw):
+        self._cook_check()
         return apply(HTMLFile.inheritedAttribute('__call__'),
                      (self,)+args[1:],kw)
 
+defaultBindings = {'name_context': 'context',
+                   'name_container': 'container',
+                   'name_m_self': 'self',
+                   'name_ns': '_',
+                   'name_subpath': 'traverse_subpath'}
 
+from Shared.DC.Scripts.Bindings import Bindings
+from Acquisition import Explicit
+from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
+from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
+
+class DTMLFile(Bindings, Explicit, HTMLFile):
+    "HTMLFile with bindings and support for __render_with_namespace__"
+    
+    class func_code: pass
+    func_code=func_code()
+    func_code.co_varnames=()
+    func_code.co_argcount=0
+
+    _Bindings_ns_class = TemplateDict
+
+    def __init__(self, name, _prefix=None, **kw):
+        self.ZBindings_edit(defaultBindings)
+        apply(DTMLFile.inheritedAttribute('__init__'),
+              (self, name, _prefix), kw)
+    
+    def _exec(self, bound_data, args, kw):
+        # Cook if we haven't already
+        self._cook_check()
+        
+        # Get our namespace
+        name_ns = self.getBindingAssignments().getAssignedName('name_ns')
+        ns = bound_data[name_ns]
+        push = ns._push
+        ns.validate = None
+
+        # Check for excessive recursion
+        level = ns.level
+        if level > 200: raise SystemError, (
+            'infinite recursion in document template')
+        ns.level = level + 1
+
+        req = None
+        kw_bind = kw
+        if level == 0:
+            # If this is the starting namespace, get the REQUEST.
+            try:
+                req = self.aq_acquire('REQUEST')
+            except: pass
+        else:
+            # Get last set of bindings.  Copy the request reference
+            # forward, and include older keyword arguments in the
+            # current 'keyword_args' binding.
+            try:
+                last_bound = ns[('current bindings',)]
+                req = last_bound.get('REQUEST', None)
+                old_kw = last_bound['keyword_args']
+                if old_kw:
+                    kw_bind = old_kw.copy()
+                    kw_bind.update(kw)
+            except: pass
+        # Add 'REQUEST' and 'keyword_args' bound names.
+        if req:
+            bound_data['REQUEST'] = req
+        bound_data['keyword_args'] = kw_bind
+
+        # Push globals, initialized variables, REQUEST (if any),
+        # and keyword arguments onto the namespace stack, followed
+        # by the the container and the bound names.
+
+        for nsitem in (self.globals, self._vars, req, kw):
+            if nsitem:
+                push(nsitem)
+
+        # This causes dtml files to bypass their context unless they
+        # explicitly use it through the 'context' name binding.
+        push(InstanceDict(self._getContainer(), ns))
+            
+        push(bound_data)
+        push({('current bindings',): bound_data})
+
+        try:
+            value = self.ZDocumentTemplate_beforeRender(ns, _marker)
+            if value is _marker:
+                try: result = render_blocks(self._v_blocks, ns)
+                except DTReturn, v: result = v.v
+                self.ZDocumentTemplate_afterRender(ns, result)
+                return result
+            else:
+                return value
+        finally:
+            # Clear the namespace
+            while len(ns): ns._pop()
 
 
 

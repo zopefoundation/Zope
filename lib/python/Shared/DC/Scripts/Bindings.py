@@ -83,16 +83,12 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision$'[11:-2]
 
 import Globals
-from Globals import Persistent, HTMLFile, package_home
-from DocumentTemplate.DT_Util import TemplateDict
+from Persistence import Persistent
 from string import join, strip
 import re
-import os
-
-_www = os.path.join(package_home(globals()), 'www')
 
 defaultBindings = {'name_context': 'context',
                    'name_container': 'container',
@@ -217,32 +213,17 @@ class NameAssignments:
         return self._generateCodeBlock(text, assigned_names)
 
 
-class Bindings (Persistent):
+class Bindings:
     
-    manage_options = (
-        {'label':'Bindings', 'action':'ZBindingsHTML_editForm'},
-        )
-
     __ac_permissions__ = (
-        ('View management screens', ('ZBindingsHTML_editForm',
-                                     'getBindingAssignments',)),
-        ('Change Python Scripts', ('ZBindingsHTML_editAction',
-                                   'ZBindings_edit')),
+        ('View management screens', ('getBindingAssignments',)),
+        ('Change bindings', ('ZBindings_edit')),
         )
-
-    ZBindingsHTML_editForm = HTMLFile('scriptBindings', _www)
 
     def ZBindings_edit(self, mapping):
         names = self._setupBindings(mapping)
         self._prepareBindCode()
         self._editedBindings()
-
-    def ZBindingsHTML_editAction(self, REQUEST):
-        '''Changes binding names.
-        '''
-        self.ZBindings_edit(REQUEST)
-        message = "Bindings changed."
-        return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
     def _editedBindings(self):
         # Override to receive notification when the bindings are edited.
@@ -325,7 +306,7 @@ class Bindings (Persistent):
             assigned_name = names.getAssignedName('name_ns')
             caller_namespace = kw.get(assigned_name, None)
         # Create a local namespace.
-        my_namespace = TemplateDict()
+        my_namespace = self._Bindings_ns_class()
         if caller_namespace is not None:
             # Include the caller's namespace.
             my_namespace._push(caller_namespace)
@@ -366,5 +347,5 @@ class Bindings (Persistent):
             bound_data = bound_data[0]
         return self._exec(bound_data, args, kw)
 
-Globals.default__class_init__(Bindings)
+
 

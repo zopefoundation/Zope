@@ -88,14 +88,16 @@
 This provides generic script support
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision$'[11:-2]
 
 import os
-from Globals import package_home, HTMLFile
+from Globals import package_home, DTMLFile
 from OFS.SimpleItem import SimpleItem
 from string import join
 from urllib import quote
-from Bindings import Bindings
+from BindingsUI import BindingsUI
+from Bindings import defaultBindings
+from DocumentTemplate.DT_Util import TemplateDict
 
 class FuncCode:
 
@@ -109,9 +111,7 @@ class FuncCode:
                         (other.co_argcount, other.co_varnames))
         except: return 1
 
-_www = os.path.join(package_home(globals()), 'www')
-
-class Script(SimpleItem, Bindings):
+class Script(SimpleItem, BindingsUI):
     """Web-callable script mixin
     """
 
@@ -119,12 +119,14 @@ class Script(SimpleItem, Bindings):
     func_defaults=()
     func_code=None
 
+    _Bindings_ns_class = TemplateDict
+
     __ac_permissions__ = (
         ('View management screens', ('ZScriptHTML_tryForm',)),
-        ('View', ('__call__','','ZScriptHTML_tryAction')),
+        ('View', ('__call__','','ZPythonScriptHTML_tryAction')),
         )
 
-    ZScriptHTML_tryForm = HTMLFile('scriptTry', _www)
+    ZScriptHTML_tryForm = DTMLFile('dtml/scriptTry', globals())
     def ZScriptHTML_tryAction(self, REQUEST, argvars):
         """Apply the test parameters.
         """

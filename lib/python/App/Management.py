@@ -85,13 +85,13 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.36 2001/01/08 22:46:56 brian Exp $"""
+$Id: Management.py,v 1.37 2001/01/09 21:48:40 evan Exp $"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
-from Globals import HTMLFile
+from Globals import HTMLFile, DTMLFile
 from string import split, join, find
 from AccessControl import getSecurityManager
 
@@ -99,7 +99,7 @@ class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
 
     manage_tabs__roles__=('Anonymous',)
-    manage_tabs=HTMLFile('dtml/manage_tabs', globals())
+    manage_tabs=DTMLFile('dtml/manage_tabs', globals())
     
 
     manage_options  =()
