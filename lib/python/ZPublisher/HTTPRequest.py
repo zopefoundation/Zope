@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import regex, sys, os
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -311,7 +311,6 @@ class HTTPRequest(BaseRequest):
         else:      script=server_url
         other['URL']=self.script=script
 
-
     def resolve_url(self, url):
         # Attempt to resolve a url into an object in the Zope
         # namespace. The url must be a fully-qualified url. The
@@ -334,6 +333,15 @@ class HTTPRequest(BaseRequest):
         try: object=req.traverse(path)
         except: rsp.exception(0)
         if object is not None:
+            # waaa - traversal may return a "default object"
+            # like an index_html document, though you really
+            # wanted to get a Folder back :(
+            if callable(object.id):
+                name=object.id()
+            else: name=object.id
+            if name != os.path.split(path)[-1] and \
+               hasattr(object, 'aq_parent'):
+                return object.aq_parent
             return object
         raise rsp.errmsg, sys.exc_value
 
