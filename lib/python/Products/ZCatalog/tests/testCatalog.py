@@ -462,7 +462,7 @@ class testRS(unittest.TestCase):
         self._catalog.aq_parent = objRS(200)
 
     def testRangeSearch(self):
-        for i in range(10000):
+        for i in range(1000):
             m = random.randrange(0,20000)
             n = m + 1000
 

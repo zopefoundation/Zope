@@ -30,25 +30,24 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
         return self.aq_parent.getpath(self.data_record_id_)
 
     def getURL(self, relative=0):
-        """Try to generate a URL for this record"""
-        try:
-            return self.REQUEST.physicalPathToURL(self.getPath(), relative)
-        except:
-            return self.getPath()
+        """Generate a URL for this record"""
+        # XXX The previous implementation attempted to eat errors coming from
+        #     REQUEST.physicalPathToURL. Unfortunately it also ate 
+        #     ConflictErrors (from getPath), which is bad. Staring at the 
+        #     relevent code in HTTPRequest.py it's unclear to me what could be 
+        #     raised by it so I'm removing the exception handling here all 
+        #     together. If undesired exceptions get raised somehow we should 
+        #     avoid bare except band-aids and find a real solution.
+        return self.REQUEST.physicalPathToURL(self.getPath(), relative)
 
     def getObject(self, REQUEST=None):
-        """Try to return the object for this record"""
-        try:
-            obj = self.aq_parent.unrestrictedTraverse(self.getPath())
-            if not obj:
-                if REQUEST is None:
-                    REQUEST = self.REQUEST
-                obj = self.aq_parent.resolve_url(self.getPath(), REQUEST)
-            return obj
-        except:
-            zLOG.LOG('CatalogBrains', zLOG.INFO, 'getObject raised an error',
-                     error=sys.exc_info())
-            pass
+        """Return the object for this record
+        
+        Will return None if the object cannot be found via its cataloged path
+        (i.e., it was deleted or moved without recataloging), or if the user is
+        not authorized to access an object along the path.
+        """
+        return self.aq_parent.restrictedTraverse(self.getPath(), None)
 
     def getRID(self):
         """Return the record ID for this object."""
