@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -201,7 +201,7 @@ class PropertySheet(Persistent, Implicit):
         if not 'w' in propinfo.get('mode', 'wd'):
             raise 'Bad Request', '%s cannot be changed.' % id
         if type(value)==type(''):
-            proptype=self.propinfo.get('type', 'string')
+            proptype=propinfo.get('type', 'string')
             if type_converters.has_key(proptype):
                 value=type_converters[proptype](value)
         if meta is not None:
