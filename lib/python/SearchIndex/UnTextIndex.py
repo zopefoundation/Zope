@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree
@@ -245,8 +245,13 @@ class UnTextIndex(Persistent):
         else:
             pass
 
+
+    def __len__(self):
+        return len(self._unindex)
+
     def clear(self):
         self._index = BTree()
+        self._unindex = IOBTree()
 
 
     def positions(self, docid, words):
@@ -280,7 +285,6 @@ class UnTextIndex(Persistent):
         """Recompute index data for data with ids >= start.
         if 'obj' is passed in, it is indexed instead of _data[i]"""
 
-
         id = self.id
 
         k = getattr(obj, id)
@@ -307,6 +311,8 @@ class UnTextIndex(Persistent):
         index = self._index
         get = index.get
 
+        self._unindex[i] = tuple(d.keys())
+        
         for word,score in d.items():
             r = get(word)
             if r is not None:
@@ -325,6 +331,8 @@ class UnTextIndex(Persistent):
                 else: r[i] = score
             else: index[word] = i, score
 
+        self._index = index
+
 
 
     def unindex_object(self, i, tt=type(()) ): 
@@ -337,7 +345,7 @@ class UnTextIndex(Persistent):
             else:
                 del index[n][i]
 
-
+        self._index = index
 
 
     def _subindex(self, isrc, d, old, last):
@@ -392,10 +400,6 @@ class UnTextIndex(Persistent):
 
         id = self.id
 
-##        cidid = "%s/%s" % (cid, id)
-##        has_key = request.has_key
-##        if has_key(cidid): keys = request[cidid]
-##        elif has_key(id): keys =request[id]
         if request.has_key(id):
             keys = request[id]
         else: return None

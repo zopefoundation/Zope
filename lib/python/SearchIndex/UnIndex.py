@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import Persistent
 import BTree
@@ -147,6 +147,9 @@ class UnIndex(Persistent):
             pass
 
 
+    def __len__(self):
+        return len(self._unindex)
+
     def index_object(self, i, obj):
         """ index and object 'obj' with integer id 'i'"""
         index = self._index
@@ -156,9 +159,7 @@ class UnIndex(Persistent):
         k=getattr(obj, id)
 
         if callable(k):
-            k = str(k())
-        else:
-            k = str(k)
+            k = k()
  
         if k is None or k == MV:
             return
@@ -169,6 +170,9 @@ class UnIndex(Persistent):
 
         set.insert(i)
         unindex[i] = k
+
+        self._index = index
+        self._unindex = unindex
 
 
     def unindex_object(self, i):
@@ -181,6 +185,9 @@ class UnIndex(Persistent):
             return None
         set = index.get(k)
         if set is not None: set.remove(i)
+
+        self._index = index
+        self._unindex = unindex
 
 
     def _apply_index(self, request, cid=''): 
