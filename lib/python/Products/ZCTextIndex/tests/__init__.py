@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,8 +11,4 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-
-Revision information:
-$Id: __init__.py,v 1.2 2002/05/14 15:12:34 gvanrossum Exp $
-"""
+"""Test package."""
