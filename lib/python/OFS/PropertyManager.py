@@ -84,9 +84,10 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import ExtensionClass, Globals
+import ZDOM
 from PropertySheets import DefaultPropertySheets, vps
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
@@ -98,7 +99,7 @@ from DateTime import DateTime
 
 
 
-class PropertyManager(ExtensionClass.Base):
+class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     """
     The PropertyManager mixin class provides an object with
     transparent property management. An object which wants to
