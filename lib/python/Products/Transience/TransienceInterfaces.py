@@ -226,24 +226,3 @@ class TransientItemContainer(Interface.Base):
         Raises no errors (traps errors).
         """
 
-
-class TransientNotification(Interface.Base):
-
-    """
-    Specfies what something must conform to to receive callbacks from
-    the setExecuteAfterAdd and SetExecuteBeforeDestruct functions.  Note
-    that this isn't a true interface -- the callbacks are registered, not
-    evaluated by name.
-    """
-
-    def executeAfterAdd(self, item, context):
-        """
-        Called when an item is added.  Item is the item being added,
-        context is the environment context, where appropriate.
-        """
-
-    def executeBeforeDestruct(self, item, context):
-        """
-        Called when an item is deleted.  Item is the item being deleted,
-        context is the environment context, where appropriate.
-        """
