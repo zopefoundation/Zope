@@ -130,7 +130,7 @@ class ZCatalog:
     ZCatalog does not store references to the objects themselves, but
     rather to a unique identifier that defines how to get to the
     object.  In Zope, this unique identifier is the object's relative
-    path to the ZCatalog (since two Zope object's cannot have the same 
+    path to the ZCatalog (since two Zope objects cannot have the same 
     URL, this is an excellent unique qualifier in Zope).
 
     """
