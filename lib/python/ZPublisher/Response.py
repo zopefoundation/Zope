@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.8 1996/08/29 22:11:35 jfulton Exp $'''
+$Id: Response.py,v 1.9 1996/08/30 23:28:29 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.8 1996/08/29 22:11:35 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.9  1996/08/30 23:28:29  jfulton
+# Added code to map 300 redirects to 302.
+#
 # Revision 1.8  1996/08/29 22:11:35  jfulton
 # Bug fixes.
 #
@@ -97,7 +100,7 @@ $Id: Response.py,v 1.8 1996/08/29 22:11:35 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -466,12 +469,14 @@ class Response:
 	self.setStatus(t)
 	if self.status >= 300 and self.status < 400:
 	    if type(v) == types.StringType and absuri_re.match(v) >= 0:
+		if self.status==300: self.setStatus(302)
 		self.setHeader('location', v)
 		return self
 	    else:
 		try:
 		    l,b=v
 		    if type(l) == types.StringType and absuri_re.match(l) >= 0:
+			if self.status==300: self.setStatus(302)
 			self.setHeader('location', l)
 			self.setBody(b)
 			return self
@@ -539,7 +544,12 @@ class Response:
 	if not headers.has_key('content-type') and self.status == 200:
 	    self.setStatus('nocontent')
 
-	headersl=map(lambda k,d=headers: "%s: %s" % (k,d[k]), headers.keys())
+	def upcase(s): return string.upper(s[:1])+s[1:]
+
+	headersl=map(
+	    lambda k,d=headers, upcase=upcase:
+	    "%s: %s" % (upcase(k),d[k]),
+	    headers.keys())
 	if self.cookies:
 	    headersl=headersl+self._cookie_list()
 	headersl[len(headersl):]=['',body]
