@@ -1,10 +1,23 @@
-<HTML><HEAD><TITLE>New SQL Method</TITLE>
+<HTML><HEAD><TITLE>Add a SQL Method</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>New SQL Method</H2>
+<H2>Add a SQL Method</H2>
 
 <!--#if SQLConnectionIDs-->
+<P>
+A SQL Method allows you to access a SQL database. For more
+information see the
+<a href="http://www.zope.org/Documentation/Guides/ZSQL">Z
+SQL Methods User's Guide</a>.
+</P>
 
+<P>In the form below <EM>Connection id</EM> is the name
+of the SQL Database Connection to use.
+<EM>Arguments</EM> is a list of variables which the
+SQL Method accepts.
+<EM>Query template</EM> is a template of the SQL statement
+which the SQL Method will execute.
+</P>
 
 <form action="manage_addZSQLMethod" method="post">
 
