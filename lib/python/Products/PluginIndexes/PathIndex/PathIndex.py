@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.15 2001/11/28 15:51:03 matt Exp $'
+__version__ = '$Id: PathIndex.py,v 1.16 2002/01/30 10:25:14 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -112,6 +112,10 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
                 else:           path = f
             except:
                 return 0
+
+
+            if not isinstance(path,StringType):
+                raise TypeError, "attribute/method must be string"
 
         else:             
 
