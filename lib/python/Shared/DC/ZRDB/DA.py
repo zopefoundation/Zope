@@ -1,4 +1,4 @@
-##############################################################################
+`##############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
 # -------------------------------------
@@ -82,10 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Generic Database adapter
+__doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.98 $'[11:-2]
+__version__='$Revision: 1.99 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
