@@ -83,13 +83,14 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
 from App.Dialogs import MessageDialog
+from AccessControl import getSecurityManager
 
 
 CopyError='Copy Error'
@@ -341,35 +342,11 @@ class CopyContainer(ExtensionClass.Base):
 
         if method_name is not None:
 
-            meth=None
-            if hasattr(self, method_name):
-                meth=getattr(self, method_name)
-            else:
-                # Handle strange names that come from the Product
-                # machinery ;(
-                mn=string.split(method_name, '/')
-                if len(mn) > 1:
-                    pname= mn[1]
-                    product=self.manage_addProduct[pname]
-                    fname=mn[2]
-                    factory=getattr(product, fname)
-                    try: meth=getattr(factory, factory.initial)
-                    except: meth=factory
+            meth=self.unrestrictedTraverse(method_name)
 
-            # if we still have a factory, get the add method
-            try: meth=getattr(meth, meth.initial)
-            except: pass
-
-            if hasattr(meth, '__roles__'):
-                roles=meth.__roles__
-                user=REQUEST.get('AUTHENTICATED_USER', None)
-                if (not hasattr(user, 'has_role') or
-                    not user.has_role(roles, self)):
-                    raise 'Unauthorized', (
-                          """You are not authorized to perform this
-                             operation."""
-                          )
+            if getSecurityManager().validateValue(meth):
                 return
+
         raise CopyError, MessageDialog(
               title='Not Supported',
               message='The object <EM>%s</EM> does not support this ' \

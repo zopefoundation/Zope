@@ -1,3 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Product.dtml">Product</a>&gt;Find</h1>
-<p> See <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder_Find.dtml">Folder&gt;Find</a>. </p><dtml-var standard_html_footer>

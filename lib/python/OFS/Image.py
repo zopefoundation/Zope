@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.99 $'[11:-2]
+__version__='$Revision: 1.100 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -136,18 +136,20 @@ class File(Persistent,Implicit,PropertyManager,
     manage_editForm  =HTMLFile('fileEdit',globals(),Kind='File',kind='file')
     manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='File',kind='file')
     manage=manage_main=manage_editForm
-
-    manage_options=({'label':'Edit', 'action':'manage_main',
-                     'help':('OFSP','File_Edit.dtml')},
-                    {'label':'Upload', 'action':'manage_uploadForm',
-                     'help':('OFSP','File_Upload.dtml')},
-                    {'label':'Properties', 'action':'manage_propertiesForm',
-                     'help':('OFSP','File_Properties.dtml')},
-                    {'label':'View', 'action':'',
-                     'help':('OFSP','File_View.dtml')},
-                    {'label':'Security', 'action':'manage_access',
-                     'help':('OFSP','File_Security.dtml')},
-                   )
+        
+    manage_options=(
+        (
+        {'label':'Edit', 'action':'manage_main',
+         'help':('OFSP','File_Edit.dtml')},
+        {'label':'Upload', 'action':'manage_uploadForm',
+         'help':('OFSP','File_Upload.dtml')},
+        {'label':'View', 'action':'',
+         'help':('OFSP','File_View.dtml')},
+        )
+        +PropertyManager.manage_options
+        +Item_w__name__.manage_options
+        +RoleManager.manage_options
+        )
 
     __ac_permissions__=(
         ('View management screens',
@@ -434,18 +436,17 @@ class Image(File):
                  {'id':'height', 'type':'string'},
                  {'id':'width', 'type':'string'},
                  )
-    
-    manage_options=({'label':'Edit', 'action':'manage_main',
-                     'help':('OFSP','Image_Edit.dtml')},
-                    {'label':'Upload', 'action':'manage_uploadForm',
-                     'help':('OFSP','Image_Upload.dtml')},
-                    {'label':'Properties', 'action':'manage_propertiesForm',
-                     'help':('OFSP','Image_Properties.dtml')},
-                    {'label':'View', 'action':'view_image_or_file',
-                     'help':('OFSP','Image_View.dtml')},
-                    {'label':'Security', 'action':'manage_access',
-                     'help':('OFSP','Image_Security.dtml')},
-                   )
+
+    # Grrrrr, need to replace the view option.
+    manage_options=tuple(map(
+        lambda o:
+        (o['label']=='View'
+         and
+         {'label':'View', 'action':'view_image_or_file',
+          'help':('OFSP','Image_View.dtml')}
+         or o)
+        , File.manage_options))
+        
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
     view_image_or_file =HTMLFile('imageView',globals())

@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -124,6 +124,9 @@ class BaseRequest:
     _auth=None
     _held=()
 
+    # Allow (reluctantly) access to unprotected attributes
+    __allow_access_to_unprotected_subobjects__=1
+        
     def __init__(self, other=None, **kw):
         """The constructor is not allowed to raise errors
         """
@@ -218,7 +221,7 @@ class BaseRequest:
     __repr__=__str__
 
 
-    def traverse(self, path, response=None):
+    def traverse(self, path, response=None, validated_hook=None):
         """Traverse the object space
 
         The REQUEST must already have a PARENTS item with at least one
@@ -264,8 +267,7 @@ class BaseRequest:
         try:
             # We build parents in the wrong order, so we
             # need to make sure we reverse it when we're doe.
-            if hasattr(object,'__roles__'): roles=object.__roles__
-            else:                           roles=UNSPECIFIED_ROLES
+            roles=getattr(object,'__roles__', UNSPECIFIED_ROLES)
         
             # if the top object has a __bobo_traverse__ method, then use it
             # to possibly traverse to an alternate top-level object.
@@ -296,9 +298,12 @@ class BaseRequest:
         
             steps=self.steps
             path.reverse()
+            pop=path.pop
+
+            # request['path']=path
+            
             while path:
-                entry_name=path[-1]
-                del path[-1]
+                entry_name=pop()
                 URL="%s/%s" % (URL,quote(entry_name))
                 got=0                   # Can't find it? XXX
                 if entry_name:
@@ -356,13 +361,11 @@ class BaseRequest:
                                 "Missing doc string at: %s" % URL)
                         else: return response.notFoundError("%s" % (URL))
 
-                    if hasattr(subobject,'__roles__'):
-                        roles=subobject.__roles__
-                    else:
-                        if not got:
-                            roleshack=entry_name+'__roles__'
-                            if hasattr(object, roleshack):
-                                roles=getattr(object, roleshack)
+                    r=getattr(subobject, '__roles__', UNSPECIFIED_ROLES)
+                    if r is not UNSPECIFIED_ROLES:
+                        roles=r
+                    elif not got:
+                        roles=getattr(subobject, entry_name+'__roles__', roles)
     
                     # Promote subobject to object
                     parents.append(object)
@@ -377,7 +380,7 @@ class BaseRequest:
                             and getattr(object, method) is not None
                             ):
                             request._hacked_path=1
-                            path=[method]
+                            path.append(method)
                         else:
                             if (hasattr(object, '__call__') and
                                 hasattr(object.__call__,'__roles__')):
@@ -458,8 +461,7 @@ class BaseRequest:
     
         steps=join(steps[:-i],'/')
         if user is not None:
-            # Try to set a watermark on the user object.
-            user._v__marker__=_marker
+            if validated_hook is not None: validated_hook(self, user)
             request['AUTHENTICATED_USER']=user
             request['AUTHENTICATION_PATH']=steps
 

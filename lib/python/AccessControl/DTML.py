@@ -82,113 +82,91 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+'''Add security system support to Document Templates
 
-"""Standard management interface support
+$Id: DTML.py,v 1.2 2000/05/11 18:54:13 jim Exp $''' 
+__version__='$Revision: 1.2 $'[11:-2]
 
-$Id: Management.py,v 1.31 2000/05/11 18:54:13 jim Exp $"""
+from DocumentTemplate import DT_Util
+import SecurityManagement
 
-__version__='$Revision: 1.31 $'[11:-2]
+# Allow access to unprotected attributes
+DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1
+DT_Util.string.__allow_access_to_unprotected_subobjects__=1
+DT_Util.math.__allow_access_to_unprotected_subobjects__=1
+DT_Util.whrandom.__allow_access_to_unprotected_subobjects__=1
 
-import sys, Globals, ExtensionClass, urllib
-from Dialogs import MessageDialog
-from Globals import HTMLFile
-from string import split, join, find
-from AccessControl import getSecurityManager
+try: DT_Util.random.__allow_access_to_unprotected_subobjects__=1
+except: pass
 
-class Tabs(ExtensionClass.Base):
-    """Mix-in provides management folder tab support."""
+# Add security testing capabilities
 
-    manage_tabs__roles__=('Anonymous',)
-    manage_tabs     =HTMLFile('manage_tabs', globals())
-    
+class DTMLSecurityAPI:
+    """API for performing security checks in DTML using '_' methods.
+    """
 
-    manage_options  =()
+    def SecurityValidate(md, inst, parent, name, value):
+        """Validate access.
 
-    filtered_manage_options__roles__=None
-    def filtered_manage_options(self, REQUEST=None):
-
-        validate=getSecurityManager().validate
+        Arguments:
         
-        result=[]
-
-        try: options=tuple(self.manage_options)
-        except: options=tuple(self.manage_options())
-
-        for d in options:
-
-            filter=d.get('filter', None)
-            if filter is not None and not filter(self):
-                continue
-
-            path=d.get('path', None)
-            if path is None: path=d['action']
-
-            o=self.unrestrictedTraverse(path, None)
-            if o is None: continue
-
-            try:
-                if validate(value=o):
-                    result.append(d)
-            except:
-                if not hasattr(o, '__roles__'):
-                    result.append(d)
-
-        return result
-                    
-            
-    manage_workspace__roles__=('Anonymous',)
-    def manage_workspace(self, REQUEST):
-        """Dispatch to first interface in manage_options
+        accessed -- the object that was being accessed
+        
+        container -- the object the value was found in
+        
+        name -- The name used to access the value
+        
+        value -- The value retrieved though the access.
+        
+        The arguments may be provided as keyword arguments. Some of these
+        arguments may be ommitted, however, the policy may reject access
+        in some cases when arguments are ommitted.  It is best to provide
+        all the values possible.
         """
-        options=self.filtered_manage_options(REQUEST)
-        try:
-            m=options[0]['action']
-            if m=='manage_workspace': raise TypeError
-        except:
-            raise 'Unauthorized', (
-                'You are not authorized to view this object.<p>')
+        return (SecurityManagement
+                .getSecurityManager()
+                .validate(inst, parent, name, value)
+                )
 
-        if find(m,'/'):
-            raise 'Redirect', (
-                "%s/%s" % (REQUEST['URL1'], m))
+    def SecurityValidateValue(md, value):
+        """Convenience for common case of simple value validation.
+        """
+        return (SecurityManagement
+                .getSecurityManager()
+                .validateValue(value)
+                )
+
+    def SecurityCheckPermission(md, permission, object):
+        """Check whether the security context allows the given permission on
+        the given object.
+
+        Arguments:
         
-        return getattr(self, m)(self, REQUEST)
-    
-    
-    def tabs_path_info(self, script, path,
-                       # Static vars
-                       quote=urllib.quote,
-                       ):
-        url=script
-        out=[]
-        while path[:1]=='/': path=path[1:]
-        while path[-1:]=='/': path=path[:-1]
-        while script[:1]=='/': script=script[1:]
-        while script[-1:]=='/': script=script[:-1]
-        path=split(path,'/')[:-1]
-        if script: path=[script]+path
-        if not path: return ''
-        script=''
-        last=path[-1]
-        del path[-1]
-        for p in path:
-            script="%s/%s" % (script, quote(p))
-            out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
-        out.append(last)
-        return join(out,'&nbsp;/&nbsp;')
+        permission -- A permission name
+        
+        object -- The object being accessed according to the permission
+        """
+        return (SecurityManagement
+                .getSecurityManager()
+                .checkPermission(permission, object)
+                )
 
-Globals.default__class_init__(Tabs)
+    def SecurityGetUser(md):
+        """Gen the current authenticated user"""
+        return (SecurityManagement
+                .getSecurityManager()
+                .getUser()
+                )
 
-class Navigation(ExtensionClass.Base):
-    """Basic (very) navigation UI support"""
+    def SecurityCalledByExecutable(md):
+        """Return a boolean value indicating if this context was called
+        by an executable"""
+        r = (SecurityManagement
+             .getSecurityManager()
+             .calledByExecutable()
+             )
+        if r > 0: return r-1
+        return r
 
-    manage          =HTMLFile('manage', globals())
-    manage_menu     =HTMLFile('menu', globals())
-    manage_copyright=HTMLFile('copyright', globals())
-    manage_copyright__roles__=None
+DT_Util.TemplateDict.__dict__.update(DTMLSecurityAPI.__dict__)
 
-    __ac_permissions__=(
-        ('View management screens', ('manage', 'manage_menu',)),
-        )
-
-Globals.default__class_init__(Navigation)

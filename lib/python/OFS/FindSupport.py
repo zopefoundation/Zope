@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -93,8 +93,7 @@ from Globals import HTMLFile
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict, cDocument
 from DateTime import DateTime
 from string import find
-
-
+from AccessControl import getSecurityManager
 
 class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
@@ -110,6 +109,11 @@ class FindSupport(ExtensionClass.Base):
           'manage_findResult')),
         )
     
+    manage_options=(
+        {'label':'Find', 'action':'manage_findFrame', 'target':'manage_main',
+         'help':('OFSP','Find.dtml')},         
+        )
+
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
@@ -136,8 +140,6 @@ class FindSupport(ExtensionClass.Base):
             if obj_expr:
                 # Setup expr machinations
                 md=td()
-                if hasattr(REQUEST, 'AUTHENTICATED_USER'):
-                    md.AUTHENTICATED_USER=REQUEST.AUTHENTICATED_USER
                 obj_expr=(Eval(obj_expr, expr_globals), md, md._push, md._pop)
 
         base=obj
@@ -230,8 +232,6 @@ class FindSupport(ExtensionClass.Base):
             if obj_expr:
                 # Setup expr machinations
                 md=td()
-                if hasattr(REQUEST, 'AUTHENTICATED_USER'):
-                    md.AUTHENTICATED_USER=REQUEST.AUTHENTICATED_USER
                 obj_expr=(Eval(obj_expr, expr_globals), md, md._push, md._pop)
 
         base=obj
@@ -299,9 +299,10 @@ class FindSupport(ExtensionClass.Base):
 
 
 
-class td(TemplateDict, cDocument):
-    pass
+class td(TemplateDict):
 
+    def validate(self, inst, parent, name, value, md):
+        return getSecurityManager().validate(inst, parent, name, value)
 
 
 def expr_match(ob, ed, c=InstanceDict, r=0):

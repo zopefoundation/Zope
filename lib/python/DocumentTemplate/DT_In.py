@@ -382,8 +382,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.38 1999/08/27 14:56:27 petrilli Exp $'
-__version__='$Revision: 1.38 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.39 2000/05/11 18:54:14 jim Exp $'
+__version__='$Revision: 1.39 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError
@@ -592,7 +592,7 @@ class InClass:
                     client=sequence[index]
 
                     if validate is not None:
-                        try: vv=validate(sequence,sequence,index,client,md)
+                        try: vv=validate(sequence,sequence,None,client,md)
                         except: vv=0
                         if not vv:
                             if (params.has_key('skip_unauthorized') and
@@ -672,7 +672,7 @@ class InClass:
                     client=sequence[index]
 
                     if validate is not None:
-                        try: vv=validate(sequence,sequence,index,client,md)
+                        try: vv=validate(sequence,sequence,None,client,md)
                         except: vv=0
                         if not vv:
                             if (self.args.has_key('skip_unauthorized') and

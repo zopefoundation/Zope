@@ -1,0 +1,35 @@
+<dtml-var standard_html_header><h1>
+DTML 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">Document</a>
+or 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Method.dtml">Method</a>
+Proxy</h1>
+<p> This view allows you to manage proxy roles for a document or method. </p>
+<p> 
+Proxy roles replace the roles of the user who is viewing the
+document or method to allow the document additional access or to limit the
+access the document or method has.
+</p>
+<p>
+To see how proxy roles can be used to limit access, suppose we want to
+assure that a document can only access public resources. We might do
+this if we allowed untrusted users to edit the document. All we need
+to do is to set the proxy roles to Anonymous. As long as we don't let
+untrusted users change the proxy roles, we can let them edit the
+document freely without worrying about giving them the ability to have
+protected resources accessed when the document is viewed.
+</p>
+<p>
+To see how proxy roles can be used to grant access, we might have a
+method that performs some management task for an unpriviledged user.
+For example, we might have a method that creates a folder for a user
+and makes them the owner.  The method needs to call the
+'manage_addFolder' method to add the folder. Perhaps the
+'manage_addFolder' requires the 'Manager' role. Simply give the method
+the 'Manager' proxy role.  This effectively allows the unpriviledged
+user to create a folder, but only though the special method.
+</p>
+
+<p> Select the role(s) you wish to assign to the document from the
+		  <tt>Proxy Roles</tt> multiple select list and click the
+		  <tt>Change</tt> button to set proxy roles for the document. </p><dtml-var standard_html_footer>

@@ -90,7 +90,8 @@ need the object's ordinary permissions intact so we can manage it.
 """
 
 import ExtensionClass, Acquisition
-from AccessControl.Permission import pname
+from Permission import pname
+from Owned import UnownableOwner
 
 class RoleManager:
 
@@ -181,6 +182,8 @@ def setPermissionMapping(name, obj, v):
     elif obj.__dict__.has_key(name): delattr(obj, name)
 
 class PM(ExtensionClass.Base):
+    _owner=UnownableOwner
+
     _View_Permission='_View_Permission'
         
     def __getattr__(self, name):

@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -129,13 +129,11 @@ class Resource(ExtensionClass.Base):
         else:
             try:    method=object.aq_acquire(methodname)
             except: method=None
-        if (method is not None) and hasattr(method, '__roles__'):
-            roles=method.__roles__
-            user=REQUEST.get('AUTHENTICATED_USER', None)
-            __traceback_info__=methodname, str(roles), user
-            if (not hasattr(user, 'hasRole') or not user.hasRole(None, roles)):
-                raise 'Unauthorized', msg
-            return 1
+
+        if method is not None:
+            try: return getSecurityManager().validateValue(method)
+            except: pass
+
         raise 'Unauthorized', msg
 
 

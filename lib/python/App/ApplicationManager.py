@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 
-import sys,os,time,string,Globals, Acquisition, os
+import sys,os,time,string,Globals, Acquisition, os, Undo
 from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
@@ -114,15 +114,18 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     icon='p_/DatabaseManagement_icon'
 
     manage_options=(
+        (
         {'label':'Database', 'action':'manage_main',
-        'help':('OFSP','Database-Management_Database.dtml')},
+         'help':('OFSP','Database-Management_Database.dtml')},
         {'label':'Cache Parameters', 'action':'manage_cacheParameters',
-        'help':('OFSP','Database-Management_Cache-Parameters.dtml')},
+         'help':('OFSP','Database-Management_Cache-Parameters.dtml')},
         {'label':'Flush Cache', 'action':'manage_cacheGC',
-        'help':('OFSP','Database-Management_Flush-Cache.dtml')},
-        {'label':'Undo', 'action':'manage_UndoForm',
-        'help':('OFSP','Database-Management_Undo.dtml')},
+         'help':('OFSP','Database-Management_Flush-Cache.dtml')},
         )
+        +SimpleItem.Item.manage_options
+        )
+
+Globals.default__class_init__(DatabaseManager)
 
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     """Version management"""
@@ -133,10 +136,14 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     icon='p_/VersionManagement_icon'
 
     manage_options=(
+        (
         {'label':'Version', 'action':'manage_main',
          'help':('OFSP','Version-Management_Version.dtml')},
         )
+        +SimpleItem.Item.manage_options
+        )
         
+Globals.default__class_init__(VersionManager)
 
 
 
@@ -148,7 +155,7 @@ _v_rst=None
 class ApplicationManager(Folder,CacheManager):
     """System management"""
 
-    __roles__=['Manager']
+    __roles__=('Manager',)
     isPrincipiaFolderish=1
     Database=DatabaseManager()
     Versions=VersionManager()
@@ -175,12 +182,13 @@ class ApplicationManager(Folder,CacheManager):
         )
 
     manage_options=(
+        (
         {'label':'Contents', 'action':'manage_main',
          'help':('OFSP','Control-Panel_Contents.dtml')},
-        {'label':'Undo', 'action':'manage_UndoForm',
-         'help':('OFSP','Control-Panel_Undo.dtml')},
         )
-
+        +Undo.UndoSupport.manage_options
+        )
+    
     id        ='Control_Panel'
     name=title='Control Panel'
     meta_type ='Control Panel'

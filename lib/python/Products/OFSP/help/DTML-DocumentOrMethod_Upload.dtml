@@ -1,0 +1,12 @@
+<dtml-var standard_html_header><h1>
+DTML
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">Document</a>
+or 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Method.dtml">Method</a>
+Upload</h1>
+<p> This view allows you to upload DTML files. </p>
+<p> Use this view to completely replace the contents of a document or method
+		  with the contents of an uploaded text file from your local computer. Click the
+		  <tt>Browse...</tt> button to locate a file to upload. Click the
+		  <tt>Change</tt> button to replace the document's contents with the
+		  uploaded file. </p><dtml-var standard_html_footer>

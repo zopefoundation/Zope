@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -111,14 +111,16 @@ class Version(Persistent,Implicit,RoleManager,Item):
     meta_type='Version'
 
     manage_options=(
+        (
         {'label':'Join/Leave', 'action':'manage_main',
          'help':('OFSP','Version_Join-Leave.dtml')},
         {'label':'Save/Discard', 'action':'manage_end',
          'help':('OFSP','Version_Save-Discard.dtml')},
         {'label':'Properties', 'action':'manage_editForm',
          'help':('OFSP','Version_Properties.dtml')},
-        {'label':'Security', 'action':'manage_access',
-         'help':('OFSP','Version_Security.dtml')},
+        )
+        +Item.manage_options
+        +RoleManager.manage_options
         )
 
     __ac_permissions__=(

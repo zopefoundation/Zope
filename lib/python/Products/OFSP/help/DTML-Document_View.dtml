@@ -1,3 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">DTML Document</a>&gt;View</h1>
-<p> This view allows you to preview the document. </p><dtml-var standard_html_footer>

@@ -82,113 +82,25 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+__doc__='''Collect rules for access to objects that don\'t have roles.
 
-"""Standard management interface support
+$Id: SimpleObjectPolicies.py,v 1.2 2000/05/11 18:54:13 jim Exp $''' 
+__version__='$Revision: 1.2 $'[11:-2] 
 
-$Id: Management.py,v 1.31 2000/05/11 18:54:13 jim Exp $"""
+import Record
 
-__version__='$Revision: 1.31 $'[11:-2]
+# Allow access to unprotected attributes
+Record.Record.__allow_access_to_unprotected_subobjects__=1
 
-import sys, Globals, ExtensionClass, urllib
-from Dialogs import MessageDialog
-from Globals import HTMLFile
-from string import split, join, find
-from AccessControl import getSecurityManager
+ContainerAssertions={
+    type(()): 1,
+    type([]): 1,
+    type({}): 1,
+    }
 
-class Tabs(ExtensionClass.Base):
-    """Mix-in provides management folder tab support."""
+from DocumentTemplate.cDocumentTemplate import InstanceDict
+ContainerAssertions[InstanceDict]=1
 
-    manage_tabs__roles__=('Anonymous',)
-    manage_tabs     =HTMLFile('manage_tabs', globals())
+Containers=ContainerAssertions.get
+
     
-
-    manage_options  =()
-
-    filtered_manage_options__roles__=None
-    def filtered_manage_options(self, REQUEST=None):
-
-        validate=getSecurityManager().validate
-        
-        result=[]
-
-        try: options=tuple(self.manage_options)
-        except: options=tuple(self.manage_options())
-
-        for d in options:
-
-            filter=d.get('filter', None)
-            if filter is not None and not filter(self):
-                continue
-
-            path=d.get('path', None)
-            if path is None: path=d['action']
-
-            o=self.unrestrictedTraverse(path, None)
-            if o is None: continue
-
-            try:
-                if validate(value=o):
-                    result.append(d)
-            except:
-                if not hasattr(o, '__roles__'):
-                    result.append(d)
-
-        return result
-                    
-            
-    manage_workspace__roles__=('Anonymous',)
-    def manage_workspace(self, REQUEST):
-        """Dispatch to first interface in manage_options
-        """
-        options=self.filtered_manage_options(REQUEST)
-        try:
-            m=options[0]['action']
-            if m=='manage_workspace': raise TypeError
-        except:
-            raise 'Unauthorized', (
-                'You are not authorized to view this object.<p>')
-
-        if find(m,'/'):
-            raise 'Redirect', (
-                "%s/%s" % (REQUEST['URL1'], m))
-        
-        return getattr(self, m)(self, REQUEST)
-    
-    
-    def tabs_path_info(self, script, path,
-                       # Static vars
-                       quote=urllib.quote,
-                       ):
-        url=script
-        out=[]
-        while path[:1]=='/': path=path[1:]
-        while path[-1:]=='/': path=path[:-1]
-        while script[:1]=='/': script=script[1:]
-        while script[-1:]=='/': script=script[:-1]
-        path=split(path,'/')[:-1]
-        if script: path=[script]+path
-        if not path: return ''
-        script=''
-        last=path[-1]
-        del path[-1]
-        for p in path:
-            script="%s/%s" % (script, quote(p))
-            out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
-        out.append(last)
-        return join(out,'&nbsp;/&nbsp;')
-
-Globals.default__class_init__(Tabs)
-
-class Navigation(ExtensionClass.Base):
-    """Basic (very) navigation UI support"""
-
-    manage          =HTMLFile('manage', globals())
-    manage_menu     =HTMLFile('menu', globals())
-    manage_copyright=HTMLFile('copyright', globals())
-    manage_copyright__roles__=None
-
-    __ac_permissions__=(
-        ('View management screens', ('manage', 'manage_menu',)),
-        )
-
-Globals.default__class_init__(Navigation)

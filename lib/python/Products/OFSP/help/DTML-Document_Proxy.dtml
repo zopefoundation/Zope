@@ -1,8 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">DTML Document</a>&gt;Proxy</h1>
-<p> This view allows you to manage proxy roles for a document. </p>
-<p> Proxy roles supplement the roles of the user who is viewing the
-		  document in order to allow the document additional access. </p>
-<p> Select the role(s) you wish to assign to the document from the
-		  <tt>Proxy Roles</tt> multiple select list and click the
-		  <tt>Change</tt> button to set proxy roles for the document. </p><dtml-var standard_html_footer>

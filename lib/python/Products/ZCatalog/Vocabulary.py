@@ -85,7 +85,7 @@
 """ZCatalog product"""
 
 from Globals import HTMLFile, MessageDialog
-import Globals
+import Globals, AccessControl.Role
 from Acquisition import Implicit
 from Persistence import Persistent
 from OFS.SimpleItem import Item
@@ -104,7 +104,9 @@ def manage_addVocabulary(self, id, title, globbing=None, REQUEST=None):
         return self.manage_main(self,REQUEST)
 
 
-class Vocabulary(Item, Persistent, Implicit):
+class Vocabulary(Item, Persistent, Implicit,
+                 AccessControl.Role.RoleManager,
+                 ):
     """
     A Vocabulary is a user managable relization of a Lexicon object.
 
@@ -115,14 +117,14 @@ class Vocabulary(Item, Persistent, Implicit):
 
     
     manage_options=(
-            
-##        {'label': 'Manage', 'action': 'manage_main',
-##         'target': 'manage_main'},
-
+        (
         {'label': 'Vocabulary', 'action': 'manage_vocabulary',
          'target': 'manage_main'},
         {'label': 'Query', 'action': 'manage_query',
          'target': 'manage_main'},
+        )
+        +Item.manage_options
+        +AccessControl.Role.RoleManager.manage_options
         )
 
     __ac_permissions__=(

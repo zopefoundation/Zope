@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.81 2000/04/19 17:50:43 jeffrey Exp $'''
-__version__='$Revision: 1.81 $'[11:-2]
+$Id: DA.py,v 1.82 2000/05/11 18:54:16 jim Exp $'''
+__version__='$Revision: 1.82 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -97,7 +97,6 @@ from cStringIO import StringIO
 import sys, Globals, OFS.SimpleItem, AccessControl.Role
 from string import atoi, find, join, split
 import DocumentTemplate, sqlvar, sqltest, sqlgroup
-from AccessControl.User import verify_watermark
 from DocumentTemplate.DT_Util import cDocument
 from time import time
 from zlib import compress, decompress
@@ -108,6 +107,7 @@ import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
+from AccessControl import getSecurityManager
 
 try: from IOBTree import Bucket
 except: Bucket=lambda:{}
@@ -147,14 +147,16 @@ class DA(
     template_class=SQL
     
     manage_options=(
+        (
         {'label':'Edit', 'action':'manage_main',
          'help':('ZSQLMethods','Z-SQL-Method_Edit.dtml')},
         {'label':'Test', 'action':'manage_testForm',
          'help':('ZSQLMethods','Z-SQL-Method_Test.dtml')},
         {'label':'Advanced', 'action':'manage_advancedForm',
          'help':('ZSQLMethods','Z-SQL-Method_Advanced.dtml')},
-        {'label':'Security', 'action':'manage_access',
-         'help':('ZSQLMethods','Z-SQL-Method_Security.dtml')},
+        )
+        +OFS.SimpleItem.Item.manage_options
+        +AccessControl.Role.RoleManager.manage_options
         )
  
     # Specify how individual operations add up to "permissions":
@@ -425,19 +427,10 @@ class DA(
         argdata['sql_delimiter']='\0'
         argdata['sql_quote__']=dbc.sql_quote__
 
-        # Also need the authenticated user.
-        auth_user=REQUEST.get('AUTHENTICATED_USER', None)
-        if auth_user is None:
-            auth_user=getattr(self, 'REQUEST', None)
-            if auth_user is not None:
-                try: auth_user=auth_user.get('AUTHENTICATED_USER', None)
-                except: auth_user=None
-                
-        if auth_user is not None:
-            verify_watermark(auth_user)
-            argdata['AUTHENTICATED_USER']=auth_user
-
-        query=apply(self.template, (p, argdata))
+        security=getSecurityManager()
+        security.addContext(self)
+        try: query=apply(self.template, (p, argdata))
+        finally: security.removeContext(self)
 
         if src__: return query
 

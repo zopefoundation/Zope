@@ -82,7 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""SMTP mail objects"""
+"""SMTP mail objects
+
+$Id: MailHost.py,v 1.48 2000/05/11 18:54:15 jim Exp $"
+__version__ = "$Revision: 1.48 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -93,8 +96,6 @@ import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.47 2000/04/21 14:10:20 tseaver Exp $ 
-__version__ = "$Revision: 1.47 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -118,16 +119,18 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     timeout=1.0
 
-    manage_options=({'icon':'', 'label':'Edit',
-                     'action':'manage_main', 'target':'manage_main',
-                     'help':('MailHost','Mail-Host_Edit.dtml')}, 
-                    {'icon':'', 'label':'Security',
-                     'action':'manage_access', 'target':'manage_main',
-                     'help':('MailHost','Mail-Host_Security.dtml')},
-                   )
+    manage_options=(
+        (
+        {'icon':'', 'label':'Edit',
+         'action':'manage_main', 'target':'manage_main',
+         'help':('MailHost','Mail-Host_Edit.dtml')},
+        )
+        +OFS.SimpleItem.Item.manage_options
+        +RoleManager.manage_options
+        )
 
     __ac_permissions__=(
-        ('View management screens', ('manage',)),
+        ('View management screens', ('manage','manage_main')),
         ('Change configuration', ('manage_makeChanges',)),
         ('Use mailhost services',('',)),
         )
@@ -221,9 +224,13 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         smtpserver.sendmail(headers['from'], headers['to'], messageText)
 
     def simple_send(self, mto, mfrom, subject, body):
-        body="from: %s\nto: %s\nsubject: %s\n\n%s" % (mfrom, mto, subject, body)
+        body="from: %s\nto: %s\nsubject: %s\n\n%s" % (
+            mfrom, mto, subject, body)
         mailserver = SMTP(self.smtphost, self.smtpport)
         mailserver.sendmail(mfrom, mto, body)
+
+        
+Globals.default__class_init__(MailBase)
 
 class MailHost(Persistent, MailBase):
     "persistent version"

@@ -87,17 +87,15 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.86 2000/03/28 16:58:55 michel Exp $"""
+$Id: Folder.py,v 1.87 2000/05/11 18:54:14 jim Exp $"""
 
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
-import Globals, SimpleItem
-from ObjectManager import ObjectManager
-from PropertyManager import PropertyManager
-from AccessControl.Role import RoleManager
-from webdav.Collection import Collection
-from FindSupport import FindSupport
+import Globals, SimpleItem, ObjectManager, PropertyManager
+import AccessControl.Role, webdav.Collection, FindSupport
+
 from Globals import HTMLFile
+from AccessControl import getSecurityManager
 
 
 manage_addFolderForm=HTMLFile('folderAdd', globals())
@@ -116,29 +114,37 @@ def manage_addFolder(self, id, title='',
     ob.id=id
     ob.title=title
     self._setObject(id, ob)
-    try: user=REQUEST['AUTHENTICATED_USER']
-    except: user=None
+    ob=self._getOb(id)
+
+    checkPermission=getSecurityManager().checkPermission    
+
     if createUserF:
-        if (user is not None) and not (
-            user.has_permission('Add User Folders', self)):
+        if not checkPermission('Add User Folders', ob):
             raise 'Unauthorized', (
                   'You are not authorized to add User Folders.'
                   )
         ob.manage_addUserFolder()
+
     if createPublic:
-        if (user is not None) and not (
-            user.has_permission('Add Documents, Images, and Files', self)):
+        if not checkPermission('Add Documents, Images, and Files', ob):
             raise 'Unauthorized', (
                   'You are not authorized to add DTML Documents.'
                   )
         ob.manage_addDTMLDocument(id='index_html', title='')
+
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
 
 
-class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
-             SimpleItem.Item, FindSupport):
+class Folder(
+    ObjectManager.ObjectManager,
+    PropertyManager.PropertyManager,
+    AccessControl.Role.RoleManager,
+    webdav.Collection.Collection,
+    SimpleItem.Item,
+    FindSupport.FindSupport,
+    ):
     """
     Folders are basic container objects that provide a standard
     interface for object management. Folder objects also implement
@@ -149,21 +155,16 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
     _properties=({'id':'title', 'type': 'string'},)
 
     manage_options=(
-        {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','Folder_Contents.dtml')},
+        ObjectManager.ObjectManager.manage_options+
+        PropertyManager.PropertyManager.manage_options+
+        (
         {'label':'View', 'action':'index_html',
          'help':('OFSP','Folder_View.dtml')},
-        {'label':'Properties', 'action':'manage_propertiesForm',
-         'help':('OFSP','Folder_Properties.dtml')},         
-        {'label':'Import/Export', 'action':'manage_importExportForm',
-         'help':('OFSP','Folder_Import-Export.dtml')},         
-        {'label':'Security', 'action':'manage_access',
-         'help':('OFSP','Folder_Security.dtml')},         
-        {'label':'Undo', 'action':'manage_UndoForm',
-         'help':('OFSP','Folder_Undo.dtml')},         
-        {'label':'Find', 'action':'manage_findFrame', 'target':'manage_main',
-         'help':('OFSP','Folder_Find.dtml')},         
-    )
+        )+
+        FindSupport.FindSupport.manage_options+
+        AccessControl.Role.RoleManager.manage_options+
+        SimpleItem.Item.manage_options
+        )
 
     __ac_permissions__=()
 

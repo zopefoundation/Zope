@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.34 2000/03/09 20:07:56 brian Exp $"
+"$Id: DT_String.py,v 1.35 2000/05/11 18:54:14 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -464,8 +464,6 @@ class String:
             if globals: push(globals)
             if mapping:
                 push(mapping)
-                if hasattr(mapping,'AUTHENTICATED_USER'):
-                    md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
             md.validate=self.validate
             if client is not None:
                 if type(client)==type(()):

@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -161,6 +161,12 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                              'manage_delProperties',
                              'manage_changeProperties',)),
     """
+
+    manage_options=(
+        {'label':'Properties', 'action':'manage_propertiesForm',
+         'help':('OFSP','Properties.dtml')},         
+        )
+    
     manage_propertiesForm=HTMLFile('properties', globals(),
                                    property_extensible_schema__=1)
 

@@ -84,9 +84,8 @@
 ##############################################################################
 __doc__='''short description
 
-
-$Id: Undo.py,v 1.19 2000/05/09 19:06:39 jim Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Undo.py,v 1.20 2000/05/11 18:54:14 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -99,6 +98,11 @@ class UndoSupport(ExtensionClass.Base):
             'manage_undo_transactions', 'undoable_transactions',
             'manage_UndoForm',
             )),
+        )
+
+    manage_options=(
+        {'label':'Undo', 'action':'manage_UndoForm',
+         'help':('OFSP','Undo.dtml')},
         )
 
     manage_UndoForm=Globals.HTMLFile(

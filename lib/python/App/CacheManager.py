@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.16 1999/10/07 19:53:25 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: CacheManager.py,v 1.17 2000/05/11 18:54:13 jim Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals, time, sys
 
@@ -298,3 +298,6 @@ class CacheManager:
         else:
             # ZODB 3
             return db.cacheExtremeDetail()
+
+Globals.default__class_init__(CacheManager)
+

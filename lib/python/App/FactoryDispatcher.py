@@ -145,7 +145,7 @@ class FactoryDispatcher(Acquisition.Implicit):
         raise AttributeError, name
 
     # Provide acquired indicators for critical OM methods:
-    _setObject=Acquisition.Acquired
+    _setObject=_getOb=Acquisition.Acquired
 
     # Provide a replacement for manage_main that does a redirection:
     def manage_main(trueself, self, REQUEST, update_menu=0):

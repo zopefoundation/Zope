@@ -1,5 +1,4 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Undo</h1>
+<dtml-var standard_html_header><h1>Undo</h1>
 <p> This view allows you to undo changes to Zope's database. </p>
 <p> Zope allows you to undo changes to its database. Changes are
 		  defined in terms of transactions which group together related changes. Each

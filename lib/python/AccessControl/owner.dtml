@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>&dtml-id; Owner</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<dtml-var manage_tabs>
+
+<dtml-var title_and_id> is 
+<dtml-if owner_info>
+  <dtml-with owner_info mapping>
+
+      owned <dtml-if explicit> directly
+      <dtml-else> indirectly (through acquisition)
+      </dtml-if> by &dtml-id; (&dtml-path;).
+
+      <dtml-if userCanChangeOwnershipType>
+         <form action="manage_changeOwnershipType">
+	    <dtml-if explicit>
+               <input type="hidden" name="explicit" value="">
+               <input type="submit" value="Make ownership implicit (acquired)">
+	    <dtml-else>
+               <input type="hidden" name="explicit" value="y">
+               <input type="submit" value="Make ownership explicit">
+	    </dtml-if>
+         </form>
+      </dtml-if>
+
+  </dtml-with>
+<dtml-else>
+  unowned.
+</dtml-if>
+
+<dtml-if userCanTakeOwnership>
+  <form action="manage_takeOwnership">
+     <input type="submit" value="Take ownership">
+  </form>
+</dtml-if>
+
+</BODY></HTML>

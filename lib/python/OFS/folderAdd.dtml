@@ -42,7 +42,7 @@ information for the Folder.
 </TR>
 <TR><TD COLSPAN="2"><BR></TD></TR>
 
-<dtml-if "AUTHENTICATED_USER.has_permission('Add Documents, Images, and Files',this())">
+<dtml-if "_.SecurityCheckPermission('Add Documents, Images, and Files',this())">
 <TR>
  <TD ALIGN="TOP" COLSPAN="2">
 <INPUT TYPE="CHECKBOX" NAME="createPublic:int" VALUE="1" CHECKED ID="cbCreatePublic">
@@ -51,7 +51,7 @@ information for the Folder.
 </TR>
 </dtml-if>
 
-<dtml-if "AUTHENTICATED_USER.has_permission('Add User Folders',this())">
+<dtml-if "_.SecurityCheckPermission('Add User Folders',this())">
 <TR>
  <TD ALIGN="TOP" COLSPAN="2">
 <INPUT TYPE="CHECKBOX" NAME="createUserF:int" VALUE="1" CHECKED ID="cbCreateUserF">

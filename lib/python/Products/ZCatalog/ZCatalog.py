@@ -101,6 +101,7 @@ from Catalog import Catalog, orify
 from SearchIndex import UnIndex, UnTextIndex
 from Vocabulary import Vocabulary
 import IOBTree
+from AccessControl import getSecurityManager
 
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
@@ -166,9 +167,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     icon='misc_/ZCatalog/ZCatalog.gif'
 
     manage_options=(  
-        {'label': 'Contents', 'action': 'manage_main',
-         'target': 'manage_main',
-         'help':('ZCatalog','ZCatalog_Contents.dtml')},
         {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
          'target': 'manage_main',
          'help':('ZCatalog','ZCatalog_Cataloged-Objects.dtml')},
@@ -184,7 +182,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         {'label': 'Status', 'action': 'manage_catalogStatus', 
          'target':'manage_main',
          'help':('ZCatalog','ZCatalog_Status.dtml')},
-        )
+        )+Folder.manage_options
 
     __ac_permissions__=(
 
@@ -540,8 +538,6 @@ class ZCatalog(Folder, Persistent, Implicit):
             if obj_expr:
                 # Setup expr machinations
                 md=td()
-                if hasattr(REQUEST, 'AUTHENTICATED_USER'):
-                    md.AUTHENTICATED_USER=REQUEST.AUTHENTICATED_USER
                 obj_expr=(Eval(obj_expr, expr_globals), md, md._push, md._pop)
 
         base=obj
@@ -633,8 +629,10 @@ def absattr(attr):
     return attr
 
 
-class td(TemplateDict, cDocument):
-    pass
+class td(TemplateDict):
+
+    def validate(self, inst, parent, name, value, md):
+        return getSecurityManager().validate(inst, parent, name, value)
 
 def expr_match(ob, ed, c=InstanceDict, r=0):
     e, md, push, pop=ed

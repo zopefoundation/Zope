@@ -84,9 +84,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-
-$Id: Connection.py,v 1.22 2000/05/04 13:32:06 shane Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: Connection.py,v 1.23 2000/05/11 18:54:16 jim Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -106,10 +105,13 @@ class Connection(
 
     # Specify definitions for tabs:
     manage_options=(
+        (
         {'label':'Status', 'action':'manage_main'},
         {'label':'Properties', 'action':'manage_properties'},
         {'label':'Test', 'action':'manage_testForm'},
-        {'label':'Security',   'action':'manage_access'},
+        )
+        +OFS.SimpleItem.Item.manage_options
+        +AccessControl.Role.RoleManager.manage_options
         )
  
     # Specify how individual operations add up to "permissions":

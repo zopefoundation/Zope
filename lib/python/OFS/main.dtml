@@ -54,10 +54,10 @@
   <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
   </dtml-if>
   </dtml-unless>
-  <dtml-if "AUTHENTICATED_USER.has_permission('Delete objects', this())">
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
   <INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
   </dtml-if>
-  <dtml-if "AUTHENTICATED_USER.has_permission('Import/Export objects', this())">
+  <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
   <INPUT TYPE="SUBMIT" NAME="manage_importExportForm:method" VALUE="Export...">
   </dtml-if>
   </TD>
@@ -79,9 +79,9 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
 </dtml-if>
 </FORM>
 
-<dtml-if "filtered_meta_types(AUTHENTICATED_USER)">
+<dtml-if filtered_meta_types>
 
-<dtml-if "_.len(filtered_meta_types(AUTHENTICATED_USER)) > 1">
+<dtml-if "_.len(filtered_meta_types) > 1">
 <TABLE ALIGN="LEFT">
 <TR>
 <TD VALIGN="MIDDLE">
@@ -95,7 +95,7 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
   <SELECT NAME=":method" ONCHANGE="location.href='<dtml-var URL1
   >/'+this.options[this.selectedIndex].value">
     <OPTION value="manage_workspace" DISABLED>Available Objects
-  <dtml-in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name>
+  <dtml-in filtered_meta_types mapping sort=name>
     <OPTION value="<dtml-var action fmt="url-quote">"><dtml-var name>
   </dtml-in>
   </SELECT>
@@ -107,7 +107,7 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
 <dtml-else>
   <FORM ACTION="<dtml-var URL1>/" METHOD="GET">
     To add a new item click &quot;Add&quot;.
-    <dtml-in "filtered_meta_types(AUTHENTICATED_USER)" mapping sort=name>
+    <dtml-in filtered_meta_types mapping sort=name>
       <input type=hidden name=":method" value="<dtml-var action fmt="url-quote">">
       <INPUT TYPE="SUBMIT" VALUE=" Add ">
     </dtml-in>

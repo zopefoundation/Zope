@@ -84,11 +84,11 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.88 2000/05/11 16:24:44 tseaver Exp $"""
+$Id: ObjectManager.py,v 1.89 2000/05/11 18:54:14 jim Exp $"""
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
-import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
+import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
@@ -98,6 +98,7 @@ from urllib import quote
 from cStringIO import StringIO
 import marshal
 import App.Common
+from AccessControl import getSecurityManager
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
 
@@ -108,7 +109,6 @@ class ObjectManager(
     App.Management.Tabs,
     Acquisition.Implicit,
     Persistent,
-    App.Undo.UndoSupport,
     Collection,
     ):
     """Generic object manager
@@ -139,10 +139,12 @@ class ObjectManager(
 
     manage_main=HTMLFile('main', globals())
 
-
     manage_options=(
-        {'label':'Contents', 'action':'manage_main'},
-    )
+        {'label':'Contents', 'action':'manage_main',
+         'help':('OFSP','ObjectManager_Contents.dtml')},
+        {'label':'Import/Export', 'action':'manage_importExportForm',
+         'help':('OFSP','ObjectManager_Import-Export.dtml')},         
+        )
 
     isAnObjectManager=1
 
@@ -175,8 +177,11 @@ class ObjectManager(
                 )
 
 
-    def filtered_meta_types(self, user):
+    def filtered_meta_types(self, user=None):
         "Those meta types for which a user has adequite permissions."
+
+        user=getSecurityManager().getUser()
+        
         meta_types=[]
         if callable(self.all_meta_types):
             all=self.all_meta_types()
@@ -235,14 +240,14 @@ class ObjectManager(
         self._objects=self._objects+({'id':id,'meta_type':t},)
         self._setOb(id,object)
         object=self._getOb(id)
+        object.manage_fixupOwnershipAfterAdd()
         object.manage_afterAdd(object, self)
         
         # Try to give user the local role "Owner", but only if
         # no local roles have been set on the object yet.
-        if hasattr(self, 'REQUEST') and type(self.REQUEST) != type('') and \
-           hasattr(object, '__ac_local_roles__'):
+        if hasattr(object, '__ac_local_roles__'):
             if object.__ac_local_roles__ is None:
-                user=self.REQUEST['AUTHENTICATED_USER']
+                user=getSecurityManager().getUser()
                 name=user.getUserName()
                 if name != 'Anonymous User':
                     object.manage_setLocalRoles(name, ['Owner'])
@@ -537,10 +542,10 @@ class ObjectManager(
         # check to see if we are acquiring our objectValues or not
         if not (len(REQUEST.PARENTS) > 1 and
                 self.objectValues() == REQUEST.PARENTS[1].objectValues()):
-            if REQUEST['AUTHENTICATED_USER'].allowed(
-                        self.manage_FTPlist,
-                        self.manage_FTPlist.__roles__):
-                mode=mode | 0770
+            try:
+                if getSecurityManager().validateValue(self.manage_FTPlist):
+                    mode=mode | 0770
+            except: pass
             if nobody.allowed(
                         self.manage_FTPlist,
                         self.manage_FTPlist.__roles__):

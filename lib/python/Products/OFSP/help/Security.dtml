@@ -1,5 +1,4 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Security</h1>
+<dtml-var standard_html_header><h1>Security</h1>
 <p> This view allows you to define security settings for this item.
 		  Security settings are defined in terms of roles and permissions. When a role is
 		  assigned to a permission, users with the given role will be able to perform

@@ -93,6 +93,7 @@ sys.path.insert(0, os.path.join(SOFTWARE_HOME, 'ZopeZODB3'))
 
 import ZODB, ZODB.ZApplication, imp
 import Globals, OFS.Application, sys
+import AccessControl.SecurityManagement, AccessControl.User
 
 Globals.BobobaseName = '%s/Data.fs' % Globals.data_dir
 Globals.DatabaseVersion='3'
@@ -128,6 +129,10 @@ Globals.opened.append(DB)
 import ClassFactory
 DB.setClassFactory(ClassFactory.ClassFactory)
 
+# "Log on" as system user
+AccessControl.SecurityManagement.newSecurityManager(
+    None, AccessControl.User.system)
+
 # Set up the "application" object that automagically opens
 # connections
 app=bobo_application=ZODB.ZApplication.ZApplicationWrapper(
@@ -140,10 +145,14 @@ OFS.Application.initialize(c)
 c._p_jar.close()
 del c
 
+# "Log off" as system user
+AccessControl.SecurityManagement.noSecurityManager()
+
+
 # This is sneaky, but we don't want to play with Main:
 sys.modules['Main']=sys.modules['Zope']
 
-import ZODB.POSException, ZPublisher, string, ZPublisher, AccessControl.User
+import ZODB.POSException, ZPublisher, string, ZPublisher
 import ExtensionClass
 from zLOG import LOG, INFO
 
@@ -212,3 +221,7 @@ def zpublisher_exception_hook(
         f(client, REQUEST, t, v, traceback)
         
     finally: traceback=None
+
+
+zpublisher_validated_hook=AccessControl.SecurityManagement.newSecurityManager
+__bobo_before__=AccessControl.SecurityManagement.noSecurityManager

@@ -82,11 +82,14 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.1 1999/06/22 14:14:47 michel Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.2 2000/05/11 18:54:16 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 class Lazy:
+
+    # Allow (reluctantly) access to unprotected attributes
+    __allow_access_to_unprotected_subobjects__=1
 
     def __repr__(self): return `list(self)`
     

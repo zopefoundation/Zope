@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -93,12 +93,13 @@ from OFS.content_types import guess_content_type
 from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
-from AccessControl.User import verify_watermark
 from webdav.common import rfc1123_date
 from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
 from urllib import quote
 import ts_regex, Globals, sys, Acquisition
+from AccessControl import getSecurityManager
+
 
 
 class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
@@ -115,17 +116,20 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     func_code.co_varnames='self','REQUEST','RESPONSE'
     func_code.co_argcount=3
 
-    manage_options=({'label':'Edit', 'action':'manage_main',
-                     'help':('OFSP','DTML-Method_Edit.dtml')},
-                    {'label':'Upload', 'action':'manage_uploadForm',
-                     'help':('OFSP','DTML-Method_Upload.dtml')},
-                    {'label':'View', 'action':'',
-                     'help':('OFSP','DTML-Method_View.dtml')},
-                    {'label':'Proxy', 'action':'manage_proxyForm',
-                     'help':('OFSP','DTML-Method_Proxy.dtml')},
-                    {'label':'Security', 'action':'manage_access',
-                     'help':('OFSP','DTML-Method_Security.dtml')},
-                   )
+    manage_options=(
+        (
+            {'label':'Edit', 'action':'manage_main',
+             'help':('OFSP','DTML-DocumentOrMethod_Edit.dtml')},
+            {'label':'Upload', 'action':'manage_uploadForm',
+             'help':('OFSP','DTML-DocumentOrMethod_Upload.dtml')},
+            {'label':'View', 'action':'',
+             'help':('OFSP','DTML-DocumentOrMethod_View.dtml')},
+            {'label':'Proxy', 'action':'manage_proxyForm',
+             'help':('OFSP','DTML-DocumentOrMethod_Proxy.dtml')},
+            )
+        +RoleManager.manage_options
+        +Item_w__name__.manage_options
+        )
                    
     __ac_permissions__=(
     ('View management screens',
@@ -143,20 +147,22 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         kw['document_id']   =self.id
         kw['document_title']=self.title
 
-        # Verify the authenticated user object.
-        if REQUEST.has_key('AUTHENTICATED_USER'):
-            verify_watermark(REQUEST['AUTHENTICATED_USER'])
+        security=getSecurityManager()
+        security.addContext(self)
+        try:
+        
+            if client is None:
+                # Called as subtemplate, so don't need error propigation!
+                r=apply(HTML.__call__, (self, client, REQUEST), kw)
+                if RESPONSE is None: return r
+                return decapitate(r, RESPONSE)
 
-        if client is None:
-            # Called as subtemplate, so don't need error propigation!
             r=apply(HTML.__call__, (self, client, REQUEST), kw)
-            if RESPONSE is None: return r
-            return decapitate(r, RESPONSE)
+            if type(r) is not type(''): return r
 
-        r=apply(HTML.__call__, (self, client, REQUEST), kw)
-        if type(r) is not type(''): return r
-                
-        if RESPONSE is None: return r
+            if RESPONSE is None: return r
+
+        finally: security.removeContext(self)
 
         # Ick.  I don't like this. But someone can override it with
         # a header if they have to.
@@ -170,54 +176,8 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         return len(self.raw)
     getSize=get_size
     
-    def oldvalidate(self, inst, parent, name, value, md):
-        #################################################################
-        # Note that this method is not used normally.  It is simply a
-        # Python rendition of the validate method implemented in
-        # DocumentTemplate.cDocumentTemplate. The Python version
-        # serves the role of a requirements spec for the C version and
-        # can also be useful (if temporarily renamed to validate) for
-        # debugging.
-        #################################################################
-
-        try:
-            if (name[:3]=='aq_' and
-                name != 'aq_parent' and name != 'aq_explicit'):
-                return 0
-        except: pass # name might not be a string!
-
-        # Try to get roles
-        if hasattr(value, '__roles__'): roles=value.__roles__
-        else:
-            if hasattr(parent,'__roles__'): roles=parent.__roles__
-            elif hasattr(parent, 'aq_acquire'):
-                try: roles=parent.aq_acquire('__roles__')
-                except AttributeError:
-                    if hasattr(inst, 'aq_base'): inst=inst.aq_base
-                    if hasattr(parent, 'aq_base'): parent=parent.aq_base
-                    return inst is parent
-            else:
-                if hasattr(inst, 'aq_base'): inst=inst.aq_base
-                if hasattr(parent, 'aq_base'): parent=parent.aq_base
-                return inst is parent
-            value=parent
-            
-        if roles is None: return 1
-
-        try: 
-            if md.AUTHENTICATED_USER.hasRole(value, roles):
-                return 1
-        except AttributeError: pass
-
-        for r in self._proxy_roles:
-            if r in roles: return 1
-
-
-        if inst is parent:
-            raise 'Unauthorized', (
-                'You are not authorized to access <em>%s</em>.' % name)
-
-        return 0
+    def validate(self, inst, parent, name, value, md):
+        return getSecurityManager().validate(inst, parent, name, value)
 
     manage_editForm=HTMLFile('documentEdit', globals())
     manage_uploadForm=HTMLFile('documentUpload', globals())
@@ -285,16 +245,14 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     def _validateProxy(self, request, roles=None):
         if roles is None: roles=self._proxy_roles
         if not roles: return
-        user=u=request.get('AUTHENTICATED_USER',None)
-        if user is not None:
-            verify_watermark(user)
-            user=user.hasRole
-            for r in roles:
-                if r and not user(self, (r,)):
-                    user=None
-                    break
+        user=u=getSecurityManager().getUser()
+        user=user.hasRole
+        for r in roles:
+            if r and not user(self, (r,)):
+                user=None
+                break
 
-            if user is not None: return
+        if user is not None: return
 
         raise 'Forbidden', (
             'You are not authorized to change <em>%s</em> because you '

@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.61 1999/10/22 18:08:45 jim Exp $''' 
-__version__='$Revision: 1.61 $'[11:-2]
+'''$Id: DT_Util.py,v 1.62 2000/05/11 18:54:14 jim Exp $''' 
+__version__='$Revision: 1.62 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -163,7 +163,7 @@ def careful_getitem(md, mapping, key):
     if type(v) is type(''): return v # Short-circuit common case
 
     validate=md.validate
-    if validate is None or validate(mapping,mapping,key,v,md): return v
+    if validate is None or validate(mapping,mapping,None,v,md): return v
     raise ValidationError, key
 
 def careful_getslice(md, seq, *indexes):
@@ -179,7 +179,7 @@ def careful_getslice(md, seq, *indexes):
     validate=md.validate
     if validate is not None:
         for e in v:
-            if not validate(seq,seq,'',e,md):
+            if not validate(seq,seq,None,e,md):
                 raise ValidationError, 'unauthorized access to slice member'
 
     return v
@@ -201,7 +201,6 @@ def careful_range(md, iFirst, *args):
     if iLen >= RANGELIMIT: raise ValueError, 'range() too large'
     return range(iStart, iEnd, iStep)
 
-
 import string, math, whrandom
 
 try:
@@ -209,6 +208,7 @@ try:
     from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
     from cDocumentTemplate import cDocument
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
+
 
 d=TemplateDict.__dict__
 for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
@@ -223,8 +223,6 @@ def careful_pow(self, x, y, z):
     return pow(x,y,z)
 
 d['pow']=careful_pow
-
-
 
 try:
     import random

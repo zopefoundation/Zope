@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.5 1999/09/23 21:55:12 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: BaseResponse.py,v 1.6 2000/05/11 18:54:17 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -99,7 +99,10 @@ class BaseResponse:
     debug_mode=None
     _auth=None
     _error_format='text/plain'
-
+    
+    # Allow (reluctantly) access to unprotected attributes
+    __allow_access_to_unprotected_subobjects__=1
+        
     def __init__(self, stdout, stderr,
                  body='', headers=None, status=None, cookies=None):
         self.stdout=stdout

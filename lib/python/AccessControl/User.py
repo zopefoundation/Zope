@@ -84,9 +84,9 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.103 $'[11:-2]
+__version__='$Revision: 1.104 $'[11:-2]
 
-import Globals, App.Undo, socket, regex
+import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
 from string import join,strip,split,lower
 from App.Management import Navigation, Tabs
@@ -110,7 +110,10 @@ class BasicUser(Implicit):
     # ----------------------------
     # Public User object interface
     # ----------------------------
-
+    
+    # Allow (reluctantly) access to unprotected attributes
+    __allow_access_to_unprotected_subobjects__=1
+        
     def __init__(self,name,password,roles,domains):
         raise NotImplemented
 
@@ -324,14 +327,16 @@ except:
 
 
 nobody=SpecialUser('Anonymous User','',('Anonymous',), [])
+system=Super('System Processes','',('manage',), [])
 
-import ZPublisher.BaseRequest
-# Make anonymous users always pass the watermark test.
-nobody._v__marker__ = ZPublisher.BaseRequest._marker
+# stuff these in a handier place for importing
+SpecialUsers.nobody=nobody
+SpecialUsers.system=system
+SpecialUsers.super=super
 
 
 class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
-                      Item, App.Undo.UndoSupport):
+                      Item):
     """Base class for UserFolder-like objects"""
 
     meta_type='User Folder'
@@ -342,13 +347,13 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     isAUserFolder=1
 
     manage_options=(
-    {'label':'Contents', 'action':'manage_main',
-     'help':('OFSP','User-Folder_Contents.dtml')},
-    {'label':'Security', 'action':'manage_access',
-     'help':('OFSP','User-Folder_Security.dtml')},
-    {'label':'Undo',     'action':'manage_UndoForm',
-     'help':('OFSP','User-Folder_Undo.dtml')},
-    )
+        (
+        {'label':'Contents', 'action':'manage_main',
+         'help':('OFSP','User-Folder_Contents.dtml')},
+        )
+        +Item.manage_options
+        +RoleManager.manage_options
+        )
 
     __ac_permissions__=(
         ('Manage users',
@@ -738,18 +743,6 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
     self.__allow_groups__=f
     
     if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
-
-
-# This bit performs watermark verification on authenticated users.
-    
-from ZPublisher.BaseRequest import _marker
-
-def verify_watermark(auth_user):
-    if not hasattr(auth_user, '_v__marker__') or \
-       auth_user._v__marker__ is not _marker:
-        raise 'Unauthorized', (
-            'You are not authorized to access this resource.'
-            )
 
 
 def rolejoin(roles, other):

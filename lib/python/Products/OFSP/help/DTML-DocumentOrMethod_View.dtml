@@ -1,0 +1,7 @@
+<dtml-var standard_html_header><h1>
+DTML 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">Document</a>
+or 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Method.dtml">Method</a>
+View</h1>
+<p> This view allows you to preview the document or method. </p><dtml-var standard_html_footer>

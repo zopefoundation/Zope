@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.145 2000/05/09 19:20:28 jim Exp $"""
-__version__='$Revision: 1.145 $'[11:-2]
+$Id: Publish.py,v 1.146 2000/05/11 18:54:17 jim Exp $"""
+__version__='$Revision: 1.146 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -128,7 +128,7 @@ def publish(request, module_name, after_list, debug=0,
             ):
 
     (bobo_before, bobo_after, object, realm, debug_mode, err_hook,
-     have_transactions)= get_module_info(module_name)
+     validated_hook, have_transactions)= get_module_info(module_name)
 
     parents=None
 
@@ -158,7 +158,7 @@ def publish(request, module_name, after_list, debug=0,
         
         if have_transactions: get_transaction().begin()
     
-        object=request.traverse(path)
+        object=request.traverse(path, validated_hook=validated_hook)
     
         # Record transaction meta-data
         if have_transactions:
@@ -312,13 +312,14 @@ def get_module_info(module_name, modules={},
             else: object=module
 
             error_hook=getattr(module,'zpublisher_exception_hook', None)
+            validated_hook=getattr(module,'zpublisher_validated_hook', None)
 
             try: get_transaction()
             except: have_transactions=0
             else: have_transactions=1
 
             info= (bobo_before, bobo_after, object, realm, debug_mode,
-                   error_hook, have_transactions)
+                   error_hook, validated_hook, have_transactions)
 
             modules[module_name]=modules[module_name+'.cgi']=info
             

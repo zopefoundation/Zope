@@ -84,17 +84,23 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
-from Acquisition import Implicit, Acquired
+from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
 from Permission import Permission
 from App.Common import aq_base
 
 ListType=type([])
+
+def _isBeingUsedAsAMethod(self):
+    return aq_get(self, '_isBeingUsedAsAMethod_', 0)
+
+def _isNotBeingUsedAsAMethod(self):
+    return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
 class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     """An obect that has configurable permissions"""
@@ -113,7 +119,17 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
           'manage_setLocalRoles', 'manage_addLocalRoles',
           'manage_delLocalRoles',
           )),
-#        ('View management screens', ('manage_access',)),
+        )
+
+    manage_options=(
+        {'label':'Security', 'action':'manage_access',
+         'help':('OFSP','Security.dtml'),
+         'filter': _isNotBeingUsedAsAMethod,
+         },
+        {'label':'Define Permissions', 'action':'manage_access',
+         'help':('OFSP','Security-DefinePermissions.dtml'),
+         'filter': _isBeingUsedAsAMethod,
+         },
         )
    
     __ac_roles__=('Manager', 'Owner', 'Anonymous')
@@ -570,3 +586,4 @@ def gather_permissions(klass, result, seen):
                 seen[name]=None
         gather_permissions(base, result, seen)
     return result
+

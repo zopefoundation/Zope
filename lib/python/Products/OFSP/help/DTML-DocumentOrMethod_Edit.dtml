@@ -1,6 +1,10 @@
 <dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">DTML Document</a>&gt;Edit</h1>
-<p> This view allows you to edit the contents of a document. </p>
+DTML 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">Document</a>
+or 
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Method.dtml">Method</a>
+Edit</h1>
+<p> This view allows you to edit the contents of a DTML document or method. </p>
 <p> The <tt>id</tt> field indicates the id of the document.
 		  The <tt>Title</tt> field allows you to edit the title of the
 		  document. The <tt>Size</tt> field indicates the size of the

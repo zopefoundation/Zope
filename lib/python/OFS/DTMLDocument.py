@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -96,6 +96,7 @@ from sgmllib import SGMLParser
 from string import find
 from urllib import quote
 import Globals
+from AccessControl import getSecurityManager
 
 done='done'
 
@@ -107,19 +108,10 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     meta_type='DTML Document'
     icon     ='p_/dtmldoc'
 
-    manage_options=({'label':'Edit', 'action':'manage_main',
-                     'help':('OFSP','DTML-Document_Edit.dtml')},
-                    {'label':'Upload', 'action':'manage_uploadForm',
-                     'help':('OFSP','DTML-Document_Upload.dtml')},
-                    {'label':'Properties', 'action':'manage_propertiesForm',
-                     'help':('OFSP','DTML-Document_Properties.dtml')},
-                    {'label':'View', 'action':'',
-                     'help':('OFSP','DTML-Document_View.dtml')},
-                    {'label':'Proxy', 'action':'manage_proxyForm',
-                     'help':('OFSP','DTML-Document_Proxy.dtml')},
-                    {'label':'Security', 'action':'manage_access',
-                     'help':('OFSP','DTML-Document_Security.dtml')},
-                   )
+    manage_options=(
+        DTMLMethod.manage_options+
+        PropertyManager.manage_options
+        )
 
     __ac_permissions__=(
         ('Change DTML Documents',   ('manage_edit', 'manage_upload', 'PUT')),
@@ -163,6 +155,10 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         kw['document_title']=self.title
         if hasattr(self, 'aq_explicit'): bself=self.aq_explicit
         else: bself=self
+        
+        security=getSecurityManager()
+        security.addContext(self)
+        
         if client is None:
             # Called as subtemplate, so don't need error propigation!
             r=apply(HTML.__call__, (self, bself, REQUEST), kw)

@@ -105,8 +105,8 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.10 1999/03/10 00:15:08 klm Exp $'
-__version__='$Revision: 1.10 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.11 2000/05/11 18:54:14 jim Exp $'
+__version__='$Revision: 1.11 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 from DT_Util import TemplateDict
@@ -139,8 +139,6 @@ class With:
         if self.only:
             _md=md
             md=TemplateDict()
-            if hasattr(_md, 'AUTHENTICATED_USER'):
-                md.AUTHENTICATED_USER=_md.AUTHENTICATED_USER
             if hasattr(_md, 'validate'):
                 md.validate=_md.validate
 

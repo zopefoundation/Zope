@@ -89,11 +89,11 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.68 2000/04/04 22:41:52 jim Exp $'''
-__version__='$Revision: 1.68 $'[11:-2]
+$Id: SimpleItem.py,v 1.69 2000/05/11 18:54:14 jim Exp $'''
+__version__='$Revision: 1.69 $'[11:-2]
 
-import regex, sys, Globals, App.Management, Acquisition
-import AccessControl.Role
+import regex, sys, Globals, App.Management, Acquisition, App.Undo
+import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource
 from ExtensionClass import Base
 from DateTime import DateTime
@@ -102,20 +102,24 @@ from string import join, lower, find, split
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 from urllib import quote
-import App.Common
+from AccessControl import getSecurityManager
 
 import marshal
 import ZDOM
 
 HTML=Globals.HTML
 _marker=[]
+StringType=type('')
 
 class Item(Base, Resource, CopySource, App.Management.Tabs,
-           ZDOM.Element):
+           ZDOM.Element,
+           AccessControl.Owned.Owned,
+           App.Undo.UndoSupport,
+           ):
     """A common base class for simple, non-container objects."""
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
-
+    
     def manage_afterAdd(self, item, container): pass
     def manage_beforeDelete(self, item, container): pass
     def manage_afterClone(self, item): pass
@@ -140,10 +144,16 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
     # Default propertysheet info:
     __propsets__=()
 
-    manage_options=()
-
+    manage_options=(
+        App.Undo.UndoSupport.manage_options
+        +AccessControl.Owned.Owned.manage_options
+        )
+    
     # Attributes that must be acquired
     REQUEST=Acquisition.Acquired
+
+    # Allow (reluctantly) access to unprotected attributes
+    __allow_access_to_unprotected_subobjects__=1
 
     getPhysicalRoot=Acquisition.Acquired
     getPhysicalRoot__roles__=()
@@ -268,21 +278,28 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         "psuedo stat, used by FTP for directory listings"
         from AccessControl.User import nobody
         mode=0100000
+        
         # check read permissions
-        if hasattr(self.aq_base,'manage_FTPget') and \
-                hasattr(self.manage_FTPget, '__roles__'):
-            if REQUEST['AUTHENTICATED_USER'].allowed(self.manage_FTPget,
-                                    self.manage_FTPget.__roles__):
-                mode=mode | 0440
-            if nobody.allowed(self.manage_FTPget, self.manage_FTPget.__roles__):
+        if (hasattr(self.aq_base,'manage_FTPget') and 
+            hasattr(self.manage_FTPget, '__roles__')):
+            try:
+                if getSecurityManager().validateValue(self.manage_FTPget):
+                    mode=mode | 0440
+            except: pass
+            if nobody.allowed(self.manage_FTPget,
+                              self.manage_FTPget.__roles__):
                 mode=mode | 0004
+                
         # check write permissions
         if hasattr(self.aq_base,'PUT') and hasattr(self.PUT, '__roles__'):
-            if REQUEST['AUTHENTICATED_USER'].allowed(self.PUT,
-                                    self.PUT.__roles__):
-                mode=mode | 0220
+            try:
+                if getSecurityManager().validateValue(self.PUT):
+                    mode=mode | 0220
+            except: pass
+            
             if nobody.allowed(self.PUT, self.PUT.__roles__):
                 mode=mode | 0002
+                
         # get size
         if hasattr(self, 'get_size'):
             size=self.get_size()
@@ -332,12 +349,31 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
 
     unrestrictedTraverse__roles__=()
     def unrestrictedTraverse(self, path, default=_marker):
+
+        if not path: return self
+
         object = self
         get=getattr
         N=None
         M=_marker
+
+        if type(path) is StringType: path=split(path,'/')
+        else: path=list(path)
+
+        REQUEST={'path': path}
+        path.reverse()
+        pop=path.pop
+        
         try:
-            for name in path:
+            while path:
+                name=pop()
+
+                if name=='..':
+                    o=getattr(object, 'aq_parent', M)
+                    if o is not M:
+                        object=o
+                        continue
+
                 t=get(object, '__bobo_traverse__', N)
                 if t is not N:
                     object=t(N, name)
@@ -416,7 +452,6 @@ def pretty_tb(t,v,tb):
     tb=join(tb,'\n')
     return tb
 
-
 class SimpleItem(Item, Globals.Persistent,
                  Acquisition.Implicit,
                  AccessControl.Role.RoleManager,
@@ -425,7 +460,7 @@ class SimpleItem(Item, Globals.Persistent,
     """Mix-in class combining the most common set of basic mix-ins
     """
 
-    manage_options=(
+    manage_options=Item.manage_options+(
         {'label':'Security',   'action':'manage_access'},
         )
  

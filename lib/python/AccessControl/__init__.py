@@ -82,3 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+
+import DTML
+del DTML
+
+from SecurityManagement import getSecurityManager, setSecurityPolicy

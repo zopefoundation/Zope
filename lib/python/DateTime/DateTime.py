@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -476,6 +476,10 @@ class DateTime:
         A DateTime object should be considered immutable; all conversion
         and numeric operations return a new DateTime object rather than
         modify the current object."""
+
+    # For security machinery:
+    __roles__=None
+    __allow_access_to_unprotected_subobjects__=1
 
     def __init__(self,*args):
         """Return a new date-time object

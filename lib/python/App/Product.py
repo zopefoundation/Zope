@@ -107,8 +107,10 @@
 
 
 import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition, Products
-from OFS.Folder import Folder
 import regex, zlib, Globals, cPickle, marshal, rotor
+import ZClasses, ZClasses.ZClass, AccessControl.Owned
+
+from OFS.Folder import Folder
 from string import rfind, atoi, find, strip, join
 from Factory import Factory
 from Permission import PermissionManager
@@ -124,23 +126,11 @@ class ProductFolder(Folder):
     meta_type ='Product Management'
     icon='p_/ProductFolder_icon'
 
-    manage_options=(
-    {'label':'Contents', 'action':'manage_main',
-     'help':('OFSP','Product-Management_Contents.dtml')},
-    {'label':'Properties', 'action':'manage_propertiesForm',
-     'help':('OFSP','Product-Management_Properties.dtml')},
-    {'label':'Import/Export', 'action':'manage_importExportForm',
-     'help':('OFSP','Product-Management_Import-Export.dtml')},
-    {'label':'Security', 'action':'manage_access',
-     'help':('OFSP','Product-Management_Security.dtml')},
-    {'label':'Undo', 'action':'manage_UndoForm',
-     'help':('OFSP','Product-Management_Undo.dtml')},
-    {'label':'Find', 'action':'manage_findFrame',
-     'help':('OFSP','Product-Management_Find.dtml')},
-    )
-
     all_meta_types={'name': 'Product', 'action': 'manage_addProductForm'},
     meta_types=all_meta_types
+
+    # This prevents subobjects from being owned!
+    _owner=AccessControl.Owned.UnownableOwner
 
     def _product(self, name): return getattr(self, name)
 
@@ -192,19 +182,12 @@ class Product(Folder, PermissionManager):
         'manage_subclassableClassNames']
 
     manage_options=(
-    {'label':'Contents', 'action':'manage_main',
-     'help':('OFSP','Product_Contents.dtml')},    
-    {'label':'Properties', 'action':'manage_propertiesForm',
-     'help':('OFSP','Product_Properties.dtml')},
-    {'label':'Security', 'action':'manage_access',
-     'help':('OFSP','Product_Define-Permissions.dtml')},
-    {'label':'Undo', 'action':'manage_UndoForm',
-     'help':('OFSP','Product_Undo.dtml')},
-    {'label':'Find', 'action':'manage_findFrame',
-     'help':('OFSP','Product_Find.dtml')},
-    {'label':'Distribution', 'action':'manage_distributionView',
-     'help':('OFSP','Product_Distribution.dtml')},
-    )
+        Folder.manage_options+
+        (
+        {'label':'Distribution', 'action':'manage_distributionView',
+         'help':('OFSP','Product_Distribution.dtml')},
+        )
+        )
 
     manage_distributionView=Globals.HTMLFile('distributionView',globals())
 
