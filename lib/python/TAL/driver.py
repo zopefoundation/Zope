@@ -110,13 +110,15 @@ def main():
     mode = None
     showcode = 0
     showtal = -1
+    strictinsert = 1
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hxmnst")
+        opts, args = getopt.getopt(sys.argv[1:], "hxlmnst")
     except getopt.error, msg:
         sys.stderr.write("\n%s\n" % str(msg))
         sys.stderr.write(
-            "usage: driver.py [-h|-x] [-m] [-n] [-s] [-t] [file]\n")
+            "usage: driver.py [-h|-x] [-l] [-m] [-n] [-s] [-t] [file]\n")
         sys.stderr.write("-h/-x -- HTML/XML input (default auto)\n")
+        sys.stderr.write("-l -- lenient structure insertion\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn off the Python 1.5.2 test\n")
         sys.stderr.write("-s -- print intermediate code\n")
@@ -125,6 +127,8 @@ def main():
     for o, a in opts:
         if o == '-h':
             mode = "html"
+        if o == '-l':
+            strictinsert = 0
         if o == '-m':
             macros = 1
         if o == '-n':
@@ -146,15 +150,17 @@ def main():
         file = FILE
     it = compilefile(file, mode)
     if showcode: showit(it)
-    else: interpretit(it, tal=(not macros), showtal=showtal)
+    else: interpretit(it, tal=(not macros), showtal=showtal,
+                      strictinsert=strictinsert)
 
-def interpretit(it, engine=None, stream=None, tal=1, showtal=-1):
+def interpretit(it, engine=None, stream=None, tal=1, showtal=-1,
+                strictinsert=1):
     from TALInterpreter import TALInterpreter
     program, macros = it
     if engine is None:
         engine = DummyEngine(macros)
     TALInterpreter(program, macros, engine, stream, wrap=0,
-                   tal=tal, showtal=showtal)()
+                   tal=tal, showtal=showtal, strictinsert=strictinsert)()
 
 def compilefile(file, mode=None):
     assert mode in ("html", "xml", None)
