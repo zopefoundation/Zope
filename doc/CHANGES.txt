@@ -64,3 +64,6 @@ Zope changes
           to use manage_tabs from ZClasses who hit the bug because the
           manage_tags document uses a namespace: 
           <dtml-with "_(manage_options=...">
+
+        - A change to pcgi_publisher was made to support FreeBSD, where
+          send() will send only 8192 bytes at a time.
