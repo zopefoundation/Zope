@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -305,15 +305,17 @@ class CopyContainer(ExtensionClass.Base):
                   title='Not Supported',
                   message='Cannot paste into this object.',
                   action='manage_main')
+
         method_name=None
         meta_types=absattr(self.all_meta_types)
         for d in meta_types:
             if d['name']==mt:
                 method_name=d['action']
                 break
+            
         if method_name is not None:
 
-
+            meth=None
             if hasattr(self, method_name):
                 meth=getattr(self, method_name)
             else:
@@ -325,7 +327,8 @@ class CopyContainer(ExtensionClass.Base):
                     product=self.aq_acquire('_getProducts')()._product(pname)
                     fname=mn[2]
                     factory=getattr(product, fname)
-                    meth=getattr(factory, factory.initial)
+                    try: meth=getattr(factory, factory.initial)
+                    except: meth=factory
 
             if hasattr(meth, '__roles__'):
                 roles=meth.__roles__
